@@ -1,0 +1,1412 @@
+2006-03-20  Adam Jackson  <ajax@freedesktop.org>
+
+	* hw/xfree86/common/xf86Init.c:
+	Bug #6213: Check geteuid's return value, not its address, otherwise
+	unprivileged users can set the modulepath and run arbitrary code.
+	Patch from Matthieu Herrb.  (CVE-2006-0745, Coverity #4)
+
+	* configure.ac:
+	Bump to 1.0.2.
+
+2006-03-16  Adam Jackson  <ajax@freedesktop.org>
+
+	* render/picture.c:
+	* miext/cw/cw.h:
+	Bug #6191: Sync Render gradient fixes from head.  (Lars Knoll)
+
+2006-03-14  Eric Anholt  <anholt@FreeBSD.org>
+
+	* GL/mesa/array_cache/Makefile.am:
+	* GL/mesa/glapi/Makefile.am:
+	* GL/mesa/main/Makefile.am:
+	* GL/mesa/math/Makefile.am:
+	* GL/mesa/shader/Makefile.am:
+	* GL/mesa/shader/grammar/Makefile.am:
+	* GL/mesa/shader/slang/Makefile.am:
+	* GL/mesa/swrast/Makefile.am:
+	* GL/mesa/swrast_setup/Makefile.am:
+	* GL/mesa/tnl/Makefile.am:
+	* configure.ac:
+	* include/dix-config.h.in:
+	Merge from HEAD:
+	Define NO_LIBCWRAPPER in dix-config.h, and rely on Mesa including
+	dix-config.h if DIX_HAVE_CONFIG_H is defined to get it and _XSERVER64.
+
+2006-02-28  Adam Jackson  <ajax@freedesktop.org>
+
+	* XpConfig/C/print/models/CANONC3200-PS/fonts/Makefile.am:
+	* XpConfig/C/print/models/HPLJ4050-PS/fonts/Makefile.am:
+	* XpConfig/C/print/models/SPSPARC2/fonts/Makefile.am:
+	Bug #5627: Fix Xprint font symlinking. (Tilman Sauerbeck)
+
+	* randr/Makefile.am:
+	Sync with head, install randrstr.h in the SDK.
+
+	* xkb/maprules.c:
+	Bug #5216: Allow options to appear with other components.
+
+	* hw/xfree86/common/xf86PciInfo.h:
+	Resync with head.
+
+2006-02-15  Eric Anholt  <anholt@FreeBSD.org>
+
+	* include/dix-config.h.in:
+	Merge from HEAD:
+	Add #undef BSD44SOCKETS, without which the listener socket on FreeBSD
+	would be created without the port number due to xtrans's define not
+	being used when xtrans was compiled in the X Server.
+
+2006-02-15  Eric Anholt  <anholt@FreeBSD.org>
+
+	* configure.ac:
+	Merge from HEAD:
+	Fix the AC_TRY_RUN for sys/linker.h which had no hope due to lacking a
+	main() to instead use a nice AC_CHECK_HEADERS that works.  Also, fix
+	the nearby SYSV IPC check which was lacking an argument and giving
+	bogus results (it's "AC_TRY_LINK(includes, main, yes, no)").
+
+2006-02-15  Eric Anholt  <anholt@FreeBSD.org>
+
+	* render/picture.c: (premultiply):
+	Merge from HEAD:
+	Correct rounding in divide-by-255 code.
+
+2006-02-14  Adam Jackson  <ajax@freedesktop.org>
+
+	* include/xorg-config.h.in:
+	Make self-backtracing work.  Spotted by many people, patch from Gentoo.
+
+	* os/access.c:
+	Bug #5218: Avoid crashing on unconfigured interfaces.  (Andrei Barbu)
+
+2005-12-20  Kevin E. Martin  <kem-at-freedesktop-dot-org>
+
+	* configure.ac:
+	Update package version for X11R7 release.
+
+2005-12-20  Adam Jackson  <ajax@freedesktop.org>
+
+	* hw/xfree86/common/xf86Config.c:
+	Bug #5359: Fix a segfault (Mark Kettenis)
+
+	* fb/fbpict.c:
+	Fix an fb regression on A8 pictures.  (Fredrik Höglund)
+
+2005-12-19  Adam Jackson  <ajax@freedesktop.org>
+
+	* hw/xfree86/doc/man/xorg.conf.man.pre:
+	Bug #5116: Refer DRI section details to dri.fd.o.
+
+2005-12-19  Alan Coopersmith  <alan.coopersmith@sun.com>
+
+	* hw/xfree86/doc/devel/exa-driver.txt:
+	* hw/xfree86/getconfig/cfg.man.pre:
+	* hw/xfree86/getconfig/getconfig.man.pre:
+	Fix typos.
+
+2005-12-14  Alan Coopersmith  <alan.coopersmith@sun.com>
+
+	* hw/xfree86/scanpci/pci.ids: 
+	* hw/xfree86/scanpci/xf86PciStdIds.h:
+	Update to 2005-12-14 snapshot from pciids.sf.net
+
+2005-12-14  Kevin E. Martin  <kem-at-freedesktop-dot-org>
+
+	* configure.ac:
+	Update package version number for final X11R7 release candidate.
+	Update release string to 6.99.99.904.
+
+2005-12-14  Adam Jackson  <ajax@freedesktop.org>
+
+	* hw/xfree86/common/xf86Globals.c:
+	* hw/xfree86/common/xf86Init.c:
+	* hw/xfree86/common/xf86Priv.h:
+	* hw/xfree86/os-support/linux/lnx_apm.c:
+	Bug #4718: Command line flag to disable ACPI.
+
+2005-12-13  Adam Jackson  <ajax@freedesktop.org>
+
+	* Xext/Makefile.am:
+	Spell it XINERAMA_SRCS, not PANORAMIX_SRCS.
+
+	* GL/mesa/X/Makefile.am:
+	Build libglx correctly when not building the Xorg DDX.
+
+2005-12-12  Alan Coopersmith  <alan.coopersmith@sun.com>
+
+	* hw/xfree86/os-support/solaris/sun_kbdEv.c: 
+	Remove unnecessary include of dgaproc.h that broke Solaris builds.
+
+2005-12-11  Alan Coopersmith  <alan.coopersmith@sun.com>
+
+	* Xext/Makefile.am: 
+	Bugzilla #4715 <https://bugs.freedesktop.org/show_bug.cgi?id=4715>
+	Files in xserver/xorg/Xext not included in tarball after make dist
+
+2005-12-09  Adam Jackson  <ajax@freedesktop.org>
+
+	* configure.ac:
+	* hw/xfree86/Makefile.am:
+	* hw/xfree86/xf8_32wid/Makefile.am:
+	Bug #4809: Re-fix that doesn't break distcheck. (Alan Coopersmith)
+
+2005-12-08  Adam Jackson  <ajax@freedesktop.org>
+
+	* configure.ac:
+	Bug #4361: Define XF86CONFIGFILE properly so config file generation
+	works.
+
+2005-12-08  Kevin E. Martin  <kem-at-freedesktop-dot-org>
+
+	* configure.ac:
+	* hw/dmx/doc/Makefile.am:
+	* hw/xfree86/doc/sgml/Makefile.am:
+	Fix sgml docs build.
+
+2005-12-08  Kevin E. Martin  <kem-at-freedesktop-dot-org>
+
+	* configure.ac:
+	Add configure option to set the top level font dir.
+
+2005-12-08  Kevin E. Martin  <kem-at-freedesktop-dot-org>
+
+	* configure.ac:
+	* hw/xfree86/Makefile.am:
+	* hw/xfree86/utils/xorgcfg/Makefile.am:
+	* hw/xfree86/utils/xorgconfig/Makefile.am:
+	Add configure options to allow hard-coded paths to be changed.
+
+2005-12-07  Kevin E. Martin  <kem-at-freedesktop-dot-org>
+
+	* configure.ac:
+	* hw/xfree86/utils/xorgcfg/Makefile.am:
+	Change to use the app-defaults default dir configured in libXt.
+
+2005-12-06  Kevin E. Martin  <kem-at-freedesktop-dot-org>
+
+	* Xprint/doc/Makefile.am:
+	* doc/Makefile.am:
+	* hw/dmx/Makefile.am:
+	* hw/dmx/config/Makefile.am:
+	* hw/vfb/Makefile.am:
+	* hw/xfree86/getconfig/Makefile.am:
+	* hw/xfree86/utils/gtf/Makefile.am:
+	* hw/xfree86/utils/kbd_mode/Makefile.am:
+	* hw/xfree86/utils/pcitweak/Makefile.am:
+	* hw/xfree86/utils/scanpci/Makefile.am:
+	* hw/xfree86/utils/xorgcfg/Makefile.am:
+	* hw/xfree86/utils/xorgconfig/Makefile.am:
+	* hw/xnest/Makefile.am:
+	Change *man_SOURCES ==> *man_PRE to fix autotools warnings.
+
+2005-12-06  Adam Jackson  <ajax@freedesktop.org>
+
+	* configure.ac:
+	Bug #5230: Fix whitespace bugs.
+
+2005-12-06  Alan Coopersmith  <alan.coopersmith@sun.com>
+
+	* os/Makefile.am: 
+	Bugzilla #5219 <https://bugs.freedesktop.org/show_bug.cgi?id=5219>
+	Make sure all optional sources are included in EXTRA_DIST,
+	even if they aren't used on the platform the distballs are made on.
+
+2005-12-03  Alan Coopersmith  <alan.coopersmith@sun.com>
+
+	* xorg/Makefile.am:
+	* xorg/configure.ac:
+	* xorg/hw/xfree86/Makefile.am:
+	* hw/xfree86/dixmods/Makefile.am: 
+	Bugzilla #4809 <https://bugs.freedesktop.org/show_bug.cgi?id=4809>
+	Patch #3908 <https://bugs.freedesktop.org/attachment.cgi?id=3908>
+	xf8_32wid and cfb24 only need to be built on sparc
+
+2005-12-03  Kevin E. Martin  <kem-at-freedesktop-dot-org>
+
+	* configure.ac:
+	Update package version number for X11R7 RC3 release.
+	Update release string to 6.99.99.903 (i.e., 7.0 RC3).
+
+2005-12-02  Kevin E. Martin  <kem-at-freedesktop-dot-org>
+
+	* GL/glx/Makefile.am:
+	* GL/mesa/X/Makefile.am:
+	* GL/mesa/array_cache/Makefile.am:
+	* GL/mesa/glapi/Makefile.am:
+	* GL/mesa/main/Makefile.am:
+	* GL/mesa/math/Makefile.am:
+	* GL/mesa/shader/Makefile.am:
+	* GL/mesa/shader/grammar/Makefile.am:
+	* GL/mesa/shader/slang/Makefile.am:
+	* GL/mesa/swrast/Makefile.am:
+	* GL/mesa/swrast_setup/Makefile.am:
+	* GL/mesa/tnl/Makefile.am:
+	* XTrap/Makefile.am:
+	* Xext/Makefile.am:
+	* Xi/Makefile.am:
+	* Xprint/Makefile.am:
+	* Xprint/pcl/Makefile.am:
+	* Xprint/ps/Makefile.am:
+	* Xprint/raster/Makefile.am:
+	* afb/Makefile.am:
+	* cfb/Makefile.am:
+	* cfb16/Makefile.am:
+	* cfb24/Makefile.am:
+	* cfb32/Makefile.am:
+	* composite/Makefile.am:
+	* configure.ac:
+	* damageext/Makefile.am:
+	* dbe/Makefile.am:
+	* dix/Makefile.am:
+	* fb/Makefile.am:
+	* hw/dmx/Makefile.am:
+	* hw/dmx/config/Makefile.am:
+	* hw/dmx/glxProxy/Makefile.am:
+	* hw/dmx/input/Makefile.am:
+	* hw/vfb/Makefile.am:
+	* hw/xfree86/Makefile.am:
+	* hw/xfree86/common/Makefile.am:
+	* hw/xfree86/ddc/Makefile.am:
+	* hw/xfree86/dixmods/Makefile.am:
+	* hw/xfree86/dixmods/extmod/Makefile.am:
+	* hw/xfree86/dri/Makefile.am:
+	* hw/xfree86/dummylib/Makefile.am:
+	* hw/xfree86/exa/Makefile.am:
+	* hw/xfree86/fbdevhw/Makefile.am:
+	* hw/xfree86/i2c/Makefile.am:
+	* hw/xfree86/int10/Makefile.am:
+	* hw/xfree86/loader/Makefile.am:
+	* hw/xfree86/os-support/bsd/Makefile.am:
+	* hw/xfree86/os-support/bus/Makefile.am:
+	* hw/xfree86/os-support/drm/Makefile.am:
+	* hw/xfree86/os-support/linux/Makefile.am:
+	* hw/xfree86/os-support/misc/Makefile.am:
+	* hw/xfree86/os-support/solaris/Makefile.am:
+	* hw/xfree86/parser/Makefile.am:
+	* hw/xfree86/rac/Makefile.am:
+	* hw/xfree86/ramdac/Makefile.am:
+	* hw/xfree86/scanpci/Makefile.am:
+	* hw/xfree86/shadowfb/Makefile.am:
+	* hw/xfree86/utils/xorgcfg/Makefile.am:
+	* hw/xfree86/utils/xorgconfig/Makefile.am:
+	* hw/xfree86/vbe/Makefile.am:
+	* hw/xfree86/vgahw/Makefile.am:
+	* hw/xfree86/x86emu/Makefile.am:
+	* hw/xfree86/xaa/Makefile.am:
+	* hw/xfree86/xf1bpp/Makefile.am:
+	* hw/xfree86/xf4bpp/Makefile.am:
+	* hw/xfree86/xf8_16bpp/Makefile.am:
+	* hw/xfree86/xf8_32bpp/Makefile.am:
+	* hw/xfree86/xf8_32wid/Makefile.am:
+	* hw/xnest/Makefile.am:
+	* include/xorg-config.h.in:
+	* include/xorg-server.h.in:
+	* include/xwin-config.h.in:
+	* lbx/Makefile.am:
+	* mfb/Makefile.am:
+	* mi/Makefile.am:
+	* miext/cw/Makefile.am:
+	* miext/damage/Makefile.am:
+	* miext/layer/Makefile.am:
+	* miext/shadow/Makefile.am:
+	* os/Makefile.am:
+	* randr/Makefile.am:
+	* record/Makefile.am:
+	* render/Makefile.am:
+	* xfixes/Makefile.am:
+	* xkb/Makefile.am:
+	* xorg-server.pc.in:
+	Define XFree86Server only where it is required.
+
+2005-12-01  Kevin E. Martin  <kem-at-freedesktop-dot-org>
+
+	* GL/mesa/X/Makefile.am:
+	Fix GL build when srcdir != builddir (Donnie Berkholz).
+
+2005-12-01  Kevin E. Martin  <kem-at-freedesktop-dot-org>
+
+	* configure.ac:
+	* include/dix-config.h.in:
+	* include/xorg-server.h.in:
+	Add missing XvExtension and XvMCExtension defines.
+
+2005-12-01  Kevin E. Martin  <kem-at-freedesktop-dot-org>
+
+	* configure.ac:
+	Fix typo: xorg_bus_linuxbsdpci ==> xorg_bus_linuxpci
+
+2005-11-30  Eric Anholt  <anholt@FreeBSD.org>
+
+	* configure.ac:
+	* hw/xfree86/os-support/bus/Makefile.am:
+	Bug #5160: Fix the modular build to try to use the same logic for
+	choosing the architecture/os-specific bus support as monolithic.
+
+2005-11-29  Adam Jackson  <ajax@freedesktop.org>
+
+	* configure.ac:
+	Only build dlloader modules by default.
+
+2005-11-29  Kevin E. Martin  <kem-at-freedesktop-dot-org>
+
+	* GL/glx/Makefile.am:
+	* GL/mesa/X/Makefile.am:
+	* GL/mesa/array_cache/Makefile.am:
+	* GL/mesa/glapi/Makefile.am:
+	* GL/mesa/main/Makefile.am:
+	* GL/mesa/math/Makefile.am:
+	* GL/mesa/shader/Makefile.am:
+	* GL/mesa/shader/grammar/Makefile.am:
+	* GL/mesa/shader/slang/Makefile.am:
+	* GL/mesa/swrast/Makefile.am:
+	* GL/mesa/swrast_setup/Makefile.am:
+	* GL/mesa/tnl/Makefile.am:
+	* GL/symlink-mesa.sh:
+	* XTrap/Makefile.am:
+	* Xext/Makefile.am:
+	* Xi/Makefile.am:
+	* afb/Makefile.am:
+	* cfb/Makefile.am:
+	* cfb16/Makefile.am:
+	* cfb24/Makefile.am:
+	* cfb32/Makefile.am:
+	* composite/Makefile.am:
+	* configure.ac:
+	* damageext/Makefile.am:
+	* dbe/Makefile.am:
+	* dix/Makefile.am:
+	* fb/Makefile.am:
+	* hw/dmx/glxProxy/Makefile.am:
+	* hw/xfree86/Makefile.am:
+	* hw/xfree86/common/Makefile.am:
+	* hw/xfree86/ddc/Makefile.am:
+	* hw/xfree86/dixmods/Makefile.am:
+	* hw/xfree86/dixmods/extmod/Makefile.am:
+	* hw/xfree86/dri/Makefile.am:
+	* hw/xfree86/dummylib/Makefile.am:
+	* hw/xfree86/exa/Makefile.am:
+	* hw/xfree86/fbdevhw/Makefile.am:
+	* hw/xfree86/i2c/Makefile.am:
+	* hw/xfree86/int10/Makefile.am:
+	* hw/xfree86/loader/Makefile.am:
+	* hw/xfree86/os-support/bsd/Makefile.am:
+	* hw/xfree86/os-support/bus/Makefile.am:
+	* hw/xfree86/os-support/drm/Makefile.am:
+	* hw/xfree86/os-support/linux/Makefile.am:
+	* hw/xfree86/os-support/misc/Makefile.am:
+	* hw/xfree86/os-support/solaris/Makefile.am:
+	* hw/xfree86/parser/Makefile.am:
+	* hw/xfree86/rac/Makefile.am:
+	* hw/xfree86/ramdac/Makefile.am:
+	* hw/xfree86/scanpci/Makefile.am:
+	* hw/xfree86/shadowfb/Makefile.am:
+	* hw/xfree86/utils/xorgcfg/Makefile.am:
+	* hw/xfree86/vbe/Makefile.am:
+	* hw/xfree86/vgahw/Makefile.am:
+	* hw/xfree86/x86emu/Makefile.am:
+	* hw/xfree86/xaa/Makefile.am:
+	* hw/xfree86/xf1bpp/Makefile.am:
+	* hw/xfree86/xf4bpp/Makefile.am:
+	* hw/xfree86/xf8_16bpp/Makefile.am:
+	* hw/xfree86/xf8_32bpp/Makefile.am:
+	* hw/xfree86/xf8_32wid/Makefile.am:
+	* include/xorg-config.h.in:
+	* lbx/Makefile.am:
+	* mfb/Makefile.am:
+	* mi/Makefile.am:
+	* miext/cw/Makefile.am:
+	* miext/damage/Makefile.am:
+	* miext/layer/Makefile.am:
+	* miext/shadow/Makefile.am:
+	* os/Makefile.am:
+	* randr/Makefile.am:
+	* record/Makefile.am:
+	* render/Makefile.am:
+	* xfixes/Makefile.am:
+	* xkb/Makefile.am:
+	* xorg-server.pc.in:
+	Fix usage of XFree86LOADER/XFree86Module/IN_MODULE and update
+	loadable module builds to reflect this change.
+
+2005-11-23  Kevin E. Martin  <kem-at-freedesktop-dot-org>
+
+	* configure.ac:
+	* hw/xfree86/Makefile.am:
+	* hw/xfree86/parser/Makefile.am:
+	* hw/xfree86/utils/xorgcfg/Makefile.am:
+	Add configure option to install libxf86config.a (disabled by
+	default).
+
+2005-11-21  Eric Anholt  <anholt@FreeBSD.org>
+
+	* hw/xfree86/utils/ioport/Makefile.am:
+	Bug #5118: Use "rm -f" instead of "$(RM)", which isn't always defined.
+
+2005-11-20  Felix Kuehling  <fxkuehl@gmx.de>
+
+	* configure.ac:
+	Fix Xprt library dependencies in the case that Xprint is
+	auto-detected by configure.
+
+2005-11-20  Alan Coopersmith  <alan.coopersmith@sun.com>
+
+	* configure.ac: 
+	* xkb/Makefile.am:
+	Make sure XKM_OUTPUT_DIR (used in code) ends in / (so paths don't
+	get hosed when appending file names) but XKB_COMPILED_DIR (used 
+	in Makefiles) does not so install-sh -d doesn't get confused when
+	the directory already exists.
+
+2005-11-19  Alan Coopersmith  <alan.coopersmith@sun.com>
+
+	* configure.ac: 
+	Add xext to list of modules xorgcfg depends on.
+
+2005-11-19  Kevin E. Martin  <kem-at-freedesktop-dot-org>
+
+	* GL/glx/Makefile.am:
+	* Xprint/Makefile.am:
+	* Xprint/pcl/Makefile.am:
+	* Xprint/ps/Makefile.am:
+	* Xprint/raster/Makefile.am:
+	* configure.ac:
+	* hw/xfree86/utils/xorgconfig/Makefile.am:
+	* xorg-server.pc.in:
+	Update dependencies to work with separate build roots.
+
+2005-11-18  Adam Jackson  <ajax@freedesktop.org>
+
+	* hw/xfree86/os-support/linux/Makefile.am:
+	Bug #4928: Unbreak Makefile.am for Alpha chips. (Stefan DeRoeck)
+
+	* configure.ac:
+	* hw/xfree86/dixmods/Makefile.am:
+	Bug #4824: Build XTrap support by default, matching monolith.
+
+2005-11-16  Adam Jackson  <ajax@freedesktop.org>
+
+	* configure.ac:
+	Fix builds when not building the Xorg DDX.
+
+2005-11-14  Kevin E. Martin  <kem-at-freedesktop-dot-org>
+
+	* GL/glx/glcontextmodes.c:
+	* GL/glx/glcontextmodes.h:
+	* GL/symlink-mesa.sh:
+	Use glcontextmodes.[ch] from Mesa.
+
+2005-11-14  Kevin E. Martin  <kem-at-freedesktop-dot-org>
+
+	* GL/glx/Makefile.am:
+	Add GL_CFLAGS so that GLX can find its proto headers when using
+	separate build dirs.
+
+2005-11-13  Alan Coopersmith  <alan.coopersmith@sun.com>
+
+	* configure.ac: 
+	Default xkb-output directory needs trailing slash.
+
+2005-11-13  Alan Coopersmith  <alan.coopersmith@sun.com>
+
+	* Xprint/doc/Makefile.am:
+	* hw/dmx/Makefile.am:
+	* hw/dmx/config/Makefile.am:
+	* hw/vfb/Makefile.am:
+	* hw/xfree86/doc/man/Makefile.am:
+	* hw/xfree86/getconfig/Makefile.am:
+	* hw/xfree86/utils/gtf/Makefile.am:
+	* hw/xfree86/utils/kbd_mode/Makefile.am:
+	* hw/xfree86/utils/pcitweak/Makefile.am:
+	* hw/xfree86/utils/scanpci/Makefile.am:
+	* hw/xfree86/utils/xorgcfg/Makefile.am:
+	* hw/xfree86/utils/xorgconfig/Makefile.am:
+	* hw/xnest/Makefile.am:
+	* hw/xwin/Makefile.am:
+	Bug #5019 <https://bugs.freedesktop.org/show_bug.cgi?id=5019>
+	xserver installs manpages into 'man1' instead of 'man1x'
+
+2005-11-12  Alan Coopersmith  <alan.coopersmith@sun.com>
+
+	* include/dix-config.h.in: 
+	Bug #4832 <https://bugs.freedesktop.org/show_bug.cgi?id=4832>
+	use RGB_DB not RGB_PATH as that's what configure defines
+	(Jürg Billeter  <j@bitron.ch>)
+  
+2005-11-09  Kevin E. Martin  <kem-at-freedesktop-dot-org>
+
+	* configure.ac:
+	* include/dix-config.h.in:
+	* include/xorg-server.h.in:
+	Fix typo to enable DGA support.
+
+	* hw/xfree86/dixmods/extmod/Makefile.am:
+	EXTMODULE is required to build DGA support into extmod.
+
+2005-11-09  Kevin E. Martin  <kem-at-freedesktop-dot-org>
+
+	* configure.ac:
+	Update package version number for X11R7 RC2 release.
+	Update release string to 6.99.99.902 (i.e., 7.0 RC2).
+
+2005-11-08  Kevin E. Martin  <kem-at-freedesktop-dot-org>
+
+	* hw/xfree86/os-support/Makefile.am:
+	* hw/xfree86/os-support/sco/Makefile.am:
+	* hw/xfree86/os-support/usl/Makefile.am:
+	Add newly checked in files to Xorg server build.
+
+	* configure.ac:
+	* include/dix-config.h.in:
+	Fix release date.
+	Enable DGA extension by default.
+
+2005-11-03  Kevin E. Martin  <kem-at-freedesktop-dot-org>
+
+	* configure.ac:
+	* dix/Makefile.am:
+	* hw/xfree86/utils/xorgcfg/Makefile.am:
+	Fix vendor string and release version reported by the servers.
+	Enable security, lbx and xevie extensions to give us parity
+	with monolithic tree.
+
+2005-11-03  Alan Coopersmith  <alan.coopersmith@sun.com>
+
+	* doc/Makefile.am: 
+	Use APP_MAN_SUFFIX for Xserver man page instead of hardcoding section 1
+	
+2005-11-02  Kevin E. Martin  <kem-at-freedesktop-dot-org>
+
+	* configure.ac:
+	* include/dix-config.h.in:
+	Add support for enabling/disabling DBE (part of generic enable/disable
+	extension support in the server).
+
+2005-11-01  Kevin E. Martin  <kem-at-freedesktop-dot-org>
+
+	* Makefile.am:
+	Add xorg-server.m4 for driver dependency checking.
+
+	* configure.ac:
+	* hw/dmx/config/Makefile.am:
+	* hw/dmx/examples/Makefile.am:
+	* hw/xfree86/dri/Makefile.am:
+	* hw/xfree86/utils/xorgcfg/Makefile.am:
+	Update pkgcheck depedencies to work with separate build roots.
+
+2005-10-28  Alan Coopersmith  <alan.coopersmith@sun.com>
+
+	* hw/xfree86/Makefile.am: 
+	Make X -> Xorg symlink at install time.
+	
+2005-10-21  Adam Jackson  <ajax@freedesktop.org>
+
+	* configure.ac:
+	Bug #4840: Typo, x$xRES -> x$RES.  (George Fufutos)
+
+2005-10-20  Donnie Berkholz  <spyderous@gentoo.org>
+
+	* configure.ac: Bug #4817 <https://bugs.freedesktop.org/show_bug.cgi?id=4817>
+	Restore '=' to '==' in test for mmx_capable.
+
+2005-10-18  Adam Jackson  <ajax@freedesktop.org>
+
+	* XTrap/Makefile.am:
+	* hw/xfree86/dixmods/Makefile.am:
+	Move xf86XTrapModule.c to dixmods, guess at a build system.
+
+2005-10-18  Kevin E. Martin  <kem-at-freedesktop-dot-org>
+
+	* configure.ac:
+	Update package version number for RC1 release.
+	Update release string to 6.99.99.901 (i.e., 7.0 RC1).
+
+2005-10-18  Adam Jackson  <ajax@freedesktop.org>
+
+	* hw/dmx/config/Makefile.am:
+	Fix parallel builds my ensuring libdmxconfig builds first.
+
+	* hw/xfree86/Makefile.am:
+	Fix distcheck by forcing Xorg to be installed before chmod/chown.
+
+2005-10-18  Alan Coopersmith  <alan.coopersmith@sun.com>
+
+	* hw/xfree86/utils/xorgcfg/Makefile.am:
+	Don't use $< in explicit rules since neither BSD nor Solaris make
+	allow that.
+
+2005-10-17  Aaron Plattner  <aplattner@nvidia.com>
+
+	* hw/xfree86/loader/Makefile.am:
+	Add miext/damage so misym.c can export DamageDamageRegion.
+
+2005-10-17  Adam Jackson  <ajax@freedesktop.org>
+
+	* hw/xfree86/utils/xorgcfg/Makefile.am:
+	Work around automake-1.7 braindamage by providing an explicit rule
+	for XOrgCfg.
+
+	* hw/xfree86/Makefile.am:
+	More automake 1.7 braindamage: use mkdir -p, not $(mkdir_p).
+
+2005-10-17  Kristian Høgsberg  <krh@redhat.com>
+
+	* configure.ac: Fix whitespace in AS_HELP_STRING uses, convert
+	all help strings to use AS_HELP_STRING.
+
+2005-10-17  Kevin E. Martin  <kem-at-freedesktop-dot-org>
+
+	* configure.ac:
+	* Xext/Makefile.am:
+	* include/dix-config.h.in
+	Add support for more extensions
+
+	* GL/Makefile.am:
+	* XTrap/Makefile.am:
+	* hw/xfree86/os-support/Makefile.am:
+	* hw/xfree86/os-support/bsd/Makefile.am:
+	* hw/xfree86/os-support/bus/Makefile.am:
+	* hw/xfree86/os-support/linux/Makefile.am:
+	* hw/xfree86/os-support/linux/int10/Makefile.am:
+	* hw/xfree86/os-support/misc/Makefile.am:
+	* hw/xfree86/os-support/solaris/Makefile.am:
+	* hw/xfree86/vgahw/Makefile.am:
+	* hw/xfree86/x86emu/Makefile.am:
+	* os/Makefile.am:
+	Add missing files to EXTRA_DIST
+
+2005-10-15  Donnie Berkholz  <spyderous@gentoo.org>
+
+	* configure.ac: Change '==' to portable '='.
+
+2005-10-15  Kevin E. Martin  <kem-at-freedesktop-dot-org>
+
+	* configure.ac:
+	Fix typo and add new Makefiles to AC_OUTPUT
+
+	* XpConfig/C/print/models/HPDJ1600C/Makefile.am:
+	Fix typos
+
+	* hw/xfree86/doc/man/Makefile.am:
+	Add xorg.conf.man to CLEANFILES
+
+	* Makefile.am:
+	* XpConfig/C/print/models/PSspooldir/Makefile.am:
+	* Xprint/Makefile.am:
+	* hw/xfree86/os-support/Makefile.am:
+	* hw/xfree86/os-support/lynxos/Makefile.am:
+	* ilbm/Makefile.am:
+	* iplan2p4/Makefile.am:
+	* miext/Makefile.am:
+	* miext/rootless/Makefile.am:
+	Add missing files to EXTRA_DIST
+
+2005-10-15  Kristian Høgsberg  <krh@redhat.com>
+
+	* lbx/Makefile.am: Doh, remember to add this file.
+
+2005-10-14  Kristian Høgsberg  <krh@redhat.com>
+
+	* Makefile.am:
+	* configure.ac:
+	* include/dix-config.h.in:
+	* os/Makefile.am: Hook up lbx.
+
+2005-10-14  Alan Coopersmith  <alan.coopersmith@sun.com>
+
+	* configure.ac:
+	Set default font path to match the default in the monolith so
+	fonts are actually found.
+
+2005-10-14  Alan Coopersmith  <alan.coopersmith@sun.com>
+
+	* hw/xfree86/Makefile.am: 
+	* hw/xfree86/doc/Makefile.am: 
+	Install Xorg & xorg.conf man pages even when not building docs
+
+2005-10-14  Kristian Høgsberg  <krh@redhat.com>
+
+	* hw/xfree86/os-support/Makefile.am (DIST_SUBDIRS): Add sysv and
+	sco os-support subdirs and add simple EXTRA_DIST Makefile.am in
+	those dirs.  Remove unsupported os-support subdirs (bsdi, dgux,
+	hurd, nto, os2, pmax, qnx4) that have no maintainer and we don't
+	dist.
+
+	* hw/xfree86/Makefile.am (EXTRA_DIST): Add Options.
+
+2005-10-13  Donnie Berkholz  <spyderous@gentoo.org>
+
+	* configure.ac: Add XTRAP_LIB to XPRINT_EXTENSIONS to fix xprint build when
+	xtrap is enabled.
+
+2005-10-13  Donnie Berkholz  <spyderous@gentoo.org>
+
+	* configure.ac: Require glproto >= 1.4.1 if building DRI with GLX. This
+	fixes a build failure on a number of hyperpipe functions.
+
+2005-10-13  Alan Coopersmith  <alan.coopersmith@sun.com>
+
+	* hw/xfree86/utils/xorgconfig/Makefile.am (EXTRAMANDEFS): 
+	Set substitutions needed in xorgconfig man page.
+
+2005-10-13  Kristian Høgsberg  <krh@redhat.com>
+
+	* hw/xfree86/xf4bpp/Makefile.am (libxf4bpp_la_SOURCES): Dist NOTES.
+
+	* hw/xfree86/xf1bpp/Makefile.am (EXTRA_DIST): Dist helper shell
+	scripts.
+
+	* hw/xfree86/xaa/Makefile.am (EXTRA_DIST): Dist XAA.HOWTO and a
+	few more unused C files.
+
+	* hw/xfree86/Makefile.am (EXTRA_DIST): Dist xorgconf.cpp.
+
+	* hw/xfree86/doc/Makefile.am (EXTRA_DIST): Fix DIST_EXTRA typo.
+
+	* hw/dmx/config/Makefile.am (MAINTAINERCLEANFILES): Clean yacc and
+	lex generated files only during make maintainer-clean as we don't
+	expect users to have those tools installed.
+
+2005-10-12  Eric Anholt  <anholt@FreeBSD.org>
+
+	* hw/xfree86/common/Makefile.am:
+	Remove an RM line that appears unnecessary and was breaking the build
+	at xf86DefModeSet.c with FreeBSD make, where RM was undefined.  While
+	here, make the build of xf86DefModeSet.c depend on its sources, so it'll
+	rebuild properly, and make it a normal CLEANFILE rather than a
+	DISTCLEANFILE, since the intention seems to be to build it at the user's
+	build time.
+
+2005-10-11  Kevin E. Martin  <kem-at-freedesktop-dot-org>
+
+	* hw/darwin/Makefile.am:
+	Fix typo (DIST_EXTRA -> EXTRA_DIST)
+
+2005-10-09  Alan Coopersmith  <alan.coopersmith@sun.com>
+
+	* Xext/Makefile.am: 
+	Bug #4715 <https://bugs.freedesktop.org/show_bug.cgi?id=4715>
+	Add SecurityPolicy to EXTRA_DIST (Bill Crawford)
+
+2005-10-07  Kristian Høgsberg  <krh@redhat.com>
+
+	* Xprint/Makefile.am:
+	* Xprint/etc/Makefile.am:
+	* Xprint/etc/Xsession.d/Makefile.am:
+	* Xprint/etc/init.d/Makefile.am:
+	* Xprint/etc/profile.d/Makefile.am:
+	* configure.ac:
+	Add Xprint init scrips to EXTRA_DIST.
+
+2005-10-07  Kevin E. Martin  <kem-at-freedesktop-dot-org>
+
+	* configure.ac:
+	* hw/Makefile.am:
+	* hw/darwin/Makefile.am:
+	Add darwin to dist
+
+	* hw/xfree86/doc/Makefile.am:
+	* hw/xfree86/doc/devel/Makefile.am:
+	Include missing docs in EXTRA_DIST
+
+	* hw/xwin/Makefile.am:
+	Include headers and other files in dist
+	
+2005-10-07  Kevin E. Martin  <kem-at-freedesktop-dot-org>
+
+	* xkb/Makefile.am:
+	Add README.compiled to dist tarball
+
+2005-10-06  Alan Coopersmith  <alan.coopersmith@sun.com>
+
+	* hw/dmx/examples/Makefile.am: 
+	Don't build "ev" example on systems without <linux/input.h>
+
+2005-10-06  Kristian Høgsberg  <krh@redhat.com>
+
+	* hw/xfree86/parser/Makefile.am: Add cpconfig.c to EXTRA_DIST.
+	* hw/xfree86/ramdac/Makefile.am: Add CURSOR.NOTES to EXTRA_DIST.
+	* hw/xfree86/scanpci/Makefile.am: Add extrapci.ids to EXTRA_DIST
+	and fix xf86PciIds.h rule.
+
+2005-10-06  Kevin E. Martin  <kem-at-freedesktop-dot-org>
+
+	* hw/vfb/Makefile.am:
+	Install correct man page and add to dist
+
+2005-10-05  Kevin E. Martin  <kem-at-freedesktop-dot-org>
+
+	* configure.ac:
+	* hw/dmx/Makefile.am:
+	* hw/dmx/config/Makefile.am:
+	* hw/dmx/doc/Makefile.am:
+	* hw/dmx/examples/Makefile.am:
+	* hw/dmx/input/Makefile.am:
+	Add support for building DMX config and examples programs
+	Add missing files to EXTRA_DIST
+	Install Xdmx man page
+
+2005-10-05  Kevin E. Martin  <kem-at-freedesktop-dot-org>
+
+	* hw/xfree86/fbdevhw/Makefile.am:
+	Clean up generated files to pass distcheck
+
+	* hw/xfree86/getconfig/Makefile.am:
+	Clean up generated files to pass distcheck
+	Distribute getconfig.man.pre, not getconfig.man
+
+2005-10-05  Kristian Høgsberg  <krh@redhat.com>
+
+	* afb/Makefile.am:
+	* cfb/Makefile.am:
+	* configure.ac:
+	* dix/Makefile.am:
+	* fb/Makefile.am:
+	* hw/vfb/Makefile.am:
+	* hw/xfree86/common/Makefile.am:
+	* hw/xfree86/dixmods/extmod/Makefile.am:
+	Add DGA configure option and add various files that we should be
+	dist'ing.  Simplify xf86DefModeSet.c rule a bit.
+
+2005-10-05  Adam Jackson  <ajax@freedesktop.org>
+
+	* configure.ac:
+	* hw/xfree86/utils/xorgcfg/Makefile.am:
+	Preprocess and install XOrgCfg.ad as in the monolith.
+
+2005-10-04  Adam Jackson  <ajax@freedesktop.org>
+
+	* configure.ac:
+	Bug #4038: Unbreak the SYSVIPC check for cross builds. (Detlef Vollman)
+
+2005-10-04  Aaron Plattner  <aplattner@nvidia.com>
+
+	* hw/xfree86/loader/Makefile.am:
+	Add miext/cw to the module loader include path so that misym.c can export
+	miDisableCompositeWrapper.
+
+2005-10-03  Alan Coopersmith  <alan.coopersmith@sun.com>
+
+	* configure.ac: Add missing ]	 (Dawid Gajownik)
+	* hw/xfree86/Makefile.am (SUBDIRS): Add getconfig (Dawid Gajownik)
+
+2005-10-02  Eric Anholt  <anholt@FreeBSD.org>
+
+	* hw/xfree86/exa/Makefile.am:
+	Fix include path for commit of bug #4616.
+
+2005-09-28  Alan Coopersmith  <alan.coopersmith@sun.com>
+
+	* configure.ac: 
+	* hw/xfree86/utils/Makefile.am:
+	* hw/xfree86/utils/kbd_mode/Makefile.am:
+	Add kbd_mode build system
+
+2005-09-27  Kevin E. Martin  <kem-at-freedesktop-dot-org>
+
+	* XpConfig/C/print/Makefile.am:
+	* XpConfig/C/print/attributes/Makefile.am:
+	* XpConfig/C/print/ddx-config/raster/Makefile.am:
+	* XpConfig/C/print/models/CANONBJ10E-GS/Makefile.am:
+	* XpConfig/C/print/models/CANONC3200-PS/Makefile.am:
+	* XpConfig/C/print/models/GSdefault/Makefile.am:
+	* XpConfig/C/print/models/HPLJ4050-PS/Makefile.am:
+	* XpConfig/C/print/models/HPLJ4family/Makefile.am:
+	* XpConfig/C/print/models/HPLJ4family/fonts/Makefile.am:
+	* XpConfig/C/print/models/PS2PDFspooldir-GS/Makefile.am:
+	* XpConfig/C/print/models/PSdefault/Makefile.am:
+	* XpConfig/C/print/models/PSdefault/fonts/Makefile.am:
+	* XpConfig/C/print/models/PSspooldir/Makefile.am:
+	* XpConfig/C/print/models/SPSPARC2/Makefile.am:
+	* XpConfig/en_US/print/attributes/Makefile.am:
+	* hw/xfree86/dummylib/Makefile.am:
+	* hw/xfree86/utils/xorgcfg/Makefile.am:
+	* hw/xfree86/utils/xorgconfig/Makefile.am:
+	Fix distcheck build and install errors.
+
+2005-09-27  Kevin E. Martin  <kem-at-freedesktop-dot-org>
+
+	* hw/dmx/doc/Makefile.am:
+	* hw/xfree86/doc/sgml/Makefile.am:
+	Fix make dist to include only sgml files.
+
+2005-09-27  Kevin E. Martin  <kem-at-freedesktop-dot-org>
+
+	* configure.ac:
+	Add build system for building docs and fix setuid issues.
+
+	* hw/dmx/Makefile.am:
+	* hw/dmx/doc/Makefile.am:
+	* hw/xfree86/Makefile.am:
+	* hw/xfree86/doc/Makefile.am:
+	* hw/xfree86/doc/sgml/Makefile.am:
+	Add build system for sgml docs.
+	
+2005-09-26  Alan Coopersmith  <alan.coopersmith@sun.com>
+
+	* configure.ac:
+	* hw/xfree86/utils/Makefile.am:
+	* hw/xfree86/utils/ioport/Makefile.am
+	* hw/xfree86/utils/pcitweak/Makefile.am: 
+	Add ioport and pcitweak utils from monolith hw/xfree86/etc dir.
+
+	* xserver/xorg/hw/xfree86/common/Makefile.am:
+	Generate xf86DefModeSet.c from vesamodes & extramodes
+
+	* xserver/xorg/hw/xfree86/os-support/solaris/Makefile.am:
+	Add apSolaris.shar to EXTRA_DIST
+	
+2005-09-25  Alan Coopersmith  <alan.coopersmith@sun.com>
+
+	* Xext/Makefile.am: 
+	Add SecurityPolicy file for XCSECURITY extension.
+	
+	* hw/xfree86/dummylib/Makefile.am:
+	Add README to EXTRA_DIST
+
+2005-09-23  Alan Coopersmith  <alan.coopersmith@sun.com>
+
+	* configure.ac:
+	* cpprules.in:
+	* hw/xfree86/Makefile.am:
+	* hw/xfree86/dummylib/Makefile.am:
+	* hw/xfree86/os-support/.cvsignore:
+	* hw/xfree86/os-support/Makefile.am:
+	* hw/xfree86/scanpci/Makefile.am:
+	* hw/xfree86/utils/Makefile.am:
+	* hw/xfree86/utils/scanpci/Makefile.am:
+	* hw/xfree86/utils/xorgcfg/Makefile.am:
+	* hw/xfree86/utils/xorgconfig/Makefile.am:
+	Add scanpci, xorgcfg, & xorgconfig utilities.
+
+2005-09-21  Kristian Høgsberg  <krh@redhat.com>
+
+	* configure.ac: Accept --with-xkb-output argument to specify
+	output dir for compiled xkb keymaps.  Define XKM_OUTPUT_DIR and
+	XKB_BIN_DIRECTORY.
+
+	* include/xkb-config.h.in: Add XKM_OUTPUT_DIR and XKB_BIN_DIRECTORY.
+
+	* xkb/Makefile.am (AM_CFLAGS): Add XKB_CFLAGS.
+
+2005-09-20  Adam Jackson  <ajax@freedesktop.org>
+
+	* hw/xfree86/os-support/Makefile.am:
+	Bug #4487: Add the bsd subdir to DIST_SUBDIRS. (Joshua Baergen)
+
+2005-09-20  Adam Jackson  <ajax@freedesktop.org>
+
+	* cfb/Makefile.am:
+	* cfb/Makefile.am.inc:
+	Bug #4257: Move cfbcmap.c to cfb_common_sources.
+
+2005-09-20  Alan Coopersmith  <alan.coopersmith@sun.com>
+
+	* hw/xfree86/Makefile.am (install-exec-local): 
+	* configure.ac:
+	Add --disable-install-setuid option so you can build as non-root
+	and chown/chmod later.   Also disable by default on platforms that
+	don't need setuid root X servers (Darwin & SPARC's, according to
+	InstallXserverSetUID settings in the old Imake config files).
+
+2005-09-19  Alan Coopersmith  <alan.coopersmith@sun.com>
+
+	* configure.ac:
+	* hw/xfree86/os-support/bus/Makefile.am: 
+	* hw/xfree86/os-support/linux/Makefile.am:
+	Linux/Alpha support (Stefaan De Roeck)
+
+2005-09-14  Eric Anholt  <anholt@FreeBSD.org>
+
+	* configure.ac:
+	Bug #3990: Require glproto in the cases that it's necessary (DRI or DMX
+	with GLX).  (spyderous)
+
+2005-09-14  Eric Anholt  <anholt@FreeBSD.org>
+
+	* hw/xfree86/Makefile.am:
+	Bug #4046: Install the X.Org server setuid root. (David Schleef)
+
+2005-09-14  Eric Anholt  <anholt@FreeBSD.org>
+
+	* configure.ac:
+	* hw/xfree86/Makefile.am:
+	Bug #3889: Create the log dir on install, and allow configuring
+	specifically that directory.  Failure to have the directory keeps the
+	xorg server from starting. (David Schleef)
+
+2005-09-14  Eric Anholt  <anholt@FreeBSD.org>
+
+	* hw/xfree86/xf8_32bpp/Makefile.am:
+	Don't put a version number on the module filename.
+
+2005-09-14  Eric Anholt  <anholt@FreeBSD.org>
+
+	* configure.ac:
+	* hw/xfree86/Makefile.am:
+	* hw/xfree86/loader/Makefile.am:
+	* hw/xfree86/xf8_32bpp/Makefile.am:
+	Build xf8_32bpp, which is wanted by the mga driver, and export elf.h,
+	which is wanted by the rendition driver.
+
+2005-09-13  Eric Anholt  <anholt@FreeBSD.org>
+
+	* configure.ac:
+	* hw/xfree86/dri/Makefile.am:
+	Turn on DRI by default on Linux, NetBSD, FreeBSD, and fix the build of
+	the module for FreeBSD by setting some missing defines (XFree86Module,
+	IN_MODULE) in the dri directory.  Note that those missing defines should
+	be somewhere generic, since there are other consumers of them, but I
+	haven't figured out where.
+
+2005-09-13  Eric Anholt  <anholt@FreeBSD.org>
+
+	* configure.ac:
+	* hw/xfree86/Makefile.am:
+	* hw/xfree86/os-support/bsd/Makefile.am:
+	* include/dix-config.h.in:
+	* include/xorg-config.h.in:
+	* include/xorg-server.h.in:
+	Add some initial BSD support for the xorg server.  Incomplete on NetBSD,
+	OpenBSD, and non-i386/amd64 FreeBSD for sure.  Plus I haven't actually
+	run it yet.
+
+2005-09-12  Eric Anholt  <anholt@FreeBSD.org>
+
+	* configure.ac:
+	Don't define POSIX_SOURCE on any BSDs, since it breaks things.
+
+	* hw/xfree86/int10/Makefile.am:
+	Define NO_SYS_HEADERS, as the monolithic build does.  Helps FreeBSD.
+
+	* hw/xfree86/x86emu/Makefile.am:
+	Don't include validate.c in the library, since it seems to be a userland
+	test program.
+
+2005-09-12  Daniel Stone  <daniel@freedesktop.org>
+
+	* configure.ac:
+	Put DMX AC_CONDITIONALS at the top level, since they must always be
+	called.  Add missing resourceproto, fontenc, and fontsproto to
+	REQUIRED_MODULES.
+
+	* configure.ac:
+	* include/xorg-config.h.in:
+	* include/xorg-server.h.in:
+	Since we build vgahw unconditionally, always define WITH_VGAHW.
+
+2005-09-09  Jürg Billeter  <j@bitron.ch>
+
+	* configure.ac: use RGB_DB not RGB_PATH as that's what it's looking for
+
+	* xkb/Makefile.am: define HAVE_XKB_CONFIG_H so setting xkb-path works
+
+2005-09-02  Alan Coopersmith  <alan.coopersmith@sun.com>
+
+	* configure.ac: 
+	Use macros from xtrans.m4, issue error if not found.
+
+2005-09-02  Daniel Stone  <daniel@freedesktop.org>
+
+	* GL/mesa/X/Makefile.am:
+	Add -include dix-config.h to CFLAGS so we pickup _XSERVER64 and other
+	assorted vaguely useful macros; this unbreaks GLcore on amd64.
+
+2005-09-01  Daniel Stone  <daniel@freedesktop.org>
+
+	* configure.ac:
+	* include/config.h.in:
+	Make RGB_PATH configurable.
+
+	* hw/xfree86/i2c/Makefile.am:
+	Move I2C modules back to $(moduledir)/multimedia.
+
+2005-08-30  Kristian Høgsberg  <krh@redhat.com>
+
+	* hw/xfree86/dri/Makefile.am: 
+	* hw/xfree86/os-support/drm/Makefile.am: Use the $(moduledir)
+	makefile variable instead of @moduledir@ so it can be overridden
+	at make install time.
+
+	* xorg-server.pc.in: Remove driverdir and inputdir from pkg-config
+	file.  The directory layout of moduledir is fixed and well known
+	by drivers.
+
+Thu Aug 25 17:15:01 2005  Søren Sandmann  <sandmann@redhat.com>
+
+	* hw/xfree86/i2c/Makefile.am (module_LTLIBRARIES): Add all the
+	drivers to the module_LTLIBRARIES instead of having separate 
+	variables for them. Pointed out by Kristian Høgsberg.
+	
+2005-08-25  Kristian Høgsberg  <krh@redhat.com>
+
+	* hw/xfree86/os-support/solaris/Makefile.am (EXTRA_DIST): Remove
+	sun_inout.s so make dist works (discussed with Alan Coopersmith).
+
+Wed Aug 24 15:39:07 2005  Søren Sandmann  <sandmann@redhat.com>
+
+	* configure.ac: Add GLX_{INC,LIBS} for xprint.
+
+	* hw/xfree86/dixmods/Makefile.am: Add @DIX_FLAGS@ to AM_CFLAGS
+
+2005-08-24  Alan Coopersmith  <alan.coopersmith@sun.com>
+
+	* configure.ac: 
+	* hw/dmx/input/Makefile.am:
+	Don't try to build dmx/input/lnx-*.c if <linux/keyboard.h> isn't found
+	Don't try to build dmx/input/usb-*.c if <linux/input.h> isn't found
+
+	* hw/dmx/Makefile.am: 
+	Replace -rdynamic with $(LD_EXPORT_SYMBOLS_FLAG) for compatibility
+	with compilers other than gcc
+	
+2005-08-22  Kevin E. Martin  <kem-at-freedesktop-dot-org>
+
+	* configure.ac:
+	Fix linking errors for xprint.
+
+2005-08-21  Daniel Stone  <daniel@freedesktop.org>
+
+	* configure.ac:
+	Huge cleanup.  Group into sections: hardware feature detection,
+	extension detection/configuration, DDX options.  Make building of Xorg
+	DDX fully optional.  Clarify and correct some help texts.  Change all
+	comments to use dnl instead of #.  Quote all tests correctly, and guard
+	pure-variable tests with 'x' (e.g. test $DMX = yes -> test "x$DMX" =
+	xyes).  Since the DDXes seem to have pretty divergent extension support
+	these days, get rid of EXTENSION_LIBS, DMX_EXTENSIONS and
+	XPRINT_EXTENSIONS, and go back to building extension lists by hand in
+	the DDX-specific sections.  Use portable POSIX constructs everywhere
+	(e.g. test foo && test bar, instead of test foo -a bar).
+
+	* configure.ac:
+	Set _XSERVER64 on 64-bit architectures, and use x86_64 for host_cpu
+	instead of amd64 (Jürg Billeter).
+	
+	* configure.ac:
+	* hw/xfree86/loader/Makefile.am:
+	* hw/xfree86/os-support/bus/Makefile.am:
+	Add test for SPARC.  Build SparcMulDiv.S, sparcPci.c, and Sbus.c on
+	all SPARCs; use xorg_bus_sparc instead of xorg_bus_sbus.
+
+	* configure.ac:
+	Make the default font path configurable.
+
+2005-08-20  Adam Jackson  <ajax@freedesktop.org>
+
+	* hw/xfree86/os-support/bus/Makefile.am:
+	Add sparcPci.c to EXTRA_DIST.
+
+2005-08-20  Daniel Stone  <daniel@freedesktop.org>
+
+	* configure.ac:
+	Make symlink-mesa.sh usage srcdir != objdir safe.
+	Remove requirement for XF86Rush protocol headers, which we don't even
+	use in the core server.
+
+	* configure.ac:
+	* xkb/Makefile.am:
+	* hw/xfree86/Makefile.am:
+	* hw/xfree86/dixmods/Makefile.am:
+	Build libxkbstubs.la to stub XKB DDX functions (e.g. VT switches), and
+	build libxorggxkb.la from within the Xorg DDX to replace the previous
+	xf86VT.o, et al, hacks.
+
+	* configure.ac:
+	* GL/**/Makefile.am:
+	* hw/xfree86/dri/Makefile.am:
+	Make DRI/GLcore builds srcdir != builddir safe, and invoke
+	symlink-mesa.sh in our builddir, not our srcdir.
+
+2005-08-19  Søren Sandmann  <sandmann@redhat.com>
+
+	* fb/Makefile.am (libfbmmx_la_CFLAGS): Move fbmmx to a convenience
+	library since the mmx flags may be harmful when applied to non-mmx
+	code.
+
+2005-08-17  Søren Sandmann  <sandmann@redhat.com>
+
+	* Xext/Makefile.am: Conditionally compile in xprint.c
+
+	* Makefile.am, configure.ac: Add Xprint
+
+2005-08-16  Søren Sandmann  <sandmann@redhat.com>
+
+	* hw/xfree86/dixmods/Makefile.am: Add ft and type1 modules.
+
+2005-08-15  Søren Sandmann  <sandmann@redhat.com>
+
+	* hw/xfree86/dixmods/extmod/Makefile.am (libextmod_la_LIBADD):
+	Link this module with libXext.la.
+
+Mon Aug 15 14:56:57 2005  Søren Sandmann  <sandmann@redhat.com>
+
+	* hw/xfree86/dixmods/Makefile.am (libdixmods_la_SOURCES): Remove
+	the xkb* files.
+
+	* hw/xfree86/Makefile.am (Xorg_LDADD): Add xkbVT.o and friends as
+	the last things on the link line so they will override the symbols
+	in libxkb.a.  Add a comment on how this situation might not be
+	considered ideal.
+
+2005-08-08  Søren Sandmann  <sandmann@redhat.com>
+
+	* include/xorg-config.h.in: #undef PIXPRIV here.
+
+2005-08-07  Keith Packard  <keithp@keithp.com>
+
+	* include/dix-config.h.in:
+	Re-add _XOPEN_SOURCE as it's needed *sometimes*.
+	Place it in #ifndef to avoid whinging.
+
+2005-08-07  Keith Packard  <keithp@keithp.com>
+
+	* .cvsignore:
+	* GL/mesa/X/.cvsignore:
+	* Xext/extmod/.cvsignore:
+	* afb/.cvsignore:
+	* cfb/.cvsignore:
+	* cfb16/.cvsignore:
+	* cfb24/.cvsignore:
+	* cfb32/.cvsignore:
+	* hw/dmx/.cvsignore:
+	* hw/dmx/config/.cvsignore:
+	* hw/vfb/.cvsignore:
+	* hw/xfree86/.cvsignore:
+	* hw/xfree86/common/.cvsignore:
+	* hw/xfree86/dixmods/.cvsignore:
+	* hw/xfree86/exa/.cvsignore:
+	* hw/xfree86/os-support/linux/drm/.cvsignore:
+	* hw/xfree86/ramdac/.cvsignore:
+	* hw/xfree86/scanpci/.cvsignore:
+	* hw/xfree86/x86emu/.cvsignore:
+	* hw/xfree86/xaa/.cvsignore:
+	* hw/xfree86/xf1bpp/.cvsignore:
+	* hw/xfree86/xf4bpp/.cvsignore:
+	* hw/xnest/.cvsignore:
+	* include/.cvsignore:
+	* mfb/.cvsignore:
+	Add autogenerated source files and other
+	various non-CVS material to .cvsignore files
+	
+	* hw/xfree86/exa/Makefile.am:
+	Use XORG_CFLAGS.  Ensure that all exa files are in SOURCES
+	
+	* include/dix-config.h.in:
+	remove _XOPEN_SOURCE as it's always in xtrans.pc these days
+	and gcc whines
+	
+	* configure.ac:
+	libdamage.la needs libcw.la when COMPOSITE is defined,
+	but that libdamage.la must be after libcomposite.la, so
+	add libcw.la to DAMAGE_LIB instead of EXTENSION_LIBS.
+	Regularize library link order across all X servers
+
+2005-08-07  Adam Jackson  <ajax@freedesktop.org>
+
+	* configure.ac:
+	Invert the sense of the composite configure flag to match reality.
+
+2005-08-07  Adam Jackson  <ajax@freedesktop.org>
+
+	* configure.ac:
+	* miext/damage/Makefile.am:
+	Bug #3989: Fix Composite builds, enable Composite build by default.
+	(Olli Helenius)
+
+2005-08-04  Adam Jackson  <ajax@freedesktop.org>
+
+	* hw/xfree86/common/Makefile.am:
+	* hw/xfree86/os-support/bus/Makefile.am:
+	EXTRA_DIST hacks to get all the OS support files into the tarball.
+
+2005-08-04  Adam Jackson  <ajax@freedesktop.org>
+
+	* configure.ac:
+	* GL/Makefile.am:
+	* GL/include/Makefile.am:
+	* GL/include/GL/Makefile.am:
+	* hw/xfree86/os-support/solaris/Makefile.am:
+	* hw/xfree86/scanpci/Makefile.am:
+	- Bug #3960: Add remaining GLX and pci.ids stuff to DIST
+	  (Cha Young-Ho, Olli Helenius)
+	- Fix some distcheck problems for non-solaris systems
+	- Change server version number from the Xorg rev to an independent one
+	- _POSIX_SOURCE and _XOPEN_SOURCE defined to the right values
+
+2005-08-04  Adam Jackson  <ajax@freedesktop.org>
+
+	* configure.ac:
+	* GL/mesa/main/Makefile.am:
+	- Check for vsnprintf
+	- Don't build the Xorg DDX on darwin
+	- Workaround for gcc defining __ppc__ but not __powerpc__
+
+2005-08-02  Keith Packard  <keithp@keithp.com>
+
+	* hw/xwin/Makefile.am:
+	Mark generated files as BUILT_SOURCES and CLEANFILES
+	to ensure they are regenerated after 'make clean' and
+	to make parallel builds work right.
+
+2005-08-01  Keith Packard  <keithp@keithp.com>
+
+	* hw/dmx/config/Makefile.am:
+	Note yacc and lex generated files as BUILT_SOURCES so
+	they are created before anything is compiled; required
+	for parallel builds
+
+2005-07-06  Alexander Gottwald  <ago@freedesktop.org>
+
+	* configure.ac:
+	* Makefile.am:
+	* include/dix-config.h:
+	Add more defines for XWin DDX
+	Make building of cfb*, afb and mfb conditional
+	Set FD_SETSIZE=256 on cygwin
+	
+2005-07-05  Alexander Gottwald  <ago@freedesktop.org>
+
+	* hw/xwin/Makefile.am:
+	Build miinitext.c and fbcmap.c as DDX specific files
+
+	* configure.ac:
+	Do not define _POSIX_SOURCE on cygwin.
+
+2005-07-05  Alexander Gottwald  <ago@freedesktop.org>
+
+	* fb/Makefile.am:
+	* mi/Makefile.am:
+	* xkb/Makefile.am:
+	Revert last changes. They have to be addressed in a different way
+
+2005-07-05  Alexander Gottwald  <ago@freedesktop.org>
+
+	* configure.ac:
+	* hw/Makefile.am:
+	Add XWin DDX, make Xorg DDX conditional
+	Make XF86VidMode and XF86Misc conditional
+
+	* include/xwin-config.h.in:
+	* hw/xwin/Makefile.am:
+	Add XWin DDX
+
+	* include/dix-config.h.in:
+	Added DDXTIME, DDXOSFATALERROR, DDXOSVERRORF and DDXBEFORERESET
+
+	* fb/Makefile.am:
+	Added fbcmap.c
+
+	* mi/Makefile.am:
+	Added miinitext.c
+
+	* xkb/Makefile.am:
+	Added -I$(top_srcdir)/Xext/extmod to INCLUDES
+
+2005-07-02  Daniel Stone  <daniel@freedesktop.org>
+
+	* acinclude.m4:
+	* autogen.sh:
+	* configure.ac:
+	* **/Makefile.am:
+	* xorg-server.pc.in:
+	Initial build system checked in.
