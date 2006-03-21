@@ -1,0 +1,29 @@
+$Id: 500_s390_support.diff 689 2005-10-19 22:11:30Z dnusinow $
+
+Miscellaneous fixes for S/390.
+
+This patch by Gerhard Tonn.
+
+Not submitted to XFree86.
+
+Index: xc/programs/Xserver/include/servermd.h
+===================================================================
+--- xc/programs/Xserver/include/servermd.h.orig	2005-10-18 19:45:06.000000000 -0400
++++ xc/programs/Xserver/include/servermd.h	2005-10-18 22:41:18.000000000 -0400
+@@ -518,7 +518,15 @@
+ #define GLYPHPADBYTES		4
+ #define GETLEFTBITS_ALIGNMENT	1
+ #endif
+- 
++
++/* linux on IBM S/390 */
++#if defined (linux) && defined (__s390__)
++#define IMAGE_BYTE_ORDER	MSBFirst
++#define BITMAP_BIT_ORDER	MSBFirst
++#define GLYPHPADBYTES		4
++#define GETLEFTBITS_ALIGNMENT	1
++#endif /* linux/s390 */ 
++
+ /* size of buffer to use with GetImage, measured in bytes. There's obviously
+  * a trade-off between the amount of stack (or whatever ALLOCATE_LOCAL gives
+  * you) used and the number of times the ddx routine has to be called.

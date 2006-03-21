@@ -1,0 +1,70 @@
+gcc4 has issues with libvgahw.a. This patch is a workaround stolen from
+https://bugzilla.redhat.com/bugzilla/show_bug.cgi?id=161242 (by Olivier
+Baudron). See also Debian #318218 and bugs merged to it
+
+Index: xorg-server-X11R7.0-1.0.1/hw/xfree86/vgahw/vgaHW.c
+===================================================================
+--- xorg-server-X11R7.0-1.0.1.orig/hw/xfree86/vgahw/vgaHW.c	2006-01-04 23:08:15.000000000 -0500
++++ xorg-server-X11R7.0-1.0.1/hw/xfree86/vgahw/vgaHW.c	2006-02-26 18:18:48.000000000 -0500
+@@ -432,12 +432,16 @@
+ static void
+ mmioWriteAttr(vgaHWPtr hwp, CARD8 index, CARD8 value)
+ {
++    volatile CARD8 tmp;
++
+     if (hwp->paletteEnabled)
+ 	index &= ~0x20;
+     else
+ 	index |= 0x20;
+ 
+-    (void) minb(hwp->IOBase + VGA_IN_STAT_1_OFFSET);
++    /* gcc-4.0 -O2 is broken : needs a volatile assignment */ 
++    tmp = minb(hwp->IOBase + VGA_IN_STAT_1_OFFSET);
++
+     moutb(VGA_ATTR_INDEX, index);
+     moutb(VGA_ATTR_DATA_W, value);
+ }
+@@ -445,12 +449,16 @@
+ static CARD8
+ mmioReadAttr(vgaHWPtr hwp, CARD8 index)
+ {
++    volatile CARD8 tmp;
++  
+     if (hwp->paletteEnabled)
+ 	index &= ~0x20;
+     else
+ 	index |= 0x20;
+ 
+-    (void) minb(hwp->IOBase + VGA_IN_STAT_1_OFFSET);
++    /* gcc-4.0 -O2 is broken : needs a volatile assignment */ 
++    tmp = minb(hwp->IOBase + VGA_IN_STAT_1_OFFSET);
++
+     moutb(VGA_ATTR_INDEX, index);
+     return minb(VGA_ATTR_DATA_R);
+ }
+@@ -470,7 +478,11 @@
+ static void
+ mmioEnablePalette(vgaHWPtr hwp)
+ {
+-    (void) minb(hwp->IOBase + VGA_IN_STAT_1_OFFSET);
++    volatile CARD8 tmp;
++    
++    /* gcc-4.0 -O2 is broken : needs a volatile assignment */ 
++    tmp = minb(hwp->IOBase + VGA_IN_STAT_1_OFFSET);
++    
+     moutb(VGA_ATTR_INDEX, 0x00);
+     hwp->paletteEnabled = TRUE;
+ }
+@@ -478,7 +490,11 @@
+ static void
+ mmioDisablePalette(vgaHWPtr hwp)
+ {
+-    (void) minb(hwp->IOBase + VGA_IN_STAT_1_OFFSET);
++    volatile CARD8 tmp;
++    
++    /* gcc-4.0 -O2 is broken : needs a volatile assignment */ 
++    tmp = minb(hwp->IOBase + VGA_IN_STAT_1_OFFSET);
++    
+     moutb(VGA_ATTR_INDEX, 0x20);
+     hwp->paletteEnabled = FALSE;
+ }

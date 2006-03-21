@@ -1,0 +1,84 @@
+xorg-server (1:1.0.1-3) [UNRELEASED:experimental]; urgency=low
+
+  [ Denis Barbier ]
+  * Set XKB base path to /usr/share/X11/xkb.
+
+ -- Denis Barbier <barbier@debian.org>  Tue, 14 Mar 2006 07:59:58 +0100
+
+xorg-server (1:1.0.1-2) experimental; urgency=low
+
+  [ David Nusinow ]
+  * Add versioned dependency on x11-common
+  * Remove old cruft in our patches directory
+  * Port patches from trunk
+    + 030_libvgahw_gcc4_volatile_fix.diff
+    + general/026_xc_programs_manpage_overhaul.diff
+    + arm/303_arm_cache_flush.diff
+    + arm/315_arm_is_not_x86_and_has_no_vga.diff
+    + general/099e_xorgconf_manpage_overhaul.diff
+    + s390/500_s390_support.diff
+    + debian/910_debian_Xserver_RTFF.diff
+  * add 04_read_rom_in_chunks.diff. This reads PCI ROM in large chunks rather
+    than one byte at a time. This patch by Alex Williamson and forwarded to us
+    by Dann Frazier. Thanks to both of them. (closes: #353168)
+  * Don't build xserver-xorg-core on s390. This means putting all the other
+    arches as being explicitly listed. Damn !s390.
+  * Version the conflict with xserver-xfree86 to allow for the transition
+    package to be installed
+  * Remove README.DRI, as it is non-free. Add it to prune list.
+  * Add 10_dont_look_in_home_for_config.diff to prevent looking in a user's
+    home directory for xorg.conf. Thanks Daniel Stone for the patch.
+
+ -- David Nusinow <dnusinow@debian.org>  Sun, 12 Mar 2006 16:18:13 -0500
+
+xorg-server (1:1.0.1-1) experimental; urgency=low
+
+  * First upload to Debian
+  * Add bison and flex to the build-depends
+  * Define INSTALL in debian/rules
+  * Add xserver-xorg-core dependency xserver-xorg-video-all |
+    xserver-xorg-video. The former is a metapackage that depends on all the
+    video drivers we ship and the latter is a virtual package that each video
+    driver provides. This scheme will install the metapackage by default but
+    will permit any single video driver to satsify the dependency. Do the same
+    thing for the input drivers.
+  * switch dpatch build-dependency to quilt
+  * Deal with mesa packaging rename: build-dep on mesa-swrast-source ->
+    mesa-swx11-source
+  * Change xserver-core depends to be on x11-common rather than xorg-common
+  * Have xserver-xorg-dev install the files in /usr/share/aclocal so we get
+    xorg-server.m4
+  * Manually set permissions on serverabiver installation
+  * Set the default font path to /usr/share/fonts/X11 instead of 
+    /usr/share/X11/fonts. Thanks Eugene Konev.
+
+ -- David Nusinow <dnusinow@debian.org>  Mon, 20 Feb 2006 00:18:45 -0500
+
+xorg-server (1:0.99.2+cvs.20051025-3) dapper; urgency=low
+
+  * Version mesa-swrast-source Build-Dep to 6.4.0 or higher, so GLcore is a
+    little less crash-happy (e.g. when moving your glxgears window).
+  * Export /usr/share/xserver-xorg/serverabiver to xserver-xorg-dev, which
+    describes the relationship needed from a driver on xserver-xorg-core.
+
+ -- Daniel Stone <daniel.stone@ubuntu.com>  Fri, 28 Oct 2005 13:00:26 +1000
+
+xorg-server (1:0.99.2+cvs.20051025-2) dapper; urgency=low
+
+  * Add Build-Deps on libxaw7-dev, libxmu-dev, libxt-dev, libxpm-dev,
+    libx11-dev, libxtst-dev, and libxres-dev for DMX utils.
+
+ -- Daniel Stone <daniel.stone@ubuntu.com>  Wed, 26 Oct 2005 14:34:40 +1000
+
+xorg-server (1:0.99.2+cvs.20051025-1) dapper; urgency=low
+
+  * Update to new upstream version.
+  * All applicable patches have been committed upstream, bar #989 and #990.
+
+ -- Daniel Stone <daniel.stone@ubuntu.com>  Thu, 20 Oct 2005 10:26:33 +1000
+
+xorg-server (1:0.99.0+cvs.20050901-1) breezy; urgency=low
+
+  * First xorg-server release.
+
+ -- Daniel Stone <daniel.stone@ubuntu.com>  Wed,  6 Jul 2005 15:48:17 +1000

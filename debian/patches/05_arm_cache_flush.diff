@@ -1,0 +1,19 @@
+$Id: 303_arm_cache_flush.diff 486 2005-08-03 04:51:11Z dnusinow $
+
+This patch re-enables cache flushing on ARM.  Which joker turned this
+off?
+
+Index: xc/programs/Xserver/hw/xfree86/loader/elfloader.c
+===================================================================
+--- xc/programs/Xserver/hw/xfree86/loader/elfloader.c.orig	2005-08-02 22:04:19.000000000 -0400
++++ xc/programs/Xserver/hw/xfree86/loader/elfloader.c	2005-08-03 00:20:24.000000000 -0400
+@@ -2536,9 +2536,7 @@
+ 	    val = symval - (unsigned long)dest32 + val;
+ 	    val >>= 2;
+ 	    *dest32 = (*dest32 & 0xff000000) | (val & 0x00ffffff);
+-#ifdef NOTYET
+ 	    arm_flush_cache(dest32);
+-#endif
+ 	}
+ 	break;
+ 

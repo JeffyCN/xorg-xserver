@@ -1,0 +1,97 @@
+$Id: 315_arm_is_not_x86_and_has_no_vga.diff 689 2005-10-19 22:11:30Z dnusinow $
+
+The files xc/programs/Xserver/hw/xfree86/os-support/linux/lnx_video.c
+          xc/programs/Xserver/hw/xfree86/common/xf86Bus.c and
+          xc/programs/Xserver/hw/xfree86/vgahw/vhaHW.h
+require some checks for the ARM architecture to prevent the X server from
+trying to execute code meant only for x86.  This is consistent with other
+non-x86 platforms.
+
+This patch by Peter Naulls, updated by Wookey.
+
+Not submitted to XFree86.
+
+Index: xc/programs/Xserver/hw/xfree86/common/xf86Bus.c
+===================================================================
+--- xc/programs/Xserver/hw/xfree86/common/xf86Bus.c.orig	2005-10-18 19:44:24.000000000 -0400
++++ xc/programs/Xserver/hw/xfree86/common/xf86Bus.c	2005-10-18 22:40:27.000000000 -0400
+@@ -3078,7 +3078,7 @@
+ CheckGenericGA()
+ {
+ /* This needs to be changed for multiple domains */
+-#if !defined(__sparc__) && !defined(__powerpc__) && !defined(__mips__) && !defined(__ia64__)
++#if !defined(__sparc__) && !defined(__powerpc__) && !defined(__mips__) && !defined(__ia64__) && !defined(__arm__)
+     IOADDRESS GenericIOBase = VGAHW_GET_IOBASE();
+     CARD8 CurrentValue, TestValue;
+ 
+Index: xc/programs/Xserver/hw/xfree86/os-support/linux/lnx_video.c
+===================================================================
+--- xc/programs/Xserver/hw/xfree86/os-support/linux/lnx_video.c.orig	2005-10-18 19:44:57.000000000 -0400
++++ xc/programs/Xserver/hw/xfree86/os-support/linux/lnx_video.c	2005-10-18 22:40:27.000000000 -0400
+@@ -466,7 +466,7 @@
+ 	   Base,realBase,alignOff);
+ #endif
+     
+-#if defined(__ia64__)
++#if defined(__ia64__) || defined(__arm__)
+ #ifndef MAP_WRITECOMBINED
+ #define MAP_WRITECOMBINED 0x00010000
+ #endif
+@@ -596,7 +596,7 @@
+ #if defined(__powerpc__)
+ 	munmap(ioBase, 0x20000);
+ 	ioBase = NULL;
+-#elif !defined(__mc68000__) && !defined(__sparc__) && !defined(__mips__) && !defined(__sh__) && !defined(__hppa__)
++#elif !defined(__mc68000__) && !defined(__sparc__) && !defined(__mips__) && !defined(__sh__) && !defined(__hppa__) && !defined(__arm__)
+ 	iopl(0);
+ 	ioperm(0, 1024, 0);
+ #endif
+@@ -615,7 +615,7 @@
+ Bool
+ xf86DisableInterrupts()
+ {
+-#if !defined(__mc68000__) && !defined(__powerpc__) && !defined(__sparc__) && !defined(__mips__) && !defined(__ia64__) && !defined(__sh__) && !defined(__hppa__)
++#if !defined(__mc68000__) && !defined(__powerpc__) && !defined(__sparc__) && !defined(__mips__) && !defined(__ia64__) && !defined(__sh__) && !defined(__hppa__) && !defined(__arm__)
+ 	if (!ExtendedEnabled)
+ 	    if (iopl(3) || ioperm(0, 1024, 1))
+ 			return (FALSE);
+@@ -634,7 +634,7 @@
+ 	asm("cli");
+ # endif
+ #endif
+-#if !defined(__mc68000__) && !defined(__powerpc__) && !defined(__sparc__) && !defined(__mips__) && !defined(__sh__) && !defined(__ia64__) && !defined(__hppa__)
++#if !defined(__mc68000__) && !defined(__powerpc__) && !defined(__sparc__) && !defined(__mips__) && !defined(__sh__) && !defined(__ia64__) && !defined(__hppa__) && !defined(__arm__)
+ 	if (!ExtendedEnabled) {
+ 	    iopl(0);
+ 	    ioperm(0, 1024, 0);
+@@ -647,7 +647,7 @@
+ void
+ xf86EnableInterrupts()
+ {
+-#if !defined(__mc68000__) && !defined(__powerpc__) && !defined(__sparc__) && !defined(__mips__) && !defined(__ia64__) && !defined(__sh__) && !defined(__hppa__)
++#if !defined(__mc68000__) && !defined(__powerpc__) && !defined(__sparc__) && !defined(__mips__) && !defined(__ia64__) && !defined(__sh__) && !defined(__hppa__) && !defined(__arm__)
+ 	if (!ExtendedEnabled)
+ 	    if (iopl(3) || ioperm(0, 1024, 1))
+ 			return;
+@@ -666,7 +666,7 @@
+ 	asm("sti");
+ # endif
+ #endif
+-#if !defined(__mc68000__) && !defined(__powerpc__) && !defined(__sparc__) && !defined(__mips__) && !defined(__sh__) && !defined(__ia64__) && !defined(__hppa__)
++#if !defined(__mc68000__) && !defined(__powerpc__) && !defined(__sparc__) && !defined(__mips__) && !defined(__sh__) && !defined(__ia64__) && !defined(__hppa__) && !defined(__arm__)
+ 	if (!ExtendedEnabled) {
+ 	    iopl(0);
+ 	    ioperm(0, 1024, 0);
+Index: xc/programs/Xserver/hw/xfree86/vgahw/vgaHW.h
+===================================================================
+--- xc/programs/Xserver/hw/xfree86/vgahw/vgaHW.h.orig	2005-10-18 19:45:00.000000000 -0400
++++ xc/programs/Xserver/hw/xfree86/vgahw/vgaHW.h	2005-10-18 22:40:27.000000000 -0400
+@@ -176,7 +176,7 @@
+ #define BITS_PER_GUN 6
+ #define COLORMAP_SIZE 256
+ 
+-#if defined(__powerpc__)
++#if defined(__powerpc__) || defined(__arm__)
+ #define DACDelay(hw) /* No legacy VGA support */
+ #else
+ #define DACDelay(hw)							      \
