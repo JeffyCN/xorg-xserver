@@ -1,3 +1,9 @@
+xorg-server (1:1.0.2-2) unstable; urgency=low
+
+  * Upload to unstable
+
+ -- David Nusinow <dnusinow@debian.org>  Tue,  4 Apr 2006 19:44:12 -0400
+
 xorg-server (1:1.0.2-1) experimental; urgency=low
 
   [ David Nusinow ]
