@@ -12,7 +12,7 @@ Build-Conflicts: xlibs-static-dev
 Standards-Version: 3.6.1.0
 
 Package: xserver-xorg-core
-Architecture: alpha amd64 arm hppa hurd-i386 i386 ia64 kfreebsd-i386 m68k mips mipsel netbsd-i386 powerpc sparc
+Architecture: any
 Depends: x11-common (>= 1:7.0.0), xserver-xorg-video-all | xserver-xorg-video, xserver-xorg-input-all | xserver-xorg-input, ${shlibs:Depends}, ${misc:Depends}
 Recommends: xkeyboard-config
 Conflicts: xserver-xorg (<< 6.8.2-38), xserver-xfree86 (<< 1:7.0.0)
