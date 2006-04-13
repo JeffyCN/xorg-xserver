@@ -1,9 +1,9 @@
 xorg-server (1:1.0.2-4) unstable; urgency=low
 
   * Document the need to update paths in xserver-xorg-core's NEWS file.
-    (closes: #362077)
+    (closes: #362077, #362244)
 
- -- David Nusinow <dnusinow@debian.org>  Wed, 12 Apr 2006 19:39:13 -0400
+ -- David Nusinow <dnusinow@debian.org>  Wed, 12 Apr 2006 20:33:40 -0400
 
 xorg-server (1:1.0.2-3) unstable; urgency=low
 
