@@ -35,7 +35,6 @@ INSTALL=/usr/bin/install
 confflags += --disable-static \
 	     --enable-xorg \
 	     --enable-dri --with-mesa-source=/usr/share/mesa-source \
-	     --with-default-font-path=/usr/share/fonts/X11 \
 		 --with-fontdir=/usr/share/fonts/X11 \
 	     --enable-xtrap \
 	     --enable-dmx \
