@@ -1,12 +1,13 @@
 xserver-xorg-core (1:1.0.2-3) unstable; urgency=low
 
   * With the latest updates of Xorg, we have transitioned from X11R6 to
-    X11R7. Part of this transition involves changing the paths to both the
-    xfonts and the xkb data files. One way to automatically update the
-    paths is to run "dpkg-reconfigure xserver-xorg" as root and it will
-    automatically generate a new config file for you. Note that this will
-    currently not work for people who have customized config files due to a
-    bug, so you'll have to manually edit your config if you have customized
-    it previously.
+    X11R7. Part of this transition involves changing the paths to the
+    xfonts and the xkb data files, as well as the modules loaded by the X
+    server. One way to automatically update the paths is to run
+    "dpkg-reconfigure xserver-xorg" as root and it will automatically
+    generate a new config file for you. Note that this will currently not
+    work for people who have customized config files due to a bug, so
+    you'll have to manually edit your config if you have customized it
+    previously.
 
   -- David Nusinow <dnusinow@debian.org>  Wed, 12 Apr 2006 19:38:51 -0400

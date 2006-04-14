@@ -1,10 +1,10 @@
 xorg-server (1:1.0.2-4) unstable; urgency=low
 
   * Document the need to update paths in xserver-xorg-core's NEWS file.
-    (closes: #362077, #362244)
+    (closes: #362077, #362244, #362431)
   * Make xserver-xorg-core Architecture: any. (closes: #362150)
 
- -- David Nusinow <dnusinow@debian.org>  Thu, 13 Apr 2006 19:18:46 -0400
+ -- David Nusinow <dnusinow@debian.org>  Thu, 13 Apr 2006 21:49:35 -0400
 
 xorg-server (1:1.0.2-3) unstable; urgency=low
 
