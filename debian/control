@@ -17,6 +17,7 @@ Depends: x11-common (>= 1:7.0.0), xserver-xorg-video-all | xserver-xorg-video, x
 Recommends: xkeyboard-config
 Conflicts: xserver-xorg (<< 6.8.2-38), xserver-xfree86 (<< 1:7.0.0)
 Replaces: xserver-xorg (<< 6.8.2-38), xserver-xfree86 (<< 1:7.0.0)
+Provides: xserver
 Description: X.Org X server -- core server
  The X.Org X server is an X server for several architectures and operating
  systems, which is derived from the XFree86 4.x series of X servers.

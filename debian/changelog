@@ -7,8 +7,10 @@ xorg-server (1:1.0.2-5) unstable; urgency=low
     way.
   * Document how to get rid of error loading glcore (and other modules) in
     NEWS.Debian. Thanks Matej Vela and others.
+  * Provide the virtual 'xserver' package. Thanks Steve Langasek and Daniel
+    Stone. (closes: #362750)
 
- -- David Nusinow <dnusinow@debian.org>  Sun, 16 Apr 2006 09:54:36 -0400
+ -- David Nusinow <dnusinow@debian.org>  Sun, 16 Apr 2006 17:29:14 -0400
 
 xorg-server (1:1.0.2-4) unstable; urgency=low
 
