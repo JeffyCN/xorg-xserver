@@ -5,8 +5,10 @@ xorg-server (1:1.0.2-5) unstable; urgency=low
     has specified. Right now, that's /usr/share/fonts/X11, as defined on
     configure in debian/rules. Thanks Eugene, this will definitely go a long
     way.
+  * Document how to get rid of error loading glcore (and other modules) in
+    NEWS.Debian. Thanks Matej Vela and others.
 
- -- David Nusinow <dnusinow@debian.org>  Sat, 15 Apr 2006 13:56:16 -0400
+ -- David Nusinow <dnusinow@debian.org>  Sun, 16 Apr 2006 09:54:36 -0400
 
 xorg-server (1:1.0.2-4) unstable; urgency=low
 

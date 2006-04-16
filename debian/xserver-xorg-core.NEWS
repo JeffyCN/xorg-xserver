@@ -1,3 +1,17 @@
+xserver-xorg-core (1:1.0.2-5) unstable; urgency=low
+
+  * Several users have reported an error on load like the following:
+
+     "(EE) Failed to load module "GLcore" (loader failed, 7)"
+
+    To resolve this error and the related ones in the logfile above it,
+    remove the line to load the glcore module in your /etc/X11/xorg.conf.
+    Other similar errors about module loading can be resolved the same way.
+    If you have not customized your config file by hand, you can run the
+    command "dpkg-reconfigure xserver-xorg" as root to do this for you.
+
+  -- David Nusinow <dnusinow@debian.org>  Wed, 12 Apr 2006 19:38:51 -0400
+
 xserver-xorg-core (1:1.0.2-3) unstable; urgency=low
 
   * With the latest updates of Xorg, we have transitioned from X11R6 to
