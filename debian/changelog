@@ -9,8 +9,11 @@ xorg-server (1:1.0.2-5) unstable; urgency=low
     NEWS.Debian. Thanks Matej Vela and others.
   * Provide the virtual 'xserver' package. Thanks Steve Langasek and Daniel
     Stone. (closes: #362750)
+  * Add 12_security_policy_in_etc.diff from Eugene Konev. This will allow us
+    to tell the server on configure to look in /etc/X11/xserver for the
+    SecurityPolicy file. Thanks Joey Hess and Eugene. (closes: #362246)
 
- -- David Nusinow <dnusinow@debian.org>  Sun, 16 Apr 2006 17:29:14 -0400
+ -- David Nusinow <dnusinow@debian.org>  Mon, 17 Apr 2006 00:34:08 -0400
 
 xorg-server (1:1.0.2-4) unstable; urgency=low
 
