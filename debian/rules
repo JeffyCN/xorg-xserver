@@ -31,8 +31,8 @@ endif
 INSTALL=/usr/bin/install
 
 # s390 chokes on inline functions. See #362641
-ifeq ($(DEB_HOST_ARCH), 's390')
-	CFLAGS += '-DNO_INLINE'
+ifeq ($(DEB_HOST_ARCH), s390)
+	CFLAGS += -DNO_INLINE
 endif
 
 # disable-static is so we don't get libfoo.a for modules.  now if only we could
