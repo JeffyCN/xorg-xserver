@@ -31,7 +31,7 @@ endif
 INSTALL=/usr/bin/install
 
 # s390 chokes on inline functions. See #362641
-ifeq ($(DEB_HOST_ACH), 's390')
+ifeq ($(DEB_HOST_ARCH), 's390')
 	CFLAGS += '-DNO_INLINE'
 endif
 
