@@ -1,3 +1,10 @@
+xorg-server (1:1.0.2-7) UNRELEASED; urgency=low
+
+  * Add 13_debian_add_xkbpath_env_variable.diff so that the server takes
+    the XKBPATH environment variable into account. (closes: #363229)
+
+ -- Denis Barbier <barbier@debian.org>  Fri, 21 Apr 2006 01:42:39 +0200
+
 xorg-server (1:1.0.2-6) unstable; urgency=low
 
   * Use -DNO_INLINE on s390. Thanks Bastian Blank and Julien Cristau.
