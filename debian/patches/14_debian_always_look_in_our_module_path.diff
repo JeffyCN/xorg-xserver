@@ -1,0 +1,15 @@
+Index: xorg-server-1.0.2/hw/xfree86/common/xf86Config.c
+===================================================================
+--- xorg-server-1.0.2.orig/hw/xfree86/common/xf86Config.c	2006-04-22 12:24:18.000000000 -0400
++++ xorg-server-1.0.2/hw/xfree86/common/xf86Config.c	2006-04-22 12:29:21.000000000 -0400
+@@ -696,7 +696,9 @@
+ 
+   if (fileconf) {
+     if (xf86ModPathFrom != X_CMDLINE && fileconf->file_modulepath) {
+-      xf86ModulePath = fileconf->file_modulepath;
++      char *mpath = xnfalloc(strlen(DEFAULT_MODULE_PATH) + strlen(fileconf->file_modulepath) + 2);
++      sprintf(mpath, "%s,%s", fileconf->file_modulepath, DEFAULT_MODULE_PATH);
++      xf86ModulePath = mpath;
+       xf86ModPathFrom = X_CONFIG;
+     }
+   }

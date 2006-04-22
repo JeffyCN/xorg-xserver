@@ -5,12 +5,18 @@ xorg-server (1:1.0.2-6) UNRELEASED; urgency=low
     (closes: #362641)
   * Re-add xvfb-run and manpage to xvfb package. Thanks Josselin Mouette and
     Jamie Wilkinson. (closes: #363494)
+  * Add 014_debian_always_look_in_our_module_path.diff. This will cause the
+    server to always look in the default module path even if they've specified
+    an alternate path in their xorg.conf file via the ModulePath option. A
+    note to users: you should remove this part of your xorg.conf unless you
+    need it, as the server will look in the right place for modules if you
+    don't specify a location.
 
   [ Denis Barbier ]
   * Add 13_debian_add_xkbpath_env_variable.diff so that the server takes
     the XKBPATH environment variable into account. (closes: #363229)
 
- -- David Nusinow <dnusinow@debian.org>  Sat, 22 Apr 2006 11:21:19 -0400
+ -- David Nusinow <dnusinow@debian.org>  Sat, 22 Apr 2006 16:43:35 -0400
 
 xorg-server (1:1.0.2-5) unstable; urgency=low
 
