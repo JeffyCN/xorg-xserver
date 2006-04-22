@@ -1,1 +1,3 @@
 usr/bin/Xvfb
+debian/local/xvfb-run usr/bin
+debian/local/xvfb-run.1 usr/share/man/man1

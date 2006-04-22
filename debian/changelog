@@ -1,16 +1,16 @@
-xorg-server (1:1.0.2-7) UNRELEASED; urgency=low
+xorg-server (1:1.0.2-6) UNRELEASED; urgency=low
 
+  [ David Nusinow ]
+  * Use -DNO_INLINE on s390. Thanks Bastian Blank and Julien Cristau.
+    (closes: #362641)
+  * Re-add xvfb-run and manpage to xvfb package. Thanks Josselin Mouette and
+    Jamie Wilkinson. (closes: #363494)
+
+  [ Denis Barbier ]
   * Add 13_debian_add_xkbpath_env_variable.diff so that the server takes
     the XKBPATH environment variable into account. (closes: #363229)
 
- -- Denis Barbier <barbier@debian.org>  Fri, 21 Apr 2006 01:42:39 +0200
-
-xorg-server (1:1.0.2-6) unstable; urgency=low
-
-  * Use -DNO_INLINE on s390. Thanks Bastian Blank and Julien Cristau.
-    (closes: #362641)
-
- -- David Nusinow <dnusinow@debian.org>  Wed, 19 Apr 2006 01:51:34 -0400
+ -- David Nusinow <dnusinow@debian.org>  Sat, 22 Apr 2006 11:21:19 -0400
 
 xorg-server (1:1.0.2-5) unstable; urgency=low
 
