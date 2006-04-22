@@ -90,6 +90,9 @@ install: build
 	find $(CURDIR)/debian/tmp/usr/lib/xorg -type f -name '*.la' | \
 	  xargs rm -f
 
+	install -m 755 debian/local/xvfb-run debian/tmp/usr/bin
+	install debian/local/xvfb-run.1 debian/tmp/usr/share/man/man1
+
 # Build architecture-dependent files here.
 binary-arch: build install
 	dh_testdir
