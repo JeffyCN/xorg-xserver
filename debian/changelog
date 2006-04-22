@@ -11,12 +11,17 @@ xorg-server (1:1.0.2-6) UNRELEASED; urgency=low
     note to users: you should remove this part of your xorg.conf unless you
     need it, as the server will look in the right place for modules if you
     don't specify a location.
+  * Run dh_install with --list-missing
+  * Add missing manpages all around. Thanks Roland Mas and Jan Hudec. 
+    (closes: #362489, #364199)
+  * Actually install apps to xdmx-tools. Thanks Xavier Bestel.
+    (closes: #356813)
 
   [ Denis Barbier ]
   * Add 13_debian_add_xkbpath_env_variable.diff so that the server takes
     the XKBPATH environment variable into account. (closes: #363229)
 
- -- David Nusinow <dnusinow@debian.org>  Sat, 22 Apr 2006 16:43:35 -0400
+ -- David Nusinow <dnusinow@debian.org>  Sat, 22 Apr 2006 17:06:23 -0400
 
 xorg-server (1:1.0.2-5) unstable; urgency=low
 

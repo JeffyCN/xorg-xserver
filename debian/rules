@@ -100,7 +100,7 @@ binary-arch: build install
 
 	dh_installdocs
 	dh_installchangelogs
-	dh_install --sourcedir=debian/tmp
+	dh_install --sourcedir=debian/tmp --list-missing
 	$(INSTALL) -d $(CURDIR)/debian/xserver-xorg-dev/usr/share/xserver-xorg
 	$(INSTALL) -m644 $(CURDIR)/debian/serverabiver \
 	           $(CURDIR)/debian/xserver-xorg-dev/usr/share/xserver-xorg/serverabiver
