@@ -1,4 +1,11 @@
-xorg-server (1:1.0.2-6) UNRELEASED; urgency=low
+xorg-server (1:1.0.2-7) UNRELEASED; urgency=low
+
+  * Ship xserverrc again in /etc/X11/xinit. Thanks Bastian Kleineidam and
+    Vasilis Vasaitis. (closes: #357713)
+
+ -- David Nusinow <dnusinow@debian.org>  Tue, 25 Apr 2006 21:14:15 -0400
+
+xorg-server (1:1.0.2-6) unstable; urgency=low
 
   [ David Nusinow ]
   * Use -DNO_INLINE on s390. Thanks Bastian Blank and Julien Cristau.
