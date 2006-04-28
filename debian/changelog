@@ -1,3 +1,9 @@
+xorg-server (1:1.0.2-8) UNRELEASED; urgency=low
+
+  * Move xserverrc back to xbase-clients. Thanks Benjamin Mesing.
+
+ -- David Nusinow <dnusinow@debian.org>  Thu, 27 Apr 2006 22:04:16 -0400
+
 xorg-server (1:1.0.2-7) unstable; urgency=low
 
   * Ship xserverrc again in /etc/X11/xinit. Thanks Bastian Kleineidam and
