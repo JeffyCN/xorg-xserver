@@ -1,3 +1,11 @@
+xorg-server (1:1.0.2-9) UNRELEASED; urgency=low
+
+  [ Denis Barbier ]
+  * Fix 13_debian_add_xkbpath_env_variable.diff, XKBPATH environment
+    variable was not always taken into account.
+
+ -- Denis Barbier <barbier@debian.org>  Fri, 12 May 2006 22:33:46 +0200
+
 xorg-server (1:1.0.2-8) unstable; urgency=low
 
   * Move xserverrc back to xbase-clients. Thanks Benjamin Mesing.
