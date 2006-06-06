@@ -1,5 +1,5 @@
 #!/usr/bin/make -f
-# $Id: rules 593 2005-09-03 20:48:30Z dnusinow $
+# $Id$
 
 # Debian rules file for xorg-x11 source package
 
