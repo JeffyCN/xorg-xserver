@@ -1,5 +1,17 @@
 # $Id$
 
+# This is the X Strike Force shell library for X Window System package
+# maintainer scripts.  It serves to define shell functions commonly used by
+# such packages, and performs some error checking necessary for proper operation
+# of those functions.  By itself, it does not "do" much; the maintainer scripts
+# invoke the functions defined here to accomplish package installation and
+# removal tasks.
+
+# If you are reading this within a Debian package maintainer script (e.g.,
+# /var/lib/dpkg)info/PACKAGE.{config,preinst,postinst,prerm,postrm}), you can
+# skip past this library by scanning forward in this file to the string
+# "GOBSTOPPER".
+
 SOURCE_VERSION=@SOURCE_VERSION@
 OFFICIAL_BUILD=@OFFICIAL_BUILD@
 
@@ -867,4 +879,6 @@ migrate_dir_to_symlink () {
   make_symlink_sane "$_old" "$_new"
 }
 
-# vim:set ai et sts=2 sw=2 tw=80:
+# vim:set ai et sw=2 ts=2 tw=80:
+
+# GOBSTOPPER: The X Strike Force shell library ends here.
