@@ -178,6 +178,10 @@ maplink () {
   # returns what symlink should point to; i.e., what the "sane" answer is
   # Keep this in sync with the debian/*.links files.
   # This is only needed for symlinks to directories.
+  #
+  # XXX: Most of these look wrong in the X11R7 world and need to be fixed.
+  # If we've stopped using this function, fixing it might enable us to re-enable
+  # it again and catch more errors.
   case "$1" in
     /etc/X11/xkb/compiled) echo /var/lib/xkb ;;
     /etc/X11/xkb/xkbcomp) echo /usr/X11R6/bin/xkbcomp ;;
