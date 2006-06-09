@@ -254,7 +254,7 @@ find_culprits () {
       _possible_culprits=$(ls -1 $_dpkg_info_dir/*.list | egrep -v \
         "(xbase-clients|x11-common|xfs|xlibs)")
       if [ -n "$_possible_culprits" ]; then
-        _smoking_guns=$(grep -l "$1" $_possible_culprits)
+        _smoking_guns=$(grep -l "$1" $_possible_culprits || true)
         if [ -n "$_smoking_guns" ]; then
           _bad_packages=$(printf "\\n")
           for f in $_smoking_guns; do
