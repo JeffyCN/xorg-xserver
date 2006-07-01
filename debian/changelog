@@ -1,4 +1,4 @@
-xorg-server (1:1.0.2-9) UNRELEASED; urgency=low
+xorg-server (1:1.0.2-9) UNRELEASED; urgency=high
 
   [ Denis Barbier ]
   * Fix 13_debian_add_xkbpath_env_variable.diff, XKBPATH environment
@@ -8,8 +8,11 @@ xorg-server (1:1.0.2-9) UNRELEASED; urgency=low
   * Remove two Ubuntu packaging holdovers. Have xvfb recommend xbase-clients
     rather than xauth, and have xserver-xorg-core recommend xkb-data rather
     than xkeyboard-config. Thanks Sterling MacNay.
+  * Security update. Fix for setuid privledge escalation vulernabilities.
+    See http://lists.freedesktop.org/archives/xorg/2006-June/016146.html for
+    the full advisory.
 
- -- David Nusinow <dnusinow@debian.org>  Wed,  7 Jun 2006 00:41:31 -0400
+ -- David Nusinow <dnusinow@debian.org>  Sat,  1 Jul 2006 17:20:45 -0400
 
 xorg-server (1:1.0.2-8) unstable; urgency=low
 
