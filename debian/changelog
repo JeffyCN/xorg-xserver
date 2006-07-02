@@ -1,0 +1,184 @@
+xorg-server (1:1.0.2-9) unstable; urgency=high
+
+  [ Denis Barbier ]
+  * Fix 13_debian_add_xkbpath_env_variable.diff, XKBPATH environment
+    variable was not always taken into account.
+
+  [ David Nusinow ]
+  * Remove two Ubuntu packaging holdovers. Have xvfb recommend xbase-clients
+    rather than xauth, and have xserver-xorg-core recommend xkb-data rather
+    than xkeyboard-config. Thanks Sterling MacNay.
+  * Security update. Fix for setuid privledge escalation vulernabilities.
+    See http://lists.freedesktop.org/archives/xorg/2006-June/016146.html for
+    the full advisory.
+
+ -- David Nusinow <dnusinow@debian.org>  Sat,  1 Jul 2006 19:11:36 -0400
+
+xorg-server (1:1.0.2-8) unstable; urgency=low
+
+  * Move xserverrc back to xbase-clients. Thanks Benjamin Mesing.
+  * Add 15_security_allocate_local.diff. This fixes Bug fd.o bug #6642. 
+    Fix buffer overflow in Render.  (CVE 2006-1526). Patch by Eric Anholt.
+
+ -- David Nusinow <dnusinow@debian.org>  Tue,  2 May 2006 21:47:17 -0400
+
+xorg-server (1:1.0.2-7) unstable; urgency=low
+
+  * Ship xserverrc again in /etc/X11/xinit. Thanks Bastian Kleineidam and
+    Vasilis Vasaitis. (closes: #357713)
+
+ -- David Nusinow <dnusinow@debian.org>  Wed, 26 Apr 2006 00:01:16 -0400
+
+xorg-server (1:1.0.2-6) unstable; urgency=low
+
+  [ David Nusinow ]
+  * Use -DNO_INLINE on s390. Thanks Bastian Blank and Julien Cristau.
+    (closes: #362641)
+  * Re-add xvfb-run and manpage to xvfb package. Thanks Josselin Mouette and
+    Jamie Wilkinson. (closes: #363494)
+  * Add 014_debian_always_look_in_our_module_path.diff. This will cause the
+    server to always look in the default module path even if they've specified
+    an alternate path in their xorg.conf file via the ModulePath option. A
+    note to users: you should remove this part of your xorg.conf unless you
+    need it, as the server will look in the right place for modules if you
+    don't specify a location.
+  * Run dh_install with --list-missing
+  * Add missing manpages all around. Thanks Roland Mas and Jan Hudec. 
+    (closes: #362489, #364199)
+  * Actually install apps to xdmx-tools. Thanks Xavier Bestel.
+    (closes: #356813)
+
+  [ Denis Barbier ]
+  * Add 13_debian_add_xkbpath_env_variable.diff so that the server takes
+    the XKBPATH environment variable into account. (closes: #363229)
+
+ -- David Nusinow <dnusinow@debian.org>  Sat, 22 Apr 2006 17:06:23 -0400
+
+xorg-server (1:1.0.2-5) unstable; urgency=low
+
+  * Add 11_debian_always_use_default_font_path.diff from Eugene Konev. This
+    patch causes the server to add the default font path to whatever the user
+    has specified. Right now, that's /usr/share/fonts/X11, as defined on
+    configure in debian/rules. Thanks Eugene, this will definitely go a long
+    way.
+  * Document how to get rid of error loading glcore (and other modules) in
+    NEWS.Debian. Thanks Matej Vela and others.
+  * Provide the virtual 'xserver' package. Thanks Steve Langasek and Daniel
+    Stone. (closes: #362750)
+  * Add 12_security_policy_in_etc.diff from Eugene Konev. This will allow us
+    to tell the server on configure to look in /etc/X11/xserver for the
+    SecurityPolicy file. Thanks Joey Hess and Eugene. (closes: #362246)
+
+ -- David Nusinow <dnusinow@debian.org>  Mon, 17 Apr 2006 00:34:08 -0400
+
+xorg-server (1:1.0.2-4) unstable; urgency=low
+
+  * Document the need to update paths in xserver-xorg-core's NEWS file.
+    (closes: #362077, #362244, #362431)
+  * Make xserver-xorg-core Architecture: any. (closes: #362150)
+  * Build with --with-fontdir=/usr/share/fonts/X11. Remove
+    --with-default-font-path option to make this work. Thanks Eugene Konev.
+
+ -- David Nusinow <dnusinow@debian.org>  Thu, 13 Apr 2006 23:54:06 -0400
+
+xorg-server (1:1.0.2-3) unstable; urgency=low
+
+  * Add build-conflicts on xlibs-static-dev. Thanks Zephaniah E. Hull.
+
+ -- David Nusinow <dnusinow@debian.org>  Tue, 11 Apr 2006 18:44:51 -0400
+
+xorg-server (1:1.0.2-2) unstable; urgency=low
+
+  * Upload to unstable
+  * Add versioned build-dep on libdmx-dev. Thanks Frank Lichtenheld.
+    (closes: #361752)
+
+ -- David Nusinow <dnusinow@debian.org>  Mon, 10 Apr 2006 19:34:04 -0400
+
+xorg-server (1:1.0.2-1) experimental; urgency=low
+
+  [ David Nusinow ]
+  * New upstream release. Fixes CVE-2006-0745
+
+  [ Denis Barbier ]
+  * Set XKB base path to /usr/share/X11/xkb.
+
+ -- David Nusinow <dnusinow@debian.org>  Mon, 20 Mar 2006 21:41:04 -0500
+
+xorg-server (1:1.0.1-2) experimental; urgency=low
+
+  [ David Nusinow ]
+  * Add versioned dependency on x11-common
+  * Remove old cruft in our patches directory
+  * Port patches from trunk
+    + 030_libvgahw_gcc4_volatile_fix.diff
+    + general/026_xc_programs_manpage_overhaul.diff
+    + arm/303_arm_cache_flush.diff
+    + arm/315_arm_is_not_x86_and_has_no_vga.diff
+    + general/099e_xorgconf_manpage_overhaul.diff
+    + s390/500_s390_support.diff
+    + debian/910_debian_Xserver_RTFF.diff
+  * add 04_read_rom_in_chunks.diff. This reads PCI ROM in large chunks rather
+    than one byte at a time. This patch by Alex Williamson and forwarded to us
+    by Dann Frazier. Thanks to both of them. (closes: #353168)
+  * Don't build xserver-xorg-core on s390. This means putting all the other
+    arches as being explicitly listed. Damn !s390.
+  * Version the conflict with xserver-xfree86 to allow for the transition
+    package to be installed
+  * Remove README.DRI, as it is non-free. Add it to prune list.
+  * Add 10_dont_look_in_home_for_config.diff to prevent looking in a user's
+    home directory for xorg.conf. Thanks Daniel Stone for the patch.
+
+ -- David Nusinow <dnusinow@debian.org>  Sun, 12 Mar 2006 16:18:13 -0500
+
+xorg-server (1:1.0.1-1) experimental; urgency=low
+
+  * First upload to Debian
+  * Add bison and flex to the build-depends
+  * Define INSTALL in debian/rules
+  * Add xserver-xorg-core dependency xserver-xorg-video-all |
+    xserver-xorg-video. The former is a metapackage that depends on all the
+    video drivers we ship and the latter is a virtual package that each video
+    driver provides. This scheme will install the metapackage by default but
+    will permit any single video driver to satsify the dependency. Do the same
+    thing for the input drivers.
+  * switch dpatch build-dependency to quilt
+  * Deal with mesa packaging rename: build-dep on mesa-swrast-source ->
+    mesa-swx11-source
+  * Change xserver-core depends to be on x11-common rather than xorg-common
+  * Have xserver-xorg-dev install the files in /usr/share/aclocal so we get
+    xorg-server.m4
+  * Manually set permissions on serverabiver installation
+  * Set the default font path to /usr/share/fonts/X11 instead of 
+    /usr/share/X11/fonts. Thanks Eugene Konev.
+
+ -- David Nusinow <dnusinow@debian.org>  Mon, 20 Feb 2006 00:18:45 -0500
+
+xorg-server (1:0.99.2+cvs.20051025-3) dapper; urgency=low
+
+  * Version mesa-swrast-source Build-Dep to 6.4.0 or higher, so GLcore is a
+    little less crash-happy (e.g. when moving your glxgears window).
+  * Export /usr/share/xserver-xorg/serverabiver to xserver-xorg-dev, which
+    describes the relationship needed from a driver on xserver-xorg-core.
+
+ -- Daniel Stone <daniel.stone@ubuntu.com>  Fri, 28 Oct 2005 13:00:26 +1000
+
+xorg-server (1:0.99.2+cvs.20051025-2) dapper; urgency=low
+
+  * Add Build-Deps on libxaw7-dev, libxmu-dev, libxt-dev, libxpm-dev,
+    libx11-dev, libxtst-dev, and libxres-dev for DMX utils.
+
+ -- Daniel Stone <daniel.stone@ubuntu.com>  Wed, 26 Oct 2005 14:34:40 +1000
+
+xorg-server (1:0.99.2+cvs.20051025-1) dapper; urgency=low
+
+  * Update to new upstream version.
+  * All applicable patches have been committed upstream, bar #989 and #990.
+
+ -- Daniel Stone <daniel.stone@ubuntu.com>  Thu, 20 Oct 2005 10:26:33 +1000
+
+xorg-server (1:0.99.0+cvs.20050901-1) breezy; urgency=low
+
+  * First xorg-server release.
+
+ -- Daniel Stone <daniel.stone@ubuntu.com>  Wed,  6 Jul 2005 15:48:17 +1000
