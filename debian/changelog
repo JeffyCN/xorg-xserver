@@ -1,3 +1,10 @@
+xorg-server (1:1.0.2-10) UNRELEASED; urgency=low
+
+  [ David Nusinow ]
+  * Move patch target call so that we don't try and build twice
+
+ -- David Nusinow <dnusinow@debian.org>  Sun,  2 Jul 2006 21:29:39 -0400
+
 xorg-server (1:1.0.2-9) unstable; urgency=high
 
   [ Denis Barbier ]

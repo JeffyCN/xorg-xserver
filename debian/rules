@@ -1,0 +1,125 @@
+#!/usr/bin/make -f
+# debian/rules for the Debian xorg-server package.
+# Copyright © 2004 Scott James Remnant <scott@netsplit.com>
+# Copyright © 2005 Daniel Stone <daniel@fooishbar.org>
+# Copyright © 2005 David Nusinow <dnusinow@debian.org>
+
+# Uncomment this to turn on verbose mode.
+#export DH_VERBOSE=1
+
+include debian/xsfbs/xsfbs.mk
+
+CFLAGS = -Wall -g
+ifneq (,$(findstring noopt,$(DEB_BUILD_OPTIONS)))
+	CFLAGS += -O0
+else
+	CFLAGS += -O2
+endif
+ifeq (,$(findstring nostrip,$(DEB_BUILD_OPTIONS)))
+	INSTALL_PROGRAM += -s
+endif
+
+DEB_HOST_ARCH      ?= $(shell dpkg-architecture -qDEB_HOST_ARCH)
+DEB_HOST_GNU_TYPE  ?= $(shell dpkg-architecture -qDEB_HOST_GNU_TYPE)
+DEB_BUILD_GNU_TYPE ?= $(shell dpkg-architecture -qDEB_BUILD_GNU_TYPE)
+ifeq ($(DEB_BUILD_GNU_TYPE), $(DEB_HOST_GNU_TYPE))
+	confflags += --build=$(DEB_HOST_GNU_TYPE)
+else
+	confflags += --build=$(DEB_BUILD_GNU_TYPE) --host=$(DEB_HOST_GNU_TYPE)
+endif
+
+INSTALL=/usr/bin/install
+
+# s390 chokes on inline functions. See #362641
+ifeq ($(DEB_HOST_ARCH), s390)
+	CFLAGS += -DNO_INLINE
+endif
+
+# disable-static is so we don't get libfoo.a for modules.  now if only we could
+# kill the .las.
+confflags += --disable-static \
+	     --enable-xorg \
+	     --enable-dri --with-mesa-source=/usr/share/mesa-source \
+		 --with-fontdir=/usr/share/fonts/X11 \
+		 --with-serverconfig-path=/etc/X11/xserver \
+	     --enable-xtrap \
+	     --enable-dmx \
+	     --enable-vfb \
+	     --disable-lbx \
+	     --disable-xprint \
+		 --disable-xorgconfig \
+		 --disable-xorgcfg \
+		 --with-xkb-path=/usr/share/X11/xkb \
+		 --with-xkb-output=/var/lib/xkb
+
+build: patch build-stamp
+build-stamp: 
+	dh_testdir
+
+	mkdir -p obj-$(DEB_BUILD_GNU_TYPE)/GL
+	cd obj-$(DEB_BUILD_GNU_TYPE) && \
+	../configure --prefix=/usr --mandir=\$${prefix}/share/man \
+	             --infodir=\$${prefix}/share/info --sysconfdir=/etc \
+	             --localstatedir=/var $(confflags) CFLAGS="$(CFLAGS)" 
+	cd obj-$(DEB_BUILD_GNU_TYPE) && $(MAKE)
+
+	touch build-stamp
+
+clean: xsfclean
+	dh_testdir
+	dh_testroot
+	rm -f build-stamp
+
+	rm -f config.cache config.log config.status
+	rm -f */config.cache */config.log */config.status
+	rm -f conftest* */conftest*
+	rm -rf autom4te.cache */autom4te.cache
+	rm -rf obj-*
+
+	dh_clean
+
+install: build
+	dh_testdir
+	dh_testroot
+	dh_clean -k
+	dh_installdirs
+
+	cd obj-$(DEB_BUILD_GNU_TYPE) && $(MAKE) DESTDIR=$(CURDIR)/debian/tmp install
+
+	# oh, yuck.
+	find $(CURDIR)/debian/tmp/usr/lib/xorg -type f -name '*.la' | \
+	  xargs rm -f
+
+	install -m 755 debian/local/xvfb-run debian/tmp/usr/bin
+	install debian/local/xvfb-run.1 debian/tmp/usr/share/man/man1
+
+# Build architecture-dependent files here.
+binary-arch: build install
+	dh_testdir
+	dh_testroot
+
+	dh_installdocs
+	dh_installchangelogs
+	dh_install --sourcedir=debian/tmp --list-missing
+	$(INSTALL) -d $(CURDIR)/debian/xserver-xorg-dev/usr/share/xserver-xorg
+	$(INSTALL) -m644 $(CURDIR)/debian/serverabiver \
+	           $(CURDIR)/debian/xserver-xorg-dev/usr/share/xserver-xorg/serverabiver
+	dh_link
+	dh_strip --exclude=usr/lib/xorg/modules
+	find debian/xserver-xorg-core/usr/lib/xorg/modules -name "lib*.so" | \
+	  xargs --no-run-if-empty \
+	  strip --strip-debug --remove-section=.note --remove-section=.comment
+	dh_compress
+	dh_fixperms
+	dh_installdeb
+	dh_shlibdeps
+	dh_gencontrol
+	dh_md5sums
+	dh_builddeb
+
+# Build architecture-independent files here.
+binary-indep: build install
+# Nothing to do
+
+binary: binary-indep binary-arch
+.PHONY: build clean binary-indep binary-arch binary install
