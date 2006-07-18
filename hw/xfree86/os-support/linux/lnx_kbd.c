@@ -104,7 +104,6 @@ GetKbdLeds(InputInfoPtr pInfo)
 #include <linux/version.h>
 #ifdef __sparc__
 #include <asm/param.h>
-#include <asm/kbio.h>
 #endif
 
 /* Deal with spurious kernel header change in struct kbd_repeat.

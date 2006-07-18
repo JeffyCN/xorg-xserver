@@ -12,6 +12,11 @@ xorg-server (1:1.0.2-9) UNRELEASED; urgency=high
     See http://lists.freedesktop.org/archives/xorg/2006-June/016146.html for
     the full advisory.
 
+  [ Jurij Smakov ]
+  * Stop including the non-existent asm/kbio.h header file in
+    hw/xfree86/os-support/linux/lnx_{io,kbd}.c to avoid the build failure
+    on sparc.
+
  -- David Nusinow <dnusinow@debian.org>  Sat,  1 Jul 2006 17:20:45 -0400
 
 xorg-server (1:1.0.2-8) unstable; urgency=low
