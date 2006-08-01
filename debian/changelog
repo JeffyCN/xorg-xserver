@@ -24,7 +24,7 @@ xorg-server (1:1.0.2-9) unstable; urgency=high
 xorg-server (1:1.0.2-8) unstable; urgency=low
 
   * Move xserverrc back to xbase-clients. Thanks Benjamin Mesing.
-  * Add 15_security_allocate_local.diff. This fixes Bug fd.o bug #6642. 
+  * Add 15_security_allocate_local.diff. This fixes Bug fd.o bug #6642.
     Fix buffer overflow in Render.  (CVE 2006-1526). Patch by Eric Anholt.
 
  -- David Nusinow <dnusinow@debian.org>  Tue,  2 May 2006 21:47:17 -0400
@@ -50,7 +50,7 @@ xorg-server (1:1.0.2-6) unstable; urgency=low
     need it, as the server will look in the right place for modules if you
     don't specify a location.
   * Run dh_install with --list-missing
-  * Add missing manpages all around. Thanks Roland Mas and Jan Hudec. 
+  * Add missing manpages all around. Thanks Roland Mas and Jan Hudec.
     (closes: #362489, #364199)
   * Actually install apps to xdmx-tools. Thanks Xavier Bestel.
     (closes: #356813)
@@ -156,7 +156,7 @@ xorg-server (1:1.0.1-1) experimental; urgency=low
   * Have xserver-xorg-dev install the files in /usr/share/aclocal so we get
     xorg-server.m4
   * Manually set permissions on serverabiver installation
-  * Set the default font path to /usr/share/fonts/X11 instead of 
+  * Set the default font path to /usr/share/fonts/X11 instead of
     /usr/share/X11/fonts. Thanks Eugene Konev.
 
  -- David Nusinow <dnusinow@debian.org>  Mon, 20 Feb 2006 00:18:45 -0500
