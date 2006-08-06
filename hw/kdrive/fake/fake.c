@@ -1,5 +1,5 @@
 /*
- * $Id: fake.c,v 1.4 2005/12/27 08:25:57 ajax Exp $
+ * $Id$
  *
  * Copyright © 2004 Keith Packard
  *

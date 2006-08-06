@@ -1,4 +1,4 @@
-/* $XdotOrg: xserver/xorg/hw/xfree86/os-support/xf86_libc.h,v 1.10 2006/01/28 02:20:37 anholt Exp $ */
+/* $XdotOrg: xserver/xorg/hw/xfree86/os-support/xf86_libc.h,v 1.9 2005/08/24 11:18:31 daniels Exp $ */
 /* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/xf86_libc.h,v 3.63 2003/12/08 21:46:55 alanh Exp $ */
 /*
  * Copyright (c) 1997-2003 by The XFree86 Project, Inc.

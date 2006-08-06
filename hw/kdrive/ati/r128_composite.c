@@ -19,7 +19,7 @@
  * TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
  * PERFORMANCE OF THIS SOFTWARE.
  */
-/* $Header: /cvs/xorg/xserver/xorg/hw/kdrive/ati/r128_composite.c,v 1.6 2005/01/27 05:25:57 anholt Exp $ */
+/* $Header$ */
 
 #include "ati.h"
 #include "ati_reg.h"

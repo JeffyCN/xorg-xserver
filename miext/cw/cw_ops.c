@@ -19,7 +19,7 @@
  * TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
  * PERFORMANCE OF THIS SOFTWARE.
  */
-/* $Header: /cvs/xorg/xc/programs/Xserver/miext/cw/cw_ops.c,v 1.8 2005/07/01 22:43:41 daniels Exp $ */
+/* $Header$ */
 
 #ifdef HAVE_DIX_CONFIG_H
 #include <dix-config.h>
@@ -28,6 +28,7 @@
 #include <stdlib.h>
 
 #include "gcstruct.h"
+#include "pixmapstr.h"
 #include "cw.h"
 
 #define SETUP_BACKING_DST(_pDst, _pGC) \
@@ -43,6 +44,9 @@
 	&src_off_y)
 
 #define PROLOGUE(pGC) do { \
+    if (pBackingGC->serialNumber != pBackingDst->serialNumber) { \
+	ValidateGC(pBackingDst, pBackingGC); \
+    } \
     pGC->funcs = pGCPrivate->wrapFuncs;\
     pGC->ops = pGCPrivate->wrapOps;\
 } while (0)

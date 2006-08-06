@@ -1,5 +1,5 @@
 /*
- * $Id: shrotpackYX.h,v 1.2 2005/08/08 06:25:22 keithp Exp $
+ * $Id$
  *
  * Copyright © 2004 Philip Blundell
  *

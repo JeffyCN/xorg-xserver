@@ -1,5 +1,5 @@
 /*
- * $Id: klinux.h,v 1.1 2003/10/14 05:05:28 keithp Exp $
+ * $Id$
  *
  * Copyright © 2003 Keith Packard
  *

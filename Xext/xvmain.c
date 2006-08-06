@@ -1,4 +1,4 @@
-/* $XdotOrg: xserver/xorg/Xext/xvmain.c,v 1.8 2006/02/15 20:44:12 ajax Exp $ */
+/* $XdotOrg: xserver/xorg/Xext/xvmain.c,v 1.7 2006/02/10 22:00:20 anholt Exp $ */
 /***********************************************************
 Copyright 1991 by Digital Equipment Corporation, Maynard, Massachusetts,
 and the Massachusetts Institute of Technology, Cambridge, Massachusetts.

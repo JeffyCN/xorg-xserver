@@ -1,4 +1,4 @@
-/* $XdotOrg: xserver/xorg/hw/xfree86/utils/xorgcfg/text-mode.c,v 1.6.12.1 2006/04/18 17:30:20 spyderous Exp $ */
+/* $XdotOrg: xserver/xorg/hw/xfree86/utils/xorgcfg/text-mode.c,v 1.6 2005/12/08 17:54:40 kem Exp $ */
 /*
  * Copyright (c) 2000 by Conectiva S.A. (http://www.conectiva.com)
  * 

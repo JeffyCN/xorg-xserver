@@ -1,4 +1,4 @@
-/* $XdotOrg: xserver/xorg/hw/xfree86/i2c/fi1236.c,v 1.10 2006/03/29 01:05:09 ajax Exp $ */
+/* $XdotOrg: xserver/xorg/hw/xfree86/i2c/fi1236.c,v 1.9 2006/02/10 22:00:25 anholt Exp $ */
 
 #ifdef HAVE_XORG_CONFIG_H
 #include <xorg-config.h>

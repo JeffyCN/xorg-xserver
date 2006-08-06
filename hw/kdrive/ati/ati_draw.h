@@ -19,7 +19,7 @@
  * TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
  * PERFORMANCE OF THIS SOFTWARE.
  */
-/* $Header: /cvs/xorg/xserver/xorg/hw/kdrive/ati/ati_draw.h,v 1.9 2005/02/21 03:44:10 anholt Exp $ */
+/* $Header$ */
 
 #ifndef _ATI_DRAW_H_
 #define _ATI_DRAW_H_

@@ -19,7 +19,7 @@
  * TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
  * PERFORMANCE OF THIS SOFTWARE.
  */
-/* $Header: /cvs/xorg/xserver/xorg/hw/kdrive/ati/ati_dma.h,v 1.5 2005/01/27 05:25:57 anholt Exp $ */
+/* $Header$ */
 
 #ifndef _ATI_DMA_H_
 #define _ATI_DMA_H_

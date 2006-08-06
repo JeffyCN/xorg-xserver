@@ -1,5 +1,5 @@
 /*
- * $Id: mga.h,v 1.10 2005/06/09 21:59:26 anholt Exp $
+ * $Id$
  *
  * Copyright © 2003-2004 Anders Carlsson
  *
@@ -21,7 +21,7 @@
  * TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
  * PERFORMANCE OF THIS SOFTWARE.
  */
-/* $Header: /cvs/xorg/xserver/xorg/hw/kdrive/mga/mga.h,v 1.10 2005/06/09 21:59:26 anholt Exp $ */
+/* $Header$ */
 
 #ifndef _MGA_H_
 #define _MGA_H_

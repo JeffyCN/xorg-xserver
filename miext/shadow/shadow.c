@@ -1,5 +1,5 @@
 /*
- * $Id: shadow.c,v 1.19 2005/08/08 06:25:22 keithp Exp $
+ * $Id$
  *
  * Copyright © 2000 Keith Packard
  *

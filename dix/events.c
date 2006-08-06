@@ -1,4 +1,4 @@
-/* $XdotOrg: xserver/xorg/dix/events.c,v 1.19 2006/03/28 01:20:59 ajax Exp $ */
+/* $XdotOrg: xserver/xorg/dix/events.c,v 1.18 2006/02/15 20:44:12 ajax Exp $ */
 /* $XFree86: xc/programs/Xserver/dix/events.c,v 3.51 2004/01/12 17:04:52 tsi Exp $ */
 /************************************************************
 

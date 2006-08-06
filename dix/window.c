@@ -1,4 +1,4 @@
-/* $XdotOrg: xserver/xorg/dix/window.c,v 1.17.2.1 2006/05/22 15:47:46 ajax Exp $ */
+/* $XdotOrg: xserver/xorg/dix/window.c,v 1.17 2006/03/31 17:39:35 sandmann Exp $ */
 /* $Xorg: window.c,v 1.4 2001/02/09 02:04:41 xorgcvs Exp $ */
 /*
 

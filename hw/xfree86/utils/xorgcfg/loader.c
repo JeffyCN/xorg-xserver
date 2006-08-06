@@ -26,7 +26,7 @@
  *
  * Author: Paulo César Pereira de Andrade <pcpa@conectiva.com.br>
  *
- * $XdotOrg: xserver/xorg/hw/xfree86/utils/xorgcfg/loader.c,v 1.5.12.1 2006/04/18 17:30:20 spyderous Exp $
+ * $XdotOrg: xserver/xorg/hw/xfree86/utils/xorgcfg/loader.c,v 1.5 2005/12/08 17:54:40 kem Exp $
  * $XFree86: xc/programs/Xserver/hw/xfree86/xf86cfg/loader.c,v 1.19 2002/06/06 21:03:32 paulo Exp $
  */
 

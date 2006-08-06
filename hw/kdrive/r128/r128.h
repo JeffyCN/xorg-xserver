@@ -1,5 +1,5 @@
 /*
- * $Id: r128.h,v 1.3 2005/06/09 10:44:45 anholt Exp $
+ * $Id$
  *
  * Copyright © 2003 Anders Carlsson
  *
@@ -21,7 +21,7 @@
  * TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
  * PERFORMANCE OF THIS SOFTWARE.
  */
-/* $Header: /cvs/xorg/xserver/xorg/hw/kdrive/r128/r128.h,v 1.3 2005/06/09 10:44:45 anholt Exp $ */
+/* $Header$ */
 
 #ifndef _R128_H_
 #define _R128_H_

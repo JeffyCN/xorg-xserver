@@ -1,5 +1,5 @@
 /*
- * $Id: mgastub.c,v 1.3 2005/12/27 08:25:59 ajax Exp $
+ * $Id$
  *
  * Copyright © 2003 Anders Carlsson
  *
@@ -21,7 +21,7 @@
  * TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
  * PERFORMANCE OF THIS SOFTWARE.
  */
-/* $Header: /cvs/xorg/xserver/xorg/hw/kdrive/mga/mgastub.c,v 1.3 2005/12/27 08:25:59 ajax Exp $ */
+/* $Header$ */
 #ifdef HAVE_CONFIG_H
 #include <kdrive-config.h>
 #endif

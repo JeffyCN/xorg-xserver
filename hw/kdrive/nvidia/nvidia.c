@@ -1,5 +1,5 @@
 /*
- * $Id: nvidia.c,v 1.5 2005/12/27 08:25:59 ajax Exp $
+ * $Id$
  *
  * Copyright © 2003 Keith Packard
  *

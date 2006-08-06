@@ -1,4 +1,4 @@
-/* $XdotOrg: xserver/xorg/hw/xfree86/xaa/xaaOverlay.c,v 1.7 2006/02/10 22:00:27 anholt Exp $ */
+/* $XdotOrg: xserver/xorg/hw/xfree86/xaa/xaaOverlay.c,v 1.6 2005/07/03 08:53:49 daniels Exp $ */
 /* $XFree86: xc/programs/Xserver/hw/xfree86/xaa/xaaOverlay.c,v 1.14tsi Exp $ */
 
 #ifdef HAVE_XORG_CONFIG_H

@@ -48,7 +48,7 @@ SOFTWARE.
 
 
 /* $Xorg: devices.c,v 1.4 2001/02/09 02:04:39 xorgcvs Exp $ */
-/* $XdotOrg: xserver/xorg/dix/devices.c,v 1.10 2006/03/28 01:20:59 ajax Exp $ */
+/* $XdotOrg: xserver/xorg/dix/devices.c,v 1.9 2006/02/15 20:44:12 ajax Exp $ */
 
 #ifdef HAVE_DIX_CONFIG_H
 #include <dix-config.h>

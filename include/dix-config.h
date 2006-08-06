@@ -11,13 +11,13 @@
 #define BUILDERADDR "xorg@lists.freedesktop.org"
 
 /* Operating System Name */
-#define OSNAME "Linux 2.6.16-1.2122_FC6smp i686"
+#define OSNAME "FreeBSD 6.1-STABLE i386"
 
 /* Operating System Vendor */
 #define OSVENDOR ""
 
 /* Default font path */
-#define COMPILEDDEFAULTFONTPATH "/usr/local/lib/X11/fonts/misc/,/usr/local/lib/X11/fonts/TTF/,/usr/local/lib/X11/fonts/OTF,/usr/local/lib/X11/fonts/Type1/,/usr/local/lib/X11/fonts/CID/,/usr/local/lib/X11/fonts/100dpi/,/usr/local/lib/X11/fonts/75dpi/"
+#define COMPILEDDEFAULTFONTPATH "/usr/X11R6/lib/X11/fonts/misc/,/usr/X11R6/lib/X11/fonts/TTF/,/usr/X11R6/lib/X11/fonts/OTF,/usr/X11R6/lib/X11/fonts/Type1/,/usr/X11R6/lib/X11/fonts/CID/,/usr/X11R6/lib/X11/fonts/100dpi/,/usr/X11R6/lib/X11/fonts/75dpi/"
 
 /* Support Composite Extension */
 #define COMPOSITE 1
@@ -58,7 +58,7 @@
 /* #undef GLX_DRI */
 
 /* Path to DRI drivers */
-#define DRI_DRIVER_PATH "/usr/local/lib/dri"
+#define DRI_DRIVER_PATH "/usr/X11R6/lib/dri"
 
 /* Include handhelds.org h3600 touchscreen driver */
 /* #undef H3600_TS */
@@ -73,7 +73,7 @@
 #define HAS_GETIFADDRS 1
 
 /* Define to 1 if you have the `getpeereid' function. */
-/* #undef HAS_GETPEEREID */
+#define HAS_GETPEEREID 1
 
 /* Define to 1 if you have the `getpeerucred' function. */
 /* #undef HAS_GETPEERUCRED */
@@ -89,10 +89,10 @@
 
 /* Define to 1 if you have <alloca.h> and it should be used (not on Ultrix).
    */
-#define HAVE_ALLOCA_H 1
+/* #undef HAVE_ALLOCA_H */
 
 /* Define to 1 if you have the <asm/mtrr.h> header file. */
-#define HAVE_ASM_MTRR_H 1
+/* #undef HAVE_ASM_MTRR_H */
 
 /* Define to 1 if you have the <dbm.h> header file. */
 /* #undef HAVE_DBM_H */
@@ -132,13 +132,13 @@
 #define HAVE_LINK 1
 
 /* Define to 1 if you have the <linux/agpgart.h> header file. */
-#define HAVE_LINUX_AGPGART_H 1
+/* #undef HAVE_LINUX_AGPGART_H */
 
 /* Define to 1 if you have the <linux/apm_bios.h> header file. */
-#define HAVE_LINUX_APM_BIOS_H 1
+/* #undef HAVE_LINUX_APM_BIOS_H */
 
 /* Define to 1 if you have the <linux/fb.h> header file. */
-#define HAVE_LINUX_FB_H 1
+/* #undef HAVE_LINUX_FB_H */
 
 /* Define to 1 if you have the <linux/h3600_ts.h> header file. */
 /* #undef HAVE_LINUX_H3600_TS_H */
@@ -156,7 +156,7 @@
 #define HAVE_MKSTEMP 1
 
 /* Define to 1 if you have the <ndbm.h> header file. */
-/* #undef HAVE_NDBM_H */
+#define HAVE_NDBM_H 1
 
 /* Define to 1 if you have the <ndir.h> header file, and it defines `DIR'. */
 /* #undef HAVE_NDIR_H */
@@ -189,7 +189,7 @@
 #define HAVE_SYSV_IPC 1
 
 /* Define to 1 if you have the <sys/agpio.h> header file. */
-/* #undef HAVE_SYS_AGPIO_H */
+#define HAVE_SYS_AGPIO_H 1
 
 /* Define to 1 if you have the <sys/dir.h> header file, and it defines `DIR'.
    */
@@ -242,7 +242,7 @@
 #define PIXPRIV 1
 
 /* Overall prefix */
-#define PROJECTROOT "/usr/local"
+#define PROJECTROOT "/usr/X11R6"
 
 /* Support RANDR extension */
 #define RANDR 1
@@ -346,13 +346,13 @@
 #define XKB_IN_SERVER 1
 
 /* Vendor release */
-#define XORG_RELEASE "Release 7.1"
+#define XORG_RELEASE "Release 7.1.1"
 
 /* Current Xorg version */
-#define XORG_VERSION_CURRENT (((7) * 10000000) + ((1) * 100000) + ((0) * 1000) + 0)
+#define XORG_VERSION_CURRENT (((7) * 10000000) + ((1) * 100000) + ((1) * 1000) + 0)
 
 /* Xorg release date */
-#define XORG_DATE "22 May 2006"
+#define XORG_DATE "12 May 2006"
 
 /* Build Xv Extension */
 #define XvExtension 1
@@ -403,14 +403,14 @@
 #define X_BYTE_ORDER X_LITTLE_ENDIAN
 
 /* BSD-compliant source */
-#define _BSD_SOURCE 1
+/* #undef _BSD_SOURCE */
 
 /* POSIX-compliant source */
-#define _POSIX_SOURCE 1
+/* #undef _POSIX_SOURCE */
 
 #ifndef _XOPEN_SOURCE
 /* X/Open-compliant source */
-#define _XOPEN_SOURCE 500
+/* #undef _XOPEN_SOURCE */
 #endif
 
 /* Define to empty if `const' does not conform to ANSI C. */
@@ -426,13 +426,13 @@
 /* #undef _XSERVER64 */
 
 /* Define to location of RGB database */
-#define RGB_DB "/usr/local/share/X11/rgb"
+#define RGB_DB "/usr/X11R6/share/X11/rgb"
 
 /* System is BSD-like */
-/* #undef CSRG_BASED */
+#define CSRG_BASED 1
 
 /* Define to 1 if `struct sockaddr_in' has a `sin_len' member */
-/* #undef BSD44SOCKETS */
+#define BSD44SOCKETS 1
 
 /* Define to 1 if modules should avoid the libcwrapper */
 #define NO_LIBCWRAPPER 1

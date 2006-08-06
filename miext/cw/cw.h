@@ -19,7 +19,7 @@
  * TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
  * PERFORMANCE OF THIS SOFTWARE.
  */
-/* $Header: /cvs/xorg/xc/programs/Xserver/miext/cw/cw.h,v 1.13 2005/10/02 08:28:26 anholt Exp $ */
+/* $Header$ */
 
 #ifdef HAVE_DIX_CONFIG_H
 #include <dix-config.h>

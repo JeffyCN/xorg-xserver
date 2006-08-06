@@ -1,4 +1,4 @@
-/* $XdotOrg: xserver/xorg/mi/miinitext.c,v 1.32 2006/03/12 00:11:34 krh Exp $ */
+/* $XdotOrg: xserver/xorg/mi/miinitext.c,v 1.31 2006/02/15 19:05:54 ajax Exp $ */
 /* $XFree86: xc/programs/Xserver/mi/miinitext.c,v 3.67 2003/01/12 02:44:27 dawes Exp $ */
 /***********************************************************
 

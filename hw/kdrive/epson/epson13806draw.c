@@ -1,4 +1,4 @@
-/* $Header: /cvs/xorg/xserver/xorg/hw/kdrive/epson/epson13806draw.c,v 1.3 2005/08/08 06:25:21 keithp Exp $ */
+/* $Header$ */
 /*
  * Copyright 2004 by Costas Stylianou <costas.stylianou@psion.com> +44(0)7850 394095
  *

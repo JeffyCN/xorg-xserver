@@ -1,5 +1,5 @@
 /*
- * $Id: damageext.c,v 1.5 2005/07/03 07:01:17 daniels Exp $
+ * $Id$
  *
  * Copyright © 2002 Keith Packard
  *

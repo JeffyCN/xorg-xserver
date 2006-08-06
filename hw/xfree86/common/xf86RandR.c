@@ -1,4 +1,4 @@
-/* $XdotOrg: xserver/xorg/hw/xfree86/common/xf86RandR.c,v 1.26 2006/03/25 19:52:03 ajax Exp $ */
+/* $XdotOrg: xserver/xorg/hw/xfree86/common/xf86RandR.c,v 1.25 2005/10/30 17:38:49 twini Exp $ */
 /*
  * $XFree86: xc/programs/Xserver/hw/xfree86/common/xf86RandR.c,v 1.7tsi Exp $
  *

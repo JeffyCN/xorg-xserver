@@ -1,5 +1,5 @@
 /* $XFree86: xc/programs/Xserver/hw/xfree86/common/xf86Init.c,v 3.212 2004/01/27 01:31:45 dawes Exp $ */
-/* $XdotOrg: xserver/xorg/hw/xfree86/common/xf86Init.c,v 1.33.2.2 2006/05/09 18:04:19 ajax Exp $ */
+/* $XdotOrg: xserver/xorg/hw/xfree86/common/xf86Init.c,v 1.33.2.1 2006/04/04 14:16:56 ajax Exp $ */
 
 /*
  * Loosely based on code bearing the following copyright:
@@ -1905,7 +1905,11 @@ xf86RunVtInit(void)
           FatalError("xf86RunVtInit: fork failed (%s)\n", strerror(errno));
           break;
       case 0:  /* child */
-          setuid(getuid());
+	  if (setuid(getuid()) == -1) {
+	      xf86Msg(X_ERROR, "xf86RunVtInit: setuid failed (%s)\n",
+			 strerror(errno));
+	      exit(255);
+	  }
           /* set stdin, stdout to the consoleFd */
           for (i = 0; i < 2; i++) {
             if (xf86Info.consoleFd != i) {

@@ -1,4 +1,4 @@
-/* $XdotOrg: xserver/xorg/hw/xfree86/utils/xorgconfig/cards.c,v 1.4.14.1 2006/04/18 17:30:20 spyderous Exp $ */
+/* $XdotOrg: xserver/xorg/hw/xfree86/utils/xorgconfig/cards.c,v 1.4 2005/07/01 22:43:35 daniels Exp $ */
 /* $XConsortium: cards.c /main/9 1996/10/19 18:15:32 kaleb $ */
 
 

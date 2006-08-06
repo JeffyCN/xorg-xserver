@@ -1,5 +1,5 @@
 /*
- * $Id: sdl.c,v 1.2 2005/12/27 08:26:01 ajax Exp $
+ * $Id$
  *
  * Copyright © 2004 PillowElephantBadgerBankPond 
  
@@ -25,7 +25,7 @@
  * 	- jaymz
  *
  */
-/* $Header: /cvs/xorg/xserver/xorg/hw/kdrive/sdl/sdl.c,v 1.2 2005/12/27 08:26:01 ajax Exp $ */
+/* $Header$ */
 #ifdef HAVE_CONFIG_H
 #include "kdrive-config.h"
 #endif

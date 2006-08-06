@@ -1,5 +1,5 @@
 /*
- * $Id: shrot16pack_90YX.c,v 1.1 2004/07/20 13:38:23 pb Exp $
+ * $Id$
  *
  * Copyright  2000 Keith Packard
  *

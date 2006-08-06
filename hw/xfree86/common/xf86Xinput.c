@@ -48,7 +48,7 @@
  * authorization from the copyright holder(s) and author(s).
  */
 /* $XConsortium: xf86Xinput.c /main/14 1996/10/27 11:05:25 kaleb $ */
-/* $XdotOrg: xserver/xorg/hw/xfree86/common/xf86Xinput.c,v 1.9 2006/03/25 19:52:03 ajax Exp $ */
+/* $XdotOrg: xserver/xorg/hw/xfree86/common/xf86Xinput.c,v 1.8 2006/03/24 20:50:13 fredrik Exp $ */
 
 #ifdef HAVE_XORG_CONFIG_H
 #include <xorg-config.h>

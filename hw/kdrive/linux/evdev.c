@@ -1,5 +1,5 @@
 /*
- * $Id: evdev.c,v 1.2 2005/12/27 08:25:58 ajax Exp $
+ * $Id$
  *
  * Copyright © 2004 Keith Packard
  *

@@ -1,4 +1,4 @@
-/* $XdotOrg: xserver/xorg/hw/xfree86/os-support/usl/usl_kbd.c,v 1.3 2006/03/25 19:52:05 ajax Exp $ */
+/* $XdotOrg: xserver/xorg/hw/xfree86/os-support/usl/usl_kbd.c,v 1.2 2005/11/08 06:33:30 jkj Exp $ */
 /*
  * Copyright 2005 by Kean Johnston <jkj@sco.com>
  *

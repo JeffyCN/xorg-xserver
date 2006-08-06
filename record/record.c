@@ -1,4 +1,4 @@
-/* $XdotOrg: xserver/xorg/record/record.c,v 1.7.2.1 2006/05/10 15:44:18 ajax Exp $ */
+/* $XdotOrg: xserver/xorg/record/record.c,v 1.7 2006/03/28 01:21:00 ajax Exp $ */
 /* $Xorg: record.c,v 1.4 2001/02/09 02:05:27 xorgcvs Exp $ */
 
 /*

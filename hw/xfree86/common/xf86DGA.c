@@ -1,4 +1,4 @@
-/* $XdotOrg: xserver/xorg/hw/xfree86/common/xf86DGA.c,v 1.9 2006/03/25 19:52:03 ajax Exp $ */
+/* $XdotOrg: xserver/xorg/hw/xfree86/common/xf86DGA.c,v 1.8 2006/02/15 20:44:13 ajax Exp $ */
 /* $XFree86: xc/programs/Xserver/hw/xfree86/common/xf86DGA.c,v 1.46 2002/12/03 18:17:40 tsi Exp $ */
 /*
  * Copyright (c) 1998-2002 by The XFree86 Project, Inc.

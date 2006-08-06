@@ -13,6 +13,10 @@
 # PARTICULAR PURPOSE.
 
 @SET_MAKE@
+
+#							-*- Makefile -*-
+# Rules for generating files using the C pre-processor
+# (Replaces CppFileTarget from Imake)
 srcdir = @srcdir@
 top_srcdir = @top_srcdir@
 VPATH = @srcdir@
@@ -35,8 +39,9 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
+DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in \
+	$(top_srcdir)/cpprules.in
 subdir = Xprint/etc/init.d
-DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/acinclude.m4 \
 	$(top_srcdir)/configure.ac
@@ -506,11 +511,51 @@ sysconfdir = @sysconfdir@
 target_alias = @target_alias@
 xglmoduledir = @xglmoduledir@
 xpconfigdir = @xpconfigdir@
+SED = sed
+SUFFIXES = .pre .man .man.pre
+
+# Translate XCOMM into pound sign with sed, rather than passing -DXCOMM=XCOMM
+# to cpp, because that trick does not work on all ANSI C preprocessors.
+# Delete line numbers from the cpp output (-P is not portable, I guess).
+# Allow XCOMM to be preceded by whitespace and provide a means of generating
+# output lines with trailing backslashes.
+# Allow XHASH to always be substituted, even in cases where XCOMM isn't.
+CPP_SED_MAGIC = $(SED) -e '/^\#  *[0-9][0-9]*  *.*$$/d' \
+                       -e '/^\#line  *[0-9][0-9]*  *.*$$/d' \
+                       -e '/^[         ]*XCOMM$$/s/XCOMM/\#/' \
+                       -e '/^[         ]*XCOMM[^a-zA-Z0-9_]/s/XCOMM/\#/' \
+                       -e '/^[         ]*XHASH/s/XHASH/\#/' \
+                       -e '/\@\@$$/s/\@\@$$/\\/'
+
+
+# Strings to replace in man pages
+XORGRELSTRING = @PACKAGE_STRING@
+XORGMANNAME = X Version 11
+XSERVERNAME = Xorg
+MANDEFS = \
+        -D__vendorversion__="\"$(XORGRELSTRING)\" \"$(XORGMANNAME)\"" \
+        -D__xorgversion__="\"$(XORGRELSTRING)\" \"$(XORGMANNAME)\"" \
+	-D__appmansuffix__=$(APP_MAN_SUFFIX) \
+	-D__filemansuffix__=$(FILE_MAN_SUFFIX) \
+	-D__libmansuffix__=$(LIB_MAN_SUFFIX) \
+	-D__miscmansuffix__=$(MISC_MAN_SUFFIX) \
+	-D__drivermansuffix__=$(DRIVER_MAN_SUFFIX) \
+	-D__adminmansuffix__=$(ADMIN_MAN_SUFFIX) \
+	-D__projectroot__=$(prefix) \
+	-D__xconfigfile__=$(__XCONFIGFILE__) -D__xconfigdir__=$(XCONFIGDIR) \
+	-D__xlogfile__=$(XLOGFILE) -D__xservername__=$(XSERVERNAME) 
+
+noinst_PRE = xprint
+BUILT_SOURCES = $(noinst_PRE)
+CLEANFILES = $(noinst_PRE) xprint.pre
+CPP_FILES_FLAGS = -DProjectRoot='"$(PROJECTROOT)"' -DOS_LINUX
 EXTRA_DIST = xprint.cpp
-all: all-am
+all: $(BUILT_SOURCES)
+	$(MAKE) $(AM_MAKEFLAGS) all-am
 
 .SUFFIXES:
-$(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am  $(am__configure_deps)
+.SUFFIXES: .pre .man .man.pre
+$(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am $(top_srcdir)/cpprules.in $(am__configure_deps)
 	@for dep in $?; do \
 	  case '$(am__configure_deps)' in \
 	    *$$dep*) \
@@ -557,6 +602,7 @@ CTAGS:
 
 
 distdir: $(DISTFILES)
+	$(mkdir_p) $(distdir)/../../..
 	@srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`; \
 	topsrcdirstrip=`echo "$(top_srcdir)" | sed 's|.|.|g'`; \
 	list='$(DISTFILES)'; for file in $$list; do \
@@ -584,10 +630,12 @@ distdir: $(DISTFILES)
 	  fi; \
 	done
 check-am: all-am
-check: check-am
+check: $(BUILT_SOURCES)
+	$(MAKE) $(AM_MAKEFLAGS) check-am
 all-am: Makefile
 installdirs:
-install: install-am
+install: $(BUILT_SOURCES)
+	$(MAKE) $(AM_MAKEFLAGS) install-am
 install-exec: install-exec-am
 install-data: install-data-am
 uninstall: uninstall-am
@@ -604,6 +652,7 @@ install-strip:
 mostlyclean-generic:
 
 clean-generic:
+	-test -z "$(CLEANFILES)" || rm -f $(CLEANFILES)
 
 distclean-generic:
 	-test -z "$(CONFIG_CLEAN_FILES)" || rm -f $(CONFIG_CLEAN_FILES)
@@ -611,6 +660,7 @@ distclean-generic:
 maintainer-clean-generic:
 	@echo "This command is intended for maintainers to use"
 	@echo "it deletes files that may require special tools to rebuild."
+	-test -z "$(BUILT_SOURCES)" || rm -f $(BUILT_SOURCES)
 clean: clean-am
 
 clean-am: clean-generic clean-libtool mostlyclean-am
@@ -667,6 +717,15 @@ uninstall-am: uninstall-info-am
 	mostlyclean-libtool pdf pdf-am ps ps-am uninstall uninstall-am \
 	uninstall-info-am
 
+
+.pre:
+	$(RAWCPP) $(RAWCPPFLAGS) $(CPP_FILES_FLAGS) < $< | $(CPP_SED_MAGIC) > $@
+
+.man.pre.man:
+	$(RAWCPP) $(RAWCPPFLAGS) $(MANDEFS) $(EXTRAMANDEFS) < $< | $(CPP_SED_MAGIC) > $@
+
+xprint.pre: xprint.cpp
+	$(SED) -e 's/^\(\s\+\)#/\1XCOMM/' $< > $@
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:

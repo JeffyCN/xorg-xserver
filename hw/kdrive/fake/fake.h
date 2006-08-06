@@ -1,5 +1,5 @@
 /*
- * $Id: fake.h,v 1.1 2004/04/28 07:26:46 keithp Exp $
+ * $Id$
  *
  * Copyright © 2004 Keith Packard
  *

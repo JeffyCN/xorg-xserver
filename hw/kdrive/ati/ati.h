@@ -1,5 +1,5 @@
 /*
- * $Id: ati.h,v 1.19 2005/12/27 08:25:55 ajax Exp $
+ * $Id$
  *
  * Copyright © 2003 Eric Anholt
  *
@@ -21,7 +21,7 @@
  * TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
  * PERFORMANCE OF THIS SOFTWARE.
  */
-/* $Header: /cvs/xorg/xserver/xorg/hw/kdrive/ati/ati.h,v 1.19 2005/12/27 08:25:55 ajax Exp $ */
+/* $Header$ */
 
 #ifndef _ATI_H_
 #define _ATI_H_

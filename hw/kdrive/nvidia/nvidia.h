@@ -1,5 +1,5 @@
 /*
- * $Id: nvidia.h,v 1.3 2005/06/09 10:44:45 anholt Exp $
+ * $Id$
  *
  * Copyright © 2003 Keith Packard
  *

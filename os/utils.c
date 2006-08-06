@@ -1,4 +1,4 @@
-/* $XdotOrg: xserver/xorg/os/utils.c,v 1.25 2006/03/25 19:52:05 ajax Exp $ */
+/* $XdotOrg: xserver/xorg/os/utils.c,v 1.24 2006/02/16 07:17:31 keithp Exp $ */
 /* $Xorg: utils.c,v 1.5 2001/02/09 02:05:24 xorgcvs Exp $ */
 /*
 
@@ -1721,8 +1721,10 @@ System(char *command)
     case -1:	/* error */
 	p = -1;
     case 0:	/* child */
-	setgid(getgid());
-	setuid(getuid());
+	if (setgid(getgid()) == -1)
+	    _exit(127);
+	if (setuid(getuid()) == -1)
+	    _exit(127);
 	execl("/bin/sh", "sh", "-c", command, (char *)NULL);
 	_exit(127);
     default:	/* parent */
@@ -1773,8 +1775,10 @@ Popen(char *command, char *type)
 	xfree(cur);
 	return NULL;
     case 0:	/* child */
-	setgid(getgid());
-	setuid(getuid());
+	if (setgid(getgid()) == -1)
+	    _exit(127);
+	if (setuid(getuid()) == -1)
+	    _exit(127);
 	if (*type == 'r') {
 	    if (pdes[1] != 1) {
 		/* stdout */
@@ -1848,8 +1852,10 @@ Fopen(char *file, char *type)
 	xfree(cur);
 	return NULL;
     case 0:	/* child */
-	setgid(getgid());
-	setuid(getuid());
+	if (setgid(getgid()) == -1)
+	    _exit(127);
+	if (setuid(getuid()) == -1)
+	    _exit(127);
 	if (*type == 'r') {
 	    if (pdes[1] != 1) {
 		/* stdout */

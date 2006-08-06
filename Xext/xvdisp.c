@@ -1,4 +1,4 @@
-/* $XdotOrg: xserver/xorg/Xext/xvdisp.c,v 1.7 2006/02/10 22:00:20 anholt Exp $ */
+/* $XdotOrg: xserver/xorg/Xext/xvdisp.c,v 1.6 2005/07/03 08:53:36 daniels Exp $ */
 /***********************************************************
 Copyright 1991 by Digital Equipment Corporation, Maynard, Massachusetts,
 and the Massachusetts Institute of Technology, Cambridge, Massachusetts.

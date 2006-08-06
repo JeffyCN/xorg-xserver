@@ -1,4 +1,4 @@
-/* $XdotOrg: xserver/xorg/Xext/shape.c,v 1.10 2006/02/10 22:00:20 anholt Exp $ */
+/* $XdotOrg: xserver/xorg/Xext/shape.c,v 1.9 2005/07/03 08:53:36 daniels Exp $ */
 /* $XFree86: xc/programs/Xserver/Xext/shape.c,v 3.18 2003/10/28 23:08:43 tsi Exp $ */
 /************************************************************
 

@@ -23,7 +23,7 @@
  * Author:  Keith Packard, SuSE, Inc.
  */
 
-/* $XdotOrg: xserver/xorg/fb/fboverlay.c,v 1.8 2006/02/10 22:00:21 anholt Exp $ */
+/* $XdotOrg: xserver/xorg/fb/fboverlay.c,v 1.7 2005/07/03 07:01:23 daniels Exp $ */
 
 #ifdef HAVE_DIX_CONFIG_H
 #include <dix-config.h>

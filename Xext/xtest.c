@@ -1,4 +1,4 @@
-/* $XdotOrg: xserver/xorg/Xext/xtest.c,v 1.7 2006/02/10 22:00:20 anholt Exp $ */
+/* $XdotOrg: xserver/xorg/Xext/xtest.c,v 1.6 2005/07/03 08:53:36 daniels Exp $ */
 /* $Xorg: xtest.c,v 1.4 2001/02/09 02:04:33 xorgcvs Exp $ */
 /*
 

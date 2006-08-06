@@ -1,4 +1,4 @@
-/* $XdotOrg: xserver/xorg/hw/xfree86/loader/misym.c,v 1.10 2006/01/06 17:05:26 ajax Exp $ */
+/* $XdotOrg: xserver/xorg/hw/xfree86/loader/misym.c,v 1.9 2005/10/18 04:02:31 aplattner Exp $ */
 /* $XFree86: xc/programs/Xserver/hw/xfree86/loader/misym.c,v 1.38 2003/10/15 16:29:04 dawes Exp $ */
 
 /*

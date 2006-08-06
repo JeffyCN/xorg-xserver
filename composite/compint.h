@@ -1,5 +1,5 @@
 /*
- * $Id: compint.h,v 1.7 2005/07/03 07:01:17 daniels Exp $
+ * $Id$
  *
  * Copyright © 2006 Sun Microsystems
  *

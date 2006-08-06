@@ -1,4 +1,4 @@
-dnl $Id: configure.ac,v 1.163 2006/02/10 22:00:18 anholt Exp $
+dnl $Id$
 dnl
 dnl Copyright © 2003-2005 Keith Packard, Daniel Stone
 dnl
@@ -26,7 +26,7 @@ AC_PREREQ(2.57)
 dnl This is the not the Xorg version number, it's the server version number.
 dnl Yes, that's weird.  Also, when you change this, be sure to change the
 dnl DEFAULT_VERSION_* variables below.
-AC_INIT([xorg-server], 1.1.0, [https://bugs.freedesktop.org/enter_bug.cgi?product=xorg], xorg-server)
+AC_INIT([xorg-server], 1.1.1, [https://bugs.freedesktop.org/enter_bug.cgi?product=xorg], xorg-server)
 AC_CONFIG_SRCDIR([Makefile.am])
 AM_INIT_AUTOMAKE([dist-bzip2 foreign])
 AM_MAINTAINER_MODE
@@ -289,9 +289,9 @@ DEFAULT_VENDOR_NAME="The X.Org Foundation"
 DEFAULT_VENDOR_NAME_SHORT="X.Org"
 DEFAULT_VERSION_MAJOR=7
 DEFAULT_VERSION_MINOR=1
-DEFAULT_VERSION_PATCH=0
+DEFAULT_VERSION_PATCH=1
 DEFAULT_VERSION_SNAP=0
-DEFAULT_RELEASE_DATE="22 May 2006"
+DEFAULT_RELEASE_DATE="12 May 2006"
 DEFAULT_VENDOR_WEB="http://wiki.x.org"
 
 m4_ifdef([AS_HELP_STRING], , [m4_define([AS_HELP_STRING], m4_defn([AC_HELP_STRING]))])

@@ -1,5 +1,5 @@
 /*
- * $Id: xfixesint.h,v 1.7 2005/07/03 08:53:54 daniels Exp $
+ * $Id$
  *
  * Copyright © 2006 Sun Microsystems
  *

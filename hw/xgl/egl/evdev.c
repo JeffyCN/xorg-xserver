@@ -1,5 +1,5 @@
 /*
- * $Id: evdev.c,v 1.4 2005/12/23 02:07:58 airlied Exp $
+ * $Id$
  *
  * Copyright © 2004 Keith Packard
  *

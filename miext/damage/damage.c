@@ -1,5 +1,5 @@
 /*
- * $Id: damage.c,v 1.20 2006/02/10 22:00:30 anholt Exp $
+ * $Id$
  *
  * Copyright © 2003 Keith Packard
  *

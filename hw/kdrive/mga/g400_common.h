@@ -1,5 +1,5 @@
 /*
- * $Id: g400_common.h,v 1.2 2005/06/09 21:59:26 anholt Exp $
+ * $Id$
  *
  * Copyright © 2004 Damien Ciabrini
  *
@@ -21,7 +21,7 @@
  * TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
  * PERFORMANCE OF THIS SOFTWARE.
  */
-/* $Header: /cvs/xorg/xserver/xorg/hw/kdrive/mga/g400_common.h,v 1.2 2005/06/09 21:59:26 anholt Exp $ */
+/* $Header$ */
 
 #ifndef __G400_COMMON_H__
 #define __G400_COMMON_H__

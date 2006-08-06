@@ -29,7 +29,7 @@ or other dealings in this Software without prior written authorization
 from Kaleb S. KEITHLEY
 
 */
-/* $XdotOrg: xserver/xorg/hw/xfree86/dixmods/extmod/xf86vmode.c,v 1.9.4.1 2006/04/07 01:26:25 ajax Exp $ */
+/* $XdotOrg: xserver/xorg/hw/xfree86/dixmods/extmod/xf86vmode.c,v 1.9 2006/02/10 22:00:24 anholt Exp $ */
 /* $Xorg: xf86vmode.c,v 1.3 2000/08/17 19:47:59 cpqbld Exp $ */
 /* THIS IS NOT AN X CONSORTIUM STANDARD OR AN X PROJECT TEAM SPECIFICATION */
 

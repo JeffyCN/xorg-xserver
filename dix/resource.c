@@ -74,7 +74,7 @@ Equipment Corporation.
 ******************************************************************/
 
 /* $Xorg: resource.c,v 1.5 2001/02/09 02:04:40 xorgcvs Exp $ */
-/* $XdotOrg: xserver/xorg/dix/resource.c,v 1.9 2006/02/15 20:44:12 ajax Exp $ */
+/* $XdotOrg: xserver/xorg/dix/resource.c,v 1.8 2005/07/03 08:53:38 daniels Exp $ */
 /* $TOG: resource.c /main/41 1998/02/09 14:20:31 kaleb $ */
 
 /*	Routines to manage various kinds of resources:

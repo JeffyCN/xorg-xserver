@@ -1,4 +1,4 @@
-/* $XdotOrg: xserver/xorg/dix/colormap.c,v 1.12.4.1 2006/05/22 15:47:46 ajax Exp $ */
+/* $XdotOrg: xserver/xorg/dix/colormap.c,v 1.12 2006/02/15 20:44:12 ajax Exp $ */
 /* $XFree86: xc/programs/Xserver/dix/colormap.c,v 3.11 2003/11/03 05:10:59 tsi Exp $ */
 /***********************************************************
 

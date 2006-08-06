@@ -1,4 +1,4 @@
-/* $XdotOrg: xserver/xorg/hw/xfree86/common/xf86Config.c,v 1.23.2.5 2006/04/07 01:40:52 ajax Exp $ */
+/* $XdotOrg: xserver/xorg/hw/xfree86/common/xf86Config.c,v 1.23.2.4 2006/04/07 01:37:03 ajax Exp $ */
 /* $XFree86: xc/programs/Xserver/hw/xfree86/common/xf86Config.c,v 3.276 2003/10/08 14:58:26 dawes Exp $ */
 
 

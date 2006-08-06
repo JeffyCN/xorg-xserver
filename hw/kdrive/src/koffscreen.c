@@ -1,5 +1,5 @@
 /*
- * $Id: koffscreen.c,v 1.18 2005/12/27 08:26:02 ajax Exp $
+ * $Id$
  *
  * Copyright © 2003 Anders Carlsson
  *

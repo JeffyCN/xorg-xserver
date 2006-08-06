@@ -25,7 +25,7 @@
  * the sale, use or other dealings in this Software without prior written
  * authorization from the copyright holder(s) and author(s).
  */
-/* $XdotOrg: xserver/xorg/hw/xfree86/os-support/shared/sigiostubs.c,v 1.6 2006/03/25 19:52:04 ajax Exp $ */
+/* $XdotOrg: xserver/xorg/hw/xfree86/os-support/shared/sigiostubs.c,v 1.5 2005/07/03 07:01:35 daniels Exp $ */
 
 #ifdef HAVE_XORG_CONFIG_H
 #include <xorg-config.h>

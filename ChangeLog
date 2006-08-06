@@ -1,10 +1,5 @@
 2006-05-22  Adam Jackson  <ajax@freedesktop.org>
 
-	* configure.ac:
-	Xorg 7.1
-
-2006-05-22  Adam Jackson  <ajax@freedesktop.org>
-
 	* dix/colormap.c:
 	* dix/pixmap.c:
 	* dix/window.c:

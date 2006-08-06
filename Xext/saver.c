@@ -1,4 +1,4 @@
-/* $XdotOrg: xserver/xorg/Xext/saver.c,v 1.12.2.1 2006/04/05 21:23:06 fredrik Exp $ */
+/* $XdotOrg: xserver/xorg/Xext/saver.c,v 1.12 2006/03/31 18:49:38 fredrik Exp $ */
 /*
  * $XConsortium: saver.c,v 1.12 94/04/17 20:59:36 dpw Exp $
  *

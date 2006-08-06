@@ -21,7 +21,7 @@
 #define BIGREQS 1
 
 /* Default font path */
-#define COMPILEDDEFAULTFONTPATH "/usr/local/lib/X11/fonts/misc/,/usr/local/lib/X11/fonts/TTF/,/usr/local/lib/X11/fonts/OTF,/usr/local/lib/X11/fonts/Type1/,/usr/local/lib/X11/fonts/CID/,/usr/local/lib/X11/fonts/100dpi/,/usr/local/lib/X11/fonts/75dpi/"
+#define COMPILEDDEFAULTFONTPATH "/usr/X11R6/lib/X11/fonts/misc/,/usr/X11R6/lib/X11/fonts/TTF/,/usr/X11R6/lib/X11/fonts/OTF,/usr/X11R6/lib/X11/fonts/Type1/,/usr/X11R6/lib/X11/fonts/CID/,/usr/X11R6/lib/X11/fonts/100dpi/,/usr/X11R6/lib/X11/fonts/75dpi/"
 
 /* Support Composite Extension */
 #define COMPOSITE 1
@@ -168,10 +168,10 @@
 #define XORGSERVER 1
 
 /* Vendor release */
-#define XORG_RELEASE "Release 7.1"
+#define XORG_RELEASE "Release 7.1.1"
 
 /* Current Xorg version */
-#define XORG_VERSION_CURRENT (((7) * 10000000) + ((1) * 100000) + ((0) * 1000) + 0)
+#define XORG_VERSION_CURRENT (((7) * 10000000) + ((1) * 100000) + ((1) * 1000) + 0)
 
 /* Build Xv Extension */
 #define XvExtension 1
@@ -201,13 +201,13 @@
 #define X_BYTE_ORDER X_LITTLE_ENDIAN
 
 /* BSD-compliant source */
-#define _BSD_SOURCE 1
+/* #undef _BSD_SOURCE */
 
 /* POSIX-compliant source */
-#define _POSIX_SOURCE 1
+/* #undef _POSIX_SOURCE */
 
 /* X/Open-compliant source */
-#define _XOPEN_SOURCE 500
+/* #undef _XOPEN_SOURCE */
 
 /* Vendor web address for support */
 #define __VENDORDWEBSUPPORT__ "http://wiki.x.org"
@@ -228,16 +228,16 @@
 #define WITH_VGAHW 1
 
 /* System is BSD-like */
-/* #undef CSRG_BASED */
+#define CSRG_BASED 1
 
 /* System has PC console */
-/* #undef PCCONS_SUPPORT */
+#define PCCONS_SUPPORT 1
 
 /* System has PCVT console */
-/* #undef PCVT_SUPPORT */
+#define PCVT_SUPPORT 1
 
 /* System has syscons console */
-/* #undef SYSCONS_SUPPORT */
+#define SYSCONS_SUPPORT 1
 
 /* System has wscons console */
 /* #undef WSCONS_SUPPORT */

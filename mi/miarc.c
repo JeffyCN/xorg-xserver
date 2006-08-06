@@ -1,4 +1,4 @@
-/* $XdotOrg: xserver/xorg/mi/miarc.c,v 1.8 2006/03/28 01:21:00 ajax Exp $ */
+/* $XdotOrg: xserver/xorg/mi/miarc.c,v 1.7 2006/02/15 19:05:54 ajax Exp $ */
 /* $XFree86: xc/programs/Xserver/mi/miarc.c,v 3.14 2003/10/29 22:57:48 tsi Exp $ */
 /***********************************************************
 
