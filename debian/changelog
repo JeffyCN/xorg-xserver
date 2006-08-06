@@ -1,9 +1,11 @@
-xorg-server (1:1.0.2-10) UNRELEASED; urgency=low
+xorg-server (1:1.1.0-1) UNRELEASED-experimental; urgency=low
 
   [ David Nusinow ]
+  * New upstream release
   * Move patch target call so that we don't try and build twice
+  * Remove obsolete 15_security_allocate_local.diff
 
- -- David Nusinow <dnusinow@debian.org>  Sun,  2 Jul 2006 21:29:39 -0400
+ -- David Nusinow <dnusinow@debian.org>  Sun,  6 Aug 2006 15:44:37 +0000
 
 xorg-server (1:1.0.2-9) unstable; urgency=high
 
