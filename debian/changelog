@@ -1,4 +1,4 @@
-xorg-server (1:1.1.1-1) UNRELEASED-experimental; urgency=low
+xorg-server (1:1.1.1-1) experimental; urgency=low
 
   [ David Nusinow ]
   * New upstream release
@@ -7,7 +7,7 @@ xorg-server (1:1.1.1-1) UNRELEASED-experimental; urgency=low
     16_SECURITY_setuid.diff
   * Add 15_symlink_mesa.diff
 
- -- David Nusinow <dnusinow@debian.org>  Sun,  6 Aug 2006 16:07:43 +0000
+ -- David Nusinow <dnusinow@debian.org>  Sun,  6 Aug 2006 16:12:25 +0000
 
 xorg-server (1:1.0.2-9) unstable; urgency=high
 
