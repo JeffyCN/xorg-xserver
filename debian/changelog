@@ -1,9 +1,10 @@
 xorg-server (1:1.1.1-2) UNRELEASED; urgency=low
 
+  [ Drew Parsons ]
   * Updated mesa-swx11-source build-depends to (>> 6.5.0), required
-    for xserver 1.1.1.
+    for xserver 1.1.1. (closes: #383334)
 
- -- Drew Parsons <dparsons@debian.org>  Mon,  7 Aug 2006 11:40:48 +1000
+ -- David Nusinow <dnusinow@debian.org>  Wed, 16 Aug 2006 19:02:12 +0000
 
 xorg-server (1:1.1.1-1) experimental; urgency=low
 
