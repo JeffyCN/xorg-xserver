@@ -6,8 +6,10 @@ xorg-server (1:1.1.1-2) UNRELEASED; urgency=low
 
   [ David Nusinow ]
   * Enable and ship xephyr
+  * Hack off the 'x' manpage suffix
+  * Install Xnest manpage
 
- -- David Nusinow <dnusinow@debian.org>  Wed, 16 Aug 2006 20:43:28 +0000
+ -- David Nusinow <dnusinow@debian.org>  Wed, 16 Aug 2006 21:10:07 +0000
 
 xorg-server (1:1.1.1-1) experimental; urgency=low
 

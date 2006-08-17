@@ -1,0 +1,9 @@
+usr/lib/xorg/modules/*.so
+usr/lib/xorg/modules/extensions/*.so
+usr/lib/xorg/modules/fonts/*
+usr/lib/xorg/modules/linux/*.so
+usr/lib/xorg/modules/multimedia/*.so
+usr/bin/Xorg
+usr/share/man/man1/Xserver.1
+usr/share/man/man1/Xorg.1
+usr/share/man/man5/xorg.conf.5
