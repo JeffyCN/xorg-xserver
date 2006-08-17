@@ -8,8 +8,9 @@ xorg-server (1:1.1.1-2) UNRELEASED; urgency=low
   * Enable and ship xephyr
   * Hack off the 'x' manpage suffix
   * Install Xnest manpage
+  * Bump policy version to 3.7.2.0. No changes necessary.
 
- -- David Nusinow <dnusinow@debian.org>  Wed, 16 Aug 2006 21:10:07 +0000
+ -- David Nusinow <dnusinow@debian.org>  Wed, 16 Aug 2006 21:14:17 +0000
 
 xorg-server (1:1.1.1-1) experimental; urgency=low
 
