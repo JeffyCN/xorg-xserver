@@ -45,6 +45,8 @@ confflags += --disable-static \
 	     --enable-xtrap \
 	     --enable-dmx \
 	     --enable-vfb \
+		 --enable-kdrive \
+		 --enable-xephyr \
 	     --disable-lbx \
 	     --disable-xprint \
 		 --disable-xorgconfig \

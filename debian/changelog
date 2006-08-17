@@ -4,7 +4,10 @@ xorg-server (1:1.1.1-2) UNRELEASED; urgency=low
   * Updated mesa-swx11-source build-depends to (>> 6.5.0), required
     for xserver 1.1.1. (closes: #383334)
 
- -- David Nusinow <dnusinow@debian.org>  Wed, 16 Aug 2006 19:02:12 +0000
+  [ David Nusinow ]
+  * Enable and ship xephyr
+
+ -- David Nusinow <dnusinow@debian.org>  Wed, 16 Aug 2006 20:43:28 +0000
 
 xorg-server (1:1.1.1-1) experimental; urgency=low
 

@@ -130,3 +130,13 @@ Description: Virtual Framebuffer 'fake' X server
  .
  This module can be found as the module 'xserver/xorg' at
  :pserver:anoncvs@cvs.freedesktop.org:/cvs/xorg
+
+Package: xserver-xephyr
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Recommends: xbase-clients
+Description: Next Generation Nested X Server
+ xserver-xephyr is an X server that can be run inside another X server,
+ much like xnest. xephyr though, is based on the kdrive X server, and as a
+ result it supports newer extensions than xnest, including render and
+ composite.
