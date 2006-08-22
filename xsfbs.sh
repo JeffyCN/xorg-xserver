@@ -57,6 +57,29 @@ EOF
   exit $SHELL_LIB_USAGE_ERROR
 fi
 
+ARCHITECTURE="$(dpkg --print-installation-architecture)"
+
+LAPTOP=""
+if [ -n "$(which laptop-detect)" ]; then
+    if laptop-detect >/dev/null; then
+	LAPTOP=true
+    fi
+fi
+
+if [ "$1" = "reconfigure" ] || [ -n "$DEBCONF_RECONFIGURE" ]; then
+  RECONFIGURE="true"
+else
+  RECONFIGURE=
+fi
+
+if ([ "$1" = "install" ] || [ "$1" = "configure" ]) && [ -z "$2" ]; then
+  FIRSTINST="yes"
+fi
+
+if [ -z "$RECONFIGURE" ] && [ -z "$FIRSTINST" ]; then
+  UPGRADE="yes"
+fi
+
 trap "message;\
       message \"Received signal.  Aborting $THIS_PACKAGE package $THIS_SCRIPT script.\";\
       message;\
