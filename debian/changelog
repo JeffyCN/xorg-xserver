@@ -1,3 +1,11 @@
+xorg-server (1:1.1.1-4) UNRELEASED; urgency=low
+
+  * Tighten dependencies between X11R7.1 server and video drivers.
+    xserver-xorg-core Depends: xserver-xorg-video-all | xserver-xorg-video-1.0
+    and Conflicts: xserver-xorg-video.
+    
+ -- Drew Parsons <dparsons@debian.org>  Wed, 23 Aug 2006 01:00:52 +1000
+
 xorg-server (1:1.1.1-3) unstable; urgency=low
 
   * Add 16_s390_fix.diff to fix FTBFS on s390. Thanks Bastian Blank.
