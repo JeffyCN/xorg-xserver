@@ -1,3 +1,10 @@
+xorg-server (1:1.0.2-10) unstable; urgency=low
+
+  * Upload to unstable to fixed messed up last upload which was supposed to go
+    to experimental. Brown bag o' joy.
+
+ -- David Nusinow <dnusinow@debian.org>  Tue, 22 Aug 2006 19:31:08 +0000
+
 xorg-server (1:1.0.2-9) UNRELEASED; urgency=high
 
   [ Denis Barbier ]
