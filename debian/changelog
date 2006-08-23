@@ -1,16 +1,20 @@
-xorg-server (1:1.1.1-4) UNRELEASED; urgency=low
+xorg-server (2:1.1.1-4) UNRELEASED; urgency=low
 
+  [ Drew Parsons ]
   * Tighten dependencies between X11R7.1 server and video drivers.
-    xserver-xorg-core no longer Depends: xserver-xorg-video-all 
-    | xserver-xorg-video but instead Conflicts: xserver-xorg-video.  
+    xserver-xorg-core no longer Depends: xserver-xorg-video-all
+    | xserver-xorg-video but instead Conflicts: xserver-xorg-video.
     (closes: #383873)
-    The dependency on xserver-xorg-video-all | xserver-xorg-video-1.0 is 
+    The dependency on xserver-xorg-video-all | xserver-xorg-video-1.0 is
     managed by the xserver-xorg binary package (not included here in
     order to avoid circular dependencies). (closes: #362313)
-  * Likewise remove Depends: xserver-xorg-input-all | xserver-xorg-input 
+  * Likewise remove Depends: xserver-xorg-input-all | xserver-xorg-input
     (again, handled by xserver-xorg) to avoid circular dependency with drivers.
 
- -- Drew Parsons <dparsons@debian.org>  Wed, 23 Aug 2006 01:20:41 +1000
+  [ David Nusinow ]
+  * Epoch bump
+
+ -- David Nusinow <dnusinow@debian.org>  Tue, 22 Aug 2006 20:43:43 +0000
 
 xorg-server (1:1.1.1-3) unstable; urgency=low
 
