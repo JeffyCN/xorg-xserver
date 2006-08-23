@@ -1,4 +1,4 @@
-xorg-server (1:1.0.2-10) unstable; urgency=low
+xorg-server (2:1.0.2-10) unstable; urgency=low
 
   * Upload to unstable to fixed messed up last upload which was supposed to go
     to experimental. Brown bag o' joy.
