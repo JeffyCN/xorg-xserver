@@ -53,7 +53,7 @@ Index: xorg-server/hw/xfree86/os-support/linux/lnx_video.c
  xf86EnableInterrupts()
  {
 -#if !defined(__mc68000__) && !defined(__powerpc__) && !defined(__sparc__) && !defined(__mips__) && !defined(__ia64__) && !defined(__sh__) && !defined(__hppa__) && !defined(__arm__)
-+#if !defined(__mc68000__) && !defined(__powerpc__) && !defined(__sparc__) && !defined(__mips__) && !defined(__ia64__) && !defined(__sh__) && !defined(__hppa__) && !defined(__arm__) || !defined(__s390__)
++#if !defined(__mc68000__) && !defined(__powerpc__) && !defined(__sparc__) && !defined(__mips__) && !defined(__ia64__) && !defined(__sh__) && !defined(__hppa__) && !defined(__arm__) && !defined(__s390__)
  	if (!ExtendedEnabled)
  	    if (iopl(3) || ioperm(0, 1024, 1))
  			return;

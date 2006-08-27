@@ -1,3 +1,10 @@
+xorg-server (2:1.1.1-5) UNRELEASED; urgency=low
+
+  * Fix error in 16_s390_fix.diff caused by my idiot copying. Thanks Yannick
+    Roehlly and Daniel Stone.
+
+ -- David Nusinow <dnusinow@debian.org>  Sun, 27 Aug 2006 16:51:49 +0000
+
 xorg-server (2:1.1.1-4) experimental; urgency=low
 
   [ Drew Parsons ]
