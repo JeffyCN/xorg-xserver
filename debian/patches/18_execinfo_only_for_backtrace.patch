@@ -1,0 +1,31 @@
+From: Michel DÃ¤nzer <michel@tungstengraphics.com>
+Date: Sat, 24 Jun 2006 13:09:24 +0000 (+0200)
+Subject: Make sure <execinfo.h> is actually included when needed.
+X-Git-Tag: xorg-server-1.1.99.3
+X-Git-Url: http://gitweb.freedesktop.org/?p=xorg/xserver.git;a=commitdiff;h=36756fdb2ddc154b406f664a6af0f38d26e6973d
+
+Make sure <execinfo.h> is actually included when needed.
+
+configure only defines HAVE_BACKTRACE, not HAVE_EXECINFO_H.
+
+This could cause problems on platforms where the size of a pointer is greater
+than that of an integer, see
+http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=363218 .
+---
+
+--- a/hw/xfree86/common/xf86Events.c
++++ b/hw/xfree86/common/xf86Events.c
+@@ -1255,12 +1255,8 @@ xf86InterceptSigIll(void (*sigillhandler
+     xf86SigIllHandler = sigillhandler;
+ }
+ 
+-#ifdef HAVE_EXECINFO_H
+-#define HAVE_BACKTRACE
+-#include <execinfo.h>
+-#endif
+-
+ #ifdef HAVE_BACKTRACE
++#include <execinfo.h>
+ 
+ static __inline__ void xorg_backtrace(void)
+ {
