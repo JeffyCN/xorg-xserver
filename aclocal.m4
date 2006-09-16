@@ -6518,7 +6518,8 @@ installed software in a non-standard prefix.
 
 _PKG_TEXT
 ])],
-		[$4])
+		[AC_MSG_RESULT([no])
+                $4])
 elif test $pkg_failed = untried; then
 	ifelse([$4], , [AC_MSG_FAILURE(dnl
 [The pkg-config script could not be found or is too old.  Make sure it
@@ -6584,7 +6585,7 @@ AC_DEFUN([XORG_MACROS_VERSION],[
 	XORG_MACROS_needed_major=`echo $XORG_MACROS_needed_version | sed 's/\..*$//'`
 	XORG_MACROS_needed_minor=`echo $XORG_MACROS_needed_version | sed -e 's/^[0-9]*\.//' -e 's/\..*$//'`]
 	AC_MSG_CHECKING([if xorg-macros used to generate configure is at least ${XORG_MACROS_needed_major}.${XORG_MACROS_needed_minor}])
-	[XORG_MACROS_version=1.1.0
+	[XORG_MACROS_version=1.1.1
 	XORG_MACROS_major=`echo $XORG_MACROS_version | sed 's/\..*$//'`
 	XORG_MACROS_minor=`echo $XORG_MACROS_version | sed -e 's/^[0-9]*\.//' -e 's/\..*$//'`]
 	if test $XORG_MACROS_major -ne $XORG_MACROS_needed_major ; then
@@ -6653,27 +6654,17 @@ AC_DEFUN([XORG_MANPAGE_SECTIONS],[
 AC_REQUIRE([AC_CANONICAL_HOST])
 
 if test x$APP_MAN_SUFFIX = x    ; then
-    case $host_os in
-	gnu* | k*bsd*-gnu)	APP_MAN_SUFFIX=1x ;;
-	*)	APP_MAN_SUFFIX=1  ;;
-    esac
+    APP_MAN_SUFFIX=1
 fi
 if test x$APP_MAN_DIR = x    ; then
-    case $host_os in
-	gnu* | k*bsd*-gnu)	APP_MAN_DIR='$(mandir)/man1' ;;
-	*)	APP_MAN_DIR='$(mandir)/man$(APP_MAN_SUFFIX)' ;;
-    esac
+    APP_MAN_DIR='$(mandir)/man$(APP_MAN_SUFFIX)'
 fi
 
 if test x$LIB_MAN_SUFFIX = x    ; then
-    case $host_os in
-	*)	LIB_MAN_SUFFIX=3  ;;
-    esac
+    LIB_MAN_SUFFIX=3
 fi
 if test x$LIB_MAN_DIR = x    ; then
-    case $host_os in
-	*)	LIB_MAN_DIR='$(mandir)/man$(LIB_MAN_SUFFIX)' ;;
-    esac
+    LIB_MAN_DIR='$(mandir)/man$(LIB_MAN_SUFFIX)'
 fi
 
 if test x$FILE_MAN_SUFFIX = x    ; then
@@ -6683,14 +6674,9 @@ if test x$FILE_MAN_SUFFIX = x    ; then
     esac
 fi
 if test x$FILE_MAN_DIR = x    ; then
-    case $host_os in
-	gnu* | k*bsd*-gnu)	FILE_MAN_DIR='$(mandir)/man5' ;;
-	*)	FILE_MAN_DIR='$(mandir)/man$(FILE_MAN_SUFFIX)' ;;
-    esac
+    FILE_MAN_DIR='$(mandir)/man$(FILE_MAN_SUFFIX)'
 fi
 
-# In Imake's linux.cf, the misc man suffix & dir was only changed for 
-# LinuxDebian, not other Linuxes, so we leave it unchanged here
 if test x$MISC_MAN_SUFFIX = x    ; then
     case $host_os in
 	solaris*)	MISC_MAN_SUFFIX=5  ;;
@@ -6698,25 +6684,17 @@ if test x$MISC_MAN_SUFFIX = x    ; then
     esac
 fi
 if test x$MISC_MAN_DIR = x    ; then
-    case $host_os in
-	*)	MISC_MAN_DIR='$(mandir)/man$(MISC_MAN_SUFFIX)' ;;
-    esac
+    MISC_MAN_DIR='$(mandir)/man$(MISC_MAN_SUFFIX)'
 fi
 
-# In Imake's linux.cf, the driver man suffix & dir was only changed for 
-# LinuxDebian, not other Linuxes, so we leave it unchanged here
 if test x$DRIVER_MAN_SUFFIX = x    ; then
     case $host_os in
-#	gnu* | k*bsd*-gnu)		DRIVER_MAN_SUFFIX=4x ;;
 	solaris*)	DRIVER_MAN_SUFFIX=7  ;;
 	*)		DRIVER_MAN_SUFFIX=4  ;;
     esac
 fi
 if test x$DRIVER_MAN_DIR = x    ; then
-    case $host_os in
-#	gnu* | k*bsd*-gnu)	DRIVER_MAN_DIR='$(mandir)/man4' ;;
-	*)	DRIVER_MAN_DIR='$(mandir)/man$(DRIVER_MAN_SUFFIX)' ;;
-    esac
+    DRIVER_MAN_DIR='$(mandir)/man$(DRIVER_MAN_SUFFIX)'
 fi
 
 if test x$ADMIN_MAN_SUFFIX = x    ; then

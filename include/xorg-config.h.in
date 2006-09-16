@@ -112,4 +112,7 @@
 /* Has backtrace support */
 #undef HAVE_BACKTRACE
 
+/* Have execinfo.h */
+#undef HAVE_EXECINFO_H
+
 #endif /* _XORG_CONFIG_H_ */

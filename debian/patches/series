@@ -15,5 +15,4 @@
 15_symlink_mesa.diff
 16_s390_fix.diff 
 17_ignoreabi.diff
-18_execinfo_configured.patch
 18_execinfo_only_for_backtrace.patch

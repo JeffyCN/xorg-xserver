@@ -1,11 +1,13 @@
 xorg-server (2:1.1.1-6) UNRELEASED; urgency=low
 
   * Added SGI FreeB licence to debian/copyright. Closes: #368563.
-  * Apply upstream patches 18_execinfo_configured.patch,
-    18_execinfo_only_for_backtrace.patch, to use execinfo.h for and
-    only for backtrace. Closes: #363218.
+  * Apply upstream patches 18_execinfo_only_for_backtrace.patch, to use
+    execinfo.h for and only for backtrace. Applied git patch
+    5a3488ccac8e5dabd9fc98bc41ef178ead1b2faf directly into configure scripts,
+    activated with autoreconf.  Closes: #363218.
+  * Only requires build-depends version of x11proto-gl-dev on 1.4.6.
 
- -- Drew Parsons <dparsons@debian.org>  Sat, 16 Sep 2006 12:45:25 +1000
+ -- Drew Parsons <dparsons@debian.org>  Sat, 16 Sep 2006 13:38:16 +1000
 
 xorg-server (2:1.1.1-5) experimental; urgency=low
 
