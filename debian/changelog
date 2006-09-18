@@ -13,6 +13,7 @@ xorg-server (2:1.1.1-6) UNRELEASED; urgency=low
   [ Steve Langasek ]
   * Add versioned build-depends on x11proto-fixes-dev (>= 4.0), to
     ensure the package is built against the right protocol version.
+    Closes: #383778.
 
  -- Steve Langasek <vorlon@debian.org>  Mon, 18 Sep 2006 01:19:12 -0700
 
