@@ -1,5 +1,8 @@
 xorg-server (2:1.1.1-6) UNRELEASED; urgency=low
 
+  * Upload 7.1 to unstable.
+
+  [ Drew Parsons ]
   * Added SGI FreeB licence to debian/copyright. Closes: #368563.
   * Apply upstream patches 18_execinfo_only_for_backtrace.patch, to use
     execinfo.h for and only for backtrace. Applied git patch
@@ -7,7 +10,7 @@ xorg-server (2:1.1.1-6) UNRELEASED; urgency=low
     activated with autoreconf.  Closes: #363218.
   * Only requires build-depends version of x11proto-gl-dev on 1.4.6.
 
- -- Drew Parsons <dparsons@debian.org>  Sat, 16 Sep 2006 13:38:16 +1000
+ -- Steve Langasek <vorlon@debian.org>  Sun, 17 Sep 2006 22:00:55 -0700
 
 xorg-server (2:1.1.1-5) experimental; urgency=low
 
