@@ -1,4 +1,4 @@
-/* $XdotOrg: xserver/xorg/miext/rootless/rootlessWindow.c,v 1.6 2005/07/03 07:02:02 daniels Exp $ */
+/* $XdotOrg: xc/programs/Xserver/miext/rootless/rootlessWindow.c,v 1.4 2004/10/08 00:35:08 torrey Exp $ */
 /*
  * Rootless window management
  */

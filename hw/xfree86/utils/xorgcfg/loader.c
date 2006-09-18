@@ -55,7 +55,7 @@
 #include <stdarg.h>
 
 #ifndef OPTIONSPATH
-#define OPTIONSPATH "/usr/X11R6/lib/X11"
+#define OPTIONSPATH "/usr/lib/X11"
 #endif
 
 #ifndef SIGNALRETURNSINT

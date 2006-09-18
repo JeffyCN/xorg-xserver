@@ -1,5 +1,5 @@
 /*
- * $Id: fbtrap.c,v 1.4 2005/07/01 22:43:07 daniels Exp $
+ * $Id$
  *
  * Copyright © 2004 Keith Packard
  *

@@ -1,4 +1,4 @@
-/* $XdotOrg: xserver/xorg/hw/xfree86/dri/drimodule.c,v 1.6 2005/11/02 15:53:57 kem Exp $ */
+/* $XdotOrg: xc/programs/Xserver/GL/dri/drimodule.c,v 1.2 2004/04/23 18:44:36 eich Exp $ */
 /**************************************************************************
 
 Copyright 1999 Precision Insight, Inc., Cedar Park, Texas.

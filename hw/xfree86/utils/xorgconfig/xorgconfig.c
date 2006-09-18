@@ -157,11 +157,12 @@ static int getuid() { return 0; }
  * may be more irritated than Unix users
  */
 #ifndef PROJECTROOT
-#define PROJECTROOT		"/usr/X11R6"
+#define PROJECTROOT		"/usr"
 #endif
 #define TREEROOT		PROJECTROOT
 #define TREEROOTLX		TREEROOT "/lib/X11"
 #define TREEROOTCFG		TREEROOT "/etc/X11"
+#define TREEROOTSHARE		TREEROOT "/share/X11"
 #ifdef XDOCDIR
 # define TREEROOTDOC		XDOCDIR
 #else
@@ -494,6 +495,8 @@ struct {
 # define DEF_MOUSEDEV "/dev/wsmouse";
 #elif defined(__FreeBSD__)
 # define DEF_MOUSEDEV "/dev/sysmouse";
+#elif defined(__linux__)
+# define DEF_MOUSEDEV "/dev/input/mice";
 #else
 # define DEF_MOUSEDEV "/dev/mouse";
 #endif
@@ -1970,7 +1973,7 @@ static char *XF86Config_firstchunk_text =
 "# file minus the extension (like \".txt\" or \".db\").  There is normally\n"
 "# no need to change the default.\n"
 "\n"
-"    RgbPath	\"" TREEROOTLX "/rgb\"\n"
+"#    RgbPath	\"" TREEROOTSHARE "/rgb\"\n"
 "\n"
 "# Multiple FontPath entries are allowed (which are concatenated together),\n"
 "# as well as specifying multiple comma-separated entries in one FontPath\n"

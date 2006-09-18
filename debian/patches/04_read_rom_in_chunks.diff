@@ -1,8 +1,8 @@
-Index: xorg-server-X11R7.0-1.0.1/hw/xfree86/os-support/bus/linuxPci.c
+Index: xorg-server-1.1.0/hw/xfree86/os-support/bus/linuxPci.c
 ===================================================================
---- xorg-server-X11R7.0-1.0.1.orig/hw/xfree86/os-support/bus/linuxPci.c	2006-01-04 23:07:36.000000000 -0500
-+++ xorg-server-X11R7.0-1.0.1/hw/xfree86/os-support/bus/linuxPci.c	2006-02-26 23:33:05.000000000 -0500
-@@ -742,8 +742,10 @@
+--- xorg-server-1.1.0.orig/hw/xfree86/os-support/bus/linuxPci.c	2006-04-28 22:28:56.000000000 +0000
++++ xorg-server-1.1.0/hw/xfree86/os-support/bus/linuxPci.c	2006-08-06 14:02:36.000000000 +0000
+@@ -740,8 +740,10 @@
  	write(fd, "1", 2);
  	lseek(fd, 0, SEEK_SET);
  

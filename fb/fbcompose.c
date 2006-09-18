@@ -1,5 +1,5 @@
 /*
- * $XdotOrg: xserver/xorg/fb/fbcompose.c,v 1.26 2005/12/09 18:35:20 ajax Exp $
+ * $XdotOrg: xserver/xorg/fb/fbcompose.c,v 1.27.4.1 2006/04/24 18:45:17 ajax Exp $
  * $XFree86: xc/programs/Xserver/fb/fbcompose.c,v 1.17tsi Exp $
  *
  * Copyright © 2000 Keith Packard, member of The XFree86 Project, Inc.
@@ -33,10 +33,14 @@
 
 #ifdef RENDER
 
+#include <stdlib.h>
+#include <string.h>
+#include <math.h>
+#include <assert.h>
+
 #include "picturestr.h"
 #include "mipict.h"
 #include "fbpict.h"
-#include <math.h>
 
 #define mod(a,b)	((b) == 1 ? 0 : (a) >= 0 ? (a) % (b) : (b) - (-a) % (b))
 
@@ -263,11 +267,11 @@ fbFetch_a4b4g4r4 (const FbBits *bits, int x, int width, CARD32 *buffer, miIndexe
         CARD32  r,g,b, a;
 
         a = ((p & 0xf000) | ((p & 0xf000) >> 4)) << 16;
-        b = ((p & 0x0f00) | ((p & 0x0f00) >> 4)) << 12;
+        b = ((p & 0x0f00) | ((p & 0x0f00) >> 4)) >> 4;
         g = ((p & 0x00f0) | ((p & 0x00f0) >> 4)) << 8;
-        r = ((p & 0x000f) | ((p & 0x000f) << 4));
+        r = ((p & 0x000f) | ((p & 0x000f) << 4)) << 16;
         *buffer++ = (a | r | g | b);
-	}
+    }
 }
 
 static FASTCALL void
@@ -279,11 +283,11 @@ fbFetch_x4b4g4r4 (const FbBits *bits, int x, int width, CARD32 *buffer, miIndexe
         CARD32  p = *pixel++;
         CARD32  r,g,b;
 
-        b = ((p & 0x0f00) | ((p & 0x0f00) >> 4)) << 12;
+        b = ((p & 0x0f00) | ((p & 0x0f00) >> 4)) >> 4;
         g = ((p & 0x00f0) | ((p & 0x00f0) >> 4)) << 8;
-        r = ((p & 0x000f) | ((p & 0x000f) << 4));
+        r = ((p & 0x000f) | ((p & 0x000f) << 4)) << 16;
         *buffer++ = (0xff000000 | r | g | b);
-	}
+    }
 }
 
 static FASTCALL void
@@ -378,6 +382,17 @@ fbFetch_c8 (const FbBits *bits, int x, int width, CARD32 *buffer, miIndexedPtr i
     while (pixel < end) {
         CARD32  p = *pixel++;
         *buffer++ = indexed->rgba[p];
+    }
+}
+
+static FASTCALL void
+fbFetch_x4a4 (const FbBits *bits, int x, int width, CARD32 *buffer, miIndexedPtr indexed)
+{
+    const CARD8 *pixel = (const CARD8 *)bits + x;
+    const CARD8 *end = pixel + width;
+    while (pixel < end) {
+	CARD8 p = (*pixel++) & 0xf;
+        *buffer++ = (p | (p << 4)) << 24;
     }
 }
 
@@ -544,7 +559,8 @@ static fetchProc fetchProcForPicture (PicturePtr pict)
     case PICT_a2b2g2r2: return fbFetch_a2b2g2r2;
     case PICT_c8: return  fbFetch_c8;
     case PICT_g8: return  fbFetch_c8;
-
+    case PICT_x4a4: return fbFetch_x4a4;
+    
         /* 4bpp formats */
     case PICT_a4: return  fbFetch_a4;
     case PICT_r1g2b1: return fbFetch_r1g2b1;
@@ -742,9 +758,9 @@ fbFetchPixel_a4b4g4r4 (const FbBits *bits, int offset, miIndexedPtr indexed)
     CARD32  a,r,g,b;
 
     a = ((pixel & 0xf000) | ((pixel & 0xf000) >> 4)) << 16;
-    b = ((pixel & 0x0f00) | ((pixel & 0x0f00) >> 4)) << 12;
+    b = ((pixel & 0x0f00) | ((pixel & 0x0f00) >> 4)) >> 4;
     g = ((pixel & 0x00f0) | ((pixel & 0x00f0) >> 4)) << 8;
-    r = ((pixel & 0x000f) | ((pixel & 0x000f) << 4));
+    r = ((pixel & 0x000f) | ((pixel & 0x000f) << 4)) << 16;
     return (a | r | g | b);
 }
 
@@ -754,9 +770,9 @@ fbFetchPixel_x4b4g4r4 (const FbBits *bits, int offset, miIndexedPtr indexed)
     CARD32  pixel = ((CARD16 *) bits)[offset];
     CARD32  r,g,b;
 
-    b = ((pixel & 0x0f00) | ((pixel & 0x0f00) >> 4)) << 12;
+    b = ((pixel & 0x0f00) | ((pixel & 0x0f00) >> 4)) >> 4;
     g = ((pixel & 0x00f0) | ((pixel & 0x00f0) >> 4)) << 8;
-    r = ((pixel & 0x000f) | ((pixel & 0x000f) << 4));
+    r = ((pixel & 0x000f) | ((pixel & 0x000f) << 4)) << 16;
     return (0xff000000 | r | g | b);
 }
 
@@ -831,6 +847,14 @@ fbFetchPixel_c8 (const FbBits *bits, int offset, miIndexedPtr indexed)
 {
     CARD32   pixel = ((CARD8 *) bits)[offset];
     return indexed->rgba[pixel];
+}
+
+static FASTCALL CARD32
+fbFetchPixel_x4a4 (const FbBits *bits, int offset, miIndexedPtr indexed)
+{
+    CARD32   pixel = ((CARD8 *) bits)[offset];
+
+    return ((pixel & 0xf) | ((pixel & 0xf) << 4)) << 24;
 }
 
 #define Fetch8(l,o)    (((CARD8 *) (l))[(o) >> 2])
@@ -972,6 +996,7 @@ static fetchPixelProc fetchPixelProcForPicture (PicturePtr pict)
     case PICT_a2b2g2r2: return fbFetchPixel_a2b2g2r2;
     case PICT_c8: return  fbFetchPixel_c8;
     case PICT_g8: return  fbFetchPixel_c8;
+    case PICT_x4a4: return fbFetchPixel_x4a4;
 
         /* 4bpp formats */
     case PICT_a4: return  fbFetchPixel_a4;
@@ -1257,6 +1282,16 @@ fbStore_c8 (FbBits *bits, const CARD32 *values, int x, int width, miIndexedPtr i
     }
 }
 
+static FASTCALL void
+fbStore_x4a4 (FbBits *bits, const CARD32 *values, int x, int width, miIndexedPtr indexed)
+{
+    int i;
+    CARD8   *pixel = ((CARD8 *) bits) + x;
+    for (i = 0; i < width; ++i) {
+        *pixel++ = values[i] >> 28;
+    }
+}
+
 #define Store8(l,o,v)  (((CARD8 *) l)[(o) >> 3] = (v))
 #if IMAGE_BYTE_ORDER == MSBFirst
 #define Store4(l,o,v)  Store8(l,o,((o) & 4 ? \
@@ -1408,6 +1443,7 @@ static storeProc storeProcForPicture (PicturePtr pict)
     case PICT_a2r2g2b2: return fbStore_a2r2g2b2;
     case PICT_c8: return  fbStore_c8;
     case PICT_g8: return  fbStore_c8;
+    case PICT_x4a4: return fbStore_x4a4;
 
         /* 4bpp formats */
     case PICT_a4: return  fbStore_a4;
@@ -2690,8 +2726,9 @@ static void fbFetchSourcePict(PicturePtr pict, int x, int y, int width, CARD32 *
         xFixed_32_32 l;
         xFixed_48_16 dx, dy, a, b, off;
 
-        v.vector[0] = IntToxFixed(x);
-        v.vector[1] = IntToxFixed(y);
+        /* reference point is the center of the pixel */
+        v.vector[0] = IntToxFixed(x) + xFixed1/2;
+        v.vector[1] = IntToxFixed(y) + xFixed1/2;
         v.vector[2] = xFixed1;
         if (pict->transform) {
             if (!PictureTransformPoint3d (pict->transform, &v))
@@ -2757,8 +2794,9 @@ static void fbFetchSourcePict(PicturePtr pict, int x, int y, int width, CARD32 *
 
         if (pict->transform) {
             PictVector v;
-            v.vector[0] = IntToxFixed(x);
-            v.vector[1] = IntToxFixed(y);
+            /* reference point is the center of the pixel */
+            v.vector[0] = IntToxFixed(x) + xFixed1/2;
+            v.vector[1] = IntToxFixed(y) + xFixed1/2;
             v.vector[2] = xFixed1;
             if (!PictureTransformPoint3d (pict->transform, &v))
                 return;
@@ -2860,7 +2898,7 @@ static void fbFetchTransformed(PicturePtr pict, int x, int y, int width, CARD32 
     FbBits     *bits;
     FbStride    stride;
     int         bpp;
-    int         xoff, yoff;
+    int         xoff, yoff, dx, dy;
     fetchPixelProc   fetch;
     PictVector	v;
     PictVector  unit;
@@ -2875,8 +2913,12 @@ static void fbFetchTransformed(PicturePtr pict, int x, int y, int width, CARD32 
     x += xoff;
     y += yoff;
 
-    v.vector[0] = IntToxFixed(x);
-    v.vector[1] = IntToxFixed(y);
+    dx = pict->pDrawable->x;
+    dy = pict->pDrawable->y;
+
+    /* reference point is the center of the pixel */
+    v.vector[0] = IntToxFixed(x - dx) + xFixed1 / 2;
+    v.vector[1] = IntToxFixed(y - dy) + xFixed1 / 2;
     v.vector[2] = xFixed1;
 
     /* when using convolution filters one might get here without a transform */
@@ -2897,7 +2939,6 @@ static void fbFetchTransformed(PicturePtr pict, int x, int y, int width, CARD32 
     {
         if (pict->repeatType == RepeatNormal) {
             if (REGION_NUM_RECTS(pict->pCompositeClip) == 1) {
-                box = pict->pCompositeClip->extents;
                 for (i = 0; i < width; ++i) {
                     if (!v.vector[2]) {
                         buffer[i] = 0;
@@ -2909,7 +2950,7 @@ static void fbFetchTransformed(PicturePtr pict, int x, int y, int width, CARD32 
                             y = MOD(v.vector[1]>>16, pict->pDrawable->height);
                             x = MOD(v.vector[0]>>16, pict->pDrawable->width);
                         }
-                        buffer[i] = fetch(bits + (y + pict->pDrawable->y)*stride, x + pict->pDrawable->x, indexed);
+                        buffer[i] = fetch(bits + (y + dy)*stride, x + dx, indexed);
                     }
                     v.vector[0] += unit.vector[0];
                     v.vector[1] += unit.vector[1];
@@ -2927,8 +2968,8 @@ static void fbFetchTransformed(PicturePtr pict, int x, int y, int width, CARD32 
                             y = MOD(v.vector[1]>>16, pict->pDrawable->height);
                             x = MOD(v.vector[0]>>16, pict->pDrawable->width);
                         }
-                        if (POINT_IN_REGION (0, pict->pCompositeClip, x, y, &box))
-                            buffer[i] = fetch(bits + (y + pict->pDrawable->y)*stride, x + pict->pDrawable->x, indexed);
+                        if (POINT_IN_REGION (0, pict->pCompositeClip, x + dx, y + dy, &box))
+                            buffer[i] = fetch(bits + (y + dy)*stride, x + dx, indexed);
                         else
                             buffer[i] = 0;
                     }
@@ -2951,8 +2992,8 @@ static void fbFetchTransformed(PicturePtr pict, int x, int y, int width, CARD32 
                             y = v.vector[1]>>16;
                             x = v.vector[0]>>16;
                         }
-                        buffer[i] = ((x < box.x1) | (x >= box.x2) | (y < box.y1) | (y >= box.y2)) ?
-                                    0 : fetch(bits + (y + pict->pDrawable->y)*stride, x + pict->pDrawable->x, indexed);
+                        buffer[i] = ((x < box.x1-dx) | (x >= box.x2-dx) | (y < box.y1-dy) | (y >= box.y2-dy)) ?
+                                    0 : fetch(bits + (y + dy)*stride, x + dx, indexed);
                     }
                     v.vector[0] += unit.vector[0];
                     v.vector[1] += unit.vector[1];
@@ -2970,8 +3011,8 @@ static void fbFetchTransformed(PicturePtr pict, int x, int y, int width, CARD32 
                             y = v.vector[1]>>16;
                             x = v.vector[0]>>16;
                         }
-                        if (POINT_IN_REGION (0, pict->pCompositeClip, x, y, &box))
-                            buffer[i] = fetch(bits + (y + pict->pDrawable->y)*stride, x + pict->pDrawable->x, indexed);
+                        if (POINT_IN_REGION (0, pict->pCompositeClip, x + dx, y + dy, &box))
+                            buffer[i] = fetch(bits + (y + dy)*stride, x + dx, indexed);
                         else
                             buffer[i] = 0;
                     }
@@ -2982,9 +3023,14 @@ static void fbFetchTransformed(PicturePtr pict, int x, int y, int width, CARD32 
             }
         }
     } else if (pict->filter == PictFilterBilinear) {
+        /* adjust vector for maximum contribution at 0.5, 0.5 of each texel. */
+        v.vector[0] -= v.vector[2] / 2;
+        v.vector[1] -= v.vector[2] / 2;
+        unit.vector[0] -= unit.vector[2] / 2;
+        unit.vector[1] -= unit.vector[2] / 2;
+
         if (pict->repeatType == RepeatNormal) {
             if (REGION_NUM_RECTS(pict->pCompositeClip) == 1) {
-                box = pict->pCompositeClip->extents;
                 for (i = 0; i < width; ++i) {
                     if (!v.vector[2]) {
                         buffer[i] = 0;
@@ -3019,13 +3065,13 @@ static void fbFetchTransformed(PicturePtr pict, int x, int y, int width, CARD32 
                         y1 = MOD (y1, pict->pDrawable->height);
                         y2 = MOD (y2, pict->pDrawable->height);
 
-                        b = bits + (y1 + pict->pDrawable->y)*stride;
+                        b = bits + (y1 + dy)*stride;
 
-                        tl = fetch(b, x1 + pict->pDrawable->x, indexed);
-                        tr = fetch(b, x2 + pict->pDrawable->x, indexed);
-                        b = bits + (y2 + pict->pDrawable->y)*stride;
-                        bl = fetch(b, x1 + pict->pDrawable->x, indexed);
-                        br = fetch(b, x2 + pict->pDrawable->x, indexed);
+                        tl = fetch(b, x1 + dx, indexed);
+                        tr = fetch(b, x2 + dx, indexed);
+                        b = bits + (y2 + dy)*stride;
+                        bl = fetch(b, x1 + dx, indexed);
+                        br = fetch(b, x2 + dx, indexed);
 
                         ft = FbGet8(tl,0) * idistx + FbGet8(tr,0) * distx;
                         fb = FbGet8(bl,0) * idistx + FbGet8(br,0) * distx;
@@ -3080,17 +3126,17 @@ static void fbFetchTransformed(PicturePtr pict, int x, int y, int width, CARD32 
                         y1 = MOD (y1, pict->pDrawable->height);
                         y2 = MOD (y2, pict->pDrawable->height);
 
-                        b = bits + (y1 + pict->pDrawable->y)*stride;
+                        b = bits + (y1 + dy)*stride;
 
-                        tl = POINT_IN_REGION(0, pict->pCompositeClip, x1, y1, &box)
-                             ? fetch(b, x1 + pict->pDrawable->x, indexed) : 0;
-                        tr = POINT_IN_REGION(0, pict->pCompositeClip, x2, y1, &box)
-                             ? fetch(b, x2 + pict->pDrawable->x, indexed) : 0;
-                        b = bits + (y2 + pict->pDrawable->y)*stride;
-                        bl = POINT_IN_REGION(0, pict->pCompositeClip, x1, y2, &box)
-                             ? fetch(b, x1 + pict->pDrawable->x, indexed) : 0;
-                        br = POINT_IN_REGION(0, pict->pCompositeClip, x2, y2, &box)
-                             ? fetch(b, x2 + pict->pDrawable->x, indexed) : 0;
+                        tl = POINT_IN_REGION(0, pict->pCompositeClip, x1 + dx, y1 + dy, &box)
+                             ? fetch(b, x1 + dx, indexed) : 0;
+                        tr = POINT_IN_REGION(0, pict->pCompositeClip, x2 + dx, y1 + dy, &box)
+                             ? fetch(b, x2 + dx, indexed) : 0;
+                        b = bits + (y2 + dy)*stride;
+                        bl = POINT_IN_REGION(0, pict->pCompositeClip, x1 + dx, y2 + dy, &box)
+                             ? fetch(b, x1 + dx, indexed) : 0;
+                        br = POINT_IN_REGION(0, pict->pCompositeClip, x2 + dx, y2 + dy, &box)
+                             ? fetch(b, x2 + dx, indexed) : 0;
 
                         ft = FbGet8(tl,0) * idistx + FbGet8(tr,0) * distx;
                         fb = FbGet8(bl,0) * idistx + FbGet8(br,0) * distx;
@@ -3144,13 +3190,13 @@ static void fbFetchTransformed(PicturePtr pict, int x, int y, int width, CARD32 
                         idistx = 256 - distx;
                         idisty = 256 - disty;
 
-                        b = bits + (y1 + pict->pDrawable->y)*stride;
-                        x_off = x1 + pict->pDrawable->x;
+                        b = bits + (y1 + dy)*stride;
+                        x_off = x1 + dx;
 
-                        x1_out = (x1 < box.x1) | (x1 >= box.x2);
-                        x2_out = (x2 < box.x1) | (x2 >= box.x2);
-                        y1_out = (y1 < box.y1) | (y1 >= box.y2);
-                        y2_out = (y2 < box.y1) | (y2 >= box.y2);
+                        x1_out = (x1 < box.x1-dx) | (x1 >= box.x2-dx);
+                        x2_out = (x2 < box.x1-dx) | (x2 >= box.x2-dx);
+                        y1_out = (y1 < box.y1-dy) | (y1 >= box.y2-dy);
+                        y2_out = (y2 < box.y1-dy) | (y2 >= box.y2-dy);
 
                         tl = x1_out|y1_out ? 0 : fetch(b, x_off, indexed);
                         tr = x2_out|y1_out ? 0 : fetch(b, x_off + 1, indexed);
@@ -3206,17 +3252,17 @@ static void fbFetchTransformed(PicturePtr pict, int x, int y, int width, CARD32 
                         idistx = 256 - distx;
                         idisty = 256 - disty;
 
-                        b = bits + (y1 + pict->pDrawable->y)*stride;
-                        x_off = x1 + pict->pDrawable->x;
+                        b = bits + (y1 + dy)*stride;
+                        x_off = x1 + dx;
 
-                        tl = POINT_IN_REGION(0, pict->pCompositeClip, x1, y1, &box)
+                        tl = POINT_IN_REGION(0, pict->pCompositeClip, x1 + dx, y1 + dy, &box)
                              ? fetch(b, x_off, indexed) : 0;
-                        tr = POINT_IN_REGION(0, pict->pCompositeClip, x2, y1, &box)
+                        tr = POINT_IN_REGION(0, pict->pCompositeClip, x2 + dx, y1 + dy, &box)
                              ? fetch(b, x_off + 1, indexed) : 0;
                         b += stride;
-                        bl = POINT_IN_REGION(0, pict->pCompositeClip, x1, y2, &box)
+                        bl = POINT_IN_REGION(0, pict->pCompositeClip, x1 + dx, y2 + dy, &box)
                              ? fetch(b, x_off, indexed) : 0;
-                        br = POINT_IN_REGION(0, pict->pCompositeClip, x2, y2, &box)
+                        br = POINT_IN_REGION(0, pict->pCompositeClip, x2 + dx, y2 + dy, &box)
                              ? fetch(b, x_off + 1, indexed) : 0;
 
                         ft = FbGet8(tl,0) * idistx + FbGet8(tr,0) * distx;
@@ -3243,8 +3289,8 @@ static void fbFetchTransformed(PicturePtr pict, int x, int y, int width, CARD32 
         xFixed *params = pict->filter_params;
         INT32 cwidth = xFixedToInt(params[0]);
         INT32 cheight = xFixedToInt(params[1]);
-        int xoff = params[0] >> 1;
-        int yoff = params[1] >> 1;
+        int xoff = (params[0] - xFixed1) >> 1;
+	int yoff = (params[1] - xFixed1) >> 1;
         params += 2;
         for (i = 0; i < width; ++i) {
             if (!v.vector[2]) {
@@ -3274,9 +3320,9 @@ static void fbFetchTransformed(PicturePtr pict, int x, int y, int width, CARD32 
                     for (x = x1; x < x2; x++) {
                         if (*p) {
                             int tx = (pict->repeatType == RepeatNormal) ? MOD (x, pict->pDrawable->width) : x;
-                            if (POINT_IN_REGION (0, pict->pCompositeClip, tx, ty, &box)) {
-                                FbBits *b = bits + (ty + pict->pDrawable->y)*stride;
-                                CARD32 c = fetch(b, tx + pict->pDrawable->x, indexed);
+                            if (POINT_IN_REGION (0, pict->pCompositeClip, tx + dx, ty + dy, &box)) {
+                                FbBits *b = bits + (ty + dy)*stride;
+                                CARD32 c = fetch(b, tx + dx, indexed);
 
                                 srtot += Red(c) * *p;
                                 sgtot += Green(c) * *p;
@@ -3287,6 +3333,11 @@ static void fbFetchTransformed(PicturePtr pict, int x, int y, int width, CARD32 
                         p++;
                     }
                 }
+
+		satot >>= 16;
+		srtot >>= 16;
+		sgtot >>= 16;
+		sbtot >>= 16;
 
                 if (satot < 0) satot = 0; else if (satot > 0xff) satot = 0xff;
                 if (srtot < 0) srtot = 0; else if (srtot > 0xff) srtot = 0xff;

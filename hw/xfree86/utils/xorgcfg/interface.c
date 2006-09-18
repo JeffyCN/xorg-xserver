@@ -65,7 +65,7 @@
 #ifdef PROJECT_ROOT
 #define DefaultXFree86Dir	PROJECT_ROOT
 #else
-#define DefaultXFree86Dir	"/usr/X11R6"
+#define DefaultXFree86Dir	"/usr"
 #endif
 
 #define IS_KBDDRIV(S) ((strcasecmp((S),"kbd") == 0) || \

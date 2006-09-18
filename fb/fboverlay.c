@@ -29,8 +29,11 @@
 #include <dix-config.h>
 #endif
 
+#include <stdlib.h>
+
 #include "fb.h"
 #include "fboverlay.h"
+#include "shmint.h"
 
 int	fbOverlayGeneration;
 int	fbOverlayScreenPrivateIndex = -1;

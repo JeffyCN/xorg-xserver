@@ -1,4 +1,4 @@
-/*
+ /*
  * $XFree86: xc/programs/Xserver/render/mipict.c,v 1.15tsi Exp $
  *
  * Copyright © 1999 Keith Packard
@@ -129,7 +129,6 @@ miValidatePicture (PicturePtr pPicture,
 		   Mask       mask)
 {
     DrawablePtr	    pDrawable = pPicture->pDrawable;
-    ScreenPtr       pScreen = pDrawable->pScreen;
 
     if ((mask & (CPClipXOrigin|CPClipYOrigin|CPClipMask|CPSubwindowMode)) ||
 	(pDrawable->serialNumber != (pPicture->serialNumber & DRAWABLE_SERIAL_BITS)))
@@ -248,6 +247,22 @@ miValidatePicture (PicturePtr pPicture,
 	    }
 	}	/* end of composite clip for pixmap */
     }
+}
+
+int
+miChangePictureTransform (PicturePtr	pPicture,
+			  PictTransform *transform)
+{
+    return Success;
+}
+
+int
+miChangePictureFilter (PicturePtr pPicture,
+		       int	  filter,
+		       xFixed     *params,
+		       int	  nparams)
+{
+    return Success;
 }
 
 #define BOUND(v)	(INT16) ((v) < MINSHORT ? MINSHORT : (v) > MAXSHORT ? MAXSHORT : (v))
@@ -389,7 +404,7 @@ miCompositeSourceValidate (PicturePtr	pPicture,
  * an allocation failure, but rendering ignores those anyways.
  */
 
-Bool
+_X_EXPORT Bool
 miComputeCompositeRegion (RegionPtr	pRegion,
 			  PicturePtr	pSrc,
 			  PicturePtr	pMask,
@@ -594,7 +609,7 @@ miRenderPixelToColor (PictFormatPtr format,
     }
 }
 
-Bool
+_X_EXPORT Bool
 miPictureInit (ScreenPtr pScreen, PictFormatPtr formats, int nformats)
 {
     PictureScreenPtr    ps;
@@ -611,6 +626,10 @@ miPictureInit (ScreenPtr pScreen, PictFormatPtr formats, int nformats)
     ps->InitIndexed = miInitIndexed;
     ps->CloseIndexed = miCloseIndexed;
     ps->UpdateIndexed = miUpdateIndexed;
+    ps->ChangePictureTransform = miChangePictureTransform;
+    ps->ChangePictureFilter = miChangePictureFilter;
+    ps->RealizeGlyph = miRealizeGlyph;
+    ps->UnrealizeGlyph = miUnrealizeGlyph;
 
     /* MI rendering routines */
     ps->Composite	= 0;			/* requires DDX support */

@@ -139,8 +139,10 @@ xf86parseKeyboardSection (void)
 			if (xf86getSubToken (&(ptr->inp_comment)) != NUMBER)
 				Error (AUTOREPEAT_MSG, NULL);
 			s1 = xf86uLongToString(val.num);
-			if (xf86getSubToken (&(ptr->inp_comment)) != NUMBER)
+			if (xf86getSubToken (&(ptr->inp_comment)) != NUMBER) {
+				xf86conffree(s1);
 				Error (AUTOREPEAT_MSG, NULL);
+			}
 			s2 = xf86uLongToString(val.num);
 			l = strlen(s1) + 1 + strlen(s2) + 1;
 			s = xf86confmalloc(l);
@@ -165,6 +167,7 @@ xf86parseKeyboardSection (void)
 				xf86conffree(s1);
 			}
 			xf86unGetToken (token);
+			xf86conffree(s);
 			break;
 		case SERVERNUM:
 			xf86parseWarning(OBSOLETE_MSG, xf86tokenString());

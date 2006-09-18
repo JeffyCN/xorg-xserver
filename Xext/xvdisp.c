@@ -52,6 +52,8 @@ SOFTWARE.
 #include <dix-config.h>
 #endif
 
+#include <string.h>
+
 #include <X11/X.h>
 #include <X11/Xproto.h>
 #include "misc.h"
@@ -69,10 +71,6 @@ SOFTWARE.
 #ifdef MITSHM
 #define _XSHM_SERVER_
 #include <X11/extensions/shmstr.h>
-#endif
-
-#ifdef EXTMODULE
-#include "xf86_ansic.h"
 #endif
 
 #include "xvdisp.h"

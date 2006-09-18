@@ -1,6 +1,28 @@
-/* $XdotOrg: xserver/xorg/dix/window.c,v 1.12 2005/07/03 08:53:38 daniels Exp $ */
+/* $XdotOrg: xserver/xorg/dix/window.c,v 1.17 2006/03/31 17:39:35 sandmann Exp $ */
 /* $Xorg: window.c,v 1.4 2001/02/09 02:04:41 xorgcvs Exp $ */
 /*
+
+Copyright (c) 2006, Red Hat, Inc.
+
+Permission to use, copy, modify, distribute, and sell this software and its
+documentation for any purpose is hereby granted without fee, provided that
+the above copyright notice appear in all copies and that both that
+copyright notice and this permission notice appear in supporting
+documentation.
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL 
+RED HAT BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER 
+IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+Except as contained in this notice, the name of Red Hat shall not be
+used in advertising or otherwise to promote the sale, use or other dealings
+in this Software without prior written authorization from Red Hat.
 
 Copyright 1987, 1998  The Open Group
 
@@ -125,9 +147,9 @@ Equipment Corporation.
 static unsigned char _back_lsb[4] = {0x88, 0x22, 0x44, 0x11};
 static unsigned char _back_msb[4] = {0x11, 0x44, 0x22, 0x88};
 
-int screenIsSaved = SCREEN_SAVER_OFF;
+_X_EXPORT int screenIsSaved = SCREEN_SAVER_OFF;
 
-ScreenSaverStuffRec savedScreenInfo[MAXSCREENS];
+_X_EXPORT ScreenSaverStuffRec savedScreenInfo[MAXSCREENS];
 
 #if 0
 extern void DeleteWindowFromAnyEvents();
@@ -160,8 +182,8 @@ static Bool TileScreenSaver(int i, int kind);
 #define SubStrSend(pWin,pParent) (StrSend(pWin) || SubSend(pParent))
 
 
-int numSaveUndersViewable = 0;
-int deltaSaveUndersViewable = 0;
+_X_EXPORT int numSaveUndersViewable = 0;
+_X_EXPORT int deltaSaveUndersViewable = 0;
 
 #ifdef DEBUG
 /******
@@ -202,7 +224,7 @@ PrintWindowTree()
 }
 #endif
 
-int
+_X_EXPORT int
 TraverseTree(register WindowPtr pWin, VisitWindowProcPtr func, pointer data)
 {
     register int result;
@@ -237,7 +259,7 @@ TraverseTree(register WindowPtr pWin, VisitWindowProcPtr func, pointer data)
  *   exit WalkTree.  Does depth-first traverse.
  *****/
 
-int
+_X_EXPORT int
 WalkTree(ScreenPtr pScreen, VisitWindowProcPtr func, pointer data)
 {
     return(TraverseTree(WindowTable[pScreen->myNum], func, data));
@@ -362,6 +384,10 @@ AllocateWindow(ScreenPtr pScreen)
 	    else
 		ppriv->ptr = (pointer)NULL;
 	}
+#if _XSERVER64
+	pWin->drawable.pad0 = 0;
+        pWin->drawable.pad1 = 0;
+#endif
     }
     return pWin;
 }
@@ -535,9 +561,22 @@ ClippedRegionFromBox(register WindowPtr pWin, RegionPtr Rgn,
     REGION_INTERSECT(pScreen, Rgn, Rgn, &pWin->winSize);
 }
 
+static RealChildHeadProc realChildHeadProc = NULL;
+
+void
+RegisterRealChildHeadProc (RealChildHeadProc proc)
+{
+    realChildHeadProc = proc;
+}
+
+
 WindowPtr
 RealChildHead(register WindowPtr pWin)
 {
+    if (realChildHeadProc) {
+	return realChildHeadProc (pWin);
+    }
+
     if (!pWin->parent &&
 	(screenIsSaved == SCREEN_SAVER_ON) &&
 	(HasSaverWindow (pWin->drawable.pScreen->myNum)))
@@ -551,7 +590,7 @@ RealChildHead(register WindowPtr pWin)
  *    Makes a window in response to client request 
  *****/
 
-WindowPtr
+_X_EXPORT WindowPtr
 CreateWindow(Window wid, register WindowPtr pParent, int x, int y, unsigned w,
              unsigned h, unsigned bw, unsigned class, register Mask vmask, XID *vlist,
              int depth, ClientPtr client, VisualID visual, int *error)
@@ -938,7 +977,7 @@ DestroySubwindows(register WindowPtr pWin, ClientPtr client)
  *  to most significant bit in the mask.  
  *****/
  
-int
+_X_EXPORT int
 ChangeWindowAttributes(register WindowPtr pWin, Mask vmask, XID *vlist, ClientPtr client)
 {
     register Mask index2;
@@ -1514,7 +1553,7 @@ GetWindowAttributes(register WindowPtr pWin, ClientPtr client, xGetWindowAttribu
 }
 
 
-WindowPtr
+_X_EXPORT WindowPtr
 MoveWindowInStack(register WindowPtr pWin, register WindowPtr pNextSib)
 {
     register WindowPtr pParent = pWin->parent;
@@ -1598,7 +1637,7 @@ MoveWindowInStack(register WindowPtr pWin, register WindowPtr pNextSib)
     return( pFirstChange );
 }
 
-RegionPtr
+_X_EXPORT RegionPtr
 CreateUnclippedWinSize (register WindowPtr pWin)
 {
     RegionPtr	pRgn;
@@ -1625,7 +1664,7 @@ CreateUnclippedWinSize (register WindowPtr pWin)
     return pRgn;
 }
 
-void
+_X_EXPORT void
 SetWinSize (register WindowPtr pWin)
 {
 #ifdef COMPOSITE
@@ -1663,7 +1702,7 @@ SetWinSize (register WindowPtr pWin)
 #endif
 }
 
-void
+_X_EXPORT void
 SetBorderSize (register WindowPtr pWin)
 {
     int	bw;
@@ -1714,7 +1753,7 @@ SetBorderSize (register WindowPtr pWin)
  *  \param destx,desty  position relative to gravity
  */
 
-void
+_X_EXPORT void
 GravityTranslate (register int x, register int y, int oldx, int oldy,
                   int dw, int dh, unsigned gravity,
                   register int *destx, register int *desty)
@@ -1764,7 +1803,7 @@ GravityTranslate (register int x, register int y, int oldx, int oldy,
 }
 
 /* XXX need to retile border on each window with ParentRelative origin */
-void
+_X_EXPORT void
 ResizeChildrenWinSize(register WindowPtr pWin, int dx, int dy, int dw, int dh)
 {
     register ScreenPtr pScreen;
@@ -2666,7 +2705,7 @@ RealizeTree(WindowPtr pWin)
  *    MapNotify event is generated.
  *****/
 
-int
+_X_EXPORT int
 MapWindow(register WindowPtr pWin, ClientPtr client)
 {
     register ScreenPtr pScreen;
@@ -2728,7 +2767,7 @@ MapWindow(register WindowPtr pWin, ClientPtr client)
 	}
 
 	pWin->mapped = TRUE;
-	if (SubStrSend(pWin, pParent))
+	if (SubStrSend(pWin, pParent) && MapUnmapEventsEnabled(pWin))
 	{
 	    event.u.u.type = MapNotify;
 	    event.u.mapNotify.window = pWin->drawable.id;
@@ -2971,7 +3010,7 @@ UnrealizeTree(
  *    generated.  Cannot unmap a root window.
  *****/
 
-int
+_X_EXPORT int
 UnmapWindow(register WindowPtr pWin, Bool fromConfigure)
 {
     register WindowPtr pParent;
@@ -2983,7 +3022,7 @@ UnmapWindow(register WindowPtr pWin, Bool fromConfigure)
 
     if ((!pWin->mapped) || (!(pParent = pWin->parent)))
 	return(Success);
-    if (SubStrSend(pWin, pParent))
+    if (SubStrSend(pWin, pParent) && MapUnmapEventsEnabled(pWin))
     {
 	event.u.u.type = UnmapNotify;
 	event.u.unmapNotify.window = pWin->drawable.id;
@@ -3200,7 +3239,7 @@ PointInWindowIsVisible(register WindowPtr pWin, int x, int y)
 }
 
 
-RegionPtr
+_X_EXPORT RegionPtr
 NotClippedByChildren(register WindowPtr pWin)
 {
     register ScreenPtr pScreen;
@@ -3217,7 +3256,7 @@ NotClippedByChildren(register WindowPtr pWin)
     return(pReg);
 }
 
-void
+_X_EXPORT void
 SendVisibilityNotify(WindowPtr pWin)
 {
     xEvent event;
@@ -3285,6 +3324,29 @@ SendVisibilityNotify(WindowPtr pWin)
     DeliverEvents(pWin, &event, 1, NullWindow);
 }
 
+static WindowPtr windowDisableMapUnmapEvents;
+
+void
+DisableMapUnmapEvents(WindowPtr pWin)
+{
+    assert (windowDisableMapUnmapEvents == NULL);
+    
+    windowDisableMapUnmapEvents = pWin;
+}
+
+void
+EnableMapUnmapEvents(WindowPtr pWin)
+{
+    assert (windowDisableMapUnmapEvents != NULL);
+
+    windowDisableMapUnmapEvents = NULL;
+}
+
+Bool
+MapUnmapEventsEnabled(WindowPtr pWin)
+{
+    return pWin != windowDisableMapUnmapEvents;
+}
 
 #define RANDOM_WIDTH 32
 
@@ -3294,7 +3356,7 @@ static void DrawLogo(
 );
 #endif
 
-void
+_X_EXPORT void
 SaveScreens(int on, int mode)
 {
     int i;
@@ -3525,7 +3587,7 @@ TileScreenSaver(int i, int kind)
  * contain the structure.
  */
 
-WindowPtr
+_X_EXPORT WindowPtr
 FindWindowWithOptional (register WindowPtr w)
 {
     do
@@ -3542,7 +3604,7 @@ FindWindowWithOptional (register WindowPtr w)
  * release the optional record
  */
 
-void
+_X_EXPORT void
 CheckWindowOptionalNeed (register WindowPtr w)
 {
     register WindowOptPtr optional;
@@ -3596,7 +3658,7 @@ CheckWindowOptionalNeed (register WindowPtr w)
  * values.
  */
 
-Bool
+_X_EXPORT Bool
 MakeWindowOptional (register WindowPtr pWin)
 {
     register WindowOptPtr optional;

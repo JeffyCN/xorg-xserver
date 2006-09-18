@@ -201,23 +201,29 @@ xf86GetOSOffsetFromPCI(PCITAG tag, int space, unsigned long base)
             fn = devfn & 0x7;
             if (tag == pciTag(bus,dev,fn)) {
                 /* ok now look through all the BAR values of this device */
+		pciConfigPtr pDev = xf86GetPciConfigFromTag(tag);
+
                 for (ndx=0; ndx<7; ndx++) {
-                    unsigned long savePtr;
-                    /*
-		     * remember to lop of the last 4bits of the BAR values as they are
-		     * memory attributes
-		     */
+                    unsigned long savePtr, flagMask;
 		    if (ndx == 6) 
-			savePtr = (0xFFFFFFF0) & 
-			    pciReadLong(tag, PCI_CMD_BIOS_REG);
+			savePtr = pDev->pci_baserom;
 		    else /* this the ROM bar */
-			savePtr = (0xFFFFFFF0) & 
-			    pciReadLong(tag, PCI_CMD_BASE_REG + (0x4 * ndx));
+			savePtr = (&pDev->pci_base0)[ndx];
+                    /* Ignore unset base addresses. The kernel may
+                     * have reported non-zero size and address even
+                     * if they are disabled (e.g. disabled ROM BAR).
+                     */
+                    if (savePtr == 0)
+                        continue;
+                    /* Remove memory attribute bits, different for IO
+                     * and memory ranges. */
+                    flagMask = (savePtr & 0x1) ? ~0x3UL : ~0xFUL;
+                    savePtr &= flagMask;
 
                     /* find the index of the incoming base */
-                    if (base >= savePtr && base <= (savePtr + size[ndx])) {
+                    if (base >= savePtr && base < (savePtr + size[ndx])) {
                         fclose(file);
-                        return (offset[ndx] & ~(0xFUL)) + (base - savePtr);
+                        return (offset[ndx] & flagMask) + (base - savePtr);
                     }
                 }
             }

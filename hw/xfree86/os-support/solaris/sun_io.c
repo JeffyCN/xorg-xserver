@@ -1,5 +1,5 @@
 /* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/sunos/sun_io.c,v 1.2 2002/10/11 01:40:37 dawes Exp $ */
-/* $XdotOrg: xserver/xorg/hw/xfree86/os-support/solaris/sun_io.c,v 1.4 2005/08/13 00:11:28 alanc Exp $ */
+/* $XdotOrg: $ */
 /*
  * Copyright 1990,91 by Thomas Roell, Dinkelscherben, Germany
  * Copyright 1993 by David Dawes <dawes@xfree86.org>

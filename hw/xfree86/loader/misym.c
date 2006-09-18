@@ -193,7 +193,6 @@ LOOKUP miLookupTab[] = {
     SYMFUNC(miInitVisuals)
     SYMFUNC(miWindowExposures)
     SYMFUNC(miSegregateChildren)
-    SYMFUNC(miClipNotify)
     SYMFUNC(miHookInitVisuals)
     SYMFUNC(miPointerAbsoluteCursor)
     SYMFUNC(miPointerGetMotionEvents)

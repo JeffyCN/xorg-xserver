@@ -1,6 +1,6 @@
 /*
  * $Xorg: stipsparc.s,v 1.4 2001/02/09 02:04:39 xorgcvs Exp $
- * $XdotOrg: xserver/xorg/cfb/stipsparc.s,v 1.3 2004/04/26 02:39:58 alanc Exp $
+ * $XdotOrg:	$
  *
 Copyright 1990, 1998  The Open Group
 

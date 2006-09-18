@@ -42,9 +42,12 @@
 #include "glxserver.h"
 #include "glxutil.h"
 #include "glxext.h"
+#include "indirect_dispatch.h"
 #include "unpack.h"
-#include "g_disptab.h"
-#include "GL/glx_ansic.h"
+#include "glapitable.h"
+#include "glapi.h"
+#include "glthread.h"
+#include "dispatch.h"
 
 int __glXDispSwap_FeedbackBuffer(__GLXclientState *cl, GLbyte *pc)
 {
@@ -66,7 +69,7 @@ int __glXDispSwap_FeedbackBuffer(__GLXclientState *cl, GLbyte *pc)
     size = *(GLsizei *)(pc+0);
     type = *(GLenum *)(pc+4);
     if (cx->feedbackBufSize < size) {
-	cx->feedbackBuf = (GLfloat *) __glXRealloc(cx->feedbackBuf,
+	cx->feedbackBuf = (GLfloat *) xrealloc(cx->feedbackBuf,
 						   (size_t) size 
 						   * __GLX_SIZE_FLOAT32);
 	if (!cx->feedbackBuf) {
@@ -75,7 +78,7 @@ int __glXDispSwap_FeedbackBuffer(__GLXclientState *cl, GLbyte *pc)
 	}
 	cx->feedbackBufSize = size;
     }
-    glFeedbackBuffer(size, type, cx->feedbackBuf);
+    CALL_FeedbackBuffer( GET_DISPATCH(), (size, type, cx->feedbackBuf) );
     __GLX_NOTE_UNFLUSHED_CMDS(cx);
     return Success;
 }
@@ -97,7 +100,7 @@ int __glXDispSwap_SelectBuffer(__GLXclientState *cl, GLbyte *pc)
     __GLX_SWAP_INT(pc+0);
     size = *(GLsizei *)(pc+0);
     if (cx->selectBufSize < size) {
-	cx->selectBuf = (GLuint *) __glXRealloc(cx->selectBuf,
+	cx->selectBuf = (GLuint *) xrealloc(cx->selectBuf,
 						(size_t) size 
 						* __GLX_SIZE_CARD32);
 	if (!cx->selectBuf) {
@@ -106,7 +109,7 @@ int __glXDispSwap_SelectBuffer(__GLXclientState *cl, GLbyte *pc)
 	}
 	cx->selectBufSize = size;
     }
-    glSelectBuffer(size, cx->selectBuf);
+    CALL_SelectBuffer( GET_DISPATCH(), (size, cx->selectBuf) );
     __GLX_NOTE_UNFLUSHED_CMDS(cx);
     return Success;
 }
@@ -132,10 +135,10 @@ int __glXDispSwap_RenderMode(__GLXclientState *cl, GLbyte *pc)
     pc += __GLX_SINGLE_HDR_SIZE;
     __GLX_SWAP_INT(pc);
     newMode = *(GLenum*) pc;
-    retval = glRenderMode(newMode);
+    retval = CALL_RenderMode( GET_DISPATCH(), (newMode) );
 
     /* Check that render mode worked */
-    glGetIntegerv(GL_RENDER_MODE, &newModeCheck);
+    CALL_GetIntegerv( GET_DISPATCH(), (GL_RENDER_MODE, &newModeCheck) );
     if (newModeCheck != newMode) {
 	/* Render mode change failed.  Bail */
 	newMode = newModeCheck;
@@ -232,7 +235,7 @@ int __glXDispSwap_Flush(__GLXclientState *cl, GLbyte *pc)
 		return error;
 	}
 
-	glFlush();
+	CALL_Flush( GET_DISPATCH(), () );
 	__GLX_NOTE_FLUSHED_CMDS(cx);
 	return Success;
 }
@@ -251,7 +254,7 @@ int __glXDispSwap_Finish(__GLXclientState *cl, GLbyte *pc)
     }
 
     /* Do a local glFinish */
-    glFinish();
+    CALL_Finish( GET_DISPATCH(), () );
     __GLX_NOTE_FLUSHED_CMDS(cx);
 
     /* Send empty reply packet to indicate finish is finished */
@@ -267,37 +270,4 @@ int __glXDispSwap_Finish(__GLXclientState *cl, GLbyte *pc)
 int __glXDispSwap_GetString(__GLXclientState *cl, GLbyte *pc)
 {
     return DoGetString(cl, pc, GL_TRUE);
-}
-
-int __glXDispSwap_GetClipPlane(__GLXclientState *cl, GLbyte *pc)
-{
-    __GLXcontext *cx;
-    ClientPtr client = cl->client;
-    int error;
-    GLdouble answer[4];
-    __GLX_DECLARE_SWAP_VARIABLES;
-    __GLX_DECLARE_SWAP_ARRAY_VARIABLES;
-
-    __GLX_SWAP_INT(&((xGLXSingleReq *)pc)->contextTag);
-    cx = __glXForceCurrent(cl, __GLX_GET_SINGLE_CONTEXT_TAG(pc), &error);
-    if (!cx) {
-	return error;
-    }
-    pc += __GLX_SINGLE_HDR_SIZE;
-    __GLX_SWAP_INT(pc + 0);
-
-    __glXClearErrorOccured();
-    glGetClipPlane(*(GLenum   *)(pc + 0), answer);
-    if (__glXErrorOccured()) {
-	__GLX_BEGIN_REPLY(0);
-	__GLX_SWAP_REPLY_HEADER();
-	__GLX_SEND_HEADER();
-    } else {
-	__GLX_SWAP_DOUBLE_ARRAY((GLbyte *)answer, 4);
-	__GLX_BEGIN_REPLY(32);
-	__GLX_SWAP_REPLY_HEADER();
-	__GLX_SEND_HEADER();
-	__GLX_SEND_DOUBLE_ARRAY(4);
-    }
-    return Success;
 }

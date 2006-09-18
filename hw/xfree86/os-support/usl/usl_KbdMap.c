@@ -1,4 +1,4 @@
-/* $XdotOrg: xserver/xorg/hw/xfree86/os-support/usl/usl_KbdMap.c,v 1.2 2005/11/08 06:33:29 jkj Exp $ */
+/* $XdotOrg$ */
 /*
  * Copyright 2005 by J. Kean Johnston <jkj@sco.com>
  *

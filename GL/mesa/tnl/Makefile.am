@@ -1,6 +1,11 @@
 noinst_LTLIBRARIES = libtnl.la
 
-AM_CFLAGS = $(DIX_CFLAGS) @SERVER_DEFINES@ @MODULE_DEFINES@ @LOADER_DEFINES@
+AM_CFLAGS = \
+	$(DIX_CFLAGS) \
+	@SERVER_DEFINES@ \
+	@MODULE_DEFINES@ \
+	@LOADER_DEFINES@ \
+	@GLX_DEFINES@
 
 INCLUDES = -I@MESA_SOURCE@/include \
            -I../X \
@@ -9,6 +14,7 @@ INCLUDES = -I@MESA_SOURCE@/include \
            -I../main \
            -I../math \
            -I../shader \
+           -I../shader/slang \
            -I../swrast \
            -I../swrast_setup \
            -I../tnl \
@@ -24,6 +30,7 @@ nodist_libtnl_la_SOURCES = t_array_api.c \
                       t_save_playback.c \
                       t_vb_arbprogram.c \
                       t_vb_arbprogram_sse.c \
+                      t_vb_arbshader.c \
                       t_vb_cull.c \
                       t_vb_fog.c \
                       t_vb_light.c \

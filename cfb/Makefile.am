@@ -9,9 +9,9 @@ libcfb_la_SOURCES = cfb8bit.c cfbteblt8.c cfbglrop8.c cfbpush8.c cfbrctstp8.c \
 
 libcfb_la_LIBADD = ../mfb/libmfb.la
 
-AM_CFLAGS = -DPSZ=8 $(DIX_CFLAGS) @SERVER_DEFINES@ @MODULE_DEFINES@ @LOADER_DEFINES@
+AM_CFLAGS = -DPSZ=8 $(DIX_CFLAGS) $(PLATFORMDEFS) @SERVER_DEFINES@ @MODULE_DEFINES@ @LOADER_DEFINES@
 
-INCLUDES = $(CFB_INCLUDES) -I$(top_srcdir)/hw/xfree86/os-support
+INCLUDES = $(CFB_INCLUDES) -I$(top_srcdir)/hw/xfree86/os-support  -I$(top_srcdir)/hw/xfree86/common
 
 EXTRA_DIST = cfbline.c cfbfillarc.c cfbzerarc.c cfbblt.c cfbsolid.c \
              cfbtileodd.c cfbtile32.c cfb8line.c cfbply1rct.c cfbglblt8.c \

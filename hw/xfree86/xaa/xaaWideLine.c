@@ -18,20 +18,10 @@ Original mi code written by Keith Packard.
 #include <xorg-config.h>
 #endif
 
-#ifndef XFree86LOADER
-#if defined(_XOPEN_SOURCE) || defined(__QNXNTO__) \
-        || (defined(sun) && defined(__SVR4))
 #include <math.h>
-#else
-#define _XOPEN_SOURCE	/* to get prototype for hypot on some systems */
-#include <math.h>
-#undef _XOPEN_SOURCE
-#endif
-#endif
 
 #include "misc.h"
 #include "xf86.h"
-#include "xf86_ansic.h"
 #include "xf86_OSproc.h"
 
 #include <X11/X.h>

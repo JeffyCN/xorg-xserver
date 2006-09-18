@@ -1,4 +1,4 @@
-/* $XdotOrg: xserver/xorg/hw/xfree86/common/xf86Config.c,v 1.21 2005/12/20 21:34:21 ajax Exp $ */
+/* $XdotOrg: xserver/xorg/hw/xfree86/common/xf86Config.c,v 1.23.2.4 2006/04/07 01:37:03 ajax Exp $ */
 /* $XFree86: xc/programs/Xserver/hw/xfree86/common/xf86Config.c,v 3.276 2003/10/08 14:58:26 dawes Exp $ */
 
 
@@ -505,7 +505,7 @@ GenerateDriverlist(char * dirname, char * drivernames)
 {
 #ifdef XFree86LOADER
     char **ret;
-    char *subdirs[] = { dirname, NULL };
+    const char *subdirs[] = { dirname, NULL };
     static const char *patlist[] = {"(.*)_drv\\.so", "(.*)_drv\\.o", NULL};
     ret = LoaderListDirs(subdirs, patlist);
     
@@ -666,7 +666,36 @@ configFiles(XF86ConfFilesPtr fileconf)
   if (! *defaultFontPath)
     FatalError("No valid FontPath could be found.");
 
-  xf86Msg(pathFrom, "FontPath set to \"%s\"\n", defaultFontPath);
+  /* make fontpath more readable in the logfiles */
+  int countDirs = 1;
+  char *temp_path = defaultFontPath;
+  while((temp_path = index(temp_path, ',')) != NULL) {
+    countDirs++;
+    temp_path++;
+  }
+  char *log_buf = xnfalloc(strlen(defaultFontPath) + (2 * countDirs) + 1);
+  if(!log_buf) /* fallback to old method */
+    xf86Msg(pathFrom, "FontPath set to \"%s\"\n", defaultFontPath);
+  else {
+    char *start, *end;
+    int size;
+    temp_path = log_buf;
+    start = defaultFontPath;
+    while((end = index(start, ',')) != NULL) {
+      size = (end - start) + 1;
+      *(temp_path++) = '\t';
+      strncpy(temp_path, start, size);
+      temp_path += size;
+      *(temp_path++) = '\n';
+      start += size;
+    }
+    /* copy last entry */
+    *(temp_path++) = '\t';
+    strcpy(temp_path, start);
+    xf86Msg(pathFrom, "FontPath set to:\n%s\n", log_buf);
+    xfree(log_buf);
+  }
+
 
   /* RgbPath */
 
@@ -756,7 +785,8 @@ typedef enum {
     FLAG_LOG,
     FLAG_RENDER_COLORMAP_MODE,
     FLAG_HANDLE_SPECIAL_KEYS,
-    FLAG_RANDR
+    FLAG_RANDR,
+    FLAG_AIGLX
 } FlagValues;
    
 static OptionInfoRec FlagOptions[] = {
@@ -825,6 +855,8 @@ static OptionInfoRec FlagOptions[] = {
   { FLAG_HANDLE_SPECIAL_KEYS,	"HandleSpecialKeys",		OPTV_STRING,
         {0}, FALSE },
   { FLAG_RANDR,			"RandR",			OPTV_BOOLEAN,
+	{0}, FALSE },
+  { FLAG_AIGLX,			"AIGLX",			OPTV_BOOLEAN,
 	{0}, FALSE },
   { -1,				NULL,				OPTV_NONE,
 	{0}, FALSE },
@@ -1009,6 +1041,13 @@ configServerFlags(XF86ConfFlagsPtr flagsconf, XF86OptionPtr layoutopts)
 	xf86Info.estimateSizesAggressively = i;
     else
 	xf86Info.estimateSizesAggressively = 0;
+
+    xf86Info.aiglx = TRUE;
+    xf86Info.aiglxFrom = X_DEFAULT;
+    if (xf86GetOptValBool(FlagOptions, FLAG_AIGLX, &value)) {
+	xf86Info.aiglx = value;
+	xf86Info.aiglxFrom = X_CONFIG;
+    }
 
 /* Make sure that timers don't overflow CARD32's after multiplying */
 #define MAX_TIME_IN_MIN (0x7fffffff / MILLI_PER_MIN)
@@ -1781,8 +1820,10 @@ configLayout(serverLayoutPtr servlayoutp, XF86ConfLayoutPtr conf_layout,
 	else
 	    scrnum = adjp->adj_scrnum;
 	if (!configScreen(slp[count].screen, adjp->adj_screen, scrnum,
-			  X_CONFIG))
+			  X_CONFIG)) {
+	    xfree(slp);
 	    return FALSE;
+	}
 	slp[count].x = adjp->adj_x;
 	slp[count].y = adjp->adj_y;
 	slp[count].refname = adjp->adj_refscreen;
@@ -1911,8 +1952,10 @@ configLayout(serverLayoutPtr servlayoutp, XF86ConfLayoutPtr conf_layout,
     idp = conf_layout->lay_inactive_lst;
     count = 0;
     while (idp) {
-	if (!configDevice(&gdp[count], idp->inactive_device, FALSE))
+	if (!configDevice(&gdp[count], idp->inactive_device, FALSE)) {
+	    xfree(gdp);
 	    return FALSE;
+	}
         count++;
         idp = (XF86ConfInactivePtr)idp->list.next;
     }
@@ -1934,8 +1977,10 @@ configLayout(serverLayoutPtr servlayoutp, XF86ConfLayoutPtr conf_layout,
     irp = conf_layout->lay_input_lst;
     count = 0;
     while (irp) {
-	if (!configInput(&indp[count], irp->iref_inputdev, X_CONFIG))
+	if (!configInput(&indp[count], irp->iref_inputdev, X_CONFIG)) {
+	    xfree(indp);
 	    return FALSE;
+	}
 	indp[count].extraOptions = irp->iref_option_lst;
         count++;
         irp = (XF86ConfInputrefPtr)irp->list.next;
@@ -1995,8 +2040,10 @@ configImpliedLayout(serverLayoutPtr servlayoutp, XF86ConfScreenPtr conf_screen)
     slp = xnfcalloc(1, 2 * sizeof(screenLayoutRec));
     slp[0].screen = xnfcalloc(1, sizeof(confScreenRec));
     slp[1].screen = NULL;
-    if (!configScreen(slp[0].screen, conf_screen, 0, from))
+    if (!configScreen(slp[0].screen, conf_screen, 0, from)) {
+	xfree(slp);
 	return FALSE;
+    }
     servlayoutp->id = "(implicit)";
     servlayoutp->screens = slp;
     servlayoutp->inactives = xnfcalloc(1, sizeof(GDevRec));
@@ -2139,6 +2186,17 @@ configScreen(confScreenPtr screenp, XF86ConfScreenPtr conf_screen, int scrnum,
     return TRUE;
 }
 
+typedef enum {
+    MON_REDUCEDBLANKING
+} MonitorValues;
+
+static OptionInfoRec MonitorOptions[] = {
+  { MON_REDUCEDBLANKING,      "ReducedBlanking",        OPTV_BOOLEAN,
+       {0}, FALSE },
+  { -1,                                NULL,                   OPTV_NONE,
+       {0}, FALSE },
+};
+
 static Bool
 configMonitor(MonPtr monitorp, XF86ConfMonitorPtr conf_monitor)
 {
@@ -2160,6 +2218,7 @@ configMonitor(MonPtr monitorp, XF86ConfMonitorPtr conf_monitor)
     monitorp->gamma = zeros;
     monitorp->widthmm = conf_monitor->mon_width;
     monitorp->heightmm = conf_monitor->mon_height;
+    monitorp->reducedblanking = FALSE;
     monitorp->options = conf_monitor->mon_option_lst;
 
     /*
@@ -2279,6 +2338,11 @@ configMonitor(MonPtr monitorp, XF86ConfMonitorPtr conf_monitor)
 	    return FALSE;
     }
 
+    /* Check wether this Monitor accepts Reduced Blanking modelines */
+    xf86ProcessOptions(-1, monitorp->options, MonitorOptions);
+
+    xf86GetOptValBool(MonitorOptions, MON_REDUCEDBLANKING,
+                      &monitorp->reducedblanking);
     return TRUE;
 }
 
@@ -2452,13 +2516,13 @@ configDRI(XF86ConfDRIPtr drip)
 }
 #endif
 
+/* Extension enable/disable in miinitext.c */
+extern Bool EnableDisableExtension(char *name, Bool enable);
+
 static Bool
 configExtensions(XF86ConfExtensionsPtr conf_ext)
 {
     XF86OptionPtr o;
-
-    /* Extension enable/disable in miinitext.c */
-    extern Bool EnableDisableExtension(char *name, Bool enable);
 
     if (conf_ext && conf_ext->ext_option_lst) {
 	for (o = conf_ext->ext_option_lst; o; o = xf86NextOption(o)) {
@@ -2493,6 +2557,7 @@ configExtensions(XF86ConfExtensionsPtr conf_ext)
 		xf86Msg(X_ERROR,
 			"%s is not a valid value for the Extension option\n",
 			val);
+		xfree(n);
 		return FALSE;
 	    }
 
@@ -2503,6 +2568,7 @@ configExtensions(XF86ConfExtensionsPtr conf_ext)
 		xf86Msg(X_WARNING, "Ignoring unrecognized extension \"%s\"\n",
                         name);
 	    }
+	    xfree(n);
 	}
     }
 
@@ -2673,7 +2739,7 @@ xf86HandleConfigFile(Bool autoconfig)
            scanptr = xf86ConfigLayout.screens->screen->device->busID;
     }
     if (scanptr) {
-       int bus, device, func, stroffset = 0;
+       int bus, device, func;
        if (strncmp(scanptr, "PCI:", 4) != 0) {
            xf86Msg(X_WARNING, "Bus types other than PCI not yet isolable.\n"
                               "\tIgnoring IsolateDevice option.\n");

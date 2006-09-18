@@ -1,4 +1,4 @@
-/* $XdotOrg: xserver/xorg/mi/miinitext.c,v 1.26 2005/07/16 03:49:59 kem Exp $ */
+/* $XdotOrg: xserver/xorg/mi/miinitext.c,v 1.31 2006/02/15 19:05:54 ajax Exp $ */
 /* $XFree86: xc/programs/Xserver/mi/miinitext.c,v 3.67 2003/01/12 02:44:27 dawes Exp $ */
 /***********************************************************
 
@@ -65,6 +65,23 @@ SOFTWARE.
 #undef DPMSExtension
 #endif
 
+#ifdef HAVE_KDRIVE_CONFIG_H
+#include <kdrive-config.h>
+/* there must be a better way... */
+#undef XF86MISC
+#undef XFreeXDGA
+#undef XF86DRI
+#undef XF86VIDMODE
+#endif
+
+#ifdef HAVE_XGL_CONFIG_H
+#include <xgl-config.h>
+#undef XF86MISC
+#undef XFreeXDGA
+#undef XF86DRI
+#undef XF86VIDMODE
+#endif
+
 #include "misc.h"
 #include "extension.h"
 #include "micmap.h"
@@ -89,7 +106,6 @@ SOFTWARE.
 #undef XFreeXDGA
 #undef XF86DRI
 #undef DPMSExtension
-#undef DPSEXT
 #undef FONTCACHE
 #undef DAMAGE
 #undef XFIXES
@@ -114,9 +130,6 @@ extern Bool noDamageExtension;
 #endif
 #ifdef DBE
 extern Bool noDbeExtension;
-#endif
-#ifdef DPSEXT
-extern Bool noDPSExtension;
 #endif
 #ifdef DPMSExtension
 extern Bool noDPMSExtension;
@@ -233,7 +246,7 @@ typedef void (*InitExtension)(INITARGS);
 #include <X11/extensions/lbxstr.h>
 #endif
 #ifdef XPRINT
-#include "Print.h"
+#include <X11/extensions/Print.h>
 #endif
 #ifdef XAPPGROUP
 #define _XAG_SERVER_
@@ -337,6 +350,9 @@ extern void XFree86MiscExtensionInit(INITARGS);
 extern void XFree86DGAExtensionInit(INITARGS);
 #endif
 #ifdef GLXEXT
+typedef struct __GLXprovider __GLXprovider;
+extern __GLXprovider __glXMesaProvider;
+extern void GlxPushProvider(__GLXprovider *impl);
 #ifndef __DARWIN__
 extern void GlxExtensionInit(INITARGS);
 extern void GlxWrapInitVisuals(miInitVisualsProcPtr *);
@@ -353,9 +369,6 @@ extern void XcupExtensionInit(INITARGS);
 #endif
 #ifdef DPMSExtension
 extern void DPMSExtensionInit(INITARGS);
-#endif
-#ifdef DPSEXT
-extern void DPSExtensionInit(INITARGS);
 #endif
 #ifdef FONTCACHE
 extern void FontCacheExtensionInit(INITARGS);
@@ -407,9 +420,6 @@ static ExtensionToggle ExtensionToggleList[] =
 #endif
 #ifdef DBE
     { "DOUBLE-BUFFER", &noDbeExtension },
-#endif
-#ifdef DPSEXT
-    { "DPSExtension", &noDPSExtension },
 #endif
 #ifdef DPMSExtension
     { "DPMS", &noDPMSExtension },
@@ -636,15 +646,12 @@ InitExtensions(argc, argv)
 #endif
 #endif
 #ifdef GLXEXT
+
+    GlxPushProvider(&__glXMesaProvider);
 #ifndef __DARWIN__
     if (!noGlxExtension) GlxExtensionInit();
 #else
     if (!noGlxExtension) DarwinGlxExtensionInit();
-#endif
-#endif
-#ifdef DPSEXT
-#ifndef XPRINT
-    if (!noDPSExtension) DPSExtensionInit();
 #endif
 #endif
 #ifdef XFIXES
@@ -788,8 +795,9 @@ InitVisualWrap()
 	(*__miHookInitVisualsFunction)(&miInitVisualsProc);
 }
 
-void miHookInitVisuals(void (**old)(miInitVisualsProcPtr *),
-		       void (*new)(miInitVisualsProcPtr *))
+_X_EXPORT void
+miHookInitVisuals(void (**old)(miInitVisualsProcPtr *),
+		  void (*new)(miInitVisualsProcPtr *))
 {
     if (old)
 	*old = __miHookInitVisualsFunction;

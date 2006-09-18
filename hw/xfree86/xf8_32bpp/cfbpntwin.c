@@ -1,4 +1,4 @@
-/* $XdotOrg: xserver/xorg/hw/xfree86/xf8_32bpp/cfbpntwin.c,v 1.5 2005/07/03 07:01:43 daniels Exp $ */
+/* $XdotOrg: xc/programs/Xserver/hw/xfree86/xf8_32bpp/cfbpntwin.c,v 1.3 2005/04/20 12:25:40 daniels Exp $ */
 /* $XFree86: xc/programs/Xserver/hw/xfree86/xf8_32bpp/cfbpntwin.c,v 1.1 1999/01/03 03:58:56 dawes Exp $ */
 
 #ifdef HAVE_XORG_CONFIG_H

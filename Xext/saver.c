@@ -1,4 +1,4 @@
-/* $XdotOrg: xserver/xorg/Xext/saver.c,v 1.10 2005/07/03 08:53:36 daniels Exp $ */
+/* $XdotOrg: xserver/xorg/Xext/saver.c,v 1.12 2006/03/31 18:49:38 fredrik Exp $ */
 /*
  * $XConsortium: saver.c,v 1.12 94/04/17 20:59:36 dpw Exp $
  *
@@ -55,13 +55,12 @@ in this Software without prior written authorization from the X Consortium.
 #include "panoramiX.h"
 #include "panoramiXsrv.h"
 #endif
-
-
-#ifdef IN_MODULE
-#include <xf86_ansic.h>
-#else
-#include <stdio.h>
+#ifdef DPMSExtension
+#define DPMS_SERVER
+#include <X11/extensions/dpms.h>
 #endif
+
+#include <stdio.h>
 
 #include "modinit.h"
 
@@ -76,12 +75,14 @@ static DISPATCH_PROC(ProcScreenSaverQueryVersion);
 static DISPATCH_PROC(ProcScreenSaverSelectInput);
 static DISPATCH_PROC(ProcScreenSaverSetAttributes);
 static DISPATCH_PROC(ProcScreenSaverUnsetAttributes);
+static DISPATCH_PROC(ProcScreenSaverSuspend);
 static DISPATCH_PROC(SProcScreenSaverDispatch);
 static DISPATCH_PROC(SProcScreenSaverQueryInfo);
 static DISPATCH_PROC(SProcScreenSaverQueryVersion);
 static DISPATCH_PROC(SProcScreenSaverSelectInput);
 static DISPATCH_PROC(SProcScreenSaverSetAttributes);
 static DISPATCH_PROC(SProcScreenSaverUnsetAttributes);
+static DISPATCH_PROC(SProcScreenSaverSuspend);
 
 static Bool ScreenSaverHandle (
 	ScreenPtr /* pScreen */,
@@ -117,6 +118,32 @@ static void SScreenSaverNotifyEvent (
 static void ScreenSaverResetProc (
 	ExtensionEntry * /* extEntry */
 	);
+
+static RESTYPE SuspendType;  /* resource type for suspension records */
+
+typedef struct _ScreenSaverSuspension *ScreenSaverSuspensionPtr;
+
+/* List of clients that are suspending the screensaver. */
+static ScreenSaverSuspensionPtr suspendingClients = NULL;
+
+/*
+ * clientResource is a resource ID that's added when the record is
+ * allocated, so the record is freed and the screensaver resumed when
+ * the client disconnects. count is the number of times the client has
+ * requested the screensaver be suspended.
+ */
+typedef struct _ScreenSaverSuspension
+{
+    ScreenSaverSuspensionPtr  next;
+    ClientPtr                 pClient;
+    XID                       clientResource;
+    int                       count;
+} ScreenSaverSuspensionRec;
+
+static int ScreenSaverFreeSuspend(
+    pointer /*value */,
+    XID /* id */
+);
 
 /*
  * each screen has a list of clients requesting
@@ -235,13 +262,15 @@ ScreenSaverExtensionInit(INITARGS)
 
     AttrType = CreateNewResourceType(ScreenSaverFreeAttr);
     EventType = CreateNewResourceType(ScreenSaverFreeEvents);
+    SuspendType = CreateNewResourceType(ScreenSaverFreeSuspend);
     ScreenPrivateIndex = AllocateScreenPrivateIndex ();
+
     for (i = 0; i < screenInfo.numScreens; i++)
     {
 	pScreen = screenInfo.screens[i];
 	SetScreenPrivate (pScreen, NULL);
     }
-    if (AttrType && EventType && ScreenPrivateIndex != -1 &&
+    if (AttrType && EventType && SuspendType && ScreenPrivateIndex != -1 &&
 	(extEntry = AddExtension(ScreenSaverName, ScreenSaverNumberEvents, 0,
 				 ProcScreenSaverDispatch, SProcScreenSaverDispatch,
 				 ScreenSaverResetProc, StandardMinorOpcode)))
@@ -433,6 +462,45 @@ ScreenSaverFreeAttr (value, id)
     }
     CheckScreenPrivate (pScreen);
     return TRUE;
+}
+
+static int
+ScreenSaverFreeSuspend (pointer value, XID id)
+{
+    ScreenSaverSuspensionPtr data = (ScreenSaverSuspensionPtr) value;
+    ScreenSaverSuspensionPtr *prev, this;
+
+    /* Unlink and free the suspension record for the client */
+    for (prev = &suspendingClients; (this = *prev); prev = &this->next)
+    {
+	if (this == data)
+	{
+	    *prev = this->next;
+	    xfree (this);
+	    break;
+	}
+    }
+
+    /* Reenable the screensaver if this was the last client suspending it. */
+    if (screenSaverSuspended && suspendingClients == NULL)
+    {
+	screenSaverSuspended = FALSE;
+
+	/* The screensaver could be active, since suspending it (by design)
+	   doesn't prevent it from being forceably activated */
+#ifdef DPMSExtension
+	if (screenIsSaved != SCREEN_SAVER_ON && DPMSPowerLevel == DPMSModeOn)
+#else
+	if (screenIsSaved != SCREEN_SAVER_ON)
+#endif
+	{
+	    UpdateCurrentTimeIf();
+	    lastDeviceEventTime = currentTime;
+	    SetScreenSaverTimer();
+	}
+    }
+
+    return Success;
 }
 
 static void
@@ -1301,12 +1369,72 @@ ProcScreenSaverUnsetAttributes (ClientPtr client)
     return ScreenSaverUnsetAttributes(client);
 }
 
+static int
+ProcScreenSaverSuspend (ClientPtr client)
+{
+    ScreenSaverSuspensionPtr *prev, this;
+
+    REQUEST(xScreenSaverSuspendReq);
+    REQUEST_SIZE_MATCH(xScreenSaverSuspendReq);
+
+    /* Check if this client is suspending the screensaver */
+    for (prev = &suspendingClients; (this = *prev); prev = &this->next)
+	if (this->pClient == client)
+	    break;
+
+    if (this)
+    {
+	if (stuff->suspend == TRUE)
+	   this->count++;
+	else if (--this->count == 0)
+	   FreeResource (this->clientResource, RT_NONE);
+
+	return Success;
+    }
+
+    /* If we get to this point, this client isn't suspending the screensaver */
+    if (stuff->suspend == FALSE)
+	return Success;
+
+    /*
+     * Allocate a suspension record for the client, and stop the screensaver
+     * if it isn't already suspended by another client. We attach a resource ID
+     * to the record, so the screensaver will be reenabled and the record freed
+     * if the client disconnects without reenabling it first.
+     */
+    this = (ScreenSaverSuspensionPtr) xalloc (sizeof (ScreenSaverSuspensionRec));
+
+    if (!this)
+	return BadAlloc;
+
+    this->next           = NULL;
+    this->pClient        = client;
+    this->count          = 1;
+    this->clientResource = FakeClientID (client->index);
+
+    if (!AddResource (this->clientResource, SuspendType, (pointer) this))
+    {
+	xfree (this);
+	return BadAlloc;
+    }
+
+    *prev = this;
+    if (!screenSaverSuspended)
+    {
+	screenSaverSuspended = TRUE;
+	FreeScreenSaverTimer();
+    }
+
+    return (client->noClientException);
+}
+
 static DISPATCH_PROC((*NormalVector[])) = {
     ProcScreenSaverQueryVersion,
     ProcScreenSaverQueryInfo,
     ProcScreenSaverSelectInput,
     ProcScreenSaverSetAttributes,
     ProcScreenSaverUnsetAttributes,
+    ProcScreenSaverSuspend,
 };
 
 #define NUM_REQUESTS	((sizeof NormalVector) / (sizeof NormalVector[0]))
@@ -1395,12 +1523,25 @@ SProcScreenSaverUnsetAttributes (client)
     return ProcScreenSaverUnsetAttributes (client);
 }
 
+static int
+SProcScreenSaverSuspend (ClientPtr client)
+{
+    int n;
+    REQUEST(xScreenSaverSuspendReq);
+
+    swaps(&stuff->length, n);
+    REQUEST_SIZE_MATCH(xScreenSaverSuspendReq);
+    swapl(&stuff->suspend, n);
+    return ProcScreenSaverSuspend (client);
+}
+
 static DISPATCH_PROC((*SwappedVector[])) = {
     SProcScreenSaverQueryVersion,
     SProcScreenSaverQueryInfo,
     SProcScreenSaverSelectInput,
     SProcScreenSaverSetAttributes,
     SProcScreenSaverUnsetAttributes,
+    SProcScreenSaverSuspend,
 };
 
 static int

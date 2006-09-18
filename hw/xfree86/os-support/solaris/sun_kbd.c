@@ -50,7 +50,7 @@
  * or other dealings in this Software without prior written authorization
  * of the copyright holder.
  */
-/* $XdotOrg: xserver/xorg/hw/xfree86/os-support/solaris/sun_kbd.c,v 1.7 2005/08/30 22:34:14 alanc Exp $ */
+/* $XdotOrg: xc/programs/Xserver/hw/xfree86/os-support/sunos/sun_kbd.c,v 1.3 2004/06/13 04:50:21 alanc Exp $ */
 
 #ifdef HAVE_XORG_CONFIG_H
 #include <xorg-config.h>

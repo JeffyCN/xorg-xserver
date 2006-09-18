@@ -54,9 +54,6 @@ from The Open Group.
 #define EXTENSION_EVENT_BASE	64
 #include "extinit.h"		/* LookupDeviceIntRec */
 #endif /* XINPUT */
-#ifdef EXTMODULE
-#include "xf86_ansic.h"
-#endif
 
 #include "modinit.h"
 

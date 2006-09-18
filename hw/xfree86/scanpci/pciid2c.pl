@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-# $XdotOrg: xserver/xorg/hw/xfree86/scanpci/pciid2c.pl,v 1.3 2005/09/20 18:26:24 alanc Exp $
+# $XdotOrg$
 
 # Automatically generate the data structures for PCI vendor/device lists
 # from the pci.ids file.

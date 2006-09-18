@@ -1,4 +1,4 @@
-/* $XdotOrg: xserver/xorg/hw/xfree86/loader/dixsym.c,v 1.19 2005/10/01 17:30:58 herrb Exp $ */
+/* $XdotOrg: xserver/xorg/hw/xfree86/loader/dixsym.c,v 1.20 2006/01/08 23:43:53 ajax Exp $ */
 /* $XFree86: xc/programs/Xserver/hw/xfree86/loader/dixsym.c,v 1.63 2003/12/03
  * 17:11:29 tsi Exp $ */
 
@@ -359,9 +359,6 @@ LOOKUP dixLookupTab[] = {
 #ifdef DBE
     SYMVAR(noDbeExtension)
 #endif
-#ifdef DPSEXT
-    SYMVAR(noDPSExtension)
-#endif
 #ifdef DPMSExtension
     SYMVAR(noDPMSExtension)
 #endif
@@ -476,9 +473,6 @@ LOOKUP dixLookupTab[] = {
     SYMFUNC(TimerFree)
     SYMFUNC(TimerSet)
     SYMFUNC(TimerCancel)
-#ifdef DPMSExtension
-    SYMFUNC(SetDPMSTimers)
-#endif
     /* io.c */
     SYMFUNC(WriteToClient)
     SYMFUNC(SetCriticalOutputPending)

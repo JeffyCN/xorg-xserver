@@ -39,12 +39,10 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #endif
 
 #include "xf86.h"
-#ifdef XFree86LOADER
-#include "xf86_ansic.h"
-#else
 #include <sys/time.h>
 #include <unistd.h>
-#endif
+#include <string.h>
+#include <stdio.h>
 
 #define NEED_REPLIES
 #define NEED_EVENTS
@@ -586,7 +584,7 @@ DRIExtensionInit(void)
     int		    	i;
     ScreenPtr		pScreen;
 
-    if (DRIScreenPrivIndex < 0) {
+    if (DRIScreenPrivIndex < 0 || DRIGeneration != serverGeneration) {
 	return FALSE;
     }
 
@@ -783,7 +781,7 @@ static Bool
 DRICreateDummyContext(ScreenPtr pScreen, Bool needCtxPriv)
 {
     DRIScreenPrivPtr pDRIPriv = DRI_SCREEN_PRIV(pScreen);
-    __GLXscreenInfo *pGLXScreen = __glXgetActiveScreen(pScreen->myNum);
+    __GLXscreen *pGLXScreen = __glXgetActiveScreen(pScreen->myNum);
     __GLcontextModes *modes = pGLXScreen->modes;
     void **pVisualConfigPriv = pGLXScreen->pVisualPriv;
     DRIContextPrivPtr pDRIContextPriv;
@@ -847,7 +845,7 @@ DRICreateContext(ScreenPtr pScreen, VisualPtr visual,
                  XID context, drm_context_t * pHWContext)
 {
     DRIScreenPrivPtr pDRIPriv = DRI_SCREEN_PRIV(pScreen);
-    __GLXscreenInfo *pGLXScreen = __glXgetActiveScreen(pScreen->myNum);
+    __GLXscreen *pGLXScreen = __glXgetActiveScreen(pScreen->myNum);
     __GLcontextModes *modes = pGLXScreen->modes;
     void **pVisualConfigPriv = pGLXScreen->pVisualPriv;
     DRIContextPrivPtr pDRIContextPriv;
@@ -1139,7 +1137,9 @@ DRIGetDrawableInfo(ScreenPtr pScreen,
     WindowPtr		pWin, pOldWin;
     int			i;
 
+#if 0
     printf("maxDrawableTableEntry = %d\n", pDRIPriv->pDriverInfo->maxDrawableTableEntry);
+#endif
 
     if (pDrawable->type == DRAWABLE_WINDOW) {
 	pWin = (WindowPtr)pDrawable;
@@ -1405,6 +1405,11 @@ DRIDoBlockHandler(int screenNum, pointer blockData,
 					      DRI_2D_CONTEXT,
 					      pDRIPriv->partial3DContextStore);
     }
+
+    if (pDRIPriv->windowsTouched)
+        DRM_SPINUNLOCK(&pDRIPriv->pSAREA->drawable_lock, 1);
+    pDRIPriv->windowsTouched = FALSE;
+
     DRIUnlock(pScreen);
 }
 
@@ -1422,7 +1427,6 @@ DRISwapContext(int drmFD, void *oldctx, void *newctx)
     DRISyncType       syncType;
 #ifdef DEBUG
     static int        count = 0;
-#endif
 
     if (!newContext) {
 	DRIDrvMsg(pScreen->myNum, X_ERROR,
@@ -1431,7 +1435,6 @@ DRISwapContext(int drmFD, void *oldctx, void *newctx)
 	return;
     }
 
-#ifdef DEBUG
     /* usefull for debugging, just print out after n context switches */
     if (!count || !(count % 1)) {
 	DRIDrvMsg(pScreen->myNum, X_INFO,
@@ -1653,16 +1656,12 @@ DRICopyWindow(WindowPtr pWin, DDXPointRec ptOldOrg, RegionPtr prgnSrc)
 static void
 DRIGetSecs(long *secs, long *usecs)
 {
-#ifdef XFree86LOADER
-    getsecs(secs,usecs);
-#else
     struct timeval tv;
 
     gettimeofday(&tv, NULL);
 
     *secs  = tv.tv_sec;
     *usecs = tv.tv_usec;
-#endif
 }
 
 static unsigned long
@@ -1751,13 +1750,6 @@ DRILockTree(ScreenPtr pScreen)
     }
 }
 
-/* It appears that somebody is relying on the lock being set even 
-   if we aren't touching 3D windows */ 
-
-#define DRI_BROKEN
-
-static Bool DRIWindowsTouched = FALSE;
-
 int
 DRIValidateTree(WindowPtr pParent, WindowPtr pChild, VTKind kind)
 {
@@ -1767,15 +1759,6 @@ DRIValidateTree(WindowPtr pParent, WindowPtr pChild, VTKind kind)
     int returnValue = 1; /* always return 1, not checked by dix/window.c */
 
     if(!pDRIPriv) return returnValue;
-
-    DRIWindowsTouched = FALSE;
-
-#ifdef DRI_BROKEN
-    if(!DRIWindowsTouched) {
-        DRILockTree(pScreen);
-        DRIWindowsTouched = TRUE;
-    }
-#endif
 
     /* call lower wrapped functions */
     if(pDRIPriv->wrap.ValidateTree) {
@@ -1817,12 +1800,6 @@ DRIPostValidateTree(WindowPtr pParent, WindowPtr pChild, VTKind kind)
 	pDRIPriv->wrap.PostValidateTree = pScreen->PostValidateTree;
 	pScreen->PostValidateTree = DRIPostValidateTree;
     }
-
-    if (DRIWindowsTouched) {
-	/* Release spin lock */
-	DRM_SPINUNLOCK(&pDRIPriv->pSAREA->drawable_lock, 1);
-        DRIWindowsTouched = FALSE;
-    }
 }
 
 void
@@ -1836,12 +1813,10 @@ DRIClipNotify(WindowPtr pWin, int dx, int dy)
 
     if ((pDRIDrawablePriv = DRI_DRAWABLE_PRIV_FROM_WINDOW(pWin))) {
 
-#ifndef DRI_BROKEN
-        if(!DRIWindowsTouched) {
+        if(!pDRIPriv->windowsTouched) {
             DRILockTree(pScreen);
-            DRIWindowsTouched = TRUE;
+            pDRIPriv->windowsTouched = TRUE;
         }
-#endif
 
 	pDRIPriv->pSAREA->drawableTable[pDRIDrawablePriv->drawableIndex].stamp
 	    = DRIDrawableValidationStamp++;

@@ -1,5 +1,5 @@
 /* $TOG: panoramiX.h /main/4 1998/03/17 06:51:02 kaleb $ */
-/* $XdotOrg: xserver/xorg/Xext/panoramiX.h,v 1.5 2005/07/03 07:01:04 daniels Exp $ */
+/* $XdotOrg: xc/programs/Xserver/Xext/panoramiX.h,v 1.3 2005/04/20 12:25:12 daniels Exp $ */
 /*****************************************************************
 
 Copyright (c) 1991, 1997 Digital Equipment Corporation, Maynard, Massachusetts.

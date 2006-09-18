@@ -22,7 +22,7 @@
  * TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE
  * OF THIS SOFTWARE.
  */
-/* $XdotOrg: xserver/xorg/hw/xfree86/os-support/solaris/sun_init.c,v 1.5 2005/07/03 07:01:36 daniels Exp $ */
+/* $XdotOrg: xc/programs/Xserver/hw/xfree86/os-support/sunos/sun_init.c,v 1.3 2005/05/21 07:46:37 alanc Exp $ */
 
 #ifdef HAVE_XORG_CONFIG_H
 #include <xorg-config.h>

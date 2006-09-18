@@ -358,6 +358,8 @@ typedef int xf86jmp_buf[1024];
 #define perror(ccp)		xf86perror(ccp)
 #undef pow
 #define pow(d1,d2)		xf86pow(d1,d2)
+#undef random
+#define random()		xf86random()
 #undef realloc
 #define realloc(vp,I)		xf86realloc(vp,I)
 #undef remove

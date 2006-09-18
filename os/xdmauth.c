@@ -70,9 +70,7 @@ XdmAuthenticationValidator (ARRAY8Ptr privateData, ARRAY8Ptr incomingData,
 
     XdmcpUnwrap (incomingData->data, &privateKey,
 			      incomingData->data,incomingData->length);
-    switch (packet_type)
-    {
-    case ACCEPT:
+    if (packet_type == ACCEPT) {
     	if (incomingData->length != 8)
 	    return FALSE;
     	incoming = (XdmAuthKeyPtr) incomingData->data;
@@ -88,9 +86,7 @@ XdmAuthenticationGenerator (ARRAY8Ptr privateData, ARRAY8Ptr outgoingData,
 {
     outgoingData->length = 0;
     outgoingData->data = 0;
-    switch (packet_type)
-    {
-    case REQUEST:
+    if (packet_type == REQUEST) {
 	if (XdmcpAllocARRAY8 (outgoingData, 8))
 	    XdmcpWrap (&rho, &privateKey, outgoingData->data, 8);
     }
@@ -440,10 +436,12 @@ XdmToID (unsigned short cookie_length, char *cookie)
 	{
 	    xfree (client);
 	    xfree (cookie);
+	    xfree (plain);
 	    return auth->id;
 	}
     }
     xfree (cookie);
+    xfree (plain);
     return (XID) -1;
 }
 
@@ -465,10 +463,9 @@ XdmFromID (XID id, unsigned short *data_lenp, char **datap)
 int
 XdmRemoveCookie (unsigned short data_length, char *data)
 {
-    XdmAuthorizationPtr	auth, prev;
+    XdmAuthorizationPtr	auth;
     XdmAuthKeyPtr	key_bits, rho_bits;
 
-    prev = 0;
     switch (data_length)
     {
     case 16:
@@ -488,10 +485,7 @@ XdmRemoveCookie (unsigned short data_length, char *data)
 	if (XdmcpCompareKeys (rho_bits, &auth->rho) &&
 	    XdmcpCompareKeys (key_bits, &auth->key))
  	{
-	    if (prev)
-		prev->next = auth->next;
-	    else
-		xdmAuth = auth->next;
+	    xdmAuth = auth->next;
 	    xfree (auth);
 	    return 1;
 	}

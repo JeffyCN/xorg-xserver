@@ -1,5 +1,5 @@
 /* $DHD: xc/programs/Xserver/hw/xfree86/common/xf86AutoConfig.c,v 1.15 2003/09/24 19:39:36 dawes Exp $ */
-/* $XdotOrg: xserver/xorg/hw/xfree86/common/xf86AutoConfig.c,v 1.4 2005/08/23 20:12:26 alanc Exp $ */
+/* $XdotOrg: $ */
 
 /*
  * Copyright 2003 by David H. Dawes.

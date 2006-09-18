@@ -299,8 +299,6 @@
 #  define ARCH_PCI_INIT netbsdPciInit
 #  define INCLUDE_XF86_MAP_PCI_MEM
 #  define INCLUDE_XF86_NO_DOMAIN
-# elif defined(PowerMAX_OS)		/* This port is broken */
-#  define ARCH_PCI_INIT ppcPciInit
 # else
 #  define ARCH_PCI_INIT ppcPciInit
 #  define INCLUDE_XF86_MAP_PCI_MEM
@@ -403,10 +401,6 @@ typedef struct pci_bus_info {
 	unsigned char  numDevices;   /* Range of valid devnums      */
 	unsigned char  secondary;    /* Boolean: bus is a secondary */
 	int            primary_bus;  /* Parent bus                  */
-#ifdef PowerMAX_OS
-	unsigned long  ppc_io_base;  /* PowerPC I/O spc membase     */
-	unsigned long  ppc_io_size;  /* PowerPC I/O spc size        */
-#endif
 	pciBusFuncs_p  funcs;        /* PCI access functions        */
 	void          *pciBusPriv;   /* Implementation private data */
 	pciConfigPtr   bridge;       /* bridge that opens this bus  */
@@ -431,6 +425,7 @@ CARD32        pciByteSwap(CARD32);
 Bool          pciMfDev(int, int);
 ADDRESS       pciAddrNOOP(PCITAG tag, PciAddrType type, ADDRESS);
 
+extern void pciSetOSBIOSPtr(int (*bios_fn)(PCITAG Tag, int basereg, unsigned char * buf, int len));
 extern PCITAG (*pciFindFirstFP)(void);
 extern PCITAG (*pciFindNextFP)(void);
 

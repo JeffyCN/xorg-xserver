@@ -1,4 +1,3 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/common/xf86Events.c,v 3.159 2003/11/22 04:22:11 dawes Exp $ */
 /*
  * Copyright 1990,91 by Thomas Roell, Dinkelscherben, Germany.
  *
@@ -47,9 +46,6 @@
  * the sale, use or other dealings in this Software without prior written
  * authorization from the copyright holder(s) and author(s).
  */
-
-/* $XConsortium: xf86Events.c /main/46 1996/10/25 11:36:30 kaleb $ */
-/* $XdotOrg: xserver/xorg/hw/xfree86/common/xf86Events.c,v 1.21 2005/11/08 06:33:28 jkj Exp $ */
 
 /* [JCH-96/01/21] Extended std reverse map to four buttons. */
 
@@ -216,7 +212,7 @@ TimeSinceLastInputEvent()
  *      Set the lastEventTime to now.
  */
 
-void
+_X_EXPORT void
 SetTimeSinceLastInputEvent()
 {
   xf86Info.lastEventTime = GetTimeInMillis();
@@ -1102,7 +1098,7 @@ special:
 
 #define ModifierIsSet(k) ((modifiers & (k)) == (k))
 
-Bool
+_X_EXPORT Bool
 xf86CommonSpecialKey(int key, Bool down, int modifiers)
 {
   if ((!ModifierIsSet(ShiftMask)) &&
@@ -1242,7 +1238,7 @@ xf86SigioReadInput(int fd,
  * xf86AddEnabledDevice --
  *    
  */
-void
+_X_EXPORT void
 xf86AddEnabledDevice(InputInfoPtr pInfo)
 {
     if (!xf86InstallSIGIOHandler (pInfo->fd, xf86SigioReadInput, pInfo)) {
@@ -1254,7 +1250,7 @@ xf86AddEnabledDevice(InputInfoPtr pInfo)
  * xf86RemoveEnabledDevice --
  *    
  */
-void
+_X_EXPORT void
 xf86RemoveEnabledDevice(InputInfoPtr pInfo)
 {
     if (!xf86RemoveSIGIOHandler (pInfo->fd)) {
@@ -1264,7 +1260,7 @@ xf86RemoveEnabledDevice(InputInfoPtr pInfo)
 
 static int *xf86SignalIntercept = NULL;
 
-void
+_X_EXPORT void
 xf86InterceptSignals(int *signo)
 {
     if ((xf86SignalIntercept = signo))
@@ -1273,7 +1269,7 @@ xf86InterceptSignals(int *signo)
 
 static void (*xf86SigIllHandler)(void) = NULL;
 
-void 
+_X_EXPORT void 
 xf86InterceptSigIll(void (*sigillhandler)(void))
 {
     xf86SigIllHandler = sigillhandler;
@@ -1482,13 +1478,6 @@ xf86SigHandler(int signo)
 #ifdef XF86BIGFONT
   XF86BigfontCleanup();
 #endif
-#if defined(XFree86LOADER)
-  if (xf86Initialising)
-      LoaderCheckUnresolved(LD_RESOLV_IFDONE);
-  ErrorF("\n"
-	 "   *** If unresolved symbols were reported above, they might not\n"
-	 "   *** be the reason for the server aborting.\n");
-#endif
 
   xorg_backtrace();
     
@@ -1671,7 +1660,7 @@ xf86VTSwitch()
 
 /* Input handler registration */
 
-pointer
+_X_EXPORT pointer
 xf86AddInputHandler(int fd, InputHandlerProc proc, pointer data)
 {
     IHPtr ih;
@@ -1696,7 +1685,7 @@ xf86AddInputHandler(int fd, InputHandlerProc proc, pointer data)
     return ih;
 }
 
-int
+_X_EXPORT int
 xf86RemoveInputHandler(pointer handler)
 {
     IHPtr ih, p;
@@ -1724,7 +1713,7 @@ xf86RemoveInputHandler(pointer handler)
     return fd;
 }
 
-void
+_X_EXPORT void
 xf86DisableInputHandler(pointer handler)
 {
     IHPtr ih;
@@ -1738,7 +1727,7 @@ xf86DisableInputHandler(pointer handler)
 	RemoveEnabledDevice(ih->fd);
 }
 
-void
+_X_EXPORT void
 xf86EnableInputHandler(pointer handler)
 {
     IHPtr ih;
@@ -1755,7 +1744,7 @@ xf86EnableInputHandler(pointer handler)
 /*
  * As used currently by the DRI, the return value is ignored.
  */
-Bool
+_X_EXPORT Bool
 xf86EnableVTSwitch(Bool new)
 {
     static Bool def = TRUE;

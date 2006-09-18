@@ -35,7 +35,7 @@
 #include "xf86Priv.h"
 #include "xf86_OSlib.h"
 
-void
+_X_EXPORT void
 xf86SoundKbdBell(int loudness, int pitch, int duration)
 {
   if (loudness && pitch) {

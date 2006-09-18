@@ -34,7 +34,7 @@
  * sale, use or other dealings in this Software without prior written
  * authorization.
  */
-/* $XdotOrg: xserver/xorg/hw/darwin/quartz/XServer.m,v 1.4 2005/04/02 02:29:24 torrey Exp $ */
+/* $XdotOrg: xc/programs/Xserver/hw/darwin/quartz/XServer.m,v 1.3 2004/07/30 19:12:17 torrey Exp $ */
 /* $XFree86: xc/programs/Xserver/hw/darwin/quartz/XServer.m,v 1.19 2003/11/24 05:39:01 torrey Exp $ */
 
 #include "quartzCommon.h"

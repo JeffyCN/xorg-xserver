@@ -45,6 +45,8 @@ confflags += --disable-static \
 	     --enable-xtrap \
 	     --enable-dmx \
 	     --enable-vfb \
+		 --enable-kdrive \
+		 --enable-xephyr \
 	     --disable-lbx \
 	     --disable-xprint \
 		 --disable-xorgconfig \
@@ -52,8 +54,8 @@ confflags += --disable-static \
 		 --with-xkb-path=/usr/share/X11/xkb \
 		 --with-xkb-output=/var/lib/xkb
 
-build: build-stamp
-build-stamp: patch
+build: patch build-stamp
+build-stamp: 
 	dh_testdir
 
 	mkdir -p obj-$(DEB_BUILD_GNU_TYPE)/GL

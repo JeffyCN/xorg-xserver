@@ -1,4 +1,5 @@
 AUTOMAKE_OPTIONS=dist-bzip2 foreign nostdinc
+DISTCHECK_CONFIGURE_FLAGS=--disable-xorgcfg
 
 if COMPOSITE
 COMPOSITE_DIR=composite
@@ -11,10 +12,6 @@ endif
 if CFB
 CFB_DIR=cfb
 CFB16_DIR=cfb16
-# cfb24 is only used by xf8_32wid, which is only used by sunffb on SPARC
-if BUILD_XF8_32WID
-CFB24_DIR=cfb24
-endif
 CFB32_DIR=cfb32
 endif
 
@@ -39,6 +36,14 @@ if LBX
 LBX_DIR=lbx
 endif
 
+if XINPUT
+XINPUT_DIR=Xi
+endif
+
+if DBE
+DBE_DIR=dbe
+endif
+
 SUBDIRS = \
 	doc \
 	include \
@@ -50,14 +55,13 @@ SUBDIRS = \
 	os \
 	randr \
 	render  \
-	Xi \
+	$(XINPUT_DIR) \
 	xkb \
-	dbe \
+	$(DBE_DIR) \
 	$(MFB_DIR) \
 	$(AFB_DIR) \
 	$(CFB_DIR) \
 	$(CFB16_DIR) \
-	$(CFB24_DIR) \
 	$(CFB32_DIR) \
 	record \
 	xfixes \
@@ -66,6 +70,7 @@ SUBDIRS = \
 	$(COMPOSITE_DIR) \
 	$(GLX_DIR) \
 	$(LBX_DIR) \
+	exa \
 	hw \
 	$(XPDDX_DIR) \
 	$(XPCONFIG_DIR)
@@ -96,17 +101,19 @@ DIST_SUBDIRS = \
 	afb \
 	cfb \
 	cfb16 \
-	cfb24 \
 	cfb32 \
-	ilbm \
-	iplan2p4 \
 	record \
 	xfixes \
 	damageext \
 	XTrap \
 	composite \
 	GL \
+	exa \
 	hw \
 	Xprint \
 	XpConfig \
 	lbx
+
+# gross hack
+relink: all
+	$(MAKE) -C hw relink

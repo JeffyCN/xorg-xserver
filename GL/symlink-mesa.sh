@@ -111,7 +111,8 @@ symlink_mesa_main() {
     action debug.h
     action depth.c
     action depth.h
-    action dispatch.c
+    action depthstencil.c
+    action depthstencil.h
     action dlist.c
     action dlist.h
     action drawpix.c
@@ -254,11 +255,14 @@ symlink_mesa_swrast() {
     action s_accum.h
     action s_alpha.c
     action s_alpha.h
+    action s_arbshader.c
+    action s_arbshader.h
     action s_atifragshader.c
     action s_atifragshader.h
     action s_bitmap.c
     action s_blend.c
     action s_blend.h
+    action s_blit.c
     action s_buffers.c
     action s_context.c
     action s_context.h
@@ -271,7 +275,6 @@ symlink_mesa_swrast() {
     action s_feedback.h
     action s_fog.c
     action s_fog.h
-    action s_fragprog_to_c.c
     action s_imaging.c
     action s_lines.c
     action s_lines.h
@@ -282,8 +285,6 @@ symlink_mesa_swrast() {
     action s_masking.h
     action s_nvfragprog.c
     action s_nvfragprog.h
-    action s_pixeltex.c
-    action s_pixeltex.h
     action s_points.c
     action s_points.h
     action s_pointtemp.h
@@ -293,10 +294,11 @@ symlink_mesa_swrast() {
     action s_spantemp.h
     action s_stencil.c
     action s_stencil.h
-    action s_tcc.c
+    action s_texcombine.c
+    action s_texcombine.h
+    action s_texfilter.c
+    action s_texfilter.h
     action s_texstore.c
-    action s_texture.c
-    action s_texture.h
     action s_triangle.c
     action s_triangle.h
     action s_trispan.h
@@ -338,6 +340,7 @@ symlink_mesa_tnl() {
     action t_vb_arbprogram.c
     action t_vb_arbprogram.h
     action t_vb_arbprogram_sse.c
+    action t_vb_arbshader.c
     action t_vb_cliptmp.h
     action t_vb_cull.c
     action t_vb_fog.c
@@ -370,29 +373,24 @@ symlink_mesa_shader() {
     src_dir src/mesa/shader
     dst_dir mesa/shader
 
-    action arbfragparse.c
-    action arbfragparse.h
     action arbprogparse.c
     action arbprogparse.h
     action arbprogram.c
     action arbprogram.h
     action arbprogram_syn.h
-    action arbvertparse.c
-    action arbvertparse.h
     action atifragshader.c
     action atifragshader.h
     action nvfragparse.c
     action nvfragparse.h
-    action nvfragprog.h
     action nvprogram.c
     action nvprogram.h
     action nvvertexec.c
     action nvvertexec.h
     action nvvertparse.c
     action nvvertparse.h
-    action nvvertprog.h
     action program.c
     action program.h
+    action program_instruction.h
     action shaderobjects.c
     action shaderobjects.h
     action shaderobjects_3dlabs.c
@@ -414,20 +412,39 @@ symlink_mesa_shader_slang() {
     src_dir src/mesa/shader/slang
     dst_dir mesa/shader/slang
 
+    action slang_analyse.c
+    action slang_analyse.h
+    action slang_assemble.c
+    action slang_assemble.h
     action slang_assemble_assignment.c
     action slang_assemble_assignment.h
-    action slang_assemble.c
     action slang_assemble_conditional.c
     action slang_assemble_conditional.h
     action slang_assemble_constructor.c
     action slang_assemble_constructor.h
-    action slang_assemble.h
     action slang_assemble_typeinfo.c
     action slang_assemble_typeinfo.h
     action slang_compile.c
     action slang_compile.h
+    action slang_compile_function.c
+    action slang_compile_function.h
+    action slang_compile_operation.c
+    action slang_compile_operation.h
+    action slang_compile_struct.c
+    action slang_compile_struct.h
+    action slang_compile_variable.c
+    action slang_compile_variable.h
     action slang_execute.c
     action slang_execute.h
+    action slang_execute_x86.c
+    action slang_export.c
+    action slang_export.h
+    action slang_library_noise.c
+    action slang_library_noise.h
+    action slang_library_texsample.c
+    action slang_library_texsample.h
+    action slang_link.c
+    action slang_link.h
     action slang_mesa.h
     action slang_preprocess.c
     action slang_preprocess.h
@@ -442,15 +459,11 @@ symlink_mesa_shader_slang_library() {
     src_dir src/mesa/shader/slang/library
     dst_dir mesa/shader/slang/library
 
-    action slang_common_builtin_gc_bin.h
     action slang_common_builtin_gc.h
-    action slang_core_gc_bin.h
     action slang_core_gc.h
-    action slang_fragment_builtin_gc_bin.h
     action slang_fragment_builtin_gc.h
     action slang_shader_syn.h
     action slang_version_syn.h
-    action slang_vertex_builtin_gc_bin.h
     action slang_vertex_builtin_gc.h
 }        
 
@@ -521,13 +534,17 @@ symlink_glx() {
     src_dir src/glx/x11
     dst_dir glx
 
-    action indirect_size.c
     action indirect_size.h
 
     src_dir src/mesa/drivers/dri/common
 
     action glcontextmodes.c
     action glcontextmodes.h
+
+    src_dir src/mesa/glapi
+
+    action glapi.c
+    action glthread.c
 }
 
 #########
@@ -539,7 +556,7 @@ symlink_glx() {
 error() {
 	echo
 	echo \ \ \ error:\ \ \ $1
-	exit
+	exit 1
 }
 
 # printing out what's going on

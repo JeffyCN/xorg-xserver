@@ -1,0 +1,29 @@
+From: Daniel Stone <daniel@fooishbar.org>
+Date: Sat, 12 Aug 2006 16:25:06 +0000 (+0300)
+Subject: configure.ac: fix execinfo.h test (Debian #363218)
+X-Git-Url: http://gitweb.freedesktop.org/?p=xorg/xserver.git;a=commitdiff;h=5a3488ccac8e5dabd9fc98bc41ef178ead1b2faf
+
+configure.ac: fix execinfo.h test (Debian #363218)
+Define HAVE_EXECINFO_H as well as HAVE_BACKTRACE, when we find execinfo.h.
+---
+
+--- a/configure.ac
++++ b/configure.ac
+@@ -174,6 +174,7 @@ dnl glibc backtrace support check (hw/xf
+ AC_CHECK_HEADER([execinfo.h],[
+     AC_CHECK_LIB(c, backtrace, [
+         AC_DEFINE(HAVE_BACKTRACE, 1, [Has backtrace support])
++        AC_DEFINE(HAVE_EXECINFO_H, 1, [Have execinfo.h])
+     ])]
+ )
+ 
+--- a/include/xorg-config.h.in
++++ b/include/xorg-config.h.in
+@@ -109,4 +109,7 @@
+ /* Name of the period field in struct kbd_repeat */
+ #undef LNX_KBD_PERIOD_NAME
+ 
++/* Have execinfo.h */
++#undef HAVE_EXECINFO_H
++
+ #endif /* _XORG_CONFIG_H_ */

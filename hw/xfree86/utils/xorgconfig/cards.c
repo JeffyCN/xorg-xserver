@@ -19,7 +19,7 @@
 
 /* Some vars to make path names in texts more flexible. */
 #ifndef PROJECTROOT
-# define PROJECTROOT		"/usr/X11R6"
+# define PROJECTROOT		"/usr"
 #endif
 #define TREEROOT		PROJECTROOT
 #define TREEROOTLX		TREEROOT "/lib/X11"

@@ -1,4 +1,4 @@
-/* $XdotOrg: xserver/xorg/hw/xfree86/dixmods/extmod/modinit.h,v 1.5 2005/07/03 07:01:06 daniels Exp $ */
+/* $XdotOrg: xc/programs/Xserver/Xext/extmod/modinit.h,v 1.3 2005/04/20 12:25:13 daniels Exp $ */
 /* $XFree86: xc/programs/Xserver/Xext/extmod/modinit.h,v 1.1 2003/07/16 01:38:33 dawes Exp $ */
 
 #ifdef HAVE_DIX_CONFIG_H

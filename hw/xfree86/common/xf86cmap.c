@@ -129,7 +129,7 @@ static void CMapUnwrapScreen(ScreenPtr pScreen);
 
 
 
-Bool xf86HandleColormaps(
+_X_EXPORT Bool xf86HandleColormaps(
     ScreenPtr pScreen,
     int maxColors,
     int sigRGBbits,
@@ -986,7 +986,7 @@ ComputeGammaRamp (
     }
 }
 
-int
+_X_EXPORT int
 xf86ChangeGammaRamp(
    ScreenPtr pScreen,
    int size,
@@ -1053,7 +1053,7 @@ xf86ChangeGammaRamp(
     return Success;
 }
 
-int
+_X_EXPORT int
 xf86GetGammaRampSize(ScreenPtr pScreen)
 {
     CMapScreenPtr pScreenPriv;
@@ -1066,7 +1066,7 @@ xf86GetGammaRampSize(ScreenPtr pScreen)
     return pScreenPriv->gammaElements;
 }
 
-int
+_X_EXPORT int
 xf86GetGammaRamp(
    ScreenPtr pScreen,
    int size,

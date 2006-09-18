@@ -1,5 +1,5 @@
 /* $Xorg: xkbActions.c,v 1.3 2000/08/17 19:53:47 cpqbld Exp $ */
-/* $XdotOrg: xserver/xorg/xkb/xkbActions.c,v 1.7 2005/07/03 08:53:54 daniels Exp $ */
+/* $XdotOrg: xc/programs/Xserver/xkb/xkbActions.c,v 1.4 2005/05/22 01:12:49 alanc Exp $ */
 /************************************************************
 Copyright (c) 1993 by Silicon Graphics Computer Systems, Inc.
 

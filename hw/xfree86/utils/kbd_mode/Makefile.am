@@ -1,4 +1,4 @@
-# $Id: Makefile.am,v 1.4 2005/11/28 22:05:09 alanc Exp $
+# $Id$
 #
 # Copyright 2005 Sun Microsystems, Inc.  All rights reserved.
 # 
@@ -55,6 +55,8 @@ all-local: kbd_mode.man.pre $(appman_DATA)
 kbd_mode.man.pre: $(MAN_SRC)
 	$(LN_S) $(MAN_SRC) kbd_mode.man.pre
 
+else
+all-local:
 endif
 
 include $(top_srcdir)/cpprules.in

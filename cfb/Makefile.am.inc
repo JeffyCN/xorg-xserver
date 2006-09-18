@@ -1,7 +1,7 @@
 libcfb_gen_sources = cfbseg.c cfbfillarcC.c cfbfillarcG.c cfbzerarcC.c cfbzerarcX.c cfbzerarcG.c \
 	cfbbltC.c cfbbltX.c cfbbltO.c cfbbltG.c cfbsolidC.c cfbsolidX.c cfbsolidG.c cfbtileoddC.c \
 	cfbtileoddG.c cfbtile32C.c cfbtile32G.c cfb8lineCO.c cfb8lineCP.c cfb8lineX.c cfb8lineG.c \
-	cfb8segCS.c cfb8segC.c cfb8segX.c cfb8setG.c cfbply1rctC.c cfbply1rctG.c 
+	cfb8segCS.c cfb8segC.c cfb8segX.c cfb8setG.c cfbply1rctC.c cfbply1rctG.c
 
 DISTCLEANFILES = $(libcfb_gen_sources)
 
@@ -138,3 +138,16 @@ cfbply1rctG.c:
 cfbglrop8.c:
 	echo "#define GLYPHROP" > $@
 	echo "#include \"$(top_srcdir)/cfb/cfbglblt8.c\"" >> $@
+
+
+if XPRINT
+
+PLATFORMDEFS = -DXFREE86
+
+cfb8bit.o:   compiler.h
+
+compiler.h:
+	echo "#include \"$(top_srcdir)/hw/xfree86/common/compiler.h\"" >> $@
+
+endif
+

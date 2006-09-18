@@ -29,7 +29,7 @@ DefaultProtocol(void)
     return "Auto";
 }
 
-#define DEFAULT_MOUSE_DEV		"/dev/mouse"
+#define DEFAULT_MOUSE_DEV		"/dev/input/mice"
 #define DEFAULT_PS2_DEV			"/dev/psaux"
 #define DEFAULT_GPM_DATA_DEV		"/dev/gpmdata"
 #define DEFAULT_GPM_CTL_DEV		"/dev/gpmdata"
@@ -189,7 +189,7 @@ GuessProtocol(InputInfoPtr pInfo, int flags)
     return NULL;
 }
 
-OSMouseInfoPtr
+_X_EXPORT OSMouseInfoPtr
 xf86OSMouseInit(int flags)
 {
     OSMouseInfoPtr p;

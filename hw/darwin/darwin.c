@@ -155,7 +155,7 @@ DarwinPrintBanner()
   ErrorF("\nRelease Date: %s\n", XF86_DATE);
   ErrorF("X Protocol Version %d, Revision %d, %s\n",
          X_PROTOCOL, X_PROTOCOL_REVISION, XORG_RELEASE );
-  ErrorF("Build Operating System:%s%s\n", OSNAME, OSVENDOR);
+  ErrorF("Build Operating System: %s %s\n", OSNAME, OSVENDOR);
 #ifdef HAS_UTSNAME
   {
     struct utsname name;

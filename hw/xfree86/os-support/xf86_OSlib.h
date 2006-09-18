@@ -67,7 +67,7 @@
  */
 
 /* $XConsortium: xf86_OSlib.h /main/22 1996/10/27 11:06:31 kaleb $ */
-/* $XdotOrg: xserver/xorg/hw/xfree86/os-support/xf86_OSlib.h,v 1.13 2005/11/08 06:33:29 jkj Exp $ */
+/* $XdotOrg: xserver/xorg/hw/xfree86/os-support/xf86_OSlib.h,v 1.14 2005/12/29 08:42:49 airlied Exp $ */
 
 /*
  * This is private, and should not be included by any drivers.  Drivers
@@ -131,11 +131,7 @@ typedef signed long xf86ssize_t;
 
 # include <errno.h>
 
-# if defined(PowerMAX_OS)
-#  define HAS_USL_VTS
-#  include <sys/immu.h>
-#  include <sys/sysmacros.h>
-# elif defined(_NEED_SYSI86)
+# if defined(_NEED_SYSI86)
 #  include <sys/immu.h>
 #  if !(defined (sun) && defined (SVR4))
 #    include <sys/region.h>
@@ -218,8 +214,6 @@ typedef signed long xf86ssize_t;
 #  include <sys/mman.h>
 #  if !(defined(sun) && defined (SVR4))
 #    define DEV_MEM "/dev/pmem"
-#  elif defined(PowerMAX_OS)
-#    define DEV_MEM "/dev/iomem"
 #  endif
 #  ifdef SCO325
 #   undef DEV_MEM
@@ -445,7 +439,7 @@ extern int errno;
 /* Kernel of *BSD                                                         */
 /**************************************************************************/
 #if defined(__FreeBSD__) || defined(__FreeBSD_kernel__) || \
- defined(__NetBSD__) || defined(__OpenBSD__) || defined(__bsdi__)
+ defined(__NetBSD__) || defined(__OpenBSD__) || defined(__bsdi__) || defined(__DragonFly__)
 
 # include <sys/param.h>
 # if defined(__FreeBSD_version) && !defined(__FreeBSD_kernel_version)
@@ -470,11 +464,11 @@ extern int errno;
 #   endif
 #   ifdef SYSCONS_SUPPORT
 #    define COMPAT_SYSCONS
-#    if defined(__NetBSD__) || defined(__OpenBSD__) || defined(__DragonFly__)
+#    if defined(__NetBSD__) || defined(__OpenBSD__)
 #     include <machine/console.h>
 #    else
-#     if defined(__FreeBSD__) || defined(__FreeBSD_kernel__)
-#        if (__FreeBSD_kernel_version >= 410000)
+#     if defined(__FreeBSD__) || defined(__FreeBSD_kernel__) || defined(__DragonFly__)
+#        if defined(__DragonFly__)  || (__FreeBSD_kernel_version >= 410000)
 #          include <sys/consio.h>
 #          include <sys/kbio.h>
 #        else
@@ -488,7 +482,7 @@ extern int errno;
 #   if defined(PCVT_SUPPORT)
 #    if !defined(SYSCONS_SUPPORT)
       /* no syscons, so include pcvt specific header file */
-#     if defined(__FreeBSD__) || defined(__FreeBSD_kernel__) || defined(__DragonFly__)
+#     if defined(__FreeBSD__) || defined(__FreeBSD_kernel__)
 #      include <machine/pcvt_ioctl.h>
 #     else
 #      if defined(__NetBSD__) || defined(__OpenBSD__)
@@ -511,8 +505,8 @@ extern int errno;
 #    include <dev/wscons/wsconsio.h>
 #    include <dev/wscons/wsdisplay_usl_io.h>
 #   endif /* WSCONS_SUPPORT */
-#   if defined(__FreeBSD__) || defined(__FreeBSD_kernel__)
-#    if (__FreeBSD_kernel_version >= 500013)
+#   if defined(__FreeBSD__) || defined(__FreeBSD_kernel__) || defined(__DragonFly__)
+#    if defined(__FreeBSD_kernel_version) && (__FreeBSD_kernel_version >= 500013)
 #     include <sys/mouse.h>
 #    else
 #     undef MOUSE_GETINFO

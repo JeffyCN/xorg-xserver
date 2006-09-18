@@ -1,4 +1,4 @@
-.\" $XdotOrg: xserver/xorg/hw/vfb/Xvfb.man.pre,v 1.4 2005/09/08 01:15:47 anholt Exp $
+.\" $XdotOrg: xc/programs/Xserver/hw/vfb/Xvfb.man,v 1.3 2005/03/23 20:49:52 gisburn Exp $
 .\" $Xorg: Xvfb.man,v 1.4 2001/02/09 02:04:45 xorgcvs Exp $
 .\" Copyright 1993, 1998  The Open Group
 .\" 

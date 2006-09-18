@@ -1,4 +1,4 @@
-/* $XdotOrg: xserver/xorg/hw/darwin/quartz/quartzCommon.h,v 1.4 2005/07/01 22:43:07 daniels Exp $ */
+/* $XdotOrg: xc/programs/Xserver/hw/darwin/quartz/quartzCommon.h,v 1.3 2004/07/30 19:12:17 torrey Exp $ */
 /*
  * quartzCommon.h
  *

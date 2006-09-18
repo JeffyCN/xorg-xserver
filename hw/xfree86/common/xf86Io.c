@@ -483,7 +483,7 @@ searchdone:
  * they really belong
  */
 #define HALFMONTH ((unsigned long) 1<<31)
-CARD32
+_X_EXPORT CARD32
 GetTimeInMillis()
 {
     struct timeval  tp;

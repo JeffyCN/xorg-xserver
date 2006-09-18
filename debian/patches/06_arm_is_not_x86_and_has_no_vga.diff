@@ -11,10 +11,10 @@ This patch by Peter Naulls, updated by Wookey.
 
 Not submitted to XFree86.
 
-Index: xc/programs/Xserver/hw/xfree86/common/xf86Bus.c
+Index: xorg-server/hw/xfree86/common/xf86Bus.c
 ===================================================================
---- xc/programs/Xserver/hw/xfree86/common/xf86Bus.c.orig	2005-10-18 19:44:24.000000000 -0400
-+++ xc/programs/Xserver/hw/xfree86/common/xf86Bus.c	2005-10-18 22:40:27.000000000 -0400
+--- xorg-server.orig/hw/xfree86/common/xf86Bus.c	2006-08-06 15:47:43.000000000 +0000
++++ xorg-server/hw/xfree86/common/xf86Bus.c	2006-08-06 16:06:38.000000000 +0000
 @@ -3078,7 +3078,7 @@
  CheckGenericGA()
  {
@@ -24,10 +24,10 @@ Index: xc/programs/Xserver/hw/xfree86/common/xf86Bus.c
      IOADDRESS GenericIOBase = VGAHW_GET_IOBASE();
      CARD8 CurrentValue, TestValue;
  
-Index: xc/programs/Xserver/hw/xfree86/os-support/linux/lnx_video.c
+Index: xorg-server/hw/xfree86/os-support/linux/lnx_video.c
 ===================================================================
---- xc/programs/Xserver/hw/xfree86/os-support/linux/lnx_video.c.orig	2005-10-18 19:44:57.000000000 -0400
-+++ xc/programs/Xserver/hw/xfree86/os-support/linux/lnx_video.c	2005-10-18 22:40:27.000000000 -0400
+--- xorg-server.orig/hw/xfree86/os-support/linux/lnx_video.c	2006-08-06 16:01:10.000000000 +0000
++++ xorg-server/hw/xfree86/os-support/linux/lnx_video.c	2006-08-06 16:06:38.000000000 +0000
 @@ -466,7 +466,7 @@
  	   Base,realBase,alignOff);
  #endif
@@ -47,7 +47,7 @@ Index: xc/programs/Xserver/hw/xfree86/os-support/linux/lnx_video.c
  	ioperm(0, 1024, 0);
  #endif
 @@ -615,7 +615,7 @@
- Bool
+ _X_EXPORT Bool
  xf86DisableInterrupts()
  {
 -#if !defined(__mc68000__) && !defined(__powerpc__) && !defined(__sparc__) && !defined(__mips__) && !defined(__ia64__) && !defined(__sh__) && !defined(__hppa__)
@@ -65,7 +65,7 @@ Index: xc/programs/Xserver/hw/xfree86/os-support/linux/lnx_video.c
  	    iopl(0);
  	    ioperm(0, 1024, 0);
 @@ -647,7 +647,7 @@
- void
+ _X_EXPORT void
  xf86EnableInterrupts()
  {
 -#if !defined(__mc68000__) && !defined(__powerpc__) && !defined(__sparc__) && !defined(__mips__) && !defined(__ia64__) && !defined(__sh__) && !defined(__hppa__)
@@ -82,10 +82,10 @@ Index: xc/programs/Xserver/hw/xfree86/os-support/linux/lnx_video.c
  	if (!ExtendedEnabled) {
  	    iopl(0);
  	    ioperm(0, 1024, 0);
-Index: xc/programs/Xserver/hw/xfree86/vgahw/vgaHW.h
+Index: xorg-server/hw/xfree86/vgahw/vgaHW.h
 ===================================================================
---- xc/programs/Xserver/hw/xfree86/vgahw/vgaHW.h.orig	2005-10-18 19:45:00.000000000 -0400
-+++ xc/programs/Xserver/hw/xfree86/vgahw/vgaHW.h	2005-10-18 22:40:27.000000000 -0400
+--- xorg-server.orig/hw/xfree86/vgahw/vgaHW.h	2006-08-06 15:47:43.000000000 +0000
++++ xorg-server/hw/xfree86/vgahw/vgaHW.h	2006-08-06 16:06:38.000000000 +0000
 @@ -176,7 +176,7 @@
  #define BITS_PER_GUN 6
  #define COLORMAP_SIZE 256

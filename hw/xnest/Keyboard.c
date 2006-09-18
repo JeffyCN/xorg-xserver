@@ -235,26 +235,6 @@ XkbError:
 	    names.keymap = XkbInitialMap;
 	}
 
-	if ((file = fopen(XKB_BASE_DIRECTORY XKB_CONFIG_FILE, "r")) != NULL) {
-	  if (XkbCFParse(file, XkbCFDflts, xkb, &config) == 0) {
-	    ErrorF("Error parsing config file.\n");
-	    fclose(file);
-	    goto XkbError;
-	  }
-	  if (config.rules_file)
-	    rules = config.rules_file;
-	  if (config.model)
-	    model = config.model;
-	  if (config.layout)
-	    layout = config.layout;
-	  if (config.variant)
-	    variants = config.variant;
-	  if (config.options)
-	    options = config.options;
-
-	  fclose(file);
-	}
-
 	XkbSetRulesDflts(rules, model, layout, variants, options);
 	XkbInitKeyboardDeviceStruct(pDev, &names, &keySyms, modmap,
 				    xnestBell, xnestChangeKeyboardControl);

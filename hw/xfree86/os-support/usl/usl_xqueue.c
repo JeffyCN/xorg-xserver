@@ -1,4 +1,4 @@
-/* $XdotOrg: xserver/xorg/hw/xfree86/os-support/usl/usl_xqueue.c,v 1.3 2005/11/10 02:41:20 jkj Exp $ */
+/* $XdotOrg$ */
 /*
  * Copyright 2005 by Kean Johnston <jkj@sco.com>
  * Copyright 1990,91 by Thomas Roell, Dinkelscherben, Germany

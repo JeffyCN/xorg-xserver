@@ -1,4 +1,4 @@
-/* $XdotOrg: xserver/xorg/hw/xfree86/common/xf86Version.h,v 1.5 2005/08/24 11:18:35 daniels Exp $ */
+/* $XdotOrg: xc/programs/Xserver/hw/xfree86/xf86Version.h,v 1.2 2004/04/23 19:20:02 eich Exp $ */
 /* $XFree86: xc/programs/Xserver/hw/xfree86/xf86Version.h,v 3.566 2003/12/19 04:52:11 dawes Exp $ */
 
 /*
@@ -59,4 +59,4 @@
 #endif
 
 /* $XConsortium: xf86Version.h /main/78 1996/10/28 05:42:10 kaleb $ */
-/* $XdotOrg: xserver/xorg/hw/xfree86/common/xf86Version.h,v 1.5 2005/08/24 11:18:35 daniels Exp $ */
+/* $XdotOrg: xc/programs/Xserver/hw/xfree86/xf86Version.h,v 1.2 2004/04/23 19:20:02 eich Exp $ */

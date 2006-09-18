@@ -47,25 +47,25 @@
 # include <errno.h>
 #endif
 
-int
+_X_EXPORT int
 xf86InstallSIGIOHandler(int fd, void (*f)(int, void *), void *closure)
 {
     return 0;
 }
 
-int
+_X_EXPORT int
 xf86RemoveSIGIOHandler(int fd)
 {
     return 0;
 }
 
-int
+_X_EXPORT int
 xf86BlockSIGIO (void)
 {
     return 0;
 }
 
-void
+_X_EXPORT void
 xf86UnblockSIGIO (int wasset)
 {
 }

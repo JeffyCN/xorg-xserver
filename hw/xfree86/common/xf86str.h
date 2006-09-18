@@ -115,6 +115,7 @@ typedef enum {
     MODE_ONE_WIDTH,     /* only one width is supported */
     MODE_ONE_HEIGHT,    /* only one height is supported */
     MODE_ONE_SIZE,      /* only one resolution is supported */
+    MODE_NO_REDUCED,    /* monitor doesn't accept reduced blanking */
     MODE_BAD = -2,	/* unspecified reason */
     MODE_ERROR	= -1	/* error condition */
 } ModeStatus;
@@ -206,6 +207,7 @@ typedef struct {
     int			heightmm;
     pointer		options;
     pointer		DDC;
+    Bool                reducedblanking; /* Allow CVT reduced blanking modes? */
 } MonRec, *MonPtr;
 
 /* the list of clock ranges */
@@ -445,7 +447,6 @@ typedef struct {
     pointer		thisCard;
     Bool                validSize;
     Bool                validate;
-    CARD32              listed_class;
 } pciVideoRec, *pciVideoPtr;
 
 typedef struct {
@@ -731,8 +732,33 @@ typedef struct {
 } IsaChipsets;
 
 typedef struct {
+    /**
+     * Key used to match this device with its name in an array of
+     * \c SymTabRec.
+     */
     int numChipset;
+
+    /**
+     * This value is quirky.  Depending on the driver, it can take on one of
+     * three meanings.  In drivers that have exactly one vendor ID (e.g.,
+     * radeon, mga, i810) the low 16-bits are the device ID.
+     *
+     * In drivers that can have multiple vendor IDs (e.g., the glint driver
+     * can have either 3dlabs' ID or TI's ID, the i740 driver can have either
+     * Intel's ID or Real3D's ID, etc.) the low 16-bits are the device ID and
+     * the high 16-bits are the vendor ID.
+     *
+     * In drivers that don't have a specific vendor (e.g., vga) contains the
+     * device ID for either the generic VGA or generic 8514 devices.  This
+     * turns out to be the same as the subclass and programming interface
+     * value (e.g., the full 24-bit class for the VGA device is 0x030000 (or 
+     * 0x000101) and for 8514 is 0x030001).
+     */
     int PCIid;
+
+    /**
+     * Resources associated with this type of device.
+     */
     resRange *resList;
 } PciChipsets;
 

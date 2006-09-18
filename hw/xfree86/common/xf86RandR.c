@@ -340,7 +340,7 @@ xf86RandRCloseScreen (int index, ScreenPtr pScreen)
     return (*pScreen->CloseScreen) (index, pScreen);
 }
 
-Rotation
+_X_EXPORT Rotation
 xf86GetRotation(ScreenPtr pScreen)
 {
     if (xf86RandRIndex == -1)
@@ -350,7 +350,7 @@ xf86GetRotation(ScreenPtr pScreen)
 }
 
 /* Function to change RandR's idea of the virtual screen size */
-Bool
+_X_EXPORT Bool
 xf86RandRSetNewVirtualAndDimensions(ScreenPtr pScreen,
 	int newvirtX, int newvirtY, int newmmWidth, int newmmHeight,
 	Bool resetMode)

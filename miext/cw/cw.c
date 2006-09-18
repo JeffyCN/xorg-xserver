@@ -19,11 +19,13 @@
  * TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
  * PERFORMANCE OF THIS SOFTWARE.
  */
-/* $Header: /cvs/xorg/xc/programs/Xserver/miext/cw/cw.c,v 1.21 2005/07/01 22:43:41 daniels Exp $ */
+/* $Header$ */
 
 #ifdef HAVE_DIX_CONFIG_H
 #include <dix-config.h>
 #endif
+
+#include <string.h>
 
 #include "gcstruct.h"
 #include "windowstr.h"
@@ -461,7 +463,7 @@ cwPaintWindowBackground(WindowPtr pWin, RegionPtr pRegion, int what)
 	DrawablePtr pBackingDrawable;
 	int x_off, y_off, x_screen, y_screen;
 
-	while (pWin && pWin->backgroundState == ParentRelative)
+	while (pWin->backgroundState == ParentRelative)
 	    pWin = pWin->parent;
 
 	pBackingDrawable = cwGetBackingDrawable((DrawablePtr)pWin, &x_off,
@@ -664,7 +666,7 @@ miInitializeCompositeWrapper(ScreenPtr pScreen)
 #endif
 }
 
-void
+_X_EXPORT void
 miDisableCompositeWrapper(ScreenPtr pScreen)
 {
     cwDisabled[pScreen->myNum] = TRUE;

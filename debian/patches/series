@@ -3,14 +3,16 @@
 03_xnest_manpage_overhaul.diff
 04_read_rom_in_chunks.diff
 05_arm_cache_flush.diff -p3
-06_arm_is_not_x86_and_has_no_vga.diff -p3
+06_arm_is_not_x86_and_has_no_vga.diff 
 07_xorgconf_manpage_overhaul.diff -p0
 08_s390_servermd.diff -p3
 09_debian_xserver_rtff.diff -p0
 10_dont_look_in_home_for_config.diff -p0
 11_debian_always_use_default_font_path.diff -p1
-12_security_policy_in_etc.diff -p1
+12_security_policy_in_etc.diff 
 13_debian_add_xkbpath_env_variable.diff
 14_debian_always_look_in_our_module_path.diff
-15_security_allocate_local.diff
-16_SECURITY_setuid.diff 
+15_symlink_mesa.diff
+16_s390_fix.diff 
+17_ignoreabi.diff
+18_execinfo_only_for_backtrace.patch

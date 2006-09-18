@@ -6,12 +6,12 @@ DOC_SUBDIR = doc
 
 SUBDIRS = common ddc dummylib i2c x86emu int10 fbdevhw os-support parser rac \
           ramdac shadowfb vbe vgahw xaa xf1bpp xf4bpp xf8_16bpp \
-	  xf8_32bpp xf8_32wid loader scanpci dixmods exa \
+	  xf8_32bpp loader scanpci dixmods exa \
 	  $(DRI_SUBDIR) utils $(DOC_SUBDIR) getconfig
 
 DIST_SUBDIRS = common ddc dummylib i2c x86emu int10 fbdevhw os-support \
                parser rac ramdac shadowfb vbe vgahw xaa xf1bpp xf4bpp \
-               xf8_16bpp xf8_32bpp xf8_32wid loader scanpci dixmods dri exa \
+               xf8_16bpp xf8_32bpp loader scanpci dixmods dri exa \
 	       utils doc getconfig
 
 bin_PROGRAMS = Xorg
@@ -21,20 +21,24 @@ INCLUDES = @XORG_INCS@
 
 Xorg_SOURCES = xorg.c
 
-DISTCLEANFILES = xorg.c
+# libxorgos and libcommon need symbols from each other
+noinst_LTLIBRARIES = libosandcommon.la
+libosandcommon_la_SOURCES = osandcommon.c
+libosandcommon_la_LIBADD = \
+            os-support/libxorgos.la \
+            common/libcommon.la
 
-xorg.c:
+osandcommon.c xorg.c:
 	touch $@
 
-OS_LIBS = os-support/libxorgos.la
+DISTCLEANFILES = osandcommon.c xorg.c
 
 XORG_LIBS = \
             @XORG_CORE_LIBS@ \
             common/libinit.a \
             loader/libloader.a \
-            common/libcommon.a \
+            libosandcommon.la \
             parser/libxf86config.a \
-            $(OS_LIBS) \
             dummylib/libdummy.a \
 	    dixmods/libdixmods.la \
             @XORG_LIBS@
@@ -72,3 +76,6 @@ optionsdir = $(libdir)/X11
 dist_options_DATA = Options
 
 EXTRA_DIST = xorgconf.cpp
+
+relink:
+	rm -f Xorg && $(MAKE) Xorg

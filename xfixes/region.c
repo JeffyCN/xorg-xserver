@@ -1,5 +1,5 @@
 /*
- * $Id: region.c,v 1.6 2005/07/03 07:02:08 daniels Exp $
+ * $Id$
  *
  * Copyright © 2003 Keith Packard
  *
@@ -839,6 +839,7 @@ ProcXFixesExpandRegion (ClientPtr client)
 	    REGION_INIT (pScreen, &r, &pTmp[i], 0);
 	    REGION_UNION (pScreen, pDestination, pDestination, &r);
 	}
+	xfree(pTmp);
     }
     if (ret == Success) 
 	ret = client->noClientException;

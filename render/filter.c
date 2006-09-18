@@ -1,5 +1,5 @@
 /*
- * $Id: filter.c,v 1.9 2005/07/03 07:37:35 daniels Exp $
+ * $Id$
  *
  * Copyright © 2002 Keith Packard
  *
@@ -125,7 +125,7 @@ PictureFreeFilterIds (void)
     filterNames = 0;
 }
 
-int
+_X_EXPORT int
 PictureAddFilter (ScreenPtr			    pScreen,
 		  char				    *filter,
 		  PictFilterValidateParamsProcPtr   ValidateParams)
@@ -157,7 +157,7 @@ PictureAddFilter (ScreenPtr			    pScreen,
     return id;
 }
 
-Bool
+_X_EXPORT Bool
 PictureSetFilterAlias (ScreenPtr pScreen, char *filter, char *alias)
 {
     PictureScreenPtr    ps = GetPictureScreen(pScreen);
@@ -271,10 +271,24 @@ PictureResetFilters (ScreenPtr pScreen)
 int
 SetPictureFilter (PicturePtr pPicture, char *name, int len, xFixed *params, int nparams)
 {
-    ScreenPtr		pScreen = pPicture->pDrawable->pScreen;
-    PictFilterPtr	pFilter = PictureFindFilter (pScreen, name, len);
+    PictFilterPtr	pFilter;
     xFixed		*new_params;
-    int			i;
+    int			i, s, result;
+
+    pFilter = PictureFindFilter (screenInfo.screens[0], name, len);
+
+    if (pPicture->pDrawable == NULL) {
+	/* For source pictures, the picture isn't tied to a screen.  So, ensure
+	 * that all screens can handle a filter we set for the picture.
+	 */
+	for (s = 0; s < screenInfo.numScreens; s++) {
+	    if (PictureFindFilter (screenInfo.screens[s], name, len)->id !=
+		pFilter->id)
+	    {
+		return BadMatch;
+	    }
+	}
+    }
 
     if (!pFilter)
 	return BadName;
@@ -298,6 +312,14 @@ SetPictureFilter (PicturePtr pPicture, char *name, int len, xFixed *params, int 
     for (i = 0; i < nparams; i++)
 	pPicture->filter_params[i] = params[i];
     pPicture->filter = pFilter->id;
-    pPicture->serialNumber |= GC_CHANGE_SERIAL_BIT;
+
+    if (pPicture->pDrawable) {
+	ScreenPtr pScreen = pPicture->pDrawable->pScreen;
+	PictureScreenPtr ps = GetPictureScreen(pScreen);
+
+	result = (*ps->ChangePictureFilter) (pPicture, pPicture->filter,
+					     params, nparams);
+	return result;
+    }
     return Success;
 }

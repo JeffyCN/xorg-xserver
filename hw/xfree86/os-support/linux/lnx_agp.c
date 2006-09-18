@@ -1,7 +1,7 @@
 /*
  * Abstraction of the AGP GART interface.
  *
- * This version is for both Linux and FreeBSD.
+ * This version is for Linux and Free/Open/NetBSD.
  *
  * Copyright © 2000 VA Linux Systems, Inc.
  * Copyright © 2001 The XFree86 Project, Inc.
@@ -44,7 +44,7 @@ static Bool initDone = FALSE;
  * Close /dev/agpgart.  This frees all associated memory allocated during
  * this server generation.
  */
-Bool
+_X_EXPORT Bool
 xf86GARTCloseScreen(int screenNum)
 {
 	if(gartFd != -1) {
@@ -117,13 +117,13 @@ GARTInit(int screenNum)
 	return TRUE;
 }
 
-Bool
+_X_EXPORT Bool
 xf86AgpGARTSupported()
 {
 	return GARTInit(-1);
 }
 
-AgpInfoPtr
+_X_EXPORT AgpInfoPtr
 xf86GetAGPInfo(int screenNum)
 {
 	struct _agp_info agpinf;
@@ -166,7 +166,7 @@ xf86GetAGPInfo(int screenNum)
  * count instead of using acquiredScreen?
  */
 
-Bool
+_X_EXPORT Bool
 xf86AcquireGART(int screenNum)
 {
 	if (screenNum != -1 && !GARTInit(screenNum))
@@ -184,7 +184,7 @@ xf86AcquireGART(int screenNum)
 	return TRUE;
 }
 
-Bool
+_X_EXPORT Bool
 xf86ReleaseGART(int screenNum)
 {
 	if (screenNum != -1 && !GARTInit(screenNum))
@@ -214,7 +214,7 @@ xf86ReleaseGART(int screenNum)
 	return FALSE;
 }
 
-int
+_X_EXPORT int
 xf86AllocateGARTMemory(int screenNum, unsigned long size, int type,
 			unsigned long *physical)
 {
@@ -252,7 +252,7 @@ xf86AllocateGARTMemory(int screenNum, unsigned long size, int type,
 	return alloc.key;
 }
 
-Bool
+_X_EXPORT Bool
 xf86DeallocateGARTMemory(int screenNum, int key)
 {
 	if (!GARTInit(screenNum) || acquiredScreen != screenNum)
@@ -264,7 +264,11 @@ xf86DeallocateGARTMemory(int screenNum, int key)
 		return FALSE;
 	}
 
+#ifdef __linux__
 	if (ioctl(gartFd, AGPIOC_DEALLOCATE, (int *)key) != 0) {
+#else
+	if (ioctl(gartFd, AGPIOC_DEALLOCATE, &key) != 0) {
+#endif
 		xf86DrvMsg(screenNum, X_WARNING,"xf86DeAllocateGARTMemory: "
                    "deallocation gart memory with key %d failed\n\t(%s)\n",
                    key, strerror(errno));
@@ -275,7 +279,7 @@ xf86DeallocateGARTMemory(int screenNum, int key)
 }
 
 /* Bind GART memory with "key" at "offset" */
-Bool
+_X_EXPORT Bool
 xf86BindGARTMemory(int screenNum, int key, unsigned long offset)
 {
 	struct _agp_bind bind;
@@ -318,7 +322,7 @@ xf86BindGARTMemory(int screenNum, int key, unsigned long offset)
 
 
 /* Unbind GART memory with "key" */
-Bool
+_X_EXPORT Bool
 xf86UnbindGARTMemory(int screenNum, int key)
 {
 	struct _agp_unbind unbind;
@@ -350,7 +354,7 @@ xf86UnbindGARTMemory(int screenNum, int key)
 
 
 /* XXX Interface may change. */
-Bool
+_X_EXPORT Bool
 xf86EnableAGP(int screenNum, CARD32 mode)
 {
 	agp_setup setup;

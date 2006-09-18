@@ -1,5 +1,5 @@
 /*************************************************************************************
- * $Id: uda1380.c,v 1.4 2005/07/13 20:19:37 sandmann Exp $
+ * $Id$
  * 
  * Copyright (C) 2005 Bogdan D. bogdand@users.sourceforge.net
  *
@@ -21,19 +21,6 @@
  * Except as contained in this notice, the name of the author shall not be used in advertising or 
  * otherwise to promote the sale, use or other dealings in this Software without prior written 
  * authorization from the author.
- *
- * $Log: uda1380.c,v $
- * Revision 1.4  2005/07/13 20:19:37  sandmann
- * xc/programs/Xserver/hw/xfree86/drivers/i2c/*.c: include xorg-config.h
- * instead of config.h
- * xserver/xorg/hw/xfree86/i2c/Makefile.am: Add i2c drivers
- *
- * Revision 1.3  2005/07/11 02:29:50  ajax
- * Prep for modular builds by adding guarded #include "config.h" everywhere.
- *
- * Revision 1.2  2005/07/01 22:43:11  daniels
- * Change all misc.h and os.h references to <X11/foo.h>.
- *
  *
  ************************************************************************************/
 

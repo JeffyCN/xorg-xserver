@@ -51,111 +51,113 @@ SOFTWARE.
 #include <dix-config.h>
 #endif
 
-#ifndef USE_RGB_TXT
+#define USE_RGB_BUILTIN 1
 
-#ifdef NDBM
-#include <ndbm.h>
-#else
-#ifdef SVR4
-#include <rpcsvc/dbm.h>
-#else
-#include <dbm.h>
-#endif
-#endif
-#include "rgb.h"
+#if USE_RGB_BUILTIN
+
+#include <X11/keysym.h>
 #include "os.h"
-#include "opaque.h"
 
-/* Note that we are assuming there is only one database for all the screens. */
-
-#ifdef NDBM
-DBM *rgb_dbm = (DBM *)NULL;
-#else
-int rgb_dbm = 0;
-#endif
-
-extern void CopyISOLatin1Lowered(
-    unsigned char * /*dest*/,
-    unsigned char * /*source*/,
-    int /*length*/);
-
-int
-OsInitColors(void)
+static unsigned char
+OsToLower (unsigned char a)
 {
-    if (!rgb_dbm)
+    if ((a >= XK_A) && (a <= XK_Z))
+	return a + (XK_a - XK_A);
+    else if ((a >= XK_Agrave) && (a <= XK_Odiaeresis))
+	return a + (XK_agrave - XK_Agrave);
+    else if ((a >= XK_Ooblique) && (a <= XK_Thorn))
+	return a + (XK_oslash - XK_Ooblique);
+    else
+	return a;
+}
+
+static int
+OsStrCaseCmp (const unsigned char *s1, const unsigned char *s2, int l2)
+{
+    unsigned char   c1, c2;
+
+    for (;;)
     {
-#ifdef NDBM
-	rgb_dbm = dbm_open(rgbPath, 0, 0);
-#else
-	if (dbminit(rgbPath) == 0)
-	    rgb_dbm = 1;
-#endif
-	if (!rgb_dbm) {
-	    ErrorF( "Couldn't open RGB_DB '%s'\n", rgbPath );
-	    return FALSE;
-	}
+	c1 = OsToLower (*s1++);
+	if (l2 == 0)
+	    c2 = '\0';
+	else
+	    c2 = OsToLower (*s2++);
+	if (!c1 || !c2)
+	    break;
+	if (c1 != c2)
+	    break;
+	l2--;
     }
+    return c2 - c1;
+}
+
+typedef struct _builtinColor {
+    unsigned char	red;
+    unsigned char	green;
+    unsigned char	blue;
+    unsigned short	name;
+} BuiltinColor;
+
+#include "oscolor.h"
+
+#define NUM_BUILTIN_COLORS  (sizeof (BuiltinColors) / sizeof (BuiltinColors[0]))
+
+Bool
+OsInitColors()
+{
     return TRUE;
 }
 
-/*ARGSUSED*/
-int
-OsLookupColor(int screen, char *name, unsigned int len, 
-    unsigned short *pred, unsigned short *pgreen, unsigned short *pblue)
+Bool
+OsLookupColor(int		screen, 
+	      char		*s_name,
+	      unsigned int	len, 
+	      unsigned short	*pred,
+	      unsigned short	*pgreen,
+	      unsigned short	*pblue)
 {
-    datum		dbent;
-    RGB			rgb;
-    char		buf[64];
-    char		*lowername;
+    const BuiltinColor	*c;
+    unsigned char	*name = (unsigned char *) s_name;
+    int			low, mid, high;
+    int			r;
 
-    if(!rgb_dbm)
-	return(0);
-
-    /* we use xalloc here so that we can compile with cc without alloca
-     * when otherwise using gcc */
-    if (len < sizeof(buf))
-	lowername = buf;
-    else if (!(lowername = (char *)xalloc(len + 1)))
-	return(0);
-    CopyISOLatin1Lowered ((unsigned char *) lowername, (unsigned char *) name,
-			  (int)len);
-
-    dbent.dptr = lowername;
-    dbent.dsize = len;
-#ifdef NDBM
-    dbent = dbm_fetch(rgb_dbm, dbent);
-#else
-    dbent = fetch (dbent);
-#endif
-
-    if (len >= sizeof(buf))
-	xfree(lowername);
-
-    if(dbent.dptr)
+    low = 0;
+    high = NUM_BUILTIN_COLORS - 1;
+    while (high >= low)
     {
-	memmove((char *) &rgb, dbent.dptr, sizeof (RGB));
-	*pred = rgb.red;
-	*pgreen = rgb.green;
-	*pblue = rgb.blue;
-	return (1);
+	mid = (low + high) / 2;
+	c = &BuiltinColors[mid];
+	r = OsStrCaseCmp (&BuiltinColorNames[c->name], name, len);
+	if (r == 0)
+	{
+	    *pred = c->red * 0x101;
+	    *pgreen = c->green * 0x101;
+	    *pblue = c->blue * 0x101;
+	    return TRUE;
+	}
+	if (r < 0)
+	    high = mid - 1;
+	else
+	    low = mid + 1;
     }
-    return(0);
+    return FALSE;
 }
 
-#else /* USE_RGB_TXT */
-
+#else
 
 /*
- * The dbm routines are a porting hassle. This implementation will do
- * the same thing by reading the rgb.txt file directly, which is much
- * more portable.
+ * This file builds the server's internal database mapping color names to
+ * RGB tuples by reading in an rgb.txt file.  This is still slightly foolish,
+ * rgb.txt hasn't changed in years, we should really include a precompiled
+ * version into the server.
  */
 
 #include <stdio.h>
 #include "os.h"
 #include "opaque.h"
 
-#define HASHSIZE 511
+#define HASHSIZE 63
 
 typedef struct _dbEntry * dbEntryPtr;
 typedef struct _dbEntry {
@@ -166,14 +168,12 @@ typedef struct _dbEntry {
   char           name[1];	/* some compilers complain if [0] */
 } dbEntry;
 
-
 extern void CopyISOLatin1Lowered(
     unsigned char * /*dest*/,
     unsigned char * /*source*/,
     int /*length*/);
 
 static dbEntryPtr hashTab[HASHSIZE];
-
 
 static dbEntryPtr
 lookup(char *name, int len, Bool create)
@@ -212,7 +212,6 @@ lookup(char *name, int len, Bool create)
 
   return entry;
 }
-
 
 Bool
 OsInitColors(void)
@@ -277,11 +276,8 @@ OsInitColors(void)
 
       was_here = TRUE;
     }
-
   return TRUE;
 }
-
-
 
 Bool
 OsLookupColor(int screen, char *name, unsigned int len, 
@@ -300,4 +296,4 @@ OsLookupColor(int screen, char *name, unsigned int len,
   return FALSE;
 }
 
-#endif /* USE_RGB_TXT */
+#endif /* USE_RGB_BUILTIN */

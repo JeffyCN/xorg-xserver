@@ -1,5 +1,5 @@
 /*
- * $Id: fbedgeimp.h,v 1.2 2005/07/01 22:43:07 daniels Exp $
+ * $Id$
  *
  * Copyright © 2004 Keith Packard
  *

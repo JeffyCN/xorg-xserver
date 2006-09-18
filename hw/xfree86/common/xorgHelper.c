@@ -1,4 +1,4 @@
-/* $XdotOrg: xserver/xorg/hw/xfree86/common/xorgHelper.c,v 1.6 2005/07/03 08:53:42 daniels Exp $ */
+/* $XdotOrg: xc/programs/Xserver/hw/xfree86/common/xorgHelper.c,v 1.3 2005/04/20 12:25:21 daniels Exp $ */
 
 #ifdef HAVE_XORG_CONFIG_H
 #include <xorg-config.h>

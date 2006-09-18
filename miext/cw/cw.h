@@ -19,7 +19,7 @@
  * TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
  * PERFORMANCE OF THIS SOFTWARE.
  */
-/* $Header: /cvs/xorg/xc/programs/Xserver/miext/cw/cw.h,v 1.13 2005/10/02 08:28:26 anholt Exp $ */
+/* $Header$ */
 
 #ifdef HAVE_DIX_CONFIG_H
 #include <dix-config.h>
@@ -61,7 +61,7 @@ typedef struct {
 } cwPictureRec, *cwPicturePtr;
 
 #define getCwPicture(pPicture)	\
-    (pPicture->pDrawable ? ((cwPicturePtr)(pPicture)->devPrivates[cwPictureIndex].ptr) : 0)
+    (pPicture->pDrawable ? (cwPicturePtr)(pPicture)->devPrivates[cwPictureIndex].ptr : 0)
 #define setCwPicture(pPicture,p) ((pPicture)->devPrivates[cwPictureIndex].ptr = (pointer) (p))
 
 extern int  cwPictureIndex;

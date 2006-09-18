@@ -60,7 +60,7 @@
 extern int                 yyparse(void);
 extern FILE                *yyin;
 
-#define DMX_INFO "xdmxconfig v0.9\nCopyright 2002 Red Hat Inc.\n$Id: xdmxconfig.c,v 1.2 2005/07/01 22:43:08 daniels Exp $"
+#define DMX_INFO "xdmxconfig v0.9\nCopyright 2002 Red Hat Inc.\n$Id$"
 
 #define DMX_MAIN_WIDTH    800
 #define DMX_MAIN_HEIGHT   600

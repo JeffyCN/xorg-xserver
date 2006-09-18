@@ -27,7 +27,7 @@
  * holders shall not be used in advertising or otherwise to promote the sale,
  * use or other dealings in this Software without prior written authorization.
  */
-/* $XdotOrg: xserver/xorg/hw/darwin/quartz/xpr/xprFrame.c,v 1.5 2005/07/01 22:43:08 daniels Exp $ */
+/* $XdotOrg: xc/programs/Xserver/hw/darwin/quartz/xpr/xprFrame.c,v 1.4 2005/04/20 12:25:20 daniels Exp $ */
 /* $XFree86: xc/programs/Xserver/hw/darwin/quartz/xpr/xprFrame.c,v 1.4 2003/11/12 20:21:52 torrey Exp $ */
 
 #include "xpr.h"

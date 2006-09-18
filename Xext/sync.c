@@ -58,6 +58,8 @@ PERFORMANCE OF THIS SOFTWARE.
 #include <dix-config.h>
 #endif
 
+#include <string.h>
+
 #include <X11/X.h>
 #include <X11/Xproto.h>
 #include <X11/Xmd.h>
@@ -71,13 +73,9 @@ PERFORMANCE OF THIS SOFTWARE.
 #include <X11/extensions/sync.h>
 #include <X11/extensions/syncstr.h>
 
-#ifdef EXTMODULE
-#include "xf86_ansic.h"
-#else
 #include <stdio.h>
 #if !defined(WIN32) && !defined(Lynx)
 #include <sys/time.h>
-#endif
 #endif
 
 #include "modinit.h"
@@ -303,14 +301,18 @@ static void
 SyncDeleteTriggerFromCounter(pTrigger)
     SyncTrigger *pTrigger;
 {
-    SyncTriggerList *pCur, *pPrev = NULL;
+    SyncTriggerList *pCur;
+    SyncTriggerList *pPrev;
 
     /* pCounter needs to be stored in pTrigger before calling here. */
 
     if (!pTrigger->pCounter)
 	return;
 
-    for (pCur = pTrigger->pCounter->pTriglist; pCur; pCur = pCur->next)
+    pPrev = NULL;
+    pCur = pTrigger->pCounter->pTriglist;
+
+    while (pCur)
     {
 	if (pCur->pTrigger == pTrigger)
 	{
@@ -318,11 +320,15 @@ SyncDeleteTriggerFromCounter(pTrigger)
 		pPrev->next = pCur->next;
 	    else
 		pTrigger->pCounter->pTriglist = pCur->next;
+	    
 	    xfree(pCur);
 	    break;
 	}
+	
+	pPrev = pCur;
+	pCur = pCur->next;
     }
-
+    
     if (IsSystemCounter(pTrigger->pCounter))
 	SyncComputeBracketValues(pTrigger->pCounter, /*startOver*/ TRUE);
 }
@@ -1114,7 +1120,7 @@ SyncComputeBracketValues(pCounter, startOver)
 {
     SyncTriggerList *pCur;
     SyncTrigger *pTrigger;
-    SysCounterInfo *psci = pCounter->pSysCounterInfo;
+    SysCounterInfo *psci;
     CARD64 *pnewgtval = NULL;
     CARD64 *pnewltval = NULL;
     SyncCounterType ct;
@@ -1122,6 +1128,7 @@ SyncComputeBracketValues(pCounter, startOver)
     if (!pCounter)
 	return;
 
+    psci = pCounter->pSysCounterInfo;
     ct = pCounter->pSysCounterInfo->counterType;
     if (ct == XSyncCounterNeverChanges)
 	return;

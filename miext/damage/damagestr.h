@@ -1,5 +1,5 @@
 /*
- * $Id: damagestr.h,v 1.5 2005/07/01 22:43:41 daniels Exp $
+ * $Id$
  *
  * Copyright © 2003 Keith Packard
  *
@@ -30,6 +30,7 @@
 #define _DAMAGESTR_H_
 
 #include "damage.h"
+#include "gcstruct.h"
 #ifdef RENDER
 # include "picturestr.h"
 #endif

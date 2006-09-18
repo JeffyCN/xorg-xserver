@@ -39,10 +39,9 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <xorg-config.h>
 #endif
 
+#include <string.h>
+
 #include "xf86.h"
-#ifdef XFree86LOADER
-#include "xf86_ansic.h"
-#endif
 
 #define NEED_REPLIES
 #define NEED_EVENTS
@@ -82,6 +81,7 @@ static DISPATCH_PROC(ProcXF86DRIDispatch);
 static DISPATCH_PROC(ProcXF86DRIAuthConnection);
 
 static DISPATCH_PROC(SProcXF86DRIQueryVersion);
+static DISPATCH_PROC(SProcXF86DRIQueryDirectRenderingCapable);
 static DISPATCH_PROC(SProcXF86DRIDispatch);
 
 static void XF86DRIResetProc(ExtensionEntry* extEntry);
@@ -143,6 +143,9 @@ ProcXF86DRIQueryVersion(
     if (client->swapped) {
     	swaps(&rep.sequenceNumber, n);
     	swapl(&rep.length, n);
+	swaps(&rep.majorVersion, n);
+	swaps(&rep.minorVersion, n);
+	swapl(&rep.patchVersion, n);
     }
     WriteToClient(client, sizeof(xXF86DRIQueryVersionReply), (char *)&rep);
     return (client->noClientException);
@@ -155,6 +158,7 @@ ProcXF86DRIQueryDirectRenderingCapable(
 {
     xXF86DRIQueryDirectRenderingCapableReply	rep;
     Bool isCapable;
+    register int n;
 
     REQUEST(xXF86DRIQueryDirectRenderingCapableReq);
     REQUEST_SIZE_MATCH(xXF86DRIQueryDirectRenderingCapableReq);
@@ -173,8 +177,13 @@ ProcXF86DRIQueryDirectRenderingCapable(
     }
     rep.isCapable = isCapable;
 
-    if (!LocalClient(client))
+    if (!LocalClient(client) || client->swapped)
 	rep.isCapable = 0;
+
+    if (client->swapped) {
+    	swaps(&rep.sequenceNumber, n);
+    	swapl(&rep.length, n);
+    }
 
     WriteToClient(client, 
 	sizeof(xXF86DRIQueryDirectRenderingCapableReply), (char *)&rep);
@@ -628,22 +637,35 @@ SProcXF86DRIQueryVersion(
 }
 
 static int
+SProcXF86DRIQueryDirectRenderingCapable(
+    register ClientPtr client
+)
+{
+    register int n;
+    REQUEST(xXF86DRIQueryDirectRenderingCapableReq);
+    swaps(&stuff->length, n);
+    swapl(&stuff->screen, n);
+    return ProcXF86DRIQueryDirectRenderingCapable(client);
+}
+
+static int
 SProcXF86DRIDispatch (
     register ClientPtr	client
 )
 {
     REQUEST(xReq);
 
-    /* It is bound to be non-local when there is byte swapping */
-    if (!LocalClient(client))
-	return DRIErrorBase + XF86DRIClientNotLocal;
-
-    /* only local clients are allowed DRI access */
+    /*
+     * Only local clients are allowed DRI access, but remote clients still need
+     * these requests to find out cleanly.
+     */
     switch (stuff->data)
     {
     case X_XF86DRIQueryVersion:
 	return SProcXF86DRIQueryVersion(client);
+    case X_XF86DRIQueryDirectRenderingCapable:
+	return SProcXF86DRIQueryDirectRenderingCapable(client);
     default:
-	return BadRequest;
+	return DRIErrorBase + XF86DRIClientNotLocal;
     }
 }

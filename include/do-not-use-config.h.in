@@ -1,5 +1,8 @@
 /* include/do-not-use-config.h.in.  Generated from configure.ac by autoheader.  */
 
+/* Build AIGLX loader */
+#undef AIGLX
+
 /* Support BigRequests extension */
 #undef BIGREQS
 
@@ -71,11 +74,14 @@
 /* Use libdl-based loader */
 #undef DLOPEN_SUPPORT
 
-/* Build DPMS extension */
+/* Support DPMS extension */
 #undef DPMSExtension
 
 /* Built-in output drivers (none) */
 #undef DRIVERS
+
+/* Default DRI driver path */
+#undef DRI_DRIVER_PATH
 
 /* Build Extended-Visual-Information extension */
 #undef EVI
@@ -88,6 +94,9 @@
 
 /* Support XDM-AUTH*-1 */
 #undef HASXDMAUTH
+
+/* System has /dev/xf86 aperture driver */
+#undef HAS_APERTURE_DRV
 
 /* Cygwin has /dev/windows for signaling new win32 messages */
 #undef HAS_DEVWINDOWS
@@ -104,10 +113,13 @@
 /* Have the `getpeerucred' function. */
 #undef HAS_GETPEERUCRED
 
+/* Have the `mmap' function. */
+#undef HAS_MMAP
+
 /* Define to 1 if NetBSD built-in MTRR support is available */
 #undef HAS_MTRR_BUILTIN
 
-/* Define to 1 if BSD MTRR support is available */
+/* MTRR support available */
 #undef HAS_MTRR_SUPPORT
 
 /* Support SHM */
@@ -147,6 +159,9 @@
 
 /* Define to 1 if you don't have `vprintf' but do have `_doprnt.' */
 #undef HAVE_DOPRNT
+
+/* Have execinfo.h */
+#undef HAVE_EXECINFO_H
 
 /* Define to 1 if you have the <fcntl.h> header file. */
 #undef HAVE_FCNTL_H
@@ -204,6 +219,9 @@
 
 /* Define to 1 if you have the <rpcsvc/dbm.h> header file. */
 #undef HAVE_RPCSVC_DBM_H
+
+/* Define to 1 if you have the <SDL/SDL.h> header file. */
+#undef HAVE_SDL_SDL_H
 
 /* Define to 1 if you have the <stdint.h> header file. */
 #undef HAVE_STDINT_H
@@ -276,6 +294,18 @@
 /* Support IPv6 for TCP connections */
 #undef IPv6
 
+/* Build kdrive ddx */
+#undef KDRIVEDDXACTIONS
+
+/* Build fbdev-based kdrive server */
+#undef KDRIVEFBDEV
+
+/* Build Kdrive X server */
+#undef KDRIVESERVER
+
+/* Build VESA-based kdrive servers */
+#undef KDRIVEVESA
+
 /* Support LBX extension */
 #undef LBX
 
@@ -290,6 +320,9 @@
 
 /* Disable some debugging code */
 #undef NDEBUG
+
+/* Do not have `strcasecmp'. */
+#undef NEED_STRCASECMP
 
 /* Need XFree86 helper functions */
 #undef NEED_XF86_PROTOTYPES
@@ -330,7 +363,7 @@
 /* System has PC console */
 #undef PCCONS_SUPPORT
 
-/* System has PCVT console */
+/* System has PC console */
 #undef PCVT_SUPPORT
 
 /* Support pixmap privates */
@@ -366,16 +399,13 @@
 /* Support Secure RPC ("SUN-DES-1") authentication for X11 clients */
 #undef SECURE_RPC
 
-/* Server config path */
-#undef SERVERCONFIGdir
-
 /* Use a lock to prevent multiple servers on a display */
 #undef SERVER_LOCK
 
 /* Support SHAPE extension */
 #undef SHAPE
 
-/* The size of a `unsigned long', as computed by sizeof. */
+/* The size of `unsigned long', as computed by sizeof. */
 #undef SIZEOF_UNSIGNED_LONG
 
 /* Include time-based scheduler */
@@ -383,7 +413,7 @@
 
 /* If using the C implementation of alloca, define if you know the
    direction of stack growth for your system; otherwise it will be
-   automatically deduced at run-time.
+   automatically deduced at runtime.
 	STACK_DIRECTION > 0 => grows toward higher addresses
 	STACK_DIRECTION < 0 => grows toward lower addresses
 	STACK_DIRECTION = 0 => direction of growth unknown */
@@ -449,7 +479,7 @@
 /* Build XEvIE extension */
 #undef XEVIE
 
-/* Build XFree86 BigFont extension */
+/* Support XF86 Big font extension */
 #undef XF86BIGFONT
 
 /* Name of configuration file */
@@ -472,6 +502,12 @@
 
 /* Build XDGA support */
 #undef XFreeXDGA
+
+/* Use loadable XGL modules */
+#undef XGL_MODULAR
+
+/* Default XGL module search path */
+#undef XGL_MODULE_PATH
 
 /* Support Xinerama extension */
 #undef XINERAMA
@@ -518,11 +554,17 @@
 /* Build Print extension */
 #undef XPRINT
 
+/* Support FreeType rasterizer in Xprint for nearly all font file formats */
+#undef XP_USE_FREETYPE
+
 /* Support Record extension */
 #undef XRECORD
 
 /* Build XRes extension */
 #undef XResExtension
+
+/* Build Xsdl server */
+#undef XSDLSERVER
 
 /* Support XSync extension */
 #undef XSYNC

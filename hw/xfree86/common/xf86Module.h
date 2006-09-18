@@ -84,11 +84,11 @@ typedef enum {
  * changed.  The minor revision mask is 0x0000FFFF and the major revision
  * mask is 0xFFFF0000.
  */
-#define ABI_ANSIC_VERSION	SET_ABI_VERSION(0, 2)
-#define ABI_VIDEODRV_VERSION	SET_ABI_VERSION(0, 8)
-#define ABI_XINPUT_VERSION	SET_ABI_VERSION(0, 5)
-#define ABI_EXTENSION_VERSION	SET_ABI_VERSION(0, 2)
-#define ABI_FONT_VERSION	SET_ABI_VERSION(0, 4)
+#define ABI_ANSIC_VERSION	SET_ABI_VERSION(0, 3)
+#define ABI_VIDEODRV_VERSION	SET_ABI_VERSION(1, 0)
+#define ABI_XINPUT_VERSION	SET_ABI_VERSION(0, 6)
+#define ABI_EXTENSION_VERSION	SET_ABI_VERSION(0, 3)
+#define ABI_FONT_VERSION	SET_ABI_VERSION(0, 5)
 
 #define MODINFOSTRING1	0xef23fdc5
 #define MODINFOSTRING2	0x10dc023a
@@ -196,11 +196,15 @@ extern ExtensionModule *ExtensionModuleList;
 pointer LoadSubModule(pointer, const char *, const char **,
 		      const char **, pointer, const XF86ModReqInfo *,
 		      int *, int *);
+pointer LoadSubModuleLocal(pointer, const char *, const char **,
+			   const char **, pointer, const XF86ModReqInfo *,
+			   int *, int *);
 void UnloadSubModule(pointer);
 void LoadFont(pointer);
 void UnloadModule (pointer);
 #endif
 pointer LoaderSymbol(const char *);
+pointer LoaderSymbolLocal(pointer module, const char *);
 char **LoaderListDirs(const char **, const char **);
 void LoaderFreeDirList(char **);
 void LoaderErrorMsg(const char *, const char *, int, int);
@@ -211,6 +215,7 @@ void LoaderReqSymLists(const char **, ...);
 void LoaderReqSymbols(const char *, ...);
 int LoaderCheckUnresolved(int);
 void LoaderGetOS(const char **name, int *major, int *minor, int *teeny);
+int LoaderGetABIVersion(const char *abiclass);
 
 typedef pointer (*ModuleSetupProc)(pointer, pointer, int *, int *);
 typedef void (*ModuleTearDownProc)(pointer);

@@ -611,7 +611,7 @@ static int AddCurrentContext(__GLXclientState *cl, __GLXcontext *glxc, DrawableP
     cl->numCurrentContexts++;
 
     __glXMemset(cl->be_currentCTag + num*screenInfo.numScreens, 0, 
-	         screenInfo.numScreens * sizeof(Display *));
+	         screenInfo.numScreens * sizeof(GLXContextTag));
 
     return num+1;
 }
@@ -3619,7 +3619,7 @@ int __glXSendLargeCommand(__GLXclientState *cl, GLXContextTag contextTag)
 	   GetReq(GLXRenderLarge,req); 
 	   req->reqType = dmxScreen->glxMajorOpcode;
 	   req->glxCode = X_GLXRenderLarge; 
-	   req->contextTag = (glxc ? GetCurrentBackEndTag(cl,contextTag,s) : 0);
+	   req->contextTag = GetCurrentBackEndTag(cl,contextTag,s);
 	   req->length += (amount + 3) >> 2;
 	   req->requestNumber = requestNumber++;
 	   req->requestTotal = totalRequests;

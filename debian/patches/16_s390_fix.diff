@@ -1,0 +1,87 @@
+Index: xorg-server/hw/xfree86/common/xf86Bus.c
+===================================================================
+--- xorg-server.orig/hw/xfree86/common/xf86Bus.c	2006-08-21 22:15:53.000000000 +0000
++++ xorg-server/hw/xfree86/common/xf86Bus.c	2006-08-21 22:25:21.000000000 +0000
+@@ -3078,7 +3078,7 @@
+ CheckGenericGA()
+ {
+ /* This needs to be changed for multiple domains */
+-#if !defined(__sparc__) && !defined(__powerpc__) && !defined(__mips__) && !defined(__ia64__) && !defined(__arm__)
++#if !defined(__sparc__) && !defined(__powerpc__) && !defined(__mips__) && !defined(__ia64__) && !defined(__arm__) && !defined(__s390__)
+     IOADDRESS GenericIOBase = VGAHW_GET_IOBASE();
+     CARD8 CurrentValue, TestValue;
+ 
+Index: xorg-server/hw/xfree86/os-support/linux/lnx_video.c
+===================================================================
+--- xorg-server.orig/hw/xfree86/os-support/linux/lnx_video.c	2006-08-21 22:15:54.000000000 +0000
++++ xorg-server/hw/xfree86/os-support/linux/lnx_video.c	2006-08-21 22:30:44.000000000 +0000
+@@ -466,7 +466,7 @@
+ 	   Base,realBase,alignOff);
+ #endif
+     
+-#if defined(__ia64__) || defined(__arm__)
++#if defined(__ia64__) || defined(__arm__) || defined(__s390__)
+ #ifndef MAP_WRITECOMBINED
+ #define MAP_WRITECOMBINED 0x00010000
+ #endif
+@@ -596,7 +596,7 @@
+ #if defined(__powerpc__)
+ 	munmap(ioBase, 0x20000);
+ 	ioBase = NULL;
+-#elif !defined(__mc68000__) && !defined(__sparc__) && !defined(__mips__) && !defined(__sh__) && !defined(__hppa__) && !defined(__arm__)
++#elif !defined(__mc68000__) && !defined(__sparc__) && !defined(__mips__) && !defined(__sh__) && !defined(__hppa__) && !defined(__arm__) && !defined(__s390__)
+ 	iopl(0);
+ 	ioperm(0, 1024, 0);
+ #endif
+@@ -615,12 +615,12 @@
+ _X_EXPORT Bool
+ xf86DisableInterrupts()
+ {
+-#if !defined(__mc68000__) && !defined(__powerpc__) && !defined(__sparc__) && !defined(__mips__) && !defined(__ia64__) && !defined(__sh__) && !defined(__hppa__) && !defined(__arm__)
++#if !defined(__mc68000__) && !defined(__powerpc__) && !defined(__sparc__) && !defined(__mips__) && !defined(__ia64__) && !defined(__sh__) && !defined(__hppa__) && !defined(__arm__) && !defined(__s390__)
+ 	if (!ExtendedEnabled)
+ 	    if (iopl(3) || ioperm(0, 1024, 1))
+ 			return (FALSE);
+ #endif
+-#if defined(__alpha__) || defined(__mc68000__) || defined(__powerpc__) || defined(__sparc__) || defined(__mips__) || defined(__arm__) || defined(__sh__) || defined(__ia64__) || defined(__hppa__)
++#if defined(__alpha__) || defined(__mc68000__) || defined(__powerpc__) || defined(__sparc__) || defined(__mips__) || defined(__arm__) || defined(__sh__) || defined(__ia64__) || defined(__hppa__) || defined(__s390__)
+ #else
+ # ifdef __GNUC__
+ #  if defined(__ia64__)
+@@ -647,12 +647,12 @@
+ _X_EXPORT void
+ xf86EnableInterrupts()
+ {
+-#if !defined(__mc68000__) && !defined(__powerpc__) && !defined(__sparc__) && !defined(__mips__) && !defined(__ia64__) && !defined(__sh__) && !defined(__hppa__) && !defined(__arm__)
++#if !defined(__mc68000__) && !defined(__powerpc__) && !defined(__sparc__) && !defined(__mips__) && !defined(__ia64__) && !defined(__sh__) && !defined(__hppa__) && !defined(__arm__) && !defined(__s390__)
+ 	if (!ExtendedEnabled)
+ 	    if (iopl(3) || ioperm(0, 1024, 1))
+ 			return;
+ #endif
+-#if defined(__alpha__) || defined(__mc68000__) || defined(__powerpc__) || defined(__sparc__) || defined(__mips__) || defined(__arm__) || defined(__sh__) || defined(__ia64__) || defined(__hppa__)
++#if defined(__alpha__) || defined(__mc68000__) || defined(__powerpc__) || defined(__sparc__) || defined(__mips__) || defined(__arm__) || defined(__sh__) || defined(__ia64__) || defined(__hppa__) || defined(__s390__)
+ #else
+ # ifdef __GNUC__
+ #  if defined(__ia64__)
+@@ -666,7 +666,7 @@
+ 	asm("sti");
+ # endif
+ #endif
+-#if !defined(__mc68000__) && !defined(__powerpc__) && !defined(__sparc__) && !defined(__mips__) && !defined(__sh__) && !defined(__ia64__) && !defined(__hppa__) && !defined(__arm__)
++#if !defined(__mc68000__) && !defined(__powerpc__) && !defined(__sparc__) && !defined(__mips__) && !defined(__sh__) && !defined(__ia64__) && !defined(__hppa__) && !defined(__arm__) && !defined(__s390__)
+ 	if (!ExtendedEnabled) {
+ 	    iopl(0);
+ 	    ioperm(0, 1024, 0);
+Index: xorg-server/hw/xfree86/vgahw/vgaHW.h
+===================================================================
+--- xorg-server.orig/hw/xfree86/vgahw/vgaHW.h	2006-08-21 22:15:54.000000000 +0000
++++ xorg-server/hw/xfree86/vgahw/vgaHW.h	2006-08-21 22:31:08.000000000 +0000
+@@ -176,7 +176,7 @@
+ #define BITS_PER_GUN 6
+ #define COLORMAP_SIZE 256
+ 
+-#if defined(__powerpc__) || defined(__arm__)
++#if defined(__powerpc__) || defined(__arm__) || defined(__s390__)
+ #define DACDelay(hw) /* No legacy VGA support */
+ #else
+ #define DACDelay(hw)							      \

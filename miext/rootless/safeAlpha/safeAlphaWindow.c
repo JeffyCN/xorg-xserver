@@ -1,4 +1,4 @@
-/* $XdotOrg: xserver/xorg/miext/rootless/safeAlpha/safeAlphaWindow.c,v 1.4 2005/07/01 22:43:42 daniels Exp $ */
+/* $XdotOrg: xc/programs/Xserver/miext/rootless/safeAlpha/safeAlphaWindow.c,v 1.3 2004/12/04 00:43:12 kuhn Exp $ */
 /*
  * Specialized window functions to protect the alpha channel
  */

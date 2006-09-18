@@ -1255,7 +1255,7 @@ XkbSizeVirtualModMap(XkbDescPtr xkb,xkbGetMapReply *rep)
 	rep->totalVModMapKeys= 0;
 	return 0;
     }
-    for (nRtrn=i=0;i<rep->nVModMapKeys;i++) {
+    for (nRtrn=i=0;i<rep->nVModMapKeys-1;i++) {
 	if (xkb->server->vmodmap[i+rep->firstVModMapKey]!=0)
 	    nRtrn++;
     }
@@ -2284,7 +2284,7 @@ ProcXkbSetMap(ClientPtr client)
     XkbDescPtr		xkb;
     XkbChangesRec	change;
     XkbEventCauseRec	cause;
-    int			nTypes,nActions,error;
+    int			nTypes = 0,nActions,error;
     char *		tmp;
     CARD8	 	mapWidths[XkbMaxLegalKeyCode+1];
     CARD16	 	symsPerKey[XkbMaxLegalKeyCode+1];
@@ -6214,7 +6214,7 @@ XkbResetProc(ExtensionEntry *extEntry)
 }
 
 void
-XkbExtensionInit(INITARGS)
+XkbExtensionInit(void)
 {
     ExtensionEntry *extEntry;
 

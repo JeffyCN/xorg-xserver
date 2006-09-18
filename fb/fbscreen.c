@@ -1,4 +1,4 @@
-/* $XdotOrg: xserver/xorg/fb/fbscreen.c,v 1.6 2005/07/03 07:01:23 daniels Exp $
+/* $XdotOrg: xc/programs/Xserver/fb/fbscreen.c,v 1.4 2004/12/04 00:42:50 kuhn Exp $
  * Id: fbscreen.c,v 1.1 1999/11/02 03:54:45 keithp Exp $
  *
  * Copyright © 1998 Keith Packard

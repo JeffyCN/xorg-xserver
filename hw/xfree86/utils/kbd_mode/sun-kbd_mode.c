@@ -1,5 +1,5 @@
 /* $Xorg: kbd_mode.c,v 1.3 2000/08/17 19:48:29 cpqbld Exp $ */
-/* $XdotOrg: xserver/xorg/hw/xfree86/utils/kbd_mode/sun-kbd_mode.c,v 1.3 2005/09/28 01:57:47 alanc Exp $ */
+/* $XdotOrg: $ */
 /************************************************************
 Copyright 1987 by Sun Microsystems, Inc. Mountain View, CA.
 

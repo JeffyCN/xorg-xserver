@@ -1,4 +1,4 @@
-/* $XdotOrg: xserver/xorg/include/globals.h,v 1.9 2005/08/24 11:18:31 daniels Exp $ */
+/* $XdotOrg: xserver/xorg/include/globals.h,v 1.10 2006/01/08 23:43:54 ajax Exp $ */
 /* $XFree86: xc/programs/Xserver/include/globals.h,v 1.3 1999/09/25 14:38:21 dawes Exp $ */
 
 #ifndef _XSERV_GLOBAL_H_
@@ -12,6 +12,10 @@ extern CARD32 defaultScreenSaverTime;
 extern CARD32 defaultScreenSaverInterval;
 extern CARD32 ScreenSaverTime;
 extern CARD32 ScreenSaverInterval;
+
+#ifdef SCREENSAVER
+extern Bool screenSaverSuspended;
+#endif
 
 extern char *defaultFontPath;
 extern char *rgbPath;
@@ -62,10 +66,6 @@ extern Bool noDamageExtension;
 
 #ifdef DBE
 extern Bool noDbeExtension;
-#endif
-
-#ifdef DPSEXT
-extern Bool noDPSExtension;
 #endif
 
 #ifdef DPMSExtension

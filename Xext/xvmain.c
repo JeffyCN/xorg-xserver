@@ -1,4 +1,4 @@
-/* $XdotOrg: xserver/xorg/Xext/xvmain.c,v 1.6 2005/07/03 08:53:36 daniels Exp $ */
+/* $XdotOrg: xserver/xorg/Xext/xvmain.c,v 1.7 2006/02/10 22:00:20 anholt Exp $ */
 /***********************************************************
 Copyright 1991 by Digital Equipment Corporation, Maynard, Massachusetts,
 and the Massachusetts Institute of Technology, Cambridge, Massachusetts.
@@ -79,6 +79,8 @@ SOFTWARE.
 #include <dix-config.h>
 #endif
 
+#include <string.h>
+
 #include <X11/X.h>
 #include <X11/Xproto.h>
 #include "misc.h"
@@ -98,10 +100,6 @@ SOFTWARE.
 #include <X11/extensions/Xv.h>
 #include <X11/extensions/Xvproto.h>
 #include "xvdix.h"
-
-#ifdef EXTMODULE
-#include "xf86_ansic.h"
-#endif
 
 #ifdef PANORAMIX
 #include "panoramiX.h"
@@ -257,7 +255,7 @@ CreateResourceTypes()
 
 }
 
-int
+_X_EXPORT int
 XvScreenInit(ScreenPtr pScreen)
 {
   XvScreenPtr pxvs;
@@ -338,13 +336,13 @@ XvResetProc(ExtensionEntry* extEntry)
 {
 }
 
-int
+_X_EXPORT int
 XvGetScreenIndex()
 {
   return XvScreenIndex;
 }
 
-unsigned long
+_X_EXPORT unsigned long
 XvGetRTPort()
 {
   return XvRTPort;

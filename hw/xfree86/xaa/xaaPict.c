@@ -26,9 +26,10 @@
 #include <xorg-config.h>
 #endif
 
+#include <string.h>
+
 #include "misc.h"
 #include "xf86.h"
-#include "xf86_ansic.h"
 #include "xf86_OSproc.h"
 
 #include <X11/X.h>
@@ -217,7 +218,13 @@ XAADoComposite (
 
     if (pDst->alphaMap || pSrc->alphaMap || (pMask && pMask->alphaMap))
 	return FALSE;
-	
+
+    if ((pSrc->repeat && pSrc->repeatType != RepeatNormal) ||
+	(pMask && pMask->repeat && pMask->repeatType != RepeatNormal))
+    {
+	return FALSE;
+    }
+
     xDst += pDst->pDrawable->x;
     yDst += pDst->pDrawable->y;
     xSrc += pSrc->pDrawable->x;

@@ -1,4 +1,4 @@
-.\" $XdotOrg: xserver/xorg/hw/xfree86/doc/man/xorg.conf.man.pre,v 1.6 2005/12/19 16:44:21 ajax Exp $
+.\" $XdotOrg: xc/programs/Xserver/hw/xfree86/xorg.conf.man,v 1.3 2005/03/22 21:30:43 ajax Exp $
 .\" shorthand for double quote that works everywhere.
 .ds q \N'34'
 .TH __xconfigfile__ __filemansuffix__ __vendorversion__

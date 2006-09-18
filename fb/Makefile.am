@@ -6,7 +6,9 @@ INCLUDES = \
 	-I$(top_srcdir)/hw/xfree86/common
 AM_CFLAGS = $(DIX_CFLAGS) @SERVER_DEFINES@ @MODULE_DEFINES@ @LOADER_DEFINES@
 
+if XORG
 sdk_HEADERS = fb.h fbrop.h fbpseudocolor.h fboverlay.h
+endif
 
 if MMX_CAPABLE
 AM_CFLAGS += -DUSE_MMX

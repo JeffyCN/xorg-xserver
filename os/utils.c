@@ -1,4 +1,4 @@
-/* $XdotOrg: xserver/xorg/os/utils.c,v 1.21 2005/11/08 06:33:30 jkj Exp $ */
+/* $XdotOrg: xserver/xorg/os/utils.c,v 1.24 2006/02/16 07:17:31 keithp Exp $ */
 /* $Xorg: utils.c,v 1.5 2001/02/09 02:05:24 xorgcvs Exp $ */
 /*
 
@@ -131,114 +131,117 @@ OR PERFORMANCE OF THIS SOFTWARE.
 #include "DiPrint.h"
 #endif
 
-Bool noTestExtensions;
+_X_EXPORT Bool noTestExtensions;
 #ifdef BIGREQS
-Bool noBigReqExtension = FALSE;
+_X_EXPORT Bool noBigReqExtension = FALSE;
 #endif
 #ifdef COMPOSITE
-/* COMPOSITE is disabled by default for now until the
- * interface is stable */
-Bool noCompositeExtension = TRUE;
+ #ifdef XFree86Server
+  /* COMPOSITE is disabled by default for now until the
+   * interface is stable */
+  #define COMPOSITE_DEFAULT FALSE
+ #else
+  #define COMPOSITE_DEFAULT TRUE
+ #endif
+_X_EXPORT Bool noCompositeExtension = !COMPOSITE_DEFAULT;
 #endif
+
 #ifdef DAMAGE
-Bool noDamageExtension = FALSE;
+_X_EXPORT Bool noDamageExtension = FALSE;
 #endif
 #ifdef DBE
-Bool noDbeExtension = FALSE;
-#endif
-#ifdef DPSEXT
-Bool noDPSExtension = FALSE;
+_X_EXPORT Bool noDbeExtension = FALSE;
 #endif
 #ifdef DPMSExtension
-Bool noDPMSExtension = FALSE;
+_X_EXPORT Bool noDPMSExtension = FALSE;
 #endif
 #ifdef EVI
-Bool noEVIExtension = FALSE;
+_X_EXPORT Bool noEVIExtension = FALSE;
 #endif
 #ifdef FONTCACHE
-Bool noFontCacheExtension = FALSE;
+_X_EXPORT Bool noFontCacheExtension = FALSE;
 #endif
 #ifdef GLXEXT
-Bool noGlxExtension = FALSE;
+_X_EXPORT Bool noGlxExtension = FALSE;
 #endif
 #ifdef LBX
-Bool noLbxExtension = FALSE;
+_X_EXPORT Bool noLbxExtension = FALSE;
 #endif
 #ifdef SCREENSAVER
-Bool noScreenSaverExtension = FALSE;
+_X_EXPORT Bool noScreenSaverExtension = FALSE;
 #endif
 #ifdef MITSHM
-Bool noMITShmExtension = FALSE;
+_X_EXPORT Bool noMITShmExtension = FALSE;
 #endif
 #ifdef MITMISC
-Bool noMITMiscExtension = FALSE;
+_X_EXPORT Bool noMITMiscExtension = FALSE;
 #endif
 #ifdef MULTIBUFFER
-Bool noMultibufferExtension = FALSE;
+_X_EXPORT Bool noMultibufferExtension = FALSE;
 #endif
 #ifdef RANDR
-Bool noRRExtension = FALSE;
+_X_EXPORT Bool noRRExtension = FALSE;
 #endif
 #ifdef RENDER
-Bool noRenderExtension = FALSE;
+_X_EXPORT Bool noRenderExtension = FALSE;
 #endif
 #ifdef SHAPE
-Bool noShapeExtension = FALSE;
+_X_EXPORT Bool noShapeExtension = FALSE;
 #endif
 #ifdef XCSECURITY
-Bool noSecurityExtension = FALSE;
+_X_EXPORT Bool noSecurityExtension = FALSE;
 #endif
 #ifdef XSYNC
-Bool noSyncExtension = FALSE;
+_X_EXPORT Bool noSyncExtension = FALSE;
 #endif
 #ifdef TOGCUP
-Bool noXcupExtension = FALSE;
+_X_EXPORT Bool noXcupExtension = FALSE;
 #endif
 #ifdef RES
-Bool noResExtension = FALSE;
+_X_EXPORT Bool noResExtension = FALSE;
 #endif
 #ifdef XAPPGROUP
-Bool noXagExtension = FALSE;
+_X_EXPORT Bool noXagExtension = FALSE;
 #endif
 #ifdef XCMISC
-Bool noXCMiscExtension = FALSE;
+_X_EXPORT Bool noXCMiscExtension = FALSE;
 #endif
 #ifdef XEVIE
 /* Xevie is disabled by default for now until the
  * interface is stable */
-Bool noXevieExtension = TRUE;
+_X_EXPORT Bool noXevieExtension = TRUE;
 #endif
 #ifdef XF86BIGFONT
-Bool noXFree86BigfontExtension = FALSE;
+_X_EXPORT Bool noXFree86BigfontExtension = FALSE;
 #endif
 #ifdef XFreeXDGA
-Bool noXFree86DGAExtension = FALSE;
+_X_EXPORT Bool noXFree86DGAExtension = FALSE;
 #endif
 #ifdef XF86DRI
-Bool noXFree86DRIExtension = FALSE;
+_X_EXPORT Bool noXFree86DRIExtension = FALSE;
 #endif
 #ifdef XF86MISC
-Bool noXFree86MiscExtension = FALSE;
+_X_EXPORT Bool noXFree86MiscExtension = FALSE;
 #endif
 #ifdef XF86VIDMODE
-Bool noXFree86VidModeExtension = FALSE;
+_X_EXPORT Bool noXFree86VidModeExtension = FALSE;
 #endif
 #ifdef XFIXES
-Bool noXFixesExtension = FALSE;
+_X_EXPORT Bool noXFixesExtension = FALSE;
 #endif
 /* |noXkbExtension| is defined in xc/programs/Xserver/xkb/xkbInit.c */
 #ifdef PANORAMIX
 /* Xinerama is disabled by default unless enabled via +xinerama */
-Bool noPanoramiXExtension = TRUE;
+_X_EXPORT Bool noPanoramiXExtension = TRUE;
 #endif
 #ifdef XINPUT
-Bool noXInputExtension = FALSE;
+_X_EXPORT Bool noXInputExtension = FALSE;
 #endif
 #ifdef XIDLE
-Bool noXIdleExtension = FALSE;
+_X_EXPORT Bool noXIdleExtension = FALSE;
 #endif
 #ifdef XV
-Bool noXvExtension = FALSE;
+_X_EXPORT Bool noXvExtension = FALSE;
 #endif
 
 #define X_INCLUDE_NETDB_H
@@ -258,7 +261,7 @@ Bool PanoramiXExtensionDisabledHack = FALSE;
 
 int auditTrailLevel = 1;
 
-Bool Must_have_memory = FALSE;
+_X_EXPORT Bool Must_have_memory = FALSE;
 
 #ifdef AIXV3
 int SyncOn  = 0;
@@ -538,7 +541,7 @@ AutoResetServer (int sig)
 /* Force connections to close and then exit on SIGTERM, SIGINT */
 
 /*ARGSUSED*/
-SIGVAL
+_X_EXPORT SIGVAL
 GiveUp(int sig)
 {
     int olderrno = errno;
@@ -553,7 +556,7 @@ GiveUp(int sig)
 }
 
 #ifndef DDXTIME
-CARD32
+_X_EXPORT CARD32
 GetTimeInMillis(void)
 {
     struct timeval  tp;
@@ -563,7 +566,7 @@ GetTimeInMillis(void)
 }
 #endif
 
-void
+_X_EXPORT void
 AdjustWaitForDelay (pointer waitTime, unsigned long newdelay)
 {
     static struct timeval   delay_val;
@@ -1352,7 +1355,7 @@ set_font_authorizations(char **authorizations, int *authlen, pointer client)
 
 #ifndef INTERNAL_MALLOC
 
-void * 
+_X_EXPORT void * 
 Xalloc(unsigned long amount)
 {
     register pointer  ptr;
@@ -1380,7 +1383,7 @@ Xalloc(unsigned long amount)
  * "no failure" realloc, alternate interface to Xalloc w/o Must_have_memory
  *****************/
 
-void *
+_X_EXPORT void *
 XNFalloc(unsigned long amount)
 {
     register pointer ptr;
@@ -1403,7 +1406,7 @@ XNFalloc(unsigned long amount)
  * Xcalloc
  *****************/
 
-void *
+_X_EXPORT void *
 Xcalloc(unsigned long amount)
 {
     unsigned long   *ret;
@@ -1418,7 +1421,7 @@ Xcalloc(unsigned long amount)
  * XNFcalloc
  *****************/
 
-void *
+_X_EXPORT void *
 XNFcalloc(unsigned long amount)
 {
     unsigned long   *ret;
@@ -1435,7 +1438,7 @@ XNFcalloc(unsigned long amount)
  * Xrealloc
  *****************/
 
-void *
+_X_EXPORT void *
 Xrealloc(pointer ptr, unsigned long amount)
 {
 #ifdef MEMBUG
@@ -1466,7 +1469,7 @@ Xrealloc(pointer ptr, unsigned long amount)
  * "no failure" realloc, alternate interface to Xrealloc w/o Must_have_memory
  *****************/
 
-void *
+_X_EXPORT void *
 XNFrealloc(pointer ptr, unsigned long amount)
 {
     if (( ptr = (pointer)Xrealloc( ptr, amount ) ) == NULL)
@@ -1482,7 +1485,7 @@ XNFrealloc(pointer ptr, unsigned long amount)
  *    calls free 
  *****************/    
 
-void
+_X_EXPORT void
 Xfree(pointer ptr)
 {
     if (ptr)
@@ -1520,7 +1523,7 @@ Xstrdup(const char *s)
 }
 
 
-char *
+_X_EXPORT char *
 XNFstrdup(const char *s)
 {
     char *sd;
@@ -1718,8 +1721,10 @@ System(char *command)
     case -1:	/* error */
 	p = -1;
     case 0:	/* child */
-	setgid(getgid());
-	setuid(getuid());
+	if (setgid(getgid()) == -1)
+	    _exit(127);
+	if (setuid(getuid()) == -1)
+	    _exit(127);
 	execl("/bin/sh", "sh", "-c", command, (char *)NULL);
 	_exit(127);
     default:	/* parent */
@@ -1770,8 +1775,10 @@ Popen(char *command, char *type)
 	xfree(cur);
 	return NULL;
     case 0:	/* child */
-	setgid(getgid());
-	setuid(getuid());
+	if (setgid(getgid()) == -1)
+	    _exit(127);
+	if (setuid(getuid()) == -1)
+	    _exit(127);
 	if (*type == 'r') {
 	    if (pdes[1] != 1) {
 		/* stdout */
@@ -1845,8 +1852,10 @@ Fopen(char *file, char *type)
 	xfree(cur);
 	return NULL;
     case 0:	/* child */
-	setgid(getgid());
-	setuid(getuid());
+	if (setgid(getgid()) == -1)
+	    _exit(127);
+	if (setuid(getuid()) == -1)
+	    _exit(127);
 	if (*type == 'r') {
 	    if (pdes[1] != 1) {
 		/* stdout */

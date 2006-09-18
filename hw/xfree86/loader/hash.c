@@ -1,4 +1,4 @@
-/* $XdotOrg: xserver/xorg/hw/xfree86/loader/hash.c,v 1.6 2005/07/03 08:53:46 daniels Exp $ */
+/* $XdotOrg: xc/programs/Xserver/hw/xfree86/loader/hash.c,v 1.3 2005/04/20 12:25:34 daniels Exp $ */
 /* $XFree86: xc/programs/Xserver/hw/xfree86/loader/hash.c,v 1.24 2003/11/17 22:20:40 dawes Exp $ */
 
 /*

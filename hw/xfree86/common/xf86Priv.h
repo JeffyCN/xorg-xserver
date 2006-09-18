@@ -155,6 +155,7 @@ void xf86AddDevToEntity(int entityIndex, GDevPtr dev);
 extern void xf86PostPreInit(void);
 extern void xf86PostScreenInit(void);
 extern memType getValidBIOSBase(PCITAG tag, int num);
+extern memType getEmptyPciRange(PCITAG tag, int base_reg);
 extern int pciTestMultiDeviceCard(int bus, int dev, int func, PCITAG** pTag);
 
 /* xf86Config.c */
@@ -171,7 +172,6 @@ extern DisplayModeRec xf86DefaultModes [];
 void DoScanPci(int argc, char **argv, int i);
 
 /* xf86DoProbe.c */
-void DoProbeArgs(int argc, char **argv, int i);
 void DoProbe(void);
 void DoConfigure(void);
 

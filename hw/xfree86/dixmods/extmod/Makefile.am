@@ -11,14 +11,13 @@ if XV
 XV_SRCS = xvmod.c xvmodproc.h
 endif
 
-AM_CFLAGS = @XORG_CFLAGS@ -DEXTMODULE @SERVER_DEFINES@ @LOADER_DEFINES@
+AM_CFLAGS = @XORG_CFLAGS@ @SERVER_DEFINES@ @LOADER_DEFINES@
 INCLUDES = @XORG_INCS@ \
            -I$(top_srcdir)/afb \
            -I$(top_srcdir)/mfb \
            -I$(top_srcdir)/cfb \
            -I$(top_srcdir)/dbe \
            -I$(top_srcdir)/hw/xfree86/loader \
-           -I$(top_srcdir)/miext/layer \
            -I$(top_srcdir)/miext/shadow
 
 libextmod_la_LDFLAGS = -avoid-version

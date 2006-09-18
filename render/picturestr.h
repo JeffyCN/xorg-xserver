@@ -1,5 +1,5 @@
 /*
- * $Id: picturestr.h,v 1.14 2005/08/24 11:18:33 daniels Exp $
+ * $Id$
  *
  * Copyright © 2000 SuSE, Inc.
  *
@@ -306,6 +306,12 @@ typedef void	(*AddTrianglesProcPtr)	    (PicturePtr	    pPicture,
 					     int	    ntri,
 					     xTriangle	    *tris);
 
+typedef Bool	(*RealizeGlyphProcPtr)	    (ScreenPtr	    pScreen,
+					     GlyphPtr	    glyph);
+
+typedef void	(*UnrealizeGlyphProcPtr)    (ScreenPtr	    pScreen,
+					     GlyphPtr	    glyph);
+
 typedef struct _PictureScreen {
     int				totalPictureSize;
     unsigned int		*PicturePrivateSizes;
@@ -343,8 +349,18 @@ typedef struct _PictureScreen {
     PictFilterAliasPtr		filterAliases;
     int				nfilterAliases;
 
+    /**
+     * Called immediately after a picture's transform is changed through the
+     * SetPictureTransform request.  Not called for source-only pictures.
+     */
     ChangePictureTransformProcPtr   ChangePictureTransform;
+
+    /**
+     * Called immediately after a picture's transform is changed through the
+     * SetPictureFilter request.  Not called for source-only pictures.
+     */
     ChangePictureFilterProcPtr	ChangePictureFilter;
+
     DestroyPictureFilterProcPtr	DestroyPictureFilter;
 
     TrapezoidsProcPtr		Trapezoids;
@@ -357,6 +373,14 @@ typedef struct _PictureScreen {
     AddTrianglesProcPtr		AddTriangles;
 
     AddTrapsProcPtr		AddTraps;
+
+    int			  	totalGlyphPrivateSize;
+    unsigned int	  	*glyphPrivateSizes;
+    int			  	glyphPrivateLen;
+    int			  	glyphPrivateOffset;
+
+    RealizeGlyphProcPtr   	RealizeGlyph;
+    UnrealizeGlyphProcPtr 	UnrealizeGlyph;
 
 } PictureScreenRec, *PictureScreenPtr;
 
@@ -371,6 +395,9 @@ extern RESTYPE		GlyphSetType;
 #define SetPictureScreen(s,p) ((s)->devPrivates[PictureScreenPrivateIndex].ptr = (pointer) (p))
 #define GetPictureWindow(w) ((PicturePtr) ((w)->devPrivates[PictureWindowPrivateIndex].ptr))
 #define SetPictureWindow(w,p) ((w)->devPrivates[PictureWindowPrivateIndex].ptr = (pointer) (p))
+
+#define GetGlyphPrivatesForScreen(glyph, s)				\
+    ((glyph)->devPrivates + (GetPictureScreen (s))->glyphPrivateOffset)
 
 #define VERIFY_PICTURE(pPicture, pid, client, mode, err) {\
     pPicture = SecurityLookupIDByType(client, pid, PictureType, mode);\

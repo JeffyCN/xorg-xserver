@@ -51,7 +51,7 @@ from The Open Group.
 
 
 /* callable by ddx */
-PixmapPtr
+_X_EXPORT PixmapPtr
 GetScratchPixmapHeader(ScreenPtr pScreen, int width, int height, int depth, 
                        int bitsPerPixel, int devKind, pointer pPixData)
 {
@@ -74,7 +74,7 @@ GetScratchPixmapHeader(ScreenPtr pScreen, int width, int height, int depth,
 
 
 /* callable by ddx */
-void
+_X_EXPORT void
 FreeScratchPixmapHeader(PixmapPtr pPixmap)
 {
     if (pPixmap)
@@ -107,7 +107,7 @@ FreeScratchPixmapsForScreen(int scrnum)
 
 
 /* callable by ddx */
-PixmapPtr
+_X_EXPORT PixmapPtr
 AllocatePixmap(ScreenPtr pScreen, int pixDataSize)
 {
     PixmapPtr pPixmap;
@@ -141,5 +141,13 @@ AllocatePixmap(ScreenPtr pScreen, int pixDataSize)
 #else
     pPixmap = (PixmapPtr)xalloc(sizeof(PixmapRec) + pixDataSize);
 #endif
+
+#ifdef _XSERVER64
+    if (pPixmap) {
+	pPixmap->drawable.pad0 = 0;
+	pPixmap->drawable.pad1 = 0;
+    }
+#endif
+
     return pPixmap;
 }

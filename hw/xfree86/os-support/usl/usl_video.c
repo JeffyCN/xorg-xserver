@@ -1,4 +1,4 @@
-/* $XdotOrg: xserver/xorg/hw/xfree86/os-support/usl/usl_video.c,v 1.2 2005/11/08 06:33:30 jkj Exp $ */
+/* $XdotOrg$ */
 /*
  * Copyrught 2005 Kean Johnston <jkj@sco.com>
  * Copyright 1990,91 by Thomas Roell, Dinkelscherben, Germany

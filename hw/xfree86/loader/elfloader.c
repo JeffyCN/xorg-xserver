@@ -1,4 +1,4 @@
-/* $XdotOrg: xserver/xorg/hw/xfree86/loader/elfloader.c,v 1.10 2005/07/03 08:53:46 daniels Exp $ */
+/* $XdotOrg: xserver/xorg/hw/xfree86/loader/elfloader.c,v 1.10.12.1 2006/02/24 05:49:34 krh Exp $ */
 /* $XFree86: xc/programs/Xserver/hw/xfree86/loader/elfloader.c,v 1.61tsi Exp $ */
 
 /*
@@ -2884,7 +2884,7 @@ ELFCollectSections(ELFModulePtr elffile, int pass, int *totalsize,
  * Public API for the ELF implementation of the loader.
  */
 void *
-ELFLoadModule(loaderPtr modrec, int elffd, LOOKUP **ppLookup)
+ELFLoadModule(loaderPtr modrec, int elffd, LOOKUP **ppLookup, int flags)
 {
     ELFModulePtr elffile;
     Elf_Ehdr *header;

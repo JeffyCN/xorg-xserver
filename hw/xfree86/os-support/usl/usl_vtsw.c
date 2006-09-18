@@ -1,4 +1,4 @@
-/* $XdotOrg: xserver/xorg/hw/xfree86/os-support/usl/usl_vtsw.c,v 1.2 2005/11/08 06:33:30 jkj Exp $ */
+/* $XdotOrg$ */
 /*
  * Copyright 2005 by Kean Johnston <jkj@sco.com>
  * Copyright 1993 by David Wexelblat <dwex@goblin.org>

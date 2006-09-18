@@ -102,6 +102,10 @@ extern void ClippedRegionFromBox(
     int /*w*/,
     int /*h*/);
 
+typedef WindowPtr (* RealChildHeadProc) (WindowPtr pWin);
+
+void RegisterRealChildHeadProc (RealChildHeadProc proc);
+
 extern WindowPtr RealChildHead(
     WindowPtr /*pWin*/);
 
@@ -260,6 +264,13 @@ extern RegionPtr CreateBoundingShape(
     WindowPtr /* pWin */ );
 
 extern RegionPtr CreateClipShape(
+    WindowPtr /* pWin */ );
+
+extern void DisableMapUnmapEvents(
+    WindowPtr /* pWin */ );
+extern void EnableMapUnmapEvents(
+    WindowPtr /* pWin */ );
+extern Bool MapUnmapEventsEnabled(
     WindowPtr /* pWin */ );
 
 #endif /* WINDOW_H */

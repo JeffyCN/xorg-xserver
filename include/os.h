@@ -55,11 +55,7 @@ SOFTWARE.
 #define ALLOCATE_LOCAL_FALLBACK(_size) Xalloc((unsigned long)(_size))
 #define DEALLOCATE_LOCAL_FALLBACK(_ptr) Xfree((pointer)(_ptr))
 #include <X11/Xalloca.h>
-#ifndef IN_MODULE
 #include <stdarg.h>
-#else
-#include "xf86_ansic.h"
-#endif
 
 #define NullFID ((FID) 0)
 
@@ -219,11 +215,6 @@ extern void TimerFree(OsTimerPtr /* pTimer */);
 
 extern void SetScreenSaverTimer(void);
 extern void FreeScreenSaverTimer(void);
-
-#ifdef DPMSExtension
-extern void SetDPMSTimers(void);
-extern void FreeDPMSTimers(void);
-#endif
 
 extern SIGVAL AutoResetServer(int /*sig*/);
 

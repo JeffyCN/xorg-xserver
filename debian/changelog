@@ -1,3 +1,76 @@
+xorg-server (2:1.1.1-6) UNRELEASED; urgency=low
+
+  * Added SGI FreeB licence to debian/copyright. Closes: #368563.
+  * Apply upstream patches 18_execinfo_only_for_backtrace.patch, to use
+    execinfo.h for and only for backtrace. Applied git patch
+    5a3488ccac8e5dabd9fc98bc41ef178ead1b2faf directly into configure scripts,
+    activated with autoreconf.  Closes: #363218.
+  * Only requires build-depends version of x11proto-gl-dev on 1.4.6.
+
+ -- Drew Parsons <dparsons@debian.org>  Sat, 16 Sep 2006 13:38:16 +1000
+
+xorg-server (2:1.1.1-5) experimental; urgency=low
+
+  * Fix error in 16_s390_fix.diff caused by my idiot copying. Thanks Yannick
+    Roehlly and Daniel Stone.
+
+ -- David Nusinow <dnusinow@debian.org>  Sun, 27 Aug 2006 23:25:21 +0000
+
+xorg-server (2:1.1.1-4) experimental; urgency=low
+
+  [ Drew Parsons ]
+  * Tighten dependencies between X11R7.1 server and video drivers.
+    xserver-xorg-core no longer Depends: xserver-xorg-video-all
+    | xserver-xorg-video but instead Conflicts: xserver-xorg-video.
+    (closes: #383873)
+    The dependency on xserver-xorg-video-all | xserver-xorg-video-1.0 is
+    managed by the xserver-xorg binary package (not included here in
+    order to avoid circular dependencies). (closes: #362313)
+  * Likewise remove Depends: xserver-xorg-input-all | xserver-xorg-input
+    (again, handled by xserver-xorg) to avoid circular dependency with drivers.
+
+  [ David Nusinow ]
+  * Epoch bump
+  * Add 17_ignoreabi.diff to allow users to simply set a value in xorg.conf
+    rather than pass -ignoreABI to the server every time it starts
+
+ -- David Nusinow <dnusinow@debian.org>  Wed, 23 Aug 2006 22:03:06 +0000
+
+xorg-server (1:1.1.1-3) unstable; urgency=low
+
+  * Add 16_s390_fix.diff to fix FTBFS on s390. Thanks Bastian Blank.
+    (closes: #362641)
+  * Bump build-depends version of libgl1-mesa-dev to 6.5.x package we have in
+    experimental currently
+  * Bump build-depends version of x11proto-gl-dev to 1.4.7 or greater
+
+ -- David Nusinow <dnusinow@debian.org>  Tue, 22 Aug 2006 00:57:31 +0000
+
+xorg-server (1:1.1.1-2) experimental; urgency=low
+
+  [ Drew Parsons ]
+  * Updated mesa-swx11-source build-depends to (>> 6.5.0), required
+    for xserver 1.1.1. (closes: #383334)
+
+  [ David Nusinow ]
+  * Enable and ship xephyr
+  * Hack off the 'x' manpage suffix
+  * Install Xnest manpage
+  * Bump policy version to 3.7.2.0. No changes necessary.
+
+ -- David Nusinow <dnusinow@debian.org>  Wed, 16 Aug 2006 21:14:44 +0000
+
+xorg-server (1:1.1.1-1) experimental; urgency=low
+
+  [ David Nusinow ]
+  * New upstream release
+  * Move patch target call so that we don't try and build twice
+  * Remove obsolete 15_security_allocate_local.diff and
+    16_SECURITY_setuid.diff
+  * Add 15_symlink_mesa.diff
+
+ -- David Nusinow <dnusinow@debian.org>  Sun,  6 Aug 2006 16:12:25 +0000
+
 xorg-server (2:1.0.2-10) unstable; urgency=low
 
   * Upload to unstable to fixed messed up last upload which was supposed to go
@@ -29,7 +102,7 @@ xorg-server (1:1.0.2-9) UNRELEASED; urgency=high
 xorg-server (1:1.0.2-8) unstable; urgency=low
 
   * Move xserverrc back to xbase-clients. Thanks Benjamin Mesing.
-  * Add 15_security_allocate_local.diff. This fixes Bug fd.o bug #6642. 
+  * Add 15_security_allocate_local.diff. This fixes Bug fd.o bug #6642.
     Fix buffer overflow in Render.  (CVE 2006-1526). Patch by Eric Anholt.
 
  -- David Nusinow <dnusinow@debian.org>  Tue,  2 May 2006 21:47:17 -0400
@@ -55,7 +128,7 @@ xorg-server (1:1.0.2-6) unstable; urgency=low
     need it, as the server will look in the right place for modules if you
     don't specify a location.
   * Run dh_install with --list-missing
-  * Add missing manpages all around. Thanks Roland Mas and Jan Hudec. 
+  * Add missing manpages all around. Thanks Roland Mas and Jan Hudec.
     (closes: #362489, #364199)
   * Actually install apps to xdmx-tools. Thanks Xavier Bestel.
     (closes: #356813)
@@ -161,7 +234,7 @@ xorg-server (1:1.0.1-1) experimental; urgency=low
   * Have xserver-xorg-dev install the files in /usr/share/aclocal so we get
     xorg-server.m4
   * Manually set permissions on serverabiver installation
-  * Set the default font path to /usr/share/fonts/X11 instead of 
+  * Set the default font path to /usr/share/fonts/X11 instead of
     /usr/share/X11/fonts. Thanks Eugene Konev.
 
  -- David Nusinow <dnusinow@debian.org>  Mon, 20 Feb 2006 00:18:45 -0500

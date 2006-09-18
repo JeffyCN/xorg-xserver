@@ -71,6 +71,15 @@ void
 miValidatePicture (PicturePtr pPicture,
 		   Mask       mask);
 
+int
+miChangePictureTransform (PicturePtr	pPicture,
+			  PictTransform *transform);
+
+int
+miChangePictureFilter (PicturePtr pPicture,
+		       int	  filter,
+		       xFixed     *params,
+		       int	  nparams);
 
 Bool
 miClipPicture (RegionPtr    pRegion,
@@ -96,6 +105,14 @@ miComputeCompositeRegion (RegionPtr	pRegion,
 
 Bool
 miPictureInit (ScreenPtr pScreen, PictFormatPtr formats, int nformats);
+
+Bool
+miRealizeGlyph (ScreenPtr pScreen,
+		GlyphPtr  glyph);
+
+void
+miUnrealizeGlyph (ScreenPtr pScreen,
+		  GlyphPtr  glyph);
 
 void
 miGlyphExtents (int		nlist,
