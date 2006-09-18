@@ -10,7 +10,11 @@ xorg-server (2:1.1.1-6) UNRELEASED; urgency=low
     activated with autoreconf.  Closes: #363218.
   * Only requires build-depends version of x11proto-gl-dev on 1.4.6.
 
- -- Steve Langasek <vorlon@debian.org>  Sun, 17 Sep 2006 22:00:55 -0700
+  [ Steve Langasek ]
+  * Add versioned build-depends on x11proto-fixes-dev (>= 4.0), to
+    ensure the package is built against the right protocol version.
+
+ -- Steve Langasek <vorlon@debian.org>  Mon, 18 Sep 2006 01:19:12 -0700
 
 xorg-server (2:1.1.1-5) experimental; urgency=low
 
