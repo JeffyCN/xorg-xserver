@@ -1,3 +1,12 @@
+xorg-server (2:1.1.1-7) unstable; urgency=low
+
+  * Fix s390 build issue. Thanks Bastian Blank for the report and Eugene Konev
+    for the patch. Closes: #388628.
+  * Disable build of various utilities that we don't ship anyway. Patch thanks
+    to Eugene Konev.
+
+ -- David Nusinow <dnusinow@debian.org>  Thu, 21 Sep 2006 23:07:16 -0400
+
 xorg-server (2:1.1.1-6) unstable; urgency=low
 
   * Upload 7.1 to unstable.

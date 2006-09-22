@@ -30,11 +30,6 @@ endif
 
 INSTALL=/usr/bin/install
 
-# s390 chokes on inline functions. See #362641
-ifeq ($(DEB_HOST_ARCH), s390)
-	CFLAGS += -DNO_INLINE
-endif
-
 # disable-static is so we don't get libfoo.a for modules.  now if only we could
 # kill the .las.
 confflags += --disable-static \
@@ -52,7 +47,8 @@ confflags += --disable-static \
 		 --disable-xorgconfig \
 		 --disable-xorgcfg \
 		 --with-xkb-path=/usr/share/X11/xkb \
-		 --with-xkb-output=/var/lib/xkb
+		 --with-xkb-output=/var/lib/xkb \
+	     --disable-misc-utils
 
 build: patch build-stamp
 build-stamp: 

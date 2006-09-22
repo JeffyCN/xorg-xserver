@@ -295,6 +295,8 @@ MAKE_TEXT = @MAKE_TEXT@
 MESA_SOURCE = @MESA_SOURCE@
 MFB_FALSE = @MFB_FALSE@
 MFB_TRUE = @MFB_TRUE@
+MISCUTILS_FALSE = @MISCUTILS_FALSE@
+MISCUTILS_TRUE = @MISCUTILS_TRUE@
 MISC_MAN_DIR = @MISC_MAN_DIR@
 MISC_MAN_SUFFIX = @MISC_MAN_SUFFIX@
 MITSHM_FALSE = @MITSHM_FALSE@
@@ -335,6 +337,7 @@ RES_TRUE = @RES_TRUE@
 RGB_DB = @RGB_DB@
 SCREENSAVER_FALSE = @SCREENSAVER_FALSE@
 SCREENSAVER_TRUE = @SCREENSAVER_TRUE@
+SERVERCONFIGdir = @SERVERCONFIGdir@
 SERVER_DEFINES = @SERVER_DEFINES@
 SET_MAKE = @SET_MAKE@
 SHELL = @SHELL@
@@ -564,11 +567,12 @@ target_alias = @target_alias@
 xglmoduledir = @xglmoduledir@
 xpconfigdir = @xpconfigdir@
 @DRI_TRUE@DRI_SUBDIR = dri
+@MISCUTILS_TRUE@MISCUTILS_SUBDIR = utils
 DOC_SUBDIR = doc
 SUBDIRS = common ddc dummylib i2c x86emu int10 fbdevhw os-support parser rac \
           ramdac shadowfb vbe vgahw xaa xf1bpp xf4bpp xf8_16bpp \
 	  xf8_32bpp loader scanpci dixmods exa \
-	  $(DRI_SUBDIR) utils $(DOC_SUBDIR) getconfig
+	  $(DRI_SUBDIR) $(MISCUTILS_SUBDIR) $(DOC_SUBDIR) getconfig
 
 DIST_SUBDIRS = common ddc dummylib i2c x86emu int10 fbdevhw os-support \
                parser rac ramdac shadowfb vbe vgahw xaa xf1bpp xf4bpp \

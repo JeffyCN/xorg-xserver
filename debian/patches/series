@@ -16,3 +16,4 @@
 16_s390_fix.diff 
 17_ignoreabi.diff
 18_execinfo_only_for_backtrace.patch
+19_configurable_misc_utils.patch
