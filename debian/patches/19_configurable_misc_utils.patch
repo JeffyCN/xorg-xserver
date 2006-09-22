@@ -1,0 +1,43 @@
+Index: xorg-server-s390/configure.ac
+===================================================================
+--- xorg-server-s390.orig/configure.ac	2006-09-22 09:02:27.000000000 +0800
++++ xorg-server-s390/configure.ac	2006-09-22 09:03:58.000000000 +0800
+@@ -422,6 +422,7 @@
+ AC_ARG_ENABLE(xf86bigfont,    AS_HELP_STRING([--disable-xf86bigfont], [Build XF86 Big Font extension (default: enabled)]), [XF86BIGFONT=$enableval], [XF86BIGFONT=yes])
+ AC_ARG_ENABLE(dpms,           AS_HELP_STRING([--disable-dpms], [Build DPMS extension (default: enabled)]), [DPMS=$enableval], [DPMSExtension=yes])
+ AC_ARG_ENABLE(xinput,         AS_HELP_STRING([--disable-xinput], [Build XInput Extension (default: enabled)]), [XINPUT=$enableval], [XINPUT=yes])
++AC_ARG_ENABLE(misc-utils,     AS_HELP_STRING([--enable-misc-utils], [Build misc utilities (default: enabled)]), [MISCUTILS=$enableval], [MISCUTILS=yes])
+ 
+ dnl DDXes.
+ AC_ARG_ENABLE(xorg,    	      AS_HELP_STRING([--enable-xorg], [Build Xorg server (default: auto)]), [XORG=$enableval], [XORG=auto])
+@@ -741,6 +742,8 @@
+ 	XI_INC='-I$(top_srcdir)/Xi'
+ fi
+ 
++AM_CONDITIONAL(MISCUTILS, test "x$MISCUTILS" = xyes)
++
+ AC_DEFINE(SHAPE, 1, [Support SHAPE extension])
+ 
+ AC_DEFINE(XKB, 1, [Build XKB])
+Index: xorg-server-s390/hw/xfree86/Makefile.am
+===================================================================
+--- xorg-server-s390.orig/hw/xfree86/Makefile.am	2006-09-22 01:06:51.000000000 +0800
++++ xorg-server-s390/hw/xfree86/Makefile.am	2006-09-22 09:02:27.000000000 +0800
+@@ -2,12 +2,16 @@
+ DRI_SUBDIR = dri
+ endif
+ 
++if MISCUTILS
++MISCUTILS_SUBDIR = utils
++endif
++
+ DOC_SUBDIR = doc
+ 
+ SUBDIRS = common ddc dummylib i2c x86emu int10 fbdevhw os-support parser rac \
+           ramdac shadowfb vbe vgahw xaa xf1bpp xf4bpp xf8_16bpp \
+ 	  xf8_32bpp loader scanpci dixmods exa \
+-	  $(DRI_SUBDIR) utils $(DOC_SUBDIR) getconfig
++	  $(DRI_SUBDIR) $(MISCUTILS_SUBDIR) $(DOC_SUBDIR) getconfig
+ 
+ DIST_SUBDIRS = common ddc dummylib i2c x86emu int10 fbdevhw os-support \
+                parser rac ramdac shadowfb vbe vgahw xaa xf1bpp xf4bpp \
