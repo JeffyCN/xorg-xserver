@@ -1,16 +1,20 @@
-Index: xorg-server/GL/symlink-mesa.sh
+Index: xorg-server-1.1.1/GL/symlink-mesa.sh
 ===================================================================
---- xorg-server.orig/GL/symlink-mesa.sh	2006-08-06 15:47:24.000000000 +0000
-+++ xorg-server/GL/symlink-mesa.sh	2006-08-06 15:47:36.000000000 +0000
-@@ -90,6 +90,7 @@
+--- xorg-server-1.1.1.orig/GL/symlink-mesa.sh	2006-09-21 23:07:11.000000000 -0400
++++ xorg-server-1.1.1/GL/symlink-mesa.sh	2006-09-24 19:11:12.000000000 -0400
+@@ -88,8 +88,11 @@
+     action api_noop.h
+     action api_validate.c
      action api_validate.h
++    action arrayobj.c
++    action arrayobj.h
      action attrib.c
      action attrib.h
 +    action bitset.h
      action blend.c
      action blend.h
      action bufferobj.c
-@@ -168,6 +169,8 @@
+@@ -168,6 +171,8 @@
      action polygon.h
      action rastpos.c
      action rastpos.h
@@ -19,3 +23,12 @@ Index: xorg-server/GL/symlink-mesa.sh
      action renderbuffer.c
      action renderbuffer.h
      action simple_list.h
+@@ -463,7 +468,7 @@
+     action slang_core_gc.h
+     action slang_fragment_builtin_gc.h
+     action slang_shader_syn.h
+-    action slang_version_syn.h
++    action slang_pp_version_syn.h
+     action slang_vertex_builtin_gc.h
+ }        
+ 
