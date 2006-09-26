@@ -1,10 +1,10 @@
-xorg-server (2:1.1.1-8) UNRELEASED; urgency=low
+xorg-server (2:1.1.1-8) unstable; urgency=low
 
   * Update mesa symlink patch to the latest from HEAD
   * Add 20_mesa_6.5.1.diff to allow the server to build with mesa 6.5.1
   * Bump build-dep versions on x11proto-gl to 1.4.8, and mesa to 6.5.1
 
- -- David Nusinow <dnusinow@debian.org>  Sun, 24 Sep 2006 23:16:07 -0400
+ -- David Nusinow <dnusinow@debian.org>  Mon, 25 Sep 2006 22:21:37 -0400
 
 xorg-server (2:1.1.1-7) unstable; urgency=low
 
