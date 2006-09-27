@@ -1,3 +1,14 @@
+xorg-server (2:1.1.1-9) UNRELEASED; urgency=low
+  
+  [ Jurij Smakov ]
+  * Add 21_glx_align_fixes.patch to reintroduce the setting of __GLX_ALIGN64
+    variable, lost during the modular transition. This setting is essential
+    for architectures with strong alignment requirements. Patch affects
+    alpha, sparc, amd64, ia64 and s390, mimicking the behaviour of the
+    monolithic build. Closes: #388125.
+
+ -- Jurij Smakov <jurij@debian.org>  Tue, 26 Sep 2006 21:53:54 -0700
+
 xorg-server (2:1.1.1-8) unstable; urgency=low
 
   * Update mesa symlink patch to the latest from HEAD

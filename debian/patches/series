@@ -18,3 +18,4 @@
 18_execinfo_only_for_backtrace.patch
 19_configurable_misc_utils.patch
 20_mesa_6.5.1.diff
+21_glx_align_fixes.patch
