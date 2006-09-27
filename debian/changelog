@@ -1,5 +1,5 @@
 xorg-server (2:1.1.1-9) UNRELEASED; urgency=low
-  
+
   [ Jurij Smakov ]
   * Add 21_glx_align_fixes.patch to reintroduce the setting of __GLX_ALIGN64
     variable, lost during the modular transition. This setting is essential
@@ -7,7 +7,11 @@ xorg-server (2:1.1.1-9) UNRELEASED; urgency=low
     alpha, sparc, amd64, ia64 and s390, mimicking the behaviour of the
     monolithic build. Closes: #388125.
 
- -- Jurij Smakov <jurij@debian.org>  Tue, 26 Sep 2006 21:53:54 -0700
+  [ Denis Barbier ]
+  * Add 22_xkb_cycle_3layouts.diff to fix layout switching when 3 layouts
+    are present.  Thanks Ivan Pascal for the patch.  Closes: #345803
+
+ -- Denis Barbier <barbier@debian.org>  Wed, 27 Sep 2006 21:52:28 +0200
 
 xorg-server (2:1.1.1-8) unstable; urgency=low
 
