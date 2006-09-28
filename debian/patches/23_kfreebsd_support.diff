@@ -1,0 +1,238 @@
+Index: xorg-server/configure
+===================================================================
+--- xorg-server.orig/configure	2006-09-27 20:18:10.000000000 -0400
++++ xorg-server/configure	2006-09-27 20:54:26.000000000 -0400
+@@ -26162,11 +26162,14 @@
+ KDRIVE_HW=no
+ case $host_os in
+   *freebsd*)
+-
++	case $host_os in
++		kfreebsd*-gnu) ;;
++		*)
+ cat >>confdefs.h <<\_ACEOF
+ #define CSRG_BASED 1
+ _ACEOF
+-
++ ;;
++	esac
+ 
+ cat >>confdefs.h <<\_ACEOF
+ #define PCCONS_SUPPORT 1
+@@ -32165,7 +32168,7 @@
+ 			;;
+ 		esac
+ 		;;
+-	  freebsd*)
++	  freebsd* | kfreebsd*-gnu)
+ 	  	XORG_OS="freebsd"
+ 		XORG_OS_SUBDIR="bsd"
+ 		XORG_OS_KBD="BSD"
+@@ -32430,7 +32433,7 @@
+ 		;;
+ 	  powerpc*)
+ 		case $host_os in
+-		  linux*|freebsd*|netbsd*|openbsd*)
++		  linux*|freebsd*|netbsd*|openbsd*|kfreebsd*-gnu)
+ 			;;
+ 		  *)
+ 			xorg_bus_ppcpci="yes"
+@@ -32443,7 +32446,7 @@
+ 		;;
+ 	  x86_64*|amd64*)
+ 		case $host_os in
+-		  freebsd*)
++		  freebsd*|kfreebsd*-gnu)
+ 			# FreeBSD uses the system pci interface
+ 			;;
+ 		  *)
+@@ -33841,11 +33844,15 @@
+ done
+ 
+     if test "$ac_cv_header_sys_vm86_h" = yes; then
+-
++    	case $host_os in
++		kfreebsd*-gnu)	kdrivevesa=no ;;
++		*)
+ cat >>confdefs.h <<\_ACEOF
+ #define KDRIVEVESA 1
+ _ACEOF
+ 
++			kdrivevesa=yes;;
++	esac
+     fi
+ 
+ 
+@@ -34315,7 +34322,7 @@
+ 
+ 
+ 
+-if test x"$ac_cv_header_sys_vm86_h" = xyes; then
++if test x"$kdrivevesa" = xyes; then
+   KDRIVEVESA_TRUE=
+   KDRIVEVESA_FALSE='#'
+ else
+@@ -34460,7 +34467,7 @@
+ 	cygwin*) ;;
+ 	solaris*) ;;
+         darwin*) ;;
+-	*bsd*) ;;
++	freebsd*|netbsd*|openbsd*) ;;
+ 	*)
+ 
+ cat >>confdefs.h <<\_ACEOF
+Index: xorg-server/debian/patches/20_kbsd.patch
+===================================================================
+--- /dev/null	1970-01-01 00:00:00.000000000 +0000
++++ xorg-server/debian/patches/20_kbsd.patch	2006-09-27 20:54:26.000000000 -0400
+@@ -0,0 +1,126 @@
++Index: xorg-server-1.1.1/configure.ac
++===================================================================
++--- xorg-server-1.1.1.orig/configure.ac	2006-09-22 09:16:33.065267000 +0200
+++++ xorg-server-1.1.1/configure.ac	2006-09-22 09:17:08.000000000 +0200
++@@ -246,7 +246,10 @@
++ dnl it would be nice to autodetect these *CONS_SUPPORTs
++ case $host_os in
++   *freebsd*)
++-	AC_DEFINE(CSRG_BASED, 1, [System is BSD-like])
+++	case $host_os in
+++		kfreebsd*-gnu) ;;
+++		*) AC_DEFINE(CSRG_BASED, 1, [System is BSD-like]) ;;
+++	esac
++ 	AC_DEFINE(PCCONS_SUPPORT, 1, [System has PC console])
++ 	AC_DEFINE(PCVT_SUPPORT, 1, [System has PCVT console])
++ 	AC_DEFINE(SYSCONS_SUPPORT, 1, [System has syscons console])
++@@ -1080,7 +1083,7 @@
++ 			;;
++ 		esac
++ 		;;
++-	  freebsd*)
+++	  freebsd* | kfreebsd*-gnu)
++ 	  	XORG_OS="freebsd"
++ 		XORG_OS_SUBDIR="bsd"
++ 		XORG_OS_KBD="BSD"
++@@ -1179,7 +1182,7 @@
++ 		;;
++ 	  powerpc*)
++ 		case $host_os in
++-		  linux*|freebsd*|netbsd*|openbsd*)
+++		  linux*|freebsd*|netbsd*|openbsd*|kfreebsd*-gnu)
++ 			;;
++ 		  *)
++ 			xorg_bus_ppcpci="yes"
++@@ -1192,7 +1195,7 @@
++ 		;;
++ 	  x86_64*|amd64*)
++ 		case $host_os in
++-		  freebsd*)
+++		  freebsd*|kfreebsd*-gnu)
++ 			# FreeBSD uses the system pci interface
++ 			;;
++ 		  *)
++@@ -1437,7 +1440,11 @@
++ 
++     AC_CHECK_HEADERS([sys/vm86.h sys/io.h])
++     if test "$ac_cv_header_sys_vm86_h" = yes; then
++-        AC_DEFINE(KDRIVEVESA, 1, [Build VESA-based kdrive servers])
+++    	case $host_os in
+++		kfreebsd*-gnu)	kdrivevesa=no ;;
+++		*) 	AC_DEFINE(KDRIVEVESA, 1, [Build VESA-based kdrive servers])
+++			kdrivevesa=yes;;
+++	esac
++     fi
++ 
++     AC_CHECK_HEADERS([linux/fb.h])
++@@ -1477,7 +1484,7 @@
++ AC_SUBST(KDRIVE_LIBS)
++ AM_CONDITIONAL(TSLIB, false)
++ AM_CONDITIONAL(H3600_TS, false)
++-AM_CONDITIONAL(KDRIVEVESA, [test x"$ac_cv_header_sys_vm86_h" = xyes])
+++AM_CONDITIONAL(KDRIVEVESA, [test x"$kdrivevesa" = xyes])
++ AM_CONDITIONAL(KDRIVEFBDEV, [test x"$ac_cv_header_linux_fb_h" = xyes])
++ #AM_CONDITIONAL(KDRIVEVESA, false)
++ #AM_CONDITIONAL(KDRIVEFBDEV, false)
++@@ -1532,7 +1539,7 @@
++ 	cygwin*) ;;
++ 	solaris*) ;;
++         darwin*) ;;
++-	*bsd*) ;;
+++	freebsd*|netbsd*|openbsd*) ;;
++ 	*) 
++ 		AC_DEFINE(_POSIX_SOURCE, 1, [POSIX-compliant source])
++ 		AC_DEFINE(_XOPEN_SOURCE, 500, [X/Open-compliant source])
++Index: xorg-server-1.1.1/hw/xfree86/os-support/bus/Pci.h
++===================================================================
++--- xorg-server-1.1.1.orig/hw/xfree86/os-support/bus/Pci.h	2006-09-22 09:16:33.106722000 +0200
+++++ xorg-server-1.1.1/hw/xfree86/os-support/bus/Pci.h	2006-09-22 09:17:08.000000000 +0200
++@@ -332,7 +332,7 @@
++ #  define ARCH_PCI_PCI_BRIDGE sparcPciPciBridge
++ # endif
++ #elif defined(__amd64__) || defined(__amd64)
++-# if defined(__FreeBSD__)
+++# if defined(__FreeBSD__) || defined(__FreeBSD_kernel__)
++ #  define ARCH_PCI_INIT freebsdPciInit
++ # else
++ #  define ARCH_PCI_INIT ix86PciInit
++Index: xorg-server-1.1.1/GL/glx/indirect_dispatch_swap.c
++===================================================================
++--- xorg-server-1.1.1.orig/GL/glx/indirect_dispatch_swap.c	2006-09-22 09:16:33.182567000 +0200
+++++ xorg-server-1.1.1/GL/glx/indirect_dispatch_swap.c	2006-09-22 09:17:08.000000000 +0200
++@@ -28,7 +28,7 @@
++ #include <X11/Xmd.h>
++ #include <GL/gl.h>
++ #include <GL/glxproto.h>
++-#ifdef __linux__
+++#if defined (__linux__) || defined (__GLIBC__)
++ #include <byteswap.h>
++ #elif defined(__OpenBSD__)
++ #include <sys/endian.h>
++Index: xorg-server-1.1.1/GL/glx/indirect_util.c
++===================================================================
++--- xorg-server-1.1.1.orig/GL/glx/indirect_util.c	2006-09-22 09:16:33.241833000 +0200
+++++ xorg-server-1.1.1/GL/glx/indirect_util.c	2006-09-22 09:17:08.000000000 +0200
++@@ -28,7 +28,7 @@
++ #include <X11/Xmd.h>
++ #include <GL/gl.h>
++ #include <GL/glxproto.h>
++-#ifdef __linux__
+++#if defined (__linux__) || defined (__GLIBC__)
++ #include <byteswap.h>
++ #elif defined(__OpenBSD__)
++ #include <sys/endian.h>
++Index: xorg-server-1.1.1/hw/kdrive/linux/agp.c
++===================================================================
++--- xorg-server-1.1.1.orig/hw/kdrive/linux/agp.c	2006-09-22 09:16:33.153875000 +0200
+++++ xorg-server-1.1.1/hw/kdrive/linux/agp.c	2006-09-22 09:17:08.000000000 +0200
++@@ -65,7 +65,7 @@
++ 
++ #include <linux/agpgart.h>
++ 
++-#elif defined(__FreeBSD__)
+++#elif defined(__FreeBSD__) || defined(__FreeBSD_kernel__)
++ #include <sys/ioctl.h>
++ #include <sys/agpio.h>
++ #endif
+Index: xorg-server/debian/patches/series
+===================================================================
+--- xorg-server.orig/debian/patches/series	2006-09-27 20:54:24.000000000 -0400
++++ xorg-server/debian/patches/series	2006-09-27 20:54:26.000000000 -0400
+@@ -17,6 +17,7 @@
+ 17_ignoreabi.diff
+ 18_execinfo_only_for_backtrace.patch
+ 19_configurable_misc_utils.patch
++20_kbsd.patch 
+ 20_mesa_6.5.1.diff
+ 21_glx_align_fixes.patch
+ 22_xkb_cycle_3layouts.diff
+Index: xorg-server/debian/xserver-xorg-core.install
+===================================================================
+--- xorg-server.orig/debian/xserver-xorg-core.install	2006-09-18 17:25:52.000000000 -0400
++++ xorg-server/debian/xserver-xorg-core.install	2006-09-27 20:54:26.000000000 -0400
+@@ -2,6 +2,7 @@
+ usr/lib/xorg/modules/extensions/*.so
+ usr/lib/xorg/modules/fonts/*
+ usr/lib/xorg/modules/linux/*.so
++usr/lib/xorg/modules/freebsd/*.so
+ usr/lib/xorg/modules/multimedia/*.so
+ usr/bin/Xorg
+ usr/share/man/man1/Xserver.1

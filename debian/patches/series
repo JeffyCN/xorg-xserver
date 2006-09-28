@@ -20,3 +20,4 @@
 20_mesa_6.5.1.diff
 21_glx_align_fixes.patch
 22_xkb_cycle_3layouts.diff
+23_kfreebsd_support.diff

@@ -11,7 +11,12 @@ xorg-server (2:1.1.1-9) UNRELEASED; urgency=low
   * Add 22_xkb_cycle_3layouts.diff to fix layout switching when 3 layouts
     are present.  Thanks Ivan Pascal for the patch.  Closes: #345803
 
- -- Denis Barbier <barbier@debian.org>  Wed, 27 Sep 2006 21:52:28 +0200
+  [ David Nusinow ]
+  * Add kFreeBSD support patch (23). Thanks to Robert Millan, Petr Salinger,
+    Daniel Stone, and Michael Banck for input and patch writing.
+    Closes: #363517
+
+ -- David Nusinow <dnusinow@debian.org>  Wed, 27 Sep 2006 20:54:38 -0400
 
 xorg-server (2:1.1.1-8) unstable; urgency=low
 
