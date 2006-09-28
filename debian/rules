@@ -34,7 +34,7 @@ INSTALL=/usr/bin/install
 # kill the .las.
 confflags += --disable-static \
 	     --enable-xorg \
-	     --enable-dri --with-mesa-source=/usr/share/mesa-source \
+	     --with-mesa-source=/usr/share/mesa-source \
 		 --with-fontdir=/usr/share/fonts/X11 \
 		 --with-serverconfig-path=/etc/X11/xserver \
 	     --enable-xtrap \

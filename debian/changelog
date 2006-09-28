@@ -17,8 +17,12 @@ xorg-server (2:1.1.1-9) UNRELEASED; urgency=low
     Closes: #363517
   * Add hurd support patch (24). Thanks Samuel Thibault, Daniel Stone, and
     Michael Banck. Closes: #356300
+  * Disable the explicit enabling of dri in the configure. The configure
+    script autodetects whether or not to use this anyway, and enabling it
+    explicitly breaks the build on hurd. Thanks Samuel Thibault and Michael
+    Banck. Closes: #358015
 
- -- David Nusinow <dnusinow@debian.org>  Wed, 27 Sep 2006 21:00:32 -0400
+ -- David Nusinow <dnusinow@debian.org>  Wed, 27 Sep 2006 21:04:09 -0400
 
 xorg-server (2:1.1.1-8) unstable; urgency=low
 
