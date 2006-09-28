@@ -1,3 +1,4 @@
+etc/X11/xserver/SecurityPolicy
 usr/lib/xorg/modules/*.so
 usr/lib/xorg/modules/extensions/*.so
 usr/lib/xorg/modules/fonts/*

@@ -22,7 +22,14 @@ xorg-server (2:1.1.1-9) UNRELEASED; urgency=low
     explicitly breaks the build on hurd. Thanks Samuel Thibault and Michael
     Banck. Closes: #358015
 
- -- David Nusinow <dnusinow@debian.org>  Wed, 27 Sep 2006 21:04:09 -0400
+  [ Eugene Konev ]
+  * Use --with-default-font-path instead of --with-fontdir.
+  * Set RGBPath through --with-rgb-path.
+  * Drop 11_debian_always_use_default_font_path.diff.
+  * Drop 14_debian_always_look_in_our_module_path.diff.
+  * Ship SecurityPolicy in xserver-xorg-core.
+
+ -- David Nusinow <dnusinow@debian.org>  Wed, 27 Sep 2006 22:37:39 -0400
 
 xorg-server (2:1.1.1-8) unstable; urgency=low
 

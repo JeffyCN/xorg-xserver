@@ -1,8 +1,8 @@
-Index: xorg-server-1.1.0/configure.ac
+Index: xorg-server/configure.ac
 ===================================================================
---- xorg-server-1.1.0.orig/configure.ac	2006-05-22 20:40:00.000000000 +0000
-+++ xorg-server-1.1.0/configure.ac	2006-08-06 14:04:45.000000000 +0000
-@@ -375,6 +375,9 @@
+--- xorg-server.orig/configure.ac	2006-09-27 21:00:27.000000000 -0400
++++ xorg-server/configure.ac	2006-09-27 22:38:20.000000000 -0400
+@@ -376,6 +376,9 @@
  AC_ARG_WITH(rgb-path,         AS_HELP_STRING([--with-rgb-path=PATH], [Path to RGB database (default: ${datadir}/X11/rgb)]),
  				[ RGBPATH="$withval" ],
  				[ RGBPATH="${datadir}/X11/rgb" ])
@@ -12,7 +12,7 @@ Index: xorg-server-1.1.0/configure.ac
  AC_ARG_WITH(dri-driver-path,  AS_HELP_STRING([--with-dri-driver-path=PATH], [Path to DRI drivers (default: ${libdir}/dri)]),
  				[ DRI_DRIVER_PATH="$withval" ],
  				[ DRI_DRIVER_PATH="${libdir}/dri" ])
-@@ -806,6 +809,7 @@
+@@ -807,6 +810,7 @@
  
  AC_DEFINE_DIR(COMPILEDDEFAULTFONTPATH, FONTPATH, [Default font path])
  AC_DEFINE_DIR(RGB_DB, RGBPATH, [Default RGB path])
@@ -20,10 +20,10 @@ Index: xorg-server-1.1.0/configure.ac
  AC_DEFINE_DIR(DRI_DRIVER_PATH, DRI_DRIVER_PATH, [Default DRI driver path])
  AC_DEFINE_UNQUOTED(XVENDORNAME, ["$VENDOR_STRING"], [Vendor name])
  AC_DEFINE_UNQUOTED(XVENDORNAMESHORT, ["$VENDOR_STRING_SHORT"], [Short vendor name])
-Index: xorg-server-1.1.0/Xext/Makefile.am
+Index: xorg-server/Xext/Makefile.am
 ===================================================================
---- xorg-server-1.1.0.orig/Xext/Makefile.am	2006-04-05 21:23:06.000000000 +0000
-+++ xorg-server-1.1.0/Xext/Makefile.am	2006-08-06 14:03:48.000000000 +0000
+--- xorg-server.orig/Xext/Makefile.am	2006-09-27 21:00:27.000000000 -0400
++++ xorg-server/Xext/Makefile.am	2006-09-27 22:38:20.000000000 -0400
 @@ -73,7 +73,6 @@
  if XCSECURITY   
  BUILTIN_SRCS += $(XCSECURITY_SRCS)
