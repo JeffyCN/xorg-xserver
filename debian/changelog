@@ -15,8 +15,10 @@ xorg-server (2:1.1.1-9) UNRELEASED; urgency=low
   * Add kFreeBSD support patch (23). Thanks to Robert Millan, Petr Salinger,
     Daniel Stone, and Michael Banck for input and patch writing.
     Closes: #363517
+  * Add hurd support patch (24). Thanks Samuel Thibault, Daniel Stone, and
+    Michael Banck. Closes: #356300
 
- -- David Nusinow <dnusinow@debian.org>  Wed, 27 Sep 2006 20:54:38 -0400
+ -- David Nusinow <dnusinow@debian.org>  Wed, 27 Sep 2006 21:00:32 -0400
 
 xorg-server (2:1.1.1-8) unstable; urgency=low
 

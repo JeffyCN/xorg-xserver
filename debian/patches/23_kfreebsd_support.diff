@@ -1,7 +1,7 @@
 Index: xorg-server/configure
 ===================================================================
---- xorg-server.orig/configure	2006-09-27 20:18:10.000000000 -0400
-+++ xorg-server/configure	2006-09-27 20:54:26.000000000 -0400
+--- xorg-server.orig/configure	2006-09-27 20:54:33.000000000 -0400
++++ xorg-server/configure	2006-09-27 20:58:22.000000000 -0400
 @@ -26162,11 +26162,14 @@
  KDRIVE_HW=no
  case $host_os in
@@ -84,7 +84,7 @@ Index: xorg-server/configure
 Index: xorg-server/debian/patches/20_kbsd.patch
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ xorg-server/debian/patches/20_kbsd.patch	2006-09-27 20:54:26.000000000 -0400
++++ xorg-server/debian/patches/20_kbsd.patch	2006-09-27 20:58:22.000000000 -0400
 @@ -0,0 +1,126 @@
 +Index: xorg-server-1.1.1/configure.ac
 +===================================================================
@@ -212,22 +212,10 @@ Index: xorg-server/debian/patches/20_kbsd.patch
 + #include <sys/ioctl.h>
 + #include <sys/agpio.h>
 + #endif
-Index: xorg-server/debian/patches/series
-===================================================================
---- xorg-server.orig/debian/patches/series	2006-09-27 20:54:24.000000000 -0400
-+++ xorg-server/debian/patches/series	2006-09-27 20:54:26.000000000 -0400
-@@ -17,6 +17,7 @@
- 17_ignoreabi.diff
- 18_execinfo_only_for_backtrace.patch
- 19_configurable_misc_utils.patch
-+20_kbsd.patch 
- 20_mesa_6.5.1.diff
- 21_glx_align_fixes.patch
- 22_xkb_cycle_3layouts.diff
 Index: xorg-server/debian/xserver-xorg-core.install
 ===================================================================
---- xorg-server.orig/debian/xserver-xorg-core.install	2006-09-18 17:25:52.000000000 -0400
-+++ xorg-server/debian/xserver-xorg-core.install	2006-09-27 20:54:26.000000000 -0400
+--- xorg-server.orig/debian/xserver-xorg-core.install	2006-09-27 20:54:33.000000000 -0400
++++ xorg-server/debian/xserver-xorg-core.install	2006-09-27 20:58:22.000000000 -0400
 @@ -2,6 +2,7 @@
  usr/lib/xorg/modules/extensions/*.so
  usr/lib/xorg/modules/fonts/*

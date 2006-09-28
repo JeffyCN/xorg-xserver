@@ -1,0 +1,79 @@
+Index: xorg-server/configure.ac
+===================================================================
+--- xorg-server.orig/configure.ac	2006-09-27 20:58:22.000000000 -0400
++++ xorg-server/configure.ac	2006-09-27 20:58:36.000000000 -0400
+@@ -1470,7 +1470,15 @@
+     #    $MIEXT_SHADOW_LIB $XPSTUBS_LIB"
+     KDRIVE_PURE_LIBS="$FB_LIB $MI_LIB $FIXES_LIB $XEXT_LIB $DBE_LIB $XTRAP_LIB $RECORD_LIB $GLX_LIBS $RENDER_LIB $RANDR_LIB $DAMAGE_LIB $MIEXT_DAMAGE_LIB $MIEXT_SHADOW_LIB $XI_LIB $XKB_LIB $XKB_STUB_LIB $COMPOSITE_LIB $XPSTUBS_LIB $OS_LIB"
+     KDRIVE_LIB='$(top_builddir)/hw/kdrive/src/libkdrive.a'
+-    KDRIVE_OS_LIB='$(top_builddir)/hw/kdrive/linux/liblinux.a'
++    case $host_os in
++	*linux*)
++	    KDRIVE_OS_LIB='$(top_builddir)/hw/kdrive/linux/liblinux.a'
++	    AM_CONDITIONAL(KDRIVELINUX, true)
++	    ;;
++	*)
++	    AM_CONDITIONAL(KDRIVELINUX, false)
++	    ;;
++    esac
+     KDRIVE_STUB_LIB='$(top_builddir)/hw/kdrive/src/libkdrivestubs.a'
+     KDRIVE_LIBS="$DIX_LIB $KDRIVE_LIB $KDRIVE_OS_LIB $KDRIVE_PURE_LIBS $KDRIVE_STUB_LIB"
+ 
+Index: xorg-server/hw/kdrive/Makefile.am
+===================================================================
+--- xorg-server.orig/hw/kdrive/Makefile.am	2006-09-18 17:26:22.000000000 -0400
++++ xorg-server/hw/kdrive/Makefile.am	2006-09-27 20:58:36.000000000 -0400
+@@ -15,9 +15,13 @@
+ XEPHYR_SUBDIRS = ephyr
+ endif
+ 
++if KDRIVELINUX
++LINUX_SUBDIRS = linux
++endif
++
+ SUBDIRS =			\
+ 	src			\
+-	linux			\
++	$(LINUX_SUBDIRS)	\
+ 	$(XSDL_SUBDIRS)		\
+ 	$(FBDEV_SUBDIRS)	\
+ 	$(VESA_SUBDIRS)		\
+Index: xorg-server/GL/glx/indirect_dispatch_swap.c
+===================================================================
+--- xorg-server.orig/GL/glx/indirect_dispatch_swap.c	2006-09-18 17:27:44.000000000 -0400
++++ xorg-server/GL/glx/indirect_dispatch_swap.c	2006-09-27 20:58:36.000000000 -0400
+@@ -28,7 +28,7 @@
+ #include <X11/Xmd.h>
+ #include <GL/gl.h>
+ #include <GL/glxproto.h>
+-#ifdef __linux__
++#if defined(__linux__) || defined(__GNU__)
+ #include <byteswap.h>
+ #elif defined(__OpenBSD__)
+ #include <sys/endian.h>
+Index: xorg-server/GL/glx/indirect_reqsize.c
+===================================================================
+--- xorg-server.orig/GL/glx/indirect_reqsize.c	2006-09-18 17:27:44.000000000 -0400
++++ xorg-server/GL/glx/indirect_reqsize.c	2006-09-27 20:58:36.000000000 -0400
+@@ -31,7 +31,7 @@
+ #include "indirect_size.h"
+ #include "indirect_reqsize.h"
+ 
+-#if defined(linux)
++#if defined(__linux__) || defined(__GNU__)
+ #  include <byteswap.h>
+ #  define SWAP_32(v)  do { (v) = bswap_32(v); } while(0)
+ #else
+Index: xorg-server/GL/glx/indirect_util.c
+===================================================================
+--- xorg-server.orig/GL/glx/indirect_util.c	2006-09-18 17:27:44.000000000 -0400
++++ xorg-server/GL/glx/indirect_util.c	2006-09-27 20:58:36.000000000 -0400
+@@ -28,7 +28,7 @@
+ #include <X11/Xmd.h>
+ #include <GL/gl.h>
+ #include <GL/glxproto.h>
+-#ifdef __linux__
++#if defined(__linux__) || defined(__GNU__)
+ #include <byteswap.h>
+ #elif defined(__OpenBSD__)
+ #include <sys/endian.h>

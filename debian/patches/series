@@ -21,3 +21,4 @@
 21_glx_align_fixes.patch
 22_xkb_cycle_3layouts.diff
 23_kfreebsd_support.diff
+24_hurd_support.diff
