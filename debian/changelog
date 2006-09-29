@@ -1,4 +1,4 @@
-xorg-server (2:1.1.1-9) UNRELEASED; urgency=low
+xorg-server (2:1.1.1-9) unstable; urgency=low
 
   [ Jurij Smakov ]
   * Add 21_glx_align_fixes.patch to reintroduce the setting of __GLX_ALIGN64
@@ -39,7 +39,7 @@ xorg-server (2:1.1.1-9) UNRELEASED; urgency=low
   * Drop 14_debian_always_look_in_our_module_path.diff.
   * Ship SecurityPolicy in xserver-xorg-core.
 
- -- David Nusinow <dnusinow@debian.org>  Thu, 28 Sep 2006 23:12:30 -0400
+ -- David Nusinow <dnusinow@debian.org>  Thu, 28 Sep 2006 23:59:35 -0400
 
 xorg-server (2:1.1.1-8) unstable; urgency=low
 
