@@ -21,6 +21,16 @@ xorg-server (2:1.1.1-9) UNRELEASED; urgency=low
     script autodetects whether or not to use this anyway, and enabling it
     explicitly breaks the build on hurd. Thanks Samuel Thibault and Michael
     Banck. Closes: #358015
+  * Add several patches written by Kristian Høgsberg for allowing compiz to
+    work with AIGLX. These patches were vetted by Theirry Reding with valuable
+    advice from Michel Dänzer, and feedback from Kristian himself.
+    - 25_tfp_damage.diff
+    - 26_aiglx_happy_vt_switch.diff
+    - 27_aiglx_locking.diff
+    - 28_mesa_copy_sub_buffer.diff
+    - 29_mesa_reseed_makefile.diff
+    - update of 20_mesa_6.5.1.diff
+  * Remove bizarre wholesale inclusion of another patch in the 23_kbsd patch
 
   [ Eugene Konev ]
   * Use --with-default-font-path instead of --with-fontdir.
@@ -29,7 +39,7 @@ xorg-server (2:1.1.1-9) UNRELEASED; urgency=low
   * Drop 14_debian_always_look_in_our_module_path.diff.
   * Ship SecurityPolicy in xserver-xorg-core.
 
- -- David Nusinow <dnusinow@debian.org>  Wed, 27 Sep 2006 22:37:39 -0400
+ -- David Nusinow <dnusinow@debian.org>  Thu, 28 Sep 2006 23:12:30 -0400
 
 xorg-server (2:1.1.1-8) unstable; urgency=low
 

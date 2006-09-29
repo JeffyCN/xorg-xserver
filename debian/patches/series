@@ -20,3 +20,8 @@
 22_xkb_cycle_3layouts.diff
 23_kfreebsd_support.diff
 24_hurd_support.diff
+25_tfp_damage.diff -p0
+26_aiglx_happy_vt_switch.diff
+27_aiglx_locking.diff
+28_mesa_copy_sub_buffer.diff -p0
+29_mesa_reseed_makefile.diff -p0
