@@ -1,0 +1,249 @@
+Note: The commit below had to be adjusted in xkb/maprules.c
+because of b3031532ca96b22e81863202efb8bbcb9d701fac
+
+commit 63f13e01ee6e7df1753f2113f4cff9538596be0a
+Author: Tilman Sauerbeck <tilman@code-monkey.de>
+Date:   Sat Jul 8 11:33:44 2006 +0200
+
+    Bug #7097: do case-insensitive comparison for some hotkeys.
+    
+    xkb's strcasecmp implementation has been moved to the dix so it's now
+    safe to just use strcasecmp().
+
+Index: xorg-server/dix/Makefile.am
+===================================================================
+--- xorg-server.orig/dix/Makefile.am
++++ xorg-server/dix/Makefile.am
+@@ -29,7 +29,8 @@
+ 	swaprep.c	\
+ 	swapreq.c	\
+ 	tables.c	\
+-	window.c
++	window.c	\
++	strcasecmp.c
+ 
+ libxpstubs_la_SOURCES =	\
+ 	xpstubs.c
+Index: xorg-server/dix/Makefile.in
+===================================================================
+--- xorg-server.orig/dix/Makefile.in
++++ xorg-server/dix/Makefile.in
+@@ -59,7 +59,7 @@
+ 	dispatch.lo dixfonts.lo dixutils.lo events.lo extension.lo \
+ 	ffs.lo gc.lo globals.lo glyphcurs.lo grabs.lo initatoms.lo \
+ 	main.lo pixmap.lo privates.lo property.lo resource.lo \
+-	swaprep.lo swapreq.lo tables.lo window.lo
++	swaprep.lo swapreq.lo tables.lo window.lo strcasecmp.lo
+ libdix_la_OBJECTS = $(am_libdix_la_OBJECTS)
+ libxpstubs_la_LIBADD =
+ am_libxpstubs_la_OBJECTS = xpstubs.lo
+@@ -569,7 +569,8 @@
+ 	swaprep.c	\
+ 	swapreq.c	\
+ 	tables.c	\
+-	window.c
++	window.c	\
++	strcasecmp.c
+ 
+ libxpstubs_la_SOURCES = \
+ 	xpstubs.c
+@@ -649,6 +650,7 @@
+ @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/privates.Plo@am__quote@
+ @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/property.Plo@am__quote@
+ @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/resource.Plo@am__quote@
++@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/strcasecmp.Plo@am__quote@
+ @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/swaprep.Plo@am__quote@
+ @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/swapreq.Plo@am__quote@
+ @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/tables.Plo@am__quote@
+Index: xorg-server/dix/strcasecmp.c
+===================================================================
+--- /dev/null
++++ xorg-server/dix/strcasecmp.c
+@@ -0,0 +1,50 @@
++/* $Xorg: xkbmisc.c,v 1.4 2000/08/17 19:46:44 cpqbld Exp $ */
++/************************************************************
++ Copyright (c) 1995 by Silicon Graphics Computer Systems, Inc.
++
++ Permission to use, copy, modify, and distribute this
++ software and its documentation for any purpose and without
++ fee is hereby granted, provided that the above copyright
++ notice appear in all copies and that both that copyright
++ notice and this permission notice appear in supporting
++ documentation, and that the name of Silicon Graphics not be
++ used in advertising or publicity pertaining to distribution
++ of the software without specific prior written permission.
++ Silicon Graphics makes no representation about the suitability
++ of this software for any purpose. It is provided "as is"
++ without any express or implied warranty.
++
++ SILICON GRAPHICS DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS
++ SOFTWARE, INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY
++ AND FITNESS FOR A PARTICULAR PURPOSE. IN NO EVENT SHALL SILICON
++ GRAPHICS BE LIABLE FOR ANY SPECIAL, INDIRECT OR CONSEQUENTIAL
++ DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE,
++ DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE
++ OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION  WITH
++ THE USE OR PERFORMANCE OF THIS SOFTWARE.
++
++ ********************************************************/
++/* $XFree86: xc/lib/xkbfile/xkbmisc.c,v 1.7 2003/07/16 02:31:10 dawes Exp $ */
++
++#ifdef HAVE_DIX_CONFIG_H
++#include <dix-config.h>
++#endif
++
++#include <ctype.h>
++#include "dix.h"
++
++#ifdef NEED_STRCASECMP
++int
++xstrcasecmp(char *str1,char *str2)
++{
++    const u_char *us1 = (const u_char *)str1, *us2 = (const u_char *)str2;
++
++    while (tolower(*us1) == tolower(*us2)) {
++        if (*us1++ == '\0')
++            return (0);
++        us2++;
++    }
++
++    return (tolower(*us1) - tolower(*us2));
++}
++#endif
+Index: xorg-server/hw/xfree86/dixmods/Makefile.am
+===================================================================
+--- xorg-server.orig/hw/xfree86/dixmods/Makefile.am
++++ xorg-server/hw/xfree86/dixmods/Makefile.am
+@@ -102,6 +102,7 @@
+ libdixmods_la_SOURCES = $(top_srcdir)/mi/miinitext.c
+ 
+ libxorgxkb_la_SOURCES = xkbVT.c xkbPrivate.c xkbKillSrv.c
++libxorgxkb_la_LIBADD = $(top_builddir)/dix/libdix.la
+ 
+ libxtrap_la_LDFLAGS = -avoid-version
+ libxtrap_la_LIBADD = $(top_builddir)/XTrap/libxtrap.la
+Index: xorg-server/hw/xfree86/dixmods/Makefile.in
+===================================================================
+--- xorg-server.orig/hw/xfree86/dixmods/Makefile.in
++++ xorg-server/hw/xfree86/dixmods/Makefile.in
+@@ -115,7 +115,7 @@
+ libtype1_la_LIBADD =
+ am_libtype1_la_OBJECTS = type1mod.lo
+ libtype1_la_OBJECTS = $(am_libtype1_la_OBJECTS)
+-libxorgxkb_la_LIBADD =
++libxorgxkb_la_DEPENDENCIES = $(top_builddir)/dix/libdix.la
+ am_libxorgxkb_la_OBJECTS = xkbVT.lo xkbPrivate.lo xkbKillSrv.lo
+ libxorgxkb_la_OBJECTS = $(am_libxorgxkb_la_OBJECTS)
+ libxtrap_la_DEPENDENCIES = $(top_builddir)/XTrap/libxtrap.la
+@@ -701,6 +701,7 @@
+ libtype1_la_SOURCES = type1mod.c
+ libdixmods_la_SOURCES = $(top_srcdir)/mi/miinitext.c
+ libxorgxkb_la_SOURCES = xkbVT.c xkbPrivate.c xkbKillSrv.c
++libxorgxkb_la_LIBADD = $(top_builddir)/dix/libdix.la
+ libxtrap_la_LDFLAGS = -avoid-version
+ libxtrap_la_LIBADD = $(top_builddir)/XTrap/libxtrap.la
+ libxtrap_la_SOURCES = xf86XTrapModule.c
+Index: xorg-server/hw/xfree86/dixmods/xkbPrivate.c
+===================================================================
+--- xorg-server.orig/hw/xfree86/dixmods/xkbPrivate.c
++++ xorg-server/hw/xfree86/dixmods/xkbPrivate.c
+@@ -26,13 +26,13 @@
+     if (xf86act->type == XkbSA_XFree86Private) {
+         memcpy(msgbuf, xf86act->data, XkbAnyActionDataSize);
+         msgbuf[XkbAnyActionDataSize]= '\0';
+-        if (strcmp(msgbuf, "-vmode")==0)
++        if (strcasecmp(msgbuf, "-vmode")==0)
+             xf86ProcessActionEvent(ACTION_PREV_MODE, NULL);
+-        else if (strcmp(msgbuf, "+vmode")==0)
++        else if (strcasecmp(msgbuf, "+vmode")==0)
+             xf86ProcessActionEvent(ACTION_NEXT_MODE, NULL);
+-        else if (strcmp(msgbuf, "ungrab")==0)
++        else if (strcasecmp(msgbuf, "ungrab")==0)
+             xf86ProcessActionEvent(ACTION_DISABLEGRAB, NULL);
+-        else if (strcmp(msgbuf, "clsgrb")==0)
++        else if (strcasecmp(msgbuf, "clsgrb")==0)
+             xf86ProcessActionEvent(ACTION_CLOSECLIENT, NULL);
+         else
+             xf86ProcessActionEvent(ACTION_MESSAGE, (void *) msgbuf);
+Index: xorg-server/include/dix.h
+===================================================================
+--- xorg-server.orig/include/dix.h
++++ xorg-server/include/dix.h
+@@ -814,4 +814,10 @@
+     SelectionCallbackKind   kind;
+ } SelectionInfoRec;
+ 
++/* strcasecmp.c */
++#if NEED_STRCASECMP
++#define strcasecmp xstrcasecmp
++extern int xstrcasecmp(char *s1, char *s2);
++#endif
++
+ #endif /* DIX_H */
+Index: xorg-server/xkb/maprules.c
+===================================================================
+--- xorg-server.orig/xkb/maprules.c
++++ xorg-server/xkb/maprules.c
+@@ -62,12 +62,6 @@
+ #define PR_DEBUG2(s,a,b)
+ #endif
+ 
+-#ifdef NEED_STRCASECMP
+-extern int _XkbStrCaseCmp(char *s1, char *s2);
+-#else
+-#define _XkbStrCaseCmp strcasecmp
+-#endif
+-
+ /***====================================================================***/
+ 
+ #define DFLT_LINE_SIZE	128
+@@ -1092,20 +1086,20 @@
+     for ( ; GetInputLine(file,&line,False); line.num_line= 0) {
+ 	if (line.line[0]=='!') {
+ 	    tok = strtok(&(line.line[1]), " \t");
+-	    if (_XkbStrCaseCmp(tolower(tok),"model") == 0)
++	    if (strcasecmp(tok,"model") == 0)
+ 		headingtype = HEAD_MODEL;
+-	    else if (_XkbStrCaseCmp(tok,"layout") == 0)
++	    else if (strcasecmp(tok,"layout") == 0)
+ 		headingtype = HEAD_LAYOUT;
+-	    else if (_XkbStrCaseCmp(tok,"variant") == 0)
++	    else if (strcasecmp(tok,"variant") == 0)
+ 		headingtype = HEAD_VARIANT;
+-	    else if (_XkbStrCaseCmp(tok,"option") == 0)
++	    else if (strcasecmp(tok,"option") == 0)
+ 		headingtype = HEAD_OPTION;
+ 	    else {
+ 		int i;
+ 		headingtype = HEAD_EXTRA;
+ 		extra_ndx= -1;
+ 		for (i=0;(i<rules->num_extra)&&(extra_ndx<0);i++) {
+-		    if (!_XkbStrCaseCmp(tok,rules->extra_names[i]))
++		    if (!strcasecmp(tok,rules->extra_names[i]))
+ 			extra_ndx= i;
+ 		}
+ 		if (extra_ndx<0) {
+Index: xorg-server/xkb/xkbfmisc.c
+===================================================================
+--- xorg-server.orig/xkb/xkbfmisc.c
++++ xorg-server/xkb/xkbfmisc.c
+@@ -247,19 +247,3 @@
+     /* if we get here, the pattern is exhausted (-:just like me:-) */
+     return (name[0]=='\0');
+ }
+-
+-#ifdef NEED_STRCASECMP
+-_X_HIDDEN int
+-_XkbStrCaseCmp(char *str1,char *str2)
+-{
+-    const u_char *us1 = (const u_char *)str1, *us2 = (const u_char *)str2;
+-
+-    while (tolower(*us1) == tolower(*us2)) {
+-        if (*us1++ == '\0')
+-            return (0);
+-        us2++;
+-    }
+-
+-    return (tolower(*us1) - tolower(*us2));
+-}
+-#endif

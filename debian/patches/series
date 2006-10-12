@@ -25,3 +25,4 @@
 27_aiglx_locking.diff
 28_mesa_copy_sub_buffer.diff -p0
 29_mesa_reseed_makefile.diff -p0
+30_fix_vmode_switch.diff
