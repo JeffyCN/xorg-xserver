@@ -6,8 +6,13 @@ xorg-server (2:1.1.1-10) UNRELEASED; urgency=low
   [ David Nusinow ]
   * Add depends on xserver-xorg so that /etc/X11/X gets installed. Thanks
     Frans Pop. Closes: #392295
+  * Add 31_blocksigio.diff. This patch by Alan Hourihane, and it prevents a
+    race condition when a driver tries to set the cursor state when the server
+    is in the middle of switching resolution. Thanks to Frans Pop for
+    reporting the bug, Michel Dänzer for reading through the backtrace and
+    diagnosing the problem, and Alan for the final patch. Closes: #390646.
 
- -- David Nusinow <dnusinow@debian.org>  Fri, 13 Oct 2006 15:36:03 -0400
+ -- David Nusinow <dnusinow@debian.org>  Fri, 13 Oct 2006 16:05:54 -0400
 
 xorg-server (2:1.1.1-9) unstable; urgency=low
 
