@@ -1,7 +1,7 @@
 xorg-server (2:1.1.1-10) UNRELEASED; urgency=low
 
   [ Denis Barbier ]
-  * Fix virtual resolution switching.  Closes: #391052
+  * Fix video mode switching.  Closes: #391052
 
  -- Denis Barbier <barbier@debian.org>  Thu, 12 Oct 2006 22:19:54 +0200
 
