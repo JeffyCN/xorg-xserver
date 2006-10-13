@@ -3,7 +3,11 @@ xorg-server (2:1.1.1-10) UNRELEASED; urgency=low
   [ Denis Barbier ]
   * Fix video mode switching.  Closes: #391052
 
- -- Denis Barbier <barbier@debian.org>  Thu, 12 Oct 2006 22:19:54 +0200
+  [ David Nusinow ]
+  * Add depends on xserver-xorg so that /etc/X11/X gets installed. Thanks
+    Frans Pop. Closes: #392295
+
+ -- David Nusinow <dnusinow@debian.org>  Fri, 13 Oct 2006 15:36:03 -0400
 
 xorg-server (2:1.1.1-9) unstable; urgency=low
 
