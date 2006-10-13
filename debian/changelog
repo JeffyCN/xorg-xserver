@@ -2,6 +2,8 @@ xorg-server (2:1.1.1-10) UNRELEASED; urgency=low
 
   [ Denis Barbier ]
   * Fix video mode switching.  Closes: #391052
+  * Fix FTBFS on kfreebsd-i386 and kfreebsd-amd64.  Thanks Petr Salinger.
+    Closes: #363517
 
   [ David Nusinow ]
   * Add depends on xserver-xorg so that /etc/X11/X gets installed. Thanks

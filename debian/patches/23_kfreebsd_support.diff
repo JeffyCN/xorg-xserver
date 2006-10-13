@@ -1,7 +1,7 @@
 Index: xorg-server/configure
 ===================================================================
---- xorg-server.orig/configure	2006-09-28 22:37:18.000000000 -0400
-+++ xorg-server/configure	2006-09-28 23:09:07.000000000 -0400
+--- xorg-server.orig/configure
++++ xorg-server/configure
 @@ -883,6 +883,7 @@
  FBDEVHW_FALSE
  FREEBSD_KLDLOAD_TRUE
@@ -256,7 +256,24 @@ Index: xorg-server/configure
  if test "x$ALPHA_VIDEO" = xyes; then
    ALPHA_VIDEO_TRUE=
    ALPHA_VIDEO_FALSE='#'
-@@ -26486,6 +26505,14 @@
+@@ -26162,11 +26181,14 @@
+ KDRIVE_HW=no
+ case $host_os in
+   *freebsd*)
+-
++	case $host_os in
++		kfreebsd*-gnu) ;;
++		*)
+ cat >>confdefs.h <<\_ACEOF
+ #define CSRG_BASED 1
+ _ACEOF
+-
++ ;;
++	esac
+ 
+ cat >>confdefs.h <<\_ACEOF
+ #define PCCONS_SUPPORT 1
+@@ -26486,6 +26508,14 @@
  fi
  
  
@@ -271,7 +288,7 @@ Index: xorg-server/configure
  # Check whether --with-dri-driver-path was given.
  if test "${with_dri_driver_path+set}" = set; then
    withval=$with_dri_driver_path;  DRI_DRIVER_PATH="$withval"
-@@ -26716,6 +26743,13 @@
+@@ -26716,6 +26746,13 @@
    XINPUT=yes
  fi
  
@@ -285,7 +302,7 @@ Index: xorg-server/configure
  
  # Check whether --enable-xorg was given.
  if test "${enable_xorg+set}" = set; then
-@@ -29418,6 +29452,17 @@
+@@ -29418,6 +29455,17 @@
  fi
  
  
@@ -303,7 +320,7 @@ Index: xorg-server/configure
  cat >>confdefs.h <<\_ACEOF
  #define SHAPE 1
  _ACEOF
-@@ -29833,6 +29878,22 @@
+@@ -29833,6 +29881,22 @@
    exec_prefix_NONE=
    test "x$prefix" = xNONE && prefix_NONE=yes && prefix=$ac_default_prefix
    test "x$exec_prefix" = xNONE && exec_prefix_NONE=yes && exec_prefix=$prefix
@@ -326,7 +343,51 @@ Index: xorg-server/configure
    eval ac_define_dir="\"$DRI_DRIVER_PATH\""
    DRI_DRIVER_PATH="$ac_define_dir"
  
-@@ -34040,7 +34101,33 @@
+@@ -32165,7 +32229,7 @@
+ 			;;
+ 		esac
+ 		;;
+-	  freebsd*)
++	  freebsd* | kfreebsd*-gnu)
+ 	  	XORG_OS="freebsd"
+ 		XORG_OS_SUBDIR="bsd"
+ 		XORG_OS_KBD="BSD"
+@@ -32430,7 +32494,7 @@
+ 		;;
+ 	  powerpc*)
+ 		case $host_os in
+-		  linux*|freebsd*|netbsd*|openbsd*)
++		  linux*|freebsd*|netbsd*|openbsd*|kfreebsd*-gnu)
+ 			;;
+ 		  *)
+ 			xorg_bus_ppcpci="yes"
+@@ -32443,7 +32507,7 @@
+ 		;;
+ 	  x86_64*|amd64*)
+ 		case $host_os in
+-		  freebsd*)
++		  freebsd*|kfreebsd*-gnu)
+ 			# FreeBSD uses the system pci interface
+ 			;;
+ 		  *)
+@@ -33841,11 +33905,15 @@
+ done
+ 
+     if test "$ac_cv_header_sys_vm86_h" = yes; then
+-
++    	case $host_os in
++		kfreebsd*-gnu)	kdrivevesa=no ;;
++		*)
+ cat >>confdefs.h <<\_ACEOF
+ #define KDRIVEVESA 1
+ _ACEOF
+ 
++			kdrivevesa=yes;;
++	esac
+     fi
+ 
+ 
+@@ -34040,7 +34108,33 @@
      #    $MIEXT_SHADOW_LIB $XPSTUBS_LIB"
      KDRIVE_PURE_LIBS="$FB_LIB $MI_LIB $FIXES_LIB $XEXT_LIB $DBE_LIB $XTRAP_LIB $RECORD_LIB $GLX_LIBS $RENDER_LIB $RANDR_LIB $DAMAGE_LIB $MIEXT_DAMAGE_LIB $MIEXT_SHADOW_LIB $XI_LIB $XKB_LIB $XKB_STUB_LIB $COMPOSITE_LIB $XPSTUBS_LIB $OS_LIB"
      KDRIVE_LIB='$(top_builddir)/hw/kdrive/src/libkdrive.a'
@@ -361,7 +422,25 @@ Index: xorg-server/configure
      KDRIVE_STUB_LIB='$(top_builddir)/hw/kdrive/src/libkdrivestubs.a'
      KDRIVE_LIBS="$DIX_LIB $KDRIVE_LIB $KDRIVE_OS_LIB $KDRIVE_PURE_LIBS $KDRIVE_STUB_LIB"
  
-@@ -35537,6 +35624,13 @@
+@@ -34315,7 +34409,7 @@
+ 
+ 
+ 
+-if test x"$ac_cv_header_sys_vm86_h" = xyes; then
++if test x"$kdrivevesa" = xyes; then
+   KDRIVEVESA_TRUE=
+   KDRIVEVESA_FALSE='#'
+ else
+@@ -34460,7 +34554,7 @@
+ 	cygwin*) ;;
+ 	solaris*) ;;
+         darwin*) ;;
+-	*bsd*) ;;
++	freebsd*|netbsd*|openbsd*) ;;
+ 	*)
+ 
+ cat >>confdefs.h <<\_ACEOF
+@@ -35537,6 +35631,13 @@
  Usually this means the macro was only invoked conditionally." >&2;}
     { (exit 1); exit 1; }; }
  fi
@@ -375,7 +454,7 @@ Index: xorg-server/configure
  if test -z "${XDMCP_TRUE}" && test -z "${XDMCP_FALSE}"; then
    { { echo "$as_me:$LINENO: error: conditional \"XDMCP\" was never defined.
  Usually this means the macro was only invoked conditionally." >&5
-@@ -35817,6 +35911,20 @@
+@@ -35817,6 +35918,20 @@
  Usually this means the macro was only invoked conditionally." >&2;}
     { (exit 1); exit 1; }; }
  fi
@@ -396,7 +475,7 @@ Index: xorg-server/configure
  if test -z "${TSLIB_TRUE}" && test -z "${TSLIB_FALSE}"; then
    { { echo "$as_me:$LINENO: error: conditional \"TSLIB\" was never defined.
  Usually this means the macro was only invoked conditionally." >&5
-@@ -36761,6 +36869,7 @@
+@@ -36761,6 +36876,7 @@
  FBDEVHW_FALSE!$FBDEVHW_FALSE$ac_delim
  FREEBSD_KLDLOAD_TRUE!$FREEBSD_KLDLOAD_TRUE$ac_delim
  FREEBSD_KLDLOAD_FALSE!$FREEBSD_KLDLOAD_FALSE$ac_delim
@@ -404,7 +483,7 @@ Index: xorg-server/configure
  ALPHA_VIDEO_TRUE!$ALPHA_VIDEO_TRUE$ac_delim
  ALPHA_VIDEO_FALSE!$ALPHA_VIDEO_FALSE$ac_delim
  ARM_VIDEO_TRUE!$ARM_VIDEO_TRUE$ac_delim
-@@ -36825,7 +36934,6 @@
+@@ -36825,7 +36941,6 @@
  AIGLX_TRUE!$AIGLX_TRUE$ac_delim
  AIGLX_FALSE!$AIGLX_FALSE$ac_delim
  GLX_DEFINES!$GLX_DEFINES$ac_delim
@@ -412,7 +491,7 @@ Index: xorg-server/configure
  _ACEOF
  
    if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 97; then
-@@ -36867,6 +36975,7 @@
+@@ -36867,6 +36982,7 @@
  ac_delim='%!_!# '
  for ac_last_try in false false false false false :; do
    cat >conf$$subs.sed <<_ACEOF
@@ -420,7 +499,7 @@ Index: xorg-server/configure
  LBXUTIL_TEST_LIBS!$LBXUTIL_TEST_LIBS$ac_delim
  LBX_TRUE!$LBX_TRUE$ac_delim
  LBX_FALSE!$LBX_FALSE$ac_delim
-@@ -36906,6 +37015,8 @@
+@@ -36906,6 +37022,8 @@
  XPRINT_FALSE!$XPRINT_FALSE$ac_delim
  XINPUT_TRUE!$XINPUT_TRUE$ac_delim
  XINPUT_FALSE!$XINPUT_FALSE$ac_delim
@@ -429,7 +508,7 @@ Index: xorg-server/configure
  XDMCP_CFLAGS!$XDMCP_CFLAGS$ac_delim
  XDMCP_LIBS!$XDMCP_LIBS$ac_delim
  XDMCP_TRUE!$XDMCP_TRUE$ac_delim
-@@ -36916,6 +37027,7 @@
+@@ -36916,6 +37034,7 @@
  USE_RGB_BUILTIN_FALSE!$USE_RGB_BUILTIN_FALSE$ac_delim
  COMPILEDDEFAULTFONTPATH!$COMPILEDDEFAULTFONTPATH$ac_delim
  RGB_DB!$RGB_DB$ac_delim
@@ -437,7 +516,7 @@ Index: xorg-server/configure
  DRI_DRIVER_PATH!$DRI_DRIVER_PATH$ac_delim
  VENDOR_STRING!$VENDOR_STRING$ac_delim
  VENDOR_STRING_SHORT!$VENDOR_STRING_SHORT$ac_delim
-@@ -36960,10 +37072,6 @@
+@@ -36960,10 +37079,6 @@
  XNEST_TRUE!$XNEST_TRUE$ac_delim
  XNEST_FALSE!$XNEST_FALSE$ac_delim
  XNEST_LIBS!$XNEST_LIBS$ac_delim
@@ -448,7 +527,7 @@ Index: xorg-server/configure
  _ACEOF
  
    if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 97; then
-@@ -37005,6 +37113,10 @@
+@@ -37005,6 +37120,10 @@
  ac_delim='%!_!# '
  for ac_last_try in false false false false false :; do
    cat >conf$$subs.sed <<_ACEOF
@@ -459,7 +538,7 @@ Index: xorg-server/configure
  XGL_LIBS!$XGL_LIBS$ac_delim
  xglmoduledir!$xglmoduledir$ac_delim
  XGL_MODULE_PATH!$XGL_MODULE_PATH$ac_delim
-@@ -37098,10 +37210,6 @@
+@@ -37098,10 +37217,6 @@
  XWIN_GLX_WINDOWS_TRUE!$XWIN_GLX_WINDOWS_TRUE$ac_delim
  XWIN_GLX_WINDOWS_FALSE!$XWIN_GLX_WINDOWS_FALSE$ac_delim
  XWIN_NATIVEGDI_TRUE!$XWIN_NATIVEGDI_TRUE$ac_delim
@@ -470,7 +549,7 @@ Index: xorg-server/configure
  _ACEOF
  
    if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 97; then
-@@ -37143,11 +37251,17 @@
+@@ -37143,11 +37258,17 @@
  ac_delim='%!_!# '
  for ac_last_try in false false false false false :; do
    cat >conf$$subs.sed <<_ACEOF
@@ -488,7 +567,7 @@ Index: xorg-server/configure
  XEPHYR_CFLAGS!$XEPHYR_CFLAGS$ac_delim
  XEPHYR_LIBS!$XEPHYR_LIBS$ac_delim
  KDRIVE_INCS!$KDRIVE_INCS$ac_delim
-@@ -37214,7 +37328,7 @@
+@@ -37214,7 +37335,7 @@
  LTLIBOBJS!$LTLIBOBJS$ac_delim
  _ACEOF
  
@@ -497,15 +576,103 @@ Index: xorg-server/configure
      break
    elif $ac_last_try; then
      { { echo "$as_me:$LINENO: error: could not make $CONFIG_STATUS" >&5
-Index: xorg-server/debian/xserver-xorg-core.install
+Index: xorg-server/configure.ac
 ===================================================================
---- xorg-server.orig/debian/xserver-xorg-core.install	2006-09-28 22:37:18.000000000 -0400
-+++ xorg-server/debian/xserver-xorg-core.install	2006-09-28 23:08:47.000000000 -0400
-@@ -3,6 +3,7 @@
- usr/lib/xorg/modules/extensions/*.so
- usr/lib/xorg/modules/fonts/*
- usr/lib/xorg/modules/linux/*.so
-+usr/lib/xorg/modules/freebsd/*.so
- usr/lib/xorg/modules/multimedia/*.so
- usr/bin/Xorg
- usr/share/man/man1/Xserver.1
+--- xorg-server.orig/configure.ac
++++ xorg-server/configure.ac
+@@ -256,7 +256,10 @@
+ dnl it would be nice to autodetect these *CONS_SUPPORTs
+ case $host_os in
+   *freebsd*)
+-	AC_DEFINE(CSRG_BASED, 1, [System is BSD-like])
++	case $host_os in
++		kfreebsd*-gnu) ;;
++		*) AC_DEFINE(CSRG_BASED, 1, [System is BSD-like]) ;;
++	esac
+ 	AC_DEFINE(PCCONS_SUPPORT, 1, [System has PC console])
+ 	AC_DEFINE(PCVT_SUPPORT, 1, [System has PCVT console])
+ 	AC_DEFINE(SYSCONS_SUPPORT, 1, [System has syscons console])
+@@ -1090,7 +1093,7 @@
+ 			;;
+ 		esac
+ 		;;
+-	  freebsd*)
++	  freebsd* | kfreebsd*-gnu)
+ 	  	XORG_OS="freebsd"
+ 		XORG_OS_SUBDIR="bsd"
+ 		XORG_OS_KBD="BSD"
+@@ -1189,7 +1192,7 @@
+ 		;;
+ 	  powerpc*)
+ 		case $host_os in
+-		  linux*|freebsd*|netbsd*|openbsd*)
++		  linux*|freebsd*|netbsd*|openbsd*|kfreebsd*-gnu)
+ 			;;
+ 		  *)
+ 			xorg_bus_ppcpci="yes"
+@@ -1202,7 +1205,7 @@
+ 		;;
+ 	  x86_64*|amd64*)
+ 		case $host_os in
+-		  freebsd*)
++		  freebsd*|kfreebsd*-gnu)
+ 			# FreeBSD uses the system pci interface
+ 			;;
+ 		  *)
+@@ -1447,7 +1450,11 @@
+ 
+     AC_CHECK_HEADERS([sys/vm86.h sys/io.h])
+     if test "$ac_cv_header_sys_vm86_h" = yes; then
+-        AC_DEFINE(KDRIVEVESA, 1, [Build VESA-based kdrive servers])
++    	case $host_os in
++		kfreebsd*-gnu)	kdrivevesa=no ;;
++		*) 	AC_DEFINE(KDRIVEVESA, 1, [Build VESA-based kdrive servers])
++			kdrivevesa=yes;;
++	esac
+     fi
+ 
+     AC_CHECK_HEADERS([linux/fb.h])
+@@ -1487,7 +1494,7 @@
+ AC_SUBST(KDRIVE_LIBS)
+ AM_CONDITIONAL(TSLIB, false)
+ AM_CONDITIONAL(H3600_TS, false)
+-AM_CONDITIONAL(KDRIVEVESA, [test x"$ac_cv_header_sys_vm86_h" = xyes])
++AM_CONDITIONAL(KDRIVEVESA, [test x"$kdrivevesa" = xyes])
+ AM_CONDITIONAL(KDRIVEFBDEV, [test x"$ac_cv_header_linux_fb_h" = xyes])
+ #AM_CONDITIONAL(KDRIVEVESA, false)
+ #AM_CONDITIONAL(KDRIVEFBDEV, false)
+@@ -1542,7 +1549,7 @@
+ 	cygwin*) ;;
+ 	solaris*) ;;
+         darwin*) ;;
+-	*bsd*) ;;
++	freebsd*|netbsd*|openbsd*) ;;
+ 	*) 
+ 		AC_DEFINE(_POSIX_SOURCE, 1, [POSIX-compliant source])
+ 		AC_DEFINE(_XOPEN_SOURCE, 500, [X/Open-compliant source])
+Index: xorg-server/hw/kdrive/linux/agp.c
+===================================================================
+--- xorg-server.orig/hw/kdrive/linux/agp.c
++++ xorg-server/hw/kdrive/linux/agp.c
+@@ -65,7 +65,7 @@
+ 
+ #include <linux/agpgart.h>
+ 
+-#elif defined(__FreeBSD__)
++#elif defined(__FreeBSD__) || defined(__FreeBSD_kernel__)
+ #include <sys/ioctl.h>
+ #include <sys/agpio.h>
+ #endif
+Index: xorg-server/hw/xfree86/os-support/bus/Pci.h
+===================================================================
+--- xorg-server.orig/hw/xfree86/os-support/bus/Pci.h
++++ xorg-server/hw/xfree86/os-support/bus/Pci.h
+@@ -332,7 +332,7 @@
+ #  define ARCH_PCI_PCI_BRIDGE sparcPciPciBridge
+ # endif
+ #elif defined(__amd64__) || defined(__amd64)
+-# if defined(__FreeBSD__)
++# if defined(__FreeBSD__) || defined(__FreeBSD_kernel__)
+ #  define ARCH_PCI_INIT freebsdPciInit
+ # else
+ #  define ARCH_PCI_INIT ix86PciInit
