@@ -14,6 +14,11 @@ xorg-server (2:1.1.1-10) UNRELEASED; urgency=low
     reporting the bug, Michel Dänzer for reading through the backtrace and
     diagnosing the problem, and Alan for the final patch. Closes: #390646.
 
+  [ Jurij Smakov ]
+  * Add 32_disable_sparc_pci_bridge.diff. Disable PCI bridge handling on
+    sparc, which is broken and causes filesystem corruption (by poking
+    the PCI bus in the wrong places) on some machines. Closes: #392312.
+ 
  -- David Nusinow <dnusinow@debian.org>  Fri, 13 Oct 2006 16:05:54 -0400
 
 xorg-server (2:1.1.1-9) unstable; urgency=low

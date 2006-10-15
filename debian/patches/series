@@ -27,3 +27,4 @@
 29_mesa_reseed_makefile.diff -p0
 30_fix_vmode_switch.diff
 31_blocksigio.diff
+32_disable_sparc_pci_bridge.diff
