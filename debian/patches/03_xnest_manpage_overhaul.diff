@@ -37,7 +37,7 @@ Index: xorg-server-X11R7.0-1.0.1/hw/xnest/Xnest.man.pre
  .\" $XFree86: xc/programs/Xserver/hw/xnest/Xnest.man,v 1.6 2001/01/27 18:21:00 dawes Exp $
  .\"
 -.TH XNEST 1 __xorgversion__
-+.TH Xnest __mansuffix__ __xorgversion__
++.TH Xnest __appmansuffix__ __xorgversion__
  .SH NAME
  Xnest \- a nested X server
  .SH SYNOPSIS
@@ -74,7 +74,7 @@ Index: xorg-server-X11R7.0-1.0.1/hw/xnest/Xnest.man.pre
 +.B Xnest
 +supports all standard options of the sample server implementation.
 +For more details, please see
-+.BR Xserver (__mansuffix__).
++.BR Xserver (__appmansuffix__).
 +The following additional arguments are supported as well.
 +.TP
 +.BI "\-display " string
@@ -172,7 +172,7 @@ Index: xorg-server-X11R7.0-1.0.1/hw/xnest/Xnest.man.pre
 +class of the default visual of the real server, but it must be supported by the
 +real server.
 +Use
-+.BR xdpyinfo (__mansuffix__)
++.BR xdpyinfo (__appmansuffix__)
 +to obtain a list of supported visual classes on the real server before starting
 +.BR Xnest .
 +If the user chooses a static class, all the colors in the default color map will
@@ -192,7 +192,7 @@ Index: xorg-server-X11R7.0-1.0.1/hw/xnest/Xnest.man.pre
 +depth of the default visual of the real server, but it must be supported by the
 +real server.
 +Use
-+.BR xdpyinfo (__mansuffix__)
++.BR xdpyinfo (__appmansuffix__)
 +to obtain a list of supported visual depths on the real server before starting
 +.BR Xnest .
 +.TP
@@ -305,7 +305,7 @@ Index: xorg-server-X11R7.0-1.0.1/hw/xnest/Xnest.man.pre
 +For example,
 +.B xterm \-display :1.1
 +will open an
-+.BR xterm (__mansuffix__)
++.BR xterm (__appmansuffix__)
 +client in the nested server with the display number
 +.B :1
 +on the second screen.
@@ -451,7 +451,7 @@ Index: xorg-server-X11R7.0-1.0.1/hw/xnest/Xnest.man.pre
 +Starting up
 +.B Xnest
 +is just as simple as starting up
-+.BR xclock (__mansuffix__)
++.BR xclock (__appmansuffix__)
 +from a terminal emulator.
 +If a user wishes to run
 +.B Xnest
@@ -607,7 +607,7 @@ Index: xorg-server-X11R7.0-1.0.1/hw/xnest/Xnest.man.pre
 +Thus, if there is a font in the local font path of the nested server, there is
 +no guarantee that this font exists in the remote font path of the real server.
 +The
-+.BR xlsfonts (__mansuffix__)
++.BR xlsfonts (__appmansuffix__)
 +client, if run on the nested server, will list fonts in the local font path and,
 +if run on the real server, will list fonts in the remote font path.
 +Before a font can be successfully opened by the nested server, it has to exist
@@ -648,6 +648,6 @@ Index: xorg-server-X11R7.0-1.0.1/hw/xnest/Xnest.man.pre
  Davor Matic, MIT X Consortium
 -
 +.SH "SEE ALSO"
-+.BR Xserver (__mansuffix__),
-+.BR xdpyinfo (__mansuffix__),
++.BR Xserver (__appmansuffix__),
++.BR xdpyinfo (__appmansuffix__),
 +.BR X (__miscmansuffix__)

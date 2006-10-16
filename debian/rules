@@ -98,7 +98,7 @@ binary-arch: build install
 	dh_testroot
 
 	dh_installdocs
-	dh_installchangelogs
+	dh_installchangelogs ChangeLog
 	dh_install --sourcedir=debian/tmp --list-missing
 	$(INSTALL) -d $(CURDIR)/debian/xserver-xorg-dev/usr/share/xserver-xorg
 	$(INSTALL) -m644 $(CURDIR)/debian/serverabiver \

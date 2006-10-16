@@ -18,8 +18,13 @@ xorg-server (2:1.1.1-10) UNRELEASED; urgency=low
   * Add 32_disable_sparc_pci_bridge.diff. Disable PCI bridge handling on
     sparc, which is broken and causes filesystem corruption (by poking
     the PCI bus in the wrong places) on some machines. Closes: #392312.
- 
- -- David Nusinow <dnusinow@debian.org>  Fri, 13 Oct 2006 16:05:54 -0400
+
+  [ Drew Parsons ]
+  * Use __appmansuffix__ not __mansuffix__ in
+    03_xnest_manpage_overhaul.diff.  Closes: #390599.
+  * Install upstream ChangeLog.  Closes: #365274.
+
+ -- Drew Parsons <dparsons@debian.org>  Tue, 17 Oct 2006 00:13:02 +1000
 
 xorg-server (2:1.1.1-9) unstable; urgency=low
 
