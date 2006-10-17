@@ -1,4 +1,4 @@
-xorg-server (2:1.1.1-10) UNRELEASED; urgency=low
+xorg-server (2:1.1.1-10) unstable; urgency=low
 
   [ Denis Barbier ]
   * Fix video mode switching.  Closes: #391052
@@ -24,7 +24,7 @@ xorg-server (2:1.1.1-10) UNRELEASED; urgency=low
     03_xnest_manpage_overhaul.diff.  Closes: #390599.
   * Install upstream ChangeLog.  Closes: #365274.
 
- -- Drew Parsons <dparsons@debian.org>  Tue, 17 Oct 2006 00:13:02 +1000
+ -- David Nusinow <dnusinow@debian.org>  Mon, 16 Oct 2006 21:59:51 -0400
 
 xorg-server (2:1.1.1-9) unstable; urgency=low
 
