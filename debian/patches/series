@@ -28,3 +28,4 @@
 30_fix_vmode_switch.diff
 31_blocksigio.diff
 32_disable_sparc_pci_bridge.diff
+33_Xserver_man_typos.patch

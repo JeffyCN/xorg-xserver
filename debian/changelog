@@ -1,3 +1,10 @@
+xorg-server (2:1.1.1-11) UNRELEASED; urgency=low
+
+  * Patch 33_Xserver_man_typos.patch fixes minor typos in Xserver man
+    page. Closes: #364556.
+
+ -- Drew Parsons <dparsons@debian.org>  Sat, 21 Oct 2006 22:14:21 +1000
+
 xorg-server (2:1.1.1-10) unstable; urgency=low
 
   [ Denis Barbier ]
