@@ -1,0 +1,13 @@
+Index: xorg-server/hw/xfree86/doc/man/xorg.conf.man.pre
+===================================================================
+--- xorg-server.orig/hw/xfree86/doc/man/xorg.conf.man.pre	2006-10-21 23:40:42.000000000 +1000
++++ xorg-server/hw/xfree86/doc/man/xorg.conf.man.pre	2006-10-21 23:41:04.000000000 +1000
+@@ -1185,7 +1185,7 @@
+ .B Modes
+ section called
+ .IR modesection\-id.
+-This make all of the modes defined in that section available for use by
++This makes all of the modes defined in that section available for use by
+ this monitor.
+ .TP 7
+ .BI "Mode  \*q" name \*q
