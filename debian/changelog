@@ -1,10 +1,15 @@
 xorg-server (2:1.1.1-11) UNRELEASED; urgency=low
 
+  [ Drew Parsons ]
   * Patches 33_Xserver_man_typos.patch and 34_xorg.conf_man_typos.patch
     fix minor typos in Xserver and xorg.conf man pages. 
     Closes: #364556, #308899.
 
- -- Drew Parsons <dparsons@debian.org>  Sat, 21 Oct 2006 23:11:47 +1000
+  [ Julien Cristau ]
+  * Don't build-depend on libdrm-dev on hurd-i386 (closes: #358015). Thanks,
+    Samuel Thibault.
+
+ -- Julien Cristau <julien.cristau@ens-lyon.org>  Tue, 24 Oct 2006 11:49:51 +0200
 
 xorg-server (2:1.1.1-10) unstable; urgency=low
 
