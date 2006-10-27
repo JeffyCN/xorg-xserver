@@ -4,14 +4,14 @@ xorg-server (2:1.1.1-11) UNRELEASED; urgency=low
   * Patches 33_Xserver_man_typos.patch and 34_xorg.conf_man_typos.patch
     fix minor typos in Xserver and xorg.conf man pages.
     Closes: #364556, #308899.
-  * Add patch 35_randr_byteswap.patch from upstream. Fixes big-endian
+  * Add patch 35_randr_byteswap.patch from upstream. Fixes a client/server
     byteswapping problem. Closes: #291100.
 
   [ Julien Cristau ]
   * Don't build-depend on libdrm-dev on hurd-i386 (closes: #358015). Thanks,
     Samuel Thibault.
 
- -- Drew Parsons <dparsons@debian.org>  Fri, 27 Oct 2006 23:43:15 +1000
+ -- Drew Parsons <dparsons@debian.org>  Sat, 28 Oct 2006 00:48:42 +1000
 
 xorg-server (2:1.1.1-10) unstable; urgency=low
 
