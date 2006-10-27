@@ -1,0 +1,18 @@
+From: Keith Packard <keithp@neko.keithp.com>
+Date: Wed, 25 Oct 2006 00:23:02 +0000 (-0700)
+Subject: Byte swap RRSelectInput enable flags.
+X-Git-Url: http://gitweb.freedesktop.org/?p=xorg/xserver.git;a=commitdiff;h=828c34e83ccdf3bcd2844d5af8b0cac4164b04ab
+
+Byte swap RRSelectInput enable flags.
+---
+
+--- a/randr/randr.c
++++ b/randr/randr.c
+@@ -1187,6 +1187,7 @@ SProcRRSelectInput (ClientPtr client)
+ 
+     swaps(&stuff->length, n);
+     swapl(&stuff->window, n);
++    swaps(&stuff->enable, n);
+     return ProcRRSelectInput(client);
+ }
+ 

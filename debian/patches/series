@@ -30,3 +30,4 @@
 32_disable_sparc_pci_bridge.diff
 33_Xserver_man_typos.patch
 34_xorg.conf_man_typos.patch
+35_randr_byteswap.patch
