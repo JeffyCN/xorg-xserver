@@ -1,7 +1,7 @@
 Index: xorg-server/hw/xfree86/doc/man/xorg.conf.man.pre
 ===================================================================
---- xorg-server.orig/hw/xfree86/doc/man/xorg.conf.man.pre	2006-10-31 17:44:02.000000000 +0100
-+++ xorg-server/hw/xfree86/doc/man/xorg.conf.man.pre	2006-10-31 17:44:03.000000000 +0100
+--- xorg-server.orig/hw/xfree86/doc/man/xorg.conf.man.pre	2006-10-21 23:40:42.000000000 +1000
++++ xorg-server/hw/xfree86/doc/man/xorg.conf.man.pre	2006-10-21 23:41:04.000000000 +1000
 @@ -1185,7 +1185,7 @@
  .B Modes
  section called
