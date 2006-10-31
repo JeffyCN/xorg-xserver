@@ -59,7 +59,7 @@ am_libdix_la_OBJECTS = atom.lo colormap.lo cursor.lo devices.lo \
 	dispatch.lo dixfonts.lo dixutils.lo events.lo extension.lo \
 	ffs.lo gc.lo globals.lo glyphcurs.lo grabs.lo initatoms.lo \
 	main.lo pixmap.lo privates.lo property.lo resource.lo \
-	swaprep.lo swapreq.lo tables.lo window.lo
+	swaprep.lo swapreq.lo tables.lo window.lo strcasecmp.lo
 libdix_la_OBJECTS = $(am_libdix_la_OBJECTS)
 libxpstubs_la_LIBADD =
 am_libxpstubs_la_OBJECTS = xpstubs.lo
@@ -569,7 +569,8 @@ libdix_la_SOURCES = \
 	swaprep.c	\
 	swapreq.c	\
 	tables.c	\
-	window.c
+	window.c	\
+	strcasecmp.c
 
 libxpstubs_la_SOURCES = \
 	xpstubs.c
@@ -649,6 +650,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/privates.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/property.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/resource.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/strcasecmp.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/swaprep.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/swapreq.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/tables.Plo@am__quote@

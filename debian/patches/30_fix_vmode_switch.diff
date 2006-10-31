@@ -24,37 +24,6 @@ Index: xorg-server/dix/Makefile.am
  
  libxpstubs_la_SOURCES =	\
  	xpstubs.c
-Index: xorg-server/dix/Makefile.in
-===================================================================
---- xorg-server.orig/dix/Makefile.in
-+++ xorg-server/dix/Makefile.in
-@@ -59,7 +59,7 @@
- 	dispatch.lo dixfonts.lo dixutils.lo events.lo extension.lo \
- 	ffs.lo gc.lo globals.lo glyphcurs.lo grabs.lo initatoms.lo \
- 	main.lo pixmap.lo privates.lo property.lo resource.lo \
--	swaprep.lo swapreq.lo tables.lo window.lo
-+	swaprep.lo swapreq.lo tables.lo window.lo strcasecmp.lo
- libdix_la_OBJECTS = $(am_libdix_la_OBJECTS)
- libxpstubs_la_LIBADD =
- am_libxpstubs_la_OBJECTS = xpstubs.lo
-@@ -569,7 +569,8 @@
- 	swaprep.c	\
- 	swapreq.c	\
- 	tables.c	\
--	window.c
-+	window.c	\
-+	strcasecmp.c
- 
- libxpstubs_la_SOURCES = \
- 	xpstubs.c
-@@ -649,6 +650,7 @@
- @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/privates.Plo@am__quote@
- @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/property.Plo@am__quote@
- @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/resource.Plo@am__quote@
-+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/strcasecmp.Plo@am__quote@
- @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/swaprep.Plo@am__quote@
- @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/swapreq.Plo@am__quote@
- @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/tables.Plo@am__quote@
 Index: xorg-server/dix/strcasecmp.c
 ===================================================================
 --- /dev/null
@@ -122,27 +91,6 @@ Index: xorg-server/hw/xfree86/dixmods/Makefile.am
  
  libxtrap_la_LDFLAGS = -avoid-version
  libxtrap_la_LIBADD = $(top_builddir)/XTrap/libxtrap.la
-Index: xorg-server/hw/xfree86/dixmods/Makefile.in
-===================================================================
---- xorg-server.orig/hw/xfree86/dixmods/Makefile.in
-+++ xorg-server/hw/xfree86/dixmods/Makefile.in
-@@ -115,7 +115,7 @@
- libtype1_la_LIBADD =
- am_libtype1_la_OBJECTS = type1mod.lo
- libtype1_la_OBJECTS = $(am_libtype1_la_OBJECTS)
--libxorgxkb_la_LIBADD =
-+libxorgxkb_la_DEPENDENCIES = $(top_builddir)/dix/libdix.la
- am_libxorgxkb_la_OBJECTS = xkbVT.lo xkbPrivate.lo xkbKillSrv.lo
- libxorgxkb_la_OBJECTS = $(am_libxorgxkb_la_OBJECTS)
- libxtrap_la_DEPENDENCIES = $(top_builddir)/XTrap/libxtrap.la
-@@ -701,6 +701,7 @@
- libtype1_la_SOURCES = type1mod.c
- libdixmods_la_SOURCES = $(top_srcdir)/mi/miinitext.c
- libxorgxkb_la_SOURCES = xkbVT.c xkbPrivate.c xkbKillSrv.c
-+libxorgxkb_la_LIBADD = $(top_builddir)/dix/libdix.la
- libxtrap_la_LDFLAGS = -avoid-version
- libxtrap_la_LIBADD = $(top_builddir)/XTrap/libxtrap.la
- libxtrap_la_SOURCES = xf86XTrapModule.c
 Index: xorg-server/hw/xfree86/dixmods/xkbPrivate.c
 ===================================================================
 --- xorg-server.orig/hw/xfree86/dixmods/xkbPrivate.c
