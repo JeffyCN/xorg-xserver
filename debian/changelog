@@ -10,8 +10,9 @@ xorg-server (2:1.1.1-11) UNRELEASED; urgency=low
   [ Julien Cristau ]
   * Don't build-depend on libdrm-dev on hurd-i386 (closes: #358015). Thanks,
     Samuel Thibault.
+  * Update hurd support patch (Closes: #356300). Thanks, Samuel Thibault.
 
- -- Drew Parsons <dparsons@debian.org>  Sat, 28 Oct 2006 00:48:42 +1000
+ -- Julien Cristau <julien.cristau@ens-lyon.org>  Tue, 31 Oct 2006 18:22:56 +0100
 
 xorg-server (2:1.1.1-10) unstable; urgency=low
 
