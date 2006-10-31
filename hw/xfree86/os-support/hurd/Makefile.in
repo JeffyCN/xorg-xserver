@@ -14,14 +14,13 @@
 
 @SET_MAKE@
 
-
 srcdir = @srcdir@
 top_srcdir = @top_srcdir@
 VPATH = @srcdir@
 pkgdatadir = $(datadir)/@PACKAGE@
 pkglibdir = $(libdir)/@PACKAGE@
 pkgincludedir = $(includedir)/@PACKAGE@
-top_builddir = ../../..
+top_builddir = ../../../..
 am__cd = CDPATH="$${ZSH_VERSION+.}$(PATH_SEPARATOR)" && cd
 INSTALL = @INSTALL@
 install_sh_DATA = $(install_sh) -c -m 644
@@ -37,9 +36,8 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-subdir = hw/xfree86/os-support
-DIST_COMMON = $(sdk_HEADERS) $(srcdir)/Makefile.am \
-	$(srcdir)/Makefile.in
+subdir = hw/xfree86/os-support/hurd
+DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/acinclude.m4 \
 	$(top_srcdir)/configure.ac
@@ -56,10 +54,13 @@ CONFIG_HEADER = $(top_builddir)/include/do-not-use-config.h \
 	$(top_builddir)/include/kdrive-config.h
 CONFIG_CLEAN_FILES =
 LTLIBRARIES = $(noinst_LTLIBRARIES)
-libxorgos_la_DEPENDENCIES = @XORG_OS_SUBDIR@/lib@XORG_OS_SUBDIR@.la \
-	bus/libbus.la misc/libmisc.la
-am_libxorgos_la_OBJECTS = xorgos.lo
-libxorgos_la_OBJECTS = $(am_libxorgos_la_OBJECTS)
+libhurd_la_LIBADD =
+am_libhurd_la_OBJECTS = hurd_init.lo hurd_io.lo hurd_mmap.lo \
+	hurd_kbd.lo hurd_mouse.lo hurd_video.lo VTsw_noop.lo \
+	posix_tty.lo libc_wrapper.lo stdResource.lo stdPci.lo \
+	sigiostubs.lo pm_noop.lo kmod_noop.lo agp_noop.lo \
+	at_scancode.lo
+libhurd_la_OBJECTS = $(am_libhurd_la_OBJECTS)
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)/include -I$(top_builddir)/include -I$(top_builddir)/include -I$(top_builddir)/include -I$(top_builddir)/include -I$(top_builddir)/include -I$(top_builddir)/include -I$(top_builddir)/include
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
@@ -71,23 +72,8 @@ LTCOMPILE = $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) \
 CCLD = $(CC)
 LINK = $(LIBTOOL) --tag=CC --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
 	$(AM_LDFLAGS) $(LDFLAGS) -o $@
-SOURCES = $(libxorgos_la_SOURCES)
-DIST_SOURCES = $(libxorgos_la_SOURCES)
-RECURSIVE_TARGETS = all-recursive check-recursive dvi-recursive \
-	html-recursive info-recursive install-data-recursive \
-	install-exec-recursive install-info-recursive \
-	install-recursive installcheck-recursive installdirs-recursive \
-	pdf-recursive ps-recursive uninstall-info-recursive \
-	uninstall-recursive
-am__vpath_adj_setup = srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`;
-am__vpath_adj = case $$p in \
-    $(srcdir)/*) f=`echo "$$p" | sed "s|^$$srcdirstrip/||"`;; \
-    *) f=$$p;; \
-  esac;
-am__strip_dir = `echo $$p | sed -e 's|^.*/||'`;
-am__installdirs = "$(DESTDIR)$(sdkdir)"
-sdkHEADERS_INSTALL = $(INSTALL_HEADER)
-HEADERS = $(sdk_HEADERS)
+SOURCES = $(libhurd_la_SOURCES)
+DIST_SOURCES = $(libhurd_la_SOURCES)
 ETAGS = etags
 CTAGS = ctags
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
@@ -550,28 +536,23 @@ sysconfdir = @sysconfdir@
 target_alias = @target_alias@
 xglmoduledir = @xglmoduledir@
 xpconfigdir = @xpconfigdir@
-@DRI_TRUE@DRI_SUBDIRS = drm
-SUBDIRS = bus @XORG_OS_SUBDIR@ misc $(DRI_SUBDIRS)
-DIST_SUBDIRS = bsd bus drm misc linux lynxos solaris sysv sco usl hurd
-sdk_HEADERS = xf86_OSproc.h xf86_OSlib.h xf86_ansic.h xf86_libc.h \
-              assyntax.h xf86OSKbd.h xf86OSmouse.h
+noinst_LTLIBRARIES = libhurd.la
+libhurd_la_SOURCES = hurd_init.c hurd_io.c hurd_mmap.c hurd_kbd.c \
+		hurd_mouse.c hurd_video.c \
+		$(srcdir)/../shared/VTsw_noop.c \
+		$(srcdir)/../shared/posix_tty.c \
+		$(srcdir)/../shared/libc_wrapper.c \
+		$(srcdir)/../shared/stdResource.c \
+		$(srcdir)/../shared/stdPci.c \
+		$(srcdir)/../shared/sigiostubs.c \
+		$(srcdir)/../shared/pm_noop.c \
+		$(srcdir)/../shared/kmod_noop.c \
+		$(srcdir)/../shared/agp_noop.c \
+		$(srcdir)/../shared/at_scancode.c
 
-
-# FIXME: These don't seem to be used anywhere
-EXTRA_DIST = int10Defines.h xf86OSpriv.h README.OS-lib xf86drm.h \
-	shared/bios_devmem.c shared/inout.S shared/kbd.c
-
-# to get the grouping semantics right, you have to glom these three together
-# as one library, otherwise libtool will actively defeat your attempts to
-# list them multiple times on the link line.
-noinst_LTLIBRARIES = libxorgos.la
-libxorgos_la_SOURCES = xorgos.c
-libxorgos_la_LIBADD = @XORG_OS_SUBDIR@/lib@XORG_OS_SUBDIR@.la \
-                      bus/libbus.la \
-                      misc/libmisc.la
-
-DISTCLEANFILES = xorgos.c
-all: all-recursive
+AM_CFLAGS = -DUSESTDRES -DHAVE_SYSV_IPC $(XORG_CFLAGS) @SERVER_DEFINES@ @LOADER_DEFINES@
+INCLUDES = $(XORG_INCS)
+all: all-am
 
 .SUFFIXES:
 .SUFFIXES: .c .lo .o .obj
@@ -584,9 +565,9 @@ $(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am  $(am__confi
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign  hw/xfree86/os-support/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign  hw/xfree86/os-support/hurd/Makefile'; \
 	cd $(top_srcdir) && \
-	  $(AUTOMAKE) --foreign  hw/xfree86/os-support/Makefile
+	  $(AUTOMAKE) --foreign  hw/xfree86/os-support/hurd/Makefile
 .PRECIOUS: Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \
@@ -613,8 +594,8 @@ clean-noinstLTLIBRARIES:
 	  echo "rm -f \"$${dir}/so_locations\""; \
 	  rm -f "$${dir}/so_locations"; \
 	done
-libxorgos.la: $(libxorgos_la_OBJECTS) $(libxorgos_la_DEPENDENCIES) 
-	$(LINK)  $(libxorgos_la_LDFLAGS) $(libxorgos_la_OBJECTS) $(libxorgos_la_LIBADD) $(LIBS)
+libhurd.la: $(libhurd_la_OBJECTS) $(libhurd_la_DEPENDENCIES) 
+	$(LINK)  $(libhurd_la_LDFLAGS) $(libhurd_la_OBJECTS) $(libhurd_la_LIBADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -622,7 +603,22 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xorgos.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/VTsw_noop.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/agp_noop.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/at_scancode.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/hurd_init.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/hurd_io.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/hurd_kbd.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/hurd_mmap.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/hurd_mouse.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/hurd_video.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/kmod_noop.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libc_wrapper.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pm_noop.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/posix_tty.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sigiostubs.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/stdPci.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/stdResource.Plo@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	if $(COMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" -c -o $@ $<; \
@@ -645,6 +641,76 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LTCOMPILE) -c -o $@ $<
 
+VTsw_noop.lo: $(srcdir)/../shared/VTsw_noop.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT VTsw_noop.lo -MD -MP -MF "$(DEPDIR)/VTsw_noop.Tpo" -c -o VTsw_noop.lo `test -f '$(srcdir)/../shared/VTsw_noop.c' || echo '$(srcdir)/'`$(srcdir)/../shared/VTsw_noop.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/VTsw_noop.Tpo" "$(DEPDIR)/VTsw_noop.Plo"; else rm -f "$(DEPDIR)/VTsw_noop.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$(srcdir)/../shared/VTsw_noop.c' object='VTsw_noop.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o VTsw_noop.lo `test -f '$(srcdir)/../shared/VTsw_noop.c' || echo '$(srcdir)/'`$(srcdir)/../shared/VTsw_noop.c
+
+posix_tty.lo: $(srcdir)/../shared/posix_tty.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT posix_tty.lo -MD -MP -MF "$(DEPDIR)/posix_tty.Tpo" -c -o posix_tty.lo `test -f '$(srcdir)/../shared/posix_tty.c' || echo '$(srcdir)/'`$(srcdir)/../shared/posix_tty.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/posix_tty.Tpo" "$(DEPDIR)/posix_tty.Plo"; else rm -f "$(DEPDIR)/posix_tty.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$(srcdir)/../shared/posix_tty.c' object='posix_tty.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o posix_tty.lo `test -f '$(srcdir)/../shared/posix_tty.c' || echo '$(srcdir)/'`$(srcdir)/../shared/posix_tty.c
+
+libc_wrapper.lo: $(srcdir)/../shared/libc_wrapper.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libc_wrapper.lo -MD -MP -MF "$(DEPDIR)/libc_wrapper.Tpo" -c -o libc_wrapper.lo `test -f '$(srcdir)/../shared/libc_wrapper.c' || echo '$(srcdir)/'`$(srcdir)/../shared/libc_wrapper.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libc_wrapper.Tpo" "$(DEPDIR)/libc_wrapper.Plo"; else rm -f "$(DEPDIR)/libc_wrapper.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$(srcdir)/../shared/libc_wrapper.c' object='libc_wrapper.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libc_wrapper.lo `test -f '$(srcdir)/../shared/libc_wrapper.c' || echo '$(srcdir)/'`$(srcdir)/../shared/libc_wrapper.c
+
+stdResource.lo: $(srcdir)/../shared/stdResource.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT stdResource.lo -MD -MP -MF "$(DEPDIR)/stdResource.Tpo" -c -o stdResource.lo `test -f '$(srcdir)/../shared/stdResource.c' || echo '$(srcdir)/'`$(srcdir)/../shared/stdResource.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/stdResource.Tpo" "$(DEPDIR)/stdResource.Plo"; else rm -f "$(DEPDIR)/stdResource.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$(srcdir)/../shared/stdResource.c' object='stdResource.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o stdResource.lo `test -f '$(srcdir)/../shared/stdResource.c' || echo '$(srcdir)/'`$(srcdir)/../shared/stdResource.c
+
+stdPci.lo: $(srcdir)/../shared/stdPci.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT stdPci.lo -MD -MP -MF "$(DEPDIR)/stdPci.Tpo" -c -o stdPci.lo `test -f '$(srcdir)/../shared/stdPci.c' || echo '$(srcdir)/'`$(srcdir)/../shared/stdPci.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/stdPci.Tpo" "$(DEPDIR)/stdPci.Plo"; else rm -f "$(DEPDIR)/stdPci.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$(srcdir)/../shared/stdPci.c' object='stdPci.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o stdPci.lo `test -f '$(srcdir)/../shared/stdPci.c' || echo '$(srcdir)/'`$(srcdir)/../shared/stdPci.c
+
+sigiostubs.lo: $(srcdir)/../shared/sigiostubs.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT sigiostubs.lo -MD -MP -MF "$(DEPDIR)/sigiostubs.Tpo" -c -o sigiostubs.lo `test -f '$(srcdir)/../shared/sigiostubs.c' || echo '$(srcdir)/'`$(srcdir)/../shared/sigiostubs.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/sigiostubs.Tpo" "$(DEPDIR)/sigiostubs.Plo"; else rm -f "$(DEPDIR)/sigiostubs.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$(srcdir)/../shared/sigiostubs.c' object='sigiostubs.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o sigiostubs.lo `test -f '$(srcdir)/../shared/sigiostubs.c' || echo '$(srcdir)/'`$(srcdir)/../shared/sigiostubs.c
+
+pm_noop.lo: $(srcdir)/../shared/pm_noop.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT pm_noop.lo -MD -MP -MF "$(DEPDIR)/pm_noop.Tpo" -c -o pm_noop.lo `test -f '$(srcdir)/../shared/pm_noop.c' || echo '$(srcdir)/'`$(srcdir)/../shared/pm_noop.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/pm_noop.Tpo" "$(DEPDIR)/pm_noop.Plo"; else rm -f "$(DEPDIR)/pm_noop.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$(srcdir)/../shared/pm_noop.c' object='pm_noop.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o pm_noop.lo `test -f '$(srcdir)/../shared/pm_noop.c' || echo '$(srcdir)/'`$(srcdir)/../shared/pm_noop.c
+
+kmod_noop.lo: $(srcdir)/../shared/kmod_noop.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT kmod_noop.lo -MD -MP -MF "$(DEPDIR)/kmod_noop.Tpo" -c -o kmod_noop.lo `test -f '$(srcdir)/../shared/kmod_noop.c' || echo '$(srcdir)/'`$(srcdir)/../shared/kmod_noop.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/kmod_noop.Tpo" "$(DEPDIR)/kmod_noop.Plo"; else rm -f "$(DEPDIR)/kmod_noop.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$(srcdir)/../shared/kmod_noop.c' object='kmod_noop.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o kmod_noop.lo `test -f '$(srcdir)/../shared/kmod_noop.c' || echo '$(srcdir)/'`$(srcdir)/../shared/kmod_noop.c
+
+agp_noop.lo: $(srcdir)/../shared/agp_noop.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT agp_noop.lo -MD -MP -MF "$(DEPDIR)/agp_noop.Tpo" -c -o agp_noop.lo `test -f '$(srcdir)/../shared/agp_noop.c' || echo '$(srcdir)/'`$(srcdir)/../shared/agp_noop.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/agp_noop.Tpo" "$(DEPDIR)/agp_noop.Plo"; else rm -f "$(DEPDIR)/agp_noop.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$(srcdir)/../shared/agp_noop.c' object='agp_noop.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o agp_noop.lo `test -f '$(srcdir)/../shared/agp_noop.c' || echo '$(srcdir)/'`$(srcdir)/../shared/agp_noop.c
+
+at_scancode.lo: $(srcdir)/../shared/at_scancode.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT at_scancode.lo -MD -MP -MF "$(DEPDIR)/at_scancode.Tpo" -c -o at_scancode.lo `test -f '$(srcdir)/../shared/at_scancode.c' || echo '$(srcdir)/'`$(srcdir)/../shared/at_scancode.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/at_scancode.Tpo" "$(DEPDIR)/at_scancode.Plo"; else rm -f "$(DEPDIR)/at_scancode.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$(srcdir)/../shared/at_scancode.c' object='at_scancode.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o at_scancode.lo `test -f '$(srcdir)/../shared/at_scancode.c' || echo '$(srcdir)/'`$(srcdir)/../shared/at_scancode.c
+
 mostlyclean-libtool:
 	-rm -f *.lo
 
@@ -654,94 +720,6 @@ clean-libtool:
 distclean-libtool:
 	-rm -f libtool
 uninstall-info-am:
-install-sdkHEADERS: $(sdk_HEADERS)
-	@$(NORMAL_INSTALL)
-	test -z "$(sdkdir)" || $(mkdir_p) "$(DESTDIR)$(sdkdir)"
-	@list='$(sdk_HEADERS)'; for p in $$list; do \
-	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
-	  f=$(am__strip_dir) \
-	  echo " $(sdkHEADERS_INSTALL) '$$d$$p' '$(DESTDIR)$(sdkdir)/$$f'"; \
-	  $(sdkHEADERS_INSTALL) "$$d$$p" "$(DESTDIR)$(sdkdir)/$$f"; \
-	done
-
-uninstall-sdkHEADERS:
-	@$(NORMAL_UNINSTALL)
-	@list='$(sdk_HEADERS)'; for p in $$list; do \
-	  f=$(am__strip_dir) \
-	  echo " rm -f '$(DESTDIR)$(sdkdir)/$$f'"; \
-	  rm -f "$(DESTDIR)$(sdkdir)/$$f"; \
-	done
-
-# This directory's subdirectories are mostly independent; you can cd
-# into them and run `make' without going through this Makefile.
-# To change the values of `make' variables: instead of editing Makefiles,
-# (1) if the variable is set in `config.status', edit `config.status'
-#     (which will cause the Makefiles to be regenerated when you run `make');
-# (2) otherwise, pass the desired values on the `make' command line.
-$(RECURSIVE_TARGETS):
-	@failcom='exit 1'; \
-	for f in x $$MAKEFLAGS; do \
-	  case $$f in \
-	    *=* | --[!k]*);; \
-	    *k*) failcom='fail=yes';; \
-	  esac; \
-	done; \
-	dot_seen=no; \
-	target=`echo $@ | sed s/-recursive//`; \
-	list='$(SUBDIRS)'; for subdir in $$list; do \
-	  echo "Making $$target in $$subdir"; \
-	  if test "$$subdir" = "."; then \
-	    dot_seen=yes; \
-	    local_target="$$target-am"; \
-	  else \
-	    local_target="$$target"; \
-	  fi; \
-	  (cd $$subdir && $(MAKE) $(AM_MAKEFLAGS) $$local_target) \
-	  || eval $$failcom; \
-	done; \
-	if test "$$dot_seen" = "no"; then \
-	  $(MAKE) $(AM_MAKEFLAGS) "$$target-am" || exit 1; \
-	fi; test -z "$$fail"
-
-mostlyclean-recursive clean-recursive distclean-recursive \
-maintainer-clean-recursive:
-	@failcom='exit 1'; \
-	for f in x $$MAKEFLAGS; do \
-	  case $$f in \
-	    *=* | --[!k]*);; \
-	    *k*) failcom='fail=yes';; \
-	  esac; \
-	done; \
-	dot_seen=no; \
-	case "$@" in \
-	  distclean-* | maintainer-clean-*) list='$(DIST_SUBDIRS)' ;; \
-	  *) list='$(SUBDIRS)' ;; \
-	esac; \
-	rev=''; for subdir in $$list; do \
-	  if test "$$subdir" = "."; then :; else \
-	    rev="$$subdir $$rev"; \
-	  fi; \
-	done; \
-	rev="$$rev ."; \
-	target=`echo $@ | sed s/-recursive//`; \
-	for subdir in $$rev; do \
-	  echo "Making $$target in $$subdir"; \
-	  if test "$$subdir" = "."; then \
-	    local_target="$$target-am"; \
-	  else \
-	    local_target="$$target"; \
-	  fi; \
-	  (cd $$subdir && $(MAKE) $(AM_MAKEFLAGS) $$local_target) \
-	  || eval $$failcom; \
-	done && test -z "$$fail"
-tags-recursive:
-	list='$(SUBDIRS)'; for subdir in $$list; do \
-	  test "$$subdir" = . || (cd $$subdir && $(MAKE) $(AM_MAKEFLAGS) tags); \
-	done
-ctags-recursive:
-	list='$(SUBDIRS)'; for subdir in $$list; do \
-	  test "$$subdir" = . || (cd $$subdir && $(MAKE) $(AM_MAKEFLAGS) ctags); \
-	done
 
 ID: $(HEADERS) $(SOURCES) $(LISP) $(TAGS_FILES)
 	list='$(SOURCES) $(HEADERS) $(LISP) $(TAGS_FILES)'; \
@@ -753,23 +731,10 @@ ID: $(HEADERS) $(SOURCES) $(LISP) $(TAGS_FILES)
 	mkid -fID $$unique
 tags: TAGS
 
-TAGS: tags-recursive $(HEADERS) $(SOURCES)  $(TAGS_DEPENDENCIES) \
+TAGS:  $(HEADERS) $(SOURCES)  $(TAGS_DEPENDENCIES) \
 		$(TAGS_FILES) $(LISP)
 	tags=; \
 	here=`pwd`; \
-	if ($(ETAGS) --etags-include --version) >/dev/null 2>&1; then \
-	  include_option=--etags-include; \
-	  empty_fix=.; \
-	else \
-	  include_option=--include; \
-	  empty_fix=; \
-	fi; \
-	list='$(SUBDIRS)'; for subdir in $$list; do \
-	  if test "$$subdir" = .; then :; else \
-	    test ! -f $$subdir/TAGS || \
-	      tags="$$tags $$include_option=$$here/$$subdir/TAGS"; \
-	  fi; \
-	done; \
 	list='$(SOURCES) $(HEADERS)  $(LISP) $(TAGS_FILES)'; \
 	unique=`for i in $$list; do \
 	    if test -f "$$i"; then echo $$i; else echo $(srcdir)/$$i; fi; \
@@ -782,7 +747,7 @@ TAGS: tags-recursive $(HEADERS) $(SOURCES)  $(TAGS_DEPENDENCIES) \
 	    $$tags $$unique; \
 	fi
 ctags: CTAGS
-CTAGS: ctags-recursive $(HEADERS) $(SOURCES)  $(TAGS_DEPENDENCIES) \
+CTAGS:  $(HEADERS) $(SOURCES)  $(TAGS_DEPENDENCIES) \
 		$(TAGS_FILES) $(LISP)
 	tags=; \
 	here=`pwd`; \
@@ -805,7 +770,6 @@ distclean-tags:
 	-rm -f TAGS ID GTAGS GRTAGS GSYMS GPATH tags
 
 distdir: $(DISTFILES)
-	$(mkdir_p) $(distdir)/shared
 	@srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`; \
 	topsrcdirstrip=`echo "$(top_srcdir)" | sed 's|.|.|g'`; \
 	list='$(DISTFILES)'; for file in $$list; do \
@@ -832,38 +796,19 @@ distdir: $(DISTFILES)
 	    || exit 1; \
 	  fi; \
 	done
-	list='$(DIST_SUBDIRS)'; for subdir in $$list; do \
-	  if test "$$subdir" = .; then :; else \
-	    test -d "$(distdir)/$$subdir" \
-	    || $(mkdir_p) "$(distdir)/$$subdir" \
-	    || exit 1; \
-	    distdir=`$(am__cd) $(distdir) && pwd`; \
-	    top_distdir=`$(am__cd) $(top_distdir) && pwd`; \
-	    (cd $$subdir && \
-	      $(MAKE) $(AM_MAKEFLAGS) \
-	        top_distdir="$$top_distdir" \
-	        distdir="$$distdir/$$subdir" \
-	        distdir) \
-	      || exit 1; \
-	  fi; \
-	done
 check-am: all-am
-check: check-recursive
-all-am: Makefile $(LTLIBRARIES) $(HEADERS)
-installdirs: installdirs-recursive
-installdirs-am:
-	for dir in "$(DESTDIR)$(sdkdir)"; do \
-	  test -z "$$dir" || $(mkdir_p) "$$dir"; \
-	done
-install: install-recursive
-install-exec: install-exec-recursive
-install-data: install-data-recursive
-uninstall: uninstall-recursive
+check: check-am
+all-am: Makefile $(LTLIBRARIES)
+installdirs:
+install: install-am
+install-exec: install-exec-am
+install-data: install-data-am
+uninstall: uninstall-am
 
 install-am: all-am
 	@$(MAKE) $(AM_MAKEFLAGS) install-exec-am install-data-am
 
-installcheck: installcheck-recursive
+installcheck: installcheck-am
 install-strip:
 	$(MAKE) $(AM_MAKEFLAGS) INSTALL_PROGRAM="$(INSTALL_STRIP_PROGRAM)" \
 	  install_sh_PROGRAM="$(INSTALL_STRIP_PROGRAM)" INSTALL_STRIP_FLAG=-s \
@@ -875,82 +820,73 @@ clean-generic:
 
 distclean-generic:
 	-test -z "$(CONFIG_CLEAN_FILES)" || rm -f $(CONFIG_CLEAN_FILES)
-	-test -z "$(DISTCLEANFILES)" || rm -f $(DISTCLEANFILES)
 
 maintainer-clean-generic:
 	@echo "This command is intended for maintainers to use"
 	@echo "it deletes files that may require special tools to rebuild."
-clean: clean-recursive
+clean: clean-am
 
 clean-am: clean-generic clean-libtool clean-noinstLTLIBRARIES \
 	mostlyclean-am
 
-distclean: distclean-recursive
+distclean: distclean-am
 	-rm -rf ./$(DEPDIR)
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
 	distclean-libtool distclean-tags
 
-dvi: dvi-recursive
+dvi: dvi-am
 
 dvi-am:
 
-html: html-recursive
+html: html-am
 
-info: info-recursive
+info: info-am
 
 info-am:
 
-install-data-am: install-sdkHEADERS
+install-data-am:
 
 install-exec-am:
 
-install-info: install-info-recursive
+install-info: install-info-am
 
 install-man:
 
 installcheck-am:
 
-maintainer-clean: maintainer-clean-recursive
+maintainer-clean: maintainer-clean-am
 	-rm -rf ./$(DEPDIR)
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 
-mostlyclean: mostlyclean-recursive
+mostlyclean: mostlyclean-am
 
 mostlyclean-am: mostlyclean-compile mostlyclean-generic \
 	mostlyclean-libtool
 
-pdf: pdf-recursive
+pdf: pdf-am
 
 pdf-am:
 
-ps: ps-recursive
+ps: ps-am
 
 ps-am:
 
-uninstall-am: uninstall-info-am uninstall-sdkHEADERS
+uninstall-am: uninstall-info-am
 
-uninstall-info: uninstall-info-recursive
-
-.PHONY: $(RECURSIVE_TARGETS) CTAGS GTAGS all all-am check check-am \
-	clean clean-generic clean-libtool clean-noinstLTLIBRARIES \
-	clean-recursive ctags ctags-recursive distclean \
+.PHONY: CTAGS GTAGS all all-am check check-am clean clean-generic \
+	clean-libtool clean-noinstLTLIBRARIES ctags distclean \
 	distclean-compile distclean-generic distclean-libtool \
-	distclean-recursive distclean-tags distdir dvi dvi-am html \
-	html-am info info-am install install-am install-data \
-	install-data-am install-exec install-exec-am install-info \
-	install-info-am install-man install-sdkHEADERS install-strip \
-	installcheck installcheck-am installdirs installdirs-am \
-	maintainer-clean maintainer-clean-generic \
-	maintainer-clean-recursive mostlyclean mostlyclean-compile \
-	mostlyclean-generic mostlyclean-libtool mostlyclean-recursive \
-	pdf pdf-am ps ps-am tags tags-recursive uninstall uninstall-am \
-	uninstall-info-am uninstall-sdkHEADERS
+	distclean-tags distdir dvi dvi-am html html-am info info-am \
+	install install-am install-data install-data-am install-exec \
+	install-exec-am install-info install-info-am install-man \
+	install-strip installcheck installcheck-am installdirs \
+	maintainer-clean maintainer-clean-generic mostlyclean \
+	mostlyclean-compile mostlyclean-generic mostlyclean-libtool \
+	pdf pdf-am ps ps-am tags uninstall uninstall-am \
+	uninstall-info-am
 
-
-xorgos.c:
-	touch $@
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:

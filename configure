@@ -883,6 +883,7 @@ FBDEVHW_TRUE
 FBDEVHW_FALSE
 FREEBSD_KLDLOAD_TRUE
 FREEBSD_KLDLOAD_FALSE
+GLX_ARCH_DEFINES
 ALPHA_VIDEO_TRUE
 ALPHA_VIDEO_FALSE
 ARM_VIDEO_TRUE
@@ -987,6 +988,8 @@ XPRINT_TRUE
 XPRINT_FALSE
 XINPUT_TRUE
 XINPUT_FALSE
+MISCUTILS_TRUE
+MISCUTILS_FALSE
 XDMCP_CFLAGS
 XDMCP_LIBS
 XDMCP_TRUE
@@ -997,6 +1000,7 @@ USE_RGB_BUILTIN_TRUE
 USE_RGB_BUILTIN_FALSE
 COMPILEDDEFAULTFONTPATH
 RGB_DB
+SERVERCONFIGdir
 DRI_DRIVER_PATH
 VENDOR_STRING
 VENDOR_STRING_SHORT
@@ -1147,6 +1151,8 @@ XWIN_XV_TRUE
 XWIN_XV_FALSE
 KDRIVE_TRUE
 KDRIVE_FALSE
+KDRIVELINUX_TRUE
+KDRIVELINUX_FALSE
 XEPHYR_CFLAGS
 XEPHYR_LIBS
 KDRIVE_INCS
@@ -1907,6 +1913,7 @@ Optional Features:
   --disable-xf86bigfont   Build XF86 Big Font extension (default: enabled)
   --disable-dpms          Build DPMS extension (default: enabled)
   --disable-xinput        Build XInput Extension (default: enabled)
+  --enable-misc-utils     Build misc utilities (default: enabled)
   --enable-xorg           Build Xorg server (default: auto)
   --enable-dmx            Build DMX server (default: auto)
   --enable-xvfb           Build Xvfb server (default: yes)
@@ -1971,6 +1978,8 @@ Optional Packages:
   --with-xkb-output=PATH  Path to XKB output dir (default:
                           ${datadir}/X11/xkb/compiled)
   --with-rgb-path=PATH    Path to RGB database (default: ${datadir}/X11/rgb)
+  --with-serverconfig-path=PATH
+                          Path to server config (default: ${libdir}/xserver)
   --with-dri-driver-path=PATH
                           Path to DRI drivers (default: ${libdir}/dri)
    --with-freetype-config=PROG
@@ -5103,7 +5112,7 @@ ia64-*-hpux*)
   ;;
 *-*-irix6*)
   # Find out which ABI we are using.
-  echo '#line 5106 "configure"' > conftest.$ac_ext
+  echo '#line 5115 "configure"' > conftest.$ac_ext
   if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
   (eval $ac_compile) 2>&5
   ac_status=$?
@@ -8357,11 +8366,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:8360: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:8369: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:8364: \$? = $ac_status" >&5
+   echo "$as_me:8373: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -8625,11 +8634,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:8628: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:8637: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:8632: \$? = $ac_status" >&5
+   echo "$as_me:8641: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -8729,11 +8738,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:8732: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:8741: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:8736: \$? = $ac_status" >&5
+   echo "$as_me:8745: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -11170,7 +11179,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 11173 "configure"
+#line 11182 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -11270,7 +11279,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 11273 "configure"
+#line 11282 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -13638,11 +13647,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:13641: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:13650: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:13645: \$? = $ac_status" >&5
+   echo "$as_me:13654: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -13742,11 +13751,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:13745: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:13754: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:13749: \$? = $ac_status" >&5
+   echo "$as_me:13758: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -15303,11 +15312,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:15306: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:15315: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:15310: \$? = $ac_status" >&5
+   echo "$as_me:15319: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -15407,11 +15416,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:15410: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:15419: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:15414: \$? = $ac_status" >&5
+   echo "$as_me:15423: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -17626,11 +17635,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:17629: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:17638: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:17633: \$? = $ac_status" >&5
+   echo "$as_me:17642: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -17894,11 +17903,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:17897: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:17906: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:17901: \$? = $ac_status" >&5
+   echo "$as_me:17910: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -17998,11 +18007,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:18001: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:18010: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:18005: \$? = $ac_status" >&5
+   echo "$as_me:18014: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -26046,6 +26055,7 @@ cat >>confdefs.h <<\_ACEOF
 _ACEOF
  ;;
 	esac
+	GLX_ARCH_DEFINES="-D__GLX_ALIGN64 -mieee"
 	;;
   arm*)
 	ARM_VIDEO=yes
@@ -26081,6 +26091,7 @@ _ACEOF
 	xorg_loader_sparcmuldiv="yes"
 	SPARC64_VIDEO=yes
 	BSD_ARCH_SOURCES="sparc64_video.c ioperm_noop.c"
+	GLX_ARCH_DEFINES="-D__GLX_ALIGN64"
 	;;
   x86_64*|amd64*)
   	use_x86_asm="yes"
@@ -26104,8 +26115,16 @@ _ACEOF
 				SYS_LIBS=-lamd64
 				;;
 	esac
+	GLX_ARCH_DEFINES="-D__GLX_ALIGN64"
+	;;
+  ia64*)
+  	GLX_ARCH_DEFINES="-D__GLX_ALIGN64"
+	;;
+  s390*)
+  	GLX_ARCH_DEFINES="-D__GLX_ALIGN64"
 	;;
 esac
+
 
 
 
@@ -26162,11 +26181,14 @@ DRI=no
 KDRIVE_HW=no
 case $host_os in
   *freebsd*)
-
+	case $host_os in
+		kfreebsd*-gnu) ;;
+		*)
 cat >>confdefs.h <<\_ACEOF
 #define CSRG_BASED 1
 _ACEOF
-
+ ;;
+	esac
 
 cat >>confdefs.h <<\_ACEOF
 #define PCCONS_SUPPORT 1
@@ -26486,6 +26508,14 @@ else
 fi
 
 
+# Check whether --with-serverconfig-path was given.
+if test "${with_serverconfig_path+set}" = set; then
+  withval=$with_serverconfig_path;  SERVERCONFIG="$withval"
+else
+   SERVERCONFIG="${libdir}/xserver"
+fi
+
+
 # Check whether --with-dri-driver-path was given.
 if test "${with_dri_driver_path+set}" = set; then
   withval=$with_dri_driver_path;  DRI_DRIVER_PATH="$withval"
@@ -26714,6 +26744,13 @@ if test "${enable_xinput+set}" = set; then
   enableval=$enable_xinput; XINPUT=$enableval
 else
   XINPUT=yes
+fi
+
+# Check whether --enable-misc-utils was given.
+if test "${enable_misc_utils+set}" = set; then
+  enableval=$enable_misc_utils; MISCUTILS=$enableval
+else
+  MISCUTILS=yes
 fi
 
 
@@ -29418,6 +29455,17 @@ _ACEOF
 fi
 
 
+
+if test "x$MISCUTILS" = xyes; then
+  MISCUTILS_TRUE=
+  MISCUTILS_FALSE='#'
+else
+  MISCUTILS_TRUE='#'
+  MISCUTILS_FALSE=
+fi
+
+
+
 cat >>confdefs.h <<\_ACEOF
 #define SHAPE 1
 _ACEOF
@@ -29823,6 +29871,22 @@ _ACEOF
 
 cat >>confdefs.h <<_ACEOF
 #define RGB_DB "$ac_define_dir"
+_ACEOF
+
+  test "$prefix_NONE" && prefix=NONE
+  test "$exec_prefix_NONE" && exec_prefix=NONE
+
+
+  prefix_NONE=
+  exec_prefix_NONE=
+  test "x$prefix" = xNONE && prefix_NONE=yes && prefix=$ac_default_prefix
+  test "x$exec_prefix" = xNONE && exec_prefix_NONE=yes && exec_prefix=$prefix
+  eval ac_define_dir="\"$SERVERCONFIG\""
+  SERVERCONFIGdir="$ac_define_dir"
+
+
+cat >>confdefs.h <<_ACEOF
+#define SERVERCONFIGdir "$ac_define_dir"
 _ACEOF
 
   test "$prefix_NONE" && prefix=NONE
@@ -32165,7 +32229,7 @@ fi
 			;;
 		esac
 		;;
-	  freebsd*)
+	  freebsd* | kfreebsd*-gnu)
 	  	XORG_OS="freebsd"
 		XORG_OS_SUBDIR="bsd"
 		XORG_OS_KBD="BSD"
@@ -32411,6 +32475,10 @@ echo "$as_me: error: Unsupported Solaris platform. Only SPARC & x86 \
 			XORG_CFLAGS="${XORG_CFLAGS} "'$(SOLARIS_ASM_CFLAGS)'
 		fi
 		;;
+	  gnu*)
+	  	XORG_OS="gnu"
+		XORG_OS_SUBDIR="hurd"
+		;;
 	  *)
 	  	XORG_OS="unknown"
 		XORG_OS_SUBDIR="unknown"
@@ -32430,7 +32498,7 @@ echo "$as_me: error: Your OS is unknown. Xorg currently only supports Linux, \
 		;;
 	  powerpc*)
 		case $host_os in
-		  linux*|freebsd*|netbsd*|openbsd*)
+		  linux*|freebsd*|netbsd*|openbsd*|kfreebsd*-gnu)
 			;;
 		  *)
 			xorg_bus_ppcpci="yes"
@@ -32443,7 +32511,7 @@ echo "$as_me: error: Your OS is unknown. Xorg currently only supports Linux, \
 		;;
 	  x86_64*|amd64*)
 		case $host_os in
-		  freebsd*)
+		  freebsd*|kfreebsd*-gnu)
 			# FreeBSD uses the system pci interface
 			;;
 		  *)
@@ -33841,11 +33909,15 @@ fi
 done
 
     if test "$ac_cv_header_sys_vm86_h" = yes; then
-
+    	case $host_os in
+		kfreebsd*-gnu)	kdrivevesa=no ;;
+		*)
 cat >>confdefs.h <<\_ACEOF
 #define KDRIVEVESA 1
 _ACEOF
 
+			kdrivevesa=yes;;
+	esac
     fi
 
 
@@ -34040,7 +34112,33 @@ _ACEOF
     #    $MIEXT_SHADOW_LIB $XPSTUBS_LIB"
     KDRIVE_PURE_LIBS="$FB_LIB $MI_LIB $FIXES_LIB $XEXT_LIB $DBE_LIB $XTRAP_LIB $RECORD_LIB $GLX_LIBS $RENDER_LIB $RANDR_LIB $DAMAGE_LIB $MIEXT_DAMAGE_LIB $MIEXT_SHADOW_LIB $XI_LIB $XKB_LIB $XKB_STUB_LIB $COMPOSITE_LIB $XPSTUBS_LIB $OS_LIB"
     KDRIVE_LIB='$(top_builddir)/hw/kdrive/src/libkdrive.a'
-    KDRIVE_OS_LIB='$(top_builddir)/hw/kdrive/linux/liblinux.a'
+    case $host_os in
+	*linux*)
+	    KDRIVE_OS_LIB='$(top_builddir)/hw/kdrive/linux/liblinux.a'
+
+
+if true; then
+  KDRIVELINUX_TRUE=
+  KDRIVELINUX_FALSE='#'
+else
+  KDRIVELINUX_TRUE='#'
+  KDRIVELINUX_FALSE=
+fi
+
+	    ;;
+	*)
+
+
+if false; then
+  KDRIVELINUX_TRUE=
+  KDRIVELINUX_FALSE='#'
+else
+  KDRIVELINUX_TRUE='#'
+  KDRIVELINUX_FALSE=
+fi
+
+	    ;;
+    esac
     KDRIVE_STUB_LIB='$(top_builddir)/hw/kdrive/src/libkdrivestubs.a'
     KDRIVE_LIBS="$DIX_LIB $KDRIVE_LIB $KDRIVE_OS_LIB $KDRIVE_PURE_LIBS $KDRIVE_STUB_LIB"
 
@@ -34315,7 +34413,7 @@ fi
 
 
 
-if test x"$ac_cv_header_sys_vm86_h" = xyes; then
+if test x"$kdrivevesa" = xyes; then
   KDRIVEVESA_TRUE=
   KDRIVEVESA_FALSE='#'
 else
@@ -34460,7 +34558,7 @@ case $host_os in
 	cygwin*) ;;
 	solaris*) ;;
         darwin*) ;;
-	*bsd*) ;;
+	freebsd*|netbsd*|openbsd*) ;;
 	*)
 
 cat >>confdefs.h <<\_ACEOF
@@ -35082,7 +35180,7 @@ echo "$as_me: Building with package name set to $PACKAGE" >&6;}
 	fi
 
 
-ac_config_files="$ac_config_files Makefile GL/Makefile GL/glx/Makefile GL/include/Makefile GL/include/GL/Makefile GL/mesa/Makefile GL/mesa/array_cache/Makefile GL/mesa/glapi/Makefile GL/mesa/main/Makefile GL/mesa/math/Makefile GL/mesa/shader/Makefile GL/mesa/shader/grammar/Makefile GL/mesa/shader/slang/Makefile GL/mesa/swrast/Makefile GL/mesa/swrast_setup/Makefile GL/mesa/tnl/Makefile GL/mesa/X/Makefile include/Makefile afb/Makefile composite/Makefile damageext/Makefile dbe/Makefile dix/Makefile doc/Makefile fb/Makefile record/Makefile XTrap/Makefile lbx/Makefile mfb/Makefile cfb/Makefile cfb16/Makefile cfb32/Makefile mi/Makefile miext/Makefile miext/damage/Makefile miext/shadow/Makefile miext/cw/Makefile miext/rootless/Makefile os/Makefile randr/Makefile render/Makefile xkb/Makefile Xext/Makefile Xi/Makefile xfixes/Makefile exa/Makefile hw/Makefile hw/xfree86/Makefile hw/xfree86/common/Makefile hw/xfree86/common/xf86Build.h hw/xfree86/ddc/Makefile hw/xfree86/dixmods/Makefile hw/xfree86/dixmods/extmod/Makefile hw/xfree86/doc/Makefile hw/xfree86/doc/devel/Makefile hw/xfree86/doc/man/Makefile hw/xfree86/doc/sgml/Makefile hw/xfree86/dri/Makefile hw/xfree86/dummylib/Makefile hw/xfree86/exa/Makefile hw/xfree86/fbdevhw/Makefile hw/xfree86/getconfig/Makefile hw/xfree86/i2c/Makefile hw/xfree86/int10/Makefile hw/xfree86/loader/Makefile hw/xfree86/os-support/Makefile hw/xfree86/os-support/bsd/Makefile hw/xfree86/os-support/bus/Makefile hw/xfree86/os-support/drm/Makefile hw/xfree86/os-support/misc/Makefile hw/xfree86/os-support/linux/Makefile hw/xfree86/os-support/lynxos/Makefile hw/xfree86/os-support/sco/Makefile hw/xfree86/os-support/solaris/Makefile hw/xfree86/os-support/sysv/Makefile hw/xfree86/os-support/usl/Makefile hw/xfree86/parser/Makefile hw/xfree86/rac/Makefile hw/xfree86/ramdac/Makefile hw/xfree86/scanpci/Makefile hw/xfree86/shadowfb/Makefile hw/xfree86/vbe/Makefile hw/xfree86/vgahw/Makefile hw/xfree86/x86emu/Makefile hw/xfree86/xaa/Makefile hw/xfree86/xf1bpp/Makefile hw/xfree86/xf4bpp/Makefile hw/xfree86/xf8_16bpp/Makefile hw/xfree86/xf8_32bpp/Makefile hw/xfree86/utils/Makefile hw/xfree86/utils/cvt/Makefile hw/xfree86/utils/gtf/Makefile hw/xfree86/utils/ioport/Makefile hw/xfree86/utils/kbd_mode/Makefile hw/xfree86/utils/pcitweak/Makefile hw/xfree86/utils/scanpci/Makefile hw/xfree86/utils/xorgcfg/Makefile hw/xfree86/utils/xorgconfig/Makefile hw/dmx/config/Makefile hw/dmx/doc/Makefile hw/dmx/examples/Makefile hw/dmx/input/Makefile hw/dmx/glxProxy/Makefile hw/dmx/Makefile hw/vfb/Makefile hw/xgl/Makefile hw/xgl/egl/Makefile hw/xgl/egl/module/Makefile hw/xgl/glx/Makefile hw/xgl/glx/module/Makefile hw/xgl/glxext/Makefile hw/xgl/glxext/module/Makefile hw/xnest/Makefile hw/xwin/Makefile hw/darwin/Makefile hw/kdrive/Makefile hw/kdrive/ati/Makefile hw/kdrive/chips/Makefile hw/kdrive/ephyr/Makefile hw/kdrive/epson/Makefile hw/kdrive/fake/Makefile hw/kdrive/fbdev/Makefile hw/kdrive/i810/Makefile hw/kdrive/linux/Makefile hw/kdrive/mach64/Makefile hw/kdrive/mga/Makefile hw/kdrive/neomagic/Makefile hw/kdrive/nvidia/Makefile hw/kdrive/pm2/Makefile hw/kdrive/r128/Makefile hw/kdrive/sdl/Makefile hw/kdrive/sis300/Makefile hw/kdrive/smi/Makefile hw/kdrive/src/Makefile hw/kdrive/vesa/Makefile hw/kdrive/via/Makefile Xprint/Makefile Xprint/doc/Makefile Xprint/pcl/Makefile Xprint/pcl-mono/Makefile Xprint/raster/Makefile Xprint/ps/Makefile Xprint/etc/Makefile Xprint/etc/Xsession.d/Makefile Xprint/etc/init.d/Makefile Xprint/etc/profile.d/Makefile XpConfig/Makefile XpConfig/C/print/attributes/Makefile XpConfig/C/print/ddx-config/Makefile XpConfig/C/print/ddx-config/raster/Makefile XpConfig/C/print/models/CANONBJ10E-GS/Makefile XpConfig/C/print/models/PSdefault/fonts/Makefile XpConfig/C/print/models/PSdefault/Makefile XpConfig/C/print/models/PSspooldir/Makefile XpConfig/C/print/models/SPSPARC2/Makefile XpConfig/C/print/models/SPSPARC2/fonts/Makefile XpConfig/C/print/models/GSdefault/Makefile XpConfig/C/print/models/HPLJ4050-PS/Makefile XpConfig/C/print/models/HPLJ4050-PS/fonts/Makefile XpConfig/C/print/models/Makefile XpConfig/C/print/models/PS2PDFspooldir-GS/Makefile XpConfig/C/print/models/CANONC3200-PS/Makefile XpConfig/C/print/models/CANONC3200-PS/fonts/Makefile XpConfig/C/print/models/HPLJ4family/fonts/Makefile XpConfig/C/print/models/HPLJ4family/Makefile XpConfig/C/print/models/HPDJ1600C/Makefile XpConfig/C/print/models/HPDJ1600C/fonts/Makefile XpConfig/C/print/Makefile XpConfig/C/Makefile XpConfig/en_US/print/attributes/Makefile XpConfig/en_US/print/Makefile XpConfig/en_US/Makefile xorg-server.pc"
+ac_config_files="$ac_config_files Makefile GL/Makefile GL/glx/Makefile GL/include/Makefile GL/include/GL/Makefile GL/mesa/Makefile GL/mesa/array_cache/Makefile GL/mesa/glapi/Makefile GL/mesa/main/Makefile GL/mesa/math/Makefile GL/mesa/shader/Makefile GL/mesa/shader/grammar/Makefile GL/mesa/shader/slang/Makefile GL/mesa/swrast/Makefile GL/mesa/swrast_setup/Makefile GL/mesa/tnl/Makefile GL/mesa/X/Makefile include/Makefile afb/Makefile composite/Makefile damageext/Makefile dbe/Makefile dix/Makefile doc/Makefile fb/Makefile record/Makefile XTrap/Makefile lbx/Makefile mfb/Makefile cfb/Makefile cfb16/Makefile cfb32/Makefile mi/Makefile miext/Makefile miext/damage/Makefile miext/shadow/Makefile miext/cw/Makefile miext/rootless/Makefile os/Makefile randr/Makefile render/Makefile xkb/Makefile Xext/Makefile Xi/Makefile xfixes/Makefile exa/Makefile hw/Makefile hw/xfree86/Makefile hw/xfree86/common/Makefile hw/xfree86/common/xf86Build.h hw/xfree86/ddc/Makefile hw/xfree86/dixmods/Makefile hw/xfree86/dixmods/extmod/Makefile hw/xfree86/doc/Makefile hw/xfree86/doc/devel/Makefile hw/xfree86/doc/man/Makefile hw/xfree86/doc/sgml/Makefile hw/xfree86/dri/Makefile hw/xfree86/dummylib/Makefile hw/xfree86/exa/Makefile hw/xfree86/fbdevhw/Makefile hw/xfree86/getconfig/Makefile hw/xfree86/i2c/Makefile hw/xfree86/int10/Makefile hw/xfree86/loader/Makefile hw/xfree86/os-support/Makefile hw/xfree86/os-support/bsd/Makefile hw/xfree86/os-support/bus/Makefile hw/xfree86/os-support/drm/Makefile hw/xfree86/os-support/misc/Makefile hw/xfree86/os-support/linux/Makefile hw/xfree86/os-support/lynxos/Makefile hw/xfree86/os-support/sco/Makefile hw/xfree86/os-support/solaris/Makefile hw/xfree86/os-support/sysv/Makefile hw/xfree86/os-support/usl/Makefile hw/xfree86/os-support/hurd/Makefile hw/xfree86/parser/Makefile hw/xfree86/rac/Makefile hw/xfree86/ramdac/Makefile hw/xfree86/scanpci/Makefile hw/xfree86/shadowfb/Makefile hw/xfree86/vbe/Makefile hw/xfree86/vgahw/Makefile hw/xfree86/x86emu/Makefile hw/xfree86/xaa/Makefile hw/xfree86/xf1bpp/Makefile hw/xfree86/xf4bpp/Makefile hw/xfree86/xf8_16bpp/Makefile hw/xfree86/xf8_32bpp/Makefile hw/xfree86/utils/Makefile hw/xfree86/utils/cvt/Makefile hw/xfree86/utils/gtf/Makefile hw/xfree86/utils/ioport/Makefile hw/xfree86/utils/kbd_mode/Makefile hw/xfree86/utils/pcitweak/Makefile hw/xfree86/utils/scanpci/Makefile hw/xfree86/utils/xorgcfg/Makefile hw/xfree86/utils/xorgconfig/Makefile hw/dmx/config/Makefile hw/dmx/doc/Makefile hw/dmx/examples/Makefile hw/dmx/input/Makefile hw/dmx/glxProxy/Makefile hw/dmx/Makefile hw/vfb/Makefile hw/xgl/Makefile hw/xgl/egl/Makefile hw/xgl/egl/module/Makefile hw/xgl/glx/Makefile hw/xgl/glx/module/Makefile hw/xgl/glxext/Makefile hw/xgl/glxext/module/Makefile hw/xnest/Makefile hw/xwin/Makefile hw/darwin/Makefile hw/kdrive/Makefile hw/kdrive/ati/Makefile hw/kdrive/chips/Makefile hw/kdrive/ephyr/Makefile hw/kdrive/epson/Makefile hw/kdrive/fake/Makefile hw/kdrive/fbdev/Makefile hw/kdrive/i810/Makefile hw/kdrive/linux/Makefile hw/kdrive/mach64/Makefile hw/kdrive/mga/Makefile hw/kdrive/neomagic/Makefile hw/kdrive/nvidia/Makefile hw/kdrive/pm2/Makefile hw/kdrive/r128/Makefile hw/kdrive/sdl/Makefile hw/kdrive/sis300/Makefile hw/kdrive/smi/Makefile hw/kdrive/src/Makefile hw/kdrive/vesa/Makefile hw/kdrive/via/Makefile Xprint/Makefile Xprint/doc/Makefile Xprint/pcl/Makefile Xprint/pcl-mono/Makefile Xprint/raster/Makefile Xprint/ps/Makefile Xprint/etc/Makefile Xprint/etc/Xsession.d/Makefile Xprint/etc/init.d/Makefile Xprint/etc/profile.d/Makefile XpConfig/Makefile XpConfig/C/print/attributes/Makefile XpConfig/C/print/ddx-config/Makefile XpConfig/C/print/ddx-config/raster/Makefile XpConfig/C/print/models/CANONBJ10E-GS/Makefile XpConfig/C/print/models/PSdefault/fonts/Makefile XpConfig/C/print/models/PSdefault/Makefile XpConfig/C/print/models/PSspooldir/Makefile XpConfig/C/print/models/SPSPARC2/Makefile XpConfig/C/print/models/SPSPARC2/fonts/Makefile XpConfig/C/print/models/GSdefault/Makefile XpConfig/C/print/models/HPLJ4050-PS/Makefile XpConfig/C/print/models/HPLJ4050-PS/fonts/Makefile XpConfig/C/print/models/Makefile XpConfig/C/print/models/PS2PDFspooldir-GS/Makefile XpConfig/C/print/models/CANONC3200-PS/Makefile XpConfig/C/print/models/CANONC3200-PS/fonts/Makefile XpConfig/C/print/models/HPLJ4family/fonts/Makefile XpConfig/C/print/models/HPLJ4family/Makefile XpConfig/C/print/models/HPDJ1600C/Makefile XpConfig/C/print/models/HPDJ1600C/fonts/Makefile XpConfig/C/print/Makefile XpConfig/C/Makefile XpConfig/en_US/print/attributes/Makefile XpConfig/en_US/print/Makefile XpConfig/en_US/Makefile xorg-server.pc"
 
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
@@ -35537,6 +35635,13 @@ echo "$as_me: error: conditional \"XINPUT\" was never defined.
 Usually this means the macro was only invoked conditionally." >&2;}
    { (exit 1); exit 1; }; }
 fi
+if test -z "${MISCUTILS_TRUE}" && test -z "${MISCUTILS_FALSE}"; then
+  { { echo "$as_me:$LINENO: error: conditional \"MISCUTILS\" was never defined.
+Usually this means the macro was only invoked conditionally." >&5
+echo "$as_me: error: conditional \"MISCUTILS\" was never defined.
+Usually this means the macro was only invoked conditionally." >&2;}
+   { (exit 1); exit 1; }; }
+fi
 if test -z "${XDMCP_TRUE}" && test -z "${XDMCP_FALSE}"; then
   { { echo "$as_me:$LINENO: error: conditional \"XDMCP\" was never defined.
 Usually this means the macro was only invoked conditionally." >&5
@@ -35814,6 +35919,20 @@ if test -z "${KDRIVE_TRUE}" && test -z "${KDRIVE_FALSE}"; then
   { { echo "$as_me:$LINENO: error: conditional \"KDRIVE\" was never defined.
 Usually this means the macro was only invoked conditionally." >&5
 echo "$as_me: error: conditional \"KDRIVE\" was never defined.
+Usually this means the macro was only invoked conditionally." >&2;}
+   { (exit 1); exit 1; }; }
+fi
+if test -z "${KDRIVELINUX_TRUE}" && test -z "${KDRIVELINUX_FALSE}"; then
+  { { echo "$as_me:$LINENO: error: conditional \"KDRIVELINUX\" was never defined.
+Usually this means the macro was only invoked conditionally." >&5
+echo "$as_me: error: conditional \"KDRIVELINUX\" was never defined.
+Usually this means the macro was only invoked conditionally." >&2;}
+   { (exit 1); exit 1; }; }
+fi
+if test -z "${KDRIVELINUX_TRUE}" && test -z "${KDRIVELINUX_FALSE}"; then
+  { { echo "$as_me:$LINENO: error: conditional \"KDRIVELINUX\" was never defined.
+Usually this means the macro was only invoked conditionally." >&5
+echo "$as_me: error: conditional \"KDRIVELINUX\" was never defined.
 Usually this means the macro was only invoked conditionally." >&2;}
    { (exit 1); exit 1; }; }
 fi
@@ -36432,6 +36551,7 @@ do
     "hw/xfree86/os-support/solaris/Makefile") CONFIG_FILES="$CONFIG_FILES hw/xfree86/os-support/solaris/Makefile" ;;
     "hw/xfree86/os-support/sysv/Makefile") CONFIG_FILES="$CONFIG_FILES hw/xfree86/os-support/sysv/Makefile" ;;
     "hw/xfree86/os-support/usl/Makefile") CONFIG_FILES="$CONFIG_FILES hw/xfree86/os-support/usl/Makefile" ;;
+    "hw/xfree86/os-support/hurd/Makefile") CONFIG_FILES="$CONFIG_FILES hw/xfree86/os-support/hurd/Makefile" ;;
     "hw/xfree86/parser/Makefile") CONFIG_FILES="$CONFIG_FILES hw/xfree86/parser/Makefile" ;;
     "hw/xfree86/rac/Makefile") CONFIG_FILES="$CONFIG_FILES hw/xfree86/rac/Makefile" ;;
     "hw/xfree86/ramdac/Makefile") CONFIG_FILES="$CONFIG_FILES hw/xfree86/ramdac/Makefile" ;;
@@ -36761,6 +36881,7 @@ FBDEVHW_TRUE!$FBDEVHW_TRUE$ac_delim
 FBDEVHW_FALSE!$FBDEVHW_FALSE$ac_delim
 FREEBSD_KLDLOAD_TRUE!$FREEBSD_KLDLOAD_TRUE$ac_delim
 FREEBSD_KLDLOAD_FALSE!$FREEBSD_KLDLOAD_FALSE$ac_delim
+GLX_ARCH_DEFINES!$GLX_ARCH_DEFINES$ac_delim
 ALPHA_VIDEO_TRUE!$ALPHA_VIDEO_TRUE$ac_delim
 ALPHA_VIDEO_FALSE!$ALPHA_VIDEO_FALSE$ac_delim
 ARM_VIDEO_TRUE!$ARM_VIDEO_TRUE$ac_delim
@@ -36825,7 +36946,6 @@ MESA_SOURCE!$MESA_SOURCE$ac_delim
 AIGLX_TRUE!$AIGLX_TRUE$ac_delim
 AIGLX_FALSE!$AIGLX_FALSE$ac_delim
 GLX_DEFINES!$GLX_DEFINES$ac_delim
-LBXUTIL_TEST_CFLAGS!$LBXUTIL_TEST_CFLAGS$ac_delim
 _ACEOF
 
   if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 97; then
@@ -36867,6 +36987,7 @@ _ACEOF
 ac_delim='%!_!# '
 for ac_last_try in false false false false false :; do
   cat >conf$$subs.sed <<_ACEOF
+LBXUTIL_TEST_CFLAGS!$LBXUTIL_TEST_CFLAGS$ac_delim
 LBXUTIL_TEST_LIBS!$LBXUTIL_TEST_LIBS$ac_delim
 LBX_TRUE!$LBX_TRUE$ac_delim
 LBX_FALSE!$LBX_FALSE$ac_delim
@@ -36906,6 +37027,8 @@ XPRINT_TRUE!$XPRINT_TRUE$ac_delim
 XPRINT_FALSE!$XPRINT_FALSE$ac_delim
 XINPUT_TRUE!$XINPUT_TRUE$ac_delim
 XINPUT_FALSE!$XINPUT_FALSE$ac_delim
+MISCUTILS_TRUE!$MISCUTILS_TRUE$ac_delim
+MISCUTILS_FALSE!$MISCUTILS_FALSE$ac_delim
 XDMCP_CFLAGS!$XDMCP_CFLAGS$ac_delim
 XDMCP_LIBS!$XDMCP_LIBS$ac_delim
 XDMCP_TRUE!$XDMCP_TRUE$ac_delim
@@ -36916,6 +37039,7 @@ USE_RGB_BUILTIN_TRUE!$USE_RGB_BUILTIN_TRUE$ac_delim
 USE_RGB_BUILTIN_FALSE!$USE_RGB_BUILTIN_FALSE$ac_delim
 COMPILEDDEFAULTFONTPATH!$COMPILEDDEFAULTFONTPATH$ac_delim
 RGB_DB!$RGB_DB$ac_delim
+SERVERCONFIGdir!$SERVERCONFIGdir$ac_delim
 DRI_DRIVER_PATH!$DRI_DRIVER_PATH$ac_delim
 VENDOR_STRING!$VENDOR_STRING$ac_delim
 VENDOR_STRING_SHORT!$VENDOR_STRING_SHORT$ac_delim
@@ -36960,10 +37084,6 @@ XNESTMODULES_LIBS!$XNESTMODULES_LIBS$ac_delim
 XNEST_TRUE!$XNEST_TRUE$ac_delim
 XNEST_FALSE!$XNEST_FALSE$ac_delim
 XNEST_LIBS!$XNEST_LIBS$ac_delim
-XGLMODULES_CFLAGS!$XGLMODULES_CFLAGS$ac_delim
-XGLMODULES_LIBS!$XGLMODULES_LIBS$ac_delim
-XGL_TRUE!$XGL_TRUE$ac_delim
-XGL_FALSE!$XGL_FALSE$ac_delim
 _ACEOF
 
   if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 97; then
@@ -37005,6 +37125,10 @@ _ACEOF
 ac_delim='%!_!# '
 for ac_last_try in false false false false false :; do
   cat >conf$$subs.sed <<_ACEOF
+XGLMODULES_CFLAGS!$XGLMODULES_CFLAGS$ac_delim
+XGLMODULES_LIBS!$XGLMODULES_LIBS$ac_delim
+XGL_TRUE!$XGL_TRUE$ac_delim
+XGL_FALSE!$XGL_FALSE$ac_delim
 XGL_LIBS!$XGL_LIBS$ac_delim
 xglmoduledir!$xglmoduledir$ac_delim
 XGL_MODULE_PATH!$XGL_MODULE_PATH$ac_delim
@@ -37098,10 +37222,6 @@ XWIN_CLIPBOARD_FALSE!$XWIN_CLIPBOARD_FALSE$ac_delim
 XWIN_GLX_WINDOWS_TRUE!$XWIN_GLX_WINDOWS_TRUE$ac_delim
 XWIN_GLX_WINDOWS_FALSE!$XWIN_GLX_WINDOWS_FALSE$ac_delim
 XWIN_NATIVEGDI_TRUE!$XWIN_NATIVEGDI_TRUE$ac_delim
-XWIN_NATIVEGDI_FALSE!$XWIN_NATIVEGDI_FALSE$ac_delim
-XWIN_PRIMARYFB_TRUE!$XWIN_PRIMARYFB_TRUE$ac_delim
-XWIN_PRIMARYFB_FALSE!$XWIN_PRIMARYFB_FALSE$ac_delim
-XWIN_RANDR_TRUE!$XWIN_RANDR_TRUE$ac_delim
 _ACEOF
 
   if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 97; then
@@ -37143,11 +37263,17 @@ _ACEOF
 ac_delim='%!_!# '
 for ac_last_try in false false false false false :; do
   cat >conf$$subs.sed <<_ACEOF
+XWIN_NATIVEGDI_FALSE!$XWIN_NATIVEGDI_FALSE$ac_delim
+XWIN_PRIMARYFB_TRUE!$XWIN_PRIMARYFB_TRUE$ac_delim
+XWIN_PRIMARYFB_FALSE!$XWIN_PRIMARYFB_FALSE$ac_delim
+XWIN_RANDR_TRUE!$XWIN_RANDR_TRUE$ac_delim
 XWIN_RANDR_FALSE!$XWIN_RANDR_FALSE$ac_delim
 XWIN_XV_TRUE!$XWIN_XV_TRUE$ac_delim
 XWIN_XV_FALSE!$XWIN_XV_FALSE$ac_delim
 KDRIVE_TRUE!$KDRIVE_TRUE$ac_delim
 KDRIVE_FALSE!$KDRIVE_FALSE$ac_delim
+KDRIVELINUX_TRUE!$KDRIVELINUX_TRUE$ac_delim
+KDRIVELINUX_FALSE!$KDRIVELINUX_FALSE$ac_delim
 XEPHYR_CFLAGS!$XEPHYR_CFLAGS$ac_delim
 XEPHYR_LIBS!$XEPHYR_LIBS$ac_delim
 KDRIVE_INCS!$KDRIVE_INCS$ac_delim
@@ -37214,7 +37340,7 @@ LIBOBJS!$LIBOBJS$ac_delim
 LTLIBOBJS!$LTLIBOBJS$ac_delim
 _ACEOF
 
-  if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 69; then
+  if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 75; then
     break
   elif $ac_last_try; then
     { { echo "$as_me:$LINENO: error: could not make $CONFIG_STATUS" >&5
