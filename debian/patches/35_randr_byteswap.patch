@@ -6,9 +6,11 @@ X-Git-Url: http://gitweb.freedesktop.org/?p=xorg/xserver.git;a=commitdiff;h=828c
 Byte swap RRSelectInput enable flags.
 ---
 
---- a/randr/randr.c
-+++ b/randr/randr.c
-@@ -1187,6 +1187,7 @@ SProcRRSelectInput (ClientPtr client)
+Index: xorg-server/randr/randr.c
+===================================================================
+--- xorg-server.orig/randr/randr.c	2006-10-31 17:47:05.000000000 +0100
++++ xorg-server/randr/randr.c	2006-10-31 17:50:04.000000000 +0100
+@@ -1188,6 +1188,7 @@
  
      swaps(&stuff->length, n);
      swapl(&stuff->window, n);
