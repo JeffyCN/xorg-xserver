@@ -31,3 +31,4 @@
 33_Xserver_man_typos.patch
 34_xorg.conf_man_typos.patch
 35_randr_byteswap.patch
+36_fix_ffs.patch
