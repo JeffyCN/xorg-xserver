@@ -17,7 +17,7 @@ xorg-server (2:1.1.1-11) UNRELEASED; urgency=low
     build date is correctly calculated at build time, and not hardcoded to
     07 July 2006.  Thanks to Jurij Smakov for noticing.
   * Add patch 36_fix_ffs.patch by Jurij Smakov to fix infinite loop in ffs()
-    if called with a null argument (closes: #395564).
+    if called with an argument of 0 (closes: #395564).
 
  -- Julien Cristau <julien.cristau@ens-lyon.org>  Fri, 10 Nov 2006 22:00:28 +0100
 
