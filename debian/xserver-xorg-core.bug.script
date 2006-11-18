@@ -88,7 +88,7 @@ if [ -e "$XORGCONFIG" ]; then
     ls -dl "$XORGCONFIG" >&3
     printf "\n" >&3
     printf "Contents of $XORGCONFIG:\n" >&3
-    cat "$XORGCONFIG" >&3
+    iconv -c -t ascii "$XORGCONFIG" >&3
     printf "\n" >&3
 else
     printf "$XORGCONFIG does not exist.\n" >&3
