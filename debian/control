@@ -75,6 +75,7 @@ Description: Distributed Multihead X server
 Package: xdmx-tools
 Architecture: any
 Depends: xdmx, ${shlibs:Depends}, ${misc:Depends}
+Replaces: xdmx (<= 2:1.1.1-10)
 Description: Distributed Multihead X tools
  This package provides a collection of tools used for administration of
  the Xdmx server; see the xdmx package for more information.
