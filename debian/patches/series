@@ -32,3 +32,4 @@
 34_xorg.conf_man_typos.patch
 35_randr_byteswap.patch
 36_fix_ffs.patch
+37_Fix-__glXDRIbindTexImage-for-32-bpp-on-big-endian-platforms.diff

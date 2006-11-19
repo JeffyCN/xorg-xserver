@@ -18,8 +18,11 @@ xorg-server (2:1.1.1-11) UNRELEASED; urgency=low
     07 July 2006.  Thanks to Jurij Smakov for noticing.
   * Add patch 36_fix_ffs.patch by Jurij Smakov to fix infinite loop in ffs()
     if called with an argument of 0 (closes: #395564).
+  * Add patch 37_Fix-__glXDRIbindTexImage-for-32-bpp-on-big-endian-platforms
+    from upstream git to fix color issue on big endian platforms
+    (closes: #392453). Thanks to Michel Dänzer for the patch!
 
- -- Julien Cristau <julien.cristau@ens-lyon.org>  Fri, 10 Nov 2006 22:00:28 +0100
+ -- Julien Cristau <julien.cristau@ens-lyon.org>  Sun, 19 Nov 2006 02:16:32 +0100
 
 xorg-server (2:1.1.1-10) unstable; urgency=low
 

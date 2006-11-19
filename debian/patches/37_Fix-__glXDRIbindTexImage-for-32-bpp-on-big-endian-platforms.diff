@@ -1,0 +1,27 @@
+From 3ad1642f1bbaa5f96558cdf3384b40f7122f8781 Mon Sep 17 00:00:00 2001
+From: =?utf-8?q?Michel_D=C3=A4nzer?= <michel@tungstengraphics.com>
+Date: Sun, 15 Oct 2006 16:57:09 +0200
+Subject: [PATCH] Fix __glXDRIbindTexImage() for 32 bpp on big endian platforms.
+
+---
+ GL/glx/glxdri.c |    7 ++++++-
+ 1 files changed, 6 insertions(+), 1 deletions(-)
+
+Index: xorg-server/GL/glx/glxdri.c
+===================================================================
+--- xorg-server.orig/GL/glx/glxdri.c	2006-11-19 02:14:38.000000000 +0100
++++ xorg-server/GL/glx/glxdri.c	2006-11-19 02:14:39.000000000 +0100
+@@ -386,7 +386,12 @@
+     if (pixmap->drawable.depth >= 24) {
+ 	bpp = 4;
+ 	format = GL_BGRA;
+-	type = GL_UNSIGNED_BYTE;
++	type =
++#if X_BYTE_ORDER == X_LITTLE_ENDIAN
++	    GL_UNSIGNED_BYTE;
++#else
++	    GL_UNSIGNED_INT_8_8_8_8_REV;
++#endif
+     } else {
+ 	bpp = 2;
+ 	format = GL_RGB;
