@@ -22,8 +22,9 @@ xorg-server (2:1.1.1-11) UNRELEASED; urgency=low
     from upstream git to fix color issue on big endian platforms
     (closes: #392453). Thanks to Michel Dänzer for the patch!
   * Fix typo in xvfb-run (closes: #337703).
+  * Install xdmxconfig and its manpage in xdmx-tools (closes: #393991).
 
- -- Julien Cristau <julien.cristau@ens-lyon.org>  Sun, 19 Nov 2006 02:49:55 +0100
+ -- Julien Cristau <julien.cristau@ens-lyon.org>  Sun, 19 Nov 2006 03:52:52 +0100
 
 xorg-server (2:1.1.1-10) unstable; urgency=low
 
