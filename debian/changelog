@@ -1,4 +1,4 @@
-xorg-server (2:1.1.1-11) UNRELEASED; urgency=low
+xorg-server (2:1.1.1-11) unstable; urgency=low
 
   [ Drew Parsons ]
   * Patches 33_Xserver_man_typos.patch and 34_xorg.conf_man_typos.patch
@@ -26,7 +26,7 @@ xorg-server (2:1.1.1-11) UNRELEASED; urgency=low
   * Add Replaces: xdmx (<= 2:1.1.1-10) to xdmx-tools because of the xmdxconfig
     manpage move.
 
- -- Julien Cristau <julien.cristau@ens-lyon.org>  Sun, 19 Nov 2006 17:12:44 +0100
+ -- David Nusinow <dnusinow@debian.org>  Fri, 24 Nov 2006 15:44:52 -0500
 
 xorg-server (2:1.1.1-10) unstable; urgency=low
 
