@@ -1,4 +1,3 @@
-/* $XdotOrg: xserver/xorg/fb/fbwindow.c,v 1.9 2005/10/02 08:28:26 anholt Exp $ */
 /*
  * Id: fbwindow.c,v 1.1 1999/11/02 03:54:45 keithp Exp $
  *
@@ -22,7 +21,6 @@
  * TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
  * PERFORMANCE OF THIS SOFTWARE.
  */
-/* $XFree86: xc/programs/Xserver/fb/fbwindow.c,v 1.10tsi Exp $ */
 
 #ifdef HAVE_DIX_CONFIG_H
 #include <dix-config.h>
@@ -31,6 +29,10 @@
 #include <stdlib.h>
 
 #include "fb.h"
+
+#ifdef USE_MMX
+#include "fbmmx.h"
+#endif
 
 Bool
 fbCreateWindow(WindowPtr pWin)
@@ -217,10 +219,23 @@ fbFillRegionSolid (DrawablePtr	pDrawable,
     int		n = REGION_NUM_RECTS(pRegion);
     BoxPtr	pbox = REGION_RECTS(pRegion);
 
+#ifdef USE_MMX
+    int has_mmx = 0;
+    if (!and && fbHaveMMX())
+        has_mmx = 1;
+#endif
+
     fbGetDrawable (pDrawable, dst, dstStride, dstBpp, dstXoff, dstYoff);
     
     while (n--)
     {
+#ifdef USE_MMX
+        if (!has_mmx || !fbSolidFillmmx (pDrawable,
+	                                pbox->x1,
+					pbox->y1,
+					(pbox->x2 - pbox->x1),
+					(pbox->y2 - pbox->y1), xor)) {
+#endif
 	fbSolid (dst + (pbox->y1 + dstYoff) * dstStride,
 		 dstStride,
 		 (pbox->x1 + dstXoff) * dstBpp,
@@ -228,6 +243,9 @@ fbFillRegionSolid (DrawablePtr	pDrawable,
 		 (pbox->x2 - pbox->x1) * dstBpp,
 		 pbox->y2 - pbox->y1,
 		 and, xor);
+#ifdef USE_MMX
+	}
+#endif
 	fbValidateDrawable (pDrawable);
 	pbox++;
     }

@@ -1,7 +1,3 @@
-/* $XdotOrg: xserver/xorg/hw/xfree86/loader/dixsym.c,v 1.20 2006/01/08 23:43:53 ajax Exp $ */
-/* $XFree86: xc/programs/Xserver/hw/xfree86/loader/dixsym.c,v 1.63 2003/12/03
- * 17:11:29 tsi Exp $ */
-
 /*
  * Copyright 1995-1998 by Metro Link, Inc.
  *
@@ -99,7 +95,7 @@ extern int NumCurrentSelections;
 
 /* DIX things */
 
-LOOKUP dixLookupTab[] = {
+_X_HIDDEN void *dixLookupTab[] = {
 
     /* dix */
     /* atom.c */
@@ -166,7 +162,7 @@ LOOKUP dixLookupTab[] = {
     SYMFUNC(QueueWorkProc)
     SYMFUNC(RegisterBlockAndWakeupHandlers)
     SYMFUNC(RemoveBlockAndWakeupHandlers)
-#ifdef XCSECURITY
+#ifdef XACE
     SYMFUNC(SecurityLookupDrawable)
     SYMFUNC(SecurityLookupWindow)
 #endif
@@ -248,7 +244,6 @@ LOOKUP dixLookupTab[] = {
     SYMVAR(globalSerialNumber)
     SYMVAR(lastDeviceEventTime)
     SYMVAR(monitorResolution)
-    SYMVAR(permitOldBugs)
     SYMVAR(screenInfo)
     SYMVAR(serverClient)
     SYMVAR(serverGeneration)
@@ -260,6 +255,8 @@ LOOKUP dixLookupTab[] = {
     SYMFUNC(GetScratchPixmapHeader)
     SYMFUNC(FreeScratchPixmapHeader)
     /* privates.c */
+    SYMFUNC(AllocateExtensionPrivate)
+    SYMFUNC(AllocateExtensionPrivateIndex)
     SYMFUNC(AllocateClientPrivate)
     SYMFUNC(AllocateClientPrivateIndex)
     SYMFUNC(AllocateGCPrivate)
@@ -287,10 +284,8 @@ LOOKUP dixLookupTab[] = {
     SYMFUNC(LookupIDByType)
     SYMFUNC(LookupIDByClass)
     SYMFUNC(LegalNewID)
-#ifdef XCSECURITY
     SYMFUNC(SecurityLookupIDByClass)
     SYMFUNC(SecurityLookupIDByType)
-#endif
     SYMFUNC(FindClientResourcesByType)
     SYMFUNC(FindAllClientResources)
     SYMVAR(lastResourceType)
@@ -370,9 +365,6 @@ LOOKUP dixLookupTab[] = {
 #endif
 #ifdef GLXEXT
     SYMVAR(noGlxExtension)
-#endif
-#ifdef LBX
-    SYMVAR(noLbxExtension)
 #endif
 #ifdef SCREENSAVER
     SYMVAR(noScreenSaverExtension)
@@ -536,6 +528,4 @@ LOOKUP dixLookupTab[] = {
     SYMFUNC(RenderEdgeInit)
     SYMFUNC(RenderLineFixedEdgeInit)
 #endif
-
-    {0, 0}
 };

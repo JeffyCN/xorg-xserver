@@ -1,4 +1,3 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/common/xf86Privstr.h,v 1.41 2004/01/27 01:31:45 dawes Exp $ */
 
 /*
  * Copyright (c) 1997-2003 by The XFree86 Project, Inc.
@@ -167,6 +166,7 @@ typedef struct {
     MessageType		randRFrom;
     Bool		aiglx;
     MessageType		aiglxFrom;
+    Bool        ignoreABI;
     struct {
 	Bool		disabled;		/* enable/disable deactivating
 						 * grabs or closing the

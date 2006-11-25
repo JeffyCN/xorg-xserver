@@ -72,6 +72,7 @@ host_triplet = @host@
 @BUILD_XORGCFG_TRUE@bin_PROGRAMS = xorgcfg$(EXEEXT)
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in \
 	$(top_srcdir)/cpprules.in TODO
+@BUILD_XORGCFG_TRUE@am__append_1 = .$(APP_MAN_SUFFIX) .man
 subdir = hw/xfree86/utils/xorgcfg
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/acinclude.m4 \
@@ -108,25 +109,17 @@ am__xorgcfg_SOURCES_DIST = accessx.c card-cfg.c cards.c config.c \
 @BUILD_XORGCFG_TRUE@@USE_CURSES_TRUE@am__objects_2 = xorgcfg-text-mode.$(OBJEXT)
 @BUILD_XORGCFG_TRUE@@NEED_STRLCAT_TRUE@am__objects_3 = xorgcfg-strlcat.$(OBJEXT) \
 @BUILD_XORGCFG_TRUE@@NEED_STRLCAT_TRUE@	xorgcfg-strlcpy.$(OBJEXT)
-@BUILD_XORGCFG_TRUE@am_xorgcfg_OBJECTS = xorgcfg-accessx.$(OBJEXT) \
-@BUILD_XORGCFG_TRUE@	xorgcfg-card-cfg.$(OBJEXT) \
-@BUILD_XORGCFG_TRUE@	xorgcfg-cards.$(OBJEXT) \
-@BUILD_XORGCFG_TRUE@	xorgcfg-config.$(OBJEXT) \
-@BUILD_XORGCFG_TRUE@	xorgcfg-expert.$(OBJEXT) \
-@BUILD_XORGCFG_TRUE@	xorgcfg-help.$(OBJEXT) \
-@BUILD_XORGCFG_TRUE@	xorgcfg-interface.$(OBJEXT) \
-@BUILD_XORGCFG_TRUE@	xorgcfg-keyboard-cfg.$(OBJEXT) \
-@BUILD_XORGCFG_TRUE@	$(am__objects_1) \
-@BUILD_XORGCFG_TRUE@	xorgcfg-monitor-cfg.$(OBJEXT) \
-@BUILD_XORGCFG_TRUE@	xorgcfg-mouse-cfg.$(OBJEXT) \
-@BUILD_XORGCFG_TRUE@	xorgcfg-options.$(OBJEXT) \
-@BUILD_XORGCFG_TRUE@	xorgcfg-screen-cfg.$(OBJEXT) \
-@BUILD_XORGCFG_TRUE@	xorgcfg-screen.$(OBJEXT) \
-@BUILD_XORGCFG_TRUE@	xorgcfg-startx.$(OBJEXT) \
-@BUILD_XORGCFG_TRUE@	xorgcfg-stubs.$(OBJEXT) $(am__objects_2) \
-@BUILD_XORGCFG_TRUE@	xorgcfg-vidmode.$(OBJEXT) \
-@BUILD_XORGCFG_TRUE@	xorgcfg-xf86config.$(OBJEXT) \
-@BUILD_XORGCFG_TRUE@	$(am__objects_3)
+am_xorgcfg_OBJECTS = xorgcfg-accessx.$(OBJEXT) \
+	xorgcfg-card-cfg.$(OBJEXT) xorgcfg-cards.$(OBJEXT) \
+	xorgcfg-config.$(OBJEXT) xorgcfg-expert.$(OBJEXT) \
+	xorgcfg-help.$(OBJEXT) xorgcfg-interface.$(OBJEXT) \
+	xorgcfg-keyboard-cfg.$(OBJEXT) $(am__objects_1) \
+	xorgcfg-monitor-cfg.$(OBJEXT) xorgcfg-mouse-cfg.$(OBJEXT) \
+	xorgcfg-options.$(OBJEXT) xorgcfg-screen-cfg.$(OBJEXT) \
+	xorgcfg-screen.$(OBJEXT) xorgcfg-startx.$(OBJEXT) \
+	xorgcfg-stubs.$(OBJEXT) $(am__objects_2) \
+	xorgcfg-vidmode.$(OBJEXT) xorgcfg-xf86config.$(OBJEXT) \
+	$(am__objects_3)
 xorgcfg_OBJECTS = $(am_xorgcfg_OBJECTS)
 am__DEPENDENCIES_1 =
 @BUILD_XORGCFG_TRUE@am__DEPENDENCIES_2 = ../../loader/libloader.a
@@ -191,6 +184,7 @@ AUTOCONF = @AUTOCONF@
 AUTOHEADER = @AUTOHEADER@
 AUTOMAKE = @AUTOMAKE@
 AWK = @AWK@
+BASE_FONT_PATH = @BASE_FONT_PATH@
 BSD_KBD_MODE_FALSE = @BSD_KBD_MODE_FALSE@
 BSD_KBD_MODE_TRUE = @BSD_KBD_MODE_TRUE@
 BUILDDOCS_FALSE = @BUILDDOCS_FALSE@
@@ -279,13 +273,11 @@ FREEBSD_KLDLOAD_TRUE = @FREEBSD_KLDLOAD_TRUE@
 FREETYPE_CFLAGS = @FREETYPE_CFLAGS@
 FREETYPE_LIBS = @FREETYPE_LIBS@
 FREETYPE_REQUIRES = @FREETYPE_REQUIRES@
-GLX_ARCH_DEFINES = @GLX_ARCH_DEFINES@
 GLX_DEFINES = @GLX_DEFINES@
 GLX_FALSE = @GLX_FALSE@
 GLX_TRUE = @GLX_TRUE@
 GL_CFLAGS = @GL_CFLAGS@
 GL_LIBS = @GL_LIBS@
-GREP = @GREP@
 H3600_TS_FALSE = @H3600_TS_FALSE@
 H3600_TS_TRUE = @H3600_TS_TRUE@
 I386_VIDEO_FALSE = @I386_VIDEO_FALSE@
@@ -306,8 +298,6 @@ INT10_X86EMU_FALSE = @INT10_X86EMU_FALSE@
 INT10_X86EMU_TRUE = @INT10_X86EMU_TRUE@
 KDRIVEFBDEV_FALSE = @KDRIVEFBDEV_FALSE@
 KDRIVEFBDEV_TRUE = @KDRIVEFBDEV_TRUE@
-KDRIVELINUX_FALSE = @KDRIVELINUX_FALSE@
-KDRIVELINUX_TRUE = @KDRIVELINUX_TRUE@
 KDRIVEVESA_FALSE = @KDRIVEVESA_FALSE@
 KDRIVEVESA_TRUE = @KDRIVEVESA_TRUE@
 KDRIVE_CFLAGS = @KDRIVE_CFLAGS@
@@ -319,12 +309,6 @@ KDRIVE_LIBS = @KDRIVE_LIBS@
 KDRIVE_PURE_INCS = @KDRIVE_PURE_INCS@
 KDRIVE_PURE_LIBS = @KDRIVE_PURE_LIBS@
 KDRIVE_TRUE = @KDRIVE_TRUE@
-LBXUTIL_CFLAGS = @LBXUTIL_CFLAGS@
-LBXUTIL_LIBS = @LBXUTIL_LIBS@
-LBXUTIL_TEST_CFLAGS = @LBXUTIL_TEST_CFLAGS@
-LBXUTIL_TEST_LIBS = @LBXUTIL_TEST_LIBS@
-LBX_FALSE = @LBX_FALSE@
-LBX_TRUE = @LBX_TRUE@
 LDFLAGS = @LDFLAGS@
 LD_EXPORT_SYMBOLS_FLAG = @LD_EXPORT_SYMBOLS_FLAG@
 LEX = @LEX@
@@ -347,7 +331,6 @@ LNXACPI_TRUE = @LNXACPI_TRUE@
 LNXAPM_FALSE = @LNXAPM_FALSE@
 LNXAPM_TRUE = @LNXAPM_TRUE@
 LN_S = @LN_S@
-LOADER_DEFINES = @LOADER_DEFINES@
 LTLIBOBJS = @LTLIBOBJS@
 MAINT = @MAINT@
 MAINTAINER_MODE_FALSE = @MAINTAINER_MODE_FALSE@
@@ -360,8 +343,6 @@ MAKE_TEXT = @MAKE_TEXT@
 MESA_SOURCE = @MESA_SOURCE@
 MFB_FALSE = @MFB_FALSE@
 MFB_TRUE = @MFB_TRUE@
-MISCUTILS_FALSE = @MISCUTILS_FALSE@
-MISCUTILS_TRUE = @MISCUTILS_TRUE@
 MISC_MAN_DIR = @MISC_MAN_DIR@
 MISC_MAN_SUFFIX = @MISC_MAN_SUFFIX@
 MITSHM_FALSE = @MITSHM_FALSE@
@@ -370,7 +351,6 @@ MKFONTDIR = @MKFONTDIR@
 MKFONTSCALE = @MKFONTSCALE@
 MMX_CAPABLE_FALSE = @MMX_CAPABLE_FALSE@
 MMX_CAPABLE_TRUE = @MMX_CAPABLE_TRUE@
-MODULE_DEFINES = @MODULE_DEFINES@
 MULTIBUFFER_FALSE = @MULTIBUFFER_FALSE@
 MULTIBUFFER_TRUE = @MULTIBUFFER_TRUE@
 NEED_STRLCAT_FALSE = @NEED_STRLCAT_FALSE@
@@ -402,10 +382,10 @@ RES_TRUE = @RES_TRUE@
 RGB_DB = @RGB_DB@
 SCREENSAVER_FALSE = @SCREENSAVER_FALSE@
 SCREENSAVER_TRUE = @SCREENSAVER_TRUE@
-SERVERCONFIGdir = @SERVERCONFIGdir@
-SERVER_DEFINES = @SERVER_DEFINES@
+SED = sed
 SET_MAKE = @SET_MAKE@
 SHELL = @SHELL@
+SOLARIS_ASM_CFLAGS = @SOLARIS_ASM_CFLAGS@
 SOLARIS_ASM_INLINE_FALSE = @SOLARIS_ASM_INLINE_FALSE@
 SOLARIS_ASM_INLINE_TRUE = @SOLARIS_ASM_INLINE_TRUE@
 SOLARIS_INOUT_ARCH = @SOLARIS_INOUT_ARCH@
@@ -417,7 +397,9 @@ STRIP = @STRIP@
 SUN_KBD_MODE_FALSE = @SUN_KBD_MODE_FALSE@
 SUN_KBD_MODE_TRUE = @SUN_KBD_MODE_TRUE@
 SYS_LIBS = @SYS_LIBS@
+TSLIB_CFLAGS = @TSLIB_CFLAGS@
 TSLIB_FALSE = @TSLIB_FALSE@
+TSLIB_LIBS = @TSLIB_LIBS@
 TSLIB_TRUE = @TSLIB_TRUE@
 USE_CURSES_FALSE = @USE_CURSES_FALSE@
 USE_CURSES_TRUE = @USE_CURSES_TRUE@
@@ -430,6 +412,10 @@ VENDOR_STRING_SHORT = @VENDOR_STRING_SHORT@
 VERSION = @VERSION@
 X11EXAMPLES_DEP_CFLAGS = @X11EXAMPLES_DEP_CFLAGS@
 X11EXAMPLES_DEP_LIBS = @X11EXAMPLES_DEP_LIBS@
+XACE_FALSE = @XACE_FALSE@
+XACE_TRUE = @XACE_TRUE@
+XCALIBRATE_FALSE = @XCALIBRATE_FALSE@
+XCALIBRATE_TRUE = @XCALIBRATE_TRUE@
 XCSECURITY_FALSE = @XCSECURITY_FALSE@
 XCSECURITY_TRUE = @XCSECURITY_TRUE@
 XDMAUTH_FALSE = @XDMAUTH_FALSE@
@@ -456,6 +442,8 @@ XEVIE_TRUE = @XEVIE_TRUE@
 XF86BIGFONT_FALSE = @XF86BIGFONT_FALSE@
 XF86BIGFONT_TRUE = @XF86BIGFONT_TRUE@
 XF86CONFIGFILE = @XF86CONFIGFILE@
+XF86UTILS_FALSE = @XF86UTILS_FALSE@
+XF86UTILS_TRUE = @XF86UTILS_TRUE@
 XGLMODULES_CFLAGS = @XGLMODULES_CFLAGS@
 XGLMODULES_LIBS = @XGLMODULES_LIBS@
 XGLXMODULES_CFLAGS = @XGLXMODULES_CFLAGS@
@@ -565,11 +553,17 @@ XWIN_TRUE = @XWIN_TRUE@
 XWIN_XV_FALSE = @XWIN_XV_FALSE@
 XWIN_XV_TRUE = @XWIN_XV_TRUE@
 YACC = @YACC@
-YFLAGS = @YFLAGS@
 __XCONFIGFILE__ = @__XCONFIGFILE__@
+ac_ct_AR = @ac_ct_AR@
+ac_ct_AS = @ac_ct_AS@
 ac_ct_CC = @ac_ct_CC@
 ac_ct_CXX = @ac_ct_CXX@
+ac_ct_DLLTOOL = @ac_ct_DLLTOOL@
 ac_ct_F77 = @ac_ct_F77@
+ac_ct_OBJDUMP = @ac_ct_OBJDUMP@
+ac_ct_RANLIB = @ac_ct_RANLIB@
+ac_ct_STRIP = @ac_ct_STRIP@
+ac_pt_PKG_CONFIG = @ac_pt_PKG_CONFIG@
 am__fastdepCC_FALSE = @am__fastdepCC_FALSE@
 am__fastdepCC_TRUE = @am__fastdepCC_TRUE@
 am__fastdepCXX_FALSE = @am__fastdepCXX_FALSE@
@@ -586,10 +580,7 @@ build_cpu = @build_cpu@
 build_os = @build_os@
 build_vendor = @build_vendor@
 datadir = @datadir@
-datarootdir = @datarootdir@
-docdir = @docdir@
 driverdir = @driverdir@
-dvidir = @dvidir@
 exec_prefix = @exec_prefix@
 extdir = @extdir@
 ft_config = @ft_config@
@@ -598,23 +589,19 @@ host_alias = @host_alias@
 host_cpu = @host_cpu@
 host_os = @host_os@
 host_vendor = @host_vendor@
-htmldir = @htmldir@
 includedir = @includedir@
 infodir = @infodir@
 install_sh = @install_sh@
 libdir = @libdir@
 libexecdir = @libexecdir@
-localedir = @localedir@
 localstatedir = @localstatedir@
 logdir = @logdir@
 mandir = @mandir@
 mkdir_p = @mkdir_p@
 moduledir = @moduledir@
 oldincludedir = @oldincludedir@
-pdfdir = @pdfdir@
 prefix = @prefix@
 program_transform_name = @program_transform_name@
-psdir = @psdir@
 sbindir = @sbindir@
 sdkdir = @sdkdir@
 sharedstatedir = @sharedstatedir@
@@ -624,7 +611,7 @@ xglmoduledir = @xglmoduledir@
 xpconfigdir = @xpconfigdir@
 @BUILD_XORGCFG_TRUE@INCLUDES = $(XORG_INCS) -I$(top_srcdir)/hw/xfree86/parser
 @BUILD_XORGCFG_TRUE@OPTIONSPATH = $(libdir)/X11
-@BUILD_XORGCFG_TRUE@xorgcfg_CFLAGS = @SERVER_DEFINES@ $(XORG_CFLAGS) $(CURSESDEFINES) \
+@BUILD_XORGCFG_TRUE@xorgcfg_CFLAGS = $(XORG_CFLAGS) $(CURSESDEFINES) \
 @BUILD_XORGCFG_TRUE@	$(XORGCFG_DEP_CFLAGS) -DXKB_RULES_DIR=\"$(XKB_BASE_DIRECTORY)/rules\" \
 @BUILD_XORGCFG_TRUE@	-DPROJECT_ROOT=\"$(PROJECTROOT)\" -DOPTIONSPATH=\"$(OPTIONSPATH)\"
 
@@ -644,70 +631,66 @@ xpconfigdir = @xpconfigdir@
 @BUILD_XORGCFG_TRUE@@USE_CURSES_TRUE@TEXTOBJ = text-mode.o
 @BUILD_XORGCFG_TRUE@@USE_CURSES_TRUE@CURSESDEFINES = -DHAS_NCURSES
 @BUILD_XORGCFG_TRUE@@NEED_STRLCAT_TRUE@STRL_SRCS = $(top_srcdir)/os/strlcat.c $(top_srcdir)/os/strlcpy.c
-@BUILD_XORGCFG_TRUE@xorgcfg_SOURCES = \
-@BUILD_XORGCFG_TRUE@        accessx.c \
-@BUILD_XORGCFG_TRUE@        card-cfg.c \
-@BUILD_XORGCFG_TRUE@        cards.c \
-@BUILD_XORGCFG_TRUE@        config.c \
-@BUILD_XORGCFG_TRUE@        expert.c \
-@BUILD_XORGCFG_TRUE@        help.c \
-@BUILD_XORGCFG_TRUE@        interface.c \
-@BUILD_XORGCFG_TRUE@        keyboard-cfg.c \
-@BUILD_XORGCFG_TRUE@        $(LDSRCS)  \
-@BUILD_XORGCFG_TRUE@        monitor-cfg.c \
-@BUILD_XORGCFG_TRUE@        mouse-cfg.c \
-@BUILD_XORGCFG_TRUE@        options.c \
-@BUILD_XORGCFG_TRUE@        screen-cfg.c \
-@BUILD_XORGCFG_TRUE@        screen.c \
-@BUILD_XORGCFG_TRUE@        $(SNPRINTFSRCS) \
-@BUILD_XORGCFG_TRUE@        startx.c \
-@BUILD_XORGCFG_TRUE@        $(STRLSRCS) \
-@BUILD_XORGCFG_TRUE@        stubs.c \
-@BUILD_XORGCFG_TRUE@        $(TEXTSRC) \
-@BUILD_XORGCFG_TRUE@        vidmode.c \
-@BUILD_XORGCFG_TRUE@        xf86config.c \
-@BUILD_XORGCFG_TRUE@        card-cfg.h \
-@BUILD_XORGCFG_TRUE@        cards.h \
-@BUILD_XORGCFG_TRUE@        config.h \
-@BUILD_XORGCFG_TRUE@        help.h \
-@BUILD_XORGCFG_TRUE@        keyboard-cfg.h \
-@BUILD_XORGCFG_TRUE@        loader.h \
-@BUILD_XORGCFG_TRUE@        monitor-cfg.h \
-@BUILD_XORGCFG_TRUE@        mouse-cfg.h \
-@BUILD_XORGCFG_TRUE@        options.h \
-@BUILD_XORGCFG_TRUE@        screen-cfg.h \
-@BUILD_XORGCFG_TRUE@        screen.h \
-@BUILD_XORGCFG_TRUE@        stubs.h \
-@BUILD_XORGCFG_TRUE@        vidmode.h \
-@BUILD_XORGCFG_TRUE@        xf86config.h \
-@BUILD_XORGCFG_TRUE@	$(STRL_SRCS)
+xorgcfg_SOURCES = \
+        accessx.c \
+        card-cfg.c \
+        cards.c \
+        config.c \
+        expert.c \
+        help.c \
+        interface.c \
+        keyboard-cfg.c \
+        $(LDSRCS)  \
+        monitor-cfg.c \
+        mouse-cfg.c \
+        options.c \
+        screen-cfg.c \
+        screen.c \
+        $(SNPRINTFSRCS) \
+        startx.c \
+        $(STRLSRCS) \
+        stubs.c \
+        $(TEXTSRC) \
+        vidmode.c \
+        xf86config.c \
+        card-cfg.h \
+        cards.h \
+        config.h \
+        help.h \
+        keyboard-cfg.h \
+        loader.h \
+        monitor-cfg.h \
+        mouse-cfg.h \
+        options.h \
+        screen-cfg.h \
+        screen.h \
+        stubs.h \
+        vidmode.h \
+        xf86config.h \
+	$(STRL_SRCS)
 
-@BUILD_XORGCFG_TRUE@XBMdir = $(includedir)/X11/bitmaps
-@BUILD_XORGCFG_TRUE@XPMdir = $(includedir)/X11/pixmaps
-@BUILD_XORGCFG_TRUE@XBM_DATA = \
-@BUILD_XORGCFG_TRUE@        card.xbm \
-@BUILD_XORGCFG_TRUE@        keyboard.xbm \
-@BUILD_XORGCFG_TRUE@        monitor.xbm \
-@BUILD_XORGCFG_TRUE@        mouse.xbm \
-@BUILD_XORGCFG_TRUE@        left.xbm \
-@BUILD_XORGCFG_TRUE@        right.xbm \
-@BUILD_XORGCFG_TRUE@        up.xbm \
-@BUILD_XORGCFG_TRUE@        down.xbm \
-@BUILD_XORGCFG_TRUE@        wider.xbm \
-@BUILD_XORGCFG_TRUE@        narrower.xbm \
-@BUILD_XORGCFG_TRUE@        shorter.xbm \
-@BUILD_XORGCFG_TRUE@        taller.xbm
+BITMAPS = \
+        card.xbm \
+        keyboard.xbm \
+        monitor.xbm \
+        mouse.xbm \
+        left.xbm \
+        right.xbm \
+        up.xbm \
+        down.xbm \
+        wider.xbm \
+        narrower.xbm \
+        shorter.xbm \
+        taller.xbm
 
-@BUILD_XORGCFG_TRUE@XPM_DATA = \
-@BUILD_XORGCFG_TRUE@        card.xpm \
-@BUILD_XORGCFG_TRUE@        computer.xpm \
-@BUILD_XORGCFG_TRUE@        keyboard.xpm \
-@BUILD_XORGCFG_TRUE@        monitor.xpm \
-@BUILD_XORGCFG_TRUE@        mouse.xpm
+PIXMAPS = \
+        card.xpm \
+        computer.xpm \
+        keyboard.xpm \
+        monitor.xpm \
+        mouse.xpm
 
-@BUILD_XORGCFG_TRUE@SED = sed
-@BUILD_XORGCFG_TRUE@SUFFIXES = .pre .man .man.pre .$(APP_MAN_SUFFIX) \
-@BUILD_XORGCFG_TRUE@	.man
+SUFFIXES = .pre .man .man.pre $(am__append_1)
 
 # Translate XCOMM into pound sign with sed, rather than passing -DXCOMM=XCOMM
 # to cpp, because that trick does not work on all ANSI C preprocessors.
@@ -715,33 +698,37 @@ xpconfigdir = @xpconfigdir@
 # Allow XCOMM to be preceded by whitespace and provide a means of generating
 # output lines with trailing backslashes.
 # Allow XHASH to always be substituted, even in cases where XCOMM isn't.
-@BUILD_XORGCFG_TRUE@CPP_SED_MAGIC = $(SED) -e '/^\#  *[0-9][0-9]*  *.*$$/d' \
-@BUILD_XORGCFG_TRUE@                       -e '/^\#line  *[0-9][0-9]*  *.*$$/d' \
-@BUILD_XORGCFG_TRUE@                       -e '/^[         ]*XCOMM$$/s/XCOMM/\#/' \
-@BUILD_XORGCFG_TRUE@                       -e '/^[         ]*XCOMM[^a-zA-Z0-9_]/s/XCOMM/\#/' \
-@BUILD_XORGCFG_TRUE@                       -e '/^[         ]*XHASH/s/XHASH/\#/' \
-@BUILD_XORGCFG_TRUE@                       -e '/\@\@$$/s/\@\@$$/\\/'
+CPP_SED_MAGIC = $(SED) -e '/^\#  *[0-9][0-9]*  *.*$$/d' \
+                       -e '/^\#line  *[0-9][0-9]*  *.*$$/d' \
+                       -e '/^[         ]*XCOMM$$/s/XCOMM/\#/' \
+                       -e '/^[         ]*XCOMM[^a-zA-Z0-9_]/s/XCOMM/\#/' \
+                       -e '/^[         ]*XHASH/s/XHASH/\#/' \
+                       -e '/\@\@$$/s/\@\@$$/\\/'
 
 
 # Strings to replace in man pages
-@BUILD_XORGCFG_TRUE@XORGRELSTRING = @PACKAGE_STRING@
-@BUILD_XORGCFG_TRUE@XORGMANNAME = X Version 11
-@BUILD_XORGCFG_TRUE@XSERVERNAME = Xorg
-@BUILD_XORGCFG_TRUE@MANDEFS = \
-@BUILD_XORGCFG_TRUE@        -D__vendorversion__="\"$(XORGRELSTRING)\" \"$(XORGMANNAME)\"" \
-@BUILD_XORGCFG_TRUE@        -D__xorgversion__="\"$(XORGRELSTRING)\" \"$(XORGMANNAME)\"" \
-@BUILD_XORGCFG_TRUE@	-D__appmansuffix__=$(APP_MAN_SUFFIX) \
-@BUILD_XORGCFG_TRUE@	-D__filemansuffix__=$(FILE_MAN_SUFFIX) \
-@BUILD_XORGCFG_TRUE@	-D__libmansuffix__=$(LIB_MAN_SUFFIX) \
-@BUILD_XORGCFG_TRUE@	-D__miscmansuffix__=$(MISC_MAN_SUFFIX) \
-@BUILD_XORGCFG_TRUE@	-D__drivermansuffix__=$(DRIVER_MAN_SUFFIX) \
-@BUILD_XORGCFG_TRUE@	-D__adminmansuffix__=$(ADMIN_MAN_SUFFIX) \
-@BUILD_XORGCFG_TRUE@	-D__projectroot__=$(prefix) \
-@BUILD_XORGCFG_TRUE@	-D__xconfigfile__=$(__XCONFIGFILE__) -D__xconfigdir__=$(XCONFIGDIR) \
-@BUILD_XORGCFG_TRUE@	-D__xlogfile__=$(XLOGFILE) -D__xservername__=$(XSERVERNAME) 
+XORGRELSTRING = @PACKAGE_STRING@
+XORGMANNAME = X Version 11
+XSERVERNAME = Xorg
+MANDEFS = \
+        -D__vendorversion__="\"$(XORGRELSTRING)\" \"$(XORGMANNAME)\"" \
+        -D__xorgversion__="\"$(XORGRELSTRING)\" \"$(XORGMANNAME)\"" \
+	-D__appmansuffix__=$(APP_MAN_SUFFIX) \
+	-D__filemansuffix__=$(FILE_MAN_SUFFIX) \
+	-D__libmansuffix__=$(LIB_MAN_SUFFIX) \
+	-D__miscmansuffix__=$(MISC_MAN_SUFFIX) \
+	-D__drivermansuffix__=$(DRIVER_MAN_SUFFIX) \
+	-D__adminmansuffix__=$(ADMIN_MAN_SUFFIX) \
+	-D__projectroot__=$(prefix) \
+	-D__xconfigfile__=$(__XCONFIGFILE__) -D__xconfigdir__=$(XCONFIGDIR) \
+	-D__xlogfile__=$(XLOGFILE) -D__xservername__=$(XSERVERNAME) 
 
 
 # Rules needed to cpp man page & app-defaults
+@BUILD_XORGCFG_TRUE@XBMdir = $(includedir)/X11/bitmaps
+@BUILD_XORGCFG_TRUE@XPMdir = $(includedir)/X11/pixmaps
+@BUILD_XORGCFG_TRUE@XBM_DATA = $(BITMAPS)
+@BUILD_XORGCFG_TRUE@XPM_DATA = $(PIXMAPS)
 
 # App default files  (*.ad)
 @BUILD_XORGCFG_TRUE@appdefaultdir = @APPDEFAULTDIR@
@@ -755,9 +742,9 @@ xpconfigdir = @xpconfigdir@
 @BUILD_XORGCFG_TRUE@appmandir = $(APP_MAN_DIR)
 @BUILD_XORGCFG_TRUE@appman_PRE = xorgcfg.man
 @BUILD_XORGCFG_TRUE@appman_DATA = $(appman_PRE:man=@APP_MAN_SUFFIX@)
-@BUILD_XORGCFG_TRUE@EXTRA_DIST = $(XBM_DATA) $(XPM_DATA) XOrgCfg.pre xorgcfg.man.pre
 @BUILD_XORGCFG_TRUE@BUILT_SOURCES = $(appman_PRE)
 @BUILD_XORGCFG_TRUE@CLEANFILES = $(APPDEFAULTFILES) $(BUILT_SOURCES) $(appman_DATA)
+EXTRA_DIST = $(BITMAPS) $(PIXMAPS) XOrgCfg.pre xorgcfg.man.pre
 all: $(BUILT_SOURCES)
 	$(MAKE) $(AM_MAKEFLAGS) all-am
 
@@ -1456,11 +1443,11 @@ uninstall-am: uninstall-XBMDATA uninstall-XPMDATA \
 	uninstall-binPROGRAMS uninstall-info-am
 
 
-@BUILD_XORGCFG_TRUE@.pre:
-@BUILD_XORGCFG_TRUE@	$(RAWCPP) $(RAWCPPFLAGS) $(CPP_FILES_FLAGS) < $< | $(CPP_SED_MAGIC) > $@
+.pre:
+	$(RAWCPP) $(RAWCPPFLAGS) $(CPP_FILES_FLAGS) < $< | $(CPP_SED_MAGIC) > $@
 
-@BUILD_XORGCFG_TRUE@.man.pre.man:
-@BUILD_XORGCFG_TRUE@	$(RAWCPP) $(RAWCPPFLAGS) $(MANDEFS) $(EXTRAMANDEFS) < $< | $(CPP_SED_MAGIC) > $@
+.man.pre.man:
+	$(RAWCPP) $(RAWCPPFLAGS) $(MANDEFS) $(EXTRAMANDEFS) < $< | $(CPP_SED_MAGIC) > $@
 
 # dear automake: it would be really nice if you would actually put things into
 # .SUFFIXES so i wouldnt' have to do this.

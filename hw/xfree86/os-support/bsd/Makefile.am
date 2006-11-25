@@ -38,7 +38,8 @@ ARCH_SOURCES = i386_video.c
 endif
 
 if PPC_VIDEO
-ARCH_SOURCES = ppc_video.c
+ARCH_SOURCES = ppc_video.c \
+	$(srcdir)/../shared/ioperm_noop.c
 endif
 
 if SPARC64_VIDEO
@@ -49,7 +50,7 @@ ARCH_SOURCES = \
 endif
 
 # FIXME: NetBSD Aperture defines (configure.ac)
-AM_CFLAGS = -DUSESTDRES $(XORG_CFLAGS) @SERVER_DEFINES@ @LOADER_DEFINES@
+AM_CFLAGS = -DUSESTDRES $(XORG_CFLAGS)
 
 INCLUDES = $(XORG_INCS)
 

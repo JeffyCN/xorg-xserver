@@ -1,4 +1,3 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/common/xf86Io.c,v 3.56 2003/11/03 05:11:02 tsi Exp $ */
 /*
  * Copyright 1990,91 by Thomas Roell, Dinkelscherben, Germany.
  *
@@ -49,7 +48,6 @@
  */
 
 /* $XConsortium: xf86Io.c /main/27 1996/10/19 17:58:55 kaleb $ */
-/* $XdotOrg: xserver/xorg/hw/xfree86/common/xf86Io.c,v 1.5 2005/07/03 07:01:24 daniels Exp $ */
 
 #define NEED_EVENTS
 #ifdef HAVE_XORG_CONFIG_H
@@ -369,12 +367,6 @@ xf86KbdProc (pKeyboard, what)
 	XkbDescPtr		desc;
 	Bool			foundTerminate = FALSE;
 	int			keyc;
-	if (XkbInitialMap) {
-	    if ((xf86Info.xkbkeymap = strchr(XkbInitialMap, '/')) != NULL)
-		xf86Info.xkbkeymap++;
-	    else
-		xf86Info.xkbkeymap = XkbInitialMap;
-	}
 	if (xf86Info.xkbkeymap) {
 	    names.keymap = xf86Info.xkbkeymap;
 	    names.keycodes = NULL;
@@ -476,32 +468,3 @@ searchdone:
   }
   return (Success);
 }
-
-#if defined(DDXTIME) && !defined(QNX4)
-/*
- * These are getting tossed in here until I can think of where
- * they really belong
- */
-#define HALFMONTH ((unsigned long) 1<<31)
-_X_EXPORT CARD32
-GetTimeInMillis()
-{
-    struct timeval  tp;
-    register CARD32 val;
-    register INT32 diff;
-    static CARD32 oldval = 0;
-    static CARD32 time = 0;
-
-    gettimeofday(&tp, 0);
-    val = (tp.tv_sec * 1000) + (tp.tv_usec / 1000);
-    if (oldval) {
-	diff = val - oldval;
-	if (diff > 0)
-	    time += diff;
-    }
-    oldval = val;
-
-    return time;
-}
-#endif /* DDXTIME && !QNX4 */
-

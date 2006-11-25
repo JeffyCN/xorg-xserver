@@ -1,4 +1,3 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/xf86config/xf86config.c,v 3.69 2003/02/20 04:05:15 dawes Exp $ */
 
 /*
  * This is a configuration program that will create a base XF86Config
@@ -87,14 +86,12 @@
  *  - Fix seg.fault problem on Solaris.
  *  - Add modestring "1400x1050"(for ATI Mobile-Rage).
  *  - Add videomemory 8192, 16384, 32768, 65536, 131072 and 262144.
- *  - Load "speedo" module.
  *  - Ready to DRI.
  *  - Load xtt module instead of freetype module.
  *  - Add font path "/TrueType/" and "/freefont/".
  *  Chisato Yamauchi(cyamauch@phyas.aichi-edu.ac.jp)
  */
 /* $XConsortium: xf86config.c /main/21 1996/10/28 05:43:57 kaleb $ */
-/* $XdotOrg: xserver/xorg/hw/xfree86/utils/xorgconfig/xorgconfig.c,v 1.19 2005/11/08 06:33:30 jkj Exp $ */
 
 #ifdef HAVE_CONFIG_H
 # include "xorg-server.h"
@@ -1948,11 +1945,6 @@ static char *XF86Config_firstchunk_text =
 #else
 "#    Load        \"type1\"\n"
 #endif
-#ifdef HAS_SPEEDO
-"    Load        \"speedo\"\n"
-#else
-"#    Load        \"speedo\"\n"
-#endif
 "    Load        \"freetype\"\n"
 "#    Load        \"xtt\"\n"
 "\n"
@@ -1981,8 +1973,8 @@ static char *XF86Config_firstchunk_text =
 "# \n"
 #if 0
 "# If you don't have a floating point coprocessor and emacs, Mosaic or other\n"
-"# programs take long to start up, try moving the Type1 and Speedo directory\n"
-"# to the end of this list (or comment them out).\n"
+"# programs take long to start up, try moving the Type1 directory\n"
+"# to the end of this list (or comment it out).\n"
 #endif
 "# \n"
 "\n";

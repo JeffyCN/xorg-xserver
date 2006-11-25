@@ -37,6 +37,9 @@
 #include "kkeymap.h"
 #include <signal.h>
 #include <stdio.h>
+#ifdef sun
+#include <sys/file.h> /* needed for FNONBLOCK & FASYNC */
+#endif
 
 #ifdef XKB
 #include <X11/extensions/XKBsrv.h>
@@ -451,9 +454,6 @@ KdKeybdProc(DeviceIntPtr pDevice, int onoff)
 				       KdBell, KdKbdCtrl);
 #else
 	memset(&names, 0, sizeof(XkbComponentNamesRec));
-
-	if (XkbInitialMap) 
-	    names.keymap = XkbInitialMap;
 
 	XkbSetRulesDflts ("base", "pc101", "us", NULL, NULL);
 	ret = XkbInitKeyboardDeviceStruct ((DeviceIntPtr) pDev,

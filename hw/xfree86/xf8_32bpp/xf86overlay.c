@@ -1,4 +1,3 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/xf8_32bpp/xf86overlay.c,v 1.8 2000/03/25 20:14:43 mvojkovi Exp $ */
 
 /*
    Copyright (C) 1998.  The XFree86 Project Inc.
@@ -101,9 +100,6 @@ static GCOps PixmapGCOps = {
     PixmapPolyText16, PixmapImageText8, 
     PixmapImageText16, PixmapImageGlyphBlt, 
     PixmapPolyGlyphBlt, PixmapPushPixels,
-#ifdef NEED_LINEHELPER
-    NULL,
-#endif
     {NULL}		/* devPrivate */
 };
 
@@ -152,9 +148,6 @@ static GCOps WindowGCOps = {
     WindowPolyText16, WindowImageText8, 
     WindowImageText16, WindowImageGlyphBlt, 
     WindowPolyGlyphBlt, WindowPushPixels,
-#ifdef NEED_LINEHELPER
-    NULL,
-#endif
     {NULL}		/* devPrivate */
 };
 

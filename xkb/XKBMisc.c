@@ -1,4 +1,3 @@
-/* $Xorg: XKBMisc.c,v 1.4 2000/08/17 19:45:02 cpqbld Exp $ */
 /************************************************************
 Copyright (c) 1993 by Silicon Graphics Computer Systems, Inc.
 
@@ -24,7 +23,6 @@ OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION  WITH
 THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 ********************************************************/
-/* $XFree86: xc/lib/X11/XKBMisc.c,v 3.5 2001/10/28 03:32:33 tsi Exp $ */
 
 #ifdef HAVE_DIX_CONFIG_H
 #include <dix-config.h>
@@ -466,8 +464,11 @@ unsigned		changed,tmp;
 	unsigned int	new_vmodmask;
 	changed|= XkbKeyActionsMask;
 	pActs= XkbResizeKeyActions(xkb,key,nSyms);
-	if (!pActs)
+	if (!pActs) {
+            if (nSyms > IBUF_SIZE)
+                xfree(interps);
 	    return False;
+        }
 	new_vmodmask= 0;
 	for (n=0;n<nSyms;n++) {
 	    if (interps[n]) {

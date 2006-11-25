@@ -1,4 +1,3 @@
-/* $Xorg: resource.h,v 1.5 2001/02/09 02:05:15 xorgcvs Exp $ */
 /***********************************************************
 
 Copyright 1987, 1989, 1998  The Open Group
@@ -45,7 +44,6 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 SOFTWARE.
 
 ******************************************************************/
-/* $XFree86: xc/programs/Xserver/include/resource.h,v 1.11 2002/03/06 21:14:04 mvojkovi Exp $ */
 
 #ifndef RESOURCE_H
 #define RESOURCE_H 1
@@ -227,8 +225,6 @@ extern pointer LookupClientResourceComplex(
 #define SecurityWriteAccess	(1<<1)	/* changing the object */
 #define SecurityDestroyAccess	(1<<2)	/* destroying the object */
 
-#ifdef XCSECURITY
-
 extern pointer SecurityLookupIDByType(
     ClientPtr /*client*/,
     XID /*id*/,
@@ -241,15 +237,6 @@ extern pointer SecurityLookupIDByClass(
     RESTYPE /*classes*/,
     Mask /*access_mode*/);
 
-#else /* not XCSECURITY */
-
-#define SecurityLookupIDByType(client, id, rtype, access_mode) \
-        LookupIDByType(id, rtype)
-
-#define SecurityLookupIDByClass(client, id, classes, access_mode) \
-        LookupIDByClass(id, classes)
-
-#endif /* XCSECURITY */
 
 extern void GetXIDRange(
     int /*client*/,

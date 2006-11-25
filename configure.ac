@@ -24,9 +24,8 @@ dnl Process this file with autoconf to create configure.
 
 AC_PREREQ(2.57)
 dnl This is the not the Xorg version number, it's the server version number.
-dnl Yes, that's weird.  Also, when you change this, be sure to change the
-dnl DEFAULT_VERSION_* variables below.
-AC_INIT([xorg-server], 1.1.1, [https://bugs.freedesktop.org/enter_bug.cgi?product=xorg], xorg-server)
+dnl Yes, that's weird.
+AC_INIT([xorg-server], 1.1.99.902, [https://bugs.freedesktop.org/enter_bug.cgi?product=xorg], xorg-server)
 AC_CONFIG_SRCDIR([Makefile.am])
 AM_INIT_AUTOMAKE([dist-bzip2 foreign])
 AM_MAINTAINER_MODE
@@ -83,7 +82,8 @@ AC_TYPE_PID_T
 dnl Checks for library functions.
 AC_FUNC_VPRINTF
 AC_CHECK_FUNCS([geteuid getuid link memmove memset mkstemp strchr strrchr \
-		strtol getopt getopt_long vsnprintf walkcontext backtrace])
+		strtol getopt getopt_long vsnprintf walkcontext backtrace \
+		getisax])
 AC_FUNC_ALLOCA
 dnl Old HAS_* names used in os/*.c.
 AC_CHECK_FUNC([getdtablesize],
@@ -175,7 +175,7 @@ dnl glibc backtrace support check (hw/xfree86/common/xf86Events.c)
 AC_CHECK_HEADER([execinfo.h],[
     AC_CHECK_LIB(c, backtrace, [
         AC_DEFINE(HAVE_BACKTRACE, 1, [Has backtrace support])
-	AC_DEFINE(HAVE_EXECINFO_H, 1, [Have execinfo.h])
+        AC_DEFINE(HAVE_EXECINFO_H, 1, [Have execinfo.h])
     ])]
 )
 
@@ -204,7 +204,9 @@ case $host_cpu in
 	case $host_os in
 		*linux*)	DEFAULT_INT10=vm86 ;;
 		*freebsd*)	AC_DEFINE(USE_DEV_IO) ;;
-		*netbsd*)	AC_DEFINE(USE_I386_IOPL) ;;
+		*netbsd*)	AC_DEFINE(USE_I386_IOPL)
+				SYS_LIBS=-li386
+				;;
 		*openbsd*)	AC_DEFINE(USE_I386_IOPL) 
 				SYS_LIBS=-li386
 				;;
@@ -226,7 +228,9 @@ case $host_cpu in
 	I386_VIDEO=yes
 	case $host_os in
 		*freebsd*)	AC_DEFINE(USE_DEV_IO, 1, [BSD /dev/io]) ;;
-		*netbsd*)	AC_DEFINE(USE_I386_IOPL, 1, [BSD i386 iopl]) ;;
+		*netbsd*)	AC_DEFINE(USE_I386_IOPL, 1, [BSD i386 iopl])
+				SYS_LIBS=-lx86_64
+				;;
 		*openbsd*)	AC_DEFINE(USE_AMD64_IOPL, 1, [BSD AMD64 iopl])
 				SYS_LIBS=-lamd64
 				;;
@@ -246,7 +250,10 @@ KDRIVE_HW=no
 dnl it would be nice to autodetect these *CONS_SUPPORTs
 case $host_os in
   *freebsd*)
-	AC_DEFINE(CSRG_BASED, 1, [System is BSD-like])
+	case $host_os in
+		kfreebsd*-gnu) ;;
+		*) AC_DEFINE(CSRG_BASED, 1, [System is BSD-like]) ;;
+	esac
 	AC_DEFINE(PCCONS_SUPPORT, 1, [System has PC console])
 	AC_DEFINE(PCVT_SUPPORT, 1, [System has PCVT console])
 	AC_DEFINE(SYSCONS_SUPPORT, 1, [System has syscons console])
@@ -290,9 +297,9 @@ DEFAULT_VENDOR_NAME="The X.Org Foundation"
 DEFAULT_VENDOR_NAME_SHORT="X.Org"
 DEFAULT_VERSION_MAJOR=7
 DEFAULT_VERSION_MINOR=1
-DEFAULT_VERSION_PATCH=1
-DEFAULT_VERSION_SNAP=0
-DEFAULT_RELEASE_DATE="12 May 2006"
+DEFAULT_VERSION_PATCH=99
+DEFAULT_VERSION_SNAP=902
+DEFAULT_RELEASE_DATE="13 November 2006"
 DEFAULT_VENDOR_WEB="http://wiki.x.org"
 
 m4_ifdef([AS_HELP_STRING], , [m4_define([AS_HELP_STRING], m4_defn([AC_HELP_STRING]))])
@@ -407,18 +414,21 @@ AC_ARG_ENABLE(dri,            AS_HELP_STRING([--enable-dri], [Build DRI extensio
 AC_ARG_ENABLE(xinerama,	      AS_HELP_STRING([--disable-xinerama], [Build Xinerama extension (default: enabled)]), [XINERAMA=$enableval], [XINERAMA=yes])
 AC_ARG_ENABLE(xf86vidmode,    AS_HELP_STRING([--disable-xf86vidmode], [Build XF86VidMode extension (default: enabled)]), [XF86VIDMODE=$enableval], [XF86VIDMODE=yes])
 AC_ARG_ENABLE(xf86misc,       AS_HELP_STRING([--disable-xf86misc], [Build XF86Misc extension (default: enabled)]), [XF86MISC=$enableval], [XF86MISC=yes])
-AC_ARG_ENABLE(xcsecurity,     AS_HELP_STRING([--disable-xcsecurity], [Build Security extension (default: enabled)]), [XCSECURITY=$enableval], [XCSECURITY=yes])
+AC_ARG_ENABLE(xace,     AS_HELP_STRING([--disable-xace], [Build X-ACE extension (default: enabled)]), [XACE=$enableval], [XACE=yes])
+AC_ARG_ENABLE(xcsecurity,     AS_HELP_STRING([--disable-xcsecurity], [Build Security extension (default: enabled)]), [XCSECURITY=$enableval], [XCSECURITY=$XACE])
+AC_ARG_ENABLE(appgroup,       AS_HELP_STRING([--disable-appgroup], [Build XC-APPGROUP extension (default: enabled)]), [APPGROUP=$enableval], [APPGROUP=$XCSECURITY])
+AC_ARG_ENABLE(xcalibrate,     AS_HELP_STRING([--enable-xcalibrate], [Build XCalibrate extension (default: disabled)]), [XCALIBRATE=$enableval], [XCALIBRATE=no])
+AC_ARG_ENABLE(tslib,          AS_HELP_STRING([--enable-tslib], [Build kdrive tslib touchscreen support (default: disabled)]), [TSLIB=$enableval], [TSLIB=no])
 AC_ARG_ENABLE(xevie,          AS_HELP_STRING([--disable-xevie], [Build XEvIE extension (default: enabled)]), [XEVIE=$enableval], [XEVIE=yes])
-AC_ARG_ENABLE(lbx,            AS_HELP_STRING([--disable-lbx], [Build LBX extension (default: no)]), [LBX=$enableval], [LBX=no])
-AC_ARG_ENABLE(appgroup,       AS_HELP_STRING([--disable-appgroup], [Build XC-APPGROUP extension (default: enabled)]), [APPGROUP=$enableval], [APPGROUP=yes])
 AC_ARG_ENABLE(cup,            AS_HELP_STRING([--disable-cup], [Build TOG-CUP extension (default: enabled)]), [CUP=$enableval], [CUP=yes])
 AC_ARG_ENABLE(evi,            AS_HELP_STRING([--disable-evi], [Build Extended-Visual-Information extension (default: enabled)]), [EVI=$enableval], [EVI=yes])
 AC_ARG_ENABLE(multibuffer,    AS_HELP_STRING([--enable-multibuffer], [Build Multibuffer extension (default: disabled)]), [MULTIBUFFER=$enableval], [MULTIBUFFER=no])
 AC_ARG_ENABLE(fontcache,      AS_HELP_STRING([--enable-fontcache], [Build FontCache extension (default: disabled)]), [FONTCACHE=$enableval], [FONTCACHE=no])
 AC_ARG_ENABLE(dbe,            AS_HELP_STRING([--disable-dbe], [Build DBE extension (default: enabled)]), [DBE=$enableval], [DBE=yes])
 AC_ARG_ENABLE(xf86bigfont,    AS_HELP_STRING([--disable-xf86bigfont], [Build XF86 Big Font extension (default: enabled)]), [XF86BIGFONT=$enableval], [XF86BIGFONT=yes])
-AC_ARG_ENABLE(dpms,           AS_HELP_STRING([--disable-dpms], [Build DPMS extension (default: enabled)]), [DPMS=$enableval], [DPMSExtension=yes])
+AC_ARG_ENABLE(dpms,           AS_HELP_STRING([--disable-dpms], [Build DPMS extension (default: enabled)]), [DPMSExtension=$enableval], [DPMSExtension=yes])
 AC_ARG_ENABLE(xinput,         AS_HELP_STRING([--disable-xinput], [Build XInput Extension (default: enabled)]), [XINPUT=$enableval], [XINPUT=yes])
+AC_ARG_ENABLE(xfree86-utils,     AS_HELP_STRING([--enable-xfree86-utils], [Build xfree86 DDX utilities (default: enabled)]), [XF86UTILS=$enableval], [XF86UTILS=yes])
 
 dnl DDXes.
 AC_ARG_ENABLE(xorg,    	      AS_HELP_STRING([--enable-xorg], [Build Xorg server (default: auto)]), [XORG=$enableval], [XORG=auto])
@@ -465,7 +475,7 @@ AC_MSG_RESULT([$SETUID])
 AM_CONDITIONAL(INSTALL_SETUID, [test "x$SETUID" = "xyes"])
 
 dnl Issue an error if xtrans.m4 was not found and XTRANS_CONNECTION_FLAGS macro
-dnl was not expanded, since libX11 with no transport types is rather useless.
+dnl was not expanded, since xorg-server with no transport types is rather useless.
 dnl
 dnl If you're seeing an error here, be sure you installed the lib/xtrans module
 dnl first and if it's not in the default location, that you set the ACLOCAL
@@ -505,7 +515,7 @@ XEXT_LIB='$(top_builddir)/Xext/libXext.la'
 XEXTXORG_LIB='$(top_builddir)/Xext/libXextbuiltin.la'
 
 dnl Core modules for most extensions, et al.
-REQUIRED_MODULES="randrproto renderproto [fixesproto >= 4.0] damageproto xcmiscproto xextproto xproto xtrans xf86miscproto xf86vidmodeproto xf86bigfontproto [scrnsaverproto >= 1.1] bigreqsproto resourceproto fontsproto inputproto xf86dgaproto"
+REQUIRED_MODULES="randrproto renderproto [fixesproto >= 4.0] damageproto xcmiscproto xextproto xproto xtrans xf86miscproto xf86vidmodeproto xf86bigfontproto [scrnsaverproto >= 1.1] bigreqsproto resourceproto fontsproto inputproto xf86dgaproto [kbproto >= 1.0.3]"
 REQUIRED_LIBS="xfont xau fontenc"
 
 AM_CONDITIONAL(XV, [test "x$XV" = xyes])
@@ -568,12 +578,17 @@ fi
 
 if test "x$GLX" = xyes && ! test "x$MESA_SOURCE" = x; then
 	PKG_CHECK_MODULES([XLIB], [x11])
-	PKG_CHECK_MODULES([GL], [glproto >= 1.4.6])
+	PKG_CHECK_MODULES([GL], [glproto >= 1.4.7])
 	AC_SUBST(XLIB_CFLAGS)
 	AC_DEFINE(GLXEXT, 1, [Build GLX extension])
 	GLX_LIBS='$(top_builddir)/GL/glx/libglx.la $(top_builddir)/GL/mesa/libGLcore.la'
 	test -d GL || mkdir GL
-        $srcdir/GL/symlink-mesa.sh $MESA_SOURCE GL/
+	case $host_os in
+	  solaris*) 	
+		SYMLINK_MESA="/usr/bin/bash $srcdir/GL/symlink-mesa.sh"	;;
+	  *)	SYMLINK_MESA=$srcdir/GL/symlink-mesa.sh ;;
+	esac
+	$SYMLINK_MESA $MESA_SOURCE GL/
 	if test $? -ne 0; then
 		AC_MSG_ERROR([Failed to link Mesa source tree.  Please specify a proper path to Mesa sources, or disable GLX.])
 	fi
@@ -596,24 +611,6 @@ if test "x$GLX_USE_TLS" = xyes -a "x$AIGLX" = xyes; then
 fi
 AC_SUBST([GLX_DEFINES])
 
-PKG_CHECK_MODULES([LBXUTIL_TEST], [lbxutil], [have_lbxutil=yes], [have_lbxutil=no])
-
-if test "x$LBX" = xauto; then
-    if test "x$have_lbxutil" = "xyes"; then
-        LBX="yes"
-    else
-        LBX="no"
-    fi
-fi
-
-AM_CONDITIONAL(LBX, [test "x$LBX" = xyes])
-if test "x$LBX" = xyes; then
-	AC_DEFINE(LBX, 1, [Support LBX extension])
-	PKG_CHECK_MODULES([LBXUTIL], [lbxutil])
-	LBX_LIB='$(top_builddir)/lbx/liblbx.la'" $LBXUTIL_LIBS"
-	LBX_INC='-I$(top_srcdir)/lbx'" $LBXUTIL_CFLAGS"
-fi
-
 AM_CONDITIONAL(DRI, test "x$DRI" = xyes)
 if test "x$DRI" = xyes; then
 	AC_DEFINE(XF86DRI, 1, [Build DRI extension])
@@ -632,8 +629,16 @@ if test "x$XINERAMA" = xyes; then
 	REQUIRED_MODULES="$REQUIRED_MODULES xineramaproto"
 fi
 
+AM_CONDITIONAL(XACE, [test "x$XACE" = xyes])
+if test "x$XACE" = xyes; then
+	AC_DEFINE(XACE, 1, [Build X-ACE extension])
+fi
+
 AM_CONDITIONAL(XCSECURITY, [test "x$XCSECURITY" = xyes])
 if test "x$XCSECURITY" = xyes; then
+	if test "x$XACE" != xyes; then
+		AC_MSG_ERROR([cannot build Security extension without X-ACE])
+	fi
 	AC_DEFINE(XCSECURITY, 1, [Build Security extension])
 fi
 
@@ -643,12 +648,11 @@ if test "x$XEVIE" = xyes; then
 	REQUIRED_MODULES="$REQUIRED_MODULES evieproto"
 fi
 
-if test "x$APPGROUP" = xyes && test "x$XCSECURITY" != xyes; then
-	AC_MSG_NOTICE([Disabling APPGROUP extension])
-	APPGROUP=no
-fi
 AM_CONDITIONAL(APPGROUP, [test "x$APPGROUP" = xyes])
 if test "x$APPGROUP" = xyes; then
+	if test "x$XACE" != xyes || test "x$XCSECURITY" != xyes; then
+		AC_MSG_ERROR([cannot build APPGROUP extension without X-ACE and XC-SECURITY])
+	fi
 	AC_DEFINE(XAPPGROUP, 1, [Build APPGROUP extension])
 fi
 
@@ -709,6 +713,14 @@ if test "x$XPRINT" = xyes; then
 	REQUIRED_MODULES="$REQUIRED_MODULES printproto"
 fi
 
+if test "x$XCALIBRATE" = xyes && test "$KDRIVE" = yes; then
+   AC_DEFINE(XCALIBRATE, 1, [Build XCalibrate extension])
+   REQUIRED_MODULES="$REQUIRED_MODULES xcalibrateproto"
+else
+   XCALIBRATE=no
+fi
+AM_CONDITIONAL(XCALIBRATE, [test "x$XCALIBRATE" = xyes])
+
 AC_DEFINE(RENDER, 1, [Support RENDER extension])
 RENDER_LIB='$(top_builddir)/render/librender.la'
 RENDER_INC='-I$(top_srcdir)/render'
@@ -737,6 +749,8 @@ if test "x$XINPUT" = xyes; then
 	XI_LIB='$(top_builddir)/Xi/libXi.la'
 	XI_INC='-I$(top_srcdir)/Xi'
 fi
+
+AM_CONDITIONAL(XF86UTILS, test "x$XF86UTILS" = xyes)
 
 AC_DEFINE(SHAPE, 1, [Support SHAPE extension])
 
@@ -807,6 +821,7 @@ VENDOR_MAN_VERSION="Version ${VENDOR_VERSION_STRING}"
 
 AC_DEFINE_DIR(COMPILEDDEFAULTFONTPATH, FONTPATH, [Default font path])
 AC_DEFINE_DIR(RGB_DB, RGBPATH, [Default RGB path])
+AC_DEFINE_DIR(BASE_FONT_PATH, FONTDIR, [Default base font path])
 AC_DEFINE_DIR(DRI_DRIVER_PATH, DRI_DRIVER_PATH, [Default DRI driver path])
 AC_DEFINE_UNQUOTED(XVENDORNAME, ["$VENDOR_STRING"], [Vendor name])
 AC_DEFINE_UNQUOTED(XVENDORNAMESHORT, ["$VENDOR_STRING_SHORT"], [Short vendor name])
@@ -857,9 +872,46 @@ PKG_CHECK_MODULES([XSERVERCFLAGS], [$REQUIRED_MODULES $REQUIRED_LIBS])
 PKG_CHECK_MODULES([XSERVERLIBS], [$REQUIRED_LIBS])
 
 XSERVER_CFLAGS="${XSERVERCFLAGS_CFLAGS}"
-XSERVER_LIBS="${XSERVERLIBS_LIBS} ${SYS_LIBS} -lm -lz"
-AC_SUBST([XSERVER_LIBS])
+XSERVER_LIBS="${XSERVERLIBS_LIBS} ${SYS_LIBS} -lm"
 AC_SUBST([SYS_LIBS])
+
+AC_CHECK_FUNCS([clock_gettime], [have_clock_gettime=yes],
+               [AC_CHECK_LIB([rt], [clock_gettime], [have_clock_gettime=-lrt],
+                             [have_clock_gettime=no])])
+
+AC_MSG_CHECKING([for a useful monotonic clock ...])
+
+if ! test "x$have_clock_gettime" = xno; then
+    if ! test "x$have_clock_gettime" = xyes; then
+        LIBS="$have_clock_gettime"
+    else
+        LIBS=""
+    fi
+
+    AC_RUN_IFELSE([
+#define _POSIX_C_SOURCE 199309L
+#include <time.h>
+
+int main(int argc, char *argv[]) {
+    struct timespec tp;
+
+    if (clock_gettime(CLOCK_MONOTONIC, &tp) == 0)
+        return 0;
+    else
+        return 1;
+}
+    ], [MONOTONIC_CLOCK=yes], [MONOTONIC_CLOCK=no],
+       [MONOTONIC_CLOCK="cross compiling"])
+else
+    MONOTONIC_CLOCK=no
+fi
+
+AC_MSG_RESULT([$MONOTONIC_CLOCK])
+
+if test "x$MONOTONIC_CLOCK" = xyes; then
+    AC_DEFINE(MONOTONIC_CLOCK, 1, [Have monotonic clock from clock_gettime()])
+    XSERVER_LIBS="$XSERVER_LIBS $LIBS"
+fi
 
 dnl Imake defines SVR4 on SVR4 systems, and many files check for it, so
 dnl we need to replicate that here until those can all be fixed
@@ -872,17 +924,14 @@ AC_EGREP_CPP([I_AM_SVR4],[
 AC_DEFINE([SVR4],1,[Define to 1 on systems derived from System V Release 4])
 AC_MSG_RESULT([yes])], AC_MSG_RESULT([no]))
 
-XSERVER_CFLAGS="$XSERVER_CFLAGS $CORE_INCS $XEXT_INC $COMPOSITE_INC $DAMAGE_INC $FIXES_INC $XI_INC $MI_INC $MIEXT_SHADOW_INC $MIEXT_LAYER_INC $MIEXT_DAMAGE_INC $RENDER_INC $RANDR_INC $FB_INC $LBX_INC"
+XSERVER_CFLAGS="$XSERVER_CFLAGS $CORE_INCS $XEXT_INC $COMPOSITE_INC $DAMAGE_INC $FIXES_INC $XI_INC $MI_INC $MIEXT_SHADOW_INC $MIEXT_LAYER_INC $MIEXT_DAMAGE_INC $RENDER_INC $RANDR_INC $FB_INC"
 AC_DEFINE_UNQUOTED(X_BYTE_ORDER,[$ENDIAN],[Endian order])
+
+AC_SUBST([XSERVER_LIBS])
 
 dnl ---------------------------------------------------------------------------
 dnl DDX section.
 dnl ---------------------------------------------------------------------------
-
-dnl These are used to define Xorg module, loader and general server defines
-MODULE_DEFINES=""
-LOADER_DEFINES=""
-SERVER_DEFINES=""
 
 dnl DMX DDX
 
@@ -900,7 +949,7 @@ if test "x$DMX" = xyes; then
 		              modules not found.])
 	fi
 	DMX_INCLUDES="$XEXT_INC $RENDER_INC $XTRAP_INC $RECORD_INC"
-	XDMX_LIBS="$FB_LIB $MI_LIB $XEXT_LIB $RENDER_LIB $XTRAP_LIB $RECORD_LIB $XI_LIB $XKB_LIB $XKB_STUB_LIB $MIEXT_DAMAGE_LIB $LBX_LIB $MIEXT_SHADOW_LIB $OS_LIB $CWRAP_LIB"
+	XDMX_LIBS="$FB_LIB $MI_LIB $XEXT_LIB $RENDER_LIB $XTRAP_LIB $RECORD_LIB $XI_LIB $XKB_LIB $XKB_STUB_LIB $MIEXT_DAMAGE_LIB $MIEXT_SHADOW_LIB $OS_LIB $CWRAP_LIB"
 	AC_SUBST([XDMX_LIBS])
 
 dnl USB sources in DMX require <linux/input.h>
@@ -939,7 +988,7 @@ AC_MSG_RESULT([$XVFB])
 AM_CONDITIONAL(XVFB, [test "x$XVFB" = xyes])
 
 if test "x$XVFB" = xyes; then
-	XVFB_LIBS="$FB_LIB $MI_LIB $FIXES_LIB $XEXT_LIB $DBE_LIB $XTRAP_LIB $RECORD_LIB $GLX_LIBS $RENDER_LIB $RANDR_LIB $DAMAGE_LIB $MIEXT_DAMAGE_LIB $MIEXT_SHADOW_LIB $XI_LIB $XKB_LIB $XKB_STUB_LIB $LBX_LIB $COMPOSITE_LIB $XPSTUBS_LIB $CWRAP_LIB $OS_LIB"
+	XVFB_LIBS="$FB_LIB $MI_LIB $FIXES_LIB $XEXT_LIB $DBE_LIB $XTRAP_LIB $RECORD_LIB $GLX_LIBS $RENDER_LIB $RANDR_LIB $DAMAGE_LIB $MIEXT_DAMAGE_LIB $MIEXT_SHADOW_LIB $XI_LIB $XKB_LIB $XKB_STUB_LIB $COMPOSITE_LIB $XPSTUBS_LIB $CWRAP_LIB $OS_LIB"
 	AC_SUBST([XVFB_LIBS])
 fi
 
@@ -955,7 +1004,7 @@ AC_MSG_RESULT([$XNEST])
 AM_CONDITIONAL(XNEST, [test "x$XNEST" = xyes])
 
 if test "x$XNEST" = xyes; then
-	XNEST_LIBS="$FB_LIB $MI_LIB $FIXES_LIB $XEXT_LIB $DBE_LIB $XTRAP_LIB $RECORD_LIB $GLX_LIBS $RENDER_LIB $RANDR_LIB $DAMAGE_LIB $MIEXT_DAMAGE_LIB $MIEXT_SHADOW_LIB $XI_LIB $XKB_LIB $XKB_STUB_LIB $LBX_LIB $COMPOSITE_LIB $XPSTUBS_LIB $CWRAP_LIB $OS_LIB"
+	XNEST_LIBS="$FB_LIB $MI_LIB $FIXES_LIB $XEXT_LIB $DBE_LIB $XTRAP_LIB $RECORD_LIB $GLX_LIBS $RENDER_LIB $RANDR_LIB $DAMAGE_LIB $MIEXT_DAMAGE_LIB $MIEXT_SHADOW_LIB $XI_LIB $XKB_LIB $XKB_STUB_LIB $COMPOSITE_LIB $XPSTUBS_LIB $CWRAP_LIB $OS_LIB"
 	AC_SUBST([XNEST_LIBS])
 fi
 
@@ -984,7 +1033,7 @@ AC_MSG_RESULT([$XGL])
 AM_CONDITIONAL(XGL, [test "x$XGL" = xyes])
 
 if test "x$XGL" = xyes; then
-	XGL_LIBS="$FB_LIB $MI_LIB $COMPOSITE_LIB $FIXES_LIB $XEXT_LIB $DBE_LIB $XTRAP_LIB $RECORD_LIB $GLX_LIBS $RENDER_LIB $RANDR_LIB $DAMAGE_LIB $MIEXT_DAMAGE_LIB $MIEXT_SHADOW_LIB $MIEXT_LAYER_LIB $XI_LIB $XKB_LIB $XKB_STUB_LIB $LBX_LIB $XPSTUBS_LIB $CWRAP_LIB $OS_LIB"
+	XGL_LIBS="$FB_LIB $MI_LIB $COMPOSITE_LIB $FIXES_LIB $XEXT_LIB $DBE_LIB $XTRAP_LIB $RECORD_LIB $GLX_LIBS $RENDER_LIB $RANDR_LIB $DAMAGE_LIB $MIEXT_DAMAGE_LIB $MIEXT_SHADOW_LIB $MIEXT_LAYER_LIB $XI_LIB $XKB_LIB $XKB_STUB_LIB $XPSTUBS_LIB $CWRAP_LIB $OS_LIB"
 	AC_SUBST([XGL_LIBS])
 	AC_DEFINE(XGL_MODULAR, 1, [Use loadable XGL modules])
 
@@ -1005,7 +1054,7 @@ AC_MSG_RESULT([$XEGL])
 AM_CONDITIONAL(XEGL, [test "x$XEGL" = xyes])
 
 if test "x$XEGL" = xyes; then
-	XEGL_LIBS="$FB_LIB $MI_LIB $COMPOSITE_LIB $FIXES_LIB $XEXT_LIB $DBE_LIB $XTRAP_LIB $RECORD_LIB $GLX_LIBS $RENDER_LIB $RANDR_LIB $DAMAGE_LIB $MIEXT_DAMAGE_LIB $MIEXT_SHADOW_LIB $MIEXT_LAYER_LIB $XI_LIB $XKB_LIB $XKB_STUB_LIB $LBX_LIB $XPSTUBS_LIB $CWRAP_LIB $OS_LIB"
+	XEGL_LIBS="$FB_LIB $MI_LIB $COMPOSITE_LIB $FIXES_LIB $XEXT_LIB $DBE_LIB $XTRAP_LIB $RECORD_LIB $GLX_LIBS $RENDER_LIB $RANDR_LIB $DAMAGE_LIB $MIEXT_DAMAGE_LIB $MIEXT_SHADOW_LIB $MIEXT_LAYER_LIB $XI_LIB $XKB_LIB $XKB_STUB_LIB $XPSTUBS_LIB $CWRAP_LIB $OS_LIB"
 	AC_SUBST([XEGL_LIBS])
 fi
 
@@ -1021,7 +1070,7 @@ AC_MSG_RESULT([$XGLX])
 AM_CONDITIONAL(XGLX, [test "x$XGLX" = xyes])
 
 if test "x$XGLX" = xyes; then
-	XGLX_LIBS="$FB_LIB $MI_LIB $COMPOSITE_LIB $FIXES_LIB $XEXT_LIB $DBE_LIB $XTRAP_LIB $RECORD_LIB $GLX_LIBS $RENDER_LIB $RANDR_LIB $DAMAGE_LIB $MIEXT_DAMAGE_LIB $MIEXT_SHADOW_LIB $MIEXT_LAYER_LIB $XI_LIB $XKB_LIB $XKB_STUB_LIB $LBX_LIB $XPSTUBS_LIB $CWRAP_LIB $OS_LIB"
+	XGLX_LIBS="$FB_LIB $MI_LIB $COMPOSITE_LIB $FIXES_LIB $XEXT_LIB $DBE_LIB $XTRAP_LIB $RECORD_LIB $GLX_LIBS $RENDER_LIB $RANDR_LIB $DAMAGE_LIB $MIEXT_DAMAGE_LIB $MIEXT_SHADOW_LIB $MIEXT_LAYER_LIB $XI_LIB $XKB_LIB $XKB_STUB_LIB $XPSTUBS_LIB $CWRAP_LIB $OS_LIB"
 	AC_SUBST([XGLX_LIBS])
 fi
 
@@ -1042,9 +1091,12 @@ if test "x$XORG" = xyes -o "x$XGL" = xyes; then
 	XORG_OSINCS='-I$(top_srcdir)/hw/xfree86/os-support -I$(top_srcdir)/hw/xfree86/os-support/bus -I$(top_srcdir)/os'
 	XORG_INCS="$XORG_DDXINCS $XORG_OSINCS"
 	XORG_CFLAGS="$XORGSERVER_CFLAGS -DHAVE_XORG_CONFIG_H"
-	XORG_LIBS="$MI_LIB $FIXES_LIB $XEXTXORG_LIB $GLX_LIBS $RENDER_LIB $RANDR_LIB $DAMAGE_LIB $MIEXT_DAMAGE_LIB $MIEXT_SHADOW_LIB $XI_LIB $XKB_LIB $LBX_LIB $COMPOSITE_LIB $XPSTUBS_LIB $OS_LIB"
+	XORG_LIBS="$COMPOSITE_LIB $MI_LIB $FIXES_LIB $XEXTXORG_LIB $GLX_LIBS $RENDER_LIB $RANDR_LIB $DAMAGE_LIB $MIEXT_DAMAGE_LIB $MIEXT_SHADOW_LIB $XI_LIB $XKB_LIB $XPSTUBS_LIB $OS_LIB"
 
-	AC_CHECK_LIB([dl], [dlopen], XORG_LIBS="$XORG_LIBS -ldl")
+dnl Check to see if dlopen is in default libraries (like Solaris, which
+dnl has it in libc), or if libdl is needed to get it.
+	AC_CHECK_FUNC([dlopen], [], 
+		AC_CHECK_LIB([dl], [dlopen], XORG_LIBS="$XORG_LIBS -ldl"))
 
 	case $host_os in
 	  linux*)
@@ -1072,8 +1124,27 @@ if test "x$XORG" = xyes -o "x$XGL" = xyes; then
 		  *)
 			;;
 		esac
+
+		# check whether struct kbd_repeat has the 'period' field.
+		# on kernels < 2.5.42 it's called 'rate' instead.
+		AC_TRY_COMPILE([
+#include <linux/kd.h>
+#ifdef __sparc__
+#include <asm/param.h>
+#include <asm/kbio.h>
+#endif
+],[
+int main () { 
+	struct kbd_repeat k;
+	k.period = 0;
+	return 0;
+}],
+		[period_field="period"],
+		[period_field="rate"])
+		AC_DEFINE_UNQUOTED(LNX_KBD_PERIOD_NAME, [$period_field],
+		                   [Name of the period field in struct kbd_repeat])
 		;;
-	  freebsd*)
+	  freebsd* | kfreebsd*-gnu)
 	  	XORG_OS="freebsd"
 		XORG_OS_SUBDIR="bsd"
 		XORG_OS_KBD="BSD"
@@ -1156,6 +1227,11 @@ if test "x$XORG" = xyes -o "x$XGL" = xyes; then
 			SOLARIS_ASM_CFLAGS='$(top_srcdir)/hw/xfree86/os-support/solaris/solaris-$(SOLARIS_INOUT_ARCH).il'
 			XORG_CFLAGS="${XORG_CFLAGS} "'$(SOLARIS_ASM_CFLAGS)'
 		fi
+		AC_SUBST([SOLARIS_ASM_CFLAGS])
+		;;
+	  gnu*)
+	  	XORG_OS="gnu"
+		XORG_OS_SUBDIR="hurd"
 		;;
 	  *)
 	  	XORG_OS="unknown"
@@ -1172,7 +1248,7 @@ if test "x$XORG" = xyes -o "x$XGL" = xyes; then
 		;;
 	  powerpc*)
 		case $host_os in
-		  linux*|freebsd*|netbsd*|openbsd*)
+		  linux*|freebsd*|netbsd*|openbsd*|kfreebsd*-gnu)
 			;;
 		  *)
 			xorg_bus_ppcpci="yes"
@@ -1185,7 +1261,7 @@ if test "x$XORG" = xyes -o "x$XGL" = xyes; then
 		;;
 	  x86_64*|amd64*)
 		case $host_os in
-		  freebsd*)
+		  freebsd*|kfreebsd*-gnu)
 			# FreeBSD uses the system pci interface
 			;;
 		  *)
@@ -1235,11 +1311,6 @@ if test "x$XORG" = xyes -o "x$XGL" = xyes; then
 	AC_SUBST([XORG_CFLAGS])
 	AC_SUBST([LD_EXPORT_SYMBOLS_FLAG])
 
-	dnl Module defines are used in the Xorg server and the drivers
-	MODULE_DEFINES="$MODULE_DEFINES -DIN_MODULE -DXFree86Module"
-	LOADER_DEFINES="$LOADER_DEFINES -DXFree86LOADER"
-	SERVER_DEFINES="$SERVER_DEFINES -DXFree86Server"
-
 	dnl these only go in xorg-config.h
 	XF86CONFIGFILE="xorg.conf"
 	CONFIGFILE="$sysconfdir/$XF86CONFIGFILE"
@@ -1247,14 +1318,11 @@ if test "x$XORG" = xyes -o "x$XGL" = xyes; then
 	AC_DEFINE(XORG_SERVER, 1, [Building Xorg server])
 	AC_DEFINE(XORGSERVER, 1, [Building Xorg server])
 	AC_DEFINE(XFree86Server, 1, [Building XFree86 server])
+	AC_DEFINE(XFree86LOADER, 1, [Building loadable XFree86 server])
 	AC_DEFINE_UNQUOTED(XORG_VERSION_CURRENT, [$VENDOR_RELEASE], [Current Xorg version])
 	AC_DEFINE(NEED_XF86_TYPES, 1, [Need XFree86 typedefs])
 	AC_DEFINE(NEED_XF86_PROTOTYPES, 1, [Need XFree86 helper functions])
 	AC_DEFINE(__XSERVERNAME__, "Xorg", [Name of X server])
-	# XXX HACK!  if anyone cares about elfloader in 7.0 you need to
-	# XXX do something smarter here.
-	AC_DEFINE(DLOPEN_HACK, 1, [Prefer dlloader modules to elfloader])
-	AC_DEFINE(DLOPEN_SUPPORT, 1, [Use libdl-based loader])
 	AC_DEFINE(WITH_VGAHW, 1, [Building vgahw module])
 	AC_DEFINE(DRIVERS, {}, [Built-in output drivers (none)])
 	AC_DEFINE(IDRIVERS, {}, [Built-in input drivers (none)])
@@ -1298,7 +1366,7 @@ AC_MSG_RESULT([$XPRINT])
 
 if test "x$XPRINT" = xyes; then
 	PKG_CHECK_MODULES([XPRINT], [printproto x11 xfont $XDMCP_MODULES xau])
-	XPRINT_EXTENSIONS="$XEXT_LIB $DBE_LIB $XTRAP_LIB $RECORD_LIB $RENDER_LIB $COMPOSITE_LIB $RANDR_LIB $XI_LIB $FIXES_LIB $LBX_LIB $DAMAGE_LIB $XI_LIB $GLX_LIBS"
+	XPRINT_EXTENSIONS="$XEXT_LIB $DBE_LIB $XTRAP_LIB $RECORD_LIB $RENDER_LIB $COMPOSITE_LIB $RANDR_LIB $XI_LIB $FIXES_LIB $DAMAGE_LIB $XI_LIB $GLX_LIBS"
 	XPRINT_LIBS="$XPRINT_LIBS $DIX_LIB $XKB_LIB $XKB_STUB_LIB $XPRINT_EXTENSIONS $MI_LIB $MIEXT_DAMAGE_LIB $CWRAP_LIB $OS_LIB"
 	AC_SUBST([XPRINT_CFLAGS])
 	AC_SUBST([XPRINT_LIBS])
@@ -1415,7 +1483,6 @@ AM_CONDITIONAL(XWIN_XV, [test "x$XWIN" = xyes && test "x$XV" = xyes])
 
 
 dnl kdrive DDX
-dnl utterly incomplete yet
 
 XEYPHR_LIBS=
 XEPHYR_INCS=
@@ -1439,6 +1506,13 @@ if test "$KDRIVE" = yes; then
     fi
     
     # tslib...
+    if test "x$TSLIB" = xyes; then
+        PKG_CHECK_MODULES([TSLIB], [tslib-0.0], [HAVE_TSLIB="yes"], [HAVE_TSLIB="no"])
+        if test "x$HAVE_TSLIB" = xno; then
+            AC_MSG_ERROR([tslib must be installed to build the tslib driver. See http://tslib.berlios.de/])
+        fi
+        AC_DEFINE(TSLIB, 1, [Have tslib support])
+    fi
 
     # damage shadow extension glx (NOTYET) fb mi
     KDRIVE_INC='-I$(top_srcdir)/hw/kdrive/src'
@@ -1446,7 +1520,7 @@ if test "$KDRIVE" = yes; then
     KDRIVE_OS_INC='-I$(top_srcdir)/hw/kdrive/linux'
     KDRIVE_INCS="$KDRIVE_PURE_INCS $KDRIVE_OS_INC"
     
-    KDRIVE_CFLAGS="$XSERVER_CFLAGS -DHAVE_KDRIVE_CONFIG_H"
+    KDRIVE_CFLAGS="$XSERVER_CFLAGS -DHAVE_KDRIVE_CONFIG_H $TSLIB_CFLAGS"
 
     # dix os fb mi extension glx (NOTYET) damage shadow xpstubs
     #KDRIVE_PURE_LIBS="$DIX_LIB $OS_LIB $FB_LIB $XEXT_LIB $MIEXT_DAMAGE_LIB \
@@ -1455,38 +1529,42 @@ if test "$KDRIVE" = yes; then
     KDRIVE_LIB='$(top_builddir)/hw/kdrive/src/libkdrive.a'
     KDRIVE_OS_LIB='$(top_builddir)/hw/kdrive/linux/liblinux.a'
     KDRIVE_STUB_LIB='$(top_builddir)/hw/kdrive/src/libkdrivestubs.a'
-    KDRIVE_LIBS="$DIX_LIB $KDRIVE_LIB $KDRIVE_OS_LIB $KDRIVE_PURE_LIBS $KDRIVE_STUB_LIB"
+    KDRIVE_LIBS="$DIX_LIB $KDRIVE_LIB $KDRIVE_OS_LIB $KDRIVE_PURE_LIBS $KDRIVE_STUB_LIB $TSLIB_LIBS"
 
     # check if we can build Xephyr
     PKG_CHECK_MODULES(XEPHYR, x11 xext xfont xau xdmcp, [xephyr="yes"], [xephyr="no"])
     
     # check for SDL SDK
     AC_CHECK_HEADERS([SDL/SDL.h])
+    if test "x$XSDL" = xauto; then
+        XSDL="$ac_cv_header_SDL_SDL_h"
+    fi
 fi
 AC_SUBST(KDRIVE_INCS)
 AC_SUBST(KDRIVE_PURE_INCS)
 AC_SUBST(KDRIVE_CFLAGS)
 AC_SUBST(KDRIVE_PURE_LIBS)
 AC_SUBST(KDRIVE_LIBS)
-AM_CONDITIONAL(TSLIB, false)
+AM_CONDITIONAL(TSLIB, [test "x$HAVE_TSLIB" = xyes])
 AM_CONDITIONAL(H3600_TS, false)
 AM_CONDITIONAL(KDRIVEVESA, [test x"$ac_cv_header_sys_vm86_h" = xyes])
 AM_CONDITIONAL(KDRIVEFBDEV, [test x"$ac_cv_header_linux_fb_h" = xyes])
-#AM_CONDITIONAL(KDRIVEVESA, false)
-#AM_CONDITIONAL(KDRIVEFBDEV, false)
+
+# Xephyr needs nanosleep() which is in librt on Solaris
+AC_CHECK_FUNC([nanosleep], [],
+	AC_CHECK_LIB([rt], [nanosleep], XEPHYR_LIBS="$XEPHYR_LIBS -lrt"))
 
 AM_CONDITIONAL(XEPHYR, [test x"$xephyr" = xyes])
 XEPHYR_LIBS="$XEPHYR_LIBS $XSERVER_LIBS"
 AC_SUBST([XEPHYR_LIBS])
 AC_SUBST([XEPHYR_INCS])
 
-AM_CONDITIONAL(XSDLSERVER, [test x"$ac_cv_header_SDL_SDL_h" = xyes])
-if test x"$ac_cv_header_SDL_SDL_h" = xyes -o x"$XSDL" = xyes; then
-    # PKG_CHECK_MODULES(XSDL_EXTRA, Xfont xau $XDMCP_MODULES)
+if test x"$XSDL" = xyes; then
     AC_DEFINE(XSDLSERVER,,[Build Xsdl server])
     XSDL_LIBS="`sdl-config --libs` $XSERVER_LIBS"
     XSDL_INCS="`sdl-config --cflags` $XSERVER_CFLAGS"
 fi
+AM_CONDITIONAL(XSDLSERVER, [test x"$XSDL" = xyes])
 AC_SUBST([XSDL_LIBS])
 AC_SUBST([XSDL_INCS])
 
@@ -1525,7 +1603,7 @@ case $host_os in
 	cygwin*) ;;
 	solaris*) ;;
         darwin*) ;;
-	*bsd*) ;;
+	freebsd*|netbsd*|openbsd*) ;;
 	*) 
 		AC_DEFINE(_POSIX_SOURCE, 1, [POSIX-compliant source])
 		AC_DEFINE(_XOPEN_SOURCE, 500, [X/Open-compliant source])
@@ -1546,7 +1624,7 @@ AC_ARG_ENABLE(xorgcfg, AS_HELP_STRING([--enable-xorgcfg],
 	[XORGCFG=$enableval],[XORGCFG=yes])
 if test x$XORGCFG = xyes ; then
 	PKG_CHECK_MODULES([XORGCFG_DEP], 
-	    [xkbui xkbfile xxf86misc xxf86vm xaw7 xmu xt xpm xext x11])
+	    [xkbui >= 1.0.2 xkbfile xxf86misc xxf86vm xaw7 xmu xt xpm xext x11])
 	AC_CHECK_LIB([curses],[waddstr],
 	    [XORGCFG_DEP_LIBS="$XORGCFG_DEP_LIBS -lcurses"; CURSES=yes],
 	    AC_CHECK_LIB([ncurses],[waddstr],
@@ -1584,10 +1662,6 @@ AM_CONDITIONAL(BUILD_KBD_MODE, [test x$BUILD_KBD_MODE = xyes])
 AM_CONDITIONAL(BSD_KBD_MODE, [test x$KBD_MODE_TYPE = xbsd])
 AM_CONDITIONAL(SUN_KBD_MODE, [test x$KBD_MODE_TYPE = xsun])
 
-AC_SUBST([MODULE_DEFINES])
-AC_SUBST([LOADER_DEFINES])
-AC_SUBST([SERVER_DEFINES])
-
 CFLAGS="$XSERVER_CFLAGS $CFLAGS"
 AC_SUBST([CFLAGS])
 
@@ -1609,8 +1683,6 @@ AC_OUTPUT([
 Makefile
 GL/Makefile
 GL/glx/Makefile
-GL/include/Makefile
-GL/include/GL/Makefile
 GL/mesa/Makefile
 GL/mesa/array_cache/Makefile
 GL/mesa/glapi/Makefile
@@ -1633,10 +1705,8 @@ doc/Makefile
 fb/Makefile
 record/Makefile
 XTrap/Makefile
-lbx/Makefile
 mfb/Makefile
 cfb/Makefile
-cfb16/Makefile
 cfb32/Makefile
 mi/Makefile
 miext/Makefile
@@ -1667,7 +1737,6 @@ hw/xfree86/dri/Makefile
 hw/xfree86/dummylib/Makefile
 hw/xfree86/exa/Makefile
 hw/xfree86/fbdevhw/Makefile
-hw/xfree86/getconfig/Makefile
 hw/xfree86/i2c/Makefile
 hw/xfree86/int10/Makefile
 hw/xfree86/loader/Makefile
@@ -1675,6 +1744,7 @@ hw/xfree86/os-support/Makefile
 hw/xfree86/os-support/bsd/Makefile
 hw/xfree86/os-support/bus/Makefile
 hw/xfree86/os-support/drm/Makefile
+hw/xfree86/os-support/hurd/Makefile
 hw/xfree86/os-support/misc/Makefile
 hw/xfree86/os-support/linux/Makefile
 hw/xfree86/os-support/lynxos/Makefile
@@ -1742,41 +1812,41 @@ hw/kdrive/smi/Makefile
 hw/kdrive/src/Makefile
 hw/kdrive/vesa/Makefile
 hw/kdrive/via/Makefile
-Xprint/Makefile
-Xprint/doc/Makefile
-Xprint/pcl/Makefile
-Xprint/pcl-mono/Makefile
-Xprint/raster/Makefile
-Xprint/ps/Makefile
-Xprint/etc/Makefile
-Xprint/etc/Xsession.d/Makefile
-Xprint/etc/init.d/Makefile
-Xprint/etc/profile.d/Makefile
-XpConfig/Makefile
-XpConfig/C/print/attributes/Makefile
-XpConfig/C/print/ddx-config/Makefile
-XpConfig/C/print/ddx-config/raster/Makefile
-XpConfig/C/print/models/CANONBJ10E-GS/Makefile
-XpConfig/C/print/models/PSdefault/fonts/Makefile
-XpConfig/C/print/models/PSdefault/Makefile
-XpConfig/C/print/models/PSspooldir/Makefile
-XpConfig/C/print/models/SPSPARC2/Makefile
-XpConfig/C/print/models/SPSPARC2/fonts/Makefile
-XpConfig/C/print/models/GSdefault/Makefile
-XpConfig/C/print/models/HPLJ4050-PS/Makefile
-XpConfig/C/print/models/HPLJ4050-PS/fonts/Makefile
-XpConfig/C/print/models/Makefile
-XpConfig/C/print/models/PS2PDFspooldir-GS/Makefile
-XpConfig/C/print/models/CANONC3200-PS/Makefile
-XpConfig/C/print/models/CANONC3200-PS/fonts/Makefile
-XpConfig/C/print/models/HPLJ4family/fonts/Makefile
-XpConfig/C/print/models/HPLJ4family/Makefile
-XpConfig/C/print/models/HPDJ1600C/Makefile
-XpConfig/C/print/models/HPDJ1600C/fonts/Makefile
-XpConfig/C/print/Makefile
-XpConfig/C/Makefile
-XpConfig/en_US/print/attributes/Makefile
-XpConfig/en_US/print/Makefile
-XpConfig/en_US/Makefile
+hw/xprint/Makefile
+hw/xprint/doc/Makefile
+hw/xprint/pcl/Makefile
+hw/xprint/pcl-mono/Makefile
+hw/xprint/raster/Makefile
+hw/xprint/ps/Makefile
+hw/xprint/etc/Makefile
+hw/xprint/etc/Xsession.d/Makefile
+hw/xprint/etc/init.d/Makefile
+hw/xprint/etc/profile.d/Makefile
+hw/xprint/config/Makefile
+hw/xprint/config/C/print/attributes/Makefile
+hw/xprint/config/C/print/ddx-config/Makefile
+hw/xprint/config/C/print/ddx-config/raster/Makefile
+hw/xprint/config/C/print/models/CANONBJ10E-GS/Makefile
+hw/xprint/config/C/print/models/PSdefault/fonts/Makefile
+hw/xprint/config/C/print/models/PSdefault/Makefile
+hw/xprint/config/C/print/models/PSspooldir/Makefile
+hw/xprint/config/C/print/models/SPSPARC2/Makefile
+hw/xprint/config/C/print/models/SPSPARC2/fonts/Makefile
+hw/xprint/config/C/print/models/GSdefault/Makefile
+hw/xprint/config/C/print/models/HPLJ4050-PS/Makefile
+hw/xprint/config/C/print/models/HPLJ4050-PS/fonts/Makefile
+hw/xprint/config/C/print/models/Makefile
+hw/xprint/config/C/print/models/PS2PDFspooldir-GS/Makefile
+hw/xprint/config/C/print/models/CANONC3200-PS/Makefile
+hw/xprint/config/C/print/models/CANONC3200-PS/fonts/Makefile
+hw/xprint/config/C/print/models/HPLJ4family/fonts/Makefile
+hw/xprint/config/C/print/models/HPLJ4family/Makefile
+hw/xprint/config/C/print/models/HPDJ1600C/Makefile
+hw/xprint/config/C/print/models/HPDJ1600C/fonts/Makefile
+hw/xprint/config/C/print/Makefile
+hw/xprint/config/C/Makefile
+hw/xprint/config/en_US/print/attributes/Makefile
+hw/xprint/config/en_US/print/Makefile
+hw/xprint/config/en_US/Makefile
 xorg-server.pc
 ])

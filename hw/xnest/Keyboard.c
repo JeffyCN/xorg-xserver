@@ -1,5 +1,3 @@
-/* $Xorg: Keyboard.c,v 1.3 2000/08/17 19:53:28 cpqbld Exp $ */
-/* $XdotOrg: xserver/xorg/hw/xnest/Keyboard.c,v 1.8 2005/07/14 03:36:44 kem Exp $ */
 /*
 
 Copyright 1993 by Davor Matic
@@ -13,7 +11,6 @@ the suitability of this software for any purpose.  It is provided "as
 is" without express or implied warranty.
 
 */
-/* $XFree86: xc/programs/Xserver/hw/xnest/Keyboard.c,v 1.9 2003/09/13 21:33:09 dawes Exp $ */
 
 #define NEED_EVENTS
 #ifdef HAVE_XNEST_CONFIG_H
@@ -202,9 +199,6 @@ XkbError:
 			       xnestBell, xnestChangeKeyboardControl);
 #ifdef XKB
       } else {
-	FILE *file;
-	XkbConfigRtrnRec config;
-
 	XkbComponentNamesRec names;
 	char *rules, *model, *layout, *variants, *options;
 
@@ -228,12 +222,6 @@ XkbError:
 	layout = XKB_DFLT_KB_LAYOUT;
 	variants = XKB_DFLT_KB_VARIANT;
 	options = XKB_DFLT_KB_OPTIONS;
-	if (XkbInitialMap) {
-	  if ((names.keymap = strchr(XkbInitialMap, '/')) != NULL)
-	    ++names.keymap;
-	  else
-	    names.keymap = XkbInitialMap;
-	}
 
 	XkbSetRulesDflts(rules, model, layout, variants, options);
 	XkbInitKeyboardDeviceStruct(pDev, &names, &keySyms, modmap,

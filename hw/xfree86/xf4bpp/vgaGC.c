@@ -1,4 +1,3 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/xf4bpp/vgaGC.c,v 1.3tsi Exp $ */
 /*
 
 Copyright (c) 1987  X Consortium
@@ -159,10 +158,6 @@ register unsigned long int idx ; /* used for stepping through bitfields */
 	    changes &= ~( GCLineStyle | GCLineWidth ) ;
 	    break ;
 	  case GCJoinStyle:
-#ifdef NEED_LINEHELPER
-	    pGC->ops->LineHelper =
-		( pGC->joinStyle == JoinMiter ) ? miMiter : miNotMiter ;
-#endif
 	    /*
 	     * If these are just square boxes with no funny business
 	     * going on we can call the fast routine that draws

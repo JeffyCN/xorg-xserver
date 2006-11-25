@@ -1,4 +1,3 @@
-/* $Xorg: input.h,v 1.4 2001/02/09 02:05:15 xorgcvs Exp $ */
 /************************************************************
 
 Copyright 1987, 1998  The Open Group
@@ -45,7 +44,6 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 SOFTWARE.
 
 ********************************************************/
-/* $XFree86: xc/programs/Xserver/include/input.h,v 3.8 2003/04/27 21:31:04 herrb Exp $ */
 
 #ifndef INPUT_H
 #define INPUT_H
@@ -163,15 +161,7 @@ extern void ResetDevicePrivateIndex(void);
 extern KeybdCtrl	defaultKeyboardControl;
 extern PtrCtrl		defaultPointerControl;
 
-#undef  AddInputDevice
-extern DevicePtr AddInputDevice(
-    DeviceProc /*deviceProc*/,
-    Bool /*autoStart*/);
-
-#define AddInputDevice(deviceProc, autoStart) \
-       _AddInputDevice(deviceProc, autoStart)
-
-extern DeviceIntPtr _AddInputDevice(
+extern DeviceIntPtr AddInputDevice(
     DeviceProc /*deviceProc*/,
     Bool /*autoStart*/);
 
@@ -190,24 +180,10 @@ extern void RemoveDevice(
 
 extern int NumMotionEvents(void);
 
-#undef  RegisterPointerDevice
 extern void RegisterPointerDevice(
-    DevicePtr /*device*/);
-
-#define RegisterPointerDevice(device) \
-       _RegisterPointerDevice(device)
-
-extern void _RegisterPointerDevice(
     DeviceIntPtr /*device*/);
 
-#undef  RegisterKeyboardDevice
 extern void RegisterKeyboardDevice(
-    DevicePtr /*device*/);
-
-#define RegisterKeyboardDevice(device) \
-       _RegisterKeyboardDevice(device)
-
-extern void _RegisterKeyboardDevice(
     DeviceIntPtr /*device*/);
 
 extern DevicePtr LookupKeyboardDevice(void);

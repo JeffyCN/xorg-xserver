@@ -1,4 +1,4 @@
- /*
+/*
  * Copyright © 2001 Keith Packard
  *
  * Partly based on code that is Copyright © The XFree86 Project Inc.
@@ -74,7 +74,7 @@ static void exaCompositeFallbackPictDesc(PicturePtr pict, char *string, int n)
 	     pict->pDrawable->height, pict->repeat ?
 	     " R" : "");
 
-    snprintf(string, n, "0x%lx:%c fmt %s (%s)", (long)pict->pDrawable, loc, format, size);
+    snprintf(string, n, "%p:%c fmt %s (%s)", pict->pDrawable, loc, format, size);
 }
 
 static void
@@ -282,8 +282,12 @@ exaTryDriverSolidFill(PicturePtr	pSrc,
 	return -1;
     }
 
-    exaGetPixelFromRGBA(&pixel, red, green, blue, alpha,
-			pDst->format);
+    if (!exaGetPixelFromRGBA(&pixel, red, green, blue, alpha,
+			pDst->format))
+    {
+	REGION_UNINIT(pDst->pDrawable->pScreen, &region);
+	return -1;
+    }
 
     if (!(*pExaScr->info->PrepareSolid) (pDstPix, GXcopy, 0xffffffff, pixel))
     {
@@ -448,6 +452,95 @@ exaTryDriverComposite(CARD8		op,
     return 1;
 }
 
+/**
+ * exaTryMagicTwoPassCompositeHelper implements PictOpOver using two passes of
+ * simpler operations PictOpOutReverse and PictOpAdd. Mainly used for component
+ * alpha and limited 1-tmu cards.
+ *
+ * From http://anholt.livejournal.com/32058.html:
+ *
+ * The trouble is that component-alpha rendering requires two different sources
+ * for blending: one for the source value to the blender, which is the
+ * per-channel multiplication of source and mask, and one for the source alpha
+ * for multiplying with the destination channels, which is the multiplication
+ * of the source channels by the mask alpha. So the equation for Over is:
+ *
+ * dst.A = src.A * mask.A + (1 - (src.A * mask.A)) * dst.A
+ * dst.R = src.R * mask.R + (1 - (src.A * mask.R)) * dst.R
+ * dst.G = src.G * mask.G + (1 - (src.A * mask.G)) * dst.G
+ * dst.B = src.B * mask.B + (1 - (src.A * mask.B)) * dst.B
+ *
+ * But we can do some simpler operations, right? How about PictOpOutReverse,
+ * which has a source factor of 0 and dest factor of (1 - source alpha). We
+ * can get the source alpha value (srca.X = src.A * mask.X) out of the texture
+ * blenders pretty easily. So we can do a component-alpha OutReverse, which
+ * gets us:
+ *
+ * dst.A = 0 + (1 - (src.A * mask.A)) * dst.A
+ * dst.R = 0 + (1 - (src.A * mask.R)) * dst.R
+ * dst.G = 0 + (1 - (src.A * mask.G)) * dst.G
+ * dst.B = 0 + (1 - (src.A * mask.B)) * dst.B
+ *
+ * OK. And if an op doesn't use the source alpha value for the destination
+ * factor, then we can do the channel multiplication in the texture blenders
+ * to get the source value, and ignore the source alpha that we wouldn't use.
+ * We've supported this in the Radeon driver for a long time. An example would
+ * be PictOpAdd, which does:
+ *
+ * dst.A = src.A * mask.A + dst.A
+ * dst.R = src.R * mask.R + dst.R
+ * dst.G = src.G * mask.G + dst.G
+ * dst.B = src.B * mask.B + dst.B
+ *
+ * Hey, this looks good! If we do a PictOpOutReverse and then a PictOpAdd right
+ * after it, we get:
+ *
+ * dst.A = src.A * mask.A + ((1 - (src.A * mask.A)) * dst.A)
+ * dst.R = src.R * mask.R + ((1 - (src.A * mask.R)) * dst.R)
+ * dst.G = src.G * mask.G + ((1 - (src.A * mask.G)) * dst.G)
+ * dst.B = src.B * mask.B + ((1 - (src.A * mask.B)) * dst.B)
+ */
+
+static int
+exaTryMagicTwoPassCompositeHelper(CARD8 op,
+				  PicturePtr pSrc,
+				  PicturePtr pMask,
+				  PicturePtr pDst,
+				  INT16 xSrc,
+				  INT16 ySrc,
+				  INT16 xMask,
+				  INT16 yMask,
+				  INT16 xDst,
+				  INT16 yDst,
+				  CARD16 width,
+				  CARD16 height)
+{
+    ExaScreenPriv (pDst->pDrawable->pScreen);
+
+    assert(op == PictOpOver);
+
+    if (pExaScr->info->CheckComposite &&
+	(!(*pExaScr->info->CheckComposite)(PictOpOutReverse, pSrc, pMask,
+					   pDst) ||
+	 !(*pExaScr->info->CheckComposite)(PictOpAdd, pSrc, pMask, pDst)))
+    {
+	return -1;
+    }
+
+    /* Now, we think we should be able to accelerate this operation. First,
+     * composite the destination to be the destination times the source alpha
+     * factors.
+     */
+    exaComposite(PictOpOutReverse, pSrc, pMask, pDst, xSrc, ySrc, xMask, yMask,
+		 xDst, yDst, width, height);
+
+    /* Then, add in the source value times the destination alpha factors (1.0).
+     */
+    exaComposite(PictOpAdd, pSrc, pMask, pDst, xSrc, ySrc, xMask, yMask,
+		 xDst, yDst, width, height);
+
+    return 1;
+}
 
 void
 exaComposite(CARD8	op,
@@ -496,7 +589,7 @@ exaComposite(CARD8	op,
 		ret = exaTryDriverSolidFill(pSrc, pDst, xSrc, ySrc, xDst, yDst,
 					    width, height);
 		if (ret == 1)
-		    goto bail;
+		    goto done;
 	    }
 	    else if (!pSrc->repeat && !pSrc->transform &&
 		     pSrc->format == pDst->format)
@@ -511,7 +604,7 @@ exaComposite(CARD8	op,
 		if (!miComputeCompositeRegion (&region, pSrc, pMask, pDst,
 					       xSrc, ySrc, xMask, yMask, xDst,
 					       yDst, width, height))
-		    goto bail;
+		    goto done;
 
 
 		exaCopyNtoN (pSrc->pDrawable, pDst->pDrawable, NULL,
@@ -519,7 +612,7 @@ exaComposite(CARD8	op,
 			     xSrc - xDst, ySrc - yDst,
 			     FALSE, FALSE, 0, NULL);
 		REGION_UNINIT(pDst->pDrawable->pScreen, &region);
-		goto bail;
+		goto done;
 	    }
 	}
     }
@@ -530,16 +623,38 @@ exaComposite(CARD8	op,
 	(yMask + height) <= pMask->pDrawable->height)
 	    pMask->repeat = 0;
 
-
     if (pExaScr->info->PrepareComposite &&
 	(!pSrc->repeat || pSrc->repeat == RepeatNormal) &&
 	(!pMask || !pMask->repeat || pMask->repeat == RepeatNormal) &&
 	!pSrc->alphaMap && (!pMask || !pMask->alphaMap) && !pDst->alphaMap)
     {
+	Bool isSrcSolid;
+
 	ret = exaTryDriverComposite(op, pSrc, pMask, pDst, xSrc, ySrc, xMask,
 				    yMask, xDst, yDst, width, height);
 	if (ret == 1)
-	    goto bail;
+	    goto done;
+
+	/* For generic masks and solid src pictures, mach64 can do Over in two
+	 * passes, similar to the component-alpha case.
+	 */
+	isSrcSolid = pSrc->pDrawable->width == 1 &&
+		     pSrc->pDrawable->height == 1 &&
+		     pSrc->repeat;
+
+	/* If we couldn't do the Composite in a single pass, and it was a
+	 * component-alpha Over, see if we can do it in two passes with
+	 * an OutReverse and then an Add.
+	 */
+	if (ret == -1 && op == PictOpOver && pMask &&
+	    (pMask->componentAlpha || isSrcSolid)) {
+	    ret = exaTryMagicTwoPassCompositeHelper(op, pSrc, pMask, pDst,
+						    xSrc, ySrc,
+						    xMask, yMask, xDst, yDst,
+						    width, height);
+	    if (ret == 1)
+		goto done;
+	}
     }
 
     if (ret != 0) {
@@ -570,7 +685,7 @@ exaComposite(CARD8	op,
     ExaCheckComposite (op, pSrc, pMask, pDst, xSrc, ySrc,
 		      xMask, yMask, xDst, yDst, width, height);
 
- bail:
+done:
     pSrc->repeat = saveSrcRepeat;
     if (pMask)
 	pMask->repeat = saveMaskRepeat;
@@ -622,6 +737,79 @@ exaAddTriangles (PicturePtr pPicture, INT16 x_off, INT16 y_off, int ntri,
     exaFinishAccess(pPicture->pDrawable, EXA_PREPARE_DEST);
 }
 
+/**
+ * Returns TRUE if the glyphs in the lists intersect.  Only checks based on
+ * bounding box, which appears to be good enough to catch most cases at least.
+ */
+static Bool
+exaGlyphsIntersect(int nlist, GlyphListPtr list, GlyphPtr *glyphs)
+{
+    int x1, x2, y1, y2;
+    int n;
+    GlyphPtr glyph;
+    int x, y;
+    BoxRec extents;
+    Bool first = TRUE;
+    
+    x = 0;
+    y = 0;
+    while (nlist--) {
+	x += list->xOff;
+	y += list->yOff;
+	n = list->len;
+	list++;
+	while (n--) {
+	    glyph = *glyphs++;
+
+	    if (glyph->info.width == 0 || glyph->info.height == 0) {
+		x += glyph->info.xOff;
+		y += glyph->info.yOff;
+		continue;
+	    }
+
+	    x1 = x - glyph->info.x;
+	    if (x1 < MINSHORT)
+		x1 = MINSHORT;
+	    y1 = y - glyph->info.y;
+	    if (y1 < MINSHORT)
+		y1 = MINSHORT;
+	    x2 = x1 + glyph->info.width;
+	    if (x2 > MAXSHORT)
+		x2 = MAXSHORT;
+	    y2 = y1 + glyph->info.height;
+	    if (y2 > MAXSHORT)
+		y2 = MAXSHORT;
+
+	    if (first) {
+		extents.x1 = x1;
+		extents.y1 = y1;
+		extents.x2 = x2;
+		extents.y2 = y2;
+		first = FALSE;
+	    } else {
+		if (x1 < extents.x2 && x2 > extents.x1 &&
+		    y1 < extents.y2 && y2 > extents.y1)
+		{
+		    return TRUE;
+		}
+
+		if (x1 < extents.x1)
+		    extents.x1 = x1;
+		if (x2 > extents.x2)
+		    extents.x2 = x2;
+		if (y1 < extents.y1)
+		    extents.y1 = y1;
+		if (y2 > extents.y2)
+		    extents.y2 = y2;
+	    }
+	    x += glyph->info.xOff;
+	    y += glyph->info.yOff;
+	}
+    }
+
+    return FALSE;
+}
+
 /* exaGlyphs is a slight variation on miGlyphs, to support acceleration.  The
  * issue is that miGlyphs' use of ModifyPixmapHeader makes it impossible to
  * migrate these pixmaps.  So, instead we create a pixmap at the beginning of
@@ -639,7 +827,7 @@ exaGlyphs (CARD8	op,
 	  GlyphPtr	*glyphs)
 {
     ExaScreenPriv (pDst->pDrawable->pScreen);
-    PixmapPtr	pPixmap = NULL, pScratchPixmap = NULL;
+    PixmapPtr	pPixmap = NULL;
     PicturePtr	pPicture;
     PixmapPtr   pMaskPixmap = NULL;
     PicturePtr  pMask;
@@ -648,18 +836,37 @@ exaGlyphs (CARD8	op,
     int		x, y;
     int		xDst = list->xOff, yDst = list->yOff;
     int		n;
-    GlyphPtr	glyph;
     int		error;
     BoxRec	extents;
     CARD32	component_alpha;
 
-    /* If the driver doesn't support accelerated composite, there's no point in
-     * going to this extra work.  Assume that no driver will be able to do
-     * component-alpha, which is likely accurate (at least until we make a CA
-     * helper).
+    /* If we have a mask format but it's the same as all the glyphs and
+     * the glyphs don't intersect, we can avoid accumulating the glyphs in the
+     * temporary picture.
      */
-    if (!pExaScr->info->PrepareComposite ||
-	(maskFormat && NeedsComponent(maskFormat->format))) {
+    if (maskFormat != NULL) {
+	Bool sameFormat = TRUE;
+	int i;
+
+	for (i = 0; i < nlist; i++) {
+	    if (maskFormat->format != list[i].format->format) {
+		sameFormat = FALSE;
+		break;
+	    }
+	}
+	if (sameFormat) {
+	    if (!exaGlyphsIntersect(nlist, list, glyphs)) {
+		maskFormat = NULL;
+	    }
+	}
+    }
+
+    /* If the driver doesn't support accelerated composite, there's no point in
+     * going to this extra work.  Assume that any driver that supports Composite
+     * will be able to support component alpha using the two-pass helper.
+     */
+    if (!pExaScr->info->PrepareComposite)
+    {
 	miGlyphs(op, pSrc, pDst, maskFormat, xSrc, ySrc, nlist, list, glyphs);
 	return;
     }
@@ -688,6 +895,7 @@ exaGlyphs (CARD8	op,
 	    (*pScreen->DestroyPixmap) (pMaskPixmap);
 	    return;
 	}
+	ValidatePicture(pMask);
 	pGC = GetScratchGC (pMaskPixmap->drawable.depth, pScreen);
 	ValidateGC (&pMaskPixmap->drawable, pGC);
 	rect.x = 0;
@@ -708,9 +916,10 @@ exaGlyphs (CARD8	op,
 
     while (nlist--)
     {
-	GCPtr pGC;
+	GCPtr pGC = NULL;
 	int maxwidth = 0, maxheight = 0, i;
 	ExaMigrationRec pixmaps[1];
+	PixmapPtr pScratchPixmap = NULL;
 
 	x += list->xOff;
 	y += list->yOff;
@@ -724,6 +933,8 @@ exaGlyphs (CARD8	op,
 	if (maxwidth == 0 || maxheight == 0) {
 	    while (n--)
 	    {
+		GlyphPtr glyph;
+
 		glyph = *glyphs++;
 		x += glyph->info.xOff;
 		y += glyph->info.yOff;
@@ -732,22 +943,11 @@ exaGlyphs (CARD8	op,
 	    continue;
 	}
 
-	/* Get a scratch pixmap to wrap the original glyph data */
-	pScratchPixmap = GetScratchPixmapHeader (pScreen, glyphs[0]->info.width,
-						 glyphs[0]->info.height, 
-						 list->format->depth,
-						 list->format->depth, 
-						 0, (pointer) (glyphs[0] + 1));
-	if (!pScratchPixmap)
-	    return;
-
 	/* Create the (real) temporary pixmap to store the current glyph in */
 	pPixmap = (*pScreen->CreatePixmap) (pScreen, maxwidth, maxheight,
 					    list->format->depth);
-	if (!pPixmap) {
-	    FreeScratchPixmapHeader (pScratchPixmap);
+	if (!pPixmap)
 	    return;
-	}
 
 	/* Create a temporary picture to wrap the temporary pixmap, so it can be
 	 * used as a source for Composite.
@@ -758,15 +958,9 @@ exaGlyphs (CARD8	op,
 				  serverClient, &error);
 	if (!pPicture) {
 	    (*pScreen->DestroyPixmap) (pPixmap);
-	    FreeScratchPixmapHeader (pScratchPixmap);
 	    return;
 	}
-
-	/* Get a scratch GC with which to copy the glyph data from scratch to
-	 * temporary
-	 */
-	pGC = GetScratchGC (list->format->depth, pScreen);
-	ValidateGC (&pPixmap->drawable, pGC);
+	ValidatePicture(pPicture);
 
 	/* Give the temporary pixmap an initial kick towards the screen, so
 	 * it'll stick there.
@@ -778,13 +972,13 @@ exaGlyphs (CARD8	op,
 
 	while (n--)
 	{
-	    glyph = *glyphs++;
+	    GlyphPtr glyph = *glyphs++;
+	    pointer glyphdata = (pointer) (glyph + 1);
 	    
 	    (*pScreen->ModifyPixmapHeader) (pScratchPixmap, 
 					    glyph->info.width,
 					    glyph->info.height,
-					    0, 0, -1, (pointer) (glyph + 1));
-	    pScratchPixmap->drawable.serialNumber = NEXT_SERIAL_NUMBER;
+					    0, 0, -1, glyphdata);
 
 	    /* Copy the glyph data into the proper pixmap instead of a fake.
 	     * First we try to use UploadToScreen, if we can, then we fall back
@@ -795,9 +989,38 @@ exaGlyphs (CARD8	op,
 		!(*pExaScr->info->UploadToScreen) (pPixmap, 0, 0,
 					glyph->info.width,
 					glyph->info.height,
-					pScratchPixmap->devPrivate.ptr,
-					pScratchPixmap->devKind))
+					glyphdata,
+					PixmapBytePad(glyph->info.width,
+						      list->format->depth)))
 	    {
+		/* Set up the scratch pixmap/GC for doing a CopyArea. */
+		if (pScratchPixmap == NULL) {
+		    /* Get a scratch pixmap to wrap the original glyph data */
+		    pScratchPixmap = GetScratchPixmapHeader (pScreen,
+							glyph->info.width,
+							glyph->info.height, 
+							list->format->depth,
+							list->format->depth, 
+							-1, glyphdata);
+		    if (!pScratchPixmap) {
+			FreePicture(pPicture, 0);
+			(*pScreen->DestroyPixmap) (pPixmap);
+			return;
+		    }
+	
+		    /* Get a scratch GC with which to copy the glyph data from
+		     * scratch to temporary
+		     */
+		    pGC = GetScratchGC (list->format->depth, pScreen);
+		    ValidateGC (&pPixmap->drawable, pGC);
+		} else {
+		    (*pScreen->ModifyPixmapHeader) (pScratchPixmap, 
+						    glyph->info.width,
+						    glyph->info.height,
+						    0, 0, -1, glyphdata);
+		    pScratchPixmap->drawable.serialNumber = NEXT_SERIAL_NUMBER;
+		}
+
 		exaCopyArea (&pScratchPixmap->drawable, &pPixmap->drawable, pGC,
 			     0, 0, glyph->info.width, glyph->info.height, 0, 0);
 	    } else {
@@ -806,53 +1029,35 @@ exaGlyphs (CARD8	op,
 
 	    if (maskFormat)
 	    {
-		CompositePicture (PictOpAdd,
-				  pPicture,
-				  NULL,
-				  pMask,
-				  0, 0,
-				  0, 0,
-				  x - glyph->info.x,
-				  y - glyph->info.y,
-				  glyph->info.width,
-				  glyph->info.height);
+		exaComposite (PictOpAdd, pPicture, NULL, pMask, 0, 0, 0, 0,
+			      x - glyph->info.x, y - glyph->info.y,
+			      glyph->info.width, glyph->info.height);
 	    }
 	    else
 	    {
-		CompositePicture (op,
-				  pSrc,
-				  pPicture,
-				  pDst,
-				  xSrc + (x - glyph->info.x) - xDst,
-				  ySrc + (y - glyph->info.y) - yDst,
-				  0, 0,
-				  x - glyph->info.x,
-				  y - glyph->info.y,
-				  glyph->info.width,
-				  glyph->info.height);
+		exaComposite (op, pSrc, pPicture, pDst,
+			      xSrc + (x - glyph->info.x) - xDst,
+			      ySrc + (y - glyph->info.y) - yDst,
+			      0, 0, x - glyph->info.x, y - glyph->info.y,
+			      glyph->info.width, glyph->info.height);
 	    }
 	    x += glyph->info.xOff;
 	    y += glyph->info.yOff;
 	}
 	list++;
-	FreeScratchGC (pGC);
+	if (pGC != NULL)
+	    FreeScratchGC (pGC);
 	FreePicture ((pointer) pPicture, 0);
 	(*pScreen->DestroyPixmap) (pPixmap);
-	FreeScratchPixmapHeader (pScratchPixmap);
+	if (pScratchPixmap != NULL)
+	    FreeScratchPixmapHeader (pScratchPixmap);
     }
     if (maskFormat)
     {
 	x = extents.x1;
 	y = extents.y1;
-	CompositePicture (op,
-			  pSrc,
-			  pMask,
-			  pDst,
-			  xSrc + x - xDst,
-			  ySrc + y - yDst,
-			  0, 0,
-			  x, y,
-			  width, height);
+	exaComposite (op, pSrc, pMask, pDst, xSrc + x - xDst, ySrc + y - yDst,
+		      0, 0, x, y, width, height);
 	FreePicture ((pointer) pMask, (XID) 0);
 	(*pScreen->DestroyPixmap) (pMaskPixmap);
     }

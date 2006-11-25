@@ -1,4 +1,3 @@
-/* $Xorg: xkbUtils.c,v 1.3 2000/08/17 19:53:48 cpqbld Exp $ */
 /************************************************************
 Copyright (c) 1993 by Silicon Graphics Computer Systems, Inc.
 
@@ -24,7 +23,6 @@ OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION  WITH
 THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 ********************************************************/
-/* $XFree86: xc/programs/Xserver/xkb/xkbUtils.c,v 3.16 2003/11/03 05:12:02 tsi Exp $ */
 
 #ifdef HAVE_DIX_CONFIG_H
 #include <dix-config.h>
@@ -757,11 +755,11 @@ unsigned char	grp;
 
     grp= state->locked_group;
     if (grp>=ctrls->num_groups)
-	state->locked_group= XkbAdjustGroup(grp,ctrls);
+	state->locked_group= XkbAdjustGroup(XkbCharToInt(grp),ctrls);
 
     grp= state->locked_group+state->base_group+state->latched_group;
     if (grp>=ctrls->num_groups)
-	 state->group= XkbAdjustGroup(grp,ctrls);
+	 state->group= XkbAdjustGroup(XkbCharToInt(grp),ctrls);
     else state->group= grp;
     XkbComputeCompatState(xkbi);
     return;
@@ -867,26 +865,6 @@ XkbDescPtr	xkb=	xkbi->desc;
     }
     if ((xkb->geom!=NULL)&&(xkb->geom->name==name))
 	return xkb->geom;
-    else if ((name==xkb->names->geometry)&&(xkb->geom==NULL)) {
-	FILE *file= XkbDDXOpenConfigFile(XkbInitialMap,NULL,0);
-	if (file!=NULL) {
-	    XkbFileInfo		xkbFInfo;
-	    xkmFileInfo		finfo;
-	    xkmSectionInfo	toc[MAX_TOC],*entry;
-	    bzero(&xkbFInfo,sizeof(xkbFInfo));
-	    xkbFInfo.xkb= xkb;
-	    if (XkmReadTOC(file,&finfo,MAX_TOC,toc)) {
-		entry= XkmFindTOCEntry(&finfo,toc,XkmGeometryIndex);
-		if (entry!=NULL)
-		    XkmReadFileSection(file,entry,&xkbFInfo,NULL);
-	    }
-	    fclose(file);
-	    if (xkb->geom) {
-		*shouldFree= 0;
-		return xkb->geom;
-	    }
-	}
-    }
     *shouldFree= 1;
     return NULL;
 }

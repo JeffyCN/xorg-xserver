@@ -1,4 +1,3 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/parser/xf86Parser.h,v 1.33 2003/10/08 14:58:30 dawes Exp $ */
 /* 
  * 
  * Copyright (c) 1997  Metro Link Incorporated
@@ -91,6 +90,7 @@ typedef struct
 	char *load_name;
 	XF86OptionPtr load_opt;
 	char *load_comment;
+        int ignore;
 }
 XF86LoadRec, *XF86LoadPtr;
 

@@ -78,9 +78,6 @@ extern void GlxSetVisualConfigs(
 );
 #endif /* GLXEXT */
 
-extern void SetVendorRelease(int release); /* in dix/main.c */
-extern void SetVendorString(char *string); /* in dix/main.c */
-
 /* Global variables available to all Xserver/hw/dmx routines. */
 int             dmxNumScreens;
 DMXScreenInfo  *dmxScreens;
@@ -1049,14 +1046,3 @@ void ddxUseMsg(void)
     ErrorF("        Ctrl-Alt-q    Quit (core devices only)\n");
     ErrorF("        Ctrl-Alt-F*   Switch to VC (local only)\n");
 }
-
-#ifdef DDXTIME
-/** Return wall-clock time in milliseconds. */
-CARD32 GetTimeInMillis(void)
-{
-    struct timeval  tp;
-
-    gettimeofday(&tp, 0);
-    return tp.tv_sec * 1000 + tp.tv_usec / 1000;
-}
-#endif

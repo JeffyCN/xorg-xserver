@@ -1,4 +1,3 @@
-/* $XdotOrg: xserver/xorg/hw/xfree86/utils/xorgcfg/text-mode.c,v 1.6 2005/12/08 17:54:40 kem Exp $ */
 /*
  * Copyright (c) 2000 by Conectiva S.A. (http://www.conectiva.com)
  * 
@@ -27,14 +26,13 @@
  *
  * Author: Paulo César Pereira de Andrade <pcpa@conectiva.com.br>
  *
- * $XFree86: xc/programs/Xserver/hw/xfree86/xf86cfg/text-mode.c,v 1.25 2003/11/12 00:10:30 dawes Exp $
  */
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #if defined(__SCO__) || defined(__UNIXWARE__) || \
-	(defined(sun) && defined(__SVR4))
+	(defined(sun) && defined(__SVR4)) || defined(__NetBSD__)
 #include <curses.h>
 #else
 #include <ncurses.h>
@@ -321,7 +319,7 @@ WriteXF86Config(void)
     if (newconfig) {
 	if (XF86Config->conf_modules == NULL) {
 	    static char *modules[] = {"extmod", "glx", "dri", "dbe",
-				      "record", "xtrap", "type1", "speedo"};
+				      "record", "xtrap", "type1"};
 	    XF86LoadPtr load;
 	    int i;
 

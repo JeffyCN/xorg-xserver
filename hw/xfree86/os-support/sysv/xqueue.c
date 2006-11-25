@@ -1,4 +1,3 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/sysv/xqueue.c,v 3.19 2000/02/10 22:33:45 dawes Exp $ */
 /*
  * Copyright 1990,91 by Thomas Roell, Dinkelscherben, Germany
  * Copyright 1993-1999 by The XFree86 Project, Inc.
@@ -135,12 +134,6 @@ xf86XqueKbdProc(DeviceIntPtr pKeyboard, int what)
 #ifdef XKB
     } else {
 	XkbComponentNamesRec names;
-	if (XkbInitialMap) {
-	    if ((xf86Info.xkbkeymap = strchr(XkbInitialMap, '/')) != NULL)
-		xf86Info.xkbkeymap++;
-	    else
-		xf86Info.xkbkeymap = XkbInitialMap;
-	}
 	if (xf86Info.xkbkeymap) {
 	    names.keymap = xf86Info.xkbkeymap;
 	    names.keycodes = NULL;

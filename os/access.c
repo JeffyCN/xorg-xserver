@@ -1,5 +1,3 @@
-/* $Xorg: access.c,v 1.5 2001/02/09 02:05:23 xorgcvs Exp $ */
-/* $XdotOrg: xserver/xorg/os/access.c,v 1.14 2006/01/07 00:45:17 ajax Exp $ */
 /***********************************************************
 
 Copyright 1987, 1998  The Open Group
@@ -55,7 +53,6 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 SOFTWARE.
 
 ******************************************************************/
-/* $XFree86: xc/programs/Xserver/os/access.c,v 3.53 2004/01/02 18:23:19 tsi Exp $ */
 
 #ifdef HAVE_DIX_CONFIG_H
 #include <dix-config.h>
@@ -67,6 +64,9 @@ SOFTWARE.
 
 #include <stdio.h>
 #include <stdlib.h>
+#define XSERV_t
+#define TRANS_SERVER
+#define TRANS_REOPEN
 #include <X11/Xtrans/Xtrans.h>
 #include <X11/Xauth.h>
 #include <X11/X.h>
@@ -202,9 +202,8 @@ SOFTWARE.
 #include "dixstruct.h"
 #include "osdep.h"
 
-#ifdef XCSECURITY
-#define _SECURITY_SERVER
-#include <X11/extensions/security.h>
+#ifdef XACE
+#include "xace.h"
 #endif
 
 #ifndef PATH_MAX
@@ -1189,7 +1188,11 @@ ResetHosts (char *display)
         FreeHost (host);
     }
 
+#if defined WIN32 && defined __MINGW32__
+#define ETC_HOST_PREFIX "X"
+#else
 #define ETC_HOST_PREFIX "/etc/X"
+#endif
 #define ETC_HOST_SUFFIX ".hosts"
     fnamelen = strlen(ETC_HOST_PREFIX) + strlen(ETC_HOST_SUFFIX) +
 		strlen(display) + 1;
@@ -1383,19 +1386,6 @@ _X_EXPORT Bool LocalClient(ClientPtr client)
     pointer		addr;
     register HOST	*host;
 
-#ifdef XCSECURITY
-    /* untrusted clients can't change host access */
-    if (client->trustLevel != XSecurityClientTrusted)
-    {
-	SecurityAudit("client %d attempted to change host access\n",
-		      client->index);
-	return FALSE;
-    }
-#endif
-#ifdef LBX
-    if (!((OsCommPtr)client->osPrivate)->trans_conn)
-	return FALSE;
-#endif
     if (!_XSERVTransGetPeerAddr (((OsCommPtr)client->osPrivate)->trans_conn,
 	&notused, &alen, &from))
     {
@@ -1538,6 +1528,11 @@ AuthorizedClient(ClientPtr client)
 {
     if (!client || defeatAccessControl)
 	return TRUE;
+#ifdef XACE
+    /* untrusted clients can't change host access */
+    if (!XaceHook(XACE_HOSTLIST_ACCESS, client, SecurityWriteAccess))
+	return FALSE;
+#endif
     return LocalClient(client);
 }
 

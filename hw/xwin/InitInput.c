@@ -26,7 +26,6 @@
   from The Open Group.
 
 */
-/* $XFree86: xc/programs/Xserver/hw/xwin/InitInput.c,v 1.11 2002/07/05 09:19:25 alanh Exp $ */
 
 #ifdef HAVE_XWIN_CONFIG_H
 #include <xwin-config.h>
@@ -177,28 +176,3 @@ InitInput (int argc, char *argv[])
   winDebug ("InitInput - returning\n");
 #endif
 }
-
-
-#ifdef XTESTEXT1
-void
-XTestGenerateEvent (int dev_type, int keycode, int keystate,
-		    int mousex, int mousey)
-{
-  ErrorF ("XTestGenerateEvent\n");
-}
-
-
-void
-XTestGetPointerPos (short *fmousex, short *fmousey)
-{
-  ErrorF ("XTestGetPointerPos\n");
-}
-
-
-void
-XTestJumpPointer (int jx, int jy, int dev_type)
-{
-  ErrorF ("XTestJumpPointer\n");
-}
-#endif
-

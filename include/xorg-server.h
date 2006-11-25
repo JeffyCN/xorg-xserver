@@ -21,19 +21,13 @@
 #define BIGREQS 1
 
 /* Default font path */
-#define COMPILEDDEFAULTFONTPATH "/usr/X11R6/lib/X11/fonts/misc/,/usr/X11R6/lib/X11/fonts/TTF/,/usr/X11R6/lib/X11/fonts/OTF,/usr/X11R6/lib/X11/fonts/Type1/,/usr/X11R6/lib/X11/fonts/CID/,/usr/X11R6/lib/X11/fonts/100dpi/,/usr/X11R6/lib/X11/fonts/75dpi/"
+#define COMPILEDDEFAULTFONTPATH "/usr/local/lib/X11/fonts/misc/,/usr/local/lib/X11/fonts/TTF/,/usr/local/lib/X11/fonts/OTF,/usr/local/lib/X11/fonts/Type1/,/usr/local/lib/X11/fonts/CID/,/usr/local/lib/X11/fonts/100dpi/,/usr/local/lib/X11/fonts/75dpi/"
 
 /* Support Composite Extension */
 #define COMPOSITE 1
 
 /* Use OsVendorInit */
 #define DDXOSINIT 1
-
-/* Prefer dlloader modules to elfloader */
-#define DLOPEN_HACK 1
-
-/* Building with libdl */
-#define DLOPEN_SUPPORT 1
 
 /* Build DPMS extension */
 #define DPMSExtension 1
@@ -42,7 +36,7 @@
 #define DRIVERS {}
 
 /* Build GLX extension */
-#define GLXEXT 1
+/* #undef GLXEXT */
 
 /* Include handhelds.org h3600 touchscreen driver */
 /* #undef H3600_TS */
@@ -168,10 +162,10 @@
 #define XORGSERVER 1
 
 /* Vendor release */
-#define XORG_RELEASE "Release 7.1.1"
+#define XORG_RELEASE "Release 7.1.99.902"
 
 /* Current Xorg version */
-#define XORG_VERSION_CURRENT (((7) * 10000000) + ((1) * 100000) + ((1) * 1000) + 0)
+#define XORG_VERSION_CURRENT (((7) * 10000000) + ((1) * 100000) + ((99) * 1000) + 902)
 
 /* Build Xv Extension */
 #define XvExtension 1
@@ -201,13 +195,13 @@
 #define X_BYTE_ORDER X_LITTLE_ENDIAN
 
 /* BSD-compliant source */
-/* #undef _BSD_SOURCE */
+#define _BSD_SOURCE 1
 
 /* POSIX-compliant source */
-/* #undef _POSIX_SOURCE */
+#define _POSIX_SOURCE 1
 
 /* X/Open-compliant source */
-/* #undef _XOPEN_SOURCE */
+#define _XOPEN_SOURCE 500
 
 /* Vendor web address for support */
 #define __VENDORDWEBSUPPORT__ "http://wiki.x.org"
@@ -228,18 +222,21 @@
 #define WITH_VGAHW 1
 
 /* System is BSD-like */
-#define CSRG_BASED 1
+/* #undef CSRG_BASED */
 
 /* System has PC console */
-#define PCCONS_SUPPORT 1
+/* #undef PCCONS_SUPPORT */
 
 /* System has PCVT console */
-#define PCVT_SUPPORT 1
+/* #undef PCVT_SUPPORT */
 
 /* System has syscons console */
-#define SYSCONS_SUPPORT 1
+/* #undef SYSCONS_SUPPORT */
 
 /* System has wscons console */
 /* #undef WSCONS_SUPPORT */
+
+/* Loadable XFree86 server awesomeness */
+#define XFree86LOADER 1
 
 #endif /* _XORG_SERVER_H_ */

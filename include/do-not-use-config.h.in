@@ -3,6 +3,9 @@
 /* Build AIGLX loader */
 #undef AIGLX
 
+/* Default base font path */
+#undef BASE_FONT_PATH
+
 /* Support BigRequests extension */
 #undef BIGREQS
 
@@ -67,12 +70,6 @@
 
 /* Support DGA extension */
 #undef DGA
-
-/* Prefer dlloader modules to elfloader */
-#undef DLOPEN_HACK
-
-/* Use libdl-based loader */
-#undef DLOPEN_SUPPORT
 
 /* Support DPMS extension */
 #undef DPMSExtension
@@ -147,6 +144,9 @@
 /* Has backtrace support */
 #undef HAVE_BACKTRACE
 
+/* Define to 1 if you have the `clock_gettime' function. */
+#undef HAVE_CLOCK_GETTIME
+
 /* Define to 1 if you have the <dbm.h> header file. */
 #undef HAVE_DBM_H
 
@@ -168,6 +168,9 @@
 
 /* Define to 1 if you have the `geteuid' function. */
 #undef HAVE_GETEUID
+
+/* Define to 1 if you have the `getisax' function. */
+#undef HAVE_GETISAX
 
 /* Define to 1 if you have the `getopt' function. */
 #undef HAVE_GETOPT
@@ -306,14 +309,17 @@
 /* Build VESA-based kdrive servers */
 #undef KDRIVEVESA
 
-/* Support LBX extension */
-#undef LBX
+/* Name of the period field in struct kbd_repeat */
+#undef LNX_KBD_PERIOD_NAME
 
 /* Support MIT Misc extension */
 #undef MITMISC
 
 /* Support MIT-SHM extension */
 #undef MITSHM
+
+/* Have monotonic clock from clock_gettime() */
+#undef MONOTONIC_CLOCK
 
 /* Build Multibuffer extension */
 #undef MULTIBUFFER
@@ -399,16 +405,13 @@
 /* Support Secure RPC ("SUN-DES-1") authentication for X11 clients */
 #undef SECURE_RPC
 
-/* Server config path */
-#undef SERVERCONFIGdir
-
 /* Use a lock to prevent multiple servers on a display */
 #undef SERVER_LOCK
 
 /* Support SHAPE extension */
 #undef SHAPE
 
-/* The size of `unsigned long', as computed by sizeof. */
+/* The size of a `unsigned long', as computed by sizeof. */
 #undef SIZEOF_UNSIGNED_LONG
 
 /* Include time-based scheduler */
@@ -416,7 +419,7 @@
 
 /* If using the C implementation of alloca, define if you know the
    direction of stack growth for your system; otherwise it will be
-   automatically deduced at runtime.
+   automatically deduced at run-time.
 	STACK_DIRECTION > 0 => grows toward higher addresses
 	STACK_DIRECTION < 0 => grows toward lower addresses
 	STACK_DIRECTION = 0 => direction of growth unknown */
@@ -436,6 +439,9 @@
 
 /* Build TOG-CUP extension */
 #undef TOGCUP
+
+/* Have tslib support */
+#undef TSLIB
 
 /* Support UNIX socket connections */
 #undef UNIXCONN
@@ -467,8 +473,14 @@
 /* System has wscons console */
 #undef WSCONS_SUPPORT
 
+/* Build X-ACE extension */
+#undef XACE
+
 /* Build APPGROUP extension */
 #undef XAPPGROUP
+
+/* Build XCalibrate extension */
+#undef XCALIBRATE
 
 /* Support XCMisc extension */
 #undef XCMISC
@@ -499,6 +511,9 @@
 
 /* Support XFixes extension */
 #undef XFIXES
+
+/* Building loadable XFree86 server */
+#undef XFree86LOADER
 
 /* Building XFree86 server */
 #undef XFree86Server

@@ -1,4 +1,3 @@
-/* $XFree86: xc/programs/Xserver/include/dixstruct.h,v 3.19tsi Exp $ */
 /***********************************************************
 Copyright 1987 by Digital Equipment Corporation, Maynard, Massachusetts.
 
@@ -21,7 +20,6 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 SOFTWARE.
 
 ******************************************************************/
-/* $Xorg: dixstruct.h,v 1.3 2000/08/17 19:53:29 cpqbld Exp $ */
 
 #ifndef DIXSTRUCT_H
 #define DIXSTRUCT_H
@@ -129,20 +127,7 @@ typedef struct _Client {
     unsigned char requestLog[MAX_REQUEST_LOG];
     int         requestLogIndex;
 #endif
-#ifdef LBX
-    int		(*readRequest)(ClientPtr /*client*/);
-#endif
     unsigned long replyBytesRemaining;
-#ifdef XCSECURITY
-    XID		authId;
-    unsigned int trustLevel;
-    pointer (* CheckAccess)(
-	    ClientPtr /*pClient*/,
-	    XID /*id*/,
-	    RESTYPE /*classes*/,
-	    Mask /*access_mode*/,
-	    pointer /*resourceval*/);
-#endif
 #ifdef XAPPGROUP
     struct _AppGroupRec*	appgroup;
 #endif

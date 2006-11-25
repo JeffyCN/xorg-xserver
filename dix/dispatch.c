@@ -1,5 +1,3 @@
-/* $XdotOrg: xserver/xorg/dix/dispatch.c,v 1.13 2005/09/13 01:33:19 daniels Exp $ */
-/* $Xorg: dispatch.c,v 1.5 2001/02/09 02:04:40 xorgcvs Exp $ */
 /************************************************************
 
 Copyright 1987, 1989, 1998  The Open Group
@@ -76,7 +74,6 @@ Equipment Corporation.
 
 ******************************************************************/
 
-/* $XFree86: xc/programs/Xserver/dix/dispatch.c,v 3.32 2003/11/10 18:21:45 tsi Exp $ */
 
 #ifdef HAVE_DIX_CONFIG_H
 #include <dix-config.h>
@@ -107,20 +104,18 @@ int ProcInitialConnection();
 #include "panoramiX.h"
 #include "panoramiXsrv.h"
 #endif
-#ifdef XCSECURITY
-#define _SECURITY_SERVER
-#include <X11/extensions/security.h>
+#ifdef XACE
+#include "xace.h"
 #endif
 #ifdef XAPPGROUP
-#include <X11/extensions/Xagsrv.h>
+#include "appgroup.h"
 #endif
 #ifdef XKB
+#ifndef XKB_IN_SERVER
 #define XKB_IN_SERVER
+#endif
 #include "inputstr.h"
 #include <X11/extensions/XKBsrv.h>
-#endif
-#ifdef LBX
-#include "lbxserve.h"
 #endif
 
 #define mskcnt ((MAXCLIENTS + 31) / 32)
@@ -456,7 +451,15 @@ Dispatch(void)
 		if (result > (maxBigRequestSize << 2))
 		    result = BadLength;
 		else
+#ifdef XACE
+		{
+		    XaceHook(XACE_AUDIT_BEGIN, client);
 		    result = (* client->requestVector[MAJOROP])(client);
+		    XaceHook(XACE_AUDIT_END, client, result);
+		}
+#else
+    		    result = (* client->requestVector[MAJOROP])(client);
+#endif /* XACE */
 	    
 		if (result != Success) 
 		{
@@ -1104,11 +1107,10 @@ ProcConvertSelection(register ClientPtr client)
 	       CurrentSelections[i].selection != stuff->selection) i++;
 	if ((i < NumCurrentSelections) && 
 	    (CurrentSelections[i].window != None)
-#ifdef XCSECURITY
-	    && (!client->CheckAccess ||
-		(* client->CheckAccess)(client, CurrentSelections[i].window,
-					RT_WINDOW, SecurityReadAccess,
-					CurrentSelections[i].pWin))
+#ifdef XACE
+	    && XaceHook(XACE_RESOURCE_ACCESS, client,
+			CurrentSelections[i].window, RT_WINDOW,
+			SecurityReadAccess, CurrentSelections[i].pWin)
 #endif
 	    )
 	{        
@@ -2100,7 +2102,7 @@ DoGetImage(register ClientPtr client, int format, Drawable drawable,
     Mask		plane = 0;
     char		*pBuf;
     xGetImageReply	xgi;
-#ifdef XCSECURITY
+#ifdef XACE
     RegionPtr pVisibleRegion = NULL;
 #endif
 
@@ -2206,9 +2208,9 @@ DoGetImage(register ClientPtr client, int format, Drawable drawable,
 	WriteReplyToClient(client, sizeof (xGetImageReply), &xgi);
     }
 
-#ifdef XCSECURITY
-    if (client->trustLevel != XSecurityClientTrusted &&
-	pDraw->type == DRAWABLE_WINDOW)
+#ifdef XACE
+    if (pDraw->type == DRAWABLE_WINDOW &&
+	!XaceHook(XACE_DRAWABLE_ACCESS, client, pDraw))
     {
 	pVisibleRegion = NotClippedByChildren((WindowPtr)pDraw);
 	if (pVisibleRegion)
@@ -2236,9 +2238,9 @@ DoGetImage(register ClientPtr client, int format, Drawable drawable,
 				         format,
 				         planemask,
 				         (pointer) pBuf);
-#ifdef XCSECURITY
+#ifdef XACE
 	    if (pVisibleRegion)
-		SecurityCensorImage(client, pVisibleRegion, widthBytesLine,
+		XaceCensorImage(client, pVisibleRegion, widthBytesLine,
 			pDraw, x, y + linesDone, width, 
 			nlines, format, pBuf);
 #endif
@@ -2277,9 +2279,9 @@ DoGetImage(register ClientPtr client, int format, Drawable drawable,
 				                 format,
 				                 plane,
 				                 (pointer)pBuf);
-#ifdef XCSECURITY
+#ifdef XACE
 		    if (pVisibleRegion)
-			SecurityCensorImage(client, pVisibleRegion,
+			XaceCensorImage(client, pVisibleRegion,
 				widthBytesLine,
 				pDraw, x, y + linesDone, width, 
 				nlines, format, pBuf);
@@ -2305,7 +2307,7 @@ DoGetImage(register ClientPtr client, int format, Drawable drawable,
             }
 	}
     }
-#ifdef XCSECURITY
+#ifdef XACE
     if (pVisibleRegion)
 	REGION_DESTROY(pDraw->pScreen, pVisibleRegion);
 #endif
@@ -2457,7 +2459,7 @@ ProcCreateColormap(register ClientPtr client)
 	    return(result);
     }
     client->errorValue = stuff->visual;
-    return(BadValue);
+    return(BadMatch);
 }
 
 int
@@ -2602,15 +2604,6 @@ ProcAllocColor (register ClientPtr client)
 					RT_COLORMAP, SecurityWriteAccess);
     if (pmap)
     {
-#ifdef LBX
-	/*
-	 * If the colormap is grabbed by a proxy, the server will have
-	 * to regain control over the colormap.  This AllocColor request
-	 * will be handled after the server gets back the colormap control.
-	 */
-	if (LbxCheckColorRequest (client, pmap, (xReq *) stuff))
-	    return Success;
-#endif
 	acr.type = X_Reply;
 	acr.length = 0;
 	acr.sequenceNumber = client->sequence;
@@ -2655,15 +2648,6 @@ ProcAllocNamedColor (register ClientPtr client)
 
 	xAllocNamedColorReply ancr;
 
-#ifdef LBX
-	/*
-	 * If the colormap is grabbed by a proxy, the server will have
-	 * to regain control over the colormap.  This AllocNamedColor request
-	 * will be handled after the server gets back the colormap control.
-	 */
-	if (LbxCheckColorRequest (client, pcmp, (xReq *) stuff))
-	    return Success;
-#endif
 	ancr.type = X_Reply;
 	ancr.length = 0;
 	ancr.sequenceNumber = client->sequence;
@@ -2717,15 +2701,6 @@ ProcAllocColorCells (register ClientPtr client)
 	long			length;
 	Pixel			*ppixels, *pmasks;
 
-#ifdef LBX
-	/*
-	 * If the colormap is grabbed by a proxy, the server will have
-	 * to regain control over the colormap.  This AllocColorCells request
-	 * will be handled after the server gets back the colormap control.
-	 */
-	if (LbxCheckColorRequest (client, pcmp, (xReq *) stuff))
-	    return Success;
-#endif
 	npixels = stuff->colors;
 	if (!npixels)
 	{
@@ -2792,15 +2767,6 @@ ProcAllocColorPlanes(register ClientPtr client)
 	long			length;
 	Pixel			*ppixels;
 
-#ifdef LBX
-	/*
-	 * If the colormap is grabbed by a proxy, the server will have
-	 * to regain control over the colormap.  This AllocColorPlanes request
-	 * will be handled after the server gets back the colormap control.
-	 */
-	if (LbxCheckColorRequest (client, pcmp, (xReq *) stuff))
-	    return Success;
-#endif
 	npixels = stuff->colors;
 	if (!npixels)
 	{
@@ -3315,11 +3281,10 @@ ProcListHosts(register ClientPtr client)
     /* REQUEST(xListHostsReq); */
 
     REQUEST_SIZE_MATCH(xListHostsReq);
-#ifdef XCSECURITY
+#ifdef XACE
     /* untrusted clients can't list hosts */
-    if (client->trustLevel != XSecurityClientTrusted)
+    if (!XaceHook(XACE_HOSTLIST_ACCESS, client, SecurityReadAccess))
     {
-	SecurityAudit("client %d attempted to list hosts\n", client->index);
 	return BadAccess;
     }
 #endif
@@ -3570,9 +3535,6 @@ CloseDownClient(register ClientPtr client)
 	if (ClientIsAsleep(client))
 	    ClientSignal (client);
 	ProcessWorkQueueZombies();
-#ifdef LBX
-	ProcessQTagZombies();
-#endif
 	CloseDownConnection(client);
 
 	/* If the client made it to the Running stage, nClients has
@@ -3650,6 +3612,10 @@ CloseDownRetainedResources()
     }
 }
 
+extern int clientPrivateLen;
+extern unsigned *clientPrivateSizes;
+extern unsigned totalClientSize;
+
 void InitClient(ClientPtr client, int i, pointer ospriv)
 {
     client->index = i;
@@ -3690,14 +3656,6 @@ void InitClient(ClientPtr client, int i, pointer ospriv)
     }
 #endif
     client->replyBytesRemaining = 0;
-#ifdef LBX
-    client->readRequest = StandardReadRequestFromClient;
-#endif
-#ifdef XCSECURITY
-    client->trustLevel = XSecurityClientTrusted;
-    client->CheckAccess = NULL;
-    client->authId = 0;
-#endif
 #ifdef XAPPGROUP
     client->appgroup = NULL;
 #endif
@@ -3709,10 +3667,6 @@ void InitClient(ClientPtr client, int i, pointer ospriv)
     client->smart_check_tick = SmartScheduleTime;
 #endif
 }
-
-extern int clientPrivateLen;
-extern unsigned *clientPrivateSizes;
-extern unsigned totalClientSize;
 
 int
 InitClientPrivates(ClientPtr client)
@@ -3746,6 +3700,17 @@ InitClientPrivates(ClientPtr client)
 	else
 	    ppriv->ptr = (pointer)NULL;
     }
+
+    /* Allow registrants to initialize the serverClient devPrivates */
+    if (!client->index && ClientStateCallback)
+    {
+	NewClientInfoRec clientinfo;
+
+	clientinfo.client = client; 
+	clientinfo.prefix = (xConnSetupPrefix *)NULL;  
+	clientinfo.setup = (xConnSetup *) NULL;
+	CallCallbacks((&ClientStateCallback), (pointer)&clientinfo);
+    } 
     return 1;
 }
 
@@ -3825,14 +3790,6 @@ ProcInitialConnection(register ClientPtr client)
     ResetCurrentRequest(client);
     return (client->noClientException);
 }
-
-#ifdef LBX
-void
-IncrementClientCount()
-{
-    nClients++;
-}
-#endif
 
 int
 SendConnSetup(register ClientPtr client, char *reason)

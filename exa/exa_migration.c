@@ -58,6 +58,37 @@ exaPixmapIsPinned (PixmapPtr pPix)
 }
 
 /**
+ * Returns TRUE if the pixmap is dirty (has been modified in its current
+ * location compared to the other), or lacks a private for tracking
+ * dirtiness.
+ */
+static Bool
+exaPixmapIsDirty (PixmapPtr pPix)
+{
+    ExaPixmapPriv (pPix);
+
+    return pExaPixmap == NULL || pExaPixmap->dirty == TRUE;
+}
+
+/**
+ * Returns TRUE if the pixmap is either pinned in FB, or has a sufficient score
+ * to be considered "should be in framebuffer".  That's just anything that has
+ * had more acceleration than fallbacks, or has no score yet.
+ *
+ * Only valid if using a migration scheme that tracks score.
+ */
+static Bool
+exaPixmapShouldBeInFB (PixmapPtr pPix)
+{
+    ExaPixmapPriv (pPix);
+
+    if (exaPixmapIsPinned (pPix))
+	return TRUE;
+
+    return pExaPixmap->score >= 0;
+}
+
+/**
  * If the pixmap is currently dirty, this copies at least the dirty area from
  * the framebuffer  memory copy to the system memory copy.  Both areas must be
  * allocated.
@@ -183,12 +214,12 @@ exaPixmapSave (ScreenPtr pScreen, ExaOffscreenArea *area)
     PixmapPtr pPixmap = area->privData;
     ExaPixmapPriv(pPixmap);
 
-    DBG_MIGRATE (("Save %p (%p) (%dx%d)\n",
-		  (void*)pPixmap->drawable.id,
+    DBG_MIGRATE (("Save %p (%p) (%dx%d) (%c)\n", pPixmap,
 		  (void*)(ExaGetPixmapPriv(pPixmap)->area ?
                           ExaGetPixmapPriv(pPixmap)->area->offset : 0),
 		  pPixmap->drawable.width,
-		  pPixmap->drawable.height));
+		  pPixmap->drawable.height,
+		  exaPixmapIsDirty(pPixmap) ? 'd' : 'c'));
 
     if (exaPixmapIsOffscreen(pPixmap)) {
 	exaCopyDirtyToSys (pPixmap);
@@ -259,11 +290,12 @@ exaMoveInPixmap (PixmapPtr pPixmap)
 				       pExaPixmap->area->offset;
     }
 
-    DBG_MIGRATE (("-> 0x%lx (0x%x) (%dx%d)\n", pPixmap->drawable.id,
+    DBG_MIGRATE (("-> %p (0x%x) (%dx%d) (%c)\n", pPixmap,
 		  (ExaGetPixmapPriv(pPixmap)->area ?
                    ExaGetPixmapPriv(pPixmap)->area->offset : 0),
 		  pPixmap->drawable.width,
-		  pPixmap->drawable.height));
+		  pPixmap->drawable.height,
+		  exaPixmapIsDirty(pPixmap) ? 'd' : 'c'));
 
     exaCopyDirtyToFb (pPixmap);
 
@@ -287,14 +319,15 @@ exaMoveOutPixmap (PixmapPtr pPixmap)
     if (exaPixmapIsPinned(pPixmap))
 	return;
 
-    DBG_MIGRATE (("<- 0x%p (0x%p) (%dx%d)\n",
-		  (void*)pPixmap->drawable.id,
-		  (void*)(ExaGetPixmapPriv(pPixmap)->area ?
-                          ExaGetPixmapPriv(pPixmap)->area->offset : 0),
-		  pPixmap->drawable.width,
-		  pPixmap->drawable.height));
-
     if (exaPixmapIsOffscreen(pPixmap)) {
+
+	DBG_MIGRATE (("<- %p (%p) (%dx%d) (%c)\n", pPixmap,
+		      (void*)(ExaGetPixmapPriv(pPixmap)->area ?
+			      ExaGetPixmapPriv(pPixmap)->area->offset : 0),
+		      pPixmap->drawable.width,
+		      pPixmap->drawable.height,
+		      exaPixmapIsDirty(pPixmap) ? 'd' : 'c'));
+
 	exaCopyDirtyToSys (pPixmap);
 
 	pPixmap->devPrivate.ptr = pExaPixmap->sys_ptr;
@@ -377,6 +410,38 @@ exaMigrateTowardSys (PixmapPtr pPixmap)
 }
 
 /**
+ * If the pixmap has both a framebuffer and system memory copy, this function
+ * asserts that both of them are the same.
+ */
+static void
+exaAssertNotDirty (PixmapPtr pPixmap)
+{
+    ExaPixmapPriv (pPixmap);
+    CARD8 *dst, *src;
+    int dst_pitch, src_pitch, data_row_bytes, y;
+
+    if (pExaPixmap == NULL || pExaPixmap->fb_ptr == NULL)
+	return;
+
+    dst = pExaPixmap->sys_ptr;
+    dst_pitch = pExaPixmap->sys_pitch;
+    src = pExaPixmap->fb_ptr;
+    src_pitch = pExaPixmap->fb_pitch;
+    data_row_bytes = pPixmap->drawable.width *
+		     pPixmap->drawable.bitsPerPixel / 8;
+
+    exaPrepareAccess(&pPixmap->drawable, EXA_PREPARE_SRC);
+    for (y = 0; y < pPixmap->drawable.height; y++) {
+	if (memcmp(dst, src, data_row_bytes) != 0) {
+	     abort();
+	}
+	dst += dst_pitch;
+	src += src_pitch;
+    }
+    exaFinishAccess(&pPixmap->drawable, EXA_PREPARE_SRC);
+}
+
+/**
  * Performs migration of the pixmaps according to the operation information
  * provided in pixmaps and can_accel and the migration scheme chosen in the
  * config file.
@@ -388,6 +453,19 @@ exaDoMigration (ExaMigrationPtr pixmaps, int npixmaps, Bool can_accel)
     ExaScreenPriv(pScreen);
     int i, j;
 
+    /* If this debugging flag is set, check each pixmap for whether it is marked
+     * as clean, and if so, actually check if that's the case.  This should help
+     * catch issues with failing to mark a drawable as dirty.  While it will
+     * catch them late (after the operation happened), it at least explains what
+     * went wrong, and instrumenting the code to find what operation happened
+     * to the pixmap last shouldn't be hard.
+     */
+    if (pExaScr->checkDirtyCorrectness) {
+	for (i = 0; i < npixmaps; i++) {
+	    if (!exaPixmapIsDirty (pixmaps[i].pPix))
+		exaAssertNotDirty (pixmaps[i].pPix);
+	}
+    }
     /* If anything is pinned in system memory, we won't be able to
      * accelerate.
      */
@@ -403,7 +481,40 @@ exaDoMigration (ExaMigrationPtr pixmaps, int npixmaps, Bool can_accel)
 	}
     }
 
-    if (pExaScr->migration == ExaMigrationGreedy) {
+    if (pExaScr->migration == ExaMigrationSmart) {
+	/* If we've got something as a destination that we shouldn't cause to
+	 * become newly dirtied, take the unaccelerated route.
+	 */
+	for (i = 0; i < npixmaps; i++) {
+	    if (pixmaps[i].as_dst && !exaPixmapShouldBeInFB (pixmaps[i].pPix) &&
+		!exaPixmapIsDirty (pixmaps[i].pPix))
+	    {
+		for (i = 0; i < npixmaps; i++) {
+		    if (!exaPixmapIsDirty (pixmaps[i].pPix))
+			exaMoveOutPixmap (pixmaps[i].pPix);
+		}
+		return;
+	    }
+	}
+
+	/* If we aren't going to accelerate, then we migrate everybody toward
+	 * system memory, and kick out if it's free.
+	 */
+	if (!can_accel) {
+	    for (i = 0; i < npixmaps; i++) {
+		exaMigrateTowardSys (pixmaps[i].pPix);
+		if (!exaPixmapIsDirty (pixmaps[i].pPix))
+		    exaMoveOutPixmap (pixmaps[i].pPix);
+	    }
+	    return;
+	}
+
+	/* Finally, the acceleration path.  Move them all in. */
+	for (i = 0; i < npixmaps; i++) {
+	    exaMigrateTowardFb(pixmaps[i].pPix);
+	    exaMoveInPixmap(pixmaps[i].pPix);
+	}
+    } else if (pExaScr->migration == ExaMigrationGreedy) {
 	/* If we can't accelerate, either because the driver can't or because one of
 	 * the pixmaps is pinned in system memory, then we migrate everybody toward
 	 * system memory.

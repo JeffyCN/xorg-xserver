@@ -1,5 +1,4 @@
 /*
- * $XFree86: xc/programs/Xserver/hw/xfree86/xaa/xaaPict.c,v 1.18 2003/04/23 18:35:34 eich Exp $
  *
  * Copyright © 2000 Keith Packard, member of The XFree86 Project, Inc.
  *
@@ -513,12 +512,22 @@ XAAComposite (CARD8      op,
     XAAInfoRecPtr infoRec = GET_XAAINFORECPTR_FROM_SCREEN(pScreen);
     XAA_RENDER_PROLOGUE(pScreen, Composite);
 
-    if((op == PictOpSrc) && !pMask && infoRec->pScrn->vtSema &&
-	infoRec->ScreenToScreenBitBlt &&
-        pSrc->pDrawable &&
-	DRAWABLE_IS_ON_CARD(pSrc->pDrawable) &&
-	DRAWABLE_IS_ON_CARD(pDst->pDrawable) &&
-	!pSrc->transform && !pSrc->repeat && (pSrc->format == pDst->format))
+    if(!pMask && infoRec->pScrn->vtSema &&
+       infoRec->ScreenToScreenBitBlt &&
+       pSrc->pDrawable &&
+       DRAWABLE_IS_ON_CARD(pSrc->pDrawable) &&
+       DRAWABLE_IS_ON_CARD(pDst->pDrawable) &&
+       !pSrc->transform &&
+       (!pSrc->repeat || (xSrc >= 0 && ySrc >= 0 &&
+			  xSrc+width<=pSrc->pDrawable->width &&
+			  ySrc+height<=pSrc->pDrawable->height)) &&
+       ((op == PictOpSrc &&
+	 ((pSrc->format==pDst->format) ||
+	  (pSrc->format==PICT_a8r8g8b8 && pDst->format==PICT_x8r8g8b8) ||
+	  (pSrc->format==PICT_a8b8g8r8 && pDst->format==PICT_x8b8g8r8))) ||
+	(op == PictOpOver && !pSrc->alphaMap && !pDst->alphaMap &&
+	 pSrc->format==pDst->format &&
+	 (pSrc->format==PICT_x8r8g8b8 || pSrc->format==PICT_x8b8g8r8))))
     {
 	XAACompositeSrcCopy(pSrc, pDst, xSrc, ySrc, xDst, yDst, width, height);
     } else if(!pSrc->pDrawable || (pMask && !pMask->pDrawable) ||

@@ -31,7 +31,6 @@
  *		Harold L Hunt II
  *		MATSUZAKI Kensuke
  */
-/* $XFree86: xc/programs/Xserver/hw/xwin/winwndproc.c,v 1.23 2002/10/17 08:18:25 alanh Exp $ */
 
 #ifdef HAVE_XWIN_CONFIG_H
 #include <xwin-config.h>
@@ -1205,9 +1204,6 @@ winWindowProc (HWND hwnd, UINT message,
 	case ID_APP_EXIT:
 	  /* Display Exit dialog */
 	  winDisplayExitDialog (s_pScreenPriv);
-	  return 0;
-	case ID_APP_SHOWCURSOR:
-	  winDebug("ShowCursor: %d\n", ShowCursor(TRUE));
 	  return 0;
 
 #ifdef XWIN_MULTIWINDOW

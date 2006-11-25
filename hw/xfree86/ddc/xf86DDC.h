@@ -1,4 +1,3 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/ddc/xf86DDC.h,v 1.10 2000/06/07 22:03:09 tsi Exp $ */
 
 /* xf86DDC.h
  *
@@ -47,6 +46,9 @@ extern xf86MonPtr xf86InterpretEDID(
 extern xf86vdifPtr xf86InterpretVdif(
     CARD8 *c
 );
+
+extern void 
+xf86DDCMonitorSet(int scrnIndex, MonPtr Monitor, xf86MonPtr DDC);
 
 extern Bool xf86SetDDCproperties(
     ScrnInfoPtr pScreen,

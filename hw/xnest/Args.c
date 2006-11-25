@@ -1,4 +1,3 @@
-/* $Xorg: Args.c,v 1.3 2000/08/17 19:53:26 cpqbld Exp $ */
 /*
 
 Copyright 1993 by Davor Matic
@@ -59,6 +58,13 @@ void ddxInitGlobals(void)
 int
 ddxProcessArgument (int argc, char *argv[], int i)
 {
+
+#ifdef COMPOSITE
+    /* XXX terrible hack */
+    extern Bool noCompositeExtension;
+    noCompositeExtension = TRUE;
+#endif
+
   if (!strcmp(argv[i], "-display")) {
     if (++i < argc) {
       xnestDisplayName = argv[i];

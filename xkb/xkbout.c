@@ -28,25 +28,12 @@
 
 #ifdef HAVE_DIX_CONFIG_H
 #include <dix-config.h>
-#elif defined(HAVE_CONFIG_H)
-#include <config.h>
 #endif
 
 #include <stdio.h>
 #include <ctype.h>
 #include <stdlib.h>
 #include <X11/Xfuncs.h>
-
-#ifndef XKB_IN_SERVER
-
-#include <X11/Xlib.h>
-#include <X11/XKBlib.h>
-#include <X11/extensions/XKBgeom.h>
-
-#include "XKMformat.h"
-#include "XKBfileInt.h"
-
-#else
 
 #include <X11/X.h>
 #define	NEED_EVENTS
@@ -61,8 +48,6 @@
 
 #include <X11/extensions/XKBgeom.h>
 #include <X11/extensions/XKBfile.h>
-
-#endif
 
 #define	VMOD_HIDE_VALUE	0
 #define	VMOD_SHOW_VALUE	1

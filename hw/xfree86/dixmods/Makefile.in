@@ -73,26 +73,21 @@ libGLcore_la_OBJECTS = $(am_libGLcore_la_OBJECTS)
 libafb_la_DEPENDENCIES = $(top_builddir)/afb/libafb.la
 am_libafb_la_OBJECTS = afbmodule.lo
 libafb_la_OBJECTS = $(am_libafb_la_OBJECTS)
-libbitmap_la_LIBADD =
-am_libbitmap_la_OBJECTS = bitmapmod.lo
-libbitmap_la_OBJECTS = $(am_libbitmap_la_OBJECTS)
 libcfb_la_DEPENDENCIES = $(top_builddir)/cfb/libcfb.la
 am_libcfb_la_OBJECTS = cfbmodule.lo
 libcfb_la_OBJECTS = $(am_libcfb_la_OBJECTS)
-libcfb16_la_DEPENDENCIES = $(top_builddir)/cfb16/libcfb16.la
-am_libcfb16_la_OBJECTS = cfb16module.lo
-libcfb16_la_OBJECTS = $(am_libcfb16_la_OBJECTS)
 libcfb32_la_DEPENDENCIES = $(top_builddir)/cfb32/libcfb32.la
 am_libcfb32_la_OBJECTS = cfb32module.lo
 libcfb32_la_OBJECTS = $(am_libcfb32_la_OBJECTS)
 libdbe_la_DEPENDENCIES = $(top_builddir)/dbe/libdbe.la
 am_libdbe_la_OBJECTS = dbemodule.lo
 libdbe_la_OBJECTS = $(am_libdbe_la_OBJECTS)
+@DBE_TRUE@am_libdbe_la_rpath = -rpath $(extsmoduledir)
 libdixmods_la_LIBADD =
-am_libdixmods_la_OBJECTS = miinitext.lo
+am_libdixmods_la_OBJECTS = libdixmods_la-miinitext.lo
 libdixmods_la_OBJECTS = $(am_libdixmods_la_OBJECTS)
 libfb_la_DEPENDENCIES = $(top_builddir)/fb/libfb.la
-am_libfb_la_OBJECTS = fbcmap.lo fbmodule.lo
+am_libfb_la_OBJECTS = libfb_la-fbcmap.lo libfb_la-fbmodule.lo
 libfb_la_OBJECTS = $(am_libfb_la_OBJECTS)
 libfreetype_la_LIBADD =
 am_libfreetype_la_OBJECTS = ftmodule.lo
@@ -134,8 +129,7 @@ CCLD = $(CC)
 LINK = $(LIBTOOL) --tag=CC --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
 	$(AM_LDFLAGS) $(LDFLAGS) -o $@
 SOURCES = $(libGLcore_la_SOURCES) $(libafb_la_SOURCES) \
-	$(libbitmap_la_SOURCES) $(libcfb_la_SOURCES) \
-	$(libcfb16_la_SOURCES) $(libcfb32_la_SOURCES) \
+	$(libcfb_la_SOURCES) $(libcfb32_la_SOURCES) \
 	$(libdbe_la_SOURCES) $(libdixmods_la_SOURCES) \
 	$(libfb_la_SOURCES) $(libfreetype_la_SOURCES) \
 	$(libglx_la_SOURCES) $(libmfb_la_SOURCES) \
@@ -143,8 +137,7 @@ SOURCES = $(libGLcore_la_SOURCES) $(libafb_la_SOURCES) \
 	$(libtype1_la_SOURCES) $(libxorgxkb_la_SOURCES) \
 	$(libxtrap_la_SOURCES)
 DIST_SOURCES = $(libGLcore_la_SOURCES) $(libafb_la_SOURCES) \
-	$(libbitmap_la_SOURCES) $(libcfb_la_SOURCES) \
-	$(libcfb16_la_SOURCES) $(libcfb32_la_SOURCES) \
+	$(libcfb_la_SOURCES) $(libcfb32_la_SOURCES) \
 	$(libdbe_la_SOURCES) $(libdixmods_la_SOURCES) \
 	$(libfb_la_SOURCES) $(libfreetype_la_SOURCES) \
 	$(libglx_la_SOURCES) $(libmfb_la_SOURCES) \
@@ -189,6 +182,7 @@ AUTOCONF = @AUTOCONF@
 AUTOHEADER = @AUTOHEADER@
 AUTOMAKE = @AUTOMAKE@
 AWK = @AWK@
+BASE_FONT_PATH = @BASE_FONT_PATH@
 BSD_KBD_MODE_FALSE = @BSD_KBD_MODE_FALSE@
 BSD_KBD_MODE_TRUE = @BSD_KBD_MODE_TRUE@
 BUILDDOCS_FALSE = @BUILDDOCS_FALSE@
@@ -277,13 +271,11 @@ FREEBSD_KLDLOAD_TRUE = @FREEBSD_KLDLOAD_TRUE@
 FREETYPE_CFLAGS = @FREETYPE_CFLAGS@
 FREETYPE_LIBS = @FREETYPE_LIBS@
 FREETYPE_REQUIRES = @FREETYPE_REQUIRES@
-GLX_ARCH_DEFINES = @GLX_ARCH_DEFINES@
 GLX_DEFINES = @GLX_DEFINES@
 GLX_FALSE = @GLX_FALSE@
 GLX_TRUE = @GLX_TRUE@
 GL_CFLAGS = @GL_CFLAGS@
 GL_LIBS = @GL_LIBS@
-GREP = @GREP@
 H3600_TS_FALSE = @H3600_TS_FALSE@
 H3600_TS_TRUE = @H3600_TS_TRUE@
 I386_VIDEO_FALSE = @I386_VIDEO_FALSE@
@@ -304,8 +296,6 @@ INT10_X86EMU_FALSE = @INT10_X86EMU_FALSE@
 INT10_X86EMU_TRUE = @INT10_X86EMU_TRUE@
 KDRIVEFBDEV_FALSE = @KDRIVEFBDEV_FALSE@
 KDRIVEFBDEV_TRUE = @KDRIVEFBDEV_TRUE@
-KDRIVELINUX_FALSE = @KDRIVELINUX_FALSE@
-KDRIVELINUX_TRUE = @KDRIVELINUX_TRUE@
 KDRIVEVESA_FALSE = @KDRIVEVESA_FALSE@
 KDRIVEVESA_TRUE = @KDRIVEVESA_TRUE@
 KDRIVE_CFLAGS = @KDRIVE_CFLAGS@
@@ -317,12 +307,6 @@ KDRIVE_LIBS = @KDRIVE_LIBS@
 KDRIVE_PURE_INCS = @KDRIVE_PURE_INCS@
 KDRIVE_PURE_LIBS = @KDRIVE_PURE_LIBS@
 KDRIVE_TRUE = @KDRIVE_TRUE@
-LBXUTIL_CFLAGS = @LBXUTIL_CFLAGS@
-LBXUTIL_LIBS = @LBXUTIL_LIBS@
-LBXUTIL_TEST_CFLAGS = @LBXUTIL_TEST_CFLAGS@
-LBXUTIL_TEST_LIBS = @LBXUTIL_TEST_LIBS@
-LBX_FALSE = @LBX_FALSE@
-LBX_TRUE = @LBX_TRUE@
 LDFLAGS = @LDFLAGS@
 LD_EXPORT_SYMBOLS_FLAG = @LD_EXPORT_SYMBOLS_FLAG@
 LEX = @LEX@
@@ -345,7 +329,6 @@ LNXACPI_TRUE = @LNXACPI_TRUE@
 LNXAPM_FALSE = @LNXAPM_FALSE@
 LNXAPM_TRUE = @LNXAPM_TRUE@
 LN_S = @LN_S@
-LOADER_DEFINES = @LOADER_DEFINES@
 LTLIBOBJS = @LTLIBOBJS@
 MAINT = @MAINT@
 MAINTAINER_MODE_FALSE = @MAINTAINER_MODE_FALSE@
@@ -358,8 +341,6 @@ MAKE_TEXT = @MAKE_TEXT@
 MESA_SOURCE = @MESA_SOURCE@
 MFB_FALSE = @MFB_FALSE@
 MFB_TRUE = @MFB_TRUE@
-MISCUTILS_FALSE = @MISCUTILS_FALSE@
-MISCUTILS_TRUE = @MISCUTILS_TRUE@
 MISC_MAN_DIR = @MISC_MAN_DIR@
 MISC_MAN_SUFFIX = @MISC_MAN_SUFFIX@
 MITSHM_FALSE = @MITSHM_FALSE@
@@ -368,7 +349,6 @@ MKFONTDIR = @MKFONTDIR@
 MKFONTSCALE = @MKFONTSCALE@
 MMX_CAPABLE_FALSE = @MMX_CAPABLE_FALSE@
 MMX_CAPABLE_TRUE = @MMX_CAPABLE_TRUE@
-MODULE_DEFINES = @MODULE_DEFINES@
 MULTIBUFFER_FALSE = @MULTIBUFFER_FALSE@
 MULTIBUFFER_TRUE = @MULTIBUFFER_TRUE@
 NEED_STRLCAT_FALSE = @NEED_STRLCAT_FALSE@
@@ -400,10 +380,10 @@ RES_TRUE = @RES_TRUE@
 RGB_DB = @RGB_DB@
 SCREENSAVER_FALSE = @SCREENSAVER_FALSE@
 SCREENSAVER_TRUE = @SCREENSAVER_TRUE@
-SERVERCONFIGdir = @SERVERCONFIGdir@
-SERVER_DEFINES = @SERVER_DEFINES@
+SED = @SED@
 SET_MAKE = @SET_MAKE@
 SHELL = @SHELL@
+SOLARIS_ASM_CFLAGS = @SOLARIS_ASM_CFLAGS@
 SOLARIS_ASM_INLINE_FALSE = @SOLARIS_ASM_INLINE_FALSE@
 SOLARIS_ASM_INLINE_TRUE = @SOLARIS_ASM_INLINE_TRUE@
 SOLARIS_INOUT_ARCH = @SOLARIS_INOUT_ARCH@
@@ -415,7 +395,9 @@ STRIP = @STRIP@
 SUN_KBD_MODE_FALSE = @SUN_KBD_MODE_FALSE@
 SUN_KBD_MODE_TRUE = @SUN_KBD_MODE_TRUE@
 SYS_LIBS = @SYS_LIBS@
+TSLIB_CFLAGS = @TSLIB_CFLAGS@
 TSLIB_FALSE = @TSLIB_FALSE@
+TSLIB_LIBS = @TSLIB_LIBS@
 TSLIB_TRUE = @TSLIB_TRUE@
 USE_CURSES_FALSE = @USE_CURSES_FALSE@
 USE_CURSES_TRUE = @USE_CURSES_TRUE@
@@ -428,6 +410,10 @@ VENDOR_STRING_SHORT = @VENDOR_STRING_SHORT@
 VERSION = @VERSION@
 X11EXAMPLES_DEP_CFLAGS = @X11EXAMPLES_DEP_CFLAGS@
 X11EXAMPLES_DEP_LIBS = @X11EXAMPLES_DEP_LIBS@
+XACE_FALSE = @XACE_FALSE@
+XACE_TRUE = @XACE_TRUE@
+XCALIBRATE_FALSE = @XCALIBRATE_FALSE@
+XCALIBRATE_TRUE = @XCALIBRATE_TRUE@
 XCSECURITY_FALSE = @XCSECURITY_FALSE@
 XCSECURITY_TRUE = @XCSECURITY_TRUE@
 XDMAUTH_FALSE = @XDMAUTH_FALSE@
@@ -454,6 +440,8 @@ XEVIE_TRUE = @XEVIE_TRUE@
 XF86BIGFONT_FALSE = @XF86BIGFONT_FALSE@
 XF86BIGFONT_TRUE = @XF86BIGFONT_TRUE@
 XF86CONFIGFILE = @XF86CONFIGFILE@
+XF86UTILS_FALSE = @XF86UTILS_FALSE@
+XF86UTILS_TRUE = @XF86UTILS_TRUE@
 XGLMODULES_CFLAGS = @XGLMODULES_CFLAGS@
 XGLMODULES_LIBS = @XGLMODULES_LIBS@
 XGLXMODULES_CFLAGS = @XGLXMODULES_CFLAGS@
@@ -563,11 +551,17 @@ XWIN_TRUE = @XWIN_TRUE@
 XWIN_XV_FALSE = @XWIN_XV_FALSE@
 XWIN_XV_TRUE = @XWIN_XV_TRUE@
 YACC = @YACC@
-YFLAGS = @YFLAGS@
 __XCONFIGFILE__ = @__XCONFIGFILE__@
+ac_ct_AR = @ac_ct_AR@
+ac_ct_AS = @ac_ct_AS@
 ac_ct_CC = @ac_ct_CC@
 ac_ct_CXX = @ac_ct_CXX@
+ac_ct_DLLTOOL = @ac_ct_DLLTOOL@
 ac_ct_F77 = @ac_ct_F77@
+ac_ct_OBJDUMP = @ac_ct_OBJDUMP@
+ac_ct_RANLIB = @ac_ct_RANLIB@
+ac_ct_STRIP = @ac_ct_STRIP@
+ac_pt_PKG_CONFIG = @ac_pt_PKG_CONFIG@
 am__fastdepCC_FALSE = @am__fastdepCC_FALSE@
 am__fastdepCC_TRUE = @am__fastdepCC_TRUE@
 am__fastdepCXX_FALSE = @am__fastdepCXX_FALSE@
@@ -584,10 +578,7 @@ build_cpu = @build_cpu@
 build_os = @build_os@
 build_vendor = @build_vendor@
 datadir = @datadir@
-datarootdir = @datarootdir@
-docdir = @docdir@
 driverdir = @driverdir@
-dvidir = @dvidir@
 exec_prefix = @exec_prefix@
 extdir = @extdir@
 ft_config = @ft_config@
@@ -596,23 +587,19 @@ host_alias = @host_alias@
 host_cpu = @host_cpu@
 host_os = @host_os@
 host_vendor = @host_vendor@
-htmldir = @htmldir@
 includedir = @includedir@
 infodir = @infodir@
 install_sh = @install_sh@
 libdir = @libdir@
 libexecdir = @libexecdir@
-localedir = @localedir@
 localstatedir = @localstatedir@
 logdir = @logdir@
 mandir = @mandir@
 mkdir_p = @mkdir_p@
 moduledir = @moduledir@
 oldincludedir = @oldincludedir@
-pdfdir = @pdfdir@
 prefix = @prefix@
 program_transform_name = @program_transform_name@
-psdir = @psdir@
 sbindir = @sbindir@
 sdkdir = @sdkdir@
 sharedstatedir = @sharedstatedir@
@@ -624,26 +611,25 @@ noinst_LTLIBRARIES = libdixmods.la libxorgxkb.la
 SUBDIRS = extmod
 @GLX_TRUE@GLXMODS = libglx.la libGLcore.la
 @XTRAP_TRUE@XTRAPMOD = libxtrap.la
+@DBE_TRUE@DBEMOD = libdbe.la
 module_LTLIBRARIES = libafb.la \
                      libcfb.la \
-                     libcfb16.la \
                      libcfb32.la \
                      libfb.la \
                      libmfb.la \
                      libshadow.la
 
 extsmoduledir = $(moduledir)/extensions
-extsmodule_LTLIBRARIES = libdbe.la \
-                         librecord.la \
+extsmodule_LTLIBRARIES = librecord.la \
+			 $(DBEMOD) \
                          $(GLXMODS) \
                          $(XTRAPMOD)
 
 fontsmoduledir = $(moduledir)/fonts
-fontsmodule_LTLIBRARIES = libbitmap.la \
-                          libfreetype.la \
+fontsmodule_LTLIBRARIES = libfreetype.la \
                           libtype1.la
 
-AM_CFLAGS = @XORG_CFLAGS@ @DIX_CFLAGS@ @SERVER_DEFINES@ @LOADER_DEFINES@
+AM_CFLAGS = @XORG_CFLAGS@ @DIX_CFLAGS@
 INCLUDES = @XORG_INCS@ \
            -I$(top_srcdir)/afb \
            -I$(top_srcdir)/cfb \
@@ -659,17 +645,9 @@ libGLcore_la_SOURCES = GLcoremodule.c
 libafb_la_LDFLAGS = -avoid-version
 libafb_la_LIBADD = $(top_builddir)/afb/libafb.la
 libafb_la_SOURCES = afbmodule.c
-
-# libbitmap is just a wrapper around the bitmap font code in Xfont.
-# it doesn't even make sense to have it loadable, but, welcome to X.
-libbitmap_la_SOURCES = bitmapmod.c
-libbitmap_la_LDFLAGS = -avoid-version # `pkg-config --libs xfont`
 libcfb_la_LDFLAGS = -avoid-version
 libcfb_la_LIBADD = $(top_builddir)/cfb/libcfb.la
 libcfb_la_SOURCES = cfbmodule.c
-libcfb16_la_LDFLAGS = -avoid-version
-libcfb16_la_LIBADD = $(top_builddir)/cfb16/libcfb16.la
-libcfb16_la_SOURCES = cfb16module.c
 libcfb32_la_LDFLAGS = -avoid-version
 libcfb32_la_LIBADD = $(top_builddir)/cfb32/libcfb32.la
 libcfb32_la_SOURCES = cfb32module.c
@@ -679,6 +657,7 @@ libdbe_la_SOURCES = dbemodule.c
 libfb_la_LDFLAGS = -avoid-version
 libfb_la_LIBADD = $(top_builddir)/fb/libfb.la
 libfb_la_SOURCES = $(top_builddir)/fb/fbcmap.c fbmodule.c
+libfb_la_CFLAGS = -DXFree86Server $(AM_CFLAGS)
 libglx_la_LDFLAGS = -avoid-version
 @AIGLX_TRUE@GLXDRI_LIBRARY = $(top_builddir)/GL/glx/libglxdri.la
 libglx_la_LIBADD = \
@@ -700,6 +679,7 @@ libfreetype_la_SOURCES = ftmodule.c
 libtype1_la_LDFLAGS = -avoid-version
 libtype1_la_SOURCES = type1mod.c
 libdixmods_la_SOURCES = $(top_srcdir)/mi/miinitext.c
+libdixmods_la_CFLAGS = -DXFree86LOADER $(AM_CFLAGS)
 libxorgxkb_la_SOURCES = xkbVT.c xkbPrivate.c xkbKillSrv.c
 libxorgxkb_la_LIBADD = $(top_builddir)/dix/libdix.la
 libxtrap_la_LDFLAGS = -avoid-version
@@ -832,16 +812,12 @@ libGLcore.la: $(libGLcore_la_OBJECTS) $(libGLcore_la_DEPENDENCIES)
 	$(LINK) $(am_libGLcore_la_rpath) $(libGLcore_la_LDFLAGS) $(libGLcore_la_OBJECTS) $(libGLcore_la_LIBADD) $(LIBS)
 libafb.la: $(libafb_la_OBJECTS) $(libafb_la_DEPENDENCIES) 
 	$(LINK) -rpath $(moduledir) $(libafb_la_LDFLAGS) $(libafb_la_OBJECTS) $(libafb_la_LIBADD) $(LIBS)
-libbitmap.la: $(libbitmap_la_OBJECTS) $(libbitmap_la_DEPENDENCIES) 
-	$(LINK) -rpath $(fontsmoduledir) $(libbitmap_la_LDFLAGS) $(libbitmap_la_OBJECTS) $(libbitmap_la_LIBADD) $(LIBS)
 libcfb.la: $(libcfb_la_OBJECTS) $(libcfb_la_DEPENDENCIES) 
 	$(LINK) -rpath $(moduledir) $(libcfb_la_LDFLAGS) $(libcfb_la_OBJECTS) $(libcfb_la_LIBADD) $(LIBS)
-libcfb16.la: $(libcfb16_la_OBJECTS) $(libcfb16_la_DEPENDENCIES) 
-	$(LINK) -rpath $(moduledir) $(libcfb16_la_LDFLAGS) $(libcfb16_la_OBJECTS) $(libcfb16_la_LIBADD) $(LIBS)
 libcfb32.la: $(libcfb32_la_OBJECTS) $(libcfb32_la_DEPENDENCIES) 
 	$(LINK) -rpath $(moduledir) $(libcfb32_la_LDFLAGS) $(libcfb32_la_OBJECTS) $(libcfb32_la_LIBADD) $(LIBS)
 libdbe.la: $(libdbe_la_OBJECTS) $(libdbe_la_DEPENDENCIES) 
-	$(LINK) -rpath $(extsmoduledir) $(libdbe_la_LDFLAGS) $(libdbe_la_OBJECTS) $(libdbe_la_LIBADD) $(LIBS)
+	$(LINK) $(am_libdbe_la_rpath) $(libdbe_la_LDFLAGS) $(libdbe_la_OBJECTS) $(libdbe_la_LIBADD) $(LIBS)
 libdixmods.la: $(libdixmods_la_OBJECTS) $(libdixmods_la_DEPENDENCIES) 
 	$(LINK)  $(libdixmods_la_LDFLAGS) $(libdixmods_la_OBJECTS) $(libdixmods_la_LIBADD) $(LIBS)
 libfb.la: $(libfb_la_OBJECTS) $(libfb_la_DEPENDENCIES) 
@@ -871,17 +847,15 @@ distclean-compile:
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GLcoremodule.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/afbmodule.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/bitmapmod.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/cfb16module.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/cfb32module.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/cfbmodule.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dbemodule.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/fbcmap.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/fbmodule.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ftmodule.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/glxmodule.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libdixmods_la-miinitext.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libfb_la-fbcmap.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libfb_la-fbmodule.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/mfbmodule.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/miinitext.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/recordmod.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/shmodule.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/type1mod.Plo@am__quote@
@@ -911,19 +885,26 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LTCOMPILE) -c -o $@ $<
 
-miinitext.lo: $(top_srcdir)/mi/miinitext.c
-@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT miinitext.lo -MD -MP -MF "$(DEPDIR)/miinitext.Tpo" -c -o miinitext.lo `test -f '$(top_srcdir)/mi/miinitext.c' || echo '$(srcdir)/'`$(top_srcdir)/mi/miinitext.c; \
-@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/miinitext.Tpo" "$(DEPDIR)/miinitext.Plo"; else rm -f "$(DEPDIR)/miinitext.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$(top_srcdir)/mi/miinitext.c' object='miinitext.lo' libtool=yes @AMDEPBACKSLASH@
+libdixmods_la-miinitext.lo: $(top_srcdir)/mi/miinitext.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libdixmods_la_CFLAGS) $(CFLAGS) -MT libdixmods_la-miinitext.lo -MD -MP -MF "$(DEPDIR)/libdixmods_la-miinitext.Tpo" -c -o libdixmods_la-miinitext.lo `test -f '$(top_srcdir)/mi/miinitext.c' || echo '$(srcdir)/'`$(top_srcdir)/mi/miinitext.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libdixmods_la-miinitext.Tpo" "$(DEPDIR)/libdixmods_la-miinitext.Plo"; else rm -f "$(DEPDIR)/libdixmods_la-miinitext.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$(top_srcdir)/mi/miinitext.c' object='libdixmods_la-miinitext.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o miinitext.lo `test -f '$(top_srcdir)/mi/miinitext.c' || echo '$(srcdir)/'`$(top_srcdir)/mi/miinitext.c
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libdixmods_la_CFLAGS) $(CFLAGS) -c -o libdixmods_la-miinitext.lo `test -f '$(top_srcdir)/mi/miinitext.c' || echo '$(srcdir)/'`$(top_srcdir)/mi/miinitext.c
 
-fbcmap.lo: $(top_builddir)/fb/fbcmap.c
-@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT fbcmap.lo -MD -MP -MF "$(DEPDIR)/fbcmap.Tpo" -c -o fbcmap.lo `test -f '$(top_builddir)/fb/fbcmap.c' || echo '$(srcdir)/'`$(top_builddir)/fb/fbcmap.c; \
-@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/fbcmap.Tpo" "$(DEPDIR)/fbcmap.Plo"; else rm -f "$(DEPDIR)/fbcmap.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$(top_builddir)/fb/fbcmap.c' object='fbcmap.lo' libtool=yes @AMDEPBACKSLASH@
+libfb_la-fbcmap.lo: $(top_builddir)/fb/fbcmap.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libfb_la_CFLAGS) $(CFLAGS) -MT libfb_la-fbcmap.lo -MD -MP -MF "$(DEPDIR)/libfb_la-fbcmap.Tpo" -c -o libfb_la-fbcmap.lo `test -f '$(top_builddir)/fb/fbcmap.c' || echo '$(srcdir)/'`$(top_builddir)/fb/fbcmap.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libfb_la-fbcmap.Tpo" "$(DEPDIR)/libfb_la-fbcmap.Plo"; else rm -f "$(DEPDIR)/libfb_la-fbcmap.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$(top_builddir)/fb/fbcmap.c' object='libfb_la-fbcmap.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o fbcmap.lo `test -f '$(top_builddir)/fb/fbcmap.c' || echo '$(srcdir)/'`$(top_builddir)/fb/fbcmap.c
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libfb_la_CFLAGS) $(CFLAGS) -c -o libfb_la-fbcmap.lo `test -f '$(top_builddir)/fb/fbcmap.c' || echo '$(srcdir)/'`$(top_builddir)/fb/fbcmap.c
+
+libfb_la-fbmodule.lo: fbmodule.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libfb_la_CFLAGS) $(CFLAGS) -MT libfb_la-fbmodule.lo -MD -MP -MF "$(DEPDIR)/libfb_la-fbmodule.Tpo" -c -o libfb_la-fbmodule.lo `test -f 'fbmodule.c' || echo '$(srcdir)/'`fbmodule.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libfb_la-fbmodule.Tpo" "$(DEPDIR)/libfb_la-fbmodule.Plo"; else rm -f "$(DEPDIR)/libfb_la-fbmodule.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='fbmodule.c' object='libfb_la-fbmodule.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libfb_la_CFLAGS) $(CFLAGS) -c -o libfb_la-fbmodule.lo `test -f 'fbmodule.c' || echo '$(srcdir)/'`fbmodule.c
 
 mostlyclean-libtool:
 	-rm -f *.lo

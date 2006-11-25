@@ -1,4 +1,3 @@
-/* $Xorg: ddxList.c,v 1.3 2000/08/17 19:53:46 cpqbld Exp $ */
 /************************************************************
 Copyright (c) 1995 by Silicon Graphics Computer Systems, Inc.
 
@@ -24,7 +23,6 @@ OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION  WITH
 THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 ********************************************************/
-/* $XFree86: xc/programs/Xserver/xkb/ddxList.c,v 3.8 2003/07/16 01:39:05 dawes Exp $ */
 
 #ifdef HAVE_DIX_CONFIG_H
 #include <dix-config.h>
@@ -169,8 +167,6 @@ char	tmpname[PATH_MAX];
 	if ((list->pattern[what][0]=='*')&&(list->pattern[what][1]=='\0')) {
 	    buf = Xprintf("%s/%s.dir",XkbBaseDirectory,componentDirs[what]);
 	    in= fopen(buf,"r");
-	    xfree (buf);
-	    buf = NULL;
 	}
 	if (!in) {
 	    haveDir= False;
@@ -186,8 +182,6 @@ char	tmpname[PATH_MAX];
 	if ((list->pattern[what][0]=='*')&&(list->pattern[what][1]=='\0')) {
 	    buf = Xprintf("%s.dir",componentDirs[what]);
 	    in= fopen(buf,"r");
-	    xfree (buf);
-	    buf = NULL;
 	}
 	if (!in) {
 	    haveDir= False;
@@ -224,6 +218,13 @@ char	tmpname[PATH_MAX];
 	return BadImplementation;
     }
     list->nFound[what]= 0;
+    if (buf) {
+        xfree(buf);
+        buf = NULL;
+    }
+    buf = xalloc(PATH_MAX * sizeof(char));
+    if (!buf)
+        return BadAlloc;
     while ((status==Success)&&((tmp=fgets(buf,PATH_MAX,in))!=NULL)) {
 	unsigned flags;
 	register unsigned int i;
@@ -268,7 +269,7 @@ char	tmpname[PATH_MAX];
 #ifndef WIN32
     if (haveDir)
 	fclose(in);
-    else if ((rval=pclose(in))!=0) {
+    else if ((rval=Pclose(in))!=0) {
 	if (xkbDebugFlags)
 	    ErrorF("xkbcomp returned exit code %d\n",rval);
     }

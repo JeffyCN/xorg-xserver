@@ -1,5 +1,3 @@
-/* $XdotOrg: xserver/xorg/dix/events.c,v 1.18 2006/02/15 20:44:12 ajax Exp $ */
-/* $XFree86: xc/programs/Xserver/dix/events.c,v 3.51 2004/01/12 17:04:52 tsi Exp $ */
 /************************************************************
 
 Copyright 1987, 1998  The Open Group
@@ -109,7 +107,6 @@ of the copyright holder.
 
 ******************************************************************/
 
-/* $Xorg: events.c,v 1.4 2001/02/09 02:04:40 xorgcvs Exp $ */
 
 #ifdef HAVE_DIX_CONFIG_H
 #include <dix-config.h>
@@ -138,9 +135,8 @@ of the copyright holder.
 extern Bool XkbFilterEvents(ClientPtr, int, xEvent *);
 #endif
 
-#ifdef XCSECURITY
-#define _SECURITY_SERVER
-#include <X11/extensions/security.h>
+#ifdef XACE
+#include "xace.h"
 #endif
 
 #ifdef XEVIE
@@ -462,13 +458,7 @@ XineramaCheckVirtualMotion(
     if (qe)
     {
 	sprite.hot.pScreen = qe->pScreen;  /* should always be Screen 0 */
-#ifdef XEVIE
-	xeviehot.x =
-#endif
 	sprite.hot.x = qe->event->u.keyButtonPointer.rootX;
-#ifdef XEVIE
-	xeviehot.y =
-#endif
 	sprite.hot.y = qe->event->u.keyButtonPointer.rootY;
 	pWin = inputInfo.pointer->grab ? inputInfo.pointer->grab->confineTo :
 					 NullWindow;
@@ -505,24 +495,12 @@ XineramaCheckVirtualMotion(
 	lims = *REGION_EXTENTS(sprite.screen, &sprite.Reg2);
 
         if (sprite.hot.x < lims.x1)
-#ifdef XEVIE
-	    xeviehot.x =
-#endif
             sprite.hot.x = lims.x1;
         else if (sprite.hot.x >= lims.x2)
-#ifdef XEVIE
-	    xeviehot.x =
-#endif
             sprite.hot.x = lims.x2 - 1;
         if (sprite.hot.y < lims.y1)
-#ifdef XEVIE
-	    xeviehot.y =
-#endif
             sprite.hot.y = lims.y1;
         else if (sprite.hot.y >= lims.y2)
-#ifdef XEVIE
-	    xeviehot.y =
-#endif
             sprite.hot.y = lims.y2 - 1;
 
 	if (REGION_NUM_RECTS(&sprite.Reg2) > 1) 
@@ -535,6 +513,10 @@ XineramaCheckVirtualMotion(
 	    qe->event->u.keyButtonPointer.rootY = sprite.hot.y;
 	}
     }
+#ifdef XEVIE
+    xeviehot.x = sprite.hot.x;
+    xeviehot.y = sprite.hot.y;
+#endif
 }
 
 
@@ -552,33 +534,15 @@ XineramaCheckMotion(xEvent *xE)
 			  panoramiXdataPtr[0].x;
 	XE_KBPTR.rootY += panoramiXdataPtr[sprite.screen->myNum].y -
 			  panoramiXdataPtr[0].y;
-#ifdef XEVIE
-	xeviehot.x =
-#endif
 	sprite.hot.x = XE_KBPTR.rootX;
-#ifdef XEVIE
-	xeviehot.y =
-#endif
 	sprite.hot.y = XE_KBPTR.rootY;
 	if (sprite.hot.x < sprite.physLimits.x1)
-#ifdef XEVIE
-	    xeviehot.x =
-#endif
 	    sprite.hot.x = sprite.physLimits.x1;
 	else if (sprite.hot.x >= sprite.physLimits.x2)
-#ifdef XEVIE
-	    xeviehot.x =
-#endif
 	    sprite.hot.x = sprite.physLimits.x2 - 1;
 	if (sprite.hot.y < sprite.physLimits.y1)
-#ifdef XEVIE
-	    xeviehot.y =
-#endif
 	    sprite.hot.y = sprite.physLimits.y1;
 	else if (sprite.hot.y >= sprite.physLimits.y2)
-#ifdef XEVIE
-	    xeviehot.y =
-#endif
 	    sprite.hot.y = sprite.physLimits.y2 - 1;
 
 	if (sprite.hotShape) 
@@ -596,6 +560,8 @@ XineramaCheckMotion(xEvent *xE)
     }
 
 #ifdef XEVIE
+    xeviehot.x = sprite.hot.x;
+    xeviehot.y = sprite.hot.y;
     xeviewin =
 #endif
     sprite.win = XYToWindow(sprite.hot.x, sprite.hot.y);
@@ -821,13 +787,7 @@ CheckVirtualMotion(
     if (qe)
     {
 	sprite.hot.pScreen = qe->pScreen;
-#ifdef XEVIE
-	xeviehot.x =
-#endif
 	sprite.hot.x = qe->event->u.keyButtonPointer.rootX;
-#ifdef XEVIE
-	xeviehot.y =
-#endif
 	sprite.hot.y = qe->event->u.keyButtonPointer.rootY;
 	pWin = inputInfo.pointer->grab ? inputInfo.pointer->grab->confineTo :
 					 NullWindow;
@@ -839,31 +799,16 @@ CheckVirtualMotion(
 	if (sprite.hot.pScreen != pWin->drawable.pScreen)
 	{
 	    sprite.hot.pScreen = pWin->drawable.pScreen;
-#ifdef XEVIE
-	    xeviehot.x = xeviehot.y = 0;
-#endif
 	    sprite.hot.x = sprite.hot.y = 0;
 	}
 	lims = *REGION_EXTENTS(pWin->drawable.pScreen, &pWin->borderSize);
 	if (sprite.hot.x < lims.x1)
-#ifdef XEVIE
-	    xeviehot.x =
-#endif
 	    sprite.hot.x = lims.x1;
 	else if (sprite.hot.x >= lims.x2)
-#ifdef XEVIE
-	    xeviehot.x =
-#endif
 	    sprite.hot.x = lims.x2 - 1;
 	if (sprite.hot.y < lims.y1)
-#ifdef XEVIE
-	    xeviehot.y =
-#endif
 	    sprite.hot.y = lims.y1;
 	else if (sprite.hot.y >= lims.y2)
-#ifdef XEVIE
-	    xeviehot.y =
-#endif
 	    sprite.hot.y = lims.y2 - 1;
 #ifdef SHAPE
 	if (wBoundingShape(pWin))
@@ -876,6 +821,10 @@ CheckVirtualMotion(
 	    qe->event->u.keyButtonPointer.rootY = sprite.hot.y;
 	}
     }
+#ifdef XEVIE
+    xeviehot.x = sprite.hot.x;
+    xeviehot.y = sprite.hot.y;
+#endif
     ROOT = WindowTable[sprite.hot.pScreen->myNum];
 }
 
@@ -2057,37 +2006,23 @@ CheckMotion(xEvent *xE)
 	    sprite.hot.pScreen = sprite.hotPhys.pScreen;
 	    ROOT = WindowTable[sprite.hot.pScreen->myNum];
 	}
-#ifdef XEVIE
-	xeviehot.x =
-#endif
 	sprite.hot.x = XE_KBPTR.rootX;
-#ifdef XEVIE
-	xeviehot.y =
-#endif
 	sprite.hot.y = XE_KBPTR.rootY;
 	if (sprite.hot.x < sprite.physLimits.x1)
-#ifdef XEVIE
-	    xeviehot.x =
-#endif
 	    sprite.hot.x = sprite.physLimits.x1;
 	else if (sprite.hot.x >= sprite.physLimits.x2)
-#ifdef XEVIE
-	    xeviehot.x =
-#endif
 	    sprite.hot.x = sprite.physLimits.x2 - 1;
 	if (sprite.hot.y < sprite.physLimits.y1)
-#ifdef XEVIE
-	    xeviehot.y =
-#endif
 	    sprite.hot.y = sprite.physLimits.y1;
 	else if (sprite.hot.y >= sprite.physLimits.y2)
-#ifdef XEVIE
-	    xeviehot.y =
-#endif
 	    sprite.hot.y = sprite.physLimits.y2 - 1;
 #ifdef SHAPE
 	if (sprite.hotShape)
 	    ConfineToShape(sprite.hotShape, &sprite.hot.x, &sprite.hot.y);
+#endif
+#ifdef XEVIE
+        xeviehot.x = sprite.hot.x;
+        xeviehot.y = sprite.hot.y;
 #endif
 	sprite.hotPhys = sprite.hot;
 	if ((sprite.hotPhys.x != XE_KBPTR.rootX) ||
@@ -2541,8 +2476,8 @@ CheckPassiveGrabsOnWindow(
 	     (grab->confineTo->realized && 
 				BorderSizeNotEmpty(grab->confineTo))))
 	{
-#ifdef XCSECURITY
-	    if (!SecurityCheckDeviceAccess(wClient(pWin), device, FALSE))
+#ifdef XACE
+	    if (!XaceHook(XACE_DEVICE_ACCESS, wClient(pWin), device, FALSE))
 		return FALSE;
 #endif
 #ifdef XKB
@@ -2911,6 +2846,10 @@ drawable.id:0;
 	DeliverFocusedEvent(keybd, xE, sprite.win, count);
     if (deactivateGrab)
         (*keybd->DeactivateGrab)(keybd);
+
+#ifdef XACE
+    XaceHook(XACE_KEY_AVAIL, xE, keybd, count);
+#endif
 }
 
 #ifdef XKB
@@ -3020,9 +2959,6 @@ ProcessPointerEvent (register xEvent *xE, register DeviceIntPtr mouse, int count
 		butc->buttonsDown++;
 	    butc->motionMask = ButtonMotionMask;
 	    *kptr |= bit;
-#if !defined(XFree86Server) || !defined(XINPUT)
-	    xE->u.u.detail = butc->map[key];
-#endif
 	    if (xE->u.u.detail == 0)
 		return;
 	    if (xE->u.u.detail <= 5)
@@ -3039,9 +2975,6 @@ ProcessPointerEvent (register xEvent *xE, register DeviceIntPtr mouse, int count
 	    if (!butc->buttonsDown)
 		butc->motionMask = 0;
 	    *kptr &= ~bit;
-#if !defined(XFree86Server) || !defined(XINPUT)
-	    xE->u.u.detail = butc->map[key];
-#endif
 	    if (xE->u.u.detail == 0)
 		return;
 	    if (xE->u.u.detail <= 5)
@@ -3224,7 +3157,7 @@ EventSuppressForWindow(register WindowPtr pWin, register ClientPtr client,
 {
     register int i, free;
 
-    if ((mask & ~PropagateMask) && !permitOldBugs)
+    if (mask & ~PropagateMask)
     {
 	client->errorValue = mask;
 	return BadValue;
@@ -3350,10 +3283,10 @@ EnterLeaveEvent(
     {
 	xKeymapEvent ke;
 
-#ifdef XCSECURITY
+#ifdef XACE
 	ClientPtr client = grab ? rClient(grab)
 				: clients[CLIENT_ID(pWin->drawable.id)];
-	if (!SecurityCheckDeviceAccess(client, keybd, FALSE))
+	if (!XaceHook(XACE_DEVICE_ACCESS, client, keybd, FALSE))
 	{
 	    bzero((char *)&ke.map[0], 31);
 	}
@@ -3445,9 +3378,9 @@ FocusEvent(DeviceIntPtr dev, int type, int mode, int detail, register WindowPtr 
 	((pWin->eventMask | wOtherEventMasks(pWin)) & KeymapStateMask))
     {
 	xKeymapEvent ke;
-#ifdef XCSECURITY
+#ifdef XACE
 	ClientPtr client = clients[CLIENT_ID(pWin->drawable.id)];
-	if (!SecurityCheckDeviceAccess(client, dev, FALSE))
+	if (!XaceHook(XACE_DEVICE_ACCESS, client, dev, FALSE))
 	{
 	    bzero((char *)&ke.map[0], 31);
 	}
@@ -3716,8 +3649,8 @@ ProcSetInputFocus(client)
     REQUEST(xSetInputFocusReq);
 
     REQUEST_SIZE_MATCH(xSetInputFocusReq);
-#ifdef XCSECURITY
-    if (!SecurityCheckDeviceAccess(client, inputInfo.keyboard, TRUE))
+#ifdef XACE
+    if (!XaceHook(XACE_DEVICE_ACCESS, client, inputInfo.keyboard, TRUE))
 	return Success;
 #endif
     return SetInputFocus(client, inputInfo.keyboard, stuff->focus,
@@ -3775,7 +3708,7 @@ ProcGrabPointer(ClientPtr client)
 	client->errorValue = stuff->ownerEvents;
         return BadValue;
     }
-    if ((stuff->eventMask & ~PointerGrabMask) && !permitOldBugs)
+    if (stuff->eventMask & ~PointerGrabMask)
     {
 	client->errorValue = stuff->eventMask;
         return BadValue;
@@ -3861,7 +3794,7 @@ ProcChangeActivePointerGrab(ClientPtr client)
     TimeStamp time;
 
     REQUEST_SIZE_MATCH(xChangeActivePointerGrabReq);
-    if ((stuff->eventMask & ~PointerGrabMask) && !permitOldBugs)
+    if (stuff->eventMask & ~PointerGrabMask)
     {
 	client->errorValue = stuff->eventMask;
         return BadValue;
@@ -3981,8 +3914,8 @@ ProcGrabKeyboard(ClientPtr client)
     int result;
 
     REQUEST_SIZE_MATCH(xGrabKeyboardReq);
-#ifdef XCSECURITY
-    if (!SecurityCheckDeviceAccess(client, inputInfo.keyboard, TRUE))
+#ifdef XACE
+    if (!XaceHook(XACE_DEVICE_ACCESS, client, inputInfo.keyboard, TRUE))
     {
 	result = Success;
 	rep.status = AlreadyGrabbed;
@@ -4162,13 +4095,12 @@ ProcSendEvent(ClientPtr client)
     if (stuff->event.u.u.type == ClientMessage &&
 	stuff->event.u.u.detail != 8 &&
 	stuff->event.u.u.detail != 16 &&
-	stuff->event.u.u.detail != 32 &&
-	!permitOldBugs)
+	stuff->event.u.u.detail != 32)
     {
 	client->errorValue = stuff->event.u.u.detail;
 	return BadValue;
     }
-    if ((stuff->eventMask & ~AllEventMasks) && !permitOldBugs)
+    if (stuff->eventMask & ~AllEventMasks)
     {
 	client->errorValue = stuff->eventMask;
 	return BadValue;
@@ -4385,12 +4317,10 @@ ProcGrabButton(ClientPtr client)
 
 
     grab = CreateGrab(client->index, inputInfo.pointer, pWin, 
-    permitOldBugs ? (Mask)(stuff->eventMask |
-			       ButtonPressMask | ButtonReleaseMask) :
-			(Mask)stuff->eventMask,
-	(Bool)stuff->ownerEvents, (Bool) stuff->keyboardMode,
-	(Bool)stuff->pointerMode, inputInfo.keyboard, stuff->modifiers,
-	ButtonPress, stuff->button, confineTo, cursor);
+        (Mask)stuff->eventMask, (Bool)stuff->ownerEvents,
+        (Bool) stuff->keyboardMode, (Bool)stuff->pointerMode,
+        inputInfo.keyboard, stuff->modifiers, ButtonPress,
+        stuff->button, confineTo, cursor);
     if (!grab)
 	return BadAlloc;
     return AddPassiveGrabToList(grab);

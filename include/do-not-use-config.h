@@ -2,19 +2,22 @@
 /* include/do-not-use-config.h.in.  Generated from configure.ac by autoheader.  */
 
 /* Build AIGLX loader */
-#define AIGLX 1
+/* #undef AIGLX */
+
+/* Default base font path */
+#define BASE_FONT_PATH "/usr/local/lib/X11/fonts"
 
 /* Support BigRequests extension */
 #define BIGREQS 1
 
 /* Define to 1 if `struct sockaddr_in' has a `sin_len' member */
-#define BSD44SOCKETS 1
+/* #undef BSD44SOCKETS */
 
 /* Builder address */
 #define BUILDERADDR "xorg@lists.freedesktop.org"
 
 /* Default font path */
-#define COMPILEDDEFAULTFONTPATH "/usr/X11R6/lib/X11/fonts/misc/,/usr/X11R6/lib/X11/fonts/TTF/,/usr/X11R6/lib/X11/fonts/OTF,/usr/X11R6/lib/X11/fonts/Type1/,/usr/X11R6/lib/X11/fonts/CID/,/usr/X11R6/lib/X11/fonts/100dpi/,/usr/X11R6/lib/X11/fonts/75dpi/"
+#define COMPILEDDEFAULTFONTPATH "/usr/local/lib/X11/fonts/misc/,/usr/local/lib/X11/fonts/TTF/,/usr/local/lib/X11/fonts/OTF,/usr/local/lib/X11/fonts/Type1/,/usr/local/lib/X11/fonts/CID/,/usr/local/lib/X11/fonts/100dpi/,/usr/local/lib/X11/fonts/75dpi/"
 
 /* Support Composite Extension */
 #define COMPOSITE 1
@@ -25,7 +28,7 @@
 /* #undef CRAY_STACKSEG_END */
 
 /* System is BSD-like */
-#define CSRG_BASED 1
+/* #undef CSRG_BASED */
 
 /* Simple debug messages */
 /* #undef CYGDEBUG */
@@ -61,19 +64,13 @@
 /* #undef DDXTIME */
 
 /* Default log location */
-#define DEFAULT_LOGPREFIX "/var/log/Xorg."
+#define DEFAULT_LOGPREFIX "/usr/local/var/log/Xorg."
 
 /* Default module search path */
-#define DEFAULT_MODULE_PATH "/usr/X11R6/lib/xorg/modules"
+#define DEFAULT_MODULE_PATH "/usr/local/lib/xorg/modules"
 
 /* Support DGA extension */
 #define DGA 1
-
-/* Prefer dlloader modules to elfloader */
-#define DLOPEN_HACK 1
-
-/* Use libdl-based loader */
-#define DLOPEN_SUPPORT 1
 
 /* Support DPMS extension */
 #define DPMSExtension 1
@@ -82,7 +79,7 @@
 #define DRIVERS {}
 
 /* Default DRI driver path */
-#define DRI_DRIVER_PATH "/usr/X11R6/lib/dri"
+#define DRI_DRIVER_PATH "/usr/local/lib/dri"
 
 /* Build Extended-Visual-Information extension */
 #define EVI 1
@@ -91,7 +88,7 @@
 /* #undef FONTCACHE */
 
 /* Build GLX extension */
-#define GLXEXT 1
+/* #undef GLXEXT */
 
 /* Support XDM-AUTH*-1 */
 #define HASXDMAUTH 1
@@ -109,7 +106,7 @@
 #define HAS_GETIFADDRS 1
 
 /* Have the `getpeereid' function. */
-#define HAS_GETPEEREID 1
+/* #undef HAS_GETPEEREID */
 
 /* Have the `getpeerucred' function. */
 /* #undef HAS_GETPEERUCRED */
@@ -134,19 +131,22 @@
 
 /* Define to 1 if you have <alloca.h> and it should be used (not on Ultrix).
    */
-/* #undef HAVE_ALLOCA_H */
+#define HAVE_ALLOCA_H 1
 
 /* Define to 1 if you have the <asm/mtrr.h> header file. */
-/* #undef HAVE_ASM_MTRR_H */
+#define HAVE_ASM_MTRR_H 1
 
 /* Define to 1 if you have the `authdes_create' function. */
 #define HAVE_AUTHDES_CREATE 1
 
 /* Define to 1 if you have the `authdes_seccreate' function. */
-#define HAVE_AUTHDES_SECCREATE 1
+/* #undef HAVE_AUTHDES_SECCREATE */
 
 /* Has backtrace support */
-/* #undef HAVE_BACKTRACE */
+#define HAVE_BACKTRACE 1
+
+/* Define to 1 if you have the `clock_gettime' function. */
+/* #undef HAVE_CLOCK_GETTIME */
 
 /* Define to 1 if you have the <dbm.h> header file. */
 /* #undef HAVE_DBM_H */
@@ -161,11 +161,17 @@
 /* Define to 1 if you don't have `vprintf' but do have `_doprnt.' */
 /* #undef HAVE_DOPRNT */
 
+/* Have execinfo.h */
+#define HAVE_EXECINFO_H 1
+
 /* Define to 1 if you have the <fcntl.h> header file. */
 #define HAVE_FCNTL_H 1
 
 /* Define to 1 if you have the `geteuid' function. */
 #define HAVE_GETEUID 1
+
+/* Define to 1 if you have the `getisax' function. */
+/* #undef HAVE_GETISAX */
 
 /* Define to 1 if you have the `getopt' function. */
 #define HAVE_GETOPT 1
@@ -186,13 +192,13 @@
 #define HAVE_LINK 1
 
 /* Define to 1 if you have the <linux/agpgart.h> header file. */
-/* #undef HAVE_LINUX_AGPGART_H */
+#define HAVE_LINUX_AGPGART_H 1
 
 /* Define to 1 if you have the <linux/apm_bios.h> header file. */
-/* #undef HAVE_LINUX_APM_BIOS_H */
+#define HAVE_LINUX_APM_BIOS_H 1
 
 /* Define to 1 if you have the <linux/fb.h> header file. */
-/* #undef HAVE_LINUX_FB_H */
+#define HAVE_LINUX_FB_H 1
 
 /* Define to 1 if you have the <machine/mtrr.h> header file. */
 /* #undef HAVE_MACHINE_MTRR_H */
@@ -210,7 +216,7 @@
 #define HAVE_MKSTEMP 1
 
 /* Define to 1 if you have the <ndbm.h> header file. */
-#define HAVE_NDBM_H 1
+/* #undef HAVE_NDBM_H */
 
 /* Define to 1 if you have the <ndir.h> header file, and it defines `DIR'. */
 /* #undef HAVE_NDIR_H */
@@ -246,7 +252,7 @@
 #define HAVE_SYSV_IPC 1
 
 /* Define to 1 if you have the <sys/agpio.h> header file. */
-#define HAVE_SYS_AGPIO_H 1
+/* #undef HAVE_SYS_AGPIO_H */
 
 /* Define to 1 if you have the <sys/dir.h> header file, and it defines `DIR'.
    */
@@ -256,10 +262,10 @@
 /* #undef HAVE_SYS_IO_H */
 
 /* Define to 1 if you have the <sys/linker.h> header file. */
-#define HAVE_SYS_LINKER_H 1
+/* #undef HAVE_SYS_LINKER_H */
 
 /* Define to 1 if you have the <sys/memrange.h> header file. */
-#define HAVE_SYS_MEMRANGE_H 1
+/* #undef HAVE_SYS_MEMRANGE_H */
 
 /* Define to 1 if you have the <sys/ndir.h> header file, and it defines `DIR'.
    */
@@ -293,25 +299,28 @@
 #define IPv6 1
 
 /* Build kdrive ddx */
-#define KDRIVEDDXACTIONS 
+/* #undef KDRIVEDDXACTIONS */
 
 /* Build fbdev-based kdrive server */
 /* #undef KDRIVEFBDEV */
 
 /* Build Kdrive X server */
-#define KDRIVESERVER 1
+/* #undef KDRIVESERVER */
 
 /* Build VESA-based kdrive servers */
 /* #undef KDRIVEVESA */
 
-/* Support LBX extension */
-/* #undef LBX */
+/* Name of the period field in struct kbd_repeat */
+#define LNX_KBD_PERIOD_NAME period
 
 /* Support MIT Misc extension */
 #define MITMISC 1
 
 /* Support MIT-SHM extension */
 #define MITSHM 1
+
+/* Have monotonic clock from clock_gettime() */
+#define MONOTONIC_CLOCK 1
 
 /* Build Multibuffer extension */
 /* #undef MULTIBUFFER */
@@ -332,7 +341,7 @@
 #define NO_LIBCWRAPPER 1
 
 /* Operating System Name */
-#define OSNAME "FreeBSD 6.1-STABLE i386"
+#define OSNAME "Linux 2.6.18-1.2708.fc6xen i686"
 
 /* Operating System Vendor */
 #define OSVENDOR ""
@@ -347,28 +356,28 @@
 #define PACKAGE_NAME "xorg-server"
 
 /* Define to the full name and version of this package. */
-#define PACKAGE_STRING "xorg-server 1.1.1"
+#define PACKAGE_STRING "xorg-server 1.1.99.902"
 
 /* Define to the one symbol short name of this package. */
 #define PACKAGE_TARNAME "xorg-server"
 
 /* Define to the version of this package. */
-#define PACKAGE_VERSION "1.1.1"
+#define PACKAGE_VERSION "1.1.99.902"
 
 /* Internal define for Xinerama */
 #define PANORAMIX 1
 
 /* System has PC console */
-#define PCCONS_SUPPORT 1
+/* #undef PCCONS_SUPPORT */
 
 /* System has PC console */
-#define PCVT_SUPPORT 1
+/* #undef PCVT_SUPPORT */
 
 /* Support pixmap privates */
 #define PIXPRIV 1
 
 /* Overall prefix */
-#define PROJECTROOT "/usr/X11R6"
+#define PROJECTROOT "/usr/local"
 
 /* Support RANDR extension */
 #define RANDR 1
@@ -386,7 +395,7 @@
 /* #undef RETSIGTYPE */
 
 /* Default RGB path */
-#define RGB_DB "/usr/X11R6/share/X11/rgb"
+#define RGB_DB "/usr/local/share/X11/rgb"
 
 /* Build Rootless code */
 /* #undef ROOTLESS */
@@ -424,13 +433,16 @@
 /* #undef SVR4 */
 
 /* System has syscons console */
-#define SYSCONS_SUPPORT 1
+/* #undef SYSCONS_SUPPORT */
 
 /* Support TCP socket connections */
 #define TCPCONN 1
 
 /* Build TOG-CUP extension */
 #define TOGCUP 1
+
+/* Have tslib support */
+/* #undef TSLIB */
 
 /* Support UNIX socket connections */
 #define UNIXCONN 1
@@ -442,7 +454,7 @@
 /* #undef USE_AMD64_IOPL */
 
 /* BSD /dev/io */
-#define USE_DEV_IO 1
+/* #undef USE_DEV_IO */
 
 /* BSD i386 iopl */
 /* #undef USE_I386_IOPL */
@@ -454,7 +466,7 @@
 #define USE_RGB_TXT 1
 
 /* Version number of package */
-#define VERSION "1.1.1"
+#define VERSION "1.1.99.902"
 
 /* Building vgahw module */
 #define WITH_VGAHW 1
@@ -462,8 +474,14 @@
 /* System has wscons console */
 /* #undef WSCONS_SUPPORT */
 
+/* Build X-ACE extension */
+#define XACE 1
+
 /* Build APPGROUP extension */
 #define XAPPGROUP 1
+
+/* Build XCalibrate extension */
+/* #undef XCALIBRATE */
 
 /* Support XCMisc extension */
 #define XCMISC 1
@@ -495,6 +513,9 @@
 /* Support XFixes extension */
 #define XFIXES 1
 
+/* Building loadable XFree86 server */
+#define XFree86LOADER 1
+
 /* Building XFree86 server */
 #define XFree86Server 1
 
@@ -517,10 +538,10 @@
 #define XKB 1
 
 /* Path to XKB data */
-#define XKB_BASE_DIRECTORY "/usr/X11R6/share/X11/xkb"
+#define XKB_BASE_DIRECTORY "/usr/local/share/X11/xkb"
 
 /* Path to XKB bin dir */
-#define XKB_BIN_DIRECTORY "/usr/X11R6/bin"
+#define XKB_BIN_DIRECTORY "/usr/local/bin"
 
 /* Disable XKB per default */
 #define XKB_DFLT_DISABLED 0
@@ -529,25 +550,25 @@
 #define XKB_IN_SERVER 1
 
 /* Path to XKB output dir */
-#define XKM_OUTPUT_DIR "/usr/X11R6/share/X11/xkb/compiled/"
+#define XKM_OUTPUT_DIR "/usr/local/share/X11/xkb/compiled/"
 
 /* Building Xorg server */
 #define XORGSERVER 1
 
 /* Vendor release */
-#define XORG_DATE "12 May 2006"
+#define XORG_DATE "13 November 2006"
 
 /* Vendor man version */
-#define XORG_MAN_VERSION "Version 7.1.1"
+#define XORG_MAN_VERSION "Version 7.1.99.902"
 
 /* Vendor release */
-#define XORG_RELEASE "Release 7.1.1"
+#define XORG_RELEASE "Release 7.1.99.902"
 
 /* Building Xorg server */
 #define XORG_SERVER 1
 
 /* Current Xorg version */
-#define XORG_VERSION_CURRENT (((7) * 10000000) + ((1) * 100000) + ((1) * 1000) + 0)
+#define XORG_VERSION_CURRENT (((7) * 10000000) + ((1) * 100000) + ((99) * 1000) + 902)
 
 /* Build Print extension */
 /* #undef XPRINT */
@@ -596,13 +617,13 @@
 #define YYTEXT_POINTER 1
 
 /* BSD-compliant source */
-/* #undef _BSD_SOURCE */
+#define _BSD_SOURCE 1
 
 /* POSIX-compliant source */
-/* #undef _POSIX_SOURCE */
+#define _POSIX_SOURCE 1
 
 /* X/Open-compliant source */
-/* #undef _XOPEN_SOURCE */
+#define _XOPEN_SOURCE 500
 
 /* Define to 1 if unsigned long is 64 bits. */
 /* #undef _XSERVER64 */

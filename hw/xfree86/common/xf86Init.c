@@ -1,5 +1,3 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/common/xf86Init.c,v 3.212 2004/01/27 01:31:45 dawes Exp $ */
-/* $XdotOrg: xserver/xorg/hw/xfree86/common/xf86Init.c,v 1.33.2.1 2006/04/04 14:16:56 ajax Exp $ */
 
 /*
  * Loosely based on code bearing the following copyright:
@@ -62,9 +60,7 @@
 
 #include "compiler.h"
 
-#ifdef XFree86LOADER
 #include "loaderProcs.h"
-#endif
 #ifdef XFreeXDGA
 #include "dgaproc.h"
 #endif
@@ -93,11 +89,6 @@
 
 #include "globals.h"
 
-#ifdef XTESTEXT1
-#include "atKeynames.h"
-extern int xtest_command_key;
-#endif /* XTESTEXT1 */
-
 #ifdef DPMSExtension
 #define DPMS_SERVER
 #include <X11/extensions/dpms.h>
@@ -119,13 +110,10 @@ extern void os2ServerVideoAccess();
 void (*xf86OSPMClose)(void) = NULL;
 #endif
 
-#ifdef XFree86LOADER
 static char *baseModules[] = {
-	"bitmap",
 	"pcidata",
 	NULL
 };
-#endif
 
 /* Common pixmap formats */
 
@@ -147,7 +135,8 @@ static int numFormats = 6;
 #endif
 static Bool formatsDone = FALSE;
 
-InputDriverRec XF86KEYBOARD = {
+#ifdef USE_DEPRECATED_KEYBOARD_DRIVER
+static InputDriverRec XF86KEYBOARD = {
 	1,
 	"keyboard",
 	NULL,
@@ -156,6 +145,7 @@ InputDriverRec XF86KEYBOARD = {
 	NULL,
 	0
 };
+#endif
 
 static Bool
 xf86CreateRootWindow(WindowPtr pWin)
@@ -278,10 +268,8 @@ InitOutput(ScreenInfo *pScreenInfo, int argc, char **argv)
 {
   int                    i, j, k, scr_index;
   static unsigned long   generation = 0;
-#ifdef XFree86LOADER
   char                   **modulelist;
   pointer                *optionlist;
-#endif
   screenLayoutPtr	 layout;
   Pix24Flags		 screenpix24, pix24;
   MessageType		 pix24From = X_DEFAULT;
@@ -339,12 +327,15 @@ InitOutput(ScreenInfo *pScreenInfo, int argc, char **argv)
     if (!autoconfig)
 	PostConfigInit();
 
-#ifdef XFree86LOADER
     /* Initialise the loader */
     LoaderInit();
 
     /* Tell the loader the default module search path */
     LoaderSetPath(xf86ModulePath);
+
+    if (xf86Info.ignoreABI) {
+        LoaderSetOptions(LDR_OPT_ABI_MISMATCH_NONFATAL);
+    }
 
 #ifdef TESTING
     {
@@ -383,8 +374,6 @@ InitOutput(ScreenInfo *pScreenInfo, int argc, char **argv)
     if (!xf86LoadModules(baseModules, NULL))
 	FatalError("Unable to load required base modules, Exiting...\n");
     
-#endif
-
     xf86OpenConsole();
 
     /* Do a general bus probe.  This will be a PCI probe for x86 platforms */
@@ -407,7 +396,6 @@ InitOutput(ScreenInfo *pScreenInfo, int argc, char **argv)
     /* Initialise the resource broker */
     xf86ResourceBrokerInit();
 
-#ifdef XFree86LOADER
     /* Load all modules specified explicitly in the config file */
     if ((modulelist = xf86ModulelistFromConfig(&optionlist))) {
       xf86LoadModules(modulelist, optionlist);
@@ -438,7 +426,6 @@ InitOutput(ScreenInfo *pScreenInfo, int argc, char **argv)
      * XXX Nothing keeps track of them for other modules.
      */
     /* XXX What do we do if not all of these could be loaded? */
-#endif
 
     /*
      * At this point, xf86DriverList[] is all filled in with entries for
@@ -678,12 +665,10 @@ InitOutput(ScreenInfo *pScreenInfo, int argc, char **argv)
       exit(0);
     }
 
-#ifdef XFree86LOADER
     /* Remove (unload) drivers that are not required */
     for (i = 0; i < xf86NumDrivers; i++)
 	if (xf86DriverList[i] && xf86DriverList[i]->refCount <= 0)
 	    xf86DeleteDriver(i);
-#endif
 
     /*
      * At this stage we know how many screens there are.
@@ -988,13 +973,6 @@ InitOutput(ScreenInfo *pScreenInfo, int argc, char **argv)
 #endif
   }
 
-#ifdef XFree86LOADER
-    if ((serverGeneration == 1) && LoaderCheckUnresolved(LD_RESOLV_IFDONE)) {
-	/* For now, just a warning */
-	xf86Msg(X_WARNING, "Some symbols could not be resolved!\n");
-    }
-#endif
-
   xf86PostScreenInit();
 
   xf86InitOrigins();
@@ -1038,9 +1016,6 @@ InitInput(argc, argv)
 
     xf86Info.vtRequestsPending = FALSE;
     xf86Info.inputPending = FALSE;
-#ifdef XTESTEXT1
-    xtest_command_key = KEY_Begin + MIN_KEYCODE;
-#endif /* XTESTEXT1 */
 
     if (serverGeneration == 1) {
 	/* Call the PreInit function for each input device instance. */
@@ -1176,9 +1151,7 @@ OsVendorInit()
   signal(SIGCHLD, SIG_DFL);	/* Need to wait for child processes */
 #endif
   OsDelayInitColors = TRUE;
-#ifdef XFree86LOADER
   loadableFonts = TRUE;
-#endif
 
   if (!beenHere)
     xf86LogInit();
@@ -1470,9 +1443,7 @@ ddxProcessArgument(int argc, char **argv, int i)
   }
   if (!strcmp(argv[i],"-ignoreABI"))
   {
-#ifdef XFree86LOADER
     LoaderSetOptions(LDR_OPT_ABI_MISMATCH_NONFATAL);
-#endif
     return 1;
   }
   if (!strcmp(argv[i],"-verbose"))
@@ -1792,8 +1763,8 @@ xf86PrintBanner()
     "Bugs may be filed in the bugzilla at http://bugs.freedesktop.org/.\n"
     "Select the \"xorg\" product for bugs you find in this release.\n"
     "Before reporting bugs in pre-release versions please check the\n"
-    "latest version in the X.Org Foundation CVS repository.\n"
-    "See http://wiki.x.org/wiki/CvsPage for CVS access instructions.\n");
+    "latest version in the X.Org Foundation git repository.\n"
+    "See http://wiki.x.org/wiki/GitPage for git access instructions.\n");
 #endif
   ErrorF("\nX Window System Version %d.%d.%d",
 	 XORG_VERSION_MAJOR,
@@ -1879,9 +1850,7 @@ xf86PrintBanner()
 #endif
   ErrorF("\tBefore reporting problems, check "__VENDORDWEBSUPPORT__"\n"
 	 "\tto make sure that you have the latest version.\n");
-#ifdef XFree86LOADER
   ErrorF("Module Loader present\n");
-#endif
 }
 
 static void
@@ -1928,7 +1897,6 @@ xf86RunVtInit(void)
     }
 }
 
-#ifdef XFree86LOADER
 /*
  * xf86LoadModules iterates over a list that is being passed in.
  */             
@@ -1970,8 +1938,6 @@ xf86LoadModules(char **list, pointer *optlist)
     }
     return !failed;
 }
-
-#endif
 
 /* Pixmap format stuff */
 

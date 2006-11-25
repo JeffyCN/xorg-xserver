@@ -1,4 +1,3 @@
-/* $Xorg: connection.c,v 1.6 2001/02/09 02:05:23 xorgcvs Exp $ */
 /***********************************************************
 
 Copyright 1987, 1989, 1998  The Open Group
@@ -45,7 +44,6 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 SOFTWARE.
 
 ******************************************************************/
-/* $XFree86: xc/programs/Xserver/os/connection.c,v 3.64 2003/10/07 22:50:42 herrb Exp $ */
 /*****************************************************************
  *  Stuff to create connections --- OS dependent
  *
@@ -148,17 +146,13 @@ extern __const__ int _nfiles;
 #include "opaque.h"
 #include "dixstruct.h"
 #ifdef XAPPGROUP
-#include <X11/extensions/Xagsrv.h>
+#include "appgroup.h"
+#endif
+#ifdef XACE
+#include "xace.h"
 #endif
 #ifdef XCSECURITY
-#define _SECURITY_SERVER
-#include <X11/extensions/security.h>
-#endif
-#ifdef LBX
-#include "colormapst.h"
-#include "propertyst.h"
-#include "lbxserve.h"
-#include "osdep.h"
+#include "securitysrv.h"
 #endif
 
 #ifdef X_NOT_POSIX
@@ -170,6 +164,11 @@ extern __const__ int _nfiles;
 #ifdef DNETCONN
 #include <netdnet/dn.h>
 #endif /* DNETCONN */
+
+#ifdef HAS_GETPEERUCRED
+# include <ucred.h>
+# include <zone.h>
+#endif
 
 int lastfdesc;			/* maximum file descriptor */
 
@@ -299,14 +298,6 @@ int	       	*ListenTransFds = NULL;
 int		ListenTransCount;
 
 static void ErrorConnMax(XtransConnInfo /* trans_conn */);
-
-#ifndef LBX
-static
-void CloseDownFileDescriptor(
-    OsCommPtr /*oc*/
-);
-#endif
-
 
 static XtransConnInfo
 lookup_trans_conn (int fd)
@@ -563,11 +554,14 @@ AuthAudit (ClientPtr client, Bool letin,
 {
     char addr[128];
     char *out = addr;
+    int client_uid;
+    char client_uid_string[64];
+#ifdef HAS_GETPEERUCRED
+    ucred_t *peercred = NULL;
+    pid_t client_pid = -1;
+    zoneid_t client_zid = -1;
+#endif
 
-    if (!((OsCommPtr)client->osPrivate)->trans_conn) {
-	strcpy(addr, "LBX proxy at ");
-	out += strlen(addr);
-    }
     if (!len)
         strcpy(out, "local host");
     else
@@ -603,14 +597,36 @@ AuthAudit (ClientPtr client, Bool letin,
 	default:
 	    strcpy(out, "unknown address");
 	}
+
+#ifdef HAS_GETPEERUCRED
+    if (getpeerucred(((OsCommPtr)client->osPrivate)->fd, &peercred) >= 0) {
+	client_uid = ucred_geteuid(peercred);
+	client_pid = ucred_getpid(peercred);
+	client_zid = ucred_getzoneid(peercred);
+
+	ucred_free(peercred);
+	snprintf(client_uid_string, sizeof(client_uid_string),
+		 " (uid %ld, pid %ld, zone %ld)",
+		 (long) client_uid, (long) client_pid, (long) client_zid);
+    }
+#else    
+    if (LocalClientCred(client, &client_uid, NULL) != -1) {
+	snprintf(client_uid_string, sizeof(client_uid_string),
+		 " (uid %d)", client_uid);
+    }
+#endif
+    else {
+	client_uid_string[0] = '\0';
+    }
     
     if (proto_n)
-	AuditF("client %d %s from %s\n  Auth name: %.*s ID: %d\n", 
+	AuditF("client %d %s from %s%s\n  Auth name: %.*s ID: %d\n", 
 	       client->index, letin ? "connected" : "rejected", addr,
-	       (int)proto_n, auth_proto, auth_id);
+	       client_uid_string, (int)proto_n, auth_proto, auth_id);
     else 
-	AuditF("client %d %s from %s\n", 
-	       client->index, letin ? "connected" : "rejected", addr);
+	AuditF("client %d %s from %s%s\n", 
+	       client->index, letin ? "connected" : "rejected", addr,
+	       client_uid_string);
 }
 
 XID
@@ -654,67 +670,13 @@ ClientAuthorized(ClientPtr client,
     XID	 		auth_id;
     char	 	*reason = NULL;
     XtransConnInfo	trans_conn;
-#ifdef LBX
-    int			restore_trans_conn = 0;
-    ClientPtr           lbxpc = NULL;
-#endif
 
     priv = (OsCommPtr)client->osPrivate;
     trans_conn = priv->trans_conn;
 
-#ifdef LBX
-    if (!trans_conn) {
-	/*
-	 * Since trans_conn is NULL, this must be a proxy's client for
-	 * which we have NO address.  Therefore, we will temporarily
-	 * set the client's trans_conn to the proxy's trans_conn and
-	 * after CheckAuthorization the client's trans_conn will be
-	 * restored. 
-	 *
-	 * If XDM-AUTHORIZATION-1 is being used, CheckAuthorization
-	 * will eventually call XdmAuthorizationValidate and this
-	 * later function may use the client's trans_conn to get the 
-	 * client's address.  Since a XDM-AUTH-1 auth string includes 
-	 * the client's address, this address is compared to the address 
-	 * in the client's trans_conn.  If the proxy and client are 
-	 * on the same host, the comparison will fail; otherwise the
-	 * comparison will fail and the client will not be authorized
-	 * to connect to the server.
-	 *
-	 * The basis for this additional code is to prevent a
-	 * NULL pointer dereference of the client's trans_conn.
-	 * The fundamental problem - the fact that the client's
-	 * trans_conn is NULL - is because the NewClient
-	 * request in version 1.0 of the LBX protocol does not
-	 * send the client's address to the server.  When the
-	 * spec is changed and the client's address is sent to
-	 * server in the NewClient request, this additional code
-	 * should be removed.
-	 *
-	 * See defect number XWSog08218 for more information.
-	 */
-	lbxpc = LbxProxyClient(priv->proxy);
-	trans_conn = ((OsCommPtr)lbxpc->osPrivate)->trans_conn;
-        priv->trans_conn = trans_conn;
-	restore_trans_conn = 1;
-    }
-#endif
-
     auth_id = CheckAuthorization (proto_n, auth_proto,
 				  string_n, auth_string, client, &reason);
 
-#ifdef LBX
-    if (! priv->trans_conn) {
-	if (auth_id == (XID) ~0L && !GetAccessControl())
-	    auth_id = ((OsCommPtr)lbxpc->osPrivate)->auth_id;
-#ifdef XCSECURITY
-	else if (auth_id != (XID) ~0L && !SecuritySameLevel(lbxpc, auth_id)) {
-	    auth_id = (XID) ~0L;
-	    reason = "Client trust level differs from that of LBX Proxy";
-	}
-#endif
-    }
-#endif
     if (auth_id == (XID) ~0L)
     {
 	if (
@@ -725,11 +687,7 @@ ClientAuthorized(ClientPtr client,
 	    _XSERVTransGetPeerAddr (trans_conn,
 	        &family, &fromlen, &from) != -1)
 	{
-	    if (
-#ifdef LBX
-		!trans_conn ||
-#endif
-		InvalidHost ((struct sockaddr *) from, fromlen, client))
+	    if (InvalidHost ((struct sockaddr *) from, fromlen, client))
 		AuthAudit(client, FALSE, (struct sockaddr *) from,
 			  fromlen, proto_n, auth_proto, auth_id);
 	    else
@@ -745,14 +703,6 @@ ClientAuthorized(ClientPtr client,
 	}
 
 	if (auth_id == (XID) ~0L) {
-#ifdef LBX
-	  /*
-	   * Restore client's trans_conn state
-	   */
-	  if (restore_trans_conn) {
-		priv->trans_conn = NULL;
-	  }
-#endif
 	    if (reason)
 		return reason;
 	    else
@@ -777,9 +727,8 @@ ClientAuthorized(ClientPtr client,
     /* indicate to Xdmcp protocol that we've opened new client */
     XdmcpOpenDisplay(priv->fd);
 #endif /* XDMCP */
-#ifdef XAPPGROUP
-    if (ClientStateCallback)
-        XagCallClientStateChange (client);
+#ifdef XACE
+    XaceHook(XACE_AUTH_AVAIL, client, auth_id);
 #endif
     /* At this point, if the client is authorized to change the access control
      * list, we should getpeername() information, and add the client to
@@ -787,34 +736,16 @@ ClientAuthorized(ClientPtr client,
      * true purpose of the selfhosts list is to see who may change the
      * access control list.
      */
-#ifdef LBX
-     if (restore_trans_conn) {
-	priv->trans_conn = NULL;
-     }
-#endif
     return((char *)NULL);
 }
 
 static ClientPtr
-#ifdef LBX
-AllocNewConnection (XtransConnInfo trans_conn, int fd, CARD32 conn_time, 
-    int (*Flush)(
-        ClientPtr /*who*/, OsCommPtr /*oc*/,
-        char * /*extraBuf*/, int /*extraCount*/),
-    void (*Close)(
-        ClientPtr /*client*/),
-    LbxProxyPtr proxy)
-#else
 AllocNewConnection (XtransConnInfo trans_conn, int fd, CARD32 conn_time)
-#endif
 {
     OsCommPtr	oc;
     ClientPtr	client;
     
     if (
-#ifdef LBX
-	trans_conn &&
-#endif
 #ifndef WIN32
 	fd >= lastfdesc
 #else
@@ -831,36 +762,25 @@ AllocNewConnection (XtransConnInfo trans_conn, int fd, CARD32 conn_time)
     oc->output = (ConnectionOutputPtr)NULL;
     oc->auth_id = None;
     oc->conn_time = conn_time;
-#ifdef LBX
-    oc->proxy = proxy;
-    oc->Flush = Flush;
-    oc->Close = Close;
-    oc->largereq = (ConnectionInputPtr) NULL;
-#endif
     if (!(client = NextAvailableClient((pointer)oc)))
     {
 	xfree (oc);
 	return NullClient;
     }
-#ifdef LBX
-    if (trans_conn)
-#endif
-    {
 #if !defined(WIN32)
-	ConnectionTranslation[fd] = client->index;
+    ConnectionTranslation[fd] = client->index;
 #else
-	SetConnectionTranslation(fd, client->index);
+    SetConnectionTranslation(fd, client->index);
 #endif
-	if (GrabInProgress)
-	{
-	    FD_SET(fd, &SavedAllClients);
-	    FD_SET(fd, &SavedAllSockets);
-	}
-	else
-	{
-	    FD_SET(fd, &AllClients);
-	    FD_SET(fd, &AllSockets);
-	}
+    if (GrabInProgress)
+    {
+        FD_SET(fd, &SavedAllClients);
+        FD_SET(fd, &SavedAllSockets);
+    }
+    else
+    {
+        FD_SET(fd, &AllClients);
+        FD_SET(fd, &AllSockets);
     }
 
 #ifdef DEBUG
@@ -870,39 +790,6 @@ AllocNewConnection (XtransConnInfo trans_conn, int fd, CARD32 conn_time)
 
     return client;
 }
-
-#ifdef LBX
-
-int
-ClientConnectionNumber (ClientPtr client)
-{
-    OsCommPtr oc = (OsCommPtr) client->osPrivate;
-
-    return oc->fd;
-}
-
-ClientPtr
-AllocLbxClientConnection (ClientPtr client, LbxProxyPtr proxy)
-{
-    OsCommPtr oc = (OsCommPtr) client->osPrivate;
-
-    return AllocNewConnection ((XtransConnInfo)NULL, oc->fd, GetTimeInMillis(),
-			       LbxFlushClient, LbxCloseClient, proxy);
-}
-
-void
-LbxProxyConnection (ClientPtr client, LbxProxyPtr proxy)
-{
-    OsCommPtr	oc = (OsCommPtr) client->osPrivate;
-
-    FlushClient(client, oc, (char *)NULL, 0);
-    oc->proxy = proxy;
-    oc->Flush = LbxFlushClient;
-    oc->Close = LbxCloseClient;
-    LbxPrimeInput(client, proxy);
-}
-
-#endif
 
 /*****************
  * EstablishNewConnections
@@ -982,12 +869,7 @@ EstablishNewConnections(ClientPtr clientUnused, pointer closure)
 
 	_XSERVTransSetOption(new_trans_conn, TRANS_NONBLOCKING, 1);
 
-	if (!AllocNewConnection (new_trans_conn, newconn, connect_time
-#ifdef LBX
-				 , StandardFlushClient,
-				 CloseDownFileDescriptor, (LbxProxyPtr)NULL
-#endif
-				))
+	if (!AllocNewConnection (new_trans_conn, newconn, connect_time))
 	{
 	    ErrorConnMax(new_trans_conn);
 	    _XSERVTransClose(new_trans_conn);
@@ -1056,27 +938,15 @@ ErrorConnMax(XtransConnInfo trans_conn)
  *     Remove this file descriptor and it's I/O buffers, etc.
  ************/
 
-#ifdef LBX
-void
-CloseDownFileDescriptor(ClientPtr client)
-#else
 static void
 CloseDownFileDescriptor(OsCommPtr oc)
-#endif
 {
-#ifdef LBX
-    OsCommPtr oc = (OsCommPtr) client->osPrivate;
-#endif
     int connection = oc->fd;
 
     if (oc->trans_conn) {
 	_XSERVTransDisconnect(oc->trans_conn);
 	_XSERVTransClose(oc->trans_conn);
     }
-#ifndef LBX
-    FreeOsBuffers(oc);
-    xfree(oc);
-#endif
 #ifndef WIN32
     ConnectionTranslation[connection] = 0;
 #else
@@ -1149,7 +1019,7 @@ CheckConnections(void)
 	FD_ZERO(&tmask);
 	FD_SET(curclient, &tmask);
 	r = Select (curclient + 1, &tmask, NULL, NULL, &notime);
-	if (r < 0)
+	if (r < 0 && GetConnectionTranslation(curclient) > 0)
 	    CloseDownClient(clients[GetConnectionTranslation(curclient)]);
     }	
 #endif
@@ -1171,34 +1041,40 @@ CloseDownConnection(ClientPtr client)
 #ifdef XDMCP
     XdmcpCloseDisplay(oc->fd);
 #endif
-#ifndef LBX
     CloseDownFileDescriptor(oc);
-#else
-    (*oc->Close) (client);
-    FreeOsBuffers(oc);
-    xfree(oc);
-#endif
     client->osPrivate = (pointer)NULL;
     if (auditTrailLevel > 1)
 	AuditF("client %d disconnected\n", client->index);
 }
 
 _X_EXPORT void
+AddGeneralSocket(int fd)
+{
+    FD_SET(fd, &AllSockets);
+    if (GrabInProgress)
+        FD_SET(fd, &SavedAllSockets);
+}
+
+_X_EXPORT void
 AddEnabledDevice(int fd)
 {
     FD_SET(fd, &EnabledDevices);
-    FD_SET(fd, &AllSockets);
+    AddGeneralSocket(fd);
+}
+
+_X_EXPORT void
+RemoveGeneralSocket(int fd)
+{
+    FD_CLR(fd, &AllSockets);
     if (GrabInProgress)
-	FD_SET(fd, &SavedAllSockets);
+        FD_CLR(fd, &SavedAllSockets);
 }
 
 _X_EXPORT void
 RemoveEnabledDevice(int fd)
 {
     FD_CLR(fd, &EnabledDevices);
-    FD_CLR(fd, &AllSockets);
-    if (GrabInProgress)
-	FD_CLR(fd, &SavedAllSockets);
+    RemoveGeneralSocket(fd);
 }
 
 /*****************
@@ -1266,17 +1142,8 @@ IgnoreClient (ClientPtr client)
 {
     OsCommPtr oc = (OsCommPtr)client->osPrivate;
     int connection = oc->fd;
-#ifdef LBX
-    LbxClientPtr lbxClient = LbxClient(client);
-#endif
 
     isItTimeToYield = TRUE;
-#ifdef LBX
-    if (lbxClient) {
-	lbxClient->ignored = TRUE;
-	return;
-    }
-#endif
     if (!GrabInProgress || FD_ISSET(connection, &AllClients))
     {
     	if (FD_ISSET (connection, &ClientsWithInput))
@@ -1310,14 +1177,6 @@ AttendClient (ClientPtr client)
 {
     OsCommPtr oc = (OsCommPtr)client->osPrivate;
     int connection = oc->fd;
-#ifdef LBX
-    LbxClientPtr lbxClient = LbxClient(client);
-
-    if (lbxClient) {
-	lbxClient->ignored = FALSE;
-	return;
-    }
-#endif
     if (!GrabInProgress || GrabInProgress == client->index ||
 	FD_ISSET(connection, &GrabImperviousClients))
     {

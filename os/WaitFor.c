@@ -1,4 +1,3 @@
-/* $XFree86: xc/programs/Xserver/os/WaitFor.c,v 3.42 2003/10/16 01:33:35 dawes Exp $ */
 /***********************************************************
 
 Copyright 1987, 1998  The Open Group
@@ -46,7 +45,6 @@ SOFTWARE.
 
 ******************************************************************/
 
-/* $Xorg: WaitFor.c,v 1.4 2001/02/09 02:05:22 xorgcvs Exp $ */
 
 /*****************************************************************
  * OS Dependent input routines:
@@ -118,21 +116,16 @@ mffs(fd_mask mask)
 #include <X11/extensions/dpms.h>
 #endif
 
-#ifdef XTESTEXT1
-/*
- * defined in xtestext1dd.c
- */
-extern int playback_on;
-#endif /* XTESTEXT1 */
-
 struct _OsTimerRec {
     OsTimerPtr		next;
     CARD32		expires;
+    CARD32              delta;
     OsTimerCallback	callback;
     pointer		arg;
 };
 
 static void DoTimer(OsTimerPtr timer, CARD32 now, OsTimerPtr *prev);
+static void CheckAllTimers(CARD32 now);
 static OsTimerPtr timers = NULL;
 
 /*****************
@@ -209,6 +202,12 @@ WaitForSomething(int *pClientsReady)
         {
             now = GetTimeInMillis();
 	    timeout = timers->expires - now;
+            if (timeout > 0 && timeout > timers->delta + 250) {
+                /* time has rewound.  reset the timers. */
+                CheckAllTimers(now);
+                timeout = timers->expires - now;
+            }
+
             if (timeout < 0)
                 timeout = 0;
 	    waittime.tv_sec = timeout / MILLI_PER_SECOND;
@@ -224,13 +223,6 @@ WaitForSomething(int *pClientsReady)
 	BlockHandler((pointer)&wt, (pointer)&LastSelectMask);
 	if (NewOutputPending)
 	    FlushAllOutput();
-#ifdef XTESTEXT1
-	/* XXX how does this interact with new write block handling? */
-	if (playback_on) {
-	    wt = &waittime;
-	    XTestComputeWaitTime (&waittime);
-	}
-#endif /* XTESTEXT1 */
 	/* keep this check close to select() call to minimize race */
 	if (dispatchException)
 	    i = -1;
@@ -245,11 +237,6 @@ WaitForSomething(int *pClientsReady)
 	}
 	selecterr = GetErrno();
 	WakeupHandler(i, (pointer)&LastSelectMask);
-#ifdef XTESTEXT1
-	if (playback_on) {
-	    i = XTestProcessInputAction (i, &waittime);
-	}
-#endif /* XTESTEXT1 */
 #ifdef SMART_SCHEDULE
 	if (i >= 0)
 	{
@@ -447,6 +434,21 @@ ANYSET(FdMask *src)
 }
 #endif
 
+/* If time has rewound, re-run every affected timer.
+ * Timers might drop out of the list, so we have to restart every time. */
+static void
+CheckAllTimers(CARD32 now)
+{
+    OsTimerPtr timer;
+
+start:
+    for (timer = timers; timer; timer = timer->next) {
+        if (timer->expires - now > timer->delta + 250) {
+            TimerForce(timer);
+            goto start;
+        }
+    }
+}
 
 static void
 DoTimer(OsTimerPtr timer, CARD32 now, OsTimerPtr *prev)
@@ -488,8 +490,13 @@ TimerSet(OsTimerPtr timer, int flags, CARD32 millis,
     }
     if (!millis)
 	return timer;
-    if (!(flags & TimerAbsolute))
+    if (flags & TimerAbsolute) {
+        timer->delta = millis - now;
+    }
+    else {
+        timer->delta = millis;
 	millis += now;
+    }
     timer->expires = millis;
     timer->callback = func;
     timer->arg = arg;
@@ -503,7 +510,7 @@ TimerSet(OsTimerPtr timer, int flags, CARD32 millis,
     for (prev = &timers;
 	 *prev && (int) ((*prev)->expires - millis) <= 0;
 	 prev = &(*prev)->next)
-	;
+        ;
     timer->next = *prev;
     *prev = timer;
     return timer;

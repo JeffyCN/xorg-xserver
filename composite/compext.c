@@ -501,7 +501,8 @@ ProcCompositeReleaseOverlayWindow (ClientPtr client)
 	return BadMatch;
     }
 
-    FreeResource(pOc->resource, 0);
+    /* The delete function will free the client structure */
+    FreeResource (pOc->resource, 0);
 
     cs = GetCompScreen(pScreen);
     if (cs->pOverlayClients == NULL) {

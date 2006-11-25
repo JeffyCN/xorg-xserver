@@ -1,4 +1,3 @@
-/* $XFree86: xc/programs/Xserver/dix/devices.c,v 3.20 2001/12/14 19:59:30 dawes Exp $ */
 /************************************************************
 
 Copyright 1987, 1998  The Open Group
@@ -47,8 +46,6 @@ SOFTWARE.
 ********************************************************/
 
 
-/* $Xorg: devices.c,v 1.4 2001/02/09 02:04:39 xorgcvs Exp $ */
-/* $XdotOrg: xserver/xorg/dix/devices.c,v 1.9 2006/02/15 20:44:12 ajax Exp $ */
 
 #ifdef HAVE_DIX_CONFIG_H
 #include <dix-config.h>
@@ -66,16 +63,14 @@ SOFTWARE.
 #include "cursorstr.h"
 #include "dixstruct.h"
 #include "site.h"
+#ifndef XKB_IN_SERVER
 #define	XKB_IN_SERVER
+#endif
 #ifdef XKB
 #include <X11/extensions/XKBsrv.h>
 #endif
-#ifdef XCSECURITY
-#define _SECURITY_SERVER
-#include <X11/extensions/security.h>
-#endif
-#ifdef LBX
-#include "lbxserve.h"
+#ifdef XACE
+#include "xace.h"
 #endif
 
 #include "dispatch.h"
@@ -83,7 +78,7 @@ SOFTWARE.
 #include "dixevents.h"
 
 DeviceIntPtr
-_AddInputDevice(DeviceProc deviceProc, Bool autoStart)
+AddInputDevice(DeviceProc deviceProc, Bool autoStart)
 {
     register DeviceIntPtr dev;
 
@@ -356,7 +351,7 @@ NumMotionEvents()
 }
 
 void
-_RegisterPointerDevice(DeviceIntPtr device)
+RegisterPointerDevice(DeviceIntPtr device)
 {
     inputInfo.pointer = device;
 #ifdef XKB
@@ -379,7 +374,7 @@ _RegisterPointerDevice(DeviceIntPtr device)
 }
 
 void
-_RegisterKeyboardDevice(DeviceIntPtr device)
+RegisterKeyboardDevice(DeviceIntPtr device)
 {
     inputInfo.keyboard = device;
 #ifdef XKB
@@ -672,13 +667,7 @@ InitPtrFeedbackClassDeviceStruct(DeviceIntPtr dev, PtrCtrlProcPtr controlProc)
     if (!feedc)
 	return FALSE;
     feedc->CtrlProc = controlProc;
-#ifdef sgi
-    feedc->ctrl.num = 1;
-    feedc->ctrl.den = 1;
-    feedc->ctrl.threshold = 1;
-#else
     feedc->ctrl = defaultPointerControl;
-#endif
     feedc->ctrl.id = 0;
     if ( (feedc->next = dev->ptrfeed) )
         feedc->ctrl.id = dev->ptrfeed->ctrl.id + 1;
@@ -957,14 +946,11 @@ ProcSetModifierMapping(ClientPtr client)
 	}
     }
 
-#ifdef XCSECURITY
-    if (!SecurityCheckDeviceAccess(client, keybd, TRUE))
+#ifdef XACE
+    if (!XaceHook(XACE_DEVICE_ACCESS, client, keybd, TRUE))
 	return BadAccess;
 #endif 
 
-#ifdef LBX
-    LbxFlushModifierMapTag();
-#endif
     rep.type = X_Reply;
     rep.length = 0;
     rep.sequenceNumber = client->sequence;
@@ -1077,9 +1063,8 @@ ProcChangeKeyboardMapping(ClientPtr client)
 	    client->errorValue = stuff->keySymsPerKeyCode;
 	    return BadValue;
     }
-#ifdef XCSECURITY
-    if (!SecurityCheckDeviceAccess(client, inputInfo.keyboard,
-				   TRUE))
+#ifdef XACE
+    if (!XaceHook(XACE_DEVICE_ACCESS, client, inputInfo.keyboard, TRUE))
 	return BadAccess;
 #endif 
     keysyms.minKeyCode = stuff->firstKeyCode;
@@ -1088,9 +1073,6 @@ ProcChangeKeyboardMapping(ClientPtr client)
     keysyms.map = (KeySym *)&stuff[1];
     if (!SetKeySymsMap(curKeySyms, &keysyms))
 	return BadAlloc;
-#ifdef LBX
-    LbxFlushKeyboardMapTag();
-#endif
     SendMappingNotify(MappingKeyboard, stuff->firstKeyCode, stuff->keyCodes,
 									client);
     return client->noClientException;
@@ -1228,8 +1210,8 @@ ProcChangeKeyboardControl (ClientPtr client)
     vmask = stuff->mask;
     if (client->req_len != (sizeof(xChangeKeyboardControlReq)>>2)+Ones(vmask))
 	return BadLength;
-#ifdef XCSECURITY
-    if (!SecurityCheckDeviceAccess(client, keybd, TRUE))
+#ifdef XACE
+    if (!XaceHook(XACE_DEVICE_ACCESS, client, keybd, TRUE))
 	return BadAccess;
 #endif 
     vlist = (XID *)&stuff[1];		/* first word of values */
@@ -1617,8 +1599,8 @@ ProcQueryKeymap(ClientPtr client)
     rep.type = X_Reply;
     rep.sequenceNumber = client->sequence;
     rep.length = 2;
-#ifdef XCSECURITY
-    if (!SecurityCheckDeviceAccess(client, inputInfo.keyboard, TRUE))
+#ifdef XACE
+    if (!XaceHook(XACE_DEVICE_ACCESS, client, inputInfo.keyboard, TRUE))
     {
 	bzero((char *)&rep.map[0], 32);
     }
@@ -1629,38 +1611,3 @@ ProcQueryKeymap(ClientPtr client)
     WriteReplyToClient(client, sizeof(xQueryKeymapReply), &rep);
     return Success;
 }
-
-/******************************************************************************
- * The following entrypoints are provided for binary compatibility with
- * previous versions (they make casts, where the current version changes types
- * for more stringent prototype checking).
- ******************************************************************************/
-#ifdef AddInputDevice
-#undef AddInputDevice
-
-DevicePtr
-AddInputDevice(DeviceProc deviceProc, Bool autoStart)
-{
-    return (DevicePtr)_AddInputDevice(deviceProc, autoStart);
-}
-#endif /* AddInputDevice */
-
-#ifdef RegisterPointerDevice
-#undef RegisterPointerDevice
-
-void
-RegisterPointerDevice(DevicePtr device)
-{
-    _RegisterPointerDevice((DeviceIntPtr)device);
-}
-#endif /* RegisterPointerDevice */
-
-#ifdef RegisterKeyboardDevice
-#undef RegisterKeyboardDevice
-
-void
-RegisterKeyboardDevice(DevicePtr device)
-{
-    _RegisterKeyboardDevice((DeviceIntPtr)device);
-}
-#endif /* RegisterKeyboardDevice */

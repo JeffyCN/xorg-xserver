@@ -63,6 +63,9 @@ do {								\
 	ErrorF("EXA fallback at %s: ", __FUNCTION__);		\
 	ErrorF x;						\
 } while (0)
+
+char
+exaDrawableLocation(DrawablePtr pDrawable);
 #else
 #define EXA_FALLBACK(x)
 #endif
@@ -83,7 +86,8 @@ do {								\
  */
 enum ExaMigrationHeuristic {
     ExaMigrationGreedy,
-    ExaMigrationAlways
+    ExaMigrationAlways,
+    ExaMigrationSmart
 };
 
 typedef void (*EnableDisableFBAccessProcPtr)(int, Bool);
@@ -107,6 +111,7 @@ typedef struct {
     Bool			 swappedOut;
     enum ExaMigrationHeuristic	 migration;
     Bool			 hideOffscreenPixmapData;
+    Bool			 checkDirtyCorrectness;
 } ExaScreenPrivRec, *ExaScreenPrivPtr;
 
 /*

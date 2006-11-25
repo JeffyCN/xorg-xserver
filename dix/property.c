@@ -1,4 +1,3 @@
-/* $XFree86: xc/programs/Xserver/dix/property.c,v 3.12 2002/02/19 11:09:22 alanh Exp $ */
 /***********************************************************
 
 Copyright 1987, 1998  The Open Group
@@ -45,7 +44,6 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 SOFTWARE.
 
 ******************************************************************/
-/* $Xorg: property.c,v 1.4 2001/02/09 02:04:40 xorgcvs Exp $ */
 
 #ifdef HAVE_DIX_CONFIG_H
 #include <dix-config.h>
@@ -60,22 +58,8 @@ SOFTWARE.
 #include "dixstruct.h"
 #include "dispatch.h"
 #include "swaprep.h"
-#ifdef XCSECURITY
-#define _SECURITY_SERVER
-#include <X11/extensions/security.h>
-#endif
-#ifdef LBX
-#include "lbxserve.h"
-#include "lbxtags.h"
-#endif
-
-#if defined(LBX) || defined(LBX_COMPAT)
-#if 0 /* no header in X11 environment, not used in X11 environment */
-int fWriteToClient(ClientPtr client, int len, char *buf)
-{
-    return WriteToClient(client, len, buf);
-}
-#endif
+#ifdef XACE
+#include "xace.h"
 #endif
 
 /*****************************************************************
@@ -134,12 +118,12 @@ ProcRotateProperties(ClientPtr client)
 	return(BadAlloc);
     for (i = 0; i < stuff->nAtoms; i++)
     {
-#ifdef XCSECURITY
-	char action = SecurityCheckPropertyAccess(client, pWin, atoms[i],
+#ifdef XACE
+	char action = XaceHook(XACE_PROPERTY_ACCESS, client, pWin, atoms[i],
 				SecurityReadAccess|SecurityWriteAccess);
 #endif
         if (!ValidAtom(atoms[i])
-#ifdef XCSECURITY
+#ifdef XACE
 	    || (SecurityErrorOperation == action)
 #endif
 	   )
@@ -148,7 +132,7 @@ ProcRotateProperties(ClientPtr client)
 	    client->errorValue = atoms[i];
             return BadAtom;
         }
-#ifdef XCSECURITY
+#ifdef XACE
 	if (SecurityIgnoreOperation == action)
         {
             DEALLOCATE_LOCAL(props);
@@ -249,8 +233,8 @@ ProcChangeProperty(ClientPtr client)
 	return(BadAtom);
     }
 
-#ifdef XCSECURITY
-    switch (SecurityCheckPropertyAccess(client, pWin, stuff->property,
+#ifdef XACE
+    switch (XaceHook(XACE_PROPERTY_ACCESS, client, pWin, stuff->property,
 					SecurityWriteAccess))
     {
 	case SecurityErrorOperation:
@@ -261,13 +245,8 @@ ProcChangeProperty(ClientPtr client)
     }
 #endif
 
-#ifdef LBX
-    err = LbxChangeWindowProperty(client, pWin, stuff->property, stuff->type,
-	 (int)format, (int)mode, len, TRUE, (pointer)&stuff[1], TRUE, NULL);
-#else
     err = ChangeWindowProperty(pWin, stuff->property, stuff->type, (int)format,
 			       (int)mode, len, (pointer)&stuff[1], TRUE);
-#endif
     if (err != Success)
 	return err;
     else
@@ -279,11 +258,6 @@ ChangeWindowProperty(WindowPtr pWin, Atom property, Atom type, int format,
                      int mode, unsigned long len, pointer value, 
                      Bool sendevent)
 {
-#ifdef LBX
-    return LbxChangeWindowProperty(NULL, pWin, property, type,
-				   format, mode, len, TRUE, value,
-				   sendevent, NULL);
-#else
     PropertyPtr pProp;
     xEvent event;
     int sizeInBytes;
@@ -390,7 +364,6 @@ ChangeWindowProperty(WindowPtr pWin, Atom property, Atom type, int format,
 	DeliverEvents(pWin, &event, 1, (WindowPtr)NULL);
     }
     return(Success);
-#endif
 }
 
 int
@@ -420,10 +393,6 @@ DeleteProperty(WindowPtr pWin, Atom propName)
         {
             prevProp->next = pProp->next;
         }
-#ifdef LBX
-	if (pProp->tag_id)
-	    TagDeleteTag(pProp->tag_id);
-#endif
 	event.u.u.type = PropertyNotify;
 	event.u.property.window = pWin->drawable.id;
 	event.u.property.state = PropertyDelete;
@@ -445,10 +414,6 @@ DeleteAllWindowProperties(WindowPtr pWin)
     pProp = wUserProps (pWin);
     while (pProp)
     {
-#ifdef LBX
-	if (pProp->tag_id)
-	    TagDeleteTag(pProp->tag_id);
-#endif
 	event.u.u.type = PropertyNotify;
 	event.u.property.window = pWin->drawable.id;
 	event.u.property.state = PropertyDelete;
@@ -536,13 +501,13 @@ ProcGetProperty(ClientPtr client)
     if (!pProp) 
 	return NullPropertyReply(client, None, 0, &reply);
 
-#ifdef XCSECURITY
+#ifdef XACE
     {
 	Mask access_mode = SecurityReadAccess;
 
 	if (stuff->delete)
 	    access_mode |= SecurityDestroyAccess;
-	switch(SecurityCheckPropertyAccess(client, pWin, stuff->property,
+	switch(XaceHook(XACE_PROPERTY_ACCESS, client, pWin, stuff->property,
 					   access_mode))
 	{
 	    case SecurityErrorOperation:
@@ -569,13 +534,6 @@ ProcGetProperty(ClientPtr client)
 	WriteReplyToClient(client, sizeof(xGenericReply), &reply);
 	return(Success);
     }
-#ifdef LBX
-    /* make sure we have the current value */                       
-    if (pProp->tag_id && pProp->owner_pid) {
-	LbxStallPropRequest(client, pProp);
-	return client->noClientException;
-    }                                              
-#endif
 
 /*
  *  Return type, format, value to client
@@ -626,10 +584,6 @@ ProcGetProperty(ClientPtr client)
 
     if (stuff->delete && (reply.bytesAfter == 0))
     { /* delete the Property */
-#ifdef LBX
-	if (pProp->tag_id)
-	    TagDeleteTag(pProp->tag_id);
-#endif
 	if (prevProp == (PropertyPtr)NULL) /* takes care of head */
 	{
 	    if (!(pWin->optional->userProps = pProp->next))
@@ -709,8 +663,8 @@ ProcDeleteProperty(register ClientPtr client)
 	return (BadAtom);
     }
 
-#ifdef XCSECURITY
-    switch(SecurityCheckPropertyAccess(client, pWin, stuff->property,
+#ifdef XACE
+    switch(XaceHook(XACE_PROPERTY_ACCESS, client, pWin, stuff->property,
 				       SecurityDestroyAccess))
     {
 	case SecurityErrorOperation:

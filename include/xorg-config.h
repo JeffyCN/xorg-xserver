@@ -17,7 +17,7 @@
 #define XORGSERVER 1
 
 /* Current X.Org version. */
-#define XORG_VERSION_CURRENT (((7) * 10000000) + ((1) * 100000) + ((1) * 1000) + 0)
+#define XORG_VERSION_CURRENT (((7) * 10000000) + ((1) * 100000) + ((99) * 1000) + 902)
 
 /* Need XFree86 libc-replacement typedefs. */
 #define NEED_XF86_TYPES 1
@@ -30,12 +30,6 @@
 
 /* URL to go to for support. */
 #define __VENDORDWEBSUPPORT__ "http://wiki.x.org"
-
-/* Prefer dlloader modules to elfloader */
-#define DLOPEN_HACK 1
-
-/* Use libdl-based loader. */
-#define DLOPEN_SUPPORT 1
 
 /* Built-in output drivers. */
 #define DRIVERS {}
@@ -50,10 +44,10 @@
 #define __XCONFIGFILE__ "xorg.conf"
 
 /* Path to loadable modules. */
-#define DEFAULT_MODULE_PATH "/usr/X11R6/lib/xorg/modules"
+#define DEFAULT_MODULE_PATH "/usr/local/lib/xorg/modules"
 
 /* Path to server log file. */
-#define DEFAULT_LOGPREFIX "/var/log/Xorg."
+#define DEFAULT_LOGPREFIX "/usr/local/var/log/Xorg."
 
 /* Building DRI-capable DDX. */
 #define XF86DRI 1
@@ -87,22 +81,22 @@
 /* #undef USE_AMD64_IOPL */
 
 /* BSD /dev/io */
-#define USE_DEV_IO 1
+/* #undef USE_DEV_IO */
 
 /* BSD i386 iopl */
 /* #undef USE_I386_IOPL */
 
 /* System is BSD-like */
-#define CSRG_BASED 1
+/* #undef CSRG_BASED */
 
 /* System has PC console */
-#define PCCONS_SUPPORT 1
+/* #undef PCCONS_SUPPORT */
 
 /* System has PCVT console */
-#define PCVT_SUPPORT 1
+/* #undef PCVT_SUPPORT */
 
 /* System has syscons console */
-#define SYSCONS_SUPPORT 1
+/* #undef SYSCONS_SUPPORT */
 
 /* System has wscons console */
 /* #undef WSCONS_SUPPORT */
@@ -111,6 +105,12 @@
 /* #undef HAS_APERTURE_DRV */
 
 /* Has backtrace support */
-/* #undef HAVE_BACKTRACE */
+#define HAVE_BACKTRACE 1
+
+/* Name of the period field in struct kbd_repeat */
+#define LNX_KBD_PERIOD_NAME period
+
+/* Have execinfo.h */
+#define HAVE_EXECINFO_H 1
 
 #endif /* _XORG_CONFIG_H_ */
