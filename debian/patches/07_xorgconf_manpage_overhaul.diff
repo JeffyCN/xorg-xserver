@@ -13,8 +13,8 @@ NOTE: Branden you must really love this package!
 
 Index: hw/xfree86/doc/man/xorg.conf.man.pre
 ===================================================================
---- hw/xfree86/doc/man/xorg.conf.man.pre.orig	2005-12-24 16:45:02.000000000 -0500
-+++ hw/xfree86/doc/man/xorg.conf.man.pre	2005-12-24 17:12:31.000000000 -0500
+--- hw/xfree86/doc/man/xorg.conf.man.pre.orig	2006-11-13 19:59:23.000000000 +0100
++++ hw/xfree86/doc/man/xorg.conf.man.pre	2006-11-26 01:51:03.000000000 +0100
 @@ -3,7 +3,7 @@
  .ds q \N'34'
  .TH __xconfigfile__ __filemansuffix__ __vendorversion__
@@ -296,7 +296,7 @@ Index: hw/xfree86/doc/man/xorg.conf.man.pre
 +to the compiled\-in default RGB path, which is:
  .PP
  .RS 11
- .I __projectroot__/lib/X11/rgb
+ .I __projectroot__/share/X11/rgb
 @@ -352,9 +364,10 @@
  binary format RGB color databases.
  .TP 7
@@ -615,7 +615,7 @@ Index: hw/xfree86/doc/man/xorg.conf.man.pre
  .\" Doubt this should be documented.
  .ig
  .TP 7
-@@ -557,66 +611,73 @@
+@@ -557,48 +611,54 @@
  ..
  .TP 7
  .BI "Option \*qNoPM\*q  \*q" boolean \*q
@@ -689,6 +689,10 @@ Index: hw/xfree86/doc/man/xorg.conf.man.pre
  .B Terminate
  action and, if found, use XKEYBOARD for processing actions, otherwise
  the builtin handler will be used.
+@@ -609,21 +669,22 @@
+ .BI "Option \*qIgnoreABI\*q \*q" boolean \*q
+ Allow modules built for a different, potentially incompatible version of
+ the X server to load. Disabled by default.
 -.SH MODULE SECTION
 +.SH "MODULE SECTION"
  The
@@ -713,7 +717,7 @@ Index: hw/xfree86/doc/man/xorg.conf.man.pre
  .B Load
  keyword, as described here:
  .TP 7
-@@ -624,8 +685,9 @@
+@@ -631,8 +692,9 @@
  This instructs the server to load the module called
  .IR modulename .
  The module name given should be the module's standard name, not the
@@ -725,7 +729,7 @@ Index: hw/xfree86/doc/man/xorg.conf.man.pre
  .PP
  .RS 7
  Example: the Type 1 font rasteriser can be loaded with the following entry:
-@@ -644,13 +706,13 @@
+@@ -651,13 +713,13 @@
  that are passed to the module when it is loaded.
  .PP
  Example: the extmod module (which contains a miscellaneous group of
@@ -741,7 +745,7 @@ Index: hw/xfree86/doc/man/xorg.conf.man.pre
  .B EndSubSection
  .fi
  .RE
-@@ -672,17 +734,20 @@
+@@ -679,17 +741,20 @@
  .fi
  .RE
  .PP
@@ -771,7 +775,7 @@ Index: hw/xfree86/doc/man/xorg.conf.man.pre
  .PP
  .B InputDevice
  sections have the following format:
-@@ -704,18 +769,21 @@
+@@ -711,18 +776,21 @@
  .B Driver
  entries are required in all
  .B InputDevice
@@ -796,7 +800,7 @@ Index: hw/xfree86/doc/man/xorg.conf.man.pre
  .B InputDevice
  section is considered active if it is referenced by an active
  .B ServerLayout
-@@ -725,7 +793,10 @@
+@@ -732,7 +800,10 @@
  .B \-pointer
  command line options, or if it is selected implicitly as the core pointer
  or keyboard device in the absence of such explicit references.
@@ -808,7 +812,7 @@ Index: hw/xfree86/doc/man/xorg.conf.man.pre
  .PP
  In the absence of an explicitly specified core input device, the first
  .B InputDevice
-@@ -733,21 +804,24 @@
+@@ -740,21 +811,24 @@
  .B CorePointer
  (or
  .BR CoreKeyboard )
@@ -841,7 +845,7 @@ Index: hw/xfree86/doc/man/xorg.conf.man.pre
  .B ServerLayout
  section, or from the
  .B \-pointer
-@@ -759,8 +833,9 @@
+@@ -766,8 +840,9 @@
  .TP 7
  .BI "Option \*qCoreKeyboard\*q"
  When this is set, the input device is to be installed as the core
@@ -853,7 +857,7 @@ Index: hw/xfree86/doc/man/xorg.conf.man.pre
  .B ServerLayout
  section, or from the
  .B \-keyboard
-@@ -774,19 +849,21 @@
+@@ -781,19 +856,21 @@
  .TP 7
  .BI "Option \*qSendCoreEvents\*q  \*q" boolean \*q
  Both of these options are equivalent, and when enabled cause the
@@ -881,7 +885,7 @@ Index: hw/xfree86/doc/man/xorg.conf.man.pre
  .PP
  .B Device
  sections have the following format:
-@@ -812,27 +889,30 @@
+@@ -819,27 +896,30 @@
  .PP
  The
  .B Identifier
@@ -920,7 +924,7 @@ Index: hw/xfree86/doc/man/xorg.conf.man.pre
  Note that most of the
  .B Options
  listed here (but not the other entries) may be specified in the
-@@ -841,118 +921,132 @@
+@@ -848,118 +928,132 @@
  .B Device
  section.
  .TP 7
@@ -1118,7 +1122,7 @@ Index: hw/xfree86/doc/man/xorg.conf.man.pre
  .ig
  .TP 7
  This optional entry allows an IRQ number to be specified.
-@@ -961,19 +1055,22 @@
+@@ -968,19 +1062,22 @@
  .B Options
  Option flags may be specified in the
  .B Device
@@ -1147,7 +1151,7 @@ Index: hw/xfree86/doc/man/xorg.conf.man.pre
  but a default configuration will be created when one isn't specified.
  .PP
  .B Monitor
-@@ -997,22 +1094,25 @@
+@@ -1004,22 +1101,25 @@
  .PP
  The
  .B Identifier
@@ -1180,7 +1184,7 @@ Index: hw/xfree86/doc/man/xorg.conf.man.pre
  .PP
  The entries that may be used in
  .B Monitor
-@@ -1024,69 +1124,78 @@
+@@ -1031,69 +1131,78 @@
  .BI "ModelName  \*q" model \*q
  This optional entry specifies the monitor's model.
  .TP 7
@@ -1295,7 +1299,7 @@ Index: hw/xfree86/doc/man/xorg.conf.man.pre
  .RS 7
  .TP 4
  .BI "DotClock  " clock
-@@ -1122,52 +1231,60 @@
+@@ -1129,52 +1238,60 @@
  may be used to select the composite sync polarity.
  .TP 4
  .BI "HSkew  " hskew
@@ -1378,7 +1382,7 @@ Index: hw/xfree86/doc/man/xorg.conf.man.pre
  .B Interlace
  indicates that the mode is interlaced.
  .B DoubleScan
-@@ -1186,7 +1303,8 @@
+@@ -1193,7 +1310,8 @@
  .B +CSync
  and
  .B \-CSync
@@ -1388,9 +1392,9 @@ Index: hw/xfree86/doc/man/xorg.conf.man.pre
  .B HSkew
  and
  .B VScan
-@@ -1205,20 +1323,22 @@
- and
- .BR \*qSyncOnGreen\*q .
+@@ -1217,20 +1335,22 @@
+ should aim for when selecting video modes.  Without this option, the
+ default is to prefer modes with higher refresh rates.
  
 -.SH MODES SECTION
 +.SH "MODES SECTION"
@@ -1416,7 +1420,7 @@ Index: hw/xfree86/doc/man/xorg.conf.man.pre
  will be sufficient.
  .PP
  .B Modes
-@@ -1246,21 +1366,24 @@
+@@ -1258,21 +1378,24 @@
  entries that are described above in the
  .B Monitor
  section.
@@ -1447,7 +1451,7 @@ Index: hw/xfree86/doc/man/xorg.conf.man.pre
  .B Screen
  section found in the config file is considered the active one.
  .PP
-@@ -1288,94 +1411,104 @@
+@@ -1300,94 +1423,104 @@
  .B Identifier
  and
  .B Device
@@ -1588,7 +1592,7 @@ Index: hw/xfree86/doc/man/xorg.conf.man.pre
  .TP 7
  .BI "Option \*qNoMTRR\*q"
  Disables MTRR (Memory Type Range Register) support, a feature of modern
-@@ -1385,14 +1518,14 @@
+@@ -1397,14 +1530,14 @@
  .TP 7
  .BI "Option \*qXaaNoCPUToScreenColorExpandFill\*q"
  Disables accelerated rectangular expansion blits from source patterns
@@ -1606,7 +1610,7 @@ Index: hw/xfree86/doc/man/xorg.conf.man.pre
  pattern.
  .TP 7
  .BI "Option \*qXaaNoDashedBresenhamLine\*q"
-@@ -1402,8 +1535,8 @@
+@@ -1414,8 +1547,8 @@
  Disables accelerated dashed line draws between two arbitrary points.
  .TP 7
  .BI "Option \*qXaaNoImageWriteRect\*q"
@@ -1617,7 +1621,7 @@ Index: hw/xfree86/doc/man/xorg.conf.man.pre
  .TP 7
  .BI "Option \*qXaaNoMono8x8PatternFillRect\*q"
  Disables accelerated fills of a rectangular region with a monochrome
-@@ -1424,7 +1557,7 @@
+@@ -1436,7 +1569,7 @@
  stored in system memory (one scan line at a time).
  .TP 7
  .BI "Option \*qXaaNoScanlineImageWriteRect\*q"
@@ -1626,7 +1630,7 @@ Index: hw/xfree86/doc/man/xorg.conf.man.pre
  system memory to video memory (one scan line at a time).
  .TP 7
  .BI "Option \*qXaaNoScreenToScreenColorExpandFill\*q"
-@@ -1439,10 +1572,10 @@
+@@ -1451,10 +1584,10 @@
  Disables accelerated solid Bresenham line draws.
  .TP 7
  .BI "Option \*qXaaNoSolidFillRect\*q"
@@ -1639,7 +1643,7 @@ Index: hw/xfree86/doc/man/xorg.conf.man.pre
  .TP 7
  .BI "Option \*qXaaNoSolidHorVertLine\*q"
  Disables accelerated solid horizontal and vertical line draws.
-@@ -1454,27 +1587,30 @@
+@@ -1466,27 +1599,30 @@
  .B Screen
  section may optionally contain one or more
  .B Display
@@ -1680,7 +1684,7 @@ Index: hw/xfree86/doc/man/xorg.conf.man.pre
  .PP
  .B Display
  subsections have the following format:
-@@ -1488,78 +1624,88 @@
+@@ -1500,78 +1636,88 @@
  .B  "    EndSubSection"
  .fi
  .RE
@@ -1809,7 +1813,7 @@ Index: hw/xfree86/doc/man/xorg.conf.man.pre
  When this entry is omitted, the valid modes referenced by the appropriate
  .B Monitor
  section will be used.  If the
-@@ -1567,10 +1713,12 @@
+@@ -1579,10 +1725,12 @@
  section contains no modes, then the selection will be taken from the
  built-in VESA standard modes.
  .TP 7
@@ -1826,7 +1830,7 @@ Index: hw/xfree86/doc/man/xorg.conf.man.pre
  .BR PseudoColor ):
  .PP
  .RS 11
-@@ -1616,43 +1764,48 @@
+@@ -1628,43 +1776,48 @@
  .RE
  .TP 7
  .BI "Black  " "red green blue"
@@ -1892,7 +1896,7 @@ Index: hw/xfree86/doc/man/xorg.conf.man.pre
  .B ServerLayout
  sections are present, the single active screen and two active (core)
  input devices are selected as described in the relevant sections above.
-@@ -1664,9 +1817,9 @@
+@@ -1676,9 +1829,9 @@
  .nf
  .B  "Section \*qServerLayout\*q"
  .BI "    Identifier   \*q" name \*q
@@ -1904,7 +1908,7 @@ Index: hw/xfree86/doc/man/xorg.conf.man.pre
  .I  "    ..."
  .I  "    options"
  .I  "    ..."
-@@ -1684,10 +1837,11 @@
+@@ -1696,10 +1849,11 @@
  .PP
  The
  .B Identifier
@@ -1918,7 +1922,7 @@ Index: hw/xfree86/doc/man/xorg.conf.man.pre
  .BR Options .
  The
  .B ServerFlags
-@@ -1698,21 +1852,25 @@
+@@ -1710,21 +1864,25 @@
  .PP
  The entries that may be used in this section are described here.
  .TP 7
@@ -1955,7 +1959,7 @@ Index: hw/xfree86/doc/man/xorg.conf.man.pre
  .RS 7
  .TP 4
  .I  "x y"
-@@ -1722,48 +1880,53 @@
+@@ -1734,48 +1892,53 @@
  .RI ( x , y ).
  The
  .B Absolute
@@ -2029,7 +2033,7 @@ Index: hw/xfree86/doc/man/xorg.conf.man.pre
  .PP
  .RS 11
  .nf
-@@ -1781,8 +1944,9 @@
+@@ -1793,8 +1956,9 @@
  .B Options
  In addition to the following, any option permitted in the
  .B ServerFlags
@@ -2041,7 +2045,7 @@ Index: hw/xfree86/doc/man/xorg.conf.man.pre
  .B ServerFlags
  section.
  .TP 7
-@@ -1795,9 +1959,11 @@
+@@ -1807,9 +1971,11 @@
  .BR "DEVICE SECTION" ,
  above) for the format of the
  .I bus\-id
@@ -2055,7 +2059,7 @@ Index: hw/xfree86/doc/man/xorg.conf.man.pre
  .TP 7
  .BI "Option \*qSingleCard\*q  \*q" boolean \*q
  As
-@@ -1821,68 +1987,102 @@
+@@ -1833,68 +1999,102 @@
  .B "EndSection"
  .fi
  .RE

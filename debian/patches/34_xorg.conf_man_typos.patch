@@ -1,8 +1,8 @@
 Index: xorg-server/hw/xfree86/doc/man/xorg.conf.man.pre
 ===================================================================
---- xorg-server.orig/hw/xfree86/doc/man/xorg.conf.man.pre	2006-10-21 23:40:42.000000000 +1000
-+++ xorg-server/hw/xfree86/doc/man/xorg.conf.man.pre	2006-10-21 23:41:04.000000000 +1000
-@@ -1185,7 +1185,7 @@
+--- xorg-server.orig/hw/xfree86/doc/man/xorg.conf.man.pre	2006-11-26 01:53:11.000000000 +0100
++++ xorg-server/hw/xfree86/doc/man/xorg.conf.man.pre	2006-11-26 02:56:22.000000000 +0100
+@@ -1188,7 +1188,7 @@
  .B Modes
  section called
  .IR modesection\-id.

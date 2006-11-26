@@ -11,11 +11,11 @@ Add an ffs prototype to dix.h, and add includes to ffs.c.
  include/dix.h |    3 +++
  2 files changed, 5 insertions(+), 0 deletions(-)
 
-diff --git a/dix/ffs.c b/dix/ffs.c
-index f84f7b4..b75657d 100644
---- a/dix/ffs.c
-+++ b/dix/ffs.c
-@@ -36,6 +36,8 @@ int
+Index: xorg-server/dix/ffs.c
+===================================================================
+--- xorg-server.orig/dix/ffs.c	2006-11-13 19:59:22.000000000 +0100
++++ xorg-server/dix/ffs.c	2006-11-26 02:57:14.000000000 +0100
+@@ -30,6 +30,8 @@
  ffs(int i)
  {
      int j;
@@ -24,11 +24,11 @@ index f84f7b4..b75657d 100644
      for (j = 1; (i & 1) == 0; j++)
  	i >>= 1;
      return j;
-diff --git a/include/dix.h b/include/dix.h
-index 983a84f..a5a570a 100644
---- a/include/dix.h
-+++ b/include/dix.h
-@@ -817,4 +817,7 @@ #define strcasecmp xstrcasecmp
+Index: xorg-server/include/dix.h
+===================================================================
+--- xorg-server.orig/include/dix.h	2006-11-13 19:59:23.000000000 +0100
++++ xorg-server/include/dix.h	2006-11-26 02:57:14.000000000 +0100
+@@ -815,4 +815,7 @@
  extern int xstrcasecmp(char *s1, char *s2);
  #endif
  

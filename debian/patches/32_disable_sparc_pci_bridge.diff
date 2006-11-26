@@ -1,8 +1,8 @@
 Index: xorg-server/hw/xfree86/os-support/bus/Pci.h
 ===================================================================
---- xorg-server.orig/hw/xfree86/os-support/bus/Pci.h	2006-10-14 21:57:12.000000000 -0700
-+++ xorg-server/hw/xfree86/os-support/bus/Pci.h	2006-10-14 21:57:46.000000000 -0700
-@@ -328,7 +328,7 @@
+--- xorg-server.orig/hw/xfree86/os-support/bus/Pci.h	2006-11-26 02:33:15.000000000 +0100
++++ xorg-server/hw/xfree86/os-support/bus/Pci.h	2006-11-26 02:55:48.000000000 +0100
+@@ -327,7 +327,7 @@
  #  define INCLUDE_XF86_MAP_PCI_MEM
  #  define INCLUDE_XF86_NO_DOMAIN
  # endif

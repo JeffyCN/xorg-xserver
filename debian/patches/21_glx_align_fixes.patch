@@ -1,10 +1,10 @@
 Index: xorg-server/GL/glx/Makefile.am
 ===================================================================
---- xorg-server.orig/GL/glx/Makefile.am	2006-09-26 21:37:18.000000000 -0700
-+++ xorg-server/GL/glx/Makefile.am	2006-09-26 21:37:29.000000000 -0700
-@@ -17,7 +17,8 @@
- 	@MODULE_DEFINES@ \
- 	@LOADER_DEFINES@ \
+--- xorg-server.orig/GL/glx/Makefile.am	2006-11-13 19:59:22.000000000 +0100
++++ xorg-server/GL/glx/Makefile.am	2006-11-26 02:21:31.000000000 +0100
+@@ -15,7 +15,8 @@
+ 	-I@MESA_SOURCE@/src/mesa/main \
+ 	-DXFree86Server \
  	-DNO_LIBCWRAPPER \
 -	@GLX_DEFINES@
 +	@GLX_DEFINES@ \
@@ -14,8 +14,8 @@ Index: xorg-server/GL/glx/Makefile.am
  #sdk_HEADERS =
 Index: xorg-server/configure.ac
 ===================================================================
---- xorg-server.orig/configure.ac	2006-09-26 21:37:14.000000000 -0700
-+++ xorg-server/configure.ac	2006-09-26 21:37:29.000000000 -0700
+--- xorg-server.orig/configure.ac	2006-11-13 19:59:22.000000000 +0100
++++ xorg-server/configure.ac	2006-11-26 02:21:31.000000000 +0100
 @@ -194,6 +194,7 @@
  	case $host_os in
  		*netbsd*)	AC_DEFINE(USE_ALPHA_PIO, 1, [NetBSD PIO alpha IO]) ;;
@@ -24,7 +24,7 @@ Index: xorg-server/configure.ac
  	;;
    arm*)
  	ARM_VIDEO=yes
-@@ -220,6 +221,7 @@
+@@ -222,6 +223,7 @@
  	xorg_loader_sparcmuldiv="yes"
  	SPARC64_VIDEO=yes
  	BSD_ARCH_SOURCES="sparc64_video.c ioperm_noop.c"
@@ -32,7 +32,7 @@ Index: xorg-server/configure.ac
  	;;
    x86_64*|amd64*)
    	use_x86_asm="yes"
-@@ -231,8 +233,16 @@
+@@ -235,8 +237,16 @@
  				SYS_LIBS=-lamd64
  				;;
  	esac
@@ -51,13 +51,15 @@ Index: xorg-server/configure.ac
  AM_CONDITIONAL(ALPHA_VIDEO, [test "x$ALPHA_VIDEO" = xyes])
 Index: xorg-server/hw/dmx/glxProxy/Makefile.am
 ===================================================================
---- xorg-server.orig/hw/dmx/glxProxy/Makefile.am	2006-09-26 21:37:22.000000000 -0700
-+++ xorg-server/hw/dmx/glxProxy/Makefile.am	2006-09-26 21:37:29.000000000 -0700
-@@ -33,6 +33,7 @@
+--- xorg-server.orig/hw/dmx/glxProxy/Makefile.am	2006-11-13 19:59:22.000000000 +0100
++++ xorg-server/hw/dmx/glxProxy/Makefile.am	2006-11-26 02:22:17.000000000 +0100
+@@ -31,8 +31,7 @@
+                         renderpixswap.c \
+                         unpack.h
  
- AM_CFLAGS = @SERVER_DEFINES@ \
-             @MODULE_DEFINES@ \
-+	    @GLX_ARCH_DEFINES@ \
+-AM_CFLAGS = \
+- \
++AM_CFLAGS = @GLX_ARCH_DEFINES@ \
              -I$(top_srcdir)/hw/dmx \
              -I$(top_srcdir)/include \
              -I$(top_srcdir)/GL/include \

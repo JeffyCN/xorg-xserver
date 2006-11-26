@@ -5,9 +5,9 @@ is horribly screwed up; this patch by Branden Robinson.
 
 Index: dix/main.c
 ===================================================================
---- dix/main.c.orig	2006-03-05 19:50:04.000000000 -0500
-+++ dix/main.c	2006-03-05 19:51:59.000000000 -0500
-@@ -409,10 +409,42 @@
+--- dix/main.c.orig	2006-11-13 19:59:22.000000000 +0100
++++ dix/main.c	2006-11-26 01:55:13.000000000 +0100
+@@ -407,10 +407,42 @@
  			defaultFontPath);
  	}
  	if (!SetDefaultFont(defaultTextFont))

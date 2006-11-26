@@ -1,8 +1,42 @@
 xorg-server (2:1.1.99.902-1) experimental; urgency=low
 
   * Update to latest upstream release candidate.
+  * Forward-port patches:
+    * 02_libvgahw_gcc4_volatile_fix.diff: update
+    * 04_read_rom_in_chunks.diff: update
+    * 05_arm_cache_flush.diff: remove, applied upstream
+    * 06_arm_is_not_x86_and_has_no_vga.diff: remove, applied upstream
+    * 07_xorgconf_manpage_overhaul.diff: update
+    * 08_s390_servermd.diff: update
+    * 09_debian_xserver_rtff.diff: update
+    * 12_security_policy_in_etc.diff: update
+    * 13_debian_add_xkbpath_env_variable.diff: update
+    * 15_symlink_mesa.diff: remove, fixed upstream
+    * 16_s390_fix.diff: update
+    * 17_ignoreabi.diff: remove, applied upstream
+    * 18_execinfo_only_for_backtrace.patch: remove, applied upstream
+    * 18_execinfo_configured.patch: remove, applied upstream
+    * 19_configurable_misc_utils.patch: remove, applied upstream
+    * 20_mesa_6.5.1.diff: remove, applied upstream
+    * 21_glx_align_fixes.patch: update
+    * 22_xkb_cycle_3layouts.diff: remove, applied upstream
+    * 23_kfreebsd_support.diff: update, partially applied upstream
+    * 24_hurd_support.diff: update, partially applied upstream
+    * 25_tfp_damage.diff: remove, applied upstream
+    * 26_aiglx_happy_vt_switch.diff: remove, applied upstream
+    * 27_aiglx_locking.diff: remove, applied upstream
+    * 28_mesa_copy_sub_buffer.diff: remove, applied upstream
+    * 29_mesa_reseed_makefile.diff: remove, fixed upstream
+    * 30_fix_vmode_switch.diff: remove, fixed upstream
+    * 31_blocksigio.diff: remove, fixed upstream
+    * 32_disable_sparc_pci_bridge.diff: update
+    * 34_xorg.conf_man_typos.patch: update
+    * 35_randr_byteswap.patch: update
+    * 36_fix_ffs.patch: update
+    * 37_Fix-__glXDRIbindTexImage-for-32-bpp-on-big-endian-platforms.diff:
+      remove, applied upstream
 
- -- Thierry Reding <thierry@gilfi.de>  Sun, 26 Nov 2006 00:33:55 +0100
+ -- Thierry Reding <thierry@gilfi.de>  Sun, 26 Nov 2006 03:10:30 +0100
 
 xorg-server (2:1.1.1-11) unstable; urgency=low
 

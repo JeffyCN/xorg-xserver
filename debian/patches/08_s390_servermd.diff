@@ -6,11 +6,11 @@ This patch by Gerhard Tonn.
 
 Not submitted to XFree86.
 
-Index: xc/programs/Xserver/include/servermd.h
+Index: xorg-server/include/servermd.h
 ===================================================================
---- xc/programs/Xserver/include/servermd.h.orig	2005-10-18 19:45:06.000000000 -0400
-+++ xc/programs/Xserver/include/servermd.h	2005-10-18 22:41:18.000000000 -0400
-@@ -518,7 +518,15 @@
+--- xorg-server.orig/include/servermd.h	2006-11-13 19:59:23.000000000 +0100
++++ xorg-server/include/servermd.h	2006-11-26 01:53:14.000000000 +0100
+@@ -515,7 +515,15 @@
  #define GLYPHPADBYTES		4
  #define GETLEFTBITS_ALIGNMENT	1
  #endif

@@ -8,9 +8,9 @@ Byte swap RRSelectInput enable flags.
 
 Index: xorg-server/randr/randr.c
 ===================================================================
---- xorg-server.orig/randr/randr.c	2006-10-31 17:47:05.000000000 +0100
-+++ xorg-server/randr/randr.c	2006-10-31 17:50:04.000000000 +0100
-@@ -1188,6 +1188,7 @@
+--- xorg-server.orig/randr/randr.c	2006-11-13 19:59:23.000000000 +0100
++++ xorg-server/randr/randr.c	2006-11-26 02:56:53.000000000 +0100
+@@ -1187,6 +1187,7 @@
  
      swaps(&stuff->length, n);
      swapl(&stuff->window, n);

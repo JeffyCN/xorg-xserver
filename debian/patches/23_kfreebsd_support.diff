@@ -1,47 +1,8 @@
 Index: xorg-server/configure.ac
 ===================================================================
---- xorg-server.orig/configure.ac	2006-10-31 17:44:02.000000000 +0100
-+++ xorg-server/configure.ac	2006-10-31 17:47:06.000000000 +0100
-@@ -256,7 +256,10 @@
- dnl it would be nice to autodetect these *CONS_SUPPORTs
- case $host_os in
-   *freebsd*)
--	AC_DEFINE(CSRG_BASED, 1, [System is BSD-like])
-+	case $host_os in
-+		kfreebsd*-gnu) ;;
-+		*) AC_DEFINE(CSRG_BASED, 1, [System is BSD-like]) ;;
-+	esac
- 	AC_DEFINE(PCCONS_SUPPORT, 1, [System has PC console])
- 	AC_DEFINE(PCVT_SUPPORT, 1, [System has PCVT console])
- 	AC_DEFINE(SYSCONS_SUPPORT, 1, [System has syscons console])
-@@ -1090,7 +1093,7 @@
- 			;;
- 		esac
- 		;;
--	  freebsd*)
-+	  freebsd* | kfreebsd*-gnu)
- 	  	XORG_OS="freebsd"
- 		XORG_OS_SUBDIR="bsd"
- 		XORG_OS_KBD="BSD"
-@@ -1189,7 +1192,7 @@
- 		;;
- 	  powerpc*)
- 		case $host_os in
--		  linux*|freebsd*|netbsd*|openbsd*)
-+		  linux*|freebsd*|netbsd*|openbsd*|kfreebsd*-gnu)
- 			;;
- 		  *)
- 			xorg_bus_ppcpci="yes"
-@@ -1202,7 +1205,7 @@
- 		;;
- 	  x86_64*|amd64*)
- 		case $host_os in
--		  freebsd*)
-+		  freebsd*|kfreebsd*-gnu)
- 			# FreeBSD uses the system pci interface
- 			;;
- 		  *)
-@@ -1447,7 +1450,11 @@
+--- xorg-server.orig/configure.ac	2006-11-26 03:09:06.000000000 +0100
++++ xorg-server/configure.ac	2006-11-26 03:09:49.000000000 +0100
+@@ -1511,7 +1511,11 @@
  
      AC_CHECK_HEADERS([sys/vm86.h sys/io.h])
      if test "$ac_cv_header_sys_vm86_h" = yes; then
@@ -54,28 +15,19 @@ Index: xorg-server/configure.ac
      fi
  
      AC_CHECK_HEADERS([linux/fb.h])
-@@ -1487,7 +1494,7 @@
+@@ -1561,7 +1565,7 @@
  AC_SUBST(KDRIVE_LIBS)
- AM_CONDITIONAL(TSLIB, false)
+ AM_CONDITIONAL(TSLIB, [test "x$HAVE_TSLIB" = xyes])
  AM_CONDITIONAL(H3600_TS, false)
 -AM_CONDITIONAL(KDRIVEVESA, [test x"$ac_cv_header_sys_vm86_h" = xyes])
 +AM_CONDITIONAL(KDRIVEVESA, [test x"$kdrivevesa" = xyes])
  AM_CONDITIONAL(KDRIVEFBDEV, [test x"$ac_cv_header_linux_fb_h" = xyes])
- #AM_CONDITIONAL(KDRIVEVESA, false)
- #AM_CONDITIONAL(KDRIVEFBDEV, false)
-@@ -1542,7 +1549,7 @@
- 	cygwin*) ;;
- 	solaris*) ;;
-         darwin*) ;;
--	*bsd*) ;;
-+	freebsd*|netbsd*|openbsd*) ;;
- 	*) 
- 		AC_DEFINE(_POSIX_SOURCE, 1, [POSIX-compliant source])
- 		AC_DEFINE(_XOPEN_SOURCE, 500, [X/Open-compliant source])
+ 
+ # Xephyr needs nanosleep() which is in librt on Solaris
 Index: xorg-server/hw/kdrive/linux/agp.c
 ===================================================================
---- xorg-server.orig/hw/kdrive/linux/agp.c	2006-10-31 17:42:39.000000000 +0100
-+++ xorg-server/hw/kdrive/linux/agp.c	2006-10-31 17:44:02.000000000 +0100
+--- xorg-server.orig/hw/kdrive/linux/agp.c	2006-11-26 03:00:41.000000000 +0100
++++ xorg-server/hw/kdrive/linux/agp.c	2006-11-26 03:09:06.000000000 +0100
 @@ -65,7 +65,7 @@
  
  #include <linux/agpgart.h>
@@ -85,16 +37,3 @@ Index: xorg-server/hw/kdrive/linux/agp.c
  #include <sys/ioctl.h>
  #include <sys/agpio.h>
  #endif
-Index: xorg-server/hw/xfree86/os-support/bus/Pci.h
-===================================================================
---- xorg-server.orig/hw/xfree86/os-support/bus/Pci.h	2006-10-31 17:42:39.000000000 +0100
-+++ xorg-server/hw/xfree86/os-support/bus/Pci.h	2006-10-31 17:47:05.000000000 +0100
-@@ -332,7 +332,7 @@
- #  define ARCH_PCI_PCI_BRIDGE sparcPciPciBridge
- # endif
- #elif defined(__amd64__) || defined(__amd64)
--# if defined(__FreeBSD__)
-+# if defined(__FreeBSD__) || defined(__FreeBSD_kernel__)
- #  define ARCH_PCI_INIT freebsdPciInit
- # else
- #  define ARCH_PCI_INIT ix86PciInit

@@ -2,34 +2,18 @@
 02_libvgahw_gcc4_volatile_fix.diff
 03_xnest_manpage_overhaul.diff
 04_read_rom_in_chunks.diff
-05_arm_cache_flush.diff -p3
-06_arm_is_not_x86_and_has_no_vga.diff 
 07_xorgconf_manpage_overhaul.diff -p0
-08_s390_servermd.diff -p3
+08_s390_servermd.diff 
 09_debian_xserver_rtff.diff -p0
 10_dont_look_in_home_for_config.diff -p0
-12_security_policy_in_etc.diff 
+12_security_policy_in_etc.diff
 13_debian_add_xkbpath_env_variable.diff
-15_symlink_mesa.diff
-16_s390_fix.diff 
-17_ignoreabi.diff
-18_execinfo_only_for_backtrace.patch
-19_configurable_misc_utils.patch
-20_mesa_6.5.1.diff
+16_s390_fix.diff
 21_glx_align_fixes.patch
-22_xkb_cycle_3layouts.diff
 23_kfreebsd_support.diff
 24_hurd_support.diff
-25_tfp_damage.diff -p0
-26_aiglx_happy_vt_switch.diff
-27_aiglx_locking.diff
-28_mesa_copy_sub_buffer.diff -p0
-29_mesa_reseed_makefile.diff -p0
-30_fix_vmode_switch.diff
-31_blocksigio.diff
 32_disable_sparc_pci_bridge.diff
 33_Xserver_man_typos.patch
 34_xorg.conf_man_typos.patch
 35_randr_byteswap.patch
 36_fix_ffs.patch
-37_Fix-__glXDRIbindTexImage-for-32-bpp-on-big-endian-platforms.diff
