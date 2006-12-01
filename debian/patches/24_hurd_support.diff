@@ -30,14 +30,6 @@ Index: xorg-server/configure.ac
      KDRIVE_STUB_LIB='$(top_builddir)/hw/kdrive/src/libkdrivestubs.a'
      KDRIVE_LIBS="$DIX_LIB $KDRIVE_LIB $KDRIVE_OS_LIB $KDRIVE_PURE_LIBS $KDRIVE_STUB_LIB $TSLIB_LIBS"
  
-@@ -1770,6 +1782,7 @@
- hw/xfree86/os-support/solaris/Makefile
- hw/xfree86/os-support/sysv/Makefile
- hw/xfree86/os-support/usl/Makefile
-+hw/xfree86/os-support/hurd/Makefile
- hw/xfree86/parser/Makefile
- hw/xfree86/rac/Makefile
- hw/xfree86/ramdac/Makefile
 Index: xorg-server/hw/kdrive/Makefile.am
 ===================================================================
 --- xorg-server.orig/hw/kdrive/Makefile.am	2006-11-26 03:00:41.000000000 +0100
