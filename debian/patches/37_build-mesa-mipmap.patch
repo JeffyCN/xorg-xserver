@@ -1,0 +1,117 @@
+--- a/GL/mesa/main/Makefile.am
++++ b/GL/mesa/main/Makefile.am
+@@ -60,6 +60,7 @@
+                     light.c \
+                     lines.c \
+                     matrix.c \
++                    mipmap.c \
+                     mm.c \
+                     occlude.c \
+                     pixel.c \
+--- a/GL/mesa/main/Makefile.in
++++ b/GL/mesa/main/Makefile.in
+@@ -63,12 +63,12 @@
+ 	drawpix.lo enable.lo enums.lo eval.lo execmem.lo extensions.lo \
+ 	fbobject.lo feedback.lo fog.lo framebuffer.lo get.lo \
+ 	getstring.lo hash.lo hint.lo histogram.lo image.lo imports.lo \
+-	light.lo lines.lo matrix.lo mm.lo occlude.lo pixel.lo \
+-	points.lo polygon.lo rastpos.lo rbadaptors.lo renderbuffer.lo \
+-	state.lo stencil.lo texcompress.lo texcompress_fxt1.lo \
+-	texcompress_s3tc.lo texenvprogram.lo texformat.lo teximage.lo \
+-	texobj.lo texrender.lo texstate.lo texstore.lo varray.lo \
+-	$(am__objects_1) vtxfmt.lo
++	light.lo lines.lo matrix.lo mipmap.lo mm.lo occlude.lo \
++	pixel.lo points.lo polygon.lo rastpos.lo rbadaptors.lo \
++	renderbuffer.lo state.lo stencil.lo texcompress.lo \
++	texcompress_fxt1.lo texcompress_s3tc.lo texenvprogram.lo \
++	texformat.lo teximage.lo texobj.lo texrender.lo texstate.lo \
++	texstore.lo varray.lo $(am__objects_1) vtxfmt.lo
+ libmain_la_OBJECTS = $(nodist_libmain_la_OBJECTS)
+ DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)/include -I$(top_builddir)/include -I$(top_builddir)/include -I$(top_builddir)/include -I$(top_builddir)/include -I$(top_builddir)/include -I$(top_builddir)/include -I$(top_builddir)/include
+ depcomp = $(SHELL) $(top_srcdir)/depcomp
+@@ -208,6 +208,7 @@
+ GLX_TRUE = @GLX_TRUE@
+ GL_CFLAGS = @GL_CFLAGS@
+ GL_LIBS = @GL_LIBS@
++GREP = @GREP@
+ H3600_TS_FALSE = @H3600_TS_FALSE@
+ H3600_TS_TRUE = @H3600_TS_TRUE@
+ I386_VIDEO_FALSE = @I386_VIDEO_FALSE@
+@@ -312,7 +313,6 @@
+ RGB_DB = @RGB_DB@
+ SCREENSAVER_FALSE = @SCREENSAVER_FALSE@
+ SCREENSAVER_TRUE = @SCREENSAVER_TRUE@
+-SED = @SED@
+ SET_MAKE = @SET_MAKE@
+ SHELL = @SHELL@
+ SOLARIS_ASM_CFLAGS = @SOLARIS_ASM_CFLAGS@
+@@ -483,17 +483,11 @@
+ XWIN_XV_FALSE = @XWIN_XV_FALSE@
+ XWIN_XV_TRUE = @XWIN_XV_TRUE@
+ YACC = @YACC@
++YFLAGS = @YFLAGS@
+ __XCONFIGFILE__ = @__XCONFIGFILE__@
+-ac_ct_AR = @ac_ct_AR@
+-ac_ct_AS = @ac_ct_AS@
+ ac_ct_CC = @ac_ct_CC@
+ ac_ct_CXX = @ac_ct_CXX@
+-ac_ct_DLLTOOL = @ac_ct_DLLTOOL@
+ ac_ct_F77 = @ac_ct_F77@
+-ac_ct_OBJDUMP = @ac_ct_OBJDUMP@
+-ac_ct_RANLIB = @ac_ct_RANLIB@
+-ac_ct_STRIP = @ac_ct_STRIP@
+-ac_pt_PKG_CONFIG = @ac_pt_PKG_CONFIG@
+ am__fastdepCC_FALSE = @am__fastdepCC_FALSE@
+ am__fastdepCC_TRUE = @am__fastdepCC_TRUE@
+ am__fastdepCXX_FALSE = @am__fastdepCXX_FALSE@
+@@ -510,7 +504,10 @@
+ build_os = @build_os@
+ build_vendor = @build_vendor@
+ datadir = @datadir@
++datarootdir = @datarootdir@
++docdir = @docdir@
+ driverdir = @driverdir@
++dvidir = @dvidir@
+ exec_prefix = @exec_prefix@
+ extdir = @extdir@
+ ft_config = @ft_config@
+@@ -519,19 +516,23 @@
+ host_cpu = @host_cpu@
+ host_os = @host_os@
+ host_vendor = @host_vendor@
++htmldir = @htmldir@
+ includedir = @includedir@
+ infodir = @infodir@
+ install_sh = @install_sh@
+ libdir = @libdir@
+ libexecdir = @libexecdir@
++localedir = @localedir@
+ localstatedir = @localstatedir@
+ logdir = @logdir@
+ mandir = @mandir@
+ mkdir_p = @mkdir_p@
+ moduledir = @moduledir@
+ oldincludedir = @oldincludedir@
++pdfdir = @pdfdir@
+ prefix = @prefix@
+ program_transform_name = @program_transform_name@
++psdir = @psdir@
+ sbindir = @sbindir@
+ sdkdir = @sdkdir@
+ sharedstatedir = @sharedstatedir@
+@@ -597,6 +598,7 @@
+                     light.c \
+                     lines.c \
+                     matrix.c \
++                    mipmap.c \
+                     mm.c \
+                     occlude.c \
+                     pixel.c \
+@@ -710,6 +712,7 @@
+ @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/light.Plo@am__quote@
+ @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/lines.Plo@am__quote@
+ @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/matrix.Plo@am__quote@
++@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/mipmap.Plo@am__quote@
+ @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/mm.Plo@am__quote@
+ @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/occlude.Plo@am__quote@
+ @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pixel.Plo@am__quote@
