@@ -35,8 +35,12 @@ xorg-server (2:1.1.99.902-1) experimental; urgency=low
     * 36_fix_ffs.patch: update
     * 37_Fix-__glXDRIbindTexImage-for-32-bpp-on-big-endian-platforms.diff:
       remove, applied upstream
+  * Add 37_build-mesa-mipmap.patch that adds the missing mipmap.c to libmain's
+    sources.
+  * Add 38_GetDrawableAttributes.patch which readds support for the
+    GetDrawableAttributes extension that's needed for compiz to work properly.
 
- -- Thierry Reding <thierry@gilfi.de>  Sun, 26 Nov 2006 03:10:30 +0100
+ -- Thierry Reding <thierry@gilfi.de>  Fri,  1 Dec 2006 20:32:34 +0100
 
 xorg-server (2:1.1.1-11) unstable; urgency=low
 
