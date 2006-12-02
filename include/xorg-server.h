@@ -21,7 +21,7 @@
 #define BIGREQS 1
 
 /* Default font path */
-#define COMPILEDDEFAULTFONTPATH "/usr/local/lib/X11/fonts/misc/,/usr/local/lib/X11/fonts/TTF/,/usr/local/lib/X11/fonts/OTF,/usr/local/lib/X11/fonts/Type1/,/usr/local/lib/X11/fonts/CID/,/usr/local/lib/X11/fonts/100dpi/,/usr/local/lib/X11/fonts/75dpi/"
+#define COMPILEDDEFAULTFONTPATH "/usr/local/lib/X11/fonts/misc/,/usr/local/lib/X11/fonts/TTF/,/usr/local/lib/X11/fonts/OTF,/usr/local/lib/X11/fonts/Type1/,/usr/local/lib/X11/fonts/100dpi/,/usr/local/lib/X11/fonts/75dpi/"
 
 /* Support Composite Extension */
 #define COMPOSITE 1
@@ -162,10 +162,10 @@
 #define XORGSERVER 1
 
 /* Vendor release */
-#define XORG_RELEASE "Release 7.1.99.902"
+#define XORG_RELEASE "Release 7.1.99.903"
 
 /* Current Xorg version */
-#define XORG_VERSION_CURRENT (((7) * 10000000) + ((1) * 100000) + ((99) * 1000) + 902)
+#define XORG_VERSION_CURRENT (((7) * 10000000) + ((1) * 100000) + ((99) * 1000) + 903)
 
 /* Build Xv Extension */
 #define XvExtension 1

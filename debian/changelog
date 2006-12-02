@@ -1,3 +1,17 @@
+xorg-server (2:1.1.99.903-1) experimental; urgency=low
+
+  * New upstream release candidate.
+  * Forward-port patches:
+    * 07_xorgconf_manpage_overhaul.diff: refresh
+    * 12_security_policy_in_etc.diff: refresh
+    * 21_glx_align_fixes.patch: refresh
+    * 23_kfreebsd_support.diff: refresh
+    * 24_hurd_support.diff: refresh
+    * 34_xorg.conf_man_typos.patch: refresh
+    * 36_fix_ffs.patch: remove, applied upstream
+
+ -- Thierry Reding <thierry@gilfi.de>  Sat,  2 Dec 2006 11:46:49 +0100
+
 xorg-server (2:1.1.99.902-1) experimental; urgency=low
 
   * Update to latest upstream release candidate.

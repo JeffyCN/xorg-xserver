@@ -1,7 +1,7 @@
 Index: xorg-server/configure.ac
 ===================================================================
---- xorg-server.orig/configure.ac	2006-11-26 03:09:06.000000000 +0100
-+++ xorg-server/configure.ac	2006-11-26 03:09:06.000000000 +0100
+--- xorg-server.orig/configure.ac	2006-12-02 11:17:45.000000000 +0100
++++ xorg-server/configure.ac	2006-12-02 11:18:03.000000000 +0100
 @@ -1247,6 +1247,10 @@
  	  	XORG_OS="gnu"
  		XORG_OS_SUBDIR="hurd"
@@ -13,7 +13,7 @@ Index: xorg-server/configure.ac
  	  *)
  	  	XORG_OS="unknown"
  		XORG_OS_SUBDIR="unknown"
-@@ -1545,7 +1549,15 @@
+@@ -1546,7 +1550,15 @@
      #    $MIEXT_SHADOW_LIB $XPSTUBS_LIB"
      KDRIVE_PURE_LIBS="$FB_LIB $MI_LIB $FIXES_LIB $XEXT_LIB $DBE_LIB $XTRAP_LIB $RECORD_LIB $GLX_LIBS $RENDER_LIB $RANDR_LIB $DAMAGE_LIB $MIEXT_DAMAGE_LIB $MIEXT_SHADOW_LIB $XI_LIB $XKB_LIB $XKB_STUB_LIB $COMPOSITE_LIB $XPSTUBS_LIB $OS_LIB"
      KDRIVE_LIB='$(top_builddir)/hw/kdrive/src/libkdrive.a'
@@ -32,8 +32,8 @@ Index: xorg-server/configure.ac
  
 Index: xorg-server/hw/kdrive/Makefile.am
 ===================================================================
---- xorg-server.orig/hw/kdrive/Makefile.am	2006-11-26 03:00:41.000000000 +0100
-+++ xorg-server/hw/kdrive/Makefile.am	2006-11-26 03:09:06.000000000 +0100
+--- xorg-server.orig/hw/kdrive/Makefile.am	2006-12-02 11:14:27.000000000 +0100
++++ xorg-server/hw/kdrive/Makefile.am	2006-12-02 11:18:03.000000000 +0100
 @@ -15,9 +15,13 @@
  XEPHYR_SUBDIRS = ephyr
  endif
@@ -51,8 +51,8 @@ Index: xorg-server/hw/kdrive/Makefile.am
  	$(VESA_SUBDIRS)		\
 Index: xorg-server/GL/glx/indirect_dispatch_swap.c
 ===================================================================
---- xorg-server.orig/GL/glx/indirect_dispatch_swap.c	2006-11-26 03:00:41.000000000 +0100
-+++ xorg-server/GL/glx/indirect_dispatch_swap.c	2006-11-26 03:09:06.000000000 +0100
+--- xorg-server.orig/GL/glx/indirect_dispatch_swap.c	2006-12-02 11:14:27.000000000 +0100
++++ xorg-server/GL/glx/indirect_dispatch_swap.c	2006-12-02 11:18:03.000000000 +0100
 @@ -28,7 +28,7 @@
  #include <X11/Xmd.h>
  #include <GL/gl.h>
@@ -64,8 +64,8 @@ Index: xorg-server/GL/glx/indirect_dispatch_swap.c
  #include <sys/endian.h>
 Index: xorg-server/GL/glx/indirect_reqsize.c
 ===================================================================
---- xorg-server.orig/GL/glx/indirect_reqsize.c	2006-11-26 03:00:41.000000000 +0100
-+++ xorg-server/GL/glx/indirect_reqsize.c	2006-11-26 03:09:06.000000000 +0100
+--- xorg-server.orig/GL/glx/indirect_reqsize.c	2006-12-02 11:14:27.000000000 +0100
++++ xorg-server/GL/glx/indirect_reqsize.c	2006-12-02 11:18:03.000000000 +0100
 @@ -31,7 +31,7 @@
  #include "indirect_size.h"
  #include "indirect_reqsize.h"
@@ -77,8 +77,8 @@ Index: xorg-server/GL/glx/indirect_reqsize.c
  #else
 Index: xorg-server/GL/glx/indirect_util.c
 ===================================================================
---- xorg-server.orig/GL/glx/indirect_util.c	2006-11-26 03:00:41.000000000 +0100
-+++ xorg-server/GL/glx/indirect_util.c	2006-11-26 03:09:06.000000000 +0100
+--- xorg-server.orig/GL/glx/indirect_util.c	2006-12-02 11:14:27.000000000 +0100
++++ xorg-server/GL/glx/indirect_util.c	2006-12-02 11:18:04.000000000 +0100
 @@ -28,7 +28,7 @@
  #include <X11/Xmd.h>
  #include <GL/gl.h>
@@ -91,7 +91,7 @@ Index: xorg-server/GL/glx/indirect_util.c
 Index: xorg-server/hw/xfree86/os-support/hurd/hurd_io.c
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ xorg-server/hw/xfree86/os-support/hurd/hurd_io.c	2006-11-26 03:09:06.000000000 +0100
++++ xorg-server/hw/xfree86/os-support/hurd/hurd_io.c	2006-12-02 11:18:04.000000000 +0100
 @@ -0,0 +1,131 @@
 +/*
 + * Copyright 1997,1998 by UCHIYAMA Yasushi
@@ -227,7 +227,7 @@ Index: xorg-server/hw/xfree86/os-support/hurd/hurd_io.c
 Index: xorg-server/hw/xfree86/os-support/hurd/hurd_kbd.c
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ xorg-server/hw/xfree86/os-support/hurd/hurd_kbd.c	2006-11-26 03:09:06.000000000 +0100
++++ xorg-server/hw/xfree86/os-support/hurd/hurd_kbd.c	2006-12-02 11:18:04.000000000 +0100
 @@ -0,0 +1,176 @@
 +/*
 + * Copyright 1997,1998 by UCHIYAMA Yasushi

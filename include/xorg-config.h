@@ -17,7 +17,7 @@
 #define XORGSERVER 1
 
 /* Current X.Org version. */
-#define XORG_VERSION_CURRENT (((7) * 10000000) + ((1) * 100000) + ((99) * 1000) + 902)
+#define XORG_VERSION_CURRENT (((7) * 10000000) + ((1) * 100000) + ((99) * 1000) + 903)
 
 /* Need XFree86 libc-replacement typedefs. */
 #define NEED_XF86_TYPES 1
@@ -45,6 +45,9 @@
 
 /* Path to loadable modules. */
 #define DEFAULT_MODULE_PATH "/usr/local/lib/xorg/modules"
+
+/* Path to installed libraries. */
+#define DEFAULT_LIBRARY_PATH "/usr/local/lib"
 
 /* Path to server log file. */
 #define DEFAULT_LOGPREFIX "/usr/local/var/log/Xorg."

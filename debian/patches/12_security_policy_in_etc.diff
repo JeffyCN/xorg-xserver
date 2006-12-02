@@ -1,8 +1,8 @@
 Index: xorg-server/configure.ac
 ===================================================================
---- xorg-server.orig/configure.ac	2006-11-26 03:00:42.000000000 +0100
-+++ xorg-server/configure.ac	2006-11-26 03:05:03.000000000 +0100
-@@ -383,6 +383,9 @@
+--- xorg-server.orig/configure.ac	2006-12-02 11:14:28.000000000 +0100
++++ xorg-server/configure.ac	2006-12-02 11:16:53.000000000 +0100
+@@ -382,6 +382,9 @@
  AC_ARG_WITH(rgb-path,         AS_HELP_STRING([--with-rgb-path=PATH], [Path to RGB database (default: ${datadir}/X11/rgb)]),
  				[ RGBPATH="$withval" ],
  				[ RGBPATH="${datadir}/X11/rgb" ])
@@ -22,8 +22,8 @@ Index: xorg-server/configure.ac
  AC_DEFINE_UNQUOTED(XVENDORNAME, ["$VENDOR_STRING"], [Vendor name])
 Index: xorg-server/Xext/Makefile.am
 ===================================================================
---- xorg-server.orig/Xext/Makefile.am	2006-11-13 19:59:22.000000000 +0100
-+++ xorg-server/Xext/Makefile.am	2006-11-26 03:05:59.000000000 +0100
+--- xorg-server.orig/Xext/Makefile.am	2006-12-02 11:14:28.000000000 +0100
++++ xorg-server/Xext/Makefile.am	2006-12-02 11:16:53.000000000 +0100
 @@ -34,7 +34,6 @@
  	xcmisc.c
  

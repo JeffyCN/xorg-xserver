@@ -17,7 +17,7 @@
 #define BUILDERADDR "xorg@lists.freedesktop.org"
 
 /* Default font path */
-#define COMPILEDDEFAULTFONTPATH "/usr/local/lib/X11/fonts/misc/,/usr/local/lib/X11/fonts/TTF/,/usr/local/lib/X11/fonts/OTF,/usr/local/lib/X11/fonts/Type1/,/usr/local/lib/X11/fonts/CID/,/usr/local/lib/X11/fonts/100dpi/,/usr/local/lib/X11/fonts/75dpi/"
+#define COMPILEDDEFAULTFONTPATH "/usr/local/lib/X11/fonts/misc/,/usr/local/lib/X11/fonts/TTF/,/usr/local/lib/X11/fonts/OTF,/usr/local/lib/X11/fonts/Type1/,/usr/local/lib/X11/fonts/100dpi/,/usr/local/lib/X11/fonts/75dpi/"
 
 /* Support Composite Extension */
 #define COMPOSITE 1
@@ -62,6 +62,9 @@
 
 /* Use GetTimeInMillis */
 /* #undef DDXTIME */
+
+/* Default library install path */
+#define DEFAULT_LIBRARY_PATH "/usr/local/lib"
 
 /* Default log location */
 #define DEFAULT_LOGPREFIX "/usr/local/var/log/Xorg."
@@ -341,7 +344,7 @@
 #define NO_LIBCWRAPPER 1
 
 /* Operating System Name */
-#define OSNAME "Linux 2.6.18-1.2708.fc6xen i686"
+#define OSNAME "Linux 2.6.17-1.2647.fc6PAE i686"
 
 /* Operating System Vendor */
 #define OSVENDOR ""
@@ -356,13 +359,13 @@
 #define PACKAGE_NAME "xorg-server"
 
 /* Define to the full name and version of this package. */
-#define PACKAGE_STRING "xorg-server 1.1.99.902"
+#define PACKAGE_STRING "xorg-server 1.1.99.903"
 
 /* Define to the one symbol short name of this package. */
 #define PACKAGE_TARNAME "xorg-server"
 
 /* Define to the version of this package. */
-#define PACKAGE_VERSION "1.1.99.902"
+#define PACKAGE_VERSION "1.1.99.903"
 
 /* Internal define for Xinerama */
 #define PANORAMIX 1
@@ -466,7 +469,7 @@
 #define USE_RGB_TXT 1
 
 /* Version number of package */
-#define VERSION "1.1.99.902"
+#define VERSION "1.1.99.903"
 
 /* Building vgahw module */
 #define WITH_VGAHW 1
@@ -556,22 +559,22 @@
 #define XORGSERVER 1
 
 /* Vendor release */
-#define XORG_DATE "13 November 2006"
+#define XORG_DATE "1 December 2006"
 
 /* Vendor man version */
-#define XORG_MAN_VERSION "Version 7.1.99.902"
+#define XORG_MAN_VERSION "Version 7.1.99.903"
 
 /* Vendor release */
-#define XORG_RELEASE "Release 7.1.99.902"
+#define XORG_RELEASE "Release 7.1.99.903"
 
 /* Building Xorg server */
 #define XORG_SERVER 1
 
 /* Current Xorg version */
-#define XORG_VERSION_CURRENT (((7) * 10000000) + ((1) * 100000) + ((99) * 1000) + 902)
+#define XORG_VERSION_CURRENT (((7) * 10000000) + ((1) * 100000) + ((99) * 1000) + 903)
 
 /* Build Print extension */
-/* #undef XPRINT */
+#define XPRINT 1
 
 /* Support FreeType rasterizer in Xprint for nearly all font file formats */
 /* #undef XP_USE_FREETYPE */
