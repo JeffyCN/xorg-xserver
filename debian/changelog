@@ -49,6 +49,7 @@ xorg-server (2:1.1.99.902-1) experimental; urgency=low
     * 36_fix_ffs.patch: update
     * 37_Fix-__glXDRIbindTexImage-for-32-bpp-on-big-endian-platforms.diff:
       remove, applied upstream
+  * Upstream no longer ships a changelog, so don't try to install it.
   * Add 37_build-mesa-mipmap.patch that adds the missing mipmap.c to libmain's
     sources.
   * Add 38_GetDrawableAttributes.patch which readds support for the
