@@ -9,8 +9,10 @@ xorg-server (2:1.1.99.903-1) experimental; urgency=low
     * 24_hurd_support.diff: refresh
     * 34_xorg.conf_man_typos.patch: refresh
     * 36_fix_ffs.patch: remove, applied upstream
+  * Bump build-dependency on libdrm-dev to (>= 2.3.0) because that is the X
+    server's minimum requirement.
 
- -- Thierry Reding <thierry@gilfi.de>  Sat,  2 Dec 2006 11:46:49 +0100
+ -- Thierry Reding <thierry@gilfi.de>  Sat,  2 Dec 2006 12:44:59 +0100
 
 xorg-server (2:1.1.99.902-1) experimental; urgency=low
 
