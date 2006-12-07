@@ -1,3 +1,10 @@
+xorg-server (2:1.1.1-12) UNRELEASED; urgency=low
+
+  * Delete hw/xfree86/common/xf86Build.h in debian/rules clean, since it's
+    wrongly included in the upstream tarball.
+
+ -- Julien Cristau <julien.cristau@ens-lyon.org>  Thu,  7 Dec 2006 16:31:52 +0100
+
 xorg-server (2:1.1.1-11) unstable; urgency=low
 
   [ Drew Parsons ]
