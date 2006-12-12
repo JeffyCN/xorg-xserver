@@ -1,9 +1,14 @@
 xorg-server (2:1.1.1-12) UNRELEASED; urgency=low
 
+  [ Julien Cristau ]
   * Delete hw/xfree86/common/xf86Build.h in debian/rules clean, since it's
     wrongly included in the upstream tarball.
 
- -- Julien Cristau <julien.cristau@ens-lyon.org>  Thu,  7 Dec 2006 16:31:52 +0100
+  [ David Nusinow ]
+  * Pull fix for the ignore_abi.diff patch. This one's a major brown bag on my
+    part. Thanks Michel Dänzer.
+
+ -- David Nusinow <dnusinow@debian.org>  Tue, 12 Dec 2006 18:58:06 -0500
 
 xorg-server (2:1.1.1-11) unstable; urgency=low
 
