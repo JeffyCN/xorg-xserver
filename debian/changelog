@@ -1,4 +1,4 @@
-xorg-server (2:1.1.1-12) UNRELEASED; urgency=low
+xorg-server (2:1.1.1-12) unstable; urgency=low
 
   [ Julien Cristau ]
   * Delete hw/xfree86/common/xf86Build.h in debian/rules clean, since it's
@@ -12,7 +12,7 @@ xorg-server (2:1.1.1-12) UNRELEASED; urgency=low
     forever. Patch by Daniel Stone. Thanks Michel Dänzer for pointing the
     changes out. Closes: #374026
 
- -- David Nusinow <dnusinow@debian.org>  Tue, 12 Dec 2006 20:36:33 -0500
+ -- David Nusinow <dnusinow@debian.org>  Tue, 12 Dec 2006 21:13:20 -0500
 
 xorg-server (2:1.1.1-11) unstable; urgency=low
 
