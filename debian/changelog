@@ -7,8 +7,12 @@ xorg-server (2:1.1.1-12) UNRELEASED; urgency=low
   [ David Nusinow ]
   * Pull fix for the ignore_abi.diff patch. This one's a major brown bag on my
     part. Thanks Michel Dänzer.
+  * Add 38_wait_for_something_force_timer_reset.diff which forces the server
+    to reset timers when they've overrun in some cases rather than wait
+    forever. Patch by Daniel Stone. Thanks Michel Dänzer for pointing the
+    changes out. Closes: #374026
 
- -- David Nusinow <dnusinow@debian.org>  Tue, 12 Dec 2006 18:58:06 -0500
+ -- David Nusinow <dnusinow@debian.org>  Tue, 12 Dec 2006 20:36:33 -0500
 
 xorg-server (2:1.1.1-11) unstable; urgency=low
 
