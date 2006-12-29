@@ -15,6 +15,7 @@ Package: xserver-xorg-core
 Architecture: any
 Depends: x11-common (>= 1:7.0.0), ${shlibs:Depends}, ${misc:Depends}, xserver-xorg
 Recommends: xkb-data
+Suggests: xfonts-base, xfonts-100dpi | xfonts-75dpi, xfonts-scalable
 Conflicts: xserver-xorg (<< 6.8.2-38), xserver-xfree86 (<< 1:7.0.0), xserver-xorg-video
 Replaces: xserver-xorg (<< 6.8.2-38), xserver-xfree86 (<< 1:7.0.0)
 Provides: xserver
@@ -24,6 +25,13 @@ Description: X.Org X server -- core server
  .
  The X.Org server supports most modern graphics hardware from most vendors,
  and supersedes all XFree86 X servers.
+ .
+ The X.Org server either needs fonts installed on the local host, or needs to
+ know of a remote hosts that provides font services (with xfs, for instance).
+ The former means that fonts packages are mandatory.  The latter means that
+ font packages may be gratuitous.  To err on the side of caution, install at
+ least the xfonts-base, xfonts-100dpi or xfonts-75dpi, and xfonts-scalable
+ packages.
  .
  More information about X.Org can be found at:
  <URL:http://xorg.freedesktop.org>

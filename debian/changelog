@@ -1,3 +1,11 @@
+xorg-server (2:1.1.1-13) UNRELEASED; urgency=low
+
+  * xserver-xorg-core suggests xfonts-base, xfonts-100dpi | xfonts-75dpi and
+    xfonts-scalable.  Also add explanation about fonts to the long
+    description, stolen from the old xserver-common package (closes: #400654).
+
+ -- Julien Cristau <julien.cristau@ens-lyon.org>  Fri, 29 Dec 2006 04:13:20 +0100
+
 xorg-server (2:1.1.1-12) unstable; urgency=low
 
   [ Julien Cristau ]
