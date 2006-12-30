@@ -1,11 +1,16 @@
-xorg-server (2:1.1.1-13) UNRELEASED; urgency=low
+xorg-server (2:1.1.1-13) unstable; urgency=medium
 
-  * xserver-xorg-core recommends xfonts-base and suggests xfonts-100dpi | 
+  [ Julien Cristau ]
+  * xserver-xorg-core recommends xfonts-base and suggests xfonts-100dpi |
     xfonts-75dpi and xfonts-scalable.  Also add explanation about fonts to the
     long description, stolen from the old xserver-common package (closes:
     #400654).
 
- -- Julien Cristau <julien.cristau@ens-lyon.org>  Fri, 29 Dec 2006 04:13:20 +0100
+  [ David Nusinow ]
+  * This is important for upgrades to etch, and has no notable risk, so bump
+    priority to medium.
+
+ -- David Nusinow <dnusinow@debian.org>  Fri, 29 Dec 2006 19:57:51 -0500
 
 xorg-server (2:1.1.1-12) unstable; urgency=low
 
