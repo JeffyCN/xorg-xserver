@@ -14,8 +14,8 @@ Standards-Version: 3.7.2.0
 Package: xserver-xorg-core
 Architecture: any
 Depends: x11-common (>= 1:7.0.0), ${shlibs:Depends}, ${misc:Depends}, xserver-xorg
-Recommends: xkb-data
-Suggests: xfonts-base, xfonts-100dpi | xfonts-75dpi, xfonts-scalable
+Recommends: xkb-data, xfonts-base
+Suggests: xfonts-100dpi | xfonts-75dpi, xfonts-scalable
 Conflicts: xserver-xorg (<< 6.8.2-38), xserver-xfree86 (<< 1:7.0.0), xserver-xorg-video
 Replaces: xserver-xorg (<< 6.8.2-38), xserver-xfree86 (<< 1:7.0.0)
 Provides: xserver
