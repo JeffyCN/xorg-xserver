@@ -34,3 +34,4 @@
 36_fix_ffs.patch
 37_Fix-__glXDRIbindTexImage-for-32-bpp-on-big-endian-platforms.diff
 38_wait_for_something_force_timer_reset.diff
+39_alpha_build_flags.patch -p0

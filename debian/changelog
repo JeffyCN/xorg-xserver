@@ -1,3 +1,14 @@
+xorg-server (2:1.1.1-14) unstable; urgency=high
+
+  * The "let's drop 20 years of build logic and replace it with autoconf in a
+    single release, trust me, what could go wrong? <gibber, gibber>" release
+  * High-urgency upload for RC bugfix
+  * New patch 39_alpha_build_flags.patch: no really, when they said
+    lnx_ev56.c should be built with -mcpu=ev56, they really meant it.  
+    Closes: #392500.
+
+ -- Steve Langasek <vorlon@debian.org>  Sun,  7 Jan 2007 15:07:05 -0800
+
 xorg-server (2:1.1.1-13) unstable; urgency=medium
 
   [ Julien Cristau ]
