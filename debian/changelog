@@ -1,4 +1,4 @@
-xorg-server (2:1.1.1-14) unstable; urgency=high
+xorg-server (2:1.1.1-14) UNRELEASED; urgency=high
 
   * The "let's drop 20 years of build logic and replace it with autoconf in a
     single release, trust me, what could go wrong? <gibber, gibber>" release
