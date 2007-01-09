@@ -1,3 +1,14 @@
+xorg-server (2:1.1.1-15) unstable; urgency=high
+
+  * High-urgency upload for security bugfix.
+  * New patch 40_xorg-xserver-1.1.0-dbe-render.diff to fix multiple integer
+    overflows in the dbe and render extensions.
+    CVE IDs: CVE-2006-6101 CVE-2006-6102 CVE-2006-6103
+  * Add myself to Uploaders, and remove Fabio and Branden, with their
+    permission.  They're of course welcome back when they have more time!
+
+ -- Julien Cristau <julien.cristau@ens-lyon.org>  Tue,  9 Jan 2007 15:45:46 +0100
+
 xorg-server (2:1.1.1-14) unstable; urgency=high
 
   * The "let's drop 20 years of build logic and replace it with autoconf in a
