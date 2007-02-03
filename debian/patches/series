@@ -36,3 +36,4 @@
 38_wait_for_something_force_timer_reset.diff
 39_alpha_build_flags.patch -p0
 40_xorg-xserver-1.1.0-dbe-render.diff
+41_xfree86_linux_acpi_fix_tokenizing.diff 

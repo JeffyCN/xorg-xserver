@@ -1,3 +1,10 @@
+xorg-server (2:1.1.1-16) unstable; urgency=medium
+
+  * New patch 41_xfree86_linux_acpi_fix_tokenizing.diff from upstream git to
+    fix a crash on acpi events (closes: #409443).
+
+ -- Julien Cristau <julien.cristau@ens-lyon.org>  Sat,  3 Feb 2007 22:56:04 +0100
+
 xorg-server (2:1.1.1-15) unstable; urgency=high
 
   * High-urgency upload for security bugfix.
