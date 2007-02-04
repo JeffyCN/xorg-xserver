@@ -8,8 +8,9 @@ xorg-server (2:1.2.0-1) UNRELEASED; urgency=low
     + 24_hurd_support.diff massively reduced.
     + 13_debian_add_xkbpath_env_variable.diff refreshed.
     + 07_xorgconf_manpage_overhaul.diff updated.
+  * Bump build-dep on mesa-swx11-source to >= 6.5.2.
 
- -- Julien Cristau <julien.cristau@ens-lyon.org>  Sun,  4 Feb 2007 09:02:33 +0100
+ -- Julien Cristau <julien.cristau@ens-lyon.org>  Sun,  4 Feb 2007 09:34:52 +0100
 
 xorg-server (2:1.1.99.903-1) experimental; urgency=low
 
