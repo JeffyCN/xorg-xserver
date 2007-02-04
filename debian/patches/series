@@ -18,3 +18,5 @@
 35_randr_byteswap.patch
 37_build-mesa-mipmap.patch
 38_GetDrawableAttributes.patch
+39_alpha_build_flags.patch -p0
+40_xorg-xserver-1.1.0-dbe-render.diff

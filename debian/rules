@@ -74,6 +74,9 @@ clean: xsfclean
 	rm -f conftest* */conftest*
 	rm -rf autom4te.cache */autom4te.cache
 	rm -rf obj-*
+	# generated file, left over in the upstream tarball
+	# see https://bugs.freedesktop.org/show_bug.cgi?id=9277
+	rm -f hw/xfree86/common/xf86Build.h
 
 	dh_clean
 
