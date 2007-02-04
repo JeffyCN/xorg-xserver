@@ -6,8 +6,10 @@ xorg-server (2:1.2.0-1) UNRELEASED; urgency=low
     + 37_build-mesa-mipmap.patch dropped.
     + 33_Xserver_man_typos.patch dropped.
     + 24_hurd_support.diff massively reduced.
+    + 13_debian_add_xkbpath_env_variable.diff refreshed.
+    + 07_xorgconf_manpage_overhaul.diff updated.
 
- -- Julien Cristau <julien.cristau@ens-lyon.org>  Sun,  4 Feb 2007 08:22:26 +0100
+ -- Julien Cristau <julien.cristau@ens-lyon.org>  Sun,  4 Feb 2007 09:02:33 +0100
 
 xorg-server (2:1.1.99.903-1) experimental; urgency=low
 
