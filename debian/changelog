@@ -1,3 +1,14 @@
+xorg-server (2:1.2.0-1) UNRELEASED; urgency=low
+
+  * New upstream release.
+    + 40_xorg-xserver-1.1.0-dbe-render.diff dropped.
+    + 38_GetDrawableAttributes.patch dropped.
+    + 37_build-mesa-mipmap.patch dropped.
+    + 33_Xserver_man_typos.patch dropped.
+    + 24_hurd_support.diff massively reduced.
+
+ -- Julien Cristau <julien.cristau@ens-lyon.org>  Sun,  4 Feb 2007 08:22:26 +0100
+
 xorg-server (2:1.1.99.903-1) experimental; urgency=low
 
   * New upstream release candidate.

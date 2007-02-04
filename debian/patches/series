@@ -13,10 +13,6 @@
 23_kfreebsd_support.diff
 24_hurd_support.diff
 32_disable_sparc_pci_bridge.diff
-33_Xserver_man_typos.patch
 34_xorg.conf_man_typos.patch
 35_randr_byteswap.patch
-37_build-mesa-mipmap.patch
-38_GetDrawableAttributes.patch
 39_alpha_build_flags.patch -p0
-40_xorg-xserver-1.1.0-dbe-render.diff
