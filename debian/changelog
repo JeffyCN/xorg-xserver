@@ -1,6 +1,6 @@
 xorg-server (2:1.1.1-17) unstable; urgency=medium
 
-  * Make the int10 module usable on i386 with a 64bit kernel.
+  * Make the int10 module usable on i386 with a 64bit kernel (closes: #409730).
     + New patch 42_build_int10_submodules.diff, which allows us to build vm86
       and x86emu as two separate submodules, and make the int10 module itself
       fall back to loading x86emu if vm86 calls fail.
@@ -11,7 +11,7 @@ xorg-server (2:1.1.1-17) unstable; urgency=medium
       hw/xfree86/os-support/linux/Makefile.in, and run autoreconf with all
       patches applied.
 
- -- Julien Cristau <jcristau@debian.org>  Wed,  7 Feb 2007 19:35:58 +0100
+ -- Julien Cristau <jcristau@debian.org>  Wed,  7 Feb 2007 20:37:19 +0100
 
 xorg-server (2:1.1.1-16) unstable; urgency=medium
 
