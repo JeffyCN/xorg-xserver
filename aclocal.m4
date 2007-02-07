@@ -6585,7 +6585,7 @@ AC_DEFUN([XORG_MACROS_VERSION],[
 	XORG_MACROS_needed_major=`echo $XORG_MACROS_needed_version | sed 's/\..*$//'`
 	XORG_MACROS_needed_minor=`echo $XORG_MACROS_needed_version | sed -e 's/^[0-9]*\.//' -e 's/\..*$//'`]
 	AC_MSG_CHECKING([if xorg-macros used to generate configure is at least ${XORG_MACROS_needed_major}.${XORG_MACROS_needed_minor}])
-	[XORG_MACROS_version=1.1.1
+	[XORG_MACROS_version=1.1.2
 	XORG_MACROS_major=`echo $XORG_MACROS_version | sed 's/\..*$//'`
 	XORG_MACROS_minor=`echo $XORG_MACROS_version | sed -e 's/^[0-9]*\.//' -e 's/\..*$//'`]
 	if test $XORG_MACROS_major -ne $XORG_MACROS_needed_major ; then
@@ -6731,18 +6731,17 @@ AC_SUBST([ADMIN_MAN_DIR])
 # Whether or not the necessary tools and files are found can be checked
 # with the AM_CONDITIONAL "BUILD_LINUXDOC"
 AC_DEFUN([XORG_CHECK_LINUXDOC],[
-AC_CHECK_FILE(
-	[$prefix/share/X11/sgml/defs.ent], 
-	[DEFS_ENT_PATH=$prefix/share/X11/sgml],
-	[DEFS_ENT_PATH=]
-)
+XORG_SGML_PATH=$prefix/share/sgml
+HAVE_DEFS_ENT=
+
+AC_CHECK_FILE([$XORG_SGML_PATH/X11/defs.ent], [HAVE_DEFS_ENT=yes])
 
 AC_PATH_PROG(LINUXDOC, linuxdoc)
 AC_PATH_PROG(PS2PDF, ps2pdf)
 
 AC_MSG_CHECKING([Whether to build documentation])
 
-if test x$DEFS_ENT_PATH != x && test x$LINUXDOC != x ; then
+if test x$HAVE_DEFS_ENT != x && test x$LINUXDOC != x ; then
    BUILDDOC=yes
 else
    BUILDDOC=no
@@ -6754,7 +6753,7 @@ AC_MSG_RESULT([$BUILDDOC])
 
 AC_MSG_CHECKING([Whether to build pdf documentation])
 
-if test x$PS2PDF != x ; then
+if test x$PS2PDF != x && test x$BUILD_PDFDOC != xno; then
    BUILDPDFDOC=yes
 else
    BUILDPDFDOC=no
@@ -6764,16 +6763,82 @@ AM_CONDITIONAL(BUILD_PDFDOC, [test x$BUILDPDFDOC = xyes])
 
 AC_MSG_RESULT([$BUILDPDFDOC])
 
-MAKE_TEXT="SGML_SEARCH_PATH=$DEFS_ENT_PATH GROFF_NO_SGR=y $LINUXDOC -B txt"
-MAKE_PS="SGML_SEARCH_PATH=$DEFS_ENT_PATH $LINUXDOC -B latex --papersize=letter --output=ps"
+MAKE_TEXT="SGML_SEARCH_PATH=$XORG_SGML_PATH GROFF_NO_SGR=y $LINUXDOC -B txt"
+MAKE_PS="SGML_SEARCH_PATH=$XORG_SGML_PATH $LINUXDOC -B latex --papersize=letter --output=ps"
 MAKE_PDF="$PS2PDF"
-MAKE_HTML="SGML_SEARCH_PATH=$DEFS_ENT_PATH $LINUXDOC  -B html --split=0"
+MAKE_HTML="SGML_SEARCH_PATH=$XORG_SGML_PATH $LINUXDOC  -B html --split=0"
 
 AC_SUBST(MAKE_TEXT)
 AC_SUBST(MAKE_PS)
 AC_SUBST(MAKE_PDF)
 AC_SUBST(MAKE_HTML)
 ]) # XORG_CHECK_LINUXDOC
+
+# XORG_CHECK_DOCBOOK
+# -------------------
+# Minimum version: 1.0.0
+#
+# Checks for the ability to build output formats from SGML DocBook source.
+# For XXX in {TXT, PDF, PS, HTML}, the AM_CONDITIONAL "BUILD_XXXDOC"
+# indicates whether the necessary tools and files are found and, if set,
+# $(MAKE_XXX) blah.sgml will produce blah.xxx.
+AC_DEFUN([XORG_CHECK_DOCBOOK],[
+XORG_SGML_PATH=$prefix/share/sgml
+HAVE_DEFS_ENT=
+BUILDTXTDOC=no
+BUILDPDFDOC=no
+BUILDPSDOC=no
+BUILDHTMLDOC=no
+
+AC_CHECK_FILE([$XORG_SGML_PATH/X11/defs.ent], [HAVE_DEFS_ENT=yes])
+
+AC_PATH_PROG(DOCBOOKPS, docbook2ps)
+AC_PATH_PROG(DOCBOOKPDF, docbook2pdf)
+AC_PATH_PROG(DOCBOOKHTML, docbook2html)
+AC_PATH_PROG(DOCBOOKTXT, docbook2txt)
+
+AC_MSG_CHECKING([Whether to build text documentation])
+if test x$HAVE_DEFS_ENT != x && test x$DOCBOOKTXT != x &&
+   test x$BUILD_TXTDOC != xno; then
+	BUILDTXTDOC=yes
+fi
+AM_CONDITIONAL(BUILD_TXTDOC, [test x$BUILDTXTDOC = xyes])
+AC_MSG_RESULT([$BUILDTXTDOC])
+
+AC_MSG_CHECKING([Whether to build PDF documentation])
+if test x$HAVE_DEFS_ENT != x && test x$DOCBOOKPDF != x &&
+   test x$BUILD_PDFDOC != xno; then
+	BUILDPDFDOC=yes
+fi
+AM_CONDITIONAL(BUILD_PDFDOC, [test x$BUILDPDFDOC = xyes])
+AC_MSG_RESULT([$BUILDPDFDOC])
+
+AC_MSG_CHECKING([Whether to build PostScript documentation])
+if test x$HAVE_DEFS_ENT != x && test x$DOCBOOKPS != x &&
+   test x$BUILD_PSDOC != xno; then
+	BUILDPSDOC=yes
+fi
+AM_CONDITIONAL(BUILD_PSDOC, [test x$BUILDPSDOC = xyes])
+AC_MSG_RESULT([$BUILDPSDOC])
+
+AC_MSG_CHECKING([Whether to build HTML documentation])
+if test x$HAVE_DEFS_ENT != x && test x$DOCBOOKHTML != x &&
+   test x$BUILD_HTMLDOC != xno; then
+	BUILDHTMLDOC=yes
+fi
+AM_CONDITIONAL(BUILD_HTMLDOC, [test x$BUILDHTMLDOC = xyes])
+AC_MSG_RESULT([$BUILDHTMLDOC])
+
+MAKE_TEXT="SGML_SEARCH_PATH=$XORG_SGML_PATH $DOCBOOKTXT"
+MAKE_PS="SGML_SEARCH_PATH=$XORG_SGML_PATH $DOCBOOKPS"
+MAKE_PDF="SGML_SEARCH_PATH=$XORG_SGML_PATH $DOCBOOKPDF"
+MAKE_HTML="SGML_SEARCH_PATH=$XORG_SGML_PATH $DOCBOOKHTML"
+
+AC_SUBST(MAKE_TEXT)
+AC_SUBST(MAKE_PS)
+AC_SUBST(MAKE_PDF)
+AC_SUBST(MAKE_HTML)
+]) # XORG_CHECK_DOCBOOK
 
 # XORG_CHECK_MALLOC_ZERO
 # ----------------------

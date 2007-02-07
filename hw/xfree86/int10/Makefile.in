@@ -37,6 +37,7 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
+@INT10_VM86_TRUE@am__append_1 = libvm86.la libx86emu.la
 subdir = hw/xfree86/int10
 DIST_COMMON = $(sdk_HEADERS) $(srcdir)/Makefile.am \
 	$(srcdir)/Makefile.in
@@ -65,28 +66,47 @@ am__installdirs = "$(DESTDIR)$(moduledir)" "$(DESTDIR)$(sdkdir)"
 moduleLTLIBRARIES_INSTALL = $(INSTALL)
 LTLIBRARIES = $(module_LTLIBRARIES)
 libint10_la_LIBADD =
-am__libint10_la_SOURCES_DIST = stub.c xf86int10module.c helper_exec.c \
-	helper_mem.c pci.c xf86int10.c \
-	$(srcdir)/../os-support/linux/int10/vm86/linux_vm86.c \
-	$(srcdir)/../os-support/linux/int10/linux.c xf86x86emu.c \
-	generic.c x86emu.c
-@INT10_STUB_FALSE@@INT10_VM86_FALSE@@INT10_X86EMU_TRUE@am_libint10_la_OBJECTS =  \
-@INT10_STUB_FALSE@@INT10_VM86_FALSE@@INT10_X86EMU_TRUE@	pci.lo \
-@INT10_STUB_FALSE@@INT10_VM86_FALSE@@INT10_X86EMU_TRUE@	xf86int10module.lo \
-@INT10_STUB_FALSE@@INT10_VM86_FALSE@@INT10_X86EMU_TRUE@	helper_exec.lo \
-@INT10_STUB_FALSE@@INT10_VM86_FALSE@@INT10_X86EMU_TRUE@	helper_mem.lo \
-@INT10_STUB_FALSE@@INT10_VM86_FALSE@@INT10_X86EMU_TRUE@	xf86int10.lo \
-@INT10_STUB_FALSE@@INT10_VM86_FALSE@@INT10_X86EMU_TRUE@	xf86x86emu.lo \
-@INT10_STUB_FALSE@@INT10_VM86_FALSE@@INT10_X86EMU_TRUE@	generic.lo \
-@INT10_STUB_FALSE@@INT10_VM86_FALSE@@INT10_X86EMU_TRUE@	x86emu.lo
+am__libint10_la_SOURCES_DIST = stub.c xf86int10module.c pci.c \
+	helper_mem.c $(srcdir)/../os-support/linux/int10/linux.c \
+	helper_exec.c xf86int10.c xf86x86emu.c generic.c x86emu.c
+@INT10_STUB_FALSE@@INT10_VM86_FALSE@@INT10_X86EMU_TRUE@am_libint10_la_OBJECTS = libint10_la-pci.lo \
+@INT10_STUB_FALSE@@INT10_VM86_FALSE@@INT10_X86EMU_TRUE@	libint10_la-xf86int10module.lo \
+@INT10_STUB_FALSE@@INT10_VM86_FALSE@@INT10_X86EMU_TRUE@	libint10_la-helper_exec.lo \
+@INT10_STUB_FALSE@@INT10_VM86_FALSE@@INT10_X86EMU_TRUE@	libint10_la-helper_mem.lo \
+@INT10_STUB_FALSE@@INT10_VM86_FALSE@@INT10_X86EMU_TRUE@	libint10_la-xf86int10.lo \
+@INT10_STUB_FALSE@@INT10_VM86_FALSE@@INT10_X86EMU_TRUE@	libint10_la-xf86x86emu.lo \
+@INT10_STUB_FALSE@@INT10_VM86_FALSE@@INT10_X86EMU_TRUE@	libint10_la-generic.lo \
+@INT10_STUB_FALSE@@INT10_VM86_FALSE@@INT10_X86EMU_TRUE@	libint10_la-x86emu.lo
 @INT10_STUB_FALSE@@INT10_VM86_TRUE@am_libint10_la_OBJECTS =  \
-@INT10_STUB_FALSE@@INT10_VM86_TRUE@	helper_exec.lo \
-@INT10_STUB_FALSE@@INT10_VM86_TRUE@	helper_mem.lo pci.lo \
-@INT10_STUB_FALSE@@INT10_VM86_TRUE@	xf86int10.lo \
-@INT10_STUB_FALSE@@INT10_VM86_TRUE@	xf86int10module.lo \
-@INT10_STUB_FALSE@@INT10_VM86_TRUE@	linux_vm86.lo linux.lo
-@INT10_STUB_TRUE@am_libint10_la_OBJECTS = stub.lo xf86int10module.lo
+@INT10_STUB_FALSE@@INT10_VM86_TRUE@	libint10_la-pci.lo \
+@INT10_STUB_FALSE@@INT10_VM86_TRUE@	libint10_la-xf86int10module.lo \
+@INT10_STUB_FALSE@@INT10_VM86_TRUE@	libint10_la-helper_mem.lo \
+@INT10_STUB_FALSE@@INT10_VM86_TRUE@	libint10_la-linux.lo
+@INT10_STUB_TRUE@am_libint10_la_OBJECTS = libint10_la-stub.lo \
+@INT10_STUB_TRUE@	libint10_la-xf86int10module.lo
 libint10_la_OBJECTS = $(am_libint10_la_OBJECTS)
+libvm86_la_LIBADD =
+am__libvm86_la_SOURCES_DIST = xf86int10module.c \
+	$(srcdir)/../os-support/linux/int10/vm86/linux_vm86.c \
+	helper_exec.c xf86int10.c
+@INT10_VM86_TRUE@am_libvm86_la_OBJECTS =  \
+@INT10_VM86_TRUE@	libvm86_la-xf86int10module.lo \
+@INT10_VM86_TRUE@	libvm86_la-linux_vm86.lo \
+@INT10_VM86_TRUE@	libvm86_la-helper_exec.lo \
+@INT10_VM86_TRUE@	libvm86_la-xf86int10.lo
+libvm86_la_OBJECTS = $(am_libvm86_la_OBJECTS)
+@INT10_VM86_TRUE@am_libvm86_la_rpath = -rpath $(moduledir)
+libx86emu_la_LIBADD =
+am__libx86emu_la_SOURCES_DIST = xf86int10module.c xf86x86emu.c \
+	helper_exec.c xf86int10.c x86emu.c
+@INT10_VM86_TRUE@am_libx86emu_la_OBJECTS =  \
+@INT10_VM86_TRUE@	libx86emu_la-xf86int10module.lo \
+@INT10_VM86_TRUE@	libx86emu_la-xf86x86emu.lo \
+@INT10_VM86_TRUE@	libx86emu_la-helper_exec.lo \
+@INT10_VM86_TRUE@	libx86emu_la-xf86int10.lo \
+@INT10_VM86_TRUE@	libx86emu_la-x86emu.lo
+libx86emu_la_OBJECTS = $(am_libx86emu_la_OBJECTS)
+@INT10_VM86_TRUE@am_libx86emu_la_rpath = -rpath $(moduledir)
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)/include -I$(top_builddir)/include -I$(top_builddir)/include -I$(top_builddir)/include -I$(top_builddir)/include -I$(top_builddir)/include -I$(top_builddir)/include -I$(top_builddir)/include
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
@@ -98,8 +118,11 @@ LTCOMPILE = $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) \
 CCLD = $(CC)
 LINK = $(LIBTOOL) --tag=CC --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
 	$(AM_LDFLAGS) $(LDFLAGS) -o $@
-SOURCES = $(libint10_la_SOURCES)
-DIST_SOURCES = $(am__libint10_la_SOURCES_DIST)
+SOURCES = $(libint10_la_SOURCES) $(libvm86_la_SOURCES) \
+	$(libx86emu_la_SOURCES)
+DIST_SOURCES = $(am__libint10_la_SOURCES_DIST) \
+	$(am__libvm86_la_SOURCES_DIST) \
+	$(am__libx86emu_la_SOURCES_DIST)
 sdkHEADERS_INSTALL = $(INSTALL_HEADER)
 HEADERS = $(sdk_HEADERS)
 ETAGS = etags
@@ -564,27 +587,56 @@ sysconfdir = @sysconfdir@
 target_alias = @target_alias@
 xglmoduledir = @xglmoduledir@
 xpconfigdir = @xpconfigdir@
-module_LTLIBRARIES = libint10.la
+module_LTLIBRARIES = libint10.la $(am__append_1)
 sdk_HEADERS = xf86int10.h
 EXTRA_CFLAGS = @SERVER_DEFINES@ @MODULE_DEFINES@ @LOADER_DEFINES@
 libint10_la_LDFLAGS = -avoid-version
 @INT10_STUB_TRUE@AM_CFLAGS = -D_PC -D_VM86_LINUX $(XORG_CFLAGS) $(EXTRA_CFLAGS)
-@INT10_VM86_TRUE@AM_CFLAGS = -D_PC -D_VM86_LINUX $(XORG_CFLAGS) $(EXTRA_CFLAGS)
+@INT10_VM86_TRUE@AM_CFLAGS = -D_PC $(XORG_CFLAGS) $(EXTRA_CFLAGS)
 @INT10_X86EMU_TRUE@AM_CFLAGS = -D_X86EMU -DNO_SYS_HEADERS -D_PC $(XORG_CFLAGS) $(EXTRA_CFLAGS)
 @INT10_VM86_TRUE@INCLUDES = $(XORG_INCS)
 @INT10_X86EMU_TRUE@INCLUDES = $(XORG_INCS) -I$(srcdir)/../x86emu
+@INT10_VM86_TRUE@libint10_la_CPPFLAGS = $(AM_CPPFLAGS) -DHAVE_SYSV_IPC -DDoSubModules
 @INT10_STUB_TRUE@libint10_la_SOURCES = stub.c xf86int10module.c
 @INT10_VM86_TRUE@libint10_la_SOURCES = \
-@INT10_VM86_TRUE@	helper_exec.c \
-@INT10_VM86_TRUE@	helper_mem.c \
 @INT10_VM86_TRUE@	pci.c \
-@INT10_VM86_TRUE@	xf86int10.c \
 @INT10_VM86_TRUE@	xf86int10module.c \
-@INT10_VM86_TRUE@	$(srcdir)/../os-support/linux/int10/vm86/linux_vm86.c \
+@INT10_VM86_TRUE@	helper_mem.c \
 @INT10_VM86_TRUE@	$(srcdir)/../os-support/linux/int10/linux.c
 
 @INT10_X86EMU_TRUE@libint10_la_SOURCES = pci.c xf86int10module.c helper_exec.c helper_mem.c \
 @INT10_X86EMU_TRUE@	xf86int10.c xf86x86emu.c generic.c x86emu.c
+
+@INT10_VM86_TRUE@libvm86_la_LDFLAGS = -avoid-version
+@INT10_VM86_TRUE@libvm86_la_CPPFLAGS = \
+@INT10_VM86_TRUE@	$(AM_CPPFLAGS) \
+@INT10_VM86_TRUE@	-DMOD_NAME=vm86 \
+@INT10_VM86_TRUE@	-DHAVE_SYSV_IPC \
+@INT10_VM86_TRUE@	-DSHOW_ALL_DEVICES \
+@INT10_VM86_TRUE@	-D_VM86_LINUX
+
+@INT10_VM86_TRUE@libvm86_la_SOURCES = \
+@INT10_VM86_TRUE@	xf86int10module.c \
+@INT10_VM86_TRUE@	$(srcdir)/../os-support/linux/int10/vm86/linux_vm86.c \
+@INT10_VM86_TRUE@	helper_exec.c \
+@INT10_VM86_TRUE@	xf86int10.c
+
+@INT10_VM86_TRUE@libx86emu_la_LDFLAGS = -avoid-version
+@INT10_VM86_TRUE@libx86emu_la_CPPFLAGS = \
+@INT10_VM86_TRUE@	$(AM_CPPFLAGS) \
+@INT10_VM86_TRUE@	-DMOD_NAME=x86emu \
+@INT10_VM86_TRUE@	-DHAVE_SYSV_IPC \
+@INT10_VM86_TRUE@	-DSHOW_ALL_DEVICES \
+@INT10_VM86_TRUE@	-D_X86EMU \
+@INT10_VM86_TRUE@	-DNO_SYS_HEADERS \
+@INT10_VM86_TRUE@	-I$(srcdir)/../x86emu
+
+@INT10_VM86_TRUE@libx86emu_la_SOURCES = \
+@INT10_VM86_TRUE@	xf86int10module.c \
+@INT10_VM86_TRUE@	xf86x86emu.c \
+@INT10_VM86_TRUE@	helper_exec.c \
+@INT10_VM86_TRUE@	xf86int10.c \
+@INT10_VM86_TRUE@	x86emu.c
 
 EXTRA_DIST = xf86x86emu.h INT10.HOWTO
 all: all-am
@@ -649,6 +701,10 @@ clean-moduleLTLIBRARIES:
 	done
 libint10.la: $(libint10_la_OBJECTS) $(libint10_la_DEPENDENCIES) 
 	$(LINK) -rpath $(moduledir) $(libint10_la_LDFLAGS) $(libint10_la_OBJECTS) $(libint10_la_LIBADD) $(LIBS)
+libvm86.la: $(libvm86_la_OBJECTS) $(libvm86_la_DEPENDENCIES) 
+	$(LINK) $(am_libvm86_la_rpath) $(libvm86_la_LDFLAGS) $(libvm86_la_OBJECTS) $(libvm86_la_LIBADD) $(LIBS)
+libx86emu.la: $(libx86emu_la_OBJECTS) $(libx86emu_la_DEPENDENCIES) 
+	$(LINK) $(am_libx86emu_la_rpath) $(libx86emu_la_LDFLAGS) $(libx86emu_la_OBJECTS) $(libx86emu_la_LIBADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -656,17 +712,25 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/generic.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/helper_exec.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/helper_mem.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/linux.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/linux_vm86.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pci.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/stub.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/x86emu.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xf86int10.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xf86int10module.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xf86x86emu.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libint10_la-generic.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libint10_la-helper_exec.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libint10_la-helper_mem.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libint10_la-linux.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libint10_la-pci.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libint10_la-stub.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libint10_la-x86emu.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libint10_la-xf86int10.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libint10_la-xf86int10module.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libint10_la-xf86x86emu.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libvm86_la-helper_exec.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libvm86_la-linux_vm86.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libvm86_la-xf86int10.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libvm86_la-xf86int10module.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libx86emu_la-helper_exec.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libx86emu_la-x86emu.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libx86emu_la-xf86int10.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libx86emu_la-xf86int10module.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libx86emu_la-xf86x86emu.Plo@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	if $(COMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" -c -o $@ $<; \
@@ -689,19 +753,138 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LTCOMPILE) -c -o $@ $<
 
-linux_vm86.lo: $(srcdir)/../os-support/linux/int10/vm86/linux_vm86.c
-@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT linux_vm86.lo -MD -MP -MF "$(DEPDIR)/linux_vm86.Tpo" -c -o linux_vm86.lo `test -f '$(srcdir)/../os-support/linux/int10/vm86/linux_vm86.c' || echo '$(srcdir)/'`$(srcdir)/../os-support/linux/int10/vm86/linux_vm86.c; \
-@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/linux_vm86.Tpo" "$(DEPDIR)/linux_vm86.Plo"; else rm -f "$(DEPDIR)/linux_vm86.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$(srcdir)/../os-support/linux/int10/vm86/linux_vm86.c' object='linux_vm86.lo' libtool=yes @AMDEPBACKSLASH@
+libint10_la-stub.lo: stub.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libint10_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libint10_la-stub.lo -MD -MP -MF "$(DEPDIR)/libint10_la-stub.Tpo" -c -o libint10_la-stub.lo `test -f 'stub.c' || echo '$(srcdir)/'`stub.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libint10_la-stub.Tpo" "$(DEPDIR)/libint10_la-stub.Plo"; else rm -f "$(DEPDIR)/libint10_la-stub.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='stub.c' object='libint10_la-stub.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o linux_vm86.lo `test -f '$(srcdir)/../os-support/linux/int10/vm86/linux_vm86.c' || echo '$(srcdir)/'`$(srcdir)/../os-support/linux/int10/vm86/linux_vm86.c
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libint10_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libint10_la-stub.lo `test -f 'stub.c' || echo '$(srcdir)/'`stub.c
 
-linux.lo: $(srcdir)/../os-support/linux/int10/linux.c
-@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT linux.lo -MD -MP -MF "$(DEPDIR)/linux.Tpo" -c -o linux.lo `test -f '$(srcdir)/../os-support/linux/int10/linux.c' || echo '$(srcdir)/'`$(srcdir)/../os-support/linux/int10/linux.c; \
-@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/linux.Tpo" "$(DEPDIR)/linux.Plo"; else rm -f "$(DEPDIR)/linux.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$(srcdir)/../os-support/linux/int10/linux.c' object='linux.lo' libtool=yes @AMDEPBACKSLASH@
+libint10_la-xf86int10module.lo: xf86int10module.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libint10_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libint10_la-xf86int10module.lo -MD -MP -MF "$(DEPDIR)/libint10_la-xf86int10module.Tpo" -c -o libint10_la-xf86int10module.lo `test -f 'xf86int10module.c' || echo '$(srcdir)/'`xf86int10module.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libint10_la-xf86int10module.Tpo" "$(DEPDIR)/libint10_la-xf86int10module.Plo"; else rm -f "$(DEPDIR)/libint10_la-xf86int10module.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='xf86int10module.c' object='libint10_la-xf86int10module.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o linux.lo `test -f '$(srcdir)/../os-support/linux/int10/linux.c' || echo '$(srcdir)/'`$(srcdir)/../os-support/linux/int10/linux.c
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libint10_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libint10_la-xf86int10module.lo `test -f 'xf86int10module.c' || echo '$(srcdir)/'`xf86int10module.c
+
+libint10_la-pci.lo: pci.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libint10_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libint10_la-pci.lo -MD -MP -MF "$(DEPDIR)/libint10_la-pci.Tpo" -c -o libint10_la-pci.lo `test -f 'pci.c' || echo '$(srcdir)/'`pci.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libint10_la-pci.Tpo" "$(DEPDIR)/libint10_la-pci.Plo"; else rm -f "$(DEPDIR)/libint10_la-pci.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='pci.c' object='libint10_la-pci.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libint10_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libint10_la-pci.lo `test -f 'pci.c' || echo '$(srcdir)/'`pci.c
+
+libint10_la-helper_mem.lo: helper_mem.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libint10_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libint10_la-helper_mem.lo -MD -MP -MF "$(DEPDIR)/libint10_la-helper_mem.Tpo" -c -o libint10_la-helper_mem.lo `test -f 'helper_mem.c' || echo '$(srcdir)/'`helper_mem.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libint10_la-helper_mem.Tpo" "$(DEPDIR)/libint10_la-helper_mem.Plo"; else rm -f "$(DEPDIR)/libint10_la-helper_mem.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='helper_mem.c' object='libint10_la-helper_mem.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libint10_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libint10_la-helper_mem.lo `test -f 'helper_mem.c' || echo '$(srcdir)/'`helper_mem.c
+
+libint10_la-linux.lo: $(srcdir)/../os-support/linux/int10/linux.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libint10_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libint10_la-linux.lo -MD -MP -MF "$(DEPDIR)/libint10_la-linux.Tpo" -c -o libint10_la-linux.lo `test -f '$(srcdir)/../os-support/linux/int10/linux.c' || echo '$(srcdir)/'`$(srcdir)/../os-support/linux/int10/linux.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libint10_la-linux.Tpo" "$(DEPDIR)/libint10_la-linux.Plo"; else rm -f "$(DEPDIR)/libint10_la-linux.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$(srcdir)/../os-support/linux/int10/linux.c' object='libint10_la-linux.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libint10_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libint10_la-linux.lo `test -f '$(srcdir)/../os-support/linux/int10/linux.c' || echo '$(srcdir)/'`$(srcdir)/../os-support/linux/int10/linux.c
+
+libint10_la-helper_exec.lo: helper_exec.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libint10_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libint10_la-helper_exec.lo -MD -MP -MF "$(DEPDIR)/libint10_la-helper_exec.Tpo" -c -o libint10_la-helper_exec.lo `test -f 'helper_exec.c' || echo '$(srcdir)/'`helper_exec.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libint10_la-helper_exec.Tpo" "$(DEPDIR)/libint10_la-helper_exec.Plo"; else rm -f "$(DEPDIR)/libint10_la-helper_exec.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='helper_exec.c' object='libint10_la-helper_exec.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libint10_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libint10_la-helper_exec.lo `test -f 'helper_exec.c' || echo '$(srcdir)/'`helper_exec.c
+
+libint10_la-xf86int10.lo: xf86int10.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libint10_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libint10_la-xf86int10.lo -MD -MP -MF "$(DEPDIR)/libint10_la-xf86int10.Tpo" -c -o libint10_la-xf86int10.lo `test -f 'xf86int10.c' || echo '$(srcdir)/'`xf86int10.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libint10_la-xf86int10.Tpo" "$(DEPDIR)/libint10_la-xf86int10.Plo"; else rm -f "$(DEPDIR)/libint10_la-xf86int10.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='xf86int10.c' object='libint10_la-xf86int10.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libint10_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libint10_la-xf86int10.lo `test -f 'xf86int10.c' || echo '$(srcdir)/'`xf86int10.c
+
+libint10_la-xf86x86emu.lo: xf86x86emu.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libint10_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libint10_la-xf86x86emu.lo -MD -MP -MF "$(DEPDIR)/libint10_la-xf86x86emu.Tpo" -c -o libint10_la-xf86x86emu.lo `test -f 'xf86x86emu.c' || echo '$(srcdir)/'`xf86x86emu.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libint10_la-xf86x86emu.Tpo" "$(DEPDIR)/libint10_la-xf86x86emu.Plo"; else rm -f "$(DEPDIR)/libint10_la-xf86x86emu.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='xf86x86emu.c' object='libint10_la-xf86x86emu.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libint10_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libint10_la-xf86x86emu.lo `test -f 'xf86x86emu.c' || echo '$(srcdir)/'`xf86x86emu.c
+
+libint10_la-generic.lo: generic.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libint10_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libint10_la-generic.lo -MD -MP -MF "$(DEPDIR)/libint10_la-generic.Tpo" -c -o libint10_la-generic.lo `test -f 'generic.c' || echo '$(srcdir)/'`generic.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libint10_la-generic.Tpo" "$(DEPDIR)/libint10_la-generic.Plo"; else rm -f "$(DEPDIR)/libint10_la-generic.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='generic.c' object='libint10_la-generic.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libint10_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libint10_la-generic.lo `test -f 'generic.c' || echo '$(srcdir)/'`generic.c
+
+libint10_la-x86emu.lo: x86emu.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libint10_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libint10_la-x86emu.lo -MD -MP -MF "$(DEPDIR)/libint10_la-x86emu.Tpo" -c -o libint10_la-x86emu.lo `test -f 'x86emu.c' || echo '$(srcdir)/'`x86emu.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libint10_la-x86emu.Tpo" "$(DEPDIR)/libint10_la-x86emu.Plo"; else rm -f "$(DEPDIR)/libint10_la-x86emu.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='x86emu.c' object='libint10_la-x86emu.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libint10_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libint10_la-x86emu.lo `test -f 'x86emu.c' || echo '$(srcdir)/'`x86emu.c
+
+libvm86_la-xf86int10module.lo: xf86int10module.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libvm86_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libvm86_la-xf86int10module.lo -MD -MP -MF "$(DEPDIR)/libvm86_la-xf86int10module.Tpo" -c -o libvm86_la-xf86int10module.lo `test -f 'xf86int10module.c' || echo '$(srcdir)/'`xf86int10module.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libvm86_la-xf86int10module.Tpo" "$(DEPDIR)/libvm86_la-xf86int10module.Plo"; else rm -f "$(DEPDIR)/libvm86_la-xf86int10module.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='xf86int10module.c' object='libvm86_la-xf86int10module.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libvm86_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libvm86_la-xf86int10module.lo `test -f 'xf86int10module.c' || echo '$(srcdir)/'`xf86int10module.c
+
+libvm86_la-linux_vm86.lo: $(srcdir)/../os-support/linux/int10/vm86/linux_vm86.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libvm86_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libvm86_la-linux_vm86.lo -MD -MP -MF "$(DEPDIR)/libvm86_la-linux_vm86.Tpo" -c -o libvm86_la-linux_vm86.lo `test -f '$(srcdir)/../os-support/linux/int10/vm86/linux_vm86.c' || echo '$(srcdir)/'`$(srcdir)/../os-support/linux/int10/vm86/linux_vm86.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libvm86_la-linux_vm86.Tpo" "$(DEPDIR)/libvm86_la-linux_vm86.Plo"; else rm -f "$(DEPDIR)/libvm86_la-linux_vm86.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$(srcdir)/../os-support/linux/int10/vm86/linux_vm86.c' object='libvm86_la-linux_vm86.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libvm86_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libvm86_la-linux_vm86.lo `test -f '$(srcdir)/../os-support/linux/int10/vm86/linux_vm86.c' || echo '$(srcdir)/'`$(srcdir)/../os-support/linux/int10/vm86/linux_vm86.c
+
+libvm86_la-helper_exec.lo: helper_exec.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libvm86_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libvm86_la-helper_exec.lo -MD -MP -MF "$(DEPDIR)/libvm86_la-helper_exec.Tpo" -c -o libvm86_la-helper_exec.lo `test -f 'helper_exec.c' || echo '$(srcdir)/'`helper_exec.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libvm86_la-helper_exec.Tpo" "$(DEPDIR)/libvm86_la-helper_exec.Plo"; else rm -f "$(DEPDIR)/libvm86_la-helper_exec.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='helper_exec.c' object='libvm86_la-helper_exec.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libvm86_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libvm86_la-helper_exec.lo `test -f 'helper_exec.c' || echo '$(srcdir)/'`helper_exec.c
+
+libvm86_la-xf86int10.lo: xf86int10.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libvm86_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libvm86_la-xf86int10.lo -MD -MP -MF "$(DEPDIR)/libvm86_la-xf86int10.Tpo" -c -o libvm86_la-xf86int10.lo `test -f 'xf86int10.c' || echo '$(srcdir)/'`xf86int10.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libvm86_la-xf86int10.Tpo" "$(DEPDIR)/libvm86_la-xf86int10.Plo"; else rm -f "$(DEPDIR)/libvm86_la-xf86int10.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='xf86int10.c' object='libvm86_la-xf86int10.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libvm86_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libvm86_la-xf86int10.lo `test -f 'xf86int10.c' || echo '$(srcdir)/'`xf86int10.c
+
+libx86emu_la-xf86int10module.lo: xf86int10module.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libx86emu_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libx86emu_la-xf86int10module.lo -MD -MP -MF "$(DEPDIR)/libx86emu_la-xf86int10module.Tpo" -c -o libx86emu_la-xf86int10module.lo `test -f 'xf86int10module.c' || echo '$(srcdir)/'`xf86int10module.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libx86emu_la-xf86int10module.Tpo" "$(DEPDIR)/libx86emu_la-xf86int10module.Plo"; else rm -f "$(DEPDIR)/libx86emu_la-xf86int10module.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='xf86int10module.c' object='libx86emu_la-xf86int10module.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libx86emu_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libx86emu_la-xf86int10module.lo `test -f 'xf86int10module.c' || echo '$(srcdir)/'`xf86int10module.c
+
+libx86emu_la-xf86x86emu.lo: xf86x86emu.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libx86emu_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libx86emu_la-xf86x86emu.lo -MD -MP -MF "$(DEPDIR)/libx86emu_la-xf86x86emu.Tpo" -c -o libx86emu_la-xf86x86emu.lo `test -f 'xf86x86emu.c' || echo '$(srcdir)/'`xf86x86emu.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libx86emu_la-xf86x86emu.Tpo" "$(DEPDIR)/libx86emu_la-xf86x86emu.Plo"; else rm -f "$(DEPDIR)/libx86emu_la-xf86x86emu.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='xf86x86emu.c' object='libx86emu_la-xf86x86emu.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libx86emu_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libx86emu_la-xf86x86emu.lo `test -f 'xf86x86emu.c' || echo '$(srcdir)/'`xf86x86emu.c
+
+libx86emu_la-helper_exec.lo: helper_exec.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libx86emu_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libx86emu_la-helper_exec.lo -MD -MP -MF "$(DEPDIR)/libx86emu_la-helper_exec.Tpo" -c -o libx86emu_la-helper_exec.lo `test -f 'helper_exec.c' || echo '$(srcdir)/'`helper_exec.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libx86emu_la-helper_exec.Tpo" "$(DEPDIR)/libx86emu_la-helper_exec.Plo"; else rm -f "$(DEPDIR)/libx86emu_la-helper_exec.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='helper_exec.c' object='libx86emu_la-helper_exec.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libx86emu_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libx86emu_la-helper_exec.lo `test -f 'helper_exec.c' || echo '$(srcdir)/'`helper_exec.c
+
+libx86emu_la-xf86int10.lo: xf86int10.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libx86emu_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libx86emu_la-xf86int10.lo -MD -MP -MF "$(DEPDIR)/libx86emu_la-xf86int10.Tpo" -c -o libx86emu_la-xf86int10.lo `test -f 'xf86int10.c' || echo '$(srcdir)/'`xf86int10.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libx86emu_la-xf86int10.Tpo" "$(DEPDIR)/libx86emu_la-xf86int10.Plo"; else rm -f "$(DEPDIR)/libx86emu_la-xf86int10.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='xf86int10.c' object='libx86emu_la-xf86int10.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libx86emu_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libx86emu_la-xf86int10.lo `test -f 'xf86int10.c' || echo '$(srcdir)/'`xf86int10.c
+
+libx86emu_la-x86emu.lo: x86emu.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libx86emu_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libx86emu_la-x86emu.lo -MD -MP -MF "$(DEPDIR)/libx86emu_la-x86emu.Tpo" -c -o libx86emu_la-x86emu.lo `test -f 'x86emu.c' || echo '$(srcdir)/'`x86emu.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libx86emu_la-x86emu.Tpo" "$(DEPDIR)/libx86emu_la-x86emu.Plo"; else rm -f "$(DEPDIR)/libx86emu_la-x86emu.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='x86emu.c' object='libx86emu_la-x86emu.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libx86emu_la_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libx86emu_la-x86emu.lo `test -f 'x86emu.c' || echo '$(srcdir)/'`x86emu.c
 
 mostlyclean-libtool:
 	-rm -f *.lo
