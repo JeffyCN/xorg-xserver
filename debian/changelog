@@ -1,3 +1,10 @@
+xorg-server (2:1.2.0-2) UNRELEASED; urgency=low
+
+  * Delete useless debian/substvars.
+  * Change my email address in debian/control.
+
+ -- Julien Cristau <jcristau@debian.org>  Fri,  9 Feb 2007 23:34:08 +0100
+
 xorg-server (2:1.2.0-1) experimental; urgency=low
 
   * New upstream release.
