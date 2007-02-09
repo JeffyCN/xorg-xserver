@@ -1,4 +1,4 @@
-xorg-server (2:1.2.0-1) UNRELEASED; urgency=low
+xorg-server (2:1.2.0-1) experimental; urgency=low
 
   * New upstream release.
     + 40_xorg-xserver-1.1.0-dbe-render.diff dropped.
@@ -14,7 +14,7 @@ xorg-server (2:1.2.0-1) UNRELEASED; urgency=low
     to match configure.ac.
   * Add build-dep on libxfixes-dev (needed for Xdmx).
 
- -- Julien Cristau <jcristau@debian.org>  Fri,  9 Feb 2007 20:47:48 +0100
+ -- Julien Cristau <jcristau@debian.org>  Fri,  9 Feb 2007 20:54:27 +0100
 
 xorg-server (2:1.1.99.903-1) experimental; urgency=low
 
