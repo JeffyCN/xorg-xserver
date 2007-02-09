@@ -1,23 +1,21 @@
 Index: xorg-server/hw/xfree86/int10/Makefile.am
 ===================================================================
---- xorg-server.orig/hw/xfree86/int10/Makefile.am	2007-02-06 00:16:58.000000000 +0100
-+++ xorg-server/hw/xfree86/int10/Makefile.am	2007-02-06 00:22:47.000000000 +0100
-@@ -7,16 +7,42 @@
- libint10_la_LDFLAGS = -avoid-version
+--- xorg-server.orig/hw/xfree86/int10/Makefile.am	2007-02-05 21:31:02.000000000 +0100
++++ xorg-server/hw/xfree86/int10/Makefile.am	2007-02-05 21:31:25.000000000 +0100
+@@ -18,12 +18,42 @@
+ endif
  
  if INT10_VM86
--AM_CFLAGS = -D_PC -D_VM86_LINUX $(XORG_CFLAGS) $(EXTRA_CFLAGS)
+-AM_CFLAGS = $(I386_VIDEO_CFLAGS) -D_VM86_LINUX $(XORG_CFLAGS) $(EXTRA_CFLAGS)
 +module_LTLIBRARIES += libvm86.la libx86emu.la
-+AM_CFLAGS = -D_PC $(XORG_CFLAGS) $(EXTRA_CFLAGS)
++AM_CFLAGS = $(I386_VIDEO_CFLAGS) $(XORG_CFLAGS) $(EXTRA_CFLAGS)
  INCLUDES = $(XORG_INCS)
 +libint10_la_CPPFLAGS = $(AM_CPPFLAGS) -DHAVE_SYSV_IPC -DDoSubModules
  libint10_la_SOURCES = \
--	helper_exec.c \
--	helper_mem.c \
- 	pci.c \
--	xf86int10.c \
- 	xf86int10module.c \
+-	$(COMMON_SOURCES) \
 -	$(srcdir)/../os-support/linux/int10/vm86/linux_vm86.c \
++	pci.c \
++	xf86int10module.c \
 +	helper_mem.c \
  	$(srcdir)/../os-support/linux/int10/linux.c
 +libvm86_la_LDFLAGS = -avoid-version
@@ -52,9 +50,9 @@ Index: xorg-server/hw/xfree86/int10/Makefile.am
  if INT10_X86EMU
 Index: xorg-server/hw/xfree86/int10/xf86int10.c
 ===================================================================
---- xorg-server.orig/hw/xfree86/int10/xf86int10.c	2007-02-06 00:23:05.000000000 +0100
-+++ xorg-server/hw/xfree86/int10/xf86int10.c	2007-02-06 00:23:35.000000000 +0100
-@@ -17,7 +17,7 @@
+--- xorg-server.orig/hw/xfree86/int10/xf86int10.c	2007-02-05 21:31:02.000000000 +0100
++++ xorg-server/hw/xfree86/int10/xf86int10.c	2007-02-05 21:35:24.000000000 +0100
+@@ -16,7 +16,7 @@
  
  #define REG pInt
  
@@ -65,9 +63,9 @@ Index: xorg-server/hw/xfree86/int10/xf86int10.c
  #ifndef _PC
 Index: xorg-server/hw/xfree86/int10/helper_mem.c
 ===================================================================
---- xorg-server.orig/hw/xfree86/int10/helper_mem.c	2007-02-06 00:23:48.000000000 +0100
-+++ xorg-server/hw/xfree86/int10/helper_mem.c	2007-02-06 00:24:15.000000000 +0100
-@@ -23,6 +23,8 @@
+--- xorg-server.orig/hw/xfree86/int10/helper_mem.c	2007-02-05 21:34:04.000000000 +0100
++++ xorg-server/hw/xfree86/int10/helper_mem.c	2007-02-05 21:34:41.000000000 +0100
+@@ -22,6 +22,8 @@
  
  #define REG pInt
  
