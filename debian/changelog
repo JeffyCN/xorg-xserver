@@ -9,8 +9,10 @@ xorg-server (2:1.2.0-1) UNRELEASED; urgency=low
     + 13_debian_add_xkbpath_env_variable.diff refreshed.
     + 07_xorgconf_manpage_overhaul.diff updated.
   * Bump build-dep on mesa-swx11-source to >= 6.5.2.
+  * Version build-dependencies on x11proto-composite-dev and x11proto-kb-dev
+    to match configure.ac.
 
- -- Julien Cristau <julien.cristau@ens-lyon.org>  Sun,  4 Feb 2007 09:34:52 +0100
+ -- Julien Cristau <jcristau@debian.org>  Fri,  9 Feb 2007 19:15:05 +0100
 
 xorg-server (2:1.1.99.903-1) experimental; urgency=low
 
