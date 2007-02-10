@@ -1,11 +1,14 @@
-xorg-server (2:1.2.0-2) UNRELEASED; urgency=low
+xorg-server (2:1.2.0-2) experimental; urgency=low
 
   * Delete useless debian/substvars.
   * Change my email address in debian/control.
-  * Disable patch 42_build_int10_submodules.diff because it seems to break the
-    server in some cases.
+  * Fix patch 42_build_int10_submodules.diff.  The definition of
+    xf86InitInt10() was moved to int10/helper_exec.c between 1.1.1 and 1.2.0,
+    so we move it to int10/helper_mem.c, which we build in the main int10
+    module, not the vm86 and x86emu submodules.  Thanks to Cédric Augonnet and
+    Brice Goglin for the report and testing.
 
- -- Julien Cristau <jcristau@debian.org>  Sat, 10 Feb 2007 03:10:12 +0100
+ -- Julien Cristau <jcristau@debian.org>  Sat, 10 Feb 2007 20:57:57 +0100
 
 xorg-server (2:1.2.0-1) experimental; urgency=low
 

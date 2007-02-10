@@ -1,7 +1,7 @@
 Index: xorg-server/hw/xfree86/int10/Makefile.am
 ===================================================================
---- xorg-server.orig/hw/xfree86/int10/Makefile.am	2007-02-05 21:31:02.000000000 +0100
-+++ xorg-server/hw/xfree86/int10/Makefile.am	2007-02-05 21:31:25.000000000 +0100
+--- xorg-server.orig/hw/xfree86/int10/Makefile.am	2007-02-10 17:52:53.000000000 +0100
++++ xorg-server/hw/xfree86/int10/Makefile.am	2007-02-10 17:55:26.000000000 +0100
 @@ -18,12 +18,42 @@
  endif
  
@@ -50,8 +50,8 @@ Index: xorg-server/hw/xfree86/int10/Makefile.am
  if INT10_X86EMU
 Index: xorg-server/hw/xfree86/int10/xf86int10.c
 ===================================================================
---- xorg-server.orig/hw/xfree86/int10/xf86int10.c	2007-02-05 21:31:02.000000000 +0100
-+++ xorg-server/hw/xfree86/int10/xf86int10.c	2007-02-05 21:35:24.000000000 +0100
+--- xorg-server.orig/hw/xfree86/int10/xf86int10.c	2007-02-10 17:52:53.000000000 +0100
++++ xorg-server/hw/xfree86/int10/xf86int10.c	2007-02-10 17:54:11.000000000 +0100
 @@ -16,7 +16,7 @@
  
  #define REG pInt
@@ -63,8 +63,8 @@ Index: xorg-server/hw/xfree86/int10/xf86int10.c
  #ifndef _PC
 Index: xorg-server/hw/xfree86/int10/helper_mem.c
 ===================================================================
---- xorg-server.orig/hw/xfree86/int10/helper_mem.c	2007-02-05 21:34:04.000000000 +0100
-+++ xorg-server/hw/xfree86/int10/helper_mem.c	2007-02-05 21:34:41.000000000 +0100
+--- xorg-server.orig/hw/xfree86/int10/helper_mem.c	2007-02-10 17:52:53.000000000 +0100
++++ xorg-server/hw/xfree86/int10/helper_mem.c	2007-02-10 17:54:31.000000000 +0100
 @@ -22,6 +22,8 @@
  
  #define REG pInt
@@ -74,3 +74,26 @@ Index: xorg-server/hw/xfree86/int10/helper_mem.c
  typedef enum {
      OPT_NOINT10,
      OPT_INIT_PRIMARY,
+@@ -429,3 +431,9 @@
+     pInt->BIOSseg = cs;
+     return TRUE;
+ }
++
++xf86Int10InfoPtr
++xf86InitInt10(int entityIndex)
++{
++    return xf86ExtendedInitInt10(entityIndex, 0);
++}
+Index: xorg-server/hw/xfree86/int10/helper_exec.c
+===================================================================
+--- xorg-server.orig/hw/xfree86/int10/helper_exec.c	2007-02-10 17:54:35.000000000 +0100
++++ xorg-server/hw/xfree86/int10/helper_exec.c	2007-02-10 17:54:50.000000000 +0100
+@@ -684,8 +684,3 @@
+ }
+ #endif
+ 
+-xf86Int10InfoPtr
+-xf86InitInt10(int entityIndex)
+-{
+-    return xf86ExtendedInitInt10(entityIndex, 0);
+-}
