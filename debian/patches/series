@@ -16,4 +16,4 @@
 34_xorg.conf_man_typos.patch
 35_randr_byteswap.patch
 39_alpha_build_flags.patch -p0
-42_build_int10_submodules.diff
+#42_build_int10_submodules.diff

@@ -2,8 +2,10 @@ xorg-server (2:1.2.0-2) UNRELEASED; urgency=low
 
   * Delete useless debian/substvars.
   * Change my email address in debian/control.
+  * Disable patch 42_build_int10_submodules.diff because it seems to break the
+    server in some cases.
 
- -- Julien Cristau <jcristau@debian.org>  Fri,  9 Feb 2007 23:34:08 +0100
+ -- Julien Cristau <jcristau@debian.org>  Sat, 10 Feb 2007 03:10:12 +0100
 
 xorg-server (2:1.2.0-1) experimental; urgency=low
 
