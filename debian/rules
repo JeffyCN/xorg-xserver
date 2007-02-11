@@ -49,7 +49,9 @@ confflags += --disable-static \
 		 --disable-xorgcfg \
 		 --with-xkb-path=/usr/share/X11/xkb \
 		 --with-xkb-output=/var/lib/xkb \
-	     --disable-misc-utils
+	     --disable-misc-utils \
+	     --with-os-name="$(shell uname)" \
+	     --with-os-vendor=Debian
 
 build: patch build-stamp
 build-stamp: 
