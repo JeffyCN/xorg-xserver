@@ -1,3 +1,10 @@
+xorg-server (2:1.2.0-3) UNRELEASED; urgency=low
+
+  * Conflict with drivers providing xserver-xorg-video-1.0. We're now at ABI
+    version 1.1.
+
+ -- David Nusinow <dnusinow@debian.org>  Sun, 11 Feb 2007 11:58:45 -0500
+
 xorg-server (2:1.2.0-2) experimental; urgency=low
 
   * Delete useless debian/substvars.
