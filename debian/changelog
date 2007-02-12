@@ -4,11 +4,7 @@ xorg-server (2:1.2.0-3) UNRELEASED; urgency=low
   * Pass --with-os-name and --with-os-vendor to configure.
   * Bump serverabiver to 2:1.2.0-1.
 
-  [ David Nusinow ]
-  * Conflict with drivers providing xserver-xorg-video-1.0. We're now at ABI
-    version 1.1.
-
- -- David Nusinow <dnusinow@debian.org>  Sun, 11 Feb 2007 11:58:45 -0500
+ -- Julien Cristau <jcristau@debian.org>  Mon, 12 Feb 2007 21:12:32 +0100
 
 xorg-server (2:1.2.0-2) experimental; urgency=low
 
