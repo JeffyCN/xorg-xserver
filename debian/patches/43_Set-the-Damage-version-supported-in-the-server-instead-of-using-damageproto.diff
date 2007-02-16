@@ -1,0 +1,56 @@
+From c328513b36633b7100c7ca3dd7a6682c2b1f2051 Mon Sep 17 00:00:00 2001
+From: Eric Anholt <eric@anholt.net>
+Date: Thu, 1 Feb 2007 12:15:54 -0800
+Subject: [PATCH] Set the Damage version supported in the server, instead of using damageproto.
+
+This was caught by distributions upgrading damageproto to 1.1, before the
+server they had supported it.  The server then advertised the new version
+without supporting the protocol.
+(cherry picked from 8274ea6aa97b06a56b7468c3908894c0ff72b687 commit)
+---
+ damageext/damageext.c |   17 ++++++++++++-----
+ 1 files changed, 12 insertions(+), 5 deletions(-)
+
+diff --git a/damageext/damageext.c b/damageext/damageext.c
+index d13c67b..a27ca22 100755
+--- a/damageext/damageext.c
++++ b/damageext/damageext.c
+@@ -35,6 +35,13 @@ int		DamageClientPrivateIndex;
+ RESTYPE		DamageExtType;
+ RESTYPE		DamageExtWinType;
+ 
++/* Version of the damage extension supported by the server, as opposed to the
++ * DAMAGE_* defines from damageproto for what version the proto header
++ * supports.
++ */
++#define SERVER_DAMAGE_MAJOR	1
++#define SERVER_DAMAGE_MINOR	0
++
+ #define prScreen	screenInfo.screens[0]
+ 
+ static void
+@@ -143,16 +150,16 @@ ProcDamageQueryVersion(ClientPtr client)
+     rep.type = X_Reply;
+     rep.length = 0;
+     rep.sequenceNumber = client->sequence;
+-    if (stuff->majorVersion < DAMAGE_MAJOR) {
++    if (stuff->majorVersion < SERVER_DAMAGE_MAJOR) {
+ 	rep.majorVersion = stuff->majorVersion;
+ 	rep.minorVersion = stuff->minorVersion;
+     } else {
+-	rep.majorVersion = DAMAGE_MAJOR;
+-	if (stuff->majorVersion == DAMAGE_MAJOR && 
+-	    stuff->minorVersion < DAMAGE_MINOR)
++	rep.majorVersion = SERVER_DAMAGE_MAJOR;
++	if (stuff->majorVersion == SERVER_DAMAGE_MAJOR && 
++	    stuff->minorVersion < SERVER_DAMAGE_MINOR)
+ 	    rep.minorVersion = stuff->minorVersion;
+ 	else
+-	    rep.minorVersion = DAMAGE_MINOR;
++	    rep.minorVersion = SERVER_DAMAGE_MINOR;
+     }
+     pDamageClient->major_version = rep.majorVersion;
+     pDamageClient->minor_version = rep.minorVersion;
+-- 
+1.4.4.4
+

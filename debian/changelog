@@ -3,8 +3,11 @@ xorg-server (2:1.2.0-3) UNRELEASED; urgency=low
   [ Julien Cristau ]
   * Pass --with-os-name and --with-os-vendor to configure.
   * Bump serverabiver to 2:1.2.0-1.
+  * Add patch from upstream git to set the supported damage version from the
+    server, instead of from the damage headers.  xserver 1.2.0 supports damage
+    1.0, not 1.1.
 
- -- Julien Cristau <jcristau@debian.org>  Mon, 12 Feb 2007 21:12:32 +0100
+ -- Julien Cristau <jcristau@debian.org>  Fri, 16 Feb 2007 11:58:07 +0100
 
 xorg-server (2:1.2.0-2) experimental; urgency=low
 
