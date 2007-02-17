@@ -100,6 +100,13 @@ xorg-server (2:1.1.99.902-1) experimental; urgency=low
 
  -- Thierry Reding <thierry@gilfi.de>  Fri,  1 Dec 2006 20:32:34 +0100
 
+xorg-server (2:1.1.1-18) unstable; urgency=medium
+
+  * Add patch from Fedora to make xephyr work on 64bit architectures
+    (closes: #405928).
+
+ -- Julien Cristau <jcristau@debian.org>  Fri, 16 Feb 2007 22:20:08 +0100
+
 xorg-server (2:1.1.1-17) unstable; urgency=medium
 
   * Make the int10 module usable on i386 with a 64bit kernel (closes: #409730).
