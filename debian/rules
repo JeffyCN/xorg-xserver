@@ -112,9 +112,11 @@ binary-arch: build install
 	$(INSTALL) -m 755 debian/xserver-xorg-core.bug.script debian/xserver-xorg-core/usr/share/bug/xserver-xorg-core/script
 	dh_link
 	dh_strip --exclude=usr/lib/xorg/modules
+ifeq (,$(findstring nostrip,$(DEB_BUILD_OPTIONS)))
 	find debian/xserver-xorg-core/usr/lib/xorg/modules -name "lib*.so" | \
 	  xargs --no-run-if-empty \
 	  strip --strip-debug --remove-section=.note --remove-section=.comment
+endif
 	dh_compress
 	dh_fixperms
 	dh_installdeb
