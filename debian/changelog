@@ -1,9 +1,17 @@
 xorg-server (2:1.2.0-4) UNRELEASED; urgency=low
 
+  [ Julien Cristau ]
   * Don't strip modules when DEB_BUILD_OPTIONS contains nostrip.  Thanks,
     Cyril Brulebois!
 
- -- Julien Cristau <jcristau@debian.org>  Tue, 20 Feb 2007 20:45:08 +0100
+  [ David Nusinow ]
+  * Move serverabiver file to serverminver. Use serverabiver to store the
+    actual video ABI version number (1.1 right now). This will allow drivers
+    to automatically generate their Provides: xserver-xorg-video-* line when
+    built against a particular server version. The rename of the files
+    is to better denote what they actually are.
+
+ -- David Nusinow <dnusinow@debian.org>  Wed, 21 Feb 2007 21:43:56 -0500
 
 xorg-server (2:1.2.0-3) experimental; urgency=low
 
