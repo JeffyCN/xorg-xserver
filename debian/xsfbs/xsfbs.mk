@@ -354,7 +354,7 @@ $(STAMP_DIR)/genscripts: $(STAMP_DIR)/stampdir
 debian/shlibs.local:
 	cat debian/*.shlibs >$@
 
-SERVERMINVERS = $(shell cat /usr/share/xserver-xorg/serverminvers 2>/dev/null)
+SERVERMINVERS = $(shell cat /usr/share/xserver-xorg/serverminver 2>/dev/null)
 SERVERABI = $(shell cat /usr/share/xserver-xorg/serverabiver 2>/dev/null)
 SERVER_DEPENDS = xserver-xorg-core (>= $(SERVERMINVERS))
 DRIVER_PROVIDES = xserver-xorg-video-$(SERVERABI)
