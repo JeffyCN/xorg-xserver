@@ -1,4 +1,4 @@
-# $Id: xsfbs.sh 2888 2006-08-22 03:04:13Z dnusinow $
+# $Id$
 
 # This is the X Strike Force shell library for X Window System package
 # maintainer scripts.  It serves to define shell functions commonly used by

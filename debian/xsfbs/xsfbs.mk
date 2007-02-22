@@ -1,5 +1,5 @@
 #!/usr/bin/make -f
-# $Id: xsfbs.mk 2284 2006-06-06 18:02:50Z branden $
+# $Id$
 
 # Debian rules file for xorg-x11 source package
 
@@ -353,6 +353,24 @@ $(STAMP_DIR)/genscripts: $(STAMP_DIR)/stampdir
 # Generate the shlibs.local file.
 debian/shlibs.local:
 	cat debian/*.shlibs >$@
+
+SERVERMINVERS = $(shell cat /usr/share/xserver-xorg/serverminvers 2>/dev/null)
+SERVERABI = $(shell cat /usr/share/xserver-xorg/serverabiver 2>/dev/null)
+SERVER_DEPENDS = xserver-xorg-core (>= $(SERVERMINVERS))
+DRIVER_PROVIDES = xserver-xorg-video-$(SERVERABI)
+ifeq ($(PACKAGE),)
+PACKAGE=$(shell awk '/^Package:/ { print $$2; exit }' < debian/control)
+endif
+
+.PHONY: serverabi
+serverabi:
+ifeq ($(SERVERABI),)
+	@echo error: xserver-xorg-dev needs to be installed
+	@exit 1
+else
+	echo "xserver:Depends=$(SERVER_DEPENDS)" >> debian/$(PACKAGE).substvars
+	echo "xviddriver:Provides=$(DRIVER_PROVIDES)" >> debian/$(PACKAGE).substvars
+endif
 
 include debian/xsfbs/xsfbs-autoreconf.mk
 
