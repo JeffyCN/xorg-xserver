@@ -1,4 +1,4 @@
-xorg-server (2:1.2.0-4) UNRELEASED; urgency=low
+xorg-server (2:1.2.0-4) experimental; urgency=low
 
   [ Julien Cristau ]
   * Don't strip modules when DEB_BUILD_OPTIONS contains nostrip.  Thanks,
@@ -12,7 +12,7 @@ xorg-server (2:1.2.0-4) UNRELEASED; urgency=low
     is to better denote what they actually are.
   * Bump the serverminver to 2:1.2.0-4 because of this change
 
- -- David Nusinow <dnusinow@debian.org>  Wed, 21 Feb 2007 21:48:15 -0500
+ -- David Nusinow <dnusinow@debian.org>  Wed, 21 Feb 2007 21:53:51 -0500
 
 xorg-server (2:1.2.0-3) experimental; urgency=low
 
