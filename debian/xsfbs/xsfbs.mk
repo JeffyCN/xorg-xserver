@@ -354,8 +354,10 @@ $(STAMP_DIR)/genscripts: $(STAMP_DIR)/stampdir
 debian/shlibs.local:
 	cat debian/*.shlibs >$@
 
+SERVERMINVERS = $(shell cat /usr/share/xserver-xorg/serverminvers 2>/dev/null)
 SERVERABI = $(shell cat /usr/share/xserver-xorg/serverabiver 2>/dev/null)
-SERVER_DEPENDS = xserver-xorg-core (>= $(SERVERABI))
+SERVER_DEPENDS = xserver-xorg-core (>= $(SERVERMINVERS))
+DRIVER_PROVIDES = xserver-xorg-video-$(SERVERABI)
 ifeq ($(PACKAGE),)
 PACKAGE=$(shell awk '/^Package:/ { print $$2; exit }' < debian/control)
 endif
@@ -367,6 +369,7 @@ ifeq ($(SERVERABI),)
 	@exit 1
 else
 	echo "xserver:Depends=$(SERVER_DEPENDS)" >> debian/$(PACKAGE).substvars
+	echo "xviddriver:Provides=$(DRIVER_PROVIDES)" >> debian/$(PACKAGE).substvars
 endif
 
 include debian/xsfbs/xsfbs-autoreconf.mk
