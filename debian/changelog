@@ -10,8 +10,9 @@ xorg-server (2:1.2.0-4) UNRELEASED; urgency=low
     to automatically generate their Provides: xserver-xorg-video-* line when
     built against a particular server version. The rename of the files
     is to better denote what they actually are.
+  * Bump the serverminver to 2:1.2.0-4 because of this change
 
- -- David Nusinow <dnusinow@debian.org>  Wed, 21 Feb 2007 21:43:56 -0500
+ -- David Nusinow <dnusinow@debian.org>  Wed, 21 Feb 2007 21:48:15 -0500
 
 xorg-server (2:1.2.0-3) experimental; urgency=low
 
