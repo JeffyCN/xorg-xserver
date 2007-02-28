@@ -355,9 +355,11 @@ debian/shlibs.local:
 	cat debian/*.shlibs >$@
 
 SERVERMINVERS = $(shell cat /usr/share/xserver-xorg/serverminver 2>/dev/null)
-SERVERABI = $(shell cat /usr/share/xserver-xorg/serverabiver 2>/dev/null)
+VIDEOABI = $(shell cat /usr/share/xserver-xorg/videoabiver 2>/dev/null)
+INPUTABI = $(shell cat /usr/share/xserver-xorg/driverabiver 2>/dev/null)
 SERVER_DEPENDS = xserver-xorg-core (>= $(SERVERMINVERS))
-DRIVER_PROVIDES = xserver-xorg-video-$(SERVERABI)
+VIDDRIVER_PROVIDES = xserver-xorg-video-$(VIDEOABI)
+INPDRIVER_PROVIDES = xserver-xorg-video-$(INPUTABI)
 ifeq ($(PACKAGE),)
 PACKAGE=$(shell awk '/^Package:/ { print $$2; exit }' < debian/control)
 endif
@@ -369,7 +371,8 @@ ifeq ($(SERVERABI),)
 	@exit 1
 else
 	echo "xserver:Depends=$(SERVER_DEPENDS)" >> debian/$(PACKAGE).substvars
-	echo "xviddriver:Provides=$(DRIVER_PROVIDES)" >> debian/$(PACKAGE).substvars
+	echo "xviddriver:Provides=$(VIDDRIVER_PROVIDES)" >> debian/$(PACKAGE).substvars
+	echo "xinpdriver:Provides=$(INPDRIVER_PROVIDES)" >> debian/$(PACKAGE).substvars
 endif
 
 include debian/xsfbs/xsfbs-autoreconf.mk
