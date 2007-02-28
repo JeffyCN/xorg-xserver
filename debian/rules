@@ -106,8 +106,10 @@ binary-arch: build install
 	dh_installchangelogs
 	dh_install --sourcedir=debian/tmp --list-missing
 	$(INSTALL) -d $(CURDIR)/debian/xserver-xorg-dev/usr/share/xserver-xorg
-	$(INSTALL) -m644 $(CURDIR)/debian/serverabiver \
-	           $(CURDIR)/debian/xserver-xorg-dev/usr/share/xserver-xorg/serverabiver
+	$(INSTALL) -m644 $(CURDIR)/debian/videoabiver \
+	           $(CURDIR)/debian/xvideo-xorg-dev/usr/share/xvideo-xorg/videoabiver
+	$(INSTALL) -m644 $(CURDIR)/debian/inputabiver \
+	           $(CURDIR)/debian/xinput-xorg-dev/usr/share/xinput-xorg/inputabiver
 	$(INSTALL) -m644 $(CURDIR)/debian/serverminver \
 	           $(CURDIR)/debian/xserver-xorg-dev/usr/share/xserver-xorg/serverminver
 	$(INSTALL) -m 755 -d debian/xserver-xorg-core/usr/share/bug/xserver-xorg-core

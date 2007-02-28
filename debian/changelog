@@ -1,3 +1,11 @@
+xorg-server (2:1.2.0-5) UNRELEASED; urgency=low
+
+  * Add input ABI versioning metadata. Rename serverabiver file to
+    videoabiver, and add inputabiver. Bump serverminver to 2:1.2.0-5 to deal
+    with this change.
+
+ -- David Nusinow <dnusinow@debian.org>  Tue, 27 Feb 2007 21:48:19 -0500
+
 xorg-server (2:1.2.0-4) experimental; urgency=low
 
   [ Julien Cristau ]
