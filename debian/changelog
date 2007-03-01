@@ -1,11 +1,16 @@
 xorg-server (2:1.1.1-19) unstable; urgency=high
 
+  [ Drew Parsons ]
+  * Removed spurious space in default font line
+    (/usr/X11R6/lib/X11/fonts/Type1 not "/usr/X11R6/lib/  X11/fonts/Type1")
+
+  [ David Nusinow ]
   * Conflict with xserver-common, because that package used to provide the
-    SecurityPolicy file. This is an RC bugfix because it breaks upgrades, 
+    SecurityPolicy file. This is an RC bugfix because it breaks upgrades,
     so it gets a high urgency. Thanks Christian Tsotras and Lionel Elie Mamane
     for reporting and it. Closes: #402658
 
- -- David Nusinow <dnusinow@debian.org>  Wed, 28 Feb 2007 17:22:08 -0500
+ -- David Nusinow <dnusinow@debian.org>  Wed, 28 Feb 2007 21:20:45 -0500
 
 xorg-server (2:1.1.1-18) unstable; urgency=medium
 
