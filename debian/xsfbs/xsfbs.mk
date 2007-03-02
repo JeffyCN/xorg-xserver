@@ -366,7 +366,7 @@ endif
 
 .PHONY: serverabi
 serverabi:
-ifeq ($(SERVERABI),)
+ifeq ($(SERVERMINVERS),)
 	@echo error: xserver-xorg-dev needs to be installed
 	@exit 1
 else
