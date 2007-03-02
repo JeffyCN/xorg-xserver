@@ -359,7 +359,7 @@ VIDEOABI = $(shell cat /usr/share/xserver-xorg/videoabiver 2>/dev/null)
 INPUTABI = $(shell cat /usr/share/xserver-xorg/inputabiver 2>/dev/null)
 SERVER_DEPENDS = xserver-xorg-core (>= $(SERVERMINVERS))
 VIDDRIVER_PROVIDES = xserver-xorg-video-$(VIDEOABI)
-INPDRIVER_PROVIDES = xserver-xorg-video-$(INPUTABI)
+INPDRIVER_PROVIDES = xserver-xorg-input-$(INPUTABI)
 ifeq ($(PACKAGE),)
 PACKAGE=$(shell awk '/^Package:/ { print $$2; exit }' < debian/control)
 endif
