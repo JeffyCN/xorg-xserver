@@ -1,0 +1,22 @@
+From 0f6dd4aea6176507dbe1c90c950d332fecbcaacb Mon Sep 17 00:00:00 2001
+From: Daniel Stone <daniel@fooishbar.org>
+Date: Thu, 15 Feb 2007 16:14:57 +0200
+Subject: [PATCH] kdrive/ephyr: free screen struct
+Free screen->driver on screenFini, instead of just leaking it.
+---
+ hw/kdrive/ephyr/ephyr.c |    2 ++
+ 1 files changed, 2 insertions(+), 0 deletions(-)
+
+Index: xorg-server/hw/kdrive/ephyr/ephyr.c
+===================================================================
+--- xorg-server.orig/hw/kdrive/ephyr/ephyr.c	2007-03-06 22:24:54.000000000 +0100
++++ xorg-server/hw/kdrive/ephyr/ephyr.c	2007-03-06 22:25:16.000000000 +0100
+@@ -667,6 +667,8 @@
+ void
+ ephyrScreenFini (KdScreenInfo *screen)
+ {
++    xfree(screen->driver);
++    screen->driver = NULL;
+ }
+ 
+ /*  

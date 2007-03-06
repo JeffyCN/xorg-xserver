@@ -1,3 +1,10 @@
+xorg-server (2:1.1.1-20) unstable; urgency=low
+
+  * xephyr: Add patch from upstream git to fix memory leak in
+    ephyrScreenFini().  Thanks, Guillem Jover!
+
+ -- Julien Cristau <jcristau@debian.org>  Tue,  6 Mar 2007 22:20:14 +0100
+
 xorg-server (2:1.1.1-19) unstable; urgency=high
 
   [ Drew Parsons ]
