@@ -9,8 +9,8 @@ Uploaders: David Nusinow <dnusinow@debian.org>, Steve Langasek <vorlon@debian.or
 # everything on is for the DMX and Xnest servers.
 Build-Depends: debhelper (>= 4.0.0), pkg-config, bison, flex,
  x11proto-bigreqs-dev, x11proto-composite-dev (>= 0.3), x11proto-core-dev,
- x11proto-damage-dev, x11proto-evie-dev, x11proto-fixes-dev (>= 4.0),
- x11proto-kb-dev (>= 1.0.3), x11proto-xinerama-dev, x11proto-randr-dev,
+ x11proto-damage-dev (>= 1.1), x11proto-evie-dev, x11proto-fixes-dev (>= 4.0),
+ x11proto-kb-dev (>= 1.0.3), x11proto-xinerama-dev, x11proto-randr-dev (>= 1.2),
  x11proto-record-dev, x11proto-render-dev, x11proto-resource-dev,
  x11proto-scrnsaver-dev, x11proto-trap-dev, x11proto-video-dev,
  x11proto-xcmisc-dev, x11proto-xext-dev (>= 6.9.99.0-1),

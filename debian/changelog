@@ -1,3 +1,13 @@
+xorg-server (2:1.2.99.901-1) UNRELEASED; urgency=low
+
+  * New upstream release candidate.
+    + Remove patches 24 (hurd support), 35 (randr byteswap) and 43 (set damage
+      version), applied upstream.
+    + Bump build-dep on x11proto-randr-dev to >= 1.2, and on
+      x11proto-damage-dev to >= 1.1.
+
+ -- Julien Cristau <jcristau@debian.org>  Wed,  7 Mar 2007 16:04:38 +0100
+
 xorg-server (2:1.2.0-6) experimental; urgency=low
 
   * Set videoabiver to 1.0, same as in xorg-server 1.1.
