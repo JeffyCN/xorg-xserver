@@ -1,4 +1,4 @@
-xorg-server (2:1.2.99.901-1) UNRELEASED; urgency=low
+xorg-server (2:1.2.99.901-1) experimental; urgency=low
 
   * New upstream release candidate.
     + Remove patches 24 (hurd support), 35 (randr byteswap) and 43 (set damage
@@ -6,7 +6,7 @@ xorg-server (2:1.2.99.901-1) UNRELEASED; urgency=low
     + Bump build-dep on x11proto-randr-dev to >= 1.2, and on
       x11proto-damage-dev to >= 1.1.
 
- -- Julien Cristau <jcristau@debian.org>  Wed,  7 Mar 2007 16:04:38 +0100
+ -- Julien Cristau <jcristau@debian.org>  Wed,  7 Mar 2007 19:58:53 +0100
 
 xorg-server (2:1.2.0-6) experimental; urgency=low
 
