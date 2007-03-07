@@ -515,7 +515,7 @@ target_alias = @target_alias@
 xglmoduledir = @xglmoduledir@
 xpconfigdir = @xpconfigdir@
 xpcdir = @xpconfigdir@/C/print/models/CANONC3200-PS/fonts
-parentdir = @xpconfigdir@/C/print/models/PSdefault/fonts
+parentdir = ../../PSdefault/fonts
 XPFONTS = \
         AvantGarde-Book.pmf \
         AvantGarde-BookOblique.pmf \

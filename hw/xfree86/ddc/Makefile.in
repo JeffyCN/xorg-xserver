@@ -55,19 +55,15 @@ CONFIG_HEADER = $(top_builddir)/include/do-not-use-config.h \
 	$(top_builddir)/include/xwin-config.h \
 	$(top_builddir)/include/kdrive-config.h
 CONFIG_CLEAN_FILES =
-am__vpath_adj_setup = srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`;
-am__vpath_adj = case $$p in \
-    $(srcdir)/*) f=`echo "$$p" | sed "s|^$$srcdirstrip/||"`;; \
-    *) f=$$p;; \
-  esac;
-am__strip_dir = `echo $$p | sed -e 's|^.*/||'`;
-am__installdirs = "$(DESTDIR)$(moduledir)" "$(DESTDIR)$(sdkdir)"
-moduleLTLIBRARIES_INSTALL = $(INSTALL)
-LTLIBRARIES = $(module_LTLIBRARIES)
-libddc_la_LIBADD =
-am_libddc_la_OBJECTS = xf86DDC.lo edid.lo interpret_edid.lo \
-	print_edid.lo interpret_vdif.lo print_vdif.lo ddcProperty.lo
-libddc_la_OBJECTS = $(am_libddc_la_OBJECTS)
+LIBRARIES = $(noinst_LIBRARIES)
+ARFLAGS = cru
+libddc_a_AR = $(AR) $(ARFLAGS)
+libddc_a_LIBADD =
+am_libddc_a_OBJECTS = xf86DDC.$(OBJEXT) edid.$(OBJEXT) \
+	interpret_edid.$(OBJEXT) print_edid.$(OBJEXT) \
+	interpret_vdif.$(OBJEXT) print_vdif.$(OBJEXT) \
+	ddcProperty.$(OBJEXT)
+libddc_a_OBJECTS = $(am_libddc_a_OBJECTS)
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)/include -I$(top_builddir)/include -I$(top_builddir)/include -I$(top_builddir)/include -I$(top_builddir)/include -I$(top_builddir)/include -I$(top_builddir)/include -I$(top_builddir)/include
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
@@ -79,8 +75,15 @@ LTCOMPILE = $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) \
 CCLD = $(CC)
 LINK = $(LIBTOOL) --tag=CC --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
 	$(AM_LDFLAGS) $(LDFLAGS) -o $@
-SOURCES = $(libddc_la_SOURCES)
-DIST_SOURCES = $(libddc_la_SOURCES)
+SOURCES = $(libddc_a_SOURCES)
+DIST_SOURCES = $(libddc_a_SOURCES)
+am__vpath_adj_setup = srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`;
+am__vpath_adj = case $$p in \
+    $(srcdir)/*) f=`echo "$$p" | sed "s|^$$srcdirstrip/||"`;; \
+    *) f=$$p;; \
+  esac;
+am__strip_dir = `echo $$p | sed -e 's|^.*/||'`;
+am__installdirs = "$(DESTDIR)$(sdkdir)"
 sdkHEADERS_INSTALL = $(INSTALL_HEADER)
 HEADERS = $(sdk_HEADERS)
 ETAGS = etags
@@ -546,9 +549,8 @@ target_alias = @target_alias@
 xglmoduledir = @xglmoduledir@
 xpconfigdir = @xpconfigdir@
 sdk_HEADERS = edid.h vdif.h xf86DDC.h
-module_LTLIBRARIES = libddc.la
-libddc_la_LDFLAGS = -avoid-version
-libddc_la_SOURCES = xf86DDC.c edid.c interpret_edid.c print_edid.c \
+noinst_LIBRARIES = libddc.a
+libddc_a_SOURCES = xf86DDC.c edid.c interpret_edid.c print_edid.c \
                    interpret_vdif.c print_vdif.c ddcProperty.c
 
 INCLUDES = $(XORG_INCS) -I$(srcdir)/../i2c
@@ -587,35 +589,13 @@ $(top_srcdir)/configure: @MAINTAINER_MODE_TRUE@ $(am__configure_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
 $(ACLOCAL_M4): @MAINTAINER_MODE_TRUE@ $(am__aclocal_m4_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
-install-moduleLTLIBRARIES: $(module_LTLIBRARIES)
-	@$(NORMAL_INSTALL)
-	test -z "$(moduledir)" || $(mkdir_p) "$(DESTDIR)$(moduledir)"
-	@list='$(module_LTLIBRARIES)'; for p in $$list; do \
-	  if test -f $$p; then \
-	    f=$(am__strip_dir) \
-	    echo " $(LIBTOOL) --mode=install $(moduleLTLIBRARIES_INSTALL) $(INSTALL_STRIP_FLAG) '$$p' '$(DESTDIR)$(moduledir)/$$f'"; \
-	    $(LIBTOOL) --mode=install $(moduleLTLIBRARIES_INSTALL) $(INSTALL_STRIP_FLAG) "$$p" "$(DESTDIR)$(moduledir)/$$f"; \
-	  else :; fi; \
-	done
 
-uninstall-moduleLTLIBRARIES:
-	@$(NORMAL_UNINSTALL)
-	@set -x; list='$(module_LTLIBRARIES)'; for p in $$list; do \
-	  p=$(am__strip_dir) \
-	  echo " $(LIBTOOL) --mode=uninstall rm -f '$(DESTDIR)$(moduledir)/$$p'"; \
-	  $(LIBTOOL) --mode=uninstall rm -f "$(DESTDIR)$(moduledir)/$$p"; \
-	done
-
-clean-moduleLTLIBRARIES:
-	-test -z "$(module_LTLIBRARIES)" || rm -f $(module_LTLIBRARIES)
-	@list='$(module_LTLIBRARIES)'; for p in $$list; do \
-	  dir="`echo $$p | sed -e 's|/[^/]*$$||'`"; \
-	  test "$$dir" != "$$p" || dir=.; \
-	  echo "rm -f \"$${dir}/so_locations\""; \
-	  rm -f "$${dir}/so_locations"; \
-	done
-libddc.la: $(libddc_la_OBJECTS) $(libddc_la_DEPENDENCIES) 
-	$(LINK) -rpath $(moduledir) $(libddc_la_LDFLAGS) $(libddc_la_OBJECTS) $(libddc_la_LIBADD) $(LIBS)
+clean-noinstLIBRARIES:
+	-test -z "$(noinst_LIBRARIES)" || rm -f $(noinst_LIBRARIES)
+libddc.a: $(libddc_a_OBJECTS) $(libddc_a_DEPENDENCIES) 
+	-rm -f libddc.a
+	$(libddc_a_AR) libddc.a $(libddc_a_OBJECTS) $(libddc_a_LIBADD)
+	$(RANLIB) libddc.a
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -623,13 +603,13 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ddcProperty.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/edid.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/interpret_edid.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/interpret_vdif.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/print_edid.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/print_vdif.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xf86DDC.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ddcProperty.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/edid.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/interpret_edid.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/interpret_vdif.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/print_edid.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/print_vdif.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xf86DDC.Po@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	if $(COMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" -c -o $@ $<; \
@@ -756,9 +736,9 @@ distdir: $(DISTFILES)
 	done
 check-am: all-am
 check: check-am
-all-am: Makefile $(LTLIBRARIES) $(HEADERS)
+all-am: Makefile $(LIBRARIES) $(HEADERS)
 installdirs:
-	for dir in "$(DESTDIR)$(moduledir)" "$(DESTDIR)$(sdkdir)"; do \
+	for dir in "$(DESTDIR)$(sdkdir)"; do \
 	  test -z "$$dir" || $(mkdir_p) "$$dir"; \
 	done
 install: install-am
@@ -787,7 +767,7 @@ maintainer-clean-generic:
 	@echo "it deletes files that may require special tools to rebuild."
 clean: clean-am
 
-clean-am: clean-generic clean-libtool clean-moduleLTLIBRARIES \
+clean-am: clean-generic clean-libtool clean-noinstLIBRARIES \
 	mostlyclean-am
 
 distclean: distclean-am
@@ -806,7 +786,7 @@ info: info-am
 
 info-am:
 
-install-data-am: install-moduleLTLIBRARIES install-sdkHEADERS
+install-data-am: install-sdkHEADERS
 
 install-exec-am:
 
@@ -834,21 +814,19 @@ ps: ps-am
 
 ps-am:
 
-uninstall-am: uninstall-info-am uninstall-moduleLTLIBRARIES \
-	uninstall-sdkHEADERS
+uninstall-am: uninstall-info-am uninstall-sdkHEADERS
 
 .PHONY: CTAGS GTAGS all all-am check check-am clean clean-generic \
-	clean-libtool clean-moduleLTLIBRARIES ctags distclean \
+	clean-libtool clean-noinstLIBRARIES ctags distclean \
 	distclean-compile distclean-generic distclean-libtool \
 	distclean-tags distdir dvi dvi-am html html-am info info-am \
 	install install-am install-data install-data-am install-exec \
 	install-exec-am install-info install-info-am install-man \
-	install-moduleLTLIBRARIES install-sdkHEADERS install-strip \
-	installcheck installcheck-am installdirs maintainer-clean \
-	maintainer-clean-generic mostlyclean mostlyclean-compile \
-	mostlyclean-generic mostlyclean-libtool pdf pdf-am ps ps-am \
-	tags uninstall uninstall-am uninstall-info-am \
-	uninstall-moduleLTLIBRARIES uninstall-sdkHEADERS
+	install-sdkHEADERS install-strip installcheck installcheck-am \
+	installdirs maintainer-clean maintainer-clean-generic \
+	mostlyclean mostlyclean-compile mostlyclean-generic \
+	mostlyclean-libtool pdf pdf-am ps ps-am tags uninstall \
+	uninstall-am uninstall-info-am uninstall-sdkHEADERS
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

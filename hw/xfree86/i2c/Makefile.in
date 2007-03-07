@@ -15,6 +15,7 @@
 @SET_MAKE@
 
 
+
 srcdir = @srcdir@
 top_srcdir = @top_srcdir@
 VPATH = @srcdir@
@@ -55,26 +56,27 @@ CONFIG_HEADER = $(top_builddir)/include/do-not-use-config.h \
 	$(top_builddir)/include/xwin-config.h \
 	$(top_builddir)/include/kdrive-config.h
 CONFIG_CLEAN_FILES =
+LIBRARIES = $(noinst_LIBRARIES)
+ARFLAGS = cru
+libi2c_a_AR = $(AR) $(ARFLAGS)
+libi2c_a_LIBADD =
+am_libi2c_a_OBJECTS = xf86i2c.$(OBJEXT)
+libi2c_a_OBJECTS = $(am_libi2c_a_OBJECTS)
 am__vpath_adj_setup = srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`;
 am__vpath_adj = case $$p in \
     $(srcdir)/*) f=`echo "$$p" | sed "s|^$$srcdirstrip/||"`;; \
     *) f=$$p;; \
   esac;
 am__strip_dir = `echo $$p | sed -e 's|^.*/||'`;
-am__installdirs = "$(DESTDIR)$(moduledir)" \
-	"$(DESTDIR)$(multimediadir)" "$(DESTDIR)$(sdkdir)"
-moduleLTLIBRARIES_INSTALL = $(INSTALL)
+am__installdirs = "$(DESTDIR)$(multimediadir)" "$(DESTDIR)$(sdkdir)"
 multimediaLTLIBRARIES_INSTALL = $(INSTALL)
-LTLIBRARIES = $(module_LTLIBRARIES) $(multimedia_LTLIBRARIES)
+LTLIBRARIES = $(multimedia_LTLIBRARIES)
 bt829_drv_la_LIBADD =
 am_bt829_drv_la_OBJECTS = bt829.lo bt829_module.lo
 bt829_drv_la_OBJECTS = $(am_bt829_drv_la_OBJECTS)
 fi1236_drv_la_LIBADD =
 am_fi1236_drv_la_OBJECTS = fi1236.lo fi1236_module.lo
 fi1236_drv_la_OBJECTS = $(am_fi1236_drv_la_OBJECTS)
-libi2c_la_LIBADD =
-am_libi2c_la_OBJECTS = xf86i2c.lo xf86i2cmodule.lo
-libi2c_la_OBJECTS = $(am_libi2c_la_OBJECTS)
 msp3430_drv_la_LIBADD =
 am_msp3430_drv_la_OBJECTS = msp3430.lo msp3430_module.lo
 msp3430_drv_la_OBJECTS = $(am_msp3430_drv_la_OBJECTS)
@@ -101,12 +103,12 @@ LTCOMPILE = $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) \
 CCLD = $(CC)
 LINK = $(LIBTOOL) --tag=CC --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
 	$(AM_LDFLAGS) $(LDFLAGS) -o $@
-SOURCES = $(bt829_drv_la_SOURCES) $(fi1236_drv_la_SOURCES) \
-	$(libi2c_la_SOURCES) $(msp3430_drv_la_SOURCES) \
+SOURCES = $(libi2c_a_SOURCES) $(bt829_drv_la_SOURCES) \
+	$(fi1236_drv_la_SOURCES) $(msp3430_drv_la_SOURCES) \
 	$(tda8425_drv_la_SOURCES) $(tda9850_drv_la_SOURCES) \
 	$(tda9885_drv_la_SOURCES) $(uda1380_drv_la_SOURCES)
-DIST_SOURCES = $(bt829_drv_la_SOURCES) $(fi1236_drv_la_SOURCES) \
-	$(libi2c_la_SOURCES) $(msp3430_drv_la_SOURCES) \
+DIST_SOURCES = $(libi2c_a_SOURCES) $(bt829_drv_la_SOURCES) \
+	$(fi1236_drv_la_SOURCES) $(msp3430_drv_la_SOURCES) \
 	$(tda8425_drv_la_SOURCES) $(tda9850_drv_la_SOURCES) \
 	$(tda9885_drv_la_SOURCES) $(uda1380_drv_la_SOURCES)
 sdkHEADERS_INSTALL = $(INSTALL_HEADER)
@@ -573,7 +575,7 @@ sysconfdir = @sysconfdir@
 target_alias = @target_alias@
 xglmoduledir = @xglmoduledir@
 xpconfigdir = @xpconfigdir@
-module_LTLIBRARIES = libi2c.la
+noinst_LIBRARIES = libi2c.a
 multimediadir = $(moduledir)/multimedia
 multimedia_LTLIBRARIES = \
 	bt829_drv.la		\
@@ -584,8 +586,7 @@ multimedia_LTLIBRARIES = \
 	tda9885_drv.la		\
 	uda1380_drv.la
 
-libi2c_la_LDFLAGS = -avoid-version
-libi2c_la_SOURCES = xf86i2c.c xf86i2cmodule.c
+libi2c_a_SOURCES = xf86i2c.c
 INCLUDES = $(XORG_INCS)
 AM_CFLAGS = $(XORG_CFLAGS)
 sdk_HEADERS = xf86i2c.h bt829.h fi1236.h msp3430.h tda8425.h tda9850.h tda9885.h uda1380.h i2c_def.h
@@ -640,33 +641,13 @@ $(top_srcdir)/configure: @MAINTAINER_MODE_TRUE@ $(am__configure_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
 $(ACLOCAL_M4): @MAINTAINER_MODE_TRUE@ $(am__aclocal_m4_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
-install-moduleLTLIBRARIES: $(module_LTLIBRARIES)
-	@$(NORMAL_INSTALL)
-	test -z "$(moduledir)" || $(mkdir_p) "$(DESTDIR)$(moduledir)"
-	@list='$(module_LTLIBRARIES)'; for p in $$list; do \
-	  if test -f $$p; then \
-	    f=$(am__strip_dir) \
-	    echo " $(LIBTOOL) --mode=install $(moduleLTLIBRARIES_INSTALL) $(INSTALL_STRIP_FLAG) '$$p' '$(DESTDIR)$(moduledir)/$$f'"; \
-	    $(LIBTOOL) --mode=install $(moduleLTLIBRARIES_INSTALL) $(INSTALL_STRIP_FLAG) "$$p" "$(DESTDIR)$(moduledir)/$$f"; \
-	  else :; fi; \
-	done
 
-uninstall-moduleLTLIBRARIES:
-	@$(NORMAL_UNINSTALL)
-	@set -x; list='$(module_LTLIBRARIES)'; for p in $$list; do \
-	  p=$(am__strip_dir) \
-	  echo " $(LIBTOOL) --mode=uninstall rm -f '$(DESTDIR)$(moduledir)/$$p'"; \
-	  $(LIBTOOL) --mode=uninstall rm -f "$(DESTDIR)$(moduledir)/$$p"; \
-	done
-
-clean-moduleLTLIBRARIES:
-	-test -z "$(module_LTLIBRARIES)" || rm -f $(module_LTLIBRARIES)
-	@list='$(module_LTLIBRARIES)'; for p in $$list; do \
-	  dir="`echo $$p | sed -e 's|/[^/]*$$||'`"; \
-	  test "$$dir" != "$$p" || dir=.; \
-	  echo "rm -f \"$${dir}/so_locations\""; \
-	  rm -f "$${dir}/so_locations"; \
-	done
+clean-noinstLIBRARIES:
+	-test -z "$(noinst_LIBRARIES)" || rm -f $(noinst_LIBRARIES)
+libi2c.a: $(libi2c_a_OBJECTS) $(libi2c_a_DEPENDENCIES) 
+	-rm -f libi2c.a
+	$(libi2c_a_AR) libi2c.a $(libi2c_a_OBJECTS) $(libi2c_a_LIBADD)
+	$(RANLIB) libi2c.a
 install-multimediaLTLIBRARIES: $(multimedia_LTLIBRARIES)
 	@$(NORMAL_INSTALL)
 	test -z "$(multimediadir)" || $(mkdir_p) "$(DESTDIR)$(multimediadir)"
@@ -698,8 +679,6 @@ bt829_drv.la: $(bt829_drv_la_OBJECTS) $(bt829_drv_la_DEPENDENCIES)
 	$(LINK) -rpath $(multimediadir) $(bt829_drv_la_LDFLAGS) $(bt829_drv_la_OBJECTS) $(bt829_drv_la_LIBADD) $(LIBS)
 fi1236_drv.la: $(fi1236_drv_la_OBJECTS) $(fi1236_drv_la_DEPENDENCIES) 
 	$(LINK) -rpath $(multimediadir) $(fi1236_drv_la_LDFLAGS) $(fi1236_drv_la_OBJECTS) $(fi1236_drv_la_LIBADD) $(LIBS)
-libi2c.la: $(libi2c_la_OBJECTS) $(libi2c_la_DEPENDENCIES) 
-	$(LINK) -rpath $(moduledir) $(libi2c_la_LDFLAGS) $(libi2c_la_OBJECTS) $(libi2c_la_LIBADD) $(LIBS)
 msp3430_drv.la: $(msp3430_drv_la_OBJECTS) $(msp3430_drv_la_DEPENDENCIES) 
 	$(LINK) -rpath $(multimediadir) $(msp3430_drv_la_LDFLAGS) $(msp3430_drv_la_OBJECTS) $(msp3430_drv_la_LIBADD) $(LIBS)
 tda8425_drv.la: $(tda8425_drv_la_OBJECTS) $(tda8425_drv_la_DEPENDENCIES) 
@@ -731,8 +710,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/tda9885_module.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/uda1380.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/uda1380_module.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xf86i2c.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xf86i2cmodule.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xf86i2c.Po@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	if $(COMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" -c -o $@ $<; \
@@ -859,9 +837,9 @@ distdir: $(DISTFILES)
 	done
 check-am: all-am
 check: check-am
-all-am: Makefile $(LTLIBRARIES) $(HEADERS)
+all-am: Makefile $(LIBRARIES) $(LTLIBRARIES) $(HEADERS)
 installdirs:
-	for dir in "$(DESTDIR)$(moduledir)" "$(DESTDIR)$(multimediadir)" "$(DESTDIR)$(sdkdir)"; do \
+	for dir in "$(DESTDIR)$(multimediadir)" "$(DESTDIR)$(sdkdir)"; do \
 	  test -z "$$dir" || $(mkdir_p) "$$dir"; \
 	done
 install: install-am
@@ -890,8 +868,8 @@ maintainer-clean-generic:
 	@echo "it deletes files that may require special tools to rebuild."
 clean: clean-am
 
-clean-am: clean-generic clean-libtool clean-moduleLTLIBRARIES \
-	clean-multimediaLTLIBRARIES mostlyclean-am
+clean-am: clean-generic clean-libtool clean-multimediaLTLIBRARIES \
+	clean-noinstLIBRARIES mostlyclean-am
 
 distclean: distclean-am
 	-rm -rf ./$(DEPDIR)
@@ -909,8 +887,7 @@ info: info-am
 
 info-am:
 
-install-data-am: install-moduleLTLIBRARIES \
-	install-multimediaLTLIBRARIES install-sdkHEADERS
+install-data-am: install-multimediaLTLIBRARIES install-sdkHEADERS
 
 install-exec-am:
 
@@ -938,22 +915,21 @@ ps: ps-am
 
 ps-am:
 
-uninstall-am: uninstall-info-am uninstall-moduleLTLIBRARIES \
-	uninstall-multimediaLTLIBRARIES uninstall-sdkHEADERS
+uninstall-am: uninstall-info-am uninstall-multimediaLTLIBRARIES \
+	uninstall-sdkHEADERS
 
 .PHONY: CTAGS GTAGS all all-am check check-am clean clean-generic \
-	clean-libtool clean-moduleLTLIBRARIES \
-	clean-multimediaLTLIBRARIES ctags distclean distclean-compile \
+	clean-libtool clean-multimediaLTLIBRARIES \
+	clean-noinstLIBRARIES ctags distclean distclean-compile \
 	distclean-generic distclean-libtool distclean-tags distdir dvi \
 	dvi-am html html-am info info-am install install-am \
 	install-data install-data-am install-exec install-exec-am \
 	install-info install-info-am install-man \
-	install-moduleLTLIBRARIES install-multimediaLTLIBRARIES \
-	install-sdkHEADERS install-strip installcheck installcheck-am \
-	installdirs maintainer-clean maintainer-clean-generic \
-	mostlyclean mostlyclean-compile mostlyclean-generic \
-	mostlyclean-libtool pdf pdf-am ps ps-am tags uninstall \
-	uninstall-am uninstall-info-am uninstall-moduleLTLIBRARIES \
+	install-multimediaLTLIBRARIES install-sdkHEADERS install-strip \
+	installcheck installcheck-am installdirs maintainer-clean \
+	maintainer-clean-generic mostlyclean mostlyclean-compile \
+	mostlyclean-generic mostlyclean-libtool pdf pdf-am ps ps-am \
+	tags uninstall uninstall-am uninstall-info-am \
 	uninstall-multimediaLTLIBRARIES uninstall-sdkHEADERS
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.

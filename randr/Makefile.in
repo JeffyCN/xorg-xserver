@@ -57,7 +57,9 @@ CONFIG_HEADER = $(top_builddir)/include/do-not-use-config.h \
 CONFIG_CLEAN_FILES =
 LTLIBRARIES = $(noinst_LTLIBRARIES)
 librandr_la_LIBADD =
-am_librandr_la_OBJECTS = mirandr.lo randr.lo
+am_librandr_la_OBJECTS = mirandr.lo randr.lo rrcrtc.lo rrdispatch.lo \
+	rrinfo.lo rrmode.lo rroutput.lo rrpointer.lo rrproperty.lo \
+	rrscreen.lo rrsdispatch.lo rrxinerama.lo
 librandr_la_OBJECTS = $(am_librandr_la_OBJECTS)
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)/include -I$(top_builddir)/include -I$(top_builddir)/include -I$(top_builddir)/include -I$(top_builddir)/include -I$(top_builddir)/include -I$(top_builddir)/include -I$(top_builddir)/include
 depcomp = $(SHELL) $(top_srcdir)/depcomp
@@ -550,7 +552,17 @@ AM_CFLAGS = $(DIX_CFLAGS)
 librandr_la_SOURCES = \
 	mirandr.c	\
 	randr.c		\
-	randrstr.h
+	randrstr.h	\
+	rrcrtc.c	\
+	rrdispatch.c	\
+	rrinfo.c	\
+	rrmode.c	\
+	rroutput.c	\
+	rrpointer.c	\
+	rrproperty.c	\
+	rrscreen.c	\
+	rrsdispatch.c	\
+	rrxinerama.c
 
 all: all-am
 
@@ -605,6 +617,16 @@ distclean-compile:
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/mirandr.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/randr.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/rrcrtc.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/rrdispatch.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/rrinfo.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/rrmode.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/rroutput.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/rrpointer.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/rrproperty.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/rrscreen.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/rrsdispatch.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/rrxinerama.Plo@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	if $(COMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" -c -o $@ $<; \
