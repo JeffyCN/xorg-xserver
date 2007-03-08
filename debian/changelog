@@ -1,5 +1,6 @@
 xorg-server (2:1.2.99.901-2) UNRELEASED; urgency=low
 
+  [ Drew Parsons ]
   * Bring xprint back into the xorg fold.
     - include existing patches:
       - 91_ttf2pt1 allows Xprint to use ttf2pt1 for Type1 font handling
@@ -17,7 +18,12 @@ xorg-server (2:1.2.99.901-2) UNRELEASED; urgency=low
        x11proto-print-dev
   * Run autoreconf to update changes to hw/xprint/ps/Makefile.am.
 
- -- Drew Parsons <dparsons@debian.org>  Sat, 10 Mar 2007 03:18:22 +1100
+  [ Brice Goglin ]
+  * Apply patch from adrian@smop.co.uk to our xvfb-run wrapper
+    to check whether Xvfb started ok and fix its cleanup
+    (closes: #351042).
+
+ -- Drew Parsons <dparsons@debian.org>  Sat, 10 Mar 2007 23:31:52 +1100
 
 xorg-server (2:1.2.99.901-1) experimental; urgency=low
 
