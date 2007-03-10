@@ -891,7 +891,7 @@ uninstall-info: uninstall-info-recursive
 
 
 Xprinters.ghostscript: $(srcdir)/Xprinters
-	sed < $(srcdir)/Xprinters "s/#Printer xp_pdf_spooldir_tmp_Xprintjobs/Printer xp_pdf_spooldir_tmp_Xprintjobs/" > Xprinters.ghostscript
+	sed < $(srcdir)/Xprinters "s/#Printer xp_pdf_spooldir_HOME_Xprintjobs/Printer xp_pdf_spooldir_HOME_Xprintjobs/" > Xprinters.ghostscript
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:

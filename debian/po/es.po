@@ -1,0 +1,40 @@
+# 
+# 
+# 
+msgid ""
+msgstr ""
+"Project-Id-Version: xprint-es\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2006-12-03 04:35+0100\n"
+"PO-Revision-Date: 2006-12-13 23:22+0100\n"
+"Last-Translator: Fernando Cerezal López <kryptos21@gmail.com>\n"
+"Language-Team: Spanish <debian-l10n-spanish@lists.debian.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit"
+
+#. Type: string
+#. Description
+#: ../xprint-common.templates:1001
+msgid "Default printer resolution"
+msgstr "Resolución predeterminada de la impresora"
+
+#. Type: string
+#. Description
+#: ../xprint-common.templates:1001
+msgid ""
+"By default Xprint assumes a printer resolution of 600dpi. This should be "
+"fine for the majority of printers today."
+msgstr "Por omisión, Xprint asume una resolución de impresión de 600 ppp. Esto debería estar bien para la mayoría de las impresoras actuales."
+
+#. Type: string
+#. Description
+#: ../xprint-common.templates:1001
+msgid ""
+"On certain 1200dpi printers, however, the image might appear squashed in the "
+"corner of the page, or it might be blown up too large on 300dpi printers. If "
+"you are experiencing these kinds of printing problems, you may want to set "
+"the default printer resolution to a more appropriate value. See /usr/share/"
+"doc/xprint-common/README.printing-problems.gz for more details."
+msgstr "Sin embargo, en ciertas impresoras de 1200 ppp, la imagen puede parecer aplastada en la esquina de la página, o puede parecer demasiado hinchada en impresoras de 300 ppp. Si experimenta este tipo de problemas de impresión, puede que quiera establecer la resolución predeterminada de la impresora a un valor más apropiado. Véase «/usr/share/doc/xprint-common/README.printing-problems.gz» para obtener más detalles."
+

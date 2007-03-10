@@ -1,0 +1,10 @@
+# If you do not want Xprint to automatically start, then set START_XPRINT=0
+# By default, START_XPRINT=1, enabling Xprt, the Xprint server, to be started.
+
+# Note that this can be more effectively done by removing the start-up symlinks
+# to /etc/init.d/xprint, e.g.
+# 	rm /etc/rc[1-6].d/*xprint*
+
+# If you always want Xprint to run, you may safely remove this file.
+
+START_XPRINT=1

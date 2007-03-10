@@ -1,0 +1,4 @@
+etc/Xprint/C/print
+etc/Xprint/en_US/print
+etc/default
+usr/share/lintian/overrides

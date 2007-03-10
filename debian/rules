@@ -44,7 +44,8 @@ confflags += --disable-static \
 		 --enable-kdrive \
 		 --enable-xephyr \
 	     --disable-lbx \
-	     --disable-xprint \
+	     --enable-xprint \
+	     --enable-freetype \
 		 --disable-xorgconfig \
 		 --disable-xorgcfg \
 		 --with-xkb-path=/usr/share/X11/xkb \
@@ -56,21 +57,21 @@ confflags += --disable-static \
 build: patch build-stamp
 build-stamp: 
 	dh_testdir
-
+	
 	mkdir -p obj-$(DEB_BUILD_GNU_TYPE)/GL
 	cd obj-$(DEB_BUILD_GNU_TYPE) && \
 	../configure --prefix=/usr --mandir=\$${prefix}/share/man \
 	             --infodir=\$${prefix}/share/info --sysconfdir=/etc \
 	             --localstatedir=/var $(confflags) CFLAGS="$(CFLAGS)" 
 	cd obj-$(DEB_BUILD_GNU_TYPE) && $(MAKE)
-
+	
 	touch build-stamp
 
 clean: xsfclean
 	dh_testdir
 	dh_testroot
 	rm -f build-stamp
-
+	
 	rm -f config.cache config.log config.status
 	rm -f */config.cache */config.log */config.status
 	rm -f conftest* */conftest*
@@ -79,7 +80,7 @@ clean: xsfclean
 	# generated file, left over in the upstream tarball
 	# see https://bugs.freedesktop.org/show_bug.cgi?id=9277
 	rm -f hw/xfree86/common/xf86Build.h
-
+	
 	dh_clean
 
 install: build
@@ -87,24 +88,43 @@ install: build
 	dh_testroot
 	dh_clean -k
 	dh_installdirs
-
+	
 	cd obj-$(DEB_BUILD_GNU_TYPE) && $(MAKE) DESTDIR=$(CURDIR)/debian/tmp install
-
+	
 	# oh, yuck.
 	find $(CURDIR)/debian/tmp/usr/lib/xorg -type f -name '*.la' | \
 	  xargs rm -f
-
+	
 	install -m 755 debian/local/xvfb-run debian/tmp/usr/bin
 	install debian/local/xvfb-run.1 debian/tmp/usr/share/man/man1
+	
+	# something funny going on with Xprinters, will have to sort it out upstream
+	mv debian/tmp/usr/lib/X11/xserver/C/print/Xprinters.ghostscript debian/tmp/usr/lib/X11/xserver/C/print/Xprinters
 
-# Build architecture-dependent files here.
-binary-arch: build install
+
+# stub to start building deb files, used by binary-indep and binary-arch
+binary-initial:
 	dh_testdir
 	dh_testroot
 
-	dh_installdocs
-	dh_installchangelogs
-	dh_install --sourcedir=debian/tmp --list-missing
+# stub to build deb files, used by binary-indep and binary-arch
+# (cf. /usr/share/debhelper/dh_make/debianm/rules)
+binary-deb:
+	dh_compress
+	dh_fixperms
+	dh_installdeb
+	dh_shlibdeps
+	dh_gencontrol
+	dh_md5sums
+	dh_builddeb
+
+# Build architecture-dependent files here.
+binary-arch: build install
+	$(MAKE) -f debian/rules DH_OPTIONS=-a binary-initial
+	
+	dh_installdocs -a
+	dh_installchangelogs -a
+	dh_install -a --sourcedir=debian/tmp --list-missing
 	$(INSTALL) -d $(CURDIR)/debian/xserver-xorg-dev/usr/share/xserver-xorg
 	$(INSTALL) -m644 $(CURDIR)/debian/videoabiver \
 	           $(CURDIR)/debian/xserver-xorg-dev/usr/share/xserver-xorg/videoabiver
@@ -114,24 +134,45 @@ binary-arch: build install
 	           $(CURDIR)/debian/xserver-xorg-dev/usr/share/xserver-xorg/serverminver
 	$(INSTALL) -m 755 -d debian/xserver-xorg-core/usr/share/bug/xserver-xorg-core
 	$(INSTALL) -m 755 debian/xserver-xorg-core.bug.script debian/xserver-xorg-core/usr/share/bug/xserver-xorg-core/script
-	dh_link
-	dh_strip --exclude=usr/lib/xorg/modules
+	dh_installdebconf -a
+	dh_installman -a
+	$(INSTALL) $(CURDIR)/debian/xprint-overrides $(CURDIR)/debian/xprint/usr/share/lintian/overrides/xprint
+	# xprint docs are linked to xprint-common
+	rm -rf debian/xprint/usr/share/doc/xprint
+	
+	dh_link -a -all
+	dh_strip -a --exclude=usr/lib/xorg/modules
 ifeq (,$(findstring nostrip,$(DEB_BUILD_OPTIONS)))
 	find debian/xserver-xorg-core/usr/lib/xorg/modules -name "lib*.so" | \
 	  xargs --no-run-if-empty \
 	  strip --strip-debug --remove-section=.note --remove-section=.comment
 endif
-	dh_compress
-	dh_fixperms
-	dh_installdeb
-	dh_shlibdeps
-	dh_gencontrol
-	dh_md5sums
-	dh_builddeb
+	$(MAKE) -f debian/rules DH_OPTIONS=-a binary-deb
 
-# Build architecture-independent files here.
+
+# Build architecture-independent files here (xprint-common)
 binary-indep: build install
-# Nothing to do
+	$(MAKE) -f debian/rules DH_OPTIONS=-i binary-initial
+	dh_install -i --sourcedir=debian/tmp --list-missing
+	
+	$(INSTALL) $(CURDIR)/debian/xprint-common-overrides $(CURDIR)/debian/xprint-common/usr/share/lintian/overrides/xprint-common
+	# split Xprint config files so font files do not land in /etc
+	# (for xprint-common only)
+	mv debian/xprint-common/usr/share/Xprint/xserver/C/print/attributes debian/xprint-common/etc/Xprint/C/print/attributes
+	mv debian/xprint-common/usr/share/Xprint/xserver/C/print/Xprinters debian/xprint-common/etc/Xprint/C/print/Xprinters
+	mv debian/xprint-common/usr/share/Xprint/xserver/C/print/ddx-config debian/xprint-common/etc/Xprint/C/print/ddx-config
+	mv debian/xprint-common/usr/share/Xprint/xserver/en_US/print/attributes debian/xprint-common/etc/Xprint/en_US/print/attributes
+	# dh_install cannot rename files, sigh
+	$(INSTALL) $(CURDIR)/debian/xprint-common.default $(CURDIR)/debian/xprint-common/etc/default/xprint
+	dh_installinit -p xprint-common --name=xprint
+	
+	dh_installdocs -i
+	dh_installchangelogs -i
+	dh_installdebconf -i
+	dh_link -i -all
+	
+	$(MAKE) -f debian/rules DH_OPTIONS=-i binary-deb
+
 
 binary: binary-indep binary-arch
 .PHONY: build clean binary-indep binary-arch binary install

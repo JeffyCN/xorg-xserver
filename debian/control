@@ -2,10 +2,11 @@ Source: xorg-server
 Section: x11
 Priority: optional
 Maintainer: Debian X Strike Force <debian-x@lists.debian.org>
-Uploaders: David Nusinow <dnusinow@debian.org>, Steve Langasek <vorlon@debian.org>, Julien Cristau <jcristau@debian.org>
+Uploaders: David Nusinow <dnusinow@debian.org>, Steve Langasek <vorlon@debian.org>, Julien Cristau <jcristau@debian.org>, Drew Parsons <dparsons@debian.org>
 # all the Build-Depends up to x11proto-xf86-dri-dev are for the normal Xorg
 # server, and common dependencies for the DIX.
 # x11proto-xf86dri-dev and libdrm-dev are for DRI support for the Xorg server.
+# x11proto-print-dev and libfreetype6-dev are for Xprint
 # everything on is for the DMX and Xnest servers.
 Build-Depends: debhelper (>= 4.0.0), pkg-config, bison, flex,
  x11proto-bigreqs-dev, x11proto-composite-dev (>= 0.3), x11proto-core-dev,
@@ -18,7 +19,9 @@ Build-Depends: debhelper (>= 4.0.0), pkg-config, bison, flex,
  x11proto-xf86vidmode-dev, xtrans-dev, libxau-dev (>= 1:0.99.1-1),
  libxdmcp-dev (>= 1:0.99.1-1), libxfont-dev, libfontenc-dev,
  libxkbfile-dev (>= 1:0.99.1-1), x11proto-xf86dri-dev,
- libdrm-dev (>= 2.3.0) [!hurd-i386], mesa-swx11-source (>= 6.5.2),
+ libdrm-dev (>= 2.3.0) [!hurd-i386], 
+ x11proto-print-dev, libfreetype6-dev, xfonts-utils
+ mesa-swx11-source (>= 6.5.2),
  x11proto-gl-dev (>= 1.4.8), libgl1-mesa-dev (>= 6.5.1),
  libxmuu-dev (>= 1:0.99.1-1), libxext-dev (>= 1:0.99.1-1),
  libx11-dev (>= 1:0.99.2-1), libxrender-dev (>= 1:0.9.0-1),
@@ -168,3 +171,35 @@ Description: Next Generation Nested X Server
  much like xnest. xephyr though, is based on the kdrive X server, and as a
  result it supports newer extensions than xnest, including render and
  composite.
+
+Package: xprint
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, xprint-common, libxfont1 (>= 1:1.1)
+Recommends: xprint-utils
+Conflicts: xprt (<= 4.3.0.dfsg.1-10)
+Description: Xprint - the X11 print system (binary)
+ Xprint is an advanced printing system which enables X11 applications
+ to use devices like printers, FAX or create documents in formats like
+ PostScript, PDF, PCL, etc.
+ .
+ This package provides Xprt, the Xprint server compiled from
+ xprint.mozdev.org, an X.org subproject.  Xprint provides superior support
+ for printing from mozilla, including non-latin characters and MathML.
+ TrueType fonts are supported.
+ .
+ Xprint uses ttf2pt1 internally for some font support.
+
+Package: xprint-common
+Architecture: all
+Depends: xbase-clients, xfonts-encodings, x11-common (>= 1:7.0.12), ${shlibs:Depends}, ${misc:Depends}
+Recommends: xprint, xfonts-base
+Conflicts: xprt-common
+Replaces: xprt-common
+Description: Xprint - the X11 print system (configuration files)
+ Xprint is an advanced printing system which enables X11 applications
+ to use devices like printers, FAX or create documents in formats like
+ PostScript, PDF, PCL, etc.
+ .
+ This package provides the configuration and postscript definition files
+ required to run Xprt, the Xprint server. Xprt is provided by xprint.
+

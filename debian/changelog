@@ -1,3 +1,24 @@
+xorg-server (2:1.2.99.901-2) UNRELEASED; urgency=low
+
+  * Bring xprint back into the xorg fold.
+    - include existing patches:
+      - 91_ttf2pt1 allows Xprint to use ttf2pt1 for Type1 font handling
+      	(but extract and apply manually the patch to
+       	hw/xprint/ps/Makefile.am so it may be applied by autoconf)
+      - 91_ttf2pt1_updates brings ttf2pt1 into the modern X11R7.1 world
+      - 92_xprint-security-holes-fix.patch places PS/PDF file output
+      	into the user's home directory (~/Xprintjobs), more secure than
+      	a shared /tmp/Xprintjobs
+      - 93_spooltodir_check_file_exists ensures output filenames are
+      	less than 256 characters in length
+      - 93_xprint_fonts_fix released references to font names after use.
+     - enable freetype support for Xprint.
+     - add descriptions to debian/control and Build-Dependency on
+       x11proto-print-dev
+  * Run autoreconf to update changes to hw/xprint/ps/Makefile.am.
+
+ -- Drew Parsons <dparsons@debian.org>  Sat, 10 Mar 2007 03:18:22 +1100
+
 xorg-server (2:1.2.99.901-1) experimental; urgency=low
 
   * New upstream release candidate.

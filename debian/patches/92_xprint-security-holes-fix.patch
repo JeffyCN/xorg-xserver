@@ -1,0 +1,158 @@
+diff -ruN xorg-server-1.0.2-old/hw/xprint/config/C/print/attributes/printer xorg-server-1.0.2/hw/xprint/config/C/print/attributes/printer
+--- xorg-server-old/hw/xprint/config/C/print/attributes/printer	2004-04-24 04:46:58.000000000 +1000
++++ xorg-server/hw/xprint/config/C/print/attributes/printer	2006-04-14 21:38:06.000000000 +1000
+@@ -22,19 +22,18 @@
+ 
+ 
+ # Sample entry for the "PSspooldir" model
+-# Just add a printer called "xp_ps_spooldir_tmp_Xprintjobs" to "Xprinters"
++# Just add a printer called "xp_ps_spooldir_HOME_Xprintjobs" to "Xprinters"
+ # and you will get an extra printer which files the PostScript jobs
+-# in the "/tmp/Xprintjobs/" directory.
+-xp_ps_spooldir_tmp_Xprintjobs.xp-model-identifier: PSspooldir
++# in the "$HOME/Xprintjobs/" directory.
++xp_ps_spooldir_HOME_Xprintjobs.xp-model-identifier: PSspooldir
+ 
+ # Sample entry for the "PS2PDFspooldir-GS" model
+-# Just add a printer called "xp_pdf_spooldir_tmp_Xprintjobs" to "Xprinters"
++# Just add a printer called "xp_pdf_spooldir_HOME_Xprintjobs" to "Xprinters"
+ # and you will get an extra printer which convertes the PostScript jobs
+-# to PDF using "ps2pdf" and files them into the "/tmp/Xprintjobs/" directory.
++# to PDF using "ps2pdf" and files them into the "$HOME/Xprintjobs/" directory.
+ # NOTE: Future versions of Xprint will use the PDF DDX instead directly
+ # instead of relying on GhostScript/ps2pdf...
+-xp_pdf_spooldir_tmp_Xprintjobs.xp-model-identifier: PS2PDFspooldir-GS
+-
++xp_pdf_spooldir_HOME_Xprintjobs.xp-model-identifier: PS2PDFspooldir-GS
+ 
+ # IMPORTANT EXAMPLES
+ #
+diff -ruN xorg-server-old/hw/xprint/config/C/print/Makefile.am xorg-server/hw/xprint/config/C/print/Makefile.am
+--- xorg-server-old/hw/xprint/config/C/print/Makefile.am	2005-09-29 06:38:42.000000000 +1000
++++ xorg-server/hw/xprint/config/C/print/Makefile.am	2006-04-14 21:41:10.000000000 +1000
+@@ -4,7 +4,7 @@
+ 
+ 
+ Xprinters.ghostscript: $(srcdir)/Xprinters
+-	sed < $(srcdir)/Xprinters "s/#Printer xp_pdf_spooldir_tmp_Xprintjobs/Printer xp_pdf_spooldir_tmp_Xprintjobs/" > Xprinters.ghostscript
++	sed < $(srcdir)/Xprinters "s/#Printer xp_pdf_spooldir_HOME_Xprintjobs/Printer xp_pdf_spooldir_HOME_Xprintjobs/" > Xprinters.ghostscript
+ 
+ 
+ 
+diff -ruN xorg-server-old/hw/xprint/config/C/print/models/PS2PDFspooldir-GS/model-config xorg-server/hw/xprint/config/C/print/models/PS2PDFspooldir-GS/model-config
+--- xorg-server-old/hw/xprint/config/C/print/models/PS2PDFspooldir-GS/model-config	2004-04-24 04:52:27.000000000 +1000
++++ xorg-server/hw/xprint/config/C/print/models/PS2PDFspooldir-GS/model-config	2006-04-14 21:50:19.000000000 +1000
+@@ -20,7 +20,7 @@
+ #
+ # Attributes supported for this printer model
+ *content-orientations-supported: portrait landscape reverse-portrait reverse-landscape
+-*descriptor: PDF job spool dir /tmp/Xprintjobs
++*descriptor: PDF job spool dir $HOME/Xprintjobs
+ *document-formats-supported: {POSTSCRIPT 2}
+ *input-trays-supported:
+ *medium-source-sizes-supported: \
+@@ -45,7 +45,7 @@
+ }
+ 
+ *plexes-supported: simplex duplex tumble
+-*printer-model: "PDF job spool dir /tmp/Xprintjobs"
++*printer-model: "PDF job spool dir $HOME/Xprintjobs"
+ # 75, 100, 120, 150, 180, 200, 240, 300, 360, 400, 600, 720,
+ # 940, 1200 and 2440 are supported DPI values, we limit it here
+ # to some common values:
+@@ -60,7 +60,7 @@
+ # Note that "%xpconfigdir%" is currently only supported in Xprt servers build
+ # from xprint.mozdev.org sources, other platforms have replace it with the
+ # absolute path name to the script
+-*xp-spooler-command: %xpconfigdir%/C/print/models/PS2PDFspooldir-GS/ps2pdf_spooltodir.sh -d /tmp/Xprintjobs -s .pdf -u 077 -p %printer-name% -c %copy-count% -t %job-name% -o "%options%"
++*xp-spooler-command: %xpconfigdir%/C/print/models/PS2PDFspooldir-GS/ps2pdf_spooltodir.sh -s .pdf -u 077 -p %printer-name% -c %copy-count% -t %job-name% -o "%options%"
+ 
+ # NOTE: xp-psddx-* attributes are EXPERIMENTAL for now.
+ # xp-psddx-download-fonts defines which fonts should be downloaded as outlines
+diff -ruN xorg-server-old/hw/xprint/config/C/print/models/PS2PDFspooldir-GS/ps2pdf_spooltodir.sh xorg-server/hw/xprint/config/C/print/models/PS2PDFspooldir-GS/ps2pdf_spooltodir.sh
+--- xorg-server-old/hw/xprint/config/C/print/models/PS2PDFspooldir-GS/ps2pdf_spooltodir.sh	2004-04-24 04:52:27.000000000 +1000
++++ xorg-server/hw/xprint/config/C/print/models/PS2PDFspooldir-GS/ps2pdf_spooltodir.sh	2006-04-14 21:53:19.000000000 +1000
+@@ -3,7 +3,7 @@
+ export PATH
+ 
+ verbose_msgs="false"
+-DEFAULT_SPOOLDIR=/tmp/Xprintjobs
++DEFAULT_SPOOLDIR=`perl -e '@x = getpwuid($>); print $x[7]'`/Xprintjobs
+ 
+ usage()
+ {
+@@ -74,7 +74,6 @@
+ 
+ if [ ! -d "${DEFAULT_SPOOLDIR}" ] ; then 
+   mkdir "${DEFAULT_SPOOLDIR}"
+-  chmod a+rwxt "${DEFAULT_SPOOLDIR}"
+ fi
+ 
+ if [ "${permmask}" != "" ] ; then
+diff -ruN xorg-server-old/hw/xprint/config/C/print/models/PSspooldir/model-config xorg-server/hw/xprint/config/C/print/models/PSspooldir/model-config
+--- xorg-server-old/hw/xprint/config/C/print/models/PSspooldir/model-config	2004-04-24 04:54:16.000000000 +1000
++++ xorg-server/hw/xprint/config/C/print/models/PSspooldir/model-config	2006-04-14 21:57:02.000000000 +1000
+@@ -19,7 +19,7 @@
+ #
+ # Attributes supported for this printer model
+ *content-orientations-supported: portrait landscape reverse-portrait reverse-landscape
+-*descriptor: PostScript job spool dir /tmp/Xprintjobs
++*descriptor: PostScript job spool dir $HOME/Xprintjobs
+ *document-formats-supported: {POSTSCRIPT 2}
+ *input-trays-supported:
+ *medium-source-sizes-supported: \
+@@ -44,7 +44,7 @@
+ }
+ 
+ *plexes-supported: simplex duplex tumble
+-*printer-model: "PostScript job spool dir /tmp/Xprintjobs"
++*printer-model: "PostScript job spool dir $HOME/Xprintjobs"
+ # 75, 100, 120, 150, 180, 200, 240, 300, 360, 400, 600, 720,
+ # 940, 1200 and 2440 are supported DPI values, we limit it here
+ # to some common values:
+@@ -59,7 +59,7 @@
+ # Note that "%xpconfigdir%" is currently only supported in Xprt servers build
+ # from xprint.mozdev.org sources, other platforms have replace it with the
+ # absolute path name to the script
+-*xp-spooler-command: %xpconfigdir%/C/print/models/PSspooldir/spooltodir.sh -d /tmp/Xprintjobs -s .ps -u 077 -p %printer-name% -c %copy-count% -t %job-name% -o "%options%"
++*xp-spooler-command: %xpconfigdir%/C/print/models/PSspooldir/spooltodir.sh -s .ps -u 077 -p %printer-name% -c %copy-count% -t %job-name% -o "%options%"
+ 
+ # NOTE: xp-psddx-* attributes are EXPERIMENTAL for now.
+ # xp-psddx-download-fonts defines which fonts should be downloaded as outlines
+diff -ruN xorg-server-old/hw/xprint/config/C/print/models/PSspooldir/spooltodir.sh xorg-server/hw/xprint/config/C/print/models/PSspooldir/spooltodir.sh
+--- xorg-server-old/hw/xprint/config/C/print/models/PSspooldir/spooltodir.sh	2004-04-24 04:54:16.000000000 +1000
++++ xorg-server/hw/xprint/config/C/print/models/PSspooldir/spooltodir.sh	2006-04-14 21:58:06.000000000 +1000
+@@ -3,7 +3,7 @@
+ export PATH
+ 
+ verbose_msgs="false"
+-DEFAULT_SPOOLDIR=/tmp/Xprintjobs
++DEFAULT_SPOOLDIR=`perl -e '@x = getpwuid($>); print $x[7]'`/Xprintjobs
+ 
+ usage()
+ {
+@@ -74,7 +74,6 @@
+ 
+ if [ ! -d "${DEFAULT_SPOOLDIR}" ] ; then 
+   mkdir "${DEFAULT_SPOOLDIR}"
+-  chmod a+rwxt "${DEFAULT_SPOOLDIR}"
+ fi
+ 
+ if [ "${permmask}" != "" ] ; then
+diff -ruN xorg-server-old/hw/xprint/config/C/print/Xprinters xorg-server/hw/xprint/config/C/print/Xprinters
+--- xorg-server-old/hw/xprint/config/C/print/Xprinters	2004-04-24 04:46:31.000000000 +1000
++++ xorg-server/hw/xprint/config/C/print/Xprinters	2006-04-14 22:04:56.000000000 +1000
+@@ -30,10 +30,10 @@
+ 
+ ########################################################################
+ # Preconfigured entry for the PSspooldir model
+-# (which sends jobs to /tmp/Xprintjobs instead to a physical printer)
++# (which sends jobs to $HOME/Xprintjobs instead to a physical printer)
+ ########################################################################
+-#Printer xp_pdf_spooldir_tmp_Xprintjobs
+-Printer xp_ps_spooldir_tmp_Xprintjobs
++#Printer xp_pdf_spooldir_HOME_Xprintjobs
++Printer xp_ps_spooldir_HOME_Xprintjobs
+ 
+ ########################################################################
+ # Add individual printers to the list of printers managed by the

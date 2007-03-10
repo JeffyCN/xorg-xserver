@@ -1,0 +1,51 @@
+# Translators, if you are not familiar with the PO format, gettext
+# documentation is worth reading, especially sections dedicated to
+# this format, e.g. by running:
+# info -n '(gettext)PO Files'
+# info -n '(gettext)Header Entry'
+# Some information specific to po-debconf are available at
+# /usr/share/doc/po-debconf/README-trans
+# or http://www.debian.org/intl/l10n/po-debconf/README-trans
+# Developers do not need to manually edit POT or PO files.
+# , fuzzy
+# 
+# 
+msgid ""
+msgstr ""
+"Project-Id-Version: xprint 1:0.1.0.alpha1-12\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2005-03-16 11:10+1100\n"
+"PO-Revision-Date: 2005-09-29 03:16-0700\n"
+"Last-Translator: Daniel Nylander <po@danielnylander.se>\n"
+"Language-Team: Swedish <sv@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=iso-8859-1\n"
+"Content-Transfer-Encoding: 8bit"
+
+#. Type: string
+#. Description
+#: ../xprint-common.templates:4
+msgid "Default printer resolution"
+msgstr "Standard skrivarupplösning"
+
+#. Type: string
+#. Description
+#: ../xprint-common.templates:4
+msgid ""
+"By default Xprint assumes a printer resolution of 600dpi. This should be "
+"fine for the majority of printers today."
+msgstr ""
+"Standard tror Xprint att skrivarens upplösning är 600dpi. Detta borde fungera fint för de flesta skrivare idag."
+
+#. Type: string
+#. Description
+#: ../xprint-common.templates:4
+msgid ""
+"On certain 1200dpi printers, however, the image might appear squashed in the "
+"corner of the page, or it might be blown up too large on 300dpi printers. If "
+"you are experiencing these kinds of printing problems, you may want to set "
+"the default printer resolution to a more appropriate value. See /usr/share/"
+"doc/xprint-common/README.printing-problems.gz for more details."
+msgstr ""
+"På vissa 1200dpi skrivare kan dock bilden verka hoptryckt i ett hörn av sidan eller att den blir förstorad på 300dpi skrivare. Om du upplever problem som dessa kan du sätta standard skrivarens upplösning till ett mer lämpligt värde. Se /usr/share/doc/xprint-common/README.printing-problems.gz för mer information."
+

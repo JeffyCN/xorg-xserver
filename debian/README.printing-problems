@@ -1,0 +1,162 @@
+Printing Problems
+-----------------
+
+This file is a mini-FAQ for two printing problems:
+
+Q1) Spaces between words are lost (words run together)
+
+Q2) Image is too big (font size too large) 
+    OR 
+    Image is too small (only takes up 1/4 of the page)
+
+
+=======================================================================
+Q1) Spaces between words are lost (words run together)
+
+At the time of the release of sarge, there is an unresolved problem
+printing certain webpages from firefox using Xprint. The problem has been
+reproduced with mozilla-firefox (0.9.3-2) and xprint (0.1.0.alpha1), 
+although the situation seems to have improved with firefox 1.0.1.
+
+mozilla proper (mozilla-browser 2:1.7.2-2) does not exhibit the
+problem, it prints fine on the package maintainer's system, although 
+others have unfortunately reported seeing the problem there. 
+
+The symptom of the problem is that spaces between words are lost,
+words are printed strung all together. The font may be sans-serif,
+where serif font is displayed on screen.
+
+The problem appears to happen on pages where the font is not
+explicitly chosen in the HTML code. An example is Debian's home page,
+www.debian.org.  Other pages which specify the font to be used do not
+seem to be affected.
+
+There are three known workarounds for the problem.
+
+1) Only use the default fonts in mozilla/firefox.
+
+   The printing error will start happening if you change font settings 
+   using Edit->Preferences (in particular if you set the serif font). 
+   Changing the setting back again to the default value of "serif" will 
+   not fix the problem.
+   
+   This is because setting the font places a "font.name.serif.x-western" 
+   entry into ~/.mozilla/firefox/default.***/prefs.js.  Even if the value 
+   of the entry is "serif", it's mere presence will ruin printing.
+   
+   The workaround is to manually delete the "font.name.serif.x-western" 
+   entry from prefs.js.
+   
+   This seems to fix the problem with the Debian home page, but depending 
+   the page and language you want to print with you might find you will need
+   to delete other font.name entries as well.
+
+2) Remove Xprint's own font directory.
+
+   Xprint contains font information in the directory
+   /usr/share/Xprint/xserver/C/print/models/PSdefault/fonts
+   If this directory is removed, then firefox prints www.debian.org
+   with correct spacing between words.  The font used is sans-serif.
+   Xprint obtains information about fonts from other parts of the system.
+   
+   Since this workaround has not been fully tested and its consequences
+   are not fully understood (other locales and printer models in
+   Xprint link to this directory), the fonts directory will be left
+   intact for the official release of Xprint in Debian.
+   
+   A side-effect is that the date stamps for news entries on
+   www.debian.org are rendered using sans-serif font, where they
+   ought to be, I believe, rendered using a monospace font.
+   
+   
+3) Use default stylesheet settings for firefox.
+
+   User directories for firefox contain sample default style settings
+   in the chrome directory, at
+   ~/.firefox/default/<user-key>/chrome/userContent-example.css
+   This file, userContent-example.css, can be renamed to userContent.css,
+   and the following style added:
+
+@media print {
+	body {
+        	font-family: times, serif;
+	}
+	tt, pre {
+		font-family: courier, monospace;
+	}
+}
+
+   This will instruct firefox to use serif font for the main text of web
+   pages where the default font is not specified. The spacing between
+   words will be rendered correctly.
+   
+   System administrators wishing to provide this style snippet
+   automatically to all users will want to make the adjustments in
+   /usr/lib/mozilla-firefox/defaults/profile/chrome/
+   
+   Note, the same can be done for mozilla proper, if needed.
+
+
+The problem is being tracked on the Debian Bug Tracking System at bugs
+#235592 and #251067, and upstream at
+http://xprint.freedesktop.org/bugzilla/show_bug.cgi?id=1112
+
+
+========================================================================
+Q2) Image is too big (font size too large) 
+    OR 
+    Image is too small (only takes up 1/4 of the page)
+
+This question is a standard Xprint FAQ (Q70).
+
+The problem means your default printer resolution is set to the wrong 
+value.  The value is set in /etc/Xprint/C/print/attributes/document (or possibly
+en_US/print/... rather than C/print/..., depending on your locale):
+
+*default-printer-resolution: 600
+
+The standard default value is set to 600dpi.  If your printer can only handle 
+300dpi, then four pixels (2x2) will be used for every one in your image, making
+it print on paper larger than it ought to. The solution is to change the default
+resolution to 300.
+
+Likewise if the default value is set to 300, but your printer can only handle
+600dpi, then the pixels will only take up half the space on paper that they are
+supposed to, so the image will only occupy a quarter of the page (1/2 x 1/2).
+This problem was often reported under previous versions of Xprint, before the 
+default resolution was set to 600.  In the latest version we have made the 
+assumption that 300dpi printers are today relatively rare, and so have set the
+default value to 600. A side-effect is the first problem discussed in the 
+previous paragraph, for 300dpi-only printers.
+
+For your convenience, a debconf question has been provided enabling you to set
+the default resolution at installation time (or after running 
+"dpkg-reconfigure xprint-common").
+
+Note that these problems do not affect all printers. Some 600dpi printers will
+happily render 300dpi images, using a 2x2 block for each pixel in the image to
+give a normal physical image size on paper.
+
+Your printer's resolutions may possibly also need to be set consistently in the 
+underlying spooler. For instance CUPS settings can usually be accessed at 
+http://localhost:631/printers (use the "Configure Printer" link).
+
+If you have different printers which need to be run at different resolutions,
+you will need to manually set a value for default-printer-resolution for each printer
+separately (that is, for each one which differs from the default value). 
+See FAQ Q211. For instance, if the printer named "old_printer" needs to run at 
+300 dpi, while others work at 600dpi, then you need to use:
+*default-printer-resolution: 600
+old_printer.default-printer-resolution: 300
+
+We can't please everybody all the time!  Please set your default resolution
+according to your own needs.  We hope that in a future version, Xprint will be
+able to set these values dynamically from the underlying printing spooler 
+(CUPS, if not others).  Watch http://bugzilla.mozdev.org/show_bug.cgi?id=5517 
+for further developments.
+
+
+
+Good luck!
+
+Drew Parsons <dparsons@debian.org>, 15 Mar 2005.

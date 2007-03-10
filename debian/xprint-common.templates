@@ -1,0 +1,12 @@
+Template: xprint-common/default_printer_resolution
+Type: string
+Default: 600
+_Description: Default printer resolution
+ By default Xprint assumes a printer resolution of 600dpi. This should be fine
+ for the majority of printers today.
+ .
+ On certain 1200dpi printers, however, the image might appear squashed in the
+ corner of the page, or it might be blown up too large on 300dpi printers. If
+ you are experiencing these kinds of printing problems, you may want to set
+ the default printer resolution to a more appropriate value. See
+ /usr/share/doc/xprint-common/README.printing-problems.gz for more details.

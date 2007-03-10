@@ -36,8 +36,8 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-@XP_USE_FREETYPE_TRUE@am__append_1 = -DXP_USE_FREETYPE
-@XP_USE_FREETYPE_TRUE@am__append_2 = $(EXTRA_DIST)
+@XP_USE_FREETYPE_TRUE@am__append_1 = -DXP_USE_FREETYPE -DUSE_FREETYPE -DXP_ONLY_BLOCKS
+@XP_USE_FREETYPE_TRUE@am__append_2 = $(FREETYPE_SRCS) $(TTF2PT1SRCS)
 subdir = hw/xprint/ps
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
@@ -62,15 +62,19 @@ am__libps_la_SOURCES_DIST = PsArc.c PsArea.c PsAttr.c PsAttVal.c \
 	PsImageUtil.c PsInit.c PsLine.c PsMisc.c psout.c psout.h \
 	PsPixel.c PsPixmap.c PsPolygon.c PsPrint.c PsSpans.c PsText.c \
 	PsWindow.c PsFTFonts.c psout_ft.c psout_ftpstype1.c \
-	psout_ftpstype3.c ttf2pt1wrap.c
+	psout_ftpstype3.c ft.c pt1.c runt1asm.c ttf2pt1.c
 am__objects_1 = PsFTFonts.lo psout_ft.lo psout_ftpstype1.lo \
-	psout_ftpstype3.lo ttf2pt1wrap.lo
-@XP_USE_FREETYPE_TRUE@am__objects_2 = $(am__objects_1)
+	psout_ftpstype3.lo
+@XP_USE_FREETYPE_TRUE@am__objects_2 = ttf2pt1.lo
+@XP_USE_FREETYPE_TRUE@am__objects_3 = ft.lo pt1.lo runt1asm.lo \
+@XP_USE_FREETYPE_TRUE@	$(am__objects_2)
+@XP_USE_FREETYPE_TRUE@am__objects_4 = $(am__objects_1) \
+@XP_USE_FREETYPE_TRUE@	$(am__objects_3)
 am_libps_la_OBJECTS = PsArc.lo PsArea.lo PsAttr.lo PsAttVal.lo \
 	PsCache.lo PsColor.lo PsFonts.lo PsGC.lo PsImageUtil.lo \
 	PsInit.lo PsLine.lo PsMisc.lo psout.lo PsPixel.lo PsPixmap.lo \
 	PsPolygon.lo PsPrint.lo PsSpans.lo PsText.lo PsWindow.lo \
-	$(am__objects_2)
+	$(am__objects_4)
 libps_la_OBJECTS = $(am_libps_la_OBJECTS)
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)/include -I$(top_builddir)/include -I$(top_builddir)/include -I$(top_builddir)/include -I$(top_builddir)/include -I$(top_builddir)/include -I$(top_builddir)/include -I$(top_builddir)/include
 depcomp = $(SHELL) $(top_srcdir)/depcomp
@@ -556,12 +560,18 @@ libps_la_SOURCES = PsArc.c PsArea.c PsAttr.c PsAttVal.c PsCache.c \
 	PsLine.c PsMisc.c psout.c psout.h PsPixel.c PsPixmap.c \
 	PsPolygon.c PsPrint.c PsSpans.c PsText.c PsWindow.c \
 	$(am__append_2)
-EXTRA_DIST = PsFTFonts.c	\
+FREETYPE_SRCS = PsFTFonts.c	\
 	psout_ft.c		\
 	psout_ftpstype1.c	\
-	psout_ftpstype3.c	\
-	ttf2pt1wrap.c
+	psout_ftpstype3.c	
 
+EXTRA_DIST = ttf2pt1wrap.c
+@XP_USE_FREETYPE_TRUE@TTF2PT1OURCEDIR = $(top_srcdir)/hw/xprint/extras/ttf2pt1
+@XP_USE_FREETYPE_TRUE@TTF2PT1SRCFILE = ttf2pt1.c
+@XP_USE_FREETYPE_TRUE@TTF2PT1OBJFILE = ttf2pt1.o
+@XP_USE_FREETYPE_TRUE@TTF2PT1SRCS_EXTRA = pt1.h t1asm.c ttf.h global.h version.h
+@XP_USE_FREETYPE_TRUE@TTF2PT1SRCS = ft.c pt1.c runt1asm.c $(TTF2PT1SRCFILE)
+@XP_USE_FREETYPE_TRUE@TTF2PT1OBJS = ft.o pt1.o runt1asm.o $(TTF2PT1OBJFILE)
 all: all-am
 
 .SUFFIXES:
@@ -633,11 +643,14 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/PsSpans.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/PsText.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/PsWindow.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ft.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/psout.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/psout_ft.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/psout_ftpstype1.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/psout_ftpstype3.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ttf2pt1wrap.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pt1.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/runt1asm.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ttf2pt1.Plo@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	if $(COMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" -c -o $@ $<; \
@@ -836,6 +849,14 @@ uninstall-am: uninstall-info-am
 	pdf pdf-am ps ps-am tags uninstall uninstall-am \
 	uninstall-info-am
 
+
+@XP_USE_FREETYPE_TRUE@$(TTF2PT1SRCS_EXTRA):
+@XP_USE_FREETYPE_TRUE@	-rm -f $@
+@XP_USE_FREETYPE_TRUE@	$(LN_S) $(TTF2PT1OURCEDIR)/$@
+
+@XP_USE_FREETYPE_TRUE@$(TTF2PT1SRCS):  $(TTF2PT1SRCS_EXTRA)
+@XP_USE_FREETYPE_TRUE@	-rm -f $@
+@XP_USE_FREETYPE_TRUE@	$(LN_S) $(TTF2PT1OURCEDIR)/$@
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:
