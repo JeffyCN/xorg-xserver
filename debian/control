@@ -20,7 +20,7 @@ Build-Depends: debhelper (>= 4.0.0), pkg-config, bison, flex,
  libxdmcp-dev (>= 1:0.99.1-1), libxfont-dev, libfontenc-dev,
  libxkbfile-dev (>= 1:0.99.1-1), x11proto-xf86dri-dev,
  libdrm-dev (>= 2.3.0) [!hurd-i386], 
- x11proto-print-dev, libfreetype6-dev, xfonts-utils
+ x11proto-print-dev, libfreetype6-dev, xfonts-utils,
  mesa-swx11-source (>= 6.5.2),
  x11proto-gl-dev (>= 1.4.8), libgl1-mesa-dev (>= 6.5.1),
  libxmuu-dev (>= 1:0.99.1-1), libxext-dev (>= 1:0.99.1-1),
