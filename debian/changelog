@@ -1,4 +1,4 @@
-xorg-server (2:1.2.99.901-2) UNRELEASED; urgency=low
+xorg-server (2:1.2.99.902-1) UNRELEASED; urgency=low
 
   [ Drew Parsons ]
   * Bring xprint back into the xorg fold.
@@ -23,7 +23,10 @@ xorg-server (2:1.2.99.901-2) UNRELEASED; urgency=low
     to check whether Xvfb started ok and fix its cleanup
     (closes: #351042).
 
- -- Drew Parsons <dparsons@debian.org>  Sat, 10 Mar 2007 23:31:52 +1100
+  [ Julien Cristau ]
+  * New upstream release candidate.
+
+ -- Julien Cristau <jcristau@debian.org>  Wed, 14 Mar 2007 23:25:57 +0100
 
 xorg-server (2:1.2.99.901-1) experimental; urgency=low
 
