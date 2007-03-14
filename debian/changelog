@@ -25,8 +25,9 @@ xorg-server (2:1.2.99.902-1) UNRELEASED; urgency=low
 
   [ Julien Cristau ]
   * New upstream release candidate.
+  * Bump serverminver to 2:1.2.99.902.
 
- -- Julien Cristau <jcristau@debian.org>  Wed, 14 Mar 2007 23:25:57 +0100
+ -- Julien Cristau <jcristau@debian.org>  Wed, 14 Mar 2007 23:26:58 +0100
 
 xorg-server (2:1.2.99.901-1) experimental; urgency=low
 
