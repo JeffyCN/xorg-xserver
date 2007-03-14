@@ -26,8 +26,10 @@ xorg-server (2:1.2.99.902-1) UNRELEASED; urgency=low
   [ Julien Cristau ]
   * New upstream release candidate.
   * Bump serverminver to 2:1.2.99.902.
+  * Drop patch 42_build_int10_submodules.diff, and use x86emu on all
+    architectures instead (closes: #410879).
 
- -- Julien Cristau <jcristau@debian.org>  Wed, 14 Mar 2007 23:26:58 +0100
+ -- Julien Cristau <jcristau@debian.org>  Wed, 14 Mar 2007 23:28:08 +0100
 
 xorg-server (2:1.2.99.901-1) experimental; urgency=low
 

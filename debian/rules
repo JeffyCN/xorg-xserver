@@ -52,7 +52,8 @@ confflags += --disable-static \
 		 --with-xkb-output=/var/lib/xkb \
 	     --disable-misc-utils \
 	     --with-os-name="$(shell uname)" \
-	     --with-os-vendor=Debian
+	     --with-os-vendor=Debian \
+	     --with-int10=x86emu
 
 build: patch build-stamp
 build-stamp: 

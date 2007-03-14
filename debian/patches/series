@@ -14,7 +14,6 @@
 32_disable_sparc_pci_bridge.diff
 34_xorg.conf_man_typos.patch
 39_alpha_build_flags.patch -p0
-42_build_int10_submodules.diff
 44_fedora-xephyr-keysym-madness.diff
 91_ttf2pt1
 91_ttf2pt1_updates
