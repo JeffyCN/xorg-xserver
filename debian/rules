@@ -140,11 +140,11 @@ binary-arch: build install
 	$(INSTALL) -m 755 debian/xserver-xorg-core.bug.script debian/xserver-xorg-core/usr/share/bug/xserver-xorg-core/script
 	dh_installdebconf -a
 	dh_installman -a
-	$(INSTALL) $(CURDIR)/debian/xprint-overrides $(CURDIR)/debian/xprint/usr/share/lintian/overrides/xprint
+	$(INSTALL) -m 644 $(CURDIR)/debian/xprint-overrides $(CURDIR)/debian/xprint/usr/share/lintian/overrides/xprint
 	# xprint docs are linked to xprint-common
 	rm -rf debian/xprint/usr/share/doc/xprint
 	
-	dh_link -a -all
+	dh_link -a
 	dh_strip -a --exclude=usr/lib/xorg/modules
 ifeq (,$(findstring nostrip,$(DEB_BUILD_OPTIONS)))
 	find debian/xserver-xorg-core/usr/lib/xorg/modules -name "lib*.so" | \
@@ -159,7 +159,7 @@ binary-indep: build install
 	$(MAKE) -f debian/rules DH_OPTIONS=-i binary-initial
 	dh_install -i --sourcedir=debian/tmp --list-missing
 	
-	$(INSTALL) $(CURDIR)/debian/xprint-common-overrides $(CURDIR)/debian/xprint-common/usr/share/lintian/overrides/xprint-common
+	$(INSTALL) -m 644 $(CURDIR)/debian/xprint-common-overrides $(CURDIR)/debian/xprint-common/usr/share/lintian/overrides/xprint-common
 	# split Xprint config files so font files do not land in /etc
 	# (for xprint-common only)
 	mv debian/xprint-common/usr/share/Xprint/xserver/C/print/attributes debian/xprint-common/etc/Xprint/C/print/attributes
@@ -167,13 +167,13 @@ binary-indep: build install
 	mv debian/xprint-common/usr/share/Xprint/xserver/C/print/ddx-config debian/xprint-common/etc/Xprint/C/print/ddx-config
 	mv debian/xprint-common/usr/share/Xprint/xserver/en_US/print/attributes debian/xprint-common/etc/Xprint/en_US/print/attributes
 	# dh_install cannot rename files, sigh
-	$(INSTALL) $(CURDIR)/debian/xprint-common.default $(CURDIR)/debian/xprint-common/etc/default/xprint
+	$(INSTALL) -m 644 $(CURDIR)/debian/xprint-common.default $(CURDIR)/debian/xprint-common/etc/default/xprint
 	dh_installinit -p xprint-common --name=xprint
 	
 	dh_installdocs -i
 	dh_installchangelogs -i
 	dh_installdebconf -i
-	dh_link -i -all
+	dh_link -i
 	
 	$(MAKE) -f debian/rules DH_OPTIONS=-i binary-deb
 
