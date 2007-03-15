@@ -1,7 +1,7 @@
 Index: xorg-server/GL/glx/Makefile.am
 ===================================================================
---- xorg-server.orig/GL/glx/Makefile.am	2006-12-02 11:14:28.000000000 +0100
-+++ xorg-server/GL/glx/Makefile.am	2006-12-02 11:17:18.000000000 +0100
+--- xorg-server.orig/GL/glx/Makefile.am	2007-03-15 00:57:26.000000000 +0100
++++ xorg-server/GL/glx/Makefile.am	2007-03-15 00:57:37.000000000 +0100
 @@ -15,7 +15,8 @@
  	-I@MESA_SOURCE@/src/mesa/main \
  	-DXFree86Server \
@@ -14,9 +14,9 @@ Index: xorg-server/GL/glx/Makefile.am
  #sdk_HEADERS =
 Index: xorg-server/configure.ac
 ===================================================================
---- xorg-server.orig/configure.ac	2006-12-02 11:16:53.000000000 +0100
-+++ xorg-server/configure.ac	2006-12-02 11:17:18.000000000 +0100
-@@ -193,6 +193,7 @@
+--- xorg-server.orig/configure.ac	2007-03-15 00:57:26.000000000 +0100
++++ xorg-server/configure.ac	2007-03-15 00:57:37.000000000 +0100
+@@ -207,6 +207,7 @@
  	case $host_os in
  		*netbsd*)	AC_DEFINE(USE_ALPHA_PIO, 1, [NetBSD PIO alpha IO]) ;;
  	esac
@@ -24,7 +24,7 @@ Index: xorg-server/configure.ac
  	;;
    arm*)
  	ARM_VIDEO=yes
-@@ -221,6 +222,7 @@
+@@ -235,6 +236,7 @@
  	xorg_loader_sparcmuldiv="yes"
  	SPARC64_VIDEO=yes
  	BSD_ARCH_SOURCES="sparc64_video.c ioperm_noop.c"
@@ -32,7 +32,7 @@ Index: xorg-server/configure.ac
  	;;
    x86_64*|amd64*)
    	use_x86_asm="yes"
-@@ -234,8 +236,16 @@
+@@ -248,8 +250,16 @@
  				SYS_LIBS=-lamd64
  				;;
  	esac
@@ -51,8 +51,8 @@ Index: xorg-server/configure.ac
  AM_CONDITIONAL(ALPHA_VIDEO, [test "x$ALPHA_VIDEO" = xyes])
 Index: xorg-server/hw/dmx/glxProxy/Makefile.am
 ===================================================================
---- xorg-server.orig/hw/dmx/glxProxy/Makefile.am	2006-12-02 11:14:28.000000000 +0100
-+++ xorg-server/hw/dmx/glxProxy/Makefile.am	2006-12-02 11:17:18.000000000 +0100
+--- xorg-server.orig/hw/dmx/glxProxy/Makefile.am	2007-03-15 00:57:26.000000000 +0100
++++ xorg-server/hw/dmx/glxProxy/Makefile.am	2007-03-15 00:57:37.000000000 +0100
 @@ -31,8 +31,7 @@
                          renderpixswap.c \
                          unpack.h

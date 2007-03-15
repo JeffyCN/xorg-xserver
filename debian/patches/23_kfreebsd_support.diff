@@ -1,8 +1,8 @@
 Index: xorg-server/configure.ac
 ===================================================================
---- xorg-server.orig/configure.ac	2006-12-02 11:17:18.000000000 +0100
-+++ xorg-server/configure.ac	2006-12-02 11:17:45.000000000 +0100
-@@ -1512,7 +1512,11 @@
+--- xorg-server.orig/configure.ac	2007-03-15 00:57:37.000000000 +0100
++++ xorg-server/configure.ac	2007-03-15 00:57:41.000000000 +0100
+@@ -1515,7 +1515,11 @@
  
      AC_CHECK_HEADERS([sys/vm86.h sys/io.h])
      if test "$ac_cv_header_sys_vm86_h" = yes; then
@@ -15,8 +15,8 @@ Index: xorg-server/configure.ac
      fi
  
      AC_CHECK_HEADERS([linux/fb.h])
-@@ -1562,7 +1566,7 @@
- AC_SUBST(KDRIVE_LIBS)
+@@ -1571,7 +1575,7 @@
+ AM_CONDITIONAL(KDRIVELINUX, [test "x$KDRIVELINUX" = xyes])
  AM_CONDITIONAL(TSLIB, [test "x$HAVE_TSLIB" = xyes])
  AM_CONDITIONAL(H3600_TS, false)
 -AM_CONDITIONAL(KDRIVEVESA, [test x"$ac_cv_header_sys_vm86_h" = xyes])
@@ -26,8 +26,8 @@ Index: xorg-server/configure.ac
  # Xephyr needs nanosleep() which is in librt on Solaris
 Index: xorg-server/hw/kdrive/linux/agp.c
 ===================================================================
---- xorg-server.orig/hw/kdrive/linux/agp.c	2006-12-02 11:14:28.000000000 +0100
-+++ xorg-server/hw/kdrive/linux/agp.c	2006-12-02 11:17:45.000000000 +0100
+--- xorg-server.orig/hw/kdrive/linux/agp.c	2007-03-15 00:57:26.000000000 +0100
++++ xorg-server/hw/kdrive/linux/agp.c	2007-03-15 00:57:41.000000000 +0100
 @@ -65,7 +65,7 @@
  
  #include <linux/agpgart.h>
