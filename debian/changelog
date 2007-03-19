@@ -1,3 +1,9 @@
+xorg-server (2:1.2.99.902-2) UNRELEASED; urgency=low
+
+  * Add exclude entries to dh_install in debian/rules.
+
+ -- Drew Parsons <dparsons@debian.org>  Mon, 19 Mar 2007 17:10:24 +1100
+
 xorg-server (2:1.2.99.902-1) experimental; urgency=low
 
   [ Drew Parsons ]

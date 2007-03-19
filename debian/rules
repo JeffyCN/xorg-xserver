@@ -128,7 +128,7 @@ binary-arch: build install
 	
 	dh_installdocs -a
 	dh_installchangelogs -a
-	dh_install -a --sourcedir=debian/tmp --list-missing
+	dh_install -a --sourcedir=debian/tmp --list-missing -Xusr/share/man/man1/Xprt -Xusr/lib/X11/xserver -Xetc/X11/Xsession.d/92xprint-xpserverlist
 	$(INSTALL) -d $(CURDIR)/debian/xserver-xorg-dev/usr/share/xserver-xorg
 	$(INSTALL) -m644 $(CURDIR)/debian/videoabiver \
 	           $(CURDIR)/debian/xserver-xorg-dev/usr/share/xserver-xorg/videoabiver
@@ -157,7 +157,7 @@ endif
 # Build architecture-independent files here (xprint-common)
 binary-indep: build install
 	$(MAKE) -f debian/rules DH_OPTIONS=-i binary-initial
-	dh_install -i --sourcedir=debian/tmp --list-missing
+	dh_install -i --sourcedir=debian/tmp --list-missing -Xusr/share/man -Xusr/include/xorg -Xusr/share/aclocal -Xusr/lib/xorg/modules -Xusr/lib/pkgconfig/xorg-server.pc -Xusr/bin -XSecurityPolicy -Xvar/lib/xkb -Xusr/lib/X11/Cards -Xusr/lib/X11/Options
 	
 	$(INSTALL) -m 644 $(CURDIR)/debian/xprint-common-overrides $(CURDIR)/debian/xprint-common/usr/share/lintian/overrides/xprint-common
 	# split Xprint config files so font files do not land in /etc
