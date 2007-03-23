@@ -203,3 +203,16 @@ Description: Xprint - the X11 print system (configuration files)
  This package provides the configuration and postscript definition files
  required to run Xprt, the Xprint server. Xprt is provided by xprint.
 
+Package: xserver-xorg-core-dbg
+Architecture: any
+Depends: xserver-xorg-core (= ${Source-Version})
+Priority: extra
+Description: Xorg - the X.Org X server (debugging symbols)
+ The X.Org X server is an X server for several architectures and operating
+ systems, which is derived from the XFree86 4.x series of X servers.
+ .
+ The X.Org server supports most modern graphics hardware from most vendors,
+ and supersedes all XFree86 X servers.
+ .
+ This package provides debugging symbols for the Xorg X server and associated
+ modules.
