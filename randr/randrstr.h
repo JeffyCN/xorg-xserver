@@ -138,6 +138,7 @@ struct _rrOutput {
     RRModePtr	    *userModes;
     Bool	    changed;
     RRPropertyPtr   properties;
+    Bool	    pendingProperties;
     void	    *devPrivate;
 };
 
@@ -496,7 +497,7 @@ RRCrtcChanged (RRCrtcPtr crtc, Bool layoutChanged);
  * Create a CRTC
  */
 RRCrtcPtr
-RRCrtcCreate (void	*devPrivate);
+RRCrtcCreate (ScreenPtr pScreen, void	*devPrivate);
 
 /*
  * Set the allowed rotations on a CRTC
@@ -504,14 +505,6 @@ RRCrtcCreate (void	*devPrivate);
 void
 RRCrtcSetRotations (RRCrtcPtr crtc, Rotation rotations);
 
-/*
- * Attach a CRTC to a screen. Once done, this cannot be
- * undone without destroying the CRTC; it is separate from Create
- * only to allow an xf86-based driver to create objects in preinit
- */
-Bool
-RRCrtcAttachScreen (RRCrtcPtr crtc, ScreenPtr pScreen);
-    
 /*
  * Notify the extension that the Crtc has been reconfigured,
  * the driver calls this whenever it has updated the mode
@@ -668,17 +661,10 @@ RROutputChanged (RROutputPtr output, Bool configChanged);
  */
 
 RROutputPtr
-RROutputCreate (const char  *name,
+RROutputCreate (ScreenPtr   pScreen,
+		const char  *name,
 		int	    nameLength,
 		void	    *devPrivate);
-
-/*
- * Attach an output to a screen, again split from creation so
- * xf86 DDXen can create randr resources before the ScreenRec
- * exists
- */
-Bool
-RROutputAttachScreen (RROutputPtr output, ScreenPtr pScreen);
 
 /*
  * Notify extension that output parameters have been changed
@@ -759,10 +745,13 @@ RRQueryOutputProperty (RROutputPtr output, Atom property);
 void
 RRDeleteOutputProperty (RROutputPtr output, Atom property);
 
+Bool
+RRPostPendingProperties (RROutputPtr output);
+    
 int
 RRChangeOutputProperty (RROutputPtr output, Atom property, Atom type,
 			int format, int mode, unsigned long len,
-			pointer value, Bool sendevent);
+			pointer value, Bool sendevent, Bool pending);
 
 int
 RRConfigureOutputProperty (RROutputPtr output, Atom property,
