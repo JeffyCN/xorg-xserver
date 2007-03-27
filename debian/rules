@@ -145,12 +145,13 @@ binary-arch: build install
 	rm -rf debian/xprint/usr/share/doc/xprint
 	
 	dh_link -a
-	dh_strip -a --exclude=usr/lib/xorg/modules --dbg-package=xserver-xorg-core
-	for i in $$(find debian/xserver-xorg-core/usr/lib/xorg/modules -name "lib*.so"); do \
-	  mkdir -p $$(dirname debian/xserver-xorg-core-dbg/usr/lib/debug/$${i#*debian/xserver-xorg-core/}) && \
-	  objcopy --only-keep-debug $$i debian/xserver-xorg-core-dbg/usr/lib/debug/$${i#*debian/xserver-xorg-core/} && \
-	  objcopy --add-gnu-debuglink=debian/xserver-xorg-core-dbg/usr/lib/debug/$${i#*debian/xserver-xorg-core/} $$i; \
-	done
+	dh_strip -a --exclude=usr/lib/xorg/modules \
+		#--dbg-package=xserver-xorg-core
+#	for i in $$(find debian/xserver-xorg-core/usr/lib/xorg/modules -name "lib*.so"); do \
+#	  mkdir -p $$(dirname debian/xserver-xorg-core-dbg/usr/lib/debug/$${i#*debian/xserver-xorg-core/}) && \
+#	  objcopy --only-keep-debug $$i debian/xserver-xorg-core-dbg/usr/lib/debug/$${i#*debian/xserver-xorg-core/} && \
+#	  objcopy --add-gnu-debuglink=debian/xserver-xorg-core-dbg/usr/lib/debug/$${i#*debian/xserver-xorg-core/} $$i; \
+#	done
 ifeq (,$(findstring nostrip,$(DEB_BUILD_OPTIONS)))
 	find debian/xserver-xorg-core/usr/lib/xorg/modules -name "lib*.so" | \
 	  xargs --no-run-if-empty \
