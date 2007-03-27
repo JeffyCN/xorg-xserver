@@ -6,8 +6,9 @@ xorg-server (2:1.2.99.903-1) experimental; urgency=low
   [ Julien Cristau ]
   * Ship debugging symbols for xserver-xorg-core in xserver-xorg-core-dbg.
   * New upstream release candidate.
+    + bump serverminver to 2:1.2.99.903.
 
- -- Julien Cristau <jcristau@debian.org>  Tue, 27 Mar 2007 07:23:40 +0200
+ -- Julien Cristau <jcristau@debian.org>  Tue, 27 Mar 2007 07:26:41 +0200
 
 xorg-server (2:1.2.99.902-1) experimental; urgency=low
 
