@@ -77,8 +77,8 @@ am_Xorg_OBJECTS = xorg.$(OBJEXT)
 Xorg_OBJECTS = $(am_Xorg_OBJECTS)
 am__DEPENDENCIES_1 = common/libinit.a loader/libloader.a \
 	libosandcommon.la rac/librac.a parser/libxf86config.a \
-	dixmods/libdixmods.la modes/libxf86modes.a ddc/libddc.a \
-	i2c/libi2c.a
+	dixmods/libdixmods.la modes/libxf86modes.a ramdac/libramdac.a \
+	ddc/libddc.a i2c/libi2c.a
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)/include -I$(top_builddir)/include -I$(top_builddir)/include -I$(top_builddir)/include -I$(top_builddir)/include -I$(top_builddir)/include -I$(top_builddir)/include -I$(top_builddir)/include
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
@@ -459,6 +459,7 @@ XORG_LIBS = \
             parser/libxf86config.a \
 	    dixmods/libdixmods.la \
 	    modes/libxf86modes.a \
+	    ramdac/libramdac.a \
 	    ddc/libddc.a \
 	    i2c/libi2c.a \
             @XORG_LIBS@

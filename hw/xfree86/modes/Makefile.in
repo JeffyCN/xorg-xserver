@@ -59,8 +59,8 @@ LIBRARIES = $(noinst_LIBRARIES)
 ARFLAGS = cru
 libxf86modes_a_AR = $(AR) $(ARFLAGS)
 libxf86modes_a_LIBADD =
-am_libxf86modes_a_OBJECTS = xf86Crtc.$(OBJEXT) xf86cvt.$(OBJEXT) \
-	xf86DiDGA.$(OBJEXT) xf86EdidModes.$(OBJEXT) \
+am_libxf86modes_a_OBJECTS = xf86Crtc.$(OBJEXT) xf86Cursors.$(OBJEXT) \
+	xf86cvt.$(OBJEXT) xf86DiDGA.$(OBJEXT) xf86EdidModes.$(OBJEXT) \
 	xf86Modes.$(OBJEXT) xf86RandR12.$(OBJEXT) xf86Rotate.$(OBJEXT)
 libxf86modes_a_OBJECTS = $(am_libxf86modes_a_OBJECTS)
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)/include -I$(top_builddir)/include -I$(top_builddir)/include -I$(top_builddir)/include -I$(top_builddir)/include -I$(top_builddir)/include -I$(top_builddir)/include -I$(top_builddir)/include
@@ -551,6 +551,7 @@ noinst_LIBRARIES = libxf86modes.a
 libxf86modes_a_SOURCES = \
 	xf86Crtc.c \
 	xf86Crtc.h \
+	xf86Cursors.c \
 	xf86cvt.c \
 	xf86DiDGA.c \
 	xf86EdidModes.c \
@@ -564,7 +565,8 @@ libxf86modes_a_SOURCES = \
 INCLUDES = $(XORG_INCS) -I$(srcdir)/../ddc -I$(srcdir)/../i2c \
 	   -I$(srcdir)/../loader -I$(srcdir)/../rac -I$(srcdir)/../parser \
            -I$(srcdir)/../scanpci -I$(srcdir)/../vbe -I$(srcdir)/../int10 \
-	   -I$(srcdir)/../vgahw -I$(srcdir)/../dixmods/extmod
+	   -I$(srcdir)/../vgahw -I$(srcdir)/../ramdac \
+	   -I$(srcdir)/../dixmods/extmod
 
 sdk_HEADERS = \
 	xf86Crtc.h \
@@ -621,6 +623,7 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xf86Crtc.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xf86Cursors.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xf86DiDGA.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xf86EdidModes.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xf86Modes.Po@am__quote@
