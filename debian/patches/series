@@ -40,3 +40,4 @@
 42_build_int10_submodules.diff
 43_fedora-xephyr-keysym-madness.diff
 44_kdrive-ephyr-free-screen-struct.patch
+45_CVE-2007-1003.diff -p0
