@@ -1,10 +1,3 @@
-xorg-server (2:1.2.99.903-2) experimental; urgency=low
-
-  * Build the xserver-xorg-core-dbg package, which contains debugging symbols
-    for Xorg and /usr/lib/xorg/modules/**/*.so
-
- -- Julien Cristau <jcristau@debian.org>  Wed, 28 Mar 2007 17:00:17 +0200
-
 xorg-server (2:1.2.99.903-1) experimental; urgency=low
 
   [ Drew Parsons ]
