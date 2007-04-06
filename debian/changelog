@@ -1,3 +1,11 @@
+xorg-server (2:1.2.99.905-1) experimental; urgency=low
+
+  * New upstream release candidate.
+    + includes fix for CVE-2007-1003: XC-MISC Extension ProcXCMiscGetXIDList()
+      Memory Corruption.
+
+ -- Julien Cristau <jcristau@debian.org>  Fri, 06 Apr 2007 12:05:40 +0200
+
 xorg-server (2:1.2.99.903-1) experimental; urgency=low
 
   [ Drew Parsons ]
