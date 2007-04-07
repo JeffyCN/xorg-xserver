@@ -1,3 +1,9 @@
+xorg-server (2:1.2.99.905-2) UNRELEASED; urgency=low
+
+  * Install the cvt and gtf utilities and their manpages (closes: #414792).
+
+ -- Julien Cristau <jcristau@debian.org>  Sat, 07 Apr 2007 05:16:34 +0200
+
 xorg-server (2:1.2.99.905-1) experimental; urgency=low
 
   * New upstream release candidate.

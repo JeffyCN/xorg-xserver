@@ -50,7 +50,7 @@ confflags += --disable-static \
 		 --disable-xorgcfg \
 		 --with-xkb-path=/usr/share/X11/xkb \
 		 --with-xkb-output=/var/lib/xkb \
-	     --disable-misc-utils \
+	     --enable-xfree86-utils \
 	     --with-os-name="$(shell uname)" \
 	     --with-os-vendor=Debian \
 	     --with-int10=x86emu
