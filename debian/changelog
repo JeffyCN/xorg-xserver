@@ -1,10 +1,10 @@
-xorg-server (2:1.2.99.905-2) UNRELEASED; urgency=low
+xorg-server (2:1.2.99.905-2) experimental; urgency=low
 
   * Install the cvt and gtf utilities and their manpages (closes: #414792).
   * Build the xserver-xorg-core-dbg package, which contains debugging symbols
     for Xorg and /usr/lib/xorg/modules/**/*.so
 
- -- Julien Cristau <jcristau@debian.org>  Sat, 07 Apr 2007 05:16:34 +0200
+ -- Julien Cristau <jcristau@debian.org>  Mon, 09 Apr 2007 20:38:22 +0200
 
 xorg-server (2:1.2.99.905-1) experimental; urgency=low
 
