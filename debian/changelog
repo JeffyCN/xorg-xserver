@@ -1,3 +1,9 @@
+xorg-server (2:1.2.99.905-3) UNRELEASED; urgency=low
+
+  * xvfb now Recommends: xfonts-base.
+
+ -- Julien Cristau <jcristau@debian.org>  Fri, 13 Apr 2007 17:44:10 +0200
+
 xorg-server (2:1.2.99.905-2) experimental; urgency=low
 
   * Install the cvt and gtf utilities and their manpages (closes: #414792).
