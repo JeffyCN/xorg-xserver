@@ -1,6 +1,6 @@
 xorg-server (2:1.2.99.905-3) UNRELEASED; urgency=low
 
-  * xvfb now Recommends: xfonts-base.
+  * xvfb now Recommends: xfonts-base (closes: #314598).
 
  -- Julien Cristau <jcristau@debian.org>  Fri, 13 Apr 2007 17:44:10 +0200
 
