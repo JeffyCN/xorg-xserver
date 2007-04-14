@@ -1,3 +1,21 @@
+xorg-server (2:1.2.99.905-3) experimental; urgency=low
+
+ * This server update includes a patch to enable proper module defaults in
+   the server. A default set of modules will be loaded unless you
+   specifically specify that they don't load. You may do this in the module
+   section of your xorg.conf using the "Disable" instruction. Note that
+   this will only override the default, not an explicit "Load".
+
+   This change will not affect most users, however if you have a customized
+   xorg.conf in which you comment out "Load" lines to disable modules, you
+   will want to change those lines so that they are uncommented and say
+   "Disable" instead of "Load". The most notable example of this is the dri
+   module, which is now loaded by default. Those who experience crashes
+   when dri is enabled will want to make this change to ensure that their
+   system does not begin to crash again.
+
+ -- David Nusinow <dnusinow@debian.org>  Sat, 14 Apr 2007 12:41:37 -0400
+
 xserver-xorg-core (1:1.0.2-5) unstable; urgency=low
 
   * Several users have reported an error on load like the following:
