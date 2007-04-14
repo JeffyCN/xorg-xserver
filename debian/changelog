@@ -1,8 +1,20 @@
 xorg-server (2:1.2.99.905-3) UNRELEASED; urgency=low
 
+  [ Julien Cristau ]
   * xvfb now Recommends: xfonts-base (closes: #314598).
 
- -- Julien Cristau <jcristau@debian.org>  Fri, 13 Apr 2007 17:44:10 +0200
+  [ David Nusinow ]
+  * Add 05_module_defaults.diff. This provides default modules loading
+    capabilities for the server that may be overrided easily. Previously the
+    server would load a set of default modules, but only if none were
+    specified in the xorg.conf, or if you didn't have a xorg.conf at all. This
+    patch provides a default set and you can add only the "Load" instructions
+    to xorg.conf that you want without losing the defaults. Similarly, if you
+    don't want to load a module that's loaded by default, you can add
+    "Disable modulename" to your xorg.conf (see man xorg.conf in this release
+    for details). See upstream bug #10541 for more.
+
+ -- David Nusinow <dnusinow@debian.org>  Sat, 14 Apr 2007 12:41:37 -0400
 
 xorg-server (2:1.2.99.905-2) experimental; urgency=low
 
