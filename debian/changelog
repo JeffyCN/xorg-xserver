@@ -1,4 +1,4 @@
-xorg-server (2:1.2.99.905-3) UNRELEASED; urgency=low
+xorg-server (2:1.2.99.905-3) experimental; urgency=low
 
   [ Julien Cristau ]
   * xvfb now Recommends: xfonts-base (closes: #314598).
@@ -14,7 +14,7 @@ xorg-server (2:1.2.99.905-3) UNRELEASED; urgency=low
     "Disable modulename" to your xorg.conf (see man xorg.conf in this release
     for details). See upstream bug #10541 for more.
 
- -- David Nusinow <dnusinow@debian.org>  Sat, 14 Apr 2007 12:41:37 -0400
+ -- David Nusinow <dnusinow@debian.org>  Sun, 15 Apr 2007 11:17:45 -0400
 
 xorg-server (2:1.2.99.905-2) experimental; urgency=low
 
