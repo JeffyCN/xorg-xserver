@@ -315,6 +315,9 @@
 /* Name of the period field in struct kbd_repeat */
 #undef LNX_KBD_PERIOD_NAME
 
+/* Support os-specific local connections */
+#undef LOCALCONN
+
 /* Support MIT Misc extension */
 #undef MITMISC
 
@@ -365,6 +368,15 @@
 
 /* Define to the version of this package. */
 #undef PACKAGE_VERSION
+
+/* Major version of this package */
+#undef PACKAGE_VERSION_MAJOR
+
+/* Minor version of this package */
+#undef PACKAGE_VERSION_MINOR
+
+/* Patch version of this package */
+#undef PACKAGE_VERSION_PATCHLEVEL
 
 /* Internal define for Xinerama */
 #undef PANORAMIX
