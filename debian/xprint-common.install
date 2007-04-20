@@ -1,0 +1,2 @@
+usr/lib/X11/xserver	usr/share/Xprint
+etc/X11/Xsession.d/92xprint-xpserverlist

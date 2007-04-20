@@ -1,4 +1,3 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/xf4bpp/ppcGC.c,v 1.7tsi Exp $ */
 /*
 
 Copyright (c) 1987  X Consortium
@@ -97,8 +96,8 @@ SOFTWARE.
  */
 static GCFuncs vgaGCFuncs = {
 	xf4bppValidateGC,
-	(void (*)())NoopDDA,
-	(void (*)())NoopDDA,
+	(void (*)(GCPtr, unsigned long))NoopDDA,
+	(void (*)(GCPtr, unsigned long, GCPtr))NoopDDA,
 	xf4bppDestroyGC,
 	xf4bppChangeClip,
 	xf4bppDestroyClip,
@@ -146,9 +145,6 @@ static GCOps vgaGCOps = {
 	xf4bppImageGlyphBlt,	/*  GJA -- void (* ImageGlyphBlt)() */
 	miPolyGlyphBlt,		/*  GJA -- void (* PolyGlyphBlt)() */
 	miPushPixels,		/*  void (* PushPixels)() */
-#ifdef NEED_LINEHELPER
-	miMiter,		/*  void (* LineHelper)() */
-#endif
 	{NULL}			/* devPrivate */
 };
 
@@ -244,10 +240,6 @@ while ((idx = LOWBIT(changes))) {
 	    break ;
 
 	case GCJoinStyle:
-#ifdef NEED_LINEHELPER
-	    pGC->ops->LineHelper = ( pGC->joinStyle == JoinMiter )
-			    ? miMiter : miNotMiter ;
-#endif
 	    changes &= ~ idx ; /* i.e. changes &= ~ GCJoinStyle */
 	    break ;
 

@@ -55,18 +55,12 @@ CONFIG_HEADER = $(top_builddir)/include/do-not-use-config.h \
 	$(top_builddir)/include/xwin-config.h \
 	$(top_builddir)/include/kdrive-config.h
 CONFIG_CLEAN_FILES =
-am__vpath_adj_setup = srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`;
-am__vpath_adj = case $$p in \
-    $(srcdir)/*) f=`echo "$$p" | sed "s|^$$srcdirstrip/||"`;; \
-    *) f=$$p;; \
-  esac;
-am__strip_dir = `echo $$p | sed -e 's|^.*/||'`;
-am__installdirs = "$(DESTDIR)$(moduledir)" "$(DESTDIR)$(sdkdir)"
-moduleLTLIBRARIES_INSTALL = $(INSTALL)
-LTLIBRARIES = $(module_LTLIBRARIES)
-librac_la_LIBADD =
-am_librac_la_OBJECTS = xf86RACmodule.lo xf86RAC.lo
-librac_la_OBJECTS = $(am_librac_la_OBJECTS)
+LIBRARIES = $(noinst_LIBRARIES)
+ARFLAGS = cru
+librac_a_AR = $(AR) $(ARFLAGS)
+librac_a_LIBADD =
+am_librac_a_OBJECTS = xf86RAC.$(OBJEXT)
+librac_a_OBJECTS = $(am_librac_a_OBJECTS)
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)/include -I$(top_builddir)/include -I$(top_builddir)/include -I$(top_builddir)/include -I$(top_builddir)/include -I$(top_builddir)/include -I$(top_builddir)/include -I$(top_builddir)/include
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
@@ -78,8 +72,15 @@ LTCOMPILE = $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) \
 CCLD = $(CC)
 LINK = $(LIBTOOL) --tag=CC --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
 	$(AM_LDFLAGS) $(LDFLAGS) -o $@
-SOURCES = $(librac_la_SOURCES)
-DIST_SOURCES = $(librac_la_SOURCES)
+SOURCES = $(librac_a_SOURCES)
+DIST_SOURCES = $(librac_a_SOURCES)
+am__vpath_adj_setup = srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`;
+am__vpath_adj = case $$p in \
+    $(srcdir)/*) f=`echo "$$p" | sed "s|^$$srcdirstrip/||"`;; \
+    *) f=$$p;; \
+  esac;
+am__strip_dir = `echo $$p | sed -e 's|^.*/||'`;
+am__installdirs = "$(DESTDIR)$(sdkdir)"
 sdkHEADERS_INSTALL = $(INSTALL_HEADER)
 HEADERS = $(sdk_HEADERS)
 ETAGS = etags
@@ -113,6 +114,7 @@ AUTOCONF = @AUTOCONF@
 AUTOHEADER = @AUTOHEADER@
 AUTOMAKE = @AUTOMAKE@
 AWK = @AWK@
+BASE_FONT_PATH = @BASE_FONT_PATH@
 BSD_KBD_MODE_FALSE = @BSD_KBD_MODE_FALSE@
 BSD_KBD_MODE_TRUE = @BSD_KBD_MODE_TRUE@
 BUILDDOCS_FALSE = @BUILDDOCS_FALSE@
@@ -149,6 +151,7 @@ DBE_FALSE = @DBE_FALSE@
 DBE_TRUE = @DBE_TRUE@
 DEBUG_FALSE = @DEBUG_FALSE@
 DEBUG_TRUE = @DEBUG_TRUE@
+DEFAULT_LIBRARY_PATH = @DEFAULT_LIBRARY_PATH@
 DEFAULT_LOGPREFIX = @DEFAULT_LOGPREFIX@
 DEFAULT_MODULE_PATH = @DEFAULT_MODULE_PATH@
 DEFS = @DEFS@
@@ -241,12 +244,6 @@ KDRIVE_LIBS = @KDRIVE_LIBS@
 KDRIVE_PURE_INCS = @KDRIVE_PURE_INCS@
 KDRIVE_PURE_LIBS = @KDRIVE_PURE_LIBS@
 KDRIVE_TRUE = @KDRIVE_TRUE@
-LBXUTIL_CFLAGS = @LBXUTIL_CFLAGS@
-LBXUTIL_LIBS = @LBXUTIL_LIBS@
-LBXUTIL_TEST_CFLAGS = @LBXUTIL_TEST_CFLAGS@
-LBXUTIL_TEST_LIBS = @LBXUTIL_TEST_LIBS@
-LBX_FALSE = @LBX_FALSE@
-LBX_TRUE = @LBX_TRUE@
 LDFLAGS = @LDFLAGS@
 LD_EXPORT_SYMBOLS_FLAG = @LD_EXPORT_SYMBOLS_FLAG@
 LEX = @LEX@
@@ -269,7 +266,6 @@ LNXACPI_TRUE = @LNXACPI_TRUE@
 LNXAPM_FALSE = @LNXAPM_FALSE@
 LNXAPM_TRUE = @LNXAPM_TRUE@
 LN_S = @LN_S@
-LOADER_DEFINES = @LOADER_DEFINES@
 LTLIBOBJS = @LTLIBOBJS@
 MAINT = @MAINT@
 MAINTAINER_MODE_FALSE = @MAINTAINER_MODE_FALSE@
@@ -282,8 +278,6 @@ MAKE_TEXT = @MAKE_TEXT@
 MESA_SOURCE = @MESA_SOURCE@
 MFB_FALSE = @MFB_FALSE@
 MFB_TRUE = @MFB_TRUE@
-MISCUTILS_FALSE = @MISCUTILS_FALSE@
-MISCUTILS_TRUE = @MISCUTILS_TRUE@
 MISC_MAN_DIR = @MISC_MAN_DIR@
 MISC_MAN_SUFFIX = @MISC_MAN_SUFFIX@
 MITSHM_FALSE = @MITSHM_FALSE@
@@ -292,7 +286,6 @@ MKFONTDIR = @MKFONTDIR@
 MKFONTSCALE = @MKFONTSCALE@
 MMX_CAPABLE_FALSE = @MMX_CAPABLE_FALSE@
 MMX_CAPABLE_TRUE = @MMX_CAPABLE_TRUE@
-MODULE_DEFINES = @MODULE_DEFINES@
 MULTIBUFFER_FALSE = @MULTIBUFFER_FALSE@
 MULTIBUFFER_TRUE = @MULTIBUFFER_TRUE@
 NEED_STRLCAT_FALSE = @NEED_STRLCAT_FALSE@
@@ -325,9 +318,9 @@ RGB_DB = @RGB_DB@
 SCREENSAVER_FALSE = @SCREENSAVER_FALSE@
 SCREENSAVER_TRUE = @SCREENSAVER_TRUE@
 SERVERCONFIGdir = @SERVERCONFIGdir@
-SERVER_DEFINES = @SERVER_DEFINES@
 SET_MAKE = @SET_MAKE@
 SHELL = @SHELL@
+SOLARIS_ASM_CFLAGS = @SOLARIS_ASM_CFLAGS@
 SOLARIS_ASM_INLINE_FALSE = @SOLARIS_ASM_INLINE_FALSE@
 SOLARIS_ASM_INLINE_TRUE = @SOLARIS_ASM_INLINE_TRUE@
 SOLARIS_INOUT_ARCH = @SOLARIS_INOUT_ARCH@
@@ -339,7 +332,9 @@ STRIP = @STRIP@
 SUN_KBD_MODE_FALSE = @SUN_KBD_MODE_FALSE@
 SUN_KBD_MODE_TRUE = @SUN_KBD_MODE_TRUE@
 SYS_LIBS = @SYS_LIBS@
+TSLIB_CFLAGS = @TSLIB_CFLAGS@
 TSLIB_FALSE = @TSLIB_FALSE@
+TSLIB_LIBS = @TSLIB_LIBS@
 TSLIB_TRUE = @TSLIB_TRUE@
 USE_CURSES_FALSE = @USE_CURSES_FALSE@
 USE_CURSES_TRUE = @USE_CURSES_TRUE@
@@ -352,6 +347,10 @@ VENDOR_STRING_SHORT = @VENDOR_STRING_SHORT@
 VERSION = @VERSION@
 X11EXAMPLES_DEP_CFLAGS = @X11EXAMPLES_DEP_CFLAGS@
 X11EXAMPLES_DEP_LIBS = @X11EXAMPLES_DEP_LIBS@
+XACE_FALSE = @XACE_FALSE@
+XACE_TRUE = @XACE_TRUE@
+XCALIBRATE_FALSE = @XCALIBRATE_FALSE@
+XCALIBRATE_TRUE = @XCALIBRATE_TRUE@
 XCSECURITY_FALSE = @XCSECURITY_FALSE@
 XCSECURITY_TRUE = @XCSECURITY_TRUE@
 XDMAUTH_FALSE = @XDMAUTH_FALSE@
@@ -378,6 +377,8 @@ XEVIE_TRUE = @XEVIE_TRUE@
 XF86BIGFONT_FALSE = @XF86BIGFONT_FALSE@
 XF86BIGFONT_TRUE = @XF86BIGFONT_TRUE@
 XF86CONFIGFILE = @XF86CONFIGFILE@
+XF86UTILS_FALSE = @XF86UTILS_FALSE@
+XF86UTILS_TRUE = @XF86UTILS_TRUE@
 XGLMODULES_CFLAGS = @XGLMODULES_CFLAGS@
 XGLMODULES_LIBS = @XGLMODULES_LIBS@
 XGLXMODULES_CFLAGS = @XGLXMODULES_CFLAGS@
@@ -544,12 +545,11 @@ sysconfdir = @sysconfdir@
 target_alias = @target_alias@
 xglmoduledir = @xglmoduledir@
 xpconfigdir = @xpconfigdir@
-module_LTLIBRARIES = librac.la
-librac_la_LDFLAGS = -avoid-version
-librac_la_SOURCES = xf86RACmodule.c xf86RAC.c
+noinst_LIBRARIES = librac.a
+librac_a_SOURCES = xf86RAC.c
 sdk_HEADERS = xf86RAC.h
 INCLUDES = $(XORG_INCS)
-AM_CFLAGS = $(XORG_CFLAGS) @SERVER_DEFINES@ @MODULE_DEFINES@ @LOADER_DEFINES@
+AM_CFLAGS = $(XORG_CFLAGS)
 all: all-am
 
 .SUFFIXES:
@@ -583,35 +583,13 @@ $(top_srcdir)/configure: @MAINTAINER_MODE_TRUE@ $(am__configure_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
 $(ACLOCAL_M4): @MAINTAINER_MODE_TRUE@ $(am__aclocal_m4_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
-install-moduleLTLIBRARIES: $(module_LTLIBRARIES)
-	@$(NORMAL_INSTALL)
-	test -z "$(moduledir)" || $(mkdir_p) "$(DESTDIR)$(moduledir)"
-	@list='$(module_LTLIBRARIES)'; for p in $$list; do \
-	  if test -f $$p; then \
-	    f=$(am__strip_dir) \
-	    echo " $(LIBTOOL) --mode=install $(moduleLTLIBRARIES_INSTALL) $(INSTALL_STRIP_FLAG) '$$p' '$(DESTDIR)$(moduledir)/$$f'"; \
-	    $(LIBTOOL) --mode=install $(moduleLTLIBRARIES_INSTALL) $(INSTALL_STRIP_FLAG) "$$p" "$(DESTDIR)$(moduledir)/$$f"; \
-	  else :; fi; \
-	done
 
-uninstall-moduleLTLIBRARIES:
-	@$(NORMAL_UNINSTALL)
-	@set -x; list='$(module_LTLIBRARIES)'; for p in $$list; do \
-	  p=$(am__strip_dir) \
-	  echo " $(LIBTOOL) --mode=uninstall rm -f '$(DESTDIR)$(moduledir)/$$p'"; \
-	  $(LIBTOOL) --mode=uninstall rm -f "$(DESTDIR)$(moduledir)/$$p"; \
-	done
-
-clean-moduleLTLIBRARIES:
-	-test -z "$(module_LTLIBRARIES)" || rm -f $(module_LTLIBRARIES)
-	@list='$(module_LTLIBRARIES)'; for p in $$list; do \
-	  dir="`echo $$p | sed -e 's|/[^/]*$$||'`"; \
-	  test "$$dir" != "$$p" || dir=.; \
-	  echo "rm -f \"$${dir}/so_locations\""; \
-	  rm -f "$${dir}/so_locations"; \
-	done
-librac.la: $(librac_la_OBJECTS) $(librac_la_DEPENDENCIES) 
-	$(LINK) -rpath $(moduledir) $(librac_la_LDFLAGS) $(librac_la_OBJECTS) $(librac_la_LIBADD) $(LIBS)
+clean-noinstLIBRARIES:
+	-test -z "$(noinst_LIBRARIES)" || rm -f $(noinst_LIBRARIES)
+librac.a: $(librac_a_OBJECTS) $(librac_a_DEPENDENCIES) 
+	-rm -f librac.a
+	$(librac_a_AR) librac.a $(librac_a_OBJECTS) $(librac_a_LIBADD)
+	$(RANLIB) librac.a
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -619,8 +597,7 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xf86RAC.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xf86RACmodule.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xf86RAC.Po@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	if $(COMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" -c -o $@ $<; \
@@ -747,9 +724,9 @@ distdir: $(DISTFILES)
 	done
 check-am: all-am
 check: check-am
-all-am: Makefile $(LTLIBRARIES) $(HEADERS)
+all-am: Makefile $(LIBRARIES) $(HEADERS)
 installdirs:
-	for dir in "$(DESTDIR)$(moduledir)" "$(DESTDIR)$(sdkdir)"; do \
+	for dir in "$(DESTDIR)$(sdkdir)"; do \
 	  test -z "$$dir" || $(mkdir_p) "$$dir"; \
 	done
 install: install-am
@@ -778,7 +755,7 @@ maintainer-clean-generic:
 	@echo "it deletes files that may require special tools to rebuild."
 clean: clean-am
 
-clean-am: clean-generic clean-libtool clean-moduleLTLIBRARIES \
+clean-am: clean-generic clean-libtool clean-noinstLIBRARIES \
 	mostlyclean-am
 
 distclean: distclean-am
@@ -797,7 +774,7 @@ info: info-am
 
 info-am:
 
-install-data-am: install-moduleLTLIBRARIES install-sdkHEADERS
+install-data-am: install-sdkHEADERS
 
 install-exec-am:
 
@@ -825,21 +802,19 @@ ps: ps-am
 
 ps-am:
 
-uninstall-am: uninstall-info-am uninstall-moduleLTLIBRARIES \
-	uninstall-sdkHEADERS
+uninstall-am: uninstall-info-am uninstall-sdkHEADERS
 
 .PHONY: CTAGS GTAGS all all-am check check-am clean clean-generic \
-	clean-libtool clean-moduleLTLIBRARIES ctags distclean \
+	clean-libtool clean-noinstLIBRARIES ctags distclean \
 	distclean-compile distclean-generic distclean-libtool \
 	distclean-tags distdir dvi dvi-am html html-am info info-am \
 	install install-am install-data install-data-am install-exec \
 	install-exec-am install-info install-info-am install-man \
-	install-moduleLTLIBRARIES install-sdkHEADERS install-strip \
-	installcheck installcheck-am installdirs maintainer-clean \
-	maintainer-clean-generic mostlyclean mostlyclean-compile \
-	mostlyclean-generic mostlyclean-libtool pdf pdf-am ps ps-am \
-	tags uninstall uninstall-am uninstall-info-am \
-	uninstall-moduleLTLIBRARIES uninstall-sdkHEADERS
+	install-sdkHEADERS install-strip installcheck installcheck-am \
+	installdirs maintainer-clean maintainer-clean-generic \
+	mostlyclean mostlyclean-compile mostlyclean-generic \
+	mostlyclean-libtool pdf pdf-am ps ps-am tags uninstall \
+	uninstall-am uninstall-info-am uninstall-sdkHEADERS
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

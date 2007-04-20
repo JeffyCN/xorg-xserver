@@ -47,11 +47,22 @@ static int exaXorgScreenPrivateIndex;
 
 typedef enum {
     EXAOPT_MIGRATION_HEURISTIC,
+    EXAOPT_NO_COMPOSITE,
+    EXAOPT_NO_UTS,
+    EXAOPT_NO_DFS,
 } EXAOpts;
 
 static const OptionInfoRec EXAOptions[] = {
-    { EXAOPT_MIGRATION_HEURISTIC, "MigrationHeuristic", OPTV_ANYSTR, {0}, FALSE },
-    { -1,			  NULL,		OPTV_NONE,	{0}, FALSE }
+    { EXAOPT_MIGRATION_HEURISTIC,	"MigrationHeuristic",
+				OPTV_ANYSTR,	{0}, FALSE },
+    { EXAOPT_NO_COMPOSITE,		"EXANoComposite",
+				OPTV_BOOLEAN,	{0}, FALSE },
+    { EXAOPT_NO_UTS,			"EXANoUploadToScreen",
+				OPTV_BOOLEAN,	{0}, FALSE },
+    { EXAOPT_NO_DFS,			"EXANoDownloadFromScreen",
+				OPTV_BOOLEAN,	{0}, FALSE },
+    { -1,				NULL,
+				OPTV_NONE,	{0}, FALSE }
 };
 
 static Bool
@@ -125,12 +136,34 @@ exaDDXDriverInit(ScreenPtr pScreen)
 		pExaScr->migration = ExaMigrationGreedy;
 	    else if (strcmp(heuristicName, "always") == 0)
 		pExaScr->migration = ExaMigrationAlways;
+	    else if (strcmp(heuristicName, "smart") == 0)
+		pExaScr->migration = ExaMigrationSmart;
 	    else {
 		xf86DrvMsg (pScreen->myNum, X_WARNING, 
 			    "EXA: unknown migration heuristic %s\n",
 			    heuristicName);
 	    }
 	}
+    }
+
+    if (xf86IsOptionSet(pScreenPriv->options, EXAOPT_NO_COMPOSITE)) {
+	xf86DrvMsg(pScreen->myNum, X_INFO,
+		   "EXA: Disabling Composite operation "
+		   "(RENDER acceleration)\n");
+	pExaScr->info->CheckComposite = NULL;
+	pExaScr->info->PrepareComposite = NULL;
+    }
+
+    if (xf86IsOptionSet(pScreenPriv->options, EXAOPT_NO_UTS)) {
+	xf86DrvMsg(pScreen->myNum, X_INFO,
+		   "EXA: Disabling UploadToScreen\n");
+	pExaScr->info->UploadToScreen = NULL;
+    }
+
+    if (xf86IsOptionSet(pScreenPriv->options, EXAOPT_NO_DFS)) {
+	xf86DrvMsg(pScreen->myNum, X_INFO,
+		   "EXA: Disabling DownloadFromScreen\n");
+	pExaScr->info->DownloadFromScreen = NULL;
     }
 
     pScreen->devPrivates[exaXorgScreenPrivateIndex].ptr = pScreenPriv;
@@ -166,9 +199,9 @@ static XF86ModuleVersionInfo exaVersRec =
 	{0,0,0,0}
 };
 
-XF86ModuleData exaModuleData = { &exaVersRec, exaSetup, NULL };
+_X_EXPORT XF86ModuleData exaModuleData = { &exaVersRec, exaSetup, NULL };
 
-ModuleInfoRec EXA = {
+static ModuleInfoRec EXA = {
     1,
     "EXA",
     NULL,
@@ -184,9 +217,6 @@ exaSetup(pointer Module, pointer Options, int *ErrorMajor, int *ErrorMinor)
 
     if (!Initialised) {
 	Initialised = TRUE;
-#ifndef REMOVE_LOADER_CHECK_MODULE_INFO
-	if (xf86LoaderCheckSymbol("xf86AddModuleInfo"))
-#endif
 	xf86AddModuleInfo(&EXA, Module);
     }
 

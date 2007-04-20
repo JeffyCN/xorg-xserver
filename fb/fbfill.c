@@ -21,7 +21,6 @@
  * TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
  * PERFORMANCE OF THIS SOFTWARE.
  */
-/* $XFree86: xc/programs/Xserver/fb/fbfill.c,v 1.5 2003/01/29 00:43:33 torrey Exp $ */
 
 #ifdef HAVE_DIX_CONFIG_H
 #include <dix-config.h>
@@ -209,7 +208,17 @@ fbSolidBoxClipped (DrawablePtr	pDrawable,
 	
 	if (partY2 <= partY1)
 	    continue;
-	
+
+#ifdef USE_MMX
+	if (!and && fbHaveMMX())
+	{
+		if (fbSolidFillmmx (pDrawable,
+		                    partX1, partY1,
+				    (partX2 - partX1), (partY2 - partY1),
+				    xor))
+			return;
+	}
+#endif
 	fbSolid (dst + (partY1 + dstYoff) * dstStride,
 		 dstStride,
 		 (partX1 + dstXoff) * dstBpp,

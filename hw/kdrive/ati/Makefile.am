@@ -31,10 +31,6 @@ INCLUDES = 					\
 
 bin_PROGRAMS = Xati
 
-if TSLIB
-TSLIB_FLAG = -lts
-endif
-
 noinst_LIBRARIES = libati.a
 
 libati_a_SOURCES = 	\
@@ -49,8 +45,7 @@ libati_a_SOURCES = 	\
 	ati_reg.h	\
 	r128_composite.c \
 	ati_video.c	\
-	radeon_composite.c \
-	$(DRI_SOURCES)
+	radeon_composite.c
 
 Xati_SOURCES = \
 	ati_stub.c
@@ -65,8 +60,12 @@ ATI_LIBS =				\
 Xati_LDADD = \
 	$(ATI_LIBS)			\
 	@KDRIVE_LIBS@			\
-	@XSERVER_LIBS@			\
-	$(TSLIB_FLAG)
+	@XSERVER_LIBS@			
 
 
-Xati_DEPENDENCIES = $(ATI_LIBS)
+Xati_DEPENDENCIES =                     \
+        libati.a                        \
+        $(FBDEV_LIBS)                   \
+        $(VESA_LIBS)                    \
+        $(DRI_LIBS)                     
+

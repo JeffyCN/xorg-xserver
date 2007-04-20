@@ -1,4 +1,3 @@
-/* $XFree86: xc/programs/Xserver/include/dix.h,v 3.26 2003/01/12 02:44:27 dawes Exp $ */
 /***********************************************************
 
 Copyright 1987, 1998  The Open Group
@@ -45,7 +44,6 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 SOFTWARE.
 
 ******************************************************************/
-/* $Xorg: dix.h,v 1.4 2001/02/09 02:05:15 xorgcvs Exp $ */
 
 #ifndef DIX_H
 #define DIX_H
@@ -89,12 +87,9 @@ SOFTWARE.
     ((client->lastDrawableID == did) ? \
      client->lastDrawable : (DrawablePtr)LookupDrawable(did, client))
 
-#ifdef XCSECURITY
+#ifdef XACE
 
 #define SECURITY_VERIFY_DRAWABLE(pDraw, did, client, mode)\
-    if (client->lastDrawableID == did && !client->trustLevel)\
-	pDraw = client->lastDrawable;\
-    else \
     {\
 	pDraw = (DrawablePtr) SecurityLookupIDByClass(client, did, \
 						      RC_DRAWABLE, mode);\
@@ -108,9 +103,6 @@ SOFTWARE.
     }
 
 #define SECURITY_VERIFY_GEOMETRABLE(pDraw, did, client, mode)\
-    if (client->lastDrawableID == did && !client->trustLevel)\
-	pDraw = client->lastDrawable;\
-    else \
     {\
 	pDraw = (DrawablePtr) SecurityLookupIDByClass(client, did, \
 						      RC_DRAWABLE, mode);\
@@ -122,9 +114,6 @@ SOFTWARE.
     }
 
 #define SECURITY_VERIFY_GC(pGC, rid, client, mode)\
-    if (client->lastGCID == rid && !client->trustLevel)\
-        pGC = client->lastGC;\
-    else\
 	pGC = (GC *) SecurityLookupIDByType(client, rid, RT_GC, mode);\
     if (!pGC)\
     {\
@@ -141,7 +130,7 @@ SOFTWARE.
 #define VERIFY_GC(pGC, rid, client)\
 	SECURITY_VERIFY_GC(pGC, rid, client, SecurityUnknownAccess)
 
-#else /* not XCSECURITY */
+#else /* not XACE */
 
 #define VERIFY_DRAWABLE(pDraw, did, client)\
     if (client->lastDrawableID == did)\
@@ -191,7 +180,7 @@ SOFTWARE.
 #define SECURITY_VERIFY_GC(pGC, rid, client, mode)\
 	VERIFY_GC(pGC, rid, client)
 
-#endif /* XCSECURITY */
+#endif /* XACE */
 
 /*
  * We think that most hardware implementations of DBE will want
@@ -294,6 +283,7 @@ extern ClientPtr requestingClient;
 extern ClientPtr *clients;
 extern ClientPtr serverClient;
 extern int currentMaxClients;
+extern char dispatchExceptionAtReset;
 
 typedef int HWEventQueueType;
 typedef HWEventQueueType* HWEventQueuePtr;
@@ -368,10 +358,6 @@ extern int DoGetImage(
     Mask /*planemask*/,
     xGetImageReply ** /*im_return*/);
 
-#ifdef LBX
-extern void IncrementClientCount(void);
-#endif /* LBX */
-
 #if defined(DDXBEFORERESET)
 extern void ddxBeforeReset (void);
 #endif
@@ -389,7 +375,7 @@ extern int CompareISOLatin1Lowered(
     unsigned char * /*b*/,
     int blen);
 
-#ifdef XCSECURITY
+#ifdef XACE
 
 extern WindowPtr SecurityLookupWindow(
     XID /*rid*/,
@@ -425,7 +411,7 @@ extern pointer LookupDrawable(
 #define SecurityLookupDrawable(rid, client, access_mode) \
 	LookupDrawable(rid, client)
 
-#endif /* XCSECURITY */
+#endif /* XACE */
 
 extern ClientPtr LookupClient(
     XID /*rid*/,
@@ -519,6 +505,12 @@ extern void AtomError(void);
 extern void FreeAllAtoms(void);
 
 extern void InitAtoms(void);
+
+/* main.c */
+
+extern void SetVendorRelease(int release);
+
+extern void SetVendorString(char *string);
 
 /* events.c */
 
@@ -692,6 +684,9 @@ extern int TryClientEvents(
 
 extern void WindowsRestructured(void);
 
+#ifdef PANORAMIX
+extern void ReinitializeRootWindow(WindowPtr win, int xoff, int yoff);
+#endif
 
 #ifdef RANDR
 void
@@ -813,5 +808,14 @@ typedef struct {
     struct _Selection	    *selection;
     SelectionCallbackKind   kind;
 } SelectionInfoRec;
+
+/* strcasecmp.c */
+#if NEED_STRCASECMP
+#define strcasecmp xstrcasecmp
+extern int xstrcasecmp(char *s1, char *s2);
+#endif
+
+/* ffs.c */
+extern int ffs(int i);
 
 #endif /* DIX_H */

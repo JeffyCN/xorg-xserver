@@ -1,4 +1,3 @@
-/* $XFree86: xc/programs/Xserver/GL/mesa/src/X/xf86glx.c,v 1.19 2003/07/16 01:38:27 dawes Exp $ */
 /**************************************************************************
 
 Copyright 1998-1999 Precision Insight, Inc., Cedar Park, Texas.
@@ -54,7 +53,6 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <glxutil.h>
 #include "context.h"
 #include "xmesaP.h"
-#include <GL/xf86glx.h>
 #include "context.h"
 
 #include "glcontextmodes.h"
@@ -80,6 +78,7 @@ typedef struct __GLXMESAdrawable __GLXMESAdrawable;
 struct __GLXMESAscreen {
     __GLXscreen   base;
     int           index;
+    int		  num_vis;
     XMesaVisual  *xm_vis;
 };
 
@@ -140,12 +139,12 @@ __glXMesaDrawableSwapBuffers(__GLXdrawable *base)
 
 
 static __GLXdrawable *
-__glXMesaContextCreateDrawable(__GLXcontext *context,
-			       DrawablePtr pDraw,
-			       XID drawId)
+__glXMesaScreenCreateDrawable(__GLXscreen *screen,
+			      DrawablePtr pDraw,
+			      XID drawId,
+			      __GLcontextModes *modes)
 {
     __GLXMESAdrawable *glxPriv;
-    __GLXscreen *pGlxScreen;
     XMesaVisual xm_vis;
 
     glxPriv = xalloc(sizeof *glxPriv);
@@ -154,30 +153,19 @@ __glXMesaContextCreateDrawable(__GLXcontext *context,
 
     memset(glxPriv, 0, sizeof *glxPriv);
 
-    if (!__glXDrawableInit(&glxPriv->base, context, pDraw, drawId)) {
+    if (!__glXDrawableInit(&glxPriv->base, screen, pDraw, drawId, modes)) {
         xfree(glxPriv);
 	return NULL;
     }
 
-    glxPriv->base.destroy       = __glXMesaDrawableDestroy;
-    glxPriv->base.resize        = __glXMesaDrawableResize;
-    glxPriv->base.swapBuffers   = __glXMesaDrawableSwapBuffers;
+    glxPriv->base.destroy     = __glXMesaDrawableDestroy;
+    glxPriv->base.resize      = __glXMesaDrawableResize;
+    glxPriv->base.swapBuffers = __glXMesaDrawableSwapBuffers;
 
-    pGlxScreen = __glXActiveScreens[pDraw->pScreen->myNum];
-
-    if (glxPriv->base.type == DRAWABLE_WINDOW) {
-	VisualID vid = wVisual((WindowPtr)pDraw);
-
-	glxPriv->base.modes = _gl_context_modes_find_visual(pGlxScreen->modes,
-							    vid);
-    } else {
-	glxPriv->base.modes = glxPriv->base.pGlxPixmap->modes;
-    }
-
-    xm_vis = find_mesa_visual(pGlxScreen, glxPriv->base.modes->visualID);
+    xm_vis = find_mesa_visual(screen, modes->visualID);
     if (xm_vis == NULL) {
 	ErrorF("find_mesa_visual returned NULL for visualID = 0x%04x\n",
-	       glxPriv->base.modes->visualID);
+	       modes->visualID);
 	xfree(glxPriv);
 	return NULL;
     }
@@ -197,7 +185,7 @@ __glXMesaContextDestroy(__GLXcontext *baseContext)
     __GLXMESAcontext *context = (__GLXMESAcontext *) baseContext;
 
     XMesaDestroyContext(context->xmesa);
-    __glXContextDestroy(context);
+    __glXContextDestroy(&context->base);
     xfree(context);
 }
 
@@ -268,7 +256,6 @@ __glXMesaScreenCreateContext(__GLXscreen *screen,
     context->base.loseCurrent    = __glXMesaContextLoseCurrent;
     context->base.copy           = __glXMesaContextCopy;
     context->base.forceCurrent   = __glXMesaContextForceCurrent;
-    context->base.createDrawable = __glXMesaContextCreateDrawable;
 
     xm_vis = find_mesa_visual(screen, modes->visualID);
     if (!xm_vis) {
@@ -294,7 +281,7 @@ __glXMesaScreenDestroy(__GLXscreen *screen)
     __GLXMESAscreen *mesaScreen = (__GLXMESAscreen *) screen;
     int i;
 
-    for (i = 0; i < screen->numVisuals; i++) {
+    for (i = 0; i < mesaScreen->num_vis; i++) {
 	if (mesaScreen->xm_vis[i])
 	    XMesaDestroyVisual(mesaScreen->xm_vis[i]);
     }
@@ -403,6 +390,7 @@ static void init_screen_visuals(__GLXMESAscreen *screen)
 
     xfree(used);
 
+    screen->num_vis = pScreen->numVisuals;
     screen->xm_vis = pXMesaVisual;
 }
 
@@ -417,8 +405,9 @@ __glXMesaScreenProbe(ScreenPtr pScreen)
 
     __glXScreenInit(&screen->base, pScreen);
 
-    screen->base.destroy       = __glXMesaScreenDestroy;
-    screen->base.createContext = __glXMesaScreenCreateContext;
+    screen->base.destroy        = __glXMesaScreenDestroy;
+    screen->base.createContext  = __glXMesaScreenCreateContext;
+    screen->base.createDrawable = __glXMesaScreenCreateDrawable;
     screen->base.pScreen       = pScreen;
 
     /*

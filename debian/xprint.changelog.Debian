@@ -1,0 +1,810 @@
+xprint (1:1.1.99.3+git20060910-9) unstable; urgency=low
+
+  * Galician debconf translation. Thanks Jacobo Tarrio. Closes: #408216.
+  * Patch 60_font_links makes symlinks to font files relative to local
+    directory, for easier management.  Also ensures
+    NewCenturySchlbk-BoldItalic.pmf is installed. Closes: #412990.
+
+ -- Drew Parsons <dparsons@debian.org>  Sat,  3 Mar 2007 00:32:11 +1100
+
+xprint (1:1.1.99.3+git20060910-8) unstable; urgency=low
+
+  * Spanish debconf translation. Thanks Fernando Cereza. Closes: #402984.
+
+ -- Drew Parsons <dparsons@debian.org>  Tue,  2 Jan 2007 22:29:25 +1100
+
+xprint (1:1.1.99.3+git20060910-7) unstable; urgency=low
+
+  * Patch 50_byteswap.patch enables Xprint with GLX support on Hurd
+    and GNU/FreeBSD. Closes: #400869.
+
+ -- Drew Parsons <dparsons@debian.org>  Fri,  1 Dec 2006 14:21:16 +1100
+
+xprint (1:1.1.99.3+git20060910-6) unstable; urgency=low
+
+  * Xprint 1.1.99.3 actually Build-Depends: mesa (>= 6.5.1).
+    Closes: #395519.
+
+ -- Drew Parsons <dparsons@debian.org>  Sun, 12 Nov 2006 14:53:25 +1100
+
+xprint (1:1.1.99.3+git20060910-5) unstable; urgency=low
+
+  * Even though --disable-record is used, record is still built. This
+    is probably a bug in upstream Makefile.am, or possibly recordproto
+    ought to be added to the REQUIRED_MODULES in configure.ac.
+    Workaround with Build-Depends: x11proto-record-dev.
+
+ -- Drew Parsons <dparsons@debian.org>  Mon,  2 Oct 2006 14:14:17 +1000
+
+xprint (1:1.1.99.3+git20060910-4) unstable; urgency=low
+
+  * Connect tabbed blocks in debian/rules in order to properly disable
+    dri, Xorg, Xvfb and Xnest at configure step.
+  * Refine extension dependencies and disables in line with what
+    Xprint actually supports, as defined in mi/miinitext.c.
+
+ -- Drew Parsons <dparsons@debian.org>  Mon,  2 Oct 2006 02:12:13 +1000
+
+xprint (1:1.1.99.3+git20060910-3) unstable; urgency=low
+
+  * Restore OpenGL support.  "Because I can".
+  * Incidentally, bugs fixed previously in experimental can be closed
+    by using -v with dpkg-buildpackage when next uploading to unstable.
+
+ -- Drew Parsons <dparsons@debian.org>  Sun,  1 Oct 2006 21:03:11 +1000
+
+xprint (1:1.1.99.3+git20060910-2) unstable; urgency=low
+
+  * xfixes 4 is now in unstable, so bring the new xprint into unstable
+  * It really irritates me the way bugs fixed in experimental are not
+    fully closed when the upload to unstable is made.
+    Closes: #377659, #384775, #383166, #375125, #369834.
+
+ -- Drew Parsons <dparsons@debian.org>  Wed, 20 Sep 2006 10:21:50 +1000
+
+xprint (1:1.1.99.3+git20060910-1) experimental; urgency=low
+
+  * Latest git.
+    Patches applied upstream:
+        80_no_composite
+      	91_Xprint_README
+  	91_enforce_bash
+      	91_install_config
+      	91_install_etc
+      	94_man_typoes
+  * Install manpages via * to avoid defining .1 or .1x. Closes: #383166.
+
+ -- Drew Parsons <dparsons@debian.org>  Sun, 10 Sep 2006 19:21:27 +1000
+
+xprint (1:1.1.99.2+git20060627-0.4) experimental; urgency=low
+
+  * Swapped patch 80_check_windowpixmap for 80_no_composite. Composite has
+    no role in Xprint.
+  * LSB compliance: force-reload only operates conditionally when Xprt is
+    already running. Thanks Sven Mueller. Closes: #377659.
+  * Added Portuguese debconf translation, thanks Rui Branco. Closes: #384775.
+  * Adjust debian/xprint.manpages to allow for a shifting suffix. 
+    Closes: #383166.
+
+ -- Drew Parsons <dparsons@debian.org>  Sun, 27 Aug 2006 13:51:57 +1000
+
+xprint (1:1.1.99.2+git20060627-0.3) experimental; urgency=low
+
+  * Why doesn't dpkg -l damn well report versions correctly?
+    Build-Depends: libxfont-dev (>=1:1.1) not (>=1.1).
+
+ -- Drew Parsons <dparsons@debian.org>  Tue, 27 Jun 2006 21:04:24 +1000
+
+xprint (1:1.1.99.2+git20060627-0.2) experimental; urgency=low
+
+  * Oops should add versioned build-depends on libxfont-dev too.
+
+ -- Drew Parsons <dparsons@debian.org>  Tue, 27 Jun 2006 19:28:03 +1000
+
+xprint (1:1.1.99.2+git20060627-0.1) experimental; urgency=low
+
+  * Latest upstream git: Xprint subdirectory moved to hw.
+    Patches updated accordingly.
+  * Actually create the patch allowing build with new libxfont (freetype
+    2.2) and avoiding a segfault (patch 80_check_windowpixmap).
+  * Versioned dependencies on x11proto-fixes-dev, libxfont1. Closes: #375125.
+  * Standards version 3.7.2.
+
+ -- Drew Parsons <dparsons@debian.org>  Tue, 27 Jun 2006 13:31:08 +1000
+
+xprint (1:1.1.99.2+git20060614-0.1) experimental; urgency=low
+
+  * New upstream version (including lastest git).
+  * Russian debconf translation. Спасибо Юрию Козлову. Closes: #369834.
+  * Upload to experimental while we wait for dependencies (libxfont 1.1,
+    libxfixes 4) to reach unstable.
+
+ -- Drew Parsons <dparsons@debian.org>  Thu, 22 Jun 2006 16:04:40 +1000
+
+xprint (1:1.0.2-1) unstable; urgency=low
+
+  * New upstream version (hey! slashdot is good for something after all!
+    (http://linux.slashdot.org/article.pl?sid=06/05/02/2216235)
+  * Only include the required ft.h, ftfuncs.h files in ./extras.
+
+ -- Drew Parsons <dparsons@debian.org>  Thu,  4 May 2006 17:46:57 +1000
+
+xprint (1:1.0.1-7) unstable; urgency=low
+
+  * Build-Depends: libgl1-mesa-dev|libgl-dev.
+
+ -- Drew Parsons <dparsons@debian.org>  Mon,  1 May 2006 22:58:28 +1000
+
+xprint (1:1.0.1-6) unstable; urgency=low
+
+  * I wonder if I should install pbuilder?
+  * Build-Depends: mesa-common-dev (only needed when compiling with
+    OpenGL support). Guess what, closes: #365386.
+
+ -- Drew Parsons <dparsons@debian.org>  Mon,  1 May 2006 22:22:40 +1000
+
+xprint (1:1.0.1-5) unstable; urgency=low
+
+  * Build-Depends: pkg-config *sigh*.
+
+ -- Drew Parsons <dparsons@debian.org>  Mon,  1 May 2006 17:55:46 +1000
+
+xprint (1:1.0.1-4) unstable; urgency=low
+
+  * Added Build-Depends: xutils-dev to get BUILD_LINUXDOC etc defined for
+    configure.ac.
+  * Looking more closely at "checking for XSERVERCFLAGS", need to add
+    Build-Depends: libxau-dev, libxdmcp-dev.
+
+ -- Drew Parsons <dparsons@debian.org>  Mon,  1 May 2006 17:32:46 +1000
+
+xprint (1:1.0.1-3) unstable; urgency=low
+
+  * Build-Depends: libtool. Closes: #365386 (again).
+
+ -- Drew Parsons <dparsons@debian.org>  Mon,  1 May 2006 09:31:33 +1000
+
+xprint (1:1.0.1-2) unstable; urgency=low
+
+  * Dutch debconf translation. Thanks Kurt De Bree. Closes: #363035.
+  * Restore dh_installdebconf in debian/rules to get debconf back again.
+  * Added xprint-common Depends: xfonts-encodings, since /etc/init.d.xprint
+    expects to be able to find encodings.dir.
+  * Since /etc/init.d/xprint no longer knows about /usr/X11R6/bin, let
+    xprint-common Depends on x11-common (>=1:7.0.12) to ensure Xprt is in
+    /usr/bin (even if it comes from an old package, where it would be
+    forced to use the /usr/X11R6/bin symlink). Closes: #363245.
+  * Make /etc/init.d/xprint exit quietly if the Xprt binary can't be found.
+    Closes: #270054.
+  * Added Build-Depends: automake1.9. Closes: #365386.
+  * Standards version 3.7.0.
+  * Restore xprint-common debconf files lost in X11R7 transition (where did
+    they disappear to?)
+  * Added lintian override to xprint-common to not trigger 
+    "package-depends-on-an-x-font-package" on Depends: xfonts-encodings.
+
+ -- Drew Parsons <dparsons@debian.org>  Mon,  1 May 2006 00:35:12 +1000
+
+xprint (1:1.0.1-1) unstable; urgency=low
+
+  * Xprint from X11R7! Closes: #360446, #356987, #362884.
+  * Xprt does not build in Xorg 7.0, hence need CVS (X11R7.1).  However CVS
+    needs xfixes 4 which will not be available in Debian until the XSF
+    prepares 7.1.  So backport patches (relating to build with FreeType
+    support).
+  * Please be advised that as a consequence of the above there will be a
+    degradation of output quality until Debian is able to upgrade to 7.1 
+    (due end of May).  Please hold back from filing bug reports about font
+    quality until that upgrade has occurred. My apologies for the
+    inconvenience.
+  * Build-depends updated to follow modular X11R7.
+  * Xprint utilities removed (transferred to xprint-utils).
+  * Set debhelper compatibility version to 5.
+  * Updated xprint init file to expect encodings.dir in
+    /usr/share/fonts/X11/encodings.
+
+ -- Drew Parsons <dparsons@debian.org>  Mon, 17 Apr 2006 14:03:06 +1000
+
+xprint (1:0.1.0.alpha1-13) unstable; urgency=low
+
+  * Got to actually install the overrides file for it to take effect, dammit.
+  * Swedish debconf translation. Thanks, Daniel Nylander. Closes: #330651.
+  * Patch 91_xsession_ifexec: only define XPSERVERLIST in
+    /etc/X11/Xsession.d/92xprint-xpserverlist if /etc/init.d/xprint is
+    present and executable.  Some administrators may wish to disable xprint
+    by making the init script non-executable. Closes: #330812.
+  * Break a circular dependency by downgrading xprint-common's Depends: on
+    xprint to a Recommends:.  Closes: #339928.
+  * Added a paragraph to README.printing-problems indicating that CUPS
+    settings may also need to be adjusted if the printer resolution is
+    mismatched. Closes: #342714.
+
+ -- Drew Parsons <dparsons@debian.org>  Sun, 11 Dec 2005 21:10:52 +1100
+
+xprint (1:0.1.0.alpha1-12) unstable; urgency=low
+
+  * Patch 93_init_startstopdaemon has the side effect that some log messages
+    (errors and warnings) from Xprt are lost, including attempted connections.
+    Let me know if you want all such messages back again.
+  * Ditch the xprt and xprt-xprintorg dummy packages. Closes: #322078, #303123.
+  * Time to start stripping binaries. Closes: #164952.
+  * Vietnamese debconf translation. Thanks Clytie Siddall. Closes: #324267.
+  * Added xprint-overrides to ignore pesky lintian warnings.
+  * Removed 93_check_default_start, since the facility to control rc scripts
+    is provided elsewhere (see command update-rc.d, or packages rcconf,
+    sysv-rc-conf or file-rc). This means /etc/default/Xprint is no longer
+    used. Use the facilities mentioned above if you want Xprint installed
+    but not to start up by default.
+    However, it is true that the manner in which Debian handles packages is
+    only partially implemented. Packages start their daemons using
+    invoke-rc.d, whose operations may be controlled by /usr/sbin/policy-rc.d
+    it exists. But it does not exist. Therefore upon upgrade (or
+    dpkg-reconfigure), the Xprt daemon will be started, even if you have
+    correctly set the rc symlinks. You will need to stop it by hand
+    "/etc/init.d/xprint stop" (this only applies to upgrades, your rc
+    configuration will be honoured at boot).  This is a general Debian
+    problem, for having daemons installed but not running. It is *not* an
+    Xprint problem.  Sorry.  See Bug#291766 for further discussion.
+
+ -- Drew Parsons <dparsons@debian.org>  Sat, 10 Sep 2005 00:38:08 +1000
+
+xprint (1:0.1.0.alpha1-11) unstable; urgency=low
+
+  * Created patch 93_init_startstopdaemon to use start-stop-daemon to launch
+    and kill Xprt.  It handles backgrounding of the Xprt process, so we
+    don't get rogue /etc/init.d/xprint processes running alongside Xprt.
+    Note during stop, we retain kill ${pid} to facilitate compatibility when
+    upgrading (otherwise the new init script won't have a
+    /var/run/Xprt_0.pid file to kill when upgrading from the old version).
+    Closes: #229252, #255240, #313315.
+  * Patch 94_man_typoes fixes spelling errors. Thanks A. Costa.
+    Fixed in *.sgml docbook files, propagated to man and html using
+    docbookconv.sh (also altered to adapt to Debian's current XSLT
+    structure, accounting for the fact that docbook2man cannot read the sgml
+    file at the moment).  Note there are problems generating the derived doc
+    files using HasDocBookTools in config/cf/xprint_host.def, so html and
+    man are generated by hand and included in the patch.
+    Closes: #306701, #306702.
+  * New standards version: 3.6.2.
+
+ -- Drew Parsons <dparsons@debian.org>  Sat,  2 Jul 2005 23:05:44 +1000
+
+xprint (1:0.1.0.alpha1-10) unstable; urgency=high
+
+  * Reduced the priority of the printer resolution debconf question to
+    "medium", since the default of 600 is fine for most printers today.
+    Closes: #298954.
+  * Reduced the amount of the text in the debconf question.
+    Closes: #298956, #298959.
+  * Added new binaries and man pages to xprint.install.
+  * New patch 92_lib_not_lib64_on_amd64ppc64: ppc64 and amb64 use
+    /usr/X11R6/lib not /usr/X11R6/lib64. Reported upstream, Xprint bug #2803.
+    Closes: #301028.
+  * New patch 91_no_ExecCommand: ExecCommand does not belong in
+    attributes.{c|h}, and gcc4 complains about it. See Debian bug #301028 and
+    upstream Xprint bug #2254.
+  * New patch 93_spooltodir_check_file_exists. Closes: #295139.
+  * 93_spooltodir_check_file_exists also checks size of file name is not too
+    long. Closes: #284620.
+
+ -- Drew Parsons <dparsons@debian.org>  Fri, 25 Mar 2005 18:29:49 +1100
+
+xprint (1:0.1.0.alpha1-9) unstable; urgency=medium
+
+  * Taking over xprt, which has been expelled from XFree86.
+  * Take the opportunity the rationalise package naming:
+    - use "xprint" rather than "xprint-xprintorg". Since the Xprint
+      development version (known as xprint.xprintorg but hosted at
+      xprint.mozdev.org) has been accepted as the official X.org development
+      version, it is now unlikely that the separate domain xprint.org will be
+      registered.
+    - xprint contains Xprt and other architecture-dependent binaries
+    - xprint-common contains architecture-independent files (config files,
+      including /etc/init.d/xprint)
+    - xprt and xprt-xprintorg become dummy packages. Closes: #294324.
+  * Even without Super-Cow powers, this Xprint washes whiter than.
+    Closes: #275656.
+  * Add example of different resolutions for different printers to
+    README.printing-problems. Closes: #293539.
+  * In xprint-common.postinst, explicitly stop server before letting debhelper
+    (dh_installinit) start it. This avoids complaints in the situation where
+    Xprt was started by a simultaneous upgrade of the xprint package.
+    Closes: #292355.
+  * For simplicity of maintenance, removed debconf question about old
+    arrangement of config files. Since Xprint is not in woody, this will not
+    cause upgrade problems.
+  * Bump up the epoch to ensure a smooth upgrade of xprt (from
+    4.3.0.dfsg.1-10).
+
+ -- Drew Parsons <dparsons@debian.org>  Thu, 17 Feb 2005 21:02:18 +1100
+
+xprint-xprintorg (0.1.0.alpha1-8) unstable; urgency=low
+
+  * Updated debconf translations:
+    	    - Brazilian (thanks Andre Luis Lopes)
+	    - German (thanks Erik Schanze)
+	    - Czech (thanks Miroslav Kure)
+
+ -- Drew Parsons <dparsons@debian.org>  Sun, 30 Jan 2005 13:16:30 +1100
+
+xprint-xprintorg (0.1.0.alpha1-7) unstable; urgency=medium
+
+  * Updated debconf translations:
+    	    - Danish, (thanks Morten Bo Johansen)
+	    - Japanese (thanks Hideki Yamane)
+	    - French (thanks Christian Perrier)
+
+    Closes: #291425, #292363, #292459.
+
+ -- Drew Parsons <dparsons@debian.org>  Thu, 27 Jan 2005 19:09:39 +1100
+
+xprint-xprintorg (0.1.0.alpha1-6) unstable; urgency=medium
+
+  * Added debconf question to set the default printer resolution.
+    Closes: #280159.
+
+ -- Drew Parsons <dparsons@debian.org>  Wed, 19 Jan 2005 01:44:29 +1100
+
+xprint-xprintorg (0.1.0.alpha1-5) unstable; urgency=high
+
+  * Related to the dash problem again, just remove /bin/sh altogether from
+    92xprint-xpserverlist; this should be simpler than changing it to
+    /bin/bash. Will close #288585 (but leave open pending upstream fix).
+    Closes: #288844.
+
+ -- Drew Parsons <dparsons@debian.org>  Tue, 11 Jan 2005 19:59:08 +1100
+
+xprint-xprintorg (0.1.0.alpha1-4) unstable; urgency=low
+
+  * Force /etc/init.d/xprint to use bash, since there are conflicts with
+    dash when it is /bin/sh.  Patch 91_enforce_bash. Closes: #288630. Also
+    closes #288585, but I will leave this open as a reminder to upstream to
+    fix the non-Posix code.
+  * On a related note, upstream simply no longer asks Linux systems to use ksh
+    at all, so 91_bash_before_ksh is deprecated.  Hence, "test -a" is no
+    longer used. Closes: #285056, #256241.
+  * xset is still being used in /etc/init.d/xprint to build the fontlist, so
+    XPROJECTROOT (or /usr/X11R6/bin) still needs to be defined.
+    Closes: #282723.
+  * Removed square brackets around \n, used by tr in /etc/init.d/xprint.
+    Patch 93_init_tr_fix.  Closes: #258419, #264983.
+
+ -- Drew Parsons <dparsons@debian.org>  Wed,  5 Jan 2005 13:59:18 +1100
+
+xprint-xprintorg (0.1.0.alpha1-3) unstable; urgency=medium
+
+  * There have been enough positive reports about 1.0alpha1 in experimental
+    (contrasted with negative reports of the version in sarge),
+    that I think it is time to get it into unstable and sarge.
+  * I'll keep the "0.1.0" versioning for now. I'll almost certainly make the
+    final 1.0 version to be "1.0".
+  * Added Danish debconf translation. Thanks Morten Bo Johansen. 
+    Closes: #285957.
+
+ -- Drew Parsons <dparsons@debian.org>  Mon,  3 Jan 2005 14:43:04 +1100
+
+xprint-xprintorg (0.1.0.alpha1-2) experimental; urgency=low
+
+  * Build-Depends: flex, bison.  Closes: #284920.
+  * amd64 support confirmed. Closes: #278510, #282655.
+  * I was joking about the cubes rotating on your paper. But the OpenGL
+    support is real.
+
+ -- Drew Parsons <dparsons@debian.org>  Sun, 12 Dec 2004 00:29:23 +1100
+
+xprint-xprintorg (0.1.0.alpha1-1) experimental; urgency=low
+
+  * New upstream version: 1.0alpha1, preview of the forthcoming v1.0.
+  * Based on X.Org 6.8.2, with innumerable improvements:
+    - better handling of broken fonts
+    - OpenGL support (yes, rotating cubes on your printer paper)
+    - better greyscale support
+    - generally more stable
+    - supports amd64
+  * Recommended by upstream to go into sarge.
+
+ -- Drew Parsons <dparsons@debian.org>  Tue,  7 Dec 2004 17:47:27 +1100
+
+xprint-xprintorg (0.0.9.final.001-9) unstable; urgency=medium
+
+  * Added patch 92_close_std_files to get /etc/init.d/xprint to close the
+    standard file descriptors (stdin/out/err) when Xprt is invoked. This
+    solves a number of problems, such as hanging sessions of dpkg-reconfigure,
+    ssh, chroot.  Thanks for the patch, Nicolas Boullis.
+    Closes: #233260, #265827, #234132. OK, #234132 also refers to the bash
+    shells, which are still there, but there are other bug reports dealing
+    with them.
+
+ -- Drew Parsons <dparsons@debian.org>  Tue,  7 Dec 2004 10:03:30 +1100
+
+xprint-xprintorg (0.0.9.final.001-8) unstable; urgency=medium
+
+  * Added patch 93_check_default_start, which checks if START_XPRINT=0 in
+    /etc/default/xprint before starting Xprt. Thanks Anthony DeRobertis.
+    Closes: #281973.
+  * Created debian/default to be installed as /etc/default/xprint.
+  * Suggests: xbase-clients, since xset is used by /etc/init.d/xprint.
+    Closes: #282723.
+
+ -- Drew Parsons <dparsons@debian.org>  Thu,  2 Dec 2004 19:00:42 +1100
+
+xprint-xprintorg (0.0.9.final.001-7) unstable; urgency=medium
+
+  * Added Czech translation for debconf templates.  Thanks Miroslav Kure.
+    Closes: #274073.
+  * Added Eugeniy Meshcheryakov's patch (93_xprint_fonts_fix) to improve
+    TrueType font handling.  Closes: #272368.
+  * Added new workaround to README.printing-problems for printing problem
+    with Debian home page: delete "font.name.serif.x-western" entry from
+    pref.js.
+  * Removed Recommends: xprt from xprt-common, since it Depends: on it.
+
+ -- Drew Parsons <dparsons@debian.org>  Fri, 12 Nov 2004 14:37:23 +1100
+
+xprint-xprintorg (0.0.9.final.001-6) unstable; urgency=high
+
+  * Added another question to README.printing-problems to address the
+    problem when the image is printed too large or too small (default
+    printer resolution in /etc/Xprint/C/print/attributes/document
+    needs to be adjusted for your printer).  Closes: #262958, #267964.
+  * Removed man page for xpxmhelloworld: binary is not provided.
+
+ -- Drew Parsons <dparsons@debian.org>  Sun, 12 Sep 2004 22:31:15 +1000
+
+xprint-xprintorg (0.0.9.final.001-5) unstable; urgency=high
+
+  * README.printing-problems needs to be added to debian/xprt-common.docs.
+
+ -- Drew Parsons <dparsons@debian.org>  Sun, 22 Aug 2004 14:12:13 +1000
+
+xprint-xprintorg (0.0.9.final.001-4) unstable; urgency=high
+
+  * Added README.printing-problems, describing the printing problem of
+    words being run together without spaces.  The file suggests two
+    workarounds (remove Xprint's fonts directories, or add a
+    firefox/mozilla stylesheet). Thanks to Jan Willem Stumpel for the
+    CSS workaround and to Yaacov Akiba Slama for the fonts directory
+    workaround.
+  * Set urgency to high to get this workaround description into sarge.
+
+ -- Drew Parsons <dparsons@debian.org>  Sun, 22 Aug 2004 12:30:57 +1000
+
+xprint-xprintorg (0.0.9.final.001-3) unstable; urgency=low
+
+  * Created patch (91_no_sh_suffix_in_Xsession.d) to not provide .sh
+    suffix to Xsession.d script.  Closes: #264978.
+  * Added Erik Schanze's German debconf translation. Closes: #264611.
+  * Added a note to README.Debian concerning the "could not open
+    default font 'fixed'" problem preventing Xprt from starting, which
+    has been reported by some users.  The bug has not yet been
+    reproduced on a system which does not already experience it,
+    making it difficult to fix it properly. A work-around ("sort -u -r" 
+    instead of "sort -u" in /etc/init.d/xprint) is suggested. This
+    concerns bugs such as #259281,  #257731, #259281. Apparently the
+    009.001 release did not help. Maybe v010 will get it at last?
+
+ -- Drew Parsons <dparsons@debian.org>  Sun, 15 Aug 2004 18:20:13 +1000
+
+xprint-xprintorg (0.0.9.final.001-2) unstable; urgency=low
+
+  * Added Brazilian Portuguese (pt_BR) debconf translation.
+    Thanks Andre Luis Lopes. Closes: #262554.
+  * Uses Dwayne C. Litzenberger's patch (92_xprint-security-holes-fix.patch)
+    to print to file into the user's $HOME directory instead of /tmp.
+    In subdirectory ../Xprintjobs.  Security patch.  Closes: #262871.
+  * xprt-xprintorg includes binaries and manpages for other auxiliary 
+    programs: xprehashprinterlist, xpsimplehelloworld, xpxthelloworld. 
+    The manpage for xpxmhelloworld is omitted since the binary is not built.
+    The general man page for Xprint is also included.
+
+ -- Drew Parsons <dparsons@debian.org>  Sun,  8 Aug 2004 18:59:52 +1000
+
+xprint-xprintorg (0.0.9.final.001-1) unstable; urgency=low
+
+  * Upstream maintenance release v009.001.
+    - only use basic optimisation on PPC.  Closes: #252362, #258844.
+    - default printer resolution in /usr/share/Xprint/xserver/C/print/attributes/document
+      is now 600dpi not 300dpi. Closes: #254704, #256175.
+    - should no longer hang when using CUPS. Closes: #256850.
+    - /etc/init.d/xprint now has a simpler copyright statement, without
+      "all rights reserved".  Closes: #250887.
+    - incorporates lpr/CUPS patch (10-lpr-cups).
+  * Will hopefully deal with a number of TrueType-related font
+    problems (e.g. #259281,  #257731, #259281). Bugs will be closed in
+    the next upload, pending positive reports from bug reporters.
+  * Treat /usr/share/Xprint/xserver/C/print/Xprinters as a config file
+    (place in /etc/). Closes: #258413.
+  * Patch applied to use bash in preference to ksh. Bug #256241 will
+    be closed once the '-a' posix issue is appropriately settled.
+  * Patch 92_lsprinter_path checks command is executable, and adds
+    test for /usr/bin/xplsprinters.  Closes: #257750.
+
+ -- Drew Parsons <dparsons@debian.org>  Mon, 19 Jul 2004 19:29:22 +1000
+
+xprint-xprintorg (0.0.9.final-3) unstable; urgency=low
+
+  * Applied patch (92_make_amd64) to enable building on AMD 64.
+    Closes: #254752.
+  * Added handling for DEB_BUILD_OPTIONS' noopt (i.e. -O0) in
+    debian/rules, using the code sample in Policy 10.1. turned on -g
+    by default (the debug keyword is deprecated, it should always be
+    on). See bug #252659 (but I think it's not yet passed to Xprint's
+    imake system). 
+
+ -- Drew Parsons <dparsons@debian.org>  Fri, 18 Jun 2004 19:13:09 +1000
+
+xprint-xprintorg (0.0.9.final-2) unstable; urgency=low
+
+  * Applied upstream patch to fix some lpr/CUPS problems
+    (see http://pdx.freedesktop.org/cgi-bin/bugzilla/show_bug.cgi?id=608)
+    - BugZilla #608 ("Can not print on Debian/CUPS due to error |Xprt_64:
+        lpr: unable to print file: server-error-not-accepting-jobs|"):
+        Xprt did setup  the list of supplementary group ids, causing print
+        failure when the the calling user must be a member in a specific
+        group to be allowed to print.
+    (patch placed in debian/patches/10-lpr-cups)
+
+ -- Drew Parsons <dparsons@debian.org>  Sun,  9 May 2004 17:41:54 +1000
+
+xprint-xprintorg (0.0.9.final-1) unstable; urgency=low
+
+  * v0.9 official release (cvs20040322, released 28 March 2004).
+  * Rearranged debian/rules to build binary-indep and binary-arch
+    separately.  Closes: #241066.
+
+ -- Drew Parsons <dparsons@debian.org>  Fri,  2 Apr 2004 20:45:33 +1000
+
+xprint-xprintorg (0.0.9.cvs20040301-1) unstable; urgency=low
+
+  * New upstream version: v009 release candidate 2.
+  * Partially addresses the complaints about extra processes alongside the
+    Xprt daemon:  tee no longer invoked for logging.  Closes: #224189.
+  * Users finally convinced me there's no point only having xprt-common
+    Recommends: xprt-xprintorg.  xprt-common is not required for client-only
+    setups (they only need XPSERVERLIST to be defined, which can be done
+    without /etc/init.d/xprint. Remember to switch off "-nolisten tcp" in the
+    Xprt server configuration if you want to do this).  So having xprt-common
+    installed without xprt-xprintorg is not in fact particularly useful,
+    unless you really want the config files stored on a different host to the
+    Xprt server, which seems somehow pointless.
+    So, xprt-common now Depends: xprt-xprintorg ( | xprt).
+    Closes: #195070, #211002, #238559.
+  * xprt-common only contains config files, so it should really be
+    Architecture: all.  Why wasn't this noticed before?
+
+ -- Drew Parsons <dparsons@debian.org>  Sat, 20 Mar 2004 17:06:20 +1100
+
+xprint-xprintorg (0.0.9.cvs20040216-2) unstable; urgency=low
+
+  * Updated the Japanese debconf translation. Closes: #234254.
+  * Replaced Build-Depends: xlibs-dev in favour of the new separated
+    X libraries.
+
+ -- Drew Parsons <dparsons@debian.org>  Wed, 25 Feb 2004 19:54:26 +1100
+
+xprint-xprintorg (0.0.9.cvs20040216-1) unstable; urgency=low
+
+  * New upstream version: v009 release candidate 1.
+
+ -- Drew Parsons <dparsons@debian.org>  Sat, 21 Feb 2004 12:02:12 +1100
+
+xprint-xprintorg (0.0.9.cvs20040114-3) unstable; urgency=low
+
+  * The "Now He Tells Me" release.
+  * Build-depends: xutils.  This provides mkfontdir, whose absence was the
+    real cause of the bug I tried to fix in -2.
+
+ -- Drew Parsons <dparsons@debian.org>  Thu, 15 Jan 2004 17:18:09 +1030
+
+xprint-xprintorg (0.0.9.cvs20040114-2) unstable; urgency=low
+
+  * Build-depends: lesstif2-dev.  In order to compile xpxmhelloworld and allow
+    the build to proceed. Not that I package xpxmhelloworld, ho-hum.
+
+ -- Drew Parsons <dparsons@debian.org>  Thu, 15 Jan 2004 10:43:56 +1030
+
+xprint-xprintorg (0.0.9.cvs20040114-1) unstable; urgency=low
+
+  * New upstream version (0.0.9 gamma)
+    - fixes handling of missing xft servers (closes: #224952,#226642,#226703).
+  * Added Japanese template translation. Thanks Hideki Yamane!
+    Closes: #224180.
+
+ -- Drew Parsons <dparsons@debian.org>  Wed, 14 Jan 2004 17:56:59 +1030
+
+xprint-xprintorg (0.0.9.cvs20031220-1) unstable; urgency=low
+
+  * New upstream version (0.0.9 beta).
+    - new improved font download engine.
+    - supports OpenType fonts. Closes: #211798, #216813.
+    - XFree86 config file is used to extract font paths (as well as standard
+      paths and the defoma directory).
+    - supports PDF output (find it in /tmp/Xprintjobs).
+    - improved CUPS support. cupsys-bsd is no longer mandatory (but still
+      works fine).  Closes: #206657.
+    - uses lockfiles for Xprint servers started via /etc/init.d/xprint.
+      Closes: #198745.
+  * xprt-common Recommends: xfonts-base, in order to find encodings.dir.
+    It is not a strict dependency since the location of the file can be set
+    as a configuration option in /etc/init.d/xprint.  Closes: #217524.
+  * xprt-xprintorg Provides: xprt.  Strictly speaking this is only valid if
+    we create a virtual package called xprt, but what the hell. 
+    "Future proofing"... ;)   Closes: #206655.
+
+ -- Drew Parsons <dparsons@debian.org>  Fri,  5 Dec 2003 23:08:13 +1100
+
+xprint-xprintorg (0.0.8.cvs20030508-6) unstable; urgency=low
+
+  * Added defoma directory to font directory in /etc/init.d/xprint.
+    Closes: #206557.
+  * Applied upstream patch to improve printer spool (CUPS) handling.
+  * New standards version 3.6.1.
+
+ -- Drew Parsons <dparsons@debian.org>  Fri, 26 Sep 2003 09:33:31 +1000
+
+xprint-xprintorg (0.0.8.cvs20030508-5) unstable; urgency=low
+
+  * Something went awry with the changes in -4, so try again:
+    - French debconf translation. Closes: #199347.
+
+ -- Drew Parsons <dparsons@debian.org>  Wed, 30 Jul 2003 20:25:03 +1000
+
+xprint-xprintorg (0.0.8.cvs20030508-4) unstable; urgency=low
+
+  * Updated upstream patch for /etc/init.d/xprint regarding LSB.
+  * French debconf translation provided by Christian Perrier. Closes: #199347.
+
+ -- Drew Parsons <dparsons@debian.org>  Mon, 30 Jun 2003 18:49:09 +1000
+
+xprint-xprintorg (0.0.8.cvs20030508-3) unstable; urgency=low
+
+  * Applied upstream patch to make /etc/init.d/xprint compliant with LSB.
+  * Updated debconf template to new po format using debconf-gettextize.
+    Added Build-Depends: debhelper (>= 4.1.16). Tidied up some spaces and
+    formatting in template and Description in control.  Closes: #198287.
+
+ -- Drew Parsons <dparsons@debian.org>  Sun, 22 Jun 2003 00:45:13 +1000
+
+xprint-xprintorg (0.0.8.cvs20030508-2) unstable; urgency=low
+
+  * Identify that Xprt is the server in question during stop/start
+    messages from /etc/init.d/xprint.  Closes: #194694, #196487.
+
+ -- Drew Parsons <dparsons@debian.org>  Sat, 14 Jun 2003 13:37:50 +1000
+
+xprint-xprintorg (0.0.8.cvs20030508-1) unstable; urgency=low
+
+  * Final 0.0.8 release.  
+    No significant changes from previous release candidate (mainly fixes for
+    Solaris). 
+  * Description identifies that TrueType fonts are now supported in 0.0.8.
+    Closes: #190736.
+  * New standards version: 3.5.10.
+
+ -- Drew Parsons <dparsons@debian.org>  Sun, 25 May 2003 12:47:06 +1000
+
+xprint-xprintorg (0.0.8.cvs20030416-1) unstable; urgency=low
+
+  * New upstream version: v0.0.8 release candidate #2.
+  * I forgot to mention last time, man pages were recompiled with docbook2man,
+    gives better results than docbook-to-man.
+
+ -- Drew Parsons <dparsons@debian.org>  Wed, 23 Apr 2003 13:12:31 +1000
+
+xprint-xprintorg (0.0.8.cvs20030403-1) unstable; urgency=low
+
+  * New upstream version.
+
+ -- Drew Parsons <dparsons@debian.org>  Sat, 12 Apr 2003 23:49:35 +1000
+
+xprint-xprintorg (0.0.8.cvs20030328-2) unstable; urgency=low
+
+  * Added libxaw7-dev to Build-Depends in debian/control. 
+    Closes: #186782, #186785.
+
+ -- Drew Parsons <dparsons@debian.org>  Sun, 30 Mar 2003 09:56:21 +1000
+
+xprint-xprintorg (0.0.8.cvs20030328-1) unstable; urgency=low
+
+  * Upstream CVS. "Beta" version for release 0.0.8.
+  * Upstream changes include:
+    - Xsession.d script defines XPSERVERLIST for all X sessions,
+      removing the need to set it in profile files.
+      Closes: #171174, #177104.
+    - "-nolisten tcp" is now implemented, allowing for improved network
+      security when using Xprt.
+      Note that you may need to reset XPSERVERLIST (possibly by restarting X), 
+      since this improvement requires the Xprt "display" to be given as ":64"
+      rather than "localhost:64".
+      Closes: #162023.
+    - the use of TrueType fonts is now supported.
+    - man pages are now available for the Xprt and other support binaries.
+    - size of source tarball now reduced to about 10 MB.
+  * The Xprint FAQ is always updated fresh from each new upstream tarball.
+    Closes: #170903.
+  * The upstream source tarball is now handled using dbs, one of Debian's patch
+    handling tools.  This should facilitate the incorporation of one-off
+    patches in the future, such as the "-nolisten tcp" patch.
+    I decided in this context to use the pristine upstream tarball without
+    modification, rather than removing the www directory from it. The size
+    of www is not significant.
+  * Identify use of debhelper v4 via debian/compat.
+  * Standards version 3.5.9.
+
+ -- Drew Parsons <dparsons@debian.org>  Sat, 29 Mar 2003 02:53:12 +1100
+
+xprint-xprintorg (0.0.7.cvs20021203-1) unstable; urgency=low
+
+  * New upstream version (final release for v007).
+
+ -- Drew Parsons <dparsons@debian.org>  Mon,  9 Dec 2002 18:13:38 +1100
+
+xprint-xprintorg (0.0.7.cvs20021125-1) unstable; urgency=low
+
+  * New upstream version (final release candidate for v007).
+  * Standards version 3.5.8.
+  * Upstream tarball created by make_xprint_tarball (invoked in
+    debian/rules) for Debian systems now recognises it is building for
+    Debian and places config files in /usr/share/Xprint, not
+    /usr/X11R6/lib/X11.  debian/xprt-common.install changed accordingly.
+  * Added link from usr/share/Xprint/xserver/README to
+    usr/share/doc/xprt-common/README in debian/xprt-common.links.
+  * xserver/SecurityPolicy no longer exists, remove from
+    debian/xprt-common.links and debian/rules.
+  * Added attributes directory for en_US to config files in /etc/Xprint
+    (allows default paper for en_US to be letter, for everyone else A4).
+    Altered directory structure in /etc/Xprint to accomodate both C and en_US
+    locales.  Changes made in rules, xprt-common.dirs, xprt-common.links.
+    Debconf invoked to remove old config files, if user permits it.
+  * Removed xprt-common.conffiles, since dh_installdeb (v3 and higher)
+    automatically lists everything in /etc as a conffile.
+
+ -- Drew Parsons <dparsons@debian.org>  Mon,  2 Dec 2002 18:11:04 +1100
+
+xprint-xprintorg (0.0.7.cvs20021101-1) unstable; urgency=low
+
+  * New upstream version.
+  * Debian patches incorporated upstream (thanks Roland!).
+  * /etc/init.d/xprint now provided in upstream source.
+    Note that upstream has set the Xprint "display" to :64, not :12.
+    You may have to refresh shell variable XPSERVERLIST by restarting client
+    programs such as mozilla or by relogging in again.
+  * Binary stripping switched off (dh_strip commented out in debian/rules)
+    by upstream's request, see Debian bug #164952.  Only temporary.
+
+ -- Drew Parsons <dparsons@debian.org>  Tue,  5 Nov 2002 08:20:15 +1100
+
+xprint-xprintorg (0.0.7.cvs20021004-1) unstable; urgency=low
+
+  * New upstream version.
+  * Should facilitate build on sparc and mips.
+
+ -- Drew Parsons <dparsons@debian.org>  Tue,  8 Oct 2002 15:24:44 +1000
+
+xprint-xprintorg (0.0.7.cvs20020903-3) unstable; urgency=low
+
+  * Change reference in README.Debian from /etc/environment to /etc/profile
+    for setting variable XPSERVERLIST.
+
+ -- Drew Parsons <dparsons@debian.org>  Mon, 23 Sep 2002 22:38:35 +1000
+
+xprint-xprintorg (0.0.7.cvs20020903-2) unstable; urgency=low
+
+  * Moved check for Xprt binary to point where it is invoked in 
+    debian/xprt-common.xprint (i.e. /etc/init.d/xprint). 
+    Depends: on xprt[-xprintorg] should not be required, /etc/init.d/xprint may
+    complain, but this ought not to affect installation.
+    Closes: #161824.
+
+ -- Drew Parsons <dparsons@debian.org>  Sun, 22 Sep 2002 11:09:43 +1000
+
+xprint-xprintorg (0.0.7.cvs20020903-1) unstable; urgency=low
+
+  * New package. Closes: #149658.
+  * 0.0.7 release branch from CVS tarball, 3 September 2002.
+  * Includes modified /etc/init.d/xprint script (v0.2) from
+    http://mozdev.org/bugs/show_bug.cgi?id=2037
+  * Standards Version 3.5.7.
+
+ -- Drew Parsons <dparsons@debian.org>  Sun, 15 Sep 2002 12:33:27 +1000
+

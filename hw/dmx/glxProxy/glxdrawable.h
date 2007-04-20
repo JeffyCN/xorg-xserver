@@ -1,4 +1,3 @@
-/* $XFree86: xc/programs/Xserver/GL/glx/glxdrawable.h,v 1.3 2001/03/21 16:29:36 dawes Exp $ */
 #ifndef _GLX_drawable_h_
 #define _GLX_drawable_h_
 
@@ -49,58 +48,6 @@ typedef struct {
     XID *be_xids;
 
 } __GLXpixmap;
-
-struct __GLXdrawablePrivateRec {
-    /*
-    ** list of drawable private structs
-    */
-    struct __GLXdrawablePrivateRec *last;
-    struct __GLXdrawablePrivateRec *next;
-
-    DrawablePtr pDraw;
-    XID drawId;
-    __GLXpixmap *pGlxPixmap;
-
-    /*
-    ** Either DRAWABLE_PIXMAP or DRAWABLE_WINDOW, copied from pDraw above.
-    ** Needed by the resource freer because pDraw might already have been
-    ** freed.
-    */
-    int type;
-
-    /*
-    ** Configuration of the visual to which this drawable was created.
-    */
-    __GLXvisualConfig *pGlxVisual;
-
-    /*
-    ** cached drawable size and origin
-    */
-    GLint xorigin, yorigin;
-    GLint width, height;
-
-    /*
-    ** list of contexts bound to this drawable
-    */
-    struct __GLXcontextRec *glxc;
-
-    /*
-    ** "methods" that the drawble should be able to respond to.
-    */
-    void (*freeBuffers)(struct __GLXdrawablePrivateRec *);
-    void (*updatePalette)(struct __GLXdrawablePrivateRec *);
-    GLboolean (*swapBuffers)(struct __GLXdrawablePrivateRec *);
-
-    /*
-    ** The GL drawable (information shared between GLX and the GL core)
-    */
-    __GLdrawablePrivate glPriv;
-
-    /*
-    ** reference count
-    */
-    int refCount;
-};
 
 typedef struct {
     DrawablePtr pDraw;

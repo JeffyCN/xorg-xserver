@@ -1,5 +1,3 @@
-/* $XdotOrg: xserver/xorg/mi/miinitext.c,v 1.31 2006/02/15 19:05:54 ajax Exp $ */
-/* $XFree86: xc/programs/Xserver/mi/miinitext.c,v 3.67 2003/01/12 02:44:27 dawes Exp $ */
 /***********************************************************
 
 Copyright 1987, 1998  The Open Group
@@ -46,7 +44,6 @@ ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS
 SOFTWARE.
 
 ******************************************************************/
-/* $Xorg: miinitext.c,v 1.4 2001/02/09 02:05:21 xorgcvs Exp $ */
 
 #ifdef HAVE_DIX_CONFIG_H
 #include <dix-config.h>
@@ -85,6 +82,7 @@ SOFTWARE.
 #include "misc.h"
 #include "extension.h"
 #include "micmap.h"
+#include "globals.h"
 
 #if defined(QNX4) /* sleaze for Watcom on QNX4 ... */
 #undef GLXEXT
@@ -107,6 +105,7 @@ SOFTWARE.
 #undef XF86DRI
 #undef DPMSExtension
 #undef FONTCACHE
+#undef COMPOSITE
 #undef DAMAGE
 #undef XFIXES
 #undef XEVIE
@@ -125,9 +124,6 @@ extern Bool noBigReqExtension;
 #ifdef COMPOSITE
 extern Bool noCompositeExtension;
 #endif
-#ifdef DAMAGE
-extern Bool noDamageExtension;
-#endif
 #ifdef DBE
 extern Bool noDbeExtension;
 #endif
@@ -142,9 +138,6 @@ extern Bool noFontCacheExtension;
 #endif
 #ifdef GLXEXT
 extern Bool noGlxExtension;
-#endif
-#ifdef LBX
-extern Bool noLbxExtension;
 #endif
 #ifdef SCREENSAVER
 extern Bool noScreenSaverExtension;
@@ -241,10 +234,6 @@ typedef void (*InitExtension)(INITARGS);
 #ifdef XKB
 #include <X11/extensions/XKB.h>
 #endif
-#ifdef LBX
-#define _XLBX_SERVER_
-#include <X11/extensions/lbxstr.h>
-#endif
 #ifdef XPRINT
 #include <X11/extensions/Print.h>
 #endif
@@ -252,8 +241,11 @@ typedef void (*InitExtension)(INITARGS);
 #define _XAG_SERVER_
 #include <X11/extensions/Xagstr.h>
 #endif
+#ifdef XACE
+#include "xace.h"
+#endif
 #ifdef XCSECURITY
-#define _SECURITY_SERVER
+#include "securitysrv.h"
 #include <X11/extensions/securstr.h>
 #endif
 #ifdef PANORAMIX
@@ -267,12 +259,6 @@ typedef void (*InitExtension)(INITARGS);
 #endif
 
 /* FIXME: this whole block of externs should be from the appropriate headers */
-#ifdef XTESTEXT1
-extern void XTestExtension1Init(INITARGS);
-#endif
-#ifdef SHAPE
-extern void ShapeExtensionInit(INITARGS);
-#endif
 #ifdef EVI
 extern void EVIExtensionInit(INITARGS);
 #endif
@@ -322,16 +308,17 @@ extern void XCMiscExtensionInit(INITARGS);
 #ifdef XRECORD
 extern void RecordExtensionInit(INITARGS);
 #endif
-#ifdef LBX
-extern void LbxExtensionInit(INITARGS);
-#endif
 #ifdef DBE
 extern void DbeExtensionInit(INITARGS);
 #endif
 #ifdef XAPPGROUP
 extern void XagExtensionInit(INITARGS);
 #endif
+#ifdef XACE
+extern void XaceExtensionInit(INITARGS);
+#endif
 #ifdef XCSECURITY
+extern void SecurityExtensionSetup(INITARGS);
 extern void SecurityExtensionInit(INITARGS);
 #endif
 #ifdef XPRINT
@@ -432,9 +419,6 @@ static ExtensionToggle ExtensionToggleList[] =
 #endif
 #ifdef GLXEXT
     { "GLX", &noGlxExtension },
-#endif
-#ifdef LBX
-    { "LBX", &noLbxExtension },
 #endif
 #ifdef SCREENSAVER
     { "MIT-SCREEN-SAVER", &noScreenSaverExtension },
@@ -545,13 +529,13 @@ InitExtensions(argc, argv)
     int		argc;
     char	*argv[];
 {
+#ifdef XCSECURITY
+    SecurityExtensionSetup();
+#endif
 #ifdef PANORAMIX
 # if !defined(PRINT_ONLY_SERVER) && !defined(NO_PANORAMIX)
   if (!noPanoramiXExtension) PanoramiXExtensionInit();
 # endif
-#endif
-#ifdef XTESTEXT1
-    if (!noTestExtensions) XTestExtension1Init();
 #endif
 #ifdef SHAPE
     if (!noShapeExtension) ShapeExtensionInit();
@@ -604,14 +588,14 @@ InitExtensions(argc, argv)
 #ifdef XRECORD
     if (!noTestExtensions) RecordExtensionInit(); 
 #endif
-#ifdef LBX
-    if (!noLbxExtension) LbxExtensionInit();
-#endif
 #ifdef DBE
     if (!noDbeExtension) DbeExtensionInit();
 #endif
 #ifdef XAPPGROUP
     if (!noXagExtension) XagExtensionInit();
+#endif
+#ifdef XACE
+    XaceExtensionInit();
 #endif
 #ifdef XCSECURITY
     if (!noSecurityExtension) SecurityExtensionInit();
@@ -697,9 +681,6 @@ InitVisualWrap()
 #else /* XFree86LOADER */
 /* List of built-in (statically linked) extensions */
 static ExtensionModule staticExtensions[] = {
-#ifdef XTESTEXT1
-    { XTestExtension1Init, "XTEST1", &noTestExtensions, NULL, NULL },
-#endif
 #ifdef MITSHM
     { ShmExtensionInit, SHMNAME, &noMITShmExtension, NULL, NULL },
 #endif
@@ -715,14 +696,14 @@ static ExtensionModule staticExtensions[] = {
 #ifdef XKB
     { XkbExtensionInit, XkbName, &noXkbExtension, NULL, NULL },
 #endif
-#ifdef LBX
-    { LbxExtensionInit, LBXNAME, &noLbxExtension, NULL, NULL },
-#endif
 #ifdef XAPPGROUP
     { XagExtensionInit, XAGNAME, &noXagExtension, NULL, NULL },
 #endif
+#ifdef XACE
+    { XaceExtensionInit, XACE_EXTENSION_NAME, NULL, NULL, NULL },
+#endif
 #ifdef XCSECURITY
-    { SecurityExtensionInit, SECURITY_EXTENSION_NAME, &noSecurityExtension, NULL, NULL },
+    { SecurityExtensionInit, SECURITY_EXTENSION_NAME, &noSecurityExtension, SecurityExtensionSetup, NULL },
 #endif
 #ifdef XPRINT
     { XpExtensionInit, XP_PRINTNAME, NULL, NULL, NULL },
@@ -773,6 +754,16 @@ InitExtensions(argc, argv)
 	/* Sort the extensions according the init dependencies. */
 	LoaderSortExtensions();
 	listInitialised = TRUE;
+    } else {
+	/* Call the setup functions on subsequent server resets as well */
+	for (i = 0; ExtensionModuleList[i].name != NULL; i++) {
+	    ext = &ExtensionModuleList[i];
+	    if (ext->setupFunc != NULL &&
+		(ext->disablePtr == NULL ||
+		 (ext->disablePtr != NULL && !*ext->disablePtr))) {
+		(ext->setupFunc)();
+	    }
+	}
     }
 
     for (i = 0; ExtensionModuleList[i].name != NULL; i++) {

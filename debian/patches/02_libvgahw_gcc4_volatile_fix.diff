@@ -2,11 +2,11 @@ gcc4 has issues with libvgahw.a. This patch is a workaround stolen from
 https://bugzilla.redhat.com/bugzilla/show_bug.cgi?id=161242 (by Olivier
 Baudron). See also Debian #318218 and bugs merged to it
 
-Index: xorg-server-1.1.0/hw/xfree86/vgahw/vgaHW.c
+Index: xorg-server/hw/xfree86/vgahw/vgaHW.c
 ===================================================================
---- xorg-server-1.1.0.orig/hw/xfree86/vgahw/vgaHW.c	2006-02-10 22:00:27.000000000 +0000
-+++ xorg-server-1.1.0/hw/xfree86/vgahw/vgaHW.c	2006-08-06 14:02:32.000000000 +0000
-@@ -435,12 +435,16 @@
+--- xorg-server.orig/hw/xfree86/vgahw/vgaHW.c	2006-11-26 01:24:48.000000000 +0100
++++ xorg-server/hw/xfree86/vgahw/vgaHW.c	2006-11-26 01:25:44.000000000 +0100
+@@ -434,12 +434,16 @@
  static void
  mmioWriteAttr(vgaHWPtr hwp, CARD8 index, CARD8 value)
  {
@@ -24,7 +24,7 @@ Index: xorg-server-1.1.0/hw/xfree86/vgahw/vgaHW.c
      moutb(VGA_ATTR_INDEX, index);
      moutb(VGA_ATTR_DATA_W, value);
  }
-@@ -448,12 +452,16 @@
+@@ -447,12 +451,16 @@
  static CARD8
  mmioReadAttr(vgaHWPtr hwp, CARD8 index)
  {
@@ -42,7 +42,7 @@ Index: xorg-server-1.1.0/hw/xfree86/vgahw/vgaHW.c
      moutb(VGA_ATTR_INDEX, index);
      return minb(VGA_ATTR_DATA_R);
  }
-@@ -473,7 +481,11 @@
+@@ -472,7 +480,11 @@
  static void
  mmioEnablePalette(vgaHWPtr hwp)
  {
@@ -55,7 +55,7 @@ Index: xorg-server-1.1.0/hw/xfree86/vgahw/vgaHW.c
      moutb(VGA_ATTR_INDEX, 0x00);
      hwp->paletteEnabled = TRUE;
  }
-@@ -481,7 +493,11 @@
+@@ -480,7 +492,11 @@
  static void
  mmioDisablePalette(vgaHWPtr hwp)
  {

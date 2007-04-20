@@ -1,4 +1,3 @@
-/* $Xorg: xcmisc.c,v 1.4 2001/02/09 02:04:33 xorgcvs Exp $ */
 /*
 
 Copyright 1993, 1998  The Open Group
@@ -26,7 +25,6 @@ other dealings in this Software without prior written authorization
 from The Open Group.
 
 */
-/* $XFree86: xc/programs/Xserver/Xext/xcmisc.c,v 3.7 2003/10/28 23:08:43 tsi Exp $ */
 
 #define NEED_EVENTS
 #define NEED_REPLIES
@@ -43,6 +41,12 @@ from The Open Group.
 #include "swaprep.h"
 #include <X11/extensions/xcmiscstr.h>
 #include "modinit.h"
+
+#if HAVE_STDINT_H
+#include <stdint.h>
+#elif !defined(UINT32_MAX)
+#define UINT32_MAX 0xffffffffU
+#endif
 
 #if 0
 static unsigned char XCMiscCode;
@@ -145,7 +149,10 @@ ProcXCMiscGetXIDList(client)
 
     REQUEST_SIZE_MATCH(xXCMiscGetXIDListReq);
 
-    pids = (XID *)ALLOCATE_LOCAL(stuff->count * sizeof(XID));
+    if (stuff->count > UINT32_MAX / sizeof(XID))
+	    return BadAlloc;
+
+    pids = (XID *)Xalloc(stuff->count * sizeof(XID));
     if (!pids)
     {
 	return BadAlloc;
@@ -166,7 +173,7 @@ ProcXCMiscGetXIDList(client)
     	client->pSwapReplyFunc = (ReplySwapPtr) Swap32Write;
 	WriteSwappedDataToClient(client, count * sizeof(XID), pids);
     }
-    DEALLOCATE_LOCAL(pids);
+    Xfree(pids);
     return(client->noClientException);
 }
 

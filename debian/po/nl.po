@@ -1,0 +1,59 @@
+# Translation of xprint_1:0.1.0.alpha1-13_templates.po to dutch
+#
+#    Translators, if you are not familiar with the PO format, gettext
+#    documentation is worth reading, especially sections dedicated to
+#    this format, e.g. by running:
+#         info -n '(gettext)PO Files'
+#         info -n '(gettext)Header Entry'
+#    Some information specific to po-debconf are available at
+#            /usr/share/doc/po-debconf/README-trans
+#         or http://www.debian.org/intl/l10n/po-debconf/README-trans#
+#    Developers do not need to manually edit POT or PO files.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: xprint_1:0.1.0.alpha1-13_nl\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2005-03-16 11:10+1100\n"
+"PO-Revision-Date: 2006-04-13 18:20\n"
+"Last-Translator: Kurt De Bree <kdebree(AT)telenet(DOT)be>\n"
+"Language-Team: Nederlands <debian-l10n-dutch@lists.debian.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: KBabel 1.10.2\n"
+"Plural-Forms:  nplurals=2; plural=(n != 1);\n"
+
+#. Type: string
+#. Description
+#: ../xprint-common.templates:4
+msgid "Default printer resolution"
+msgstr "Standaard printerresolutie:"
+
+#. Type: string
+#. Description
+#: ../xprint-common.templates:4
+msgid ""
+"By default Xprint assumes a printer resolution of 600dpi. This should be "
+"fine for the majority of printers today."
+msgstr ""
+"Standaard veronderstelt Xprint een printerresolutie van 600dpi. Dit zou "
+"voor het merendeel van de hedendaagse printers goed moeten zijn."
+
+#. Type: string
+#. Description
+#: ../xprint-common.templates:4
+msgid ""
+"On certain 1200dpi printers, however, the image might appear squashed in the "
+"corner of the page, or it might be blown up too large on 300dpi printers. If "
+"you are experiencing these kinds of printing problems, you may want to set "
+"the default printer resolution to a more appropriate value. See /usr/share/"
+"doc/xprint-common/README.printing-problems.gz for more details."
+msgstr ""
+"Op bepaalde 1200dpi-printers zou het beeld echter samengedrukt kunnen "
+"lijken in de hoek van de pagina, terwijl het op 300dpi-printers te groot "
+"zou kunnen worden opgeblazen. Als u dergelijke afdrukproblemen ervaart, kunt u "
+"de standaard printerresolutie naar een meer passende waarde veranderen. Zie "
+"/usr/share/doc/xprint-common/README.printing-problems.gz voor meer "
+"gedetailleerde informatie."
+

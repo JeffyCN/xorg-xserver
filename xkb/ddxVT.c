@@ -1,4 +1,3 @@
-/* $Xorg: ddxVT.c,v 1.3 2000/08/17 19:53:46 cpqbld Exp $ */
 /************************************************************
 Copyright (c) 1993 by Silicon Graphics Computer Systems, Inc.
 
@@ -24,18 +23,13 @@ OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION  WITH
 THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 ********************************************************/
-/* $XFree86: xc/programs/Xserver/xkb/ddxVT.c,v 1.3 2002/11/23 19:27:50 tsi Exp $ */
 
 #ifdef HAVE_DIX_CONFIG_H
 #include <dix-config.h>
 #endif
 
-#ifdef HAVE_XORG_CONFIG_H
-#include <xorg-config.h>
-#endif
-
 #include <stdio.h>
-#define	NEED_EVENTS 1
+#define NEED_EVENTS
 #include <X11/X.h>
 #include <X11/Xproto.h>
 #include <X11/keysym.h>
@@ -43,7 +37,6 @@ THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #include "scrnintstr.h"
 #include "windowstr.h"
 #include <X11/extensions/XKBsrv.h>
-#include <X11/extensions/XI.h>
 
 int
 XkbDDXSwitchScreen(DeviceIntPtr dev,KeyCode key,XkbAction *act)

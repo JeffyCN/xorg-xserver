@@ -25,7 +25,6 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  */
-/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/libusb/usbvar.h,v 1.1.2.2 1999/12/03 10:12:43 hohndel Exp $ */
 
 struct report_desc {
 	unsigned int size;

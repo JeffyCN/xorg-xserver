@@ -32,7 +32,7 @@ BUILT_SOURCES = xf86DefModeSet.c
 
 AM_LDFLAGS = -r
 libcommon_la_SOURCES = xf86Configure.c xf86Bus.c xf86Config.c \
-                      xf86Cursor.c xf86DGA.c xf86DPMS.c \
+                      xf86Cursor.c xf86cvt.c xf86DGA.c xf86DPMS.c \
                       xf86DoProbe.c xf86DoScanPci.c xf86Events.c \
                       xf86Globals.c xf86Io.c xf86AutoConfig.c \
                       xf86MiscExt.c xf86Option.c \
@@ -54,7 +54,7 @@ sdk_HEADERS = compiler.h fourcc.h xf86.h xf86Module.h xf86Opt.h \
               xf86PciInfo.h xf86Priv.h xf86Privstr.h xf86Resources.h \
               xf86cmap.h xf86fbman.h xf86str.h $(XISDKINCS) \
               $(XVSDKINCS) atKeynames.h xf86Version.h xorgVersion.h \
-              xf86sbusBus.h xf86xv.h xf86xvmc.h xf86xvpriv.h
+              xf86sbusBus.h xf86xv.h xf86xvmc.h xf86xvpriv.h xf86Keymap.h
 
 DISTCLEANFILES = xf86Build.h
 CLEANFILES = $(BUILT_SOURCES)
@@ -103,4 +103,4 @@ if LNXACPI
 XORG_CFLAGS += -DHAVE_ACPI
 endif
 
-AM_CFLAGS = $(XORG_CFLAGS) @SERVER_DEFINES@ @LOADER_DEFINES@
+AM_CFLAGS = $(XORG_CFLAGS)

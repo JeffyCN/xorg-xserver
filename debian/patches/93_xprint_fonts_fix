@@ -1,0 +1,12 @@
+diff -ruN xorg-server-old/hw/xprint/ps/psout_ft.c xorg-server/hw/xprint/ps/psout_ft.c
+--- xorg-server-old/hw/xprint/ps/psout_ft.c	2006-04-02 10:09:43.000000000 +1000
++++ xorg-server/hw/xprint/ps/psout_ft.c	2006-04-14 22:22:42.000000000 +1000
+@@ -280,6 +280,8 @@
+       else
+       {
+         sprintf(buf, "%s", baseFontName);
++        xfree(self->FontName);
++        self->FontName = NULL;
+       }
+ 
+       if( self->FontSize == -1 )

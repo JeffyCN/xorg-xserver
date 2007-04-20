@@ -1,5 +1,3 @@
-/* $XdotOrg: xserver/xorg/hw/xfree86/common/xf86Config.c,v 1.23.2.4 2006/04/07 01:37:03 ajax Exp $ */
-/* $XFree86: xc/programs/Xserver/hw/xfree86/common/xf86Config.c,v 3.276 2003/10/08 14:58:26 dawes Exp $ */
 
 
 /*
@@ -65,8 +63,9 @@
 #include "xf86Config.h"
 #include "xf86Priv.h"
 #include "xf86_OSlib.h"
-
+#include "configProcs.h"
 #include "globals.h"
+#include "extension.h"
 
 #ifdef XINPUT
 #include "xf86Xinput.h"
@@ -74,6 +73,7 @@ extern DeviceAssocRec mouse_assoc;
 #endif
 
 #ifdef XKB
+#undef XKB_IN_SERVER
 #define XKB_IN_SERVER
 #include <X11/extensions/XKBsrv.h>
 #endif
@@ -249,8 +249,9 @@ xf86ValidateFontPath(char *path)
 char **
 xf86ModulelistFromConfig(pointer **optlist)
 {
-    int count = 0;
+    int count = 0, i = 0;
     char **modulearray;
+    char *ignore[] = { "GLcore", "speedo", "bitmap", "drm", NULL };
     pointer *optarray;
     XF86LoadPtr modp;
     
@@ -271,12 +272,29 @@ xf86ModulelistFromConfig(pointer **optlist)
 	 */
 	modp = xf86configptr->conf_modules->mod_load_lst;
 	while (modp) {
-	    count++;
+            for (i = 0; ignore[i]; i++) {
+                if (strcmp(modp->load_name, ignore[i]) == 0)
+                    modp->ignore = 1;
+            }
+            if (!modp->ignore)
+	        count++;
 	    modp = (XF86LoadPtr) modp->list.next;
 	}
+    } else {
+	xf86configptr->conf_modules = xnfcalloc(1, sizeof(XF86ConfModuleRec));
     }
-    if (count == 0)
-	return NULL;
+
+    if (count == 0) {
+	XF86ConfModulePtr ptr = xf86configptr->conf_modules;
+	ptr = xf86addNewLoadDirective(ptr, "extmod", XF86_LOAD_MODULE, NULL);
+	ptr = xf86addNewLoadDirective(ptr, "dbe", XF86_LOAD_MODULE, NULL);
+	ptr = xf86addNewLoadDirective(ptr, "glx", XF86_LOAD_MODULE, NULL);
+	ptr = xf86addNewLoadDirective(ptr, "freetype", XF86_LOAD_MODULE, NULL);
+	ptr = xf86addNewLoadDirective(ptr, "type1", XF86_LOAD_MODULE, NULL);
+	ptr = xf86addNewLoadDirective(ptr, "record", XF86_LOAD_MODULE, NULL);
+	ptr = xf86addNewLoadDirective(ptr, "dri", XF86_LOAD_MODULE, NULL);
+	count = 7;
+    }
 
     /*
      * allocate the memory and walk the list again to fill in the pointers
@@ -287,9 +305,11 @@ xf86ModulelistFromConfig(pointer **optlist)
     if (xf86configptr->conf_modules) {
 	modp = xf86configptr->conf_modules->mod_load_lst;
 	while (modp) {
-	    modulearray[count] = modp->load_name;
-	    optarray[count] = modp->load_opt;
-	    count++;
+            if (!modp->ignore) {
+	        modulearray[count] = modp->load_name;
+	        optarray[count] = modp->load_opt;
+	        count++;
+            }
 	    modp = (XF86LoadPtr) modp->list.next;
 	}
     }
@@ -503,50 +523,16 @@ fixup_video_driver_list(char **drivers)
 static char **
 GenerateDriverlist(char * dirname, char * drivernames)
 {
-#ifdef XFree86LOADER
     char **ret;
     const char *subdirs[] = { dirname, NULL };
     static const char *patlist[] = {"(.*)_drv\\.so", "(.*)_drv\\.o", NULL};
     ret = LoaderListDirs(subdirs, patlist);
     
     /* fix up the probe order for video drivers */
-    if (strstr(dirname, "drivers"))
+    if (strstr(dirname, "drivers") && ret != NULL)
         fixup_video_driver_list(ret);
 
     return ret;
-#else /* non-loadable server */
-    char *cp, **driverlist;
-    int count;
-
-    /* Count the number needed */
-    count = 0;
-    cp = drivernames;
-    while (*cp) {
-	while (*cp && isspace(*cp)) cp++;
-	if (!*cp) break;
-	count++;
-	while (*cp && !isspace(*cp)) cp++;
-    }
-
-    if (!count)
-	return NULL;
-
-    /* Now allocate the array of pointers to 0-terminated driver names */
-    driverlist = (char **)xnfalloc((count + 1) * sizeof(char *));
-    count = 0;
-    cp = drivernames;
-    while (*cp) {
-	while (*cp && isspace(*cp)) cp++;
-	if (!*cp) break;
-	driverlist[count++] = cp;
-	while (*cp && !isspace(*cp)) cp++;
-	if (!*cp) break;
-	*cp++ = 0;
-    }
-    driverlist[count] = NULL;
-
-    return driverlist;
-#endif
 }
 
 
@@ -608,6 +594,9 @@ static Bool
 configFiles(XF86ConfFilesPtr fileconf)
 {
   MessageType pathFrom = X_DEFAULT;
+  int countDirs;
+  char *temp_path;
+  char *log_buf;
 
   /* FontPath */
 
@@ -667,13 +656,13 @@ configFiles(XF86ConfFilesPtr fileconf)
     FatalError("No valid FontPath could be found.");
 
   /* make fontpath more readable in the logfiles */
-  int countDirs = 1;
-  char *temp_path = defaultFontPath;
+  countDirs = 1;
+  temp_path = defaultFontPath;
   while((temp_path = index(temp_path, ',')) != NULL) {
     countDirs++;
     temp_path++;
   }
-  char *log_buf = xnfalloc(strlen(defaultFontPath) + (2 * countDirs) + 1);
+  log_buf = xnfalloc(strlen(defaultFontPath) + (2 * countDirs) + 1);
   if(!log_buf) /* fallback to old method */
     xf86Msg(pathFrom, "FontPath set to \"%s\"\n", defaultFontPath);
   else {
@@ -719,7 +708,6 @@ configFiles(XF86ConfFilesPtr fileconf)
   }
   
   
-#ifdef XFree86LOADER
   /* ModulePath */
 
   if (fileconf) {
@@ -730,7 +718,6 @@ configFiles(XF86ConfFilesPtr fileconf)
   }
 
   xf86Msg(xf86ModPathFrom, "ModulePath set to \"%s\"\n", xf86ModulePath);
-#endif
 
 #if 0
   /* LogFile */
@@ -786,7 +773,8 @@ typedef enum {
     FLAG_RENDER_COLORMAP_MODE,
     FLAG_HANDLE_SPECIAL_KEYS,
     FLAG_RANDR,
-    FLAG_AIGLX
+    FLAG_AIGLX,
+    FLAG_IGNORE_ABI
 } FlagValues;
    
 static OptionInfoRec FlagOptions[] = {
@@ -858,6 +846,8 @@ static OptionInfoRec FlagOptions[] = {
 	{0}, FALSE },
   { FLAG_AIGLX,			"AIGLX",			OPTV_BOOLEAN,
 	{0}, FALSE },
+  { FLAG_IGNORE_ABI,			"IgnoreABI",			OPTV_BOOLEAN,
+	{0}, FALSE },
   { -1,				NULL,				OPTV_NONE,
 	{0}, FALSE },
 };
@@ -916,6 +906,10 @@ configServerFlags(XF86ConfFlagsPtr flagsconf, XF86OptionPtr layoutopts)
 		      &(xf86Info.grabInfo.allowDeactivate));
     xf86GetOptValBool(FlagOptions, FLAG_ALLOW_CLOSEDOWN_GRABS,
 		      &(xf86Info.grabInfo.allowClosedown));
+    xf86GetOptValBool(FlagOptions, FLAG_IGNORE_ABI, &xf86Info.ignoreABI);
+    if (xf86Info.ignoreABI) {
+	    xf86Msg(X_CONFIG, "Ignoring ABI Version\n");
+    }
 
     /*
      * Set things up based on the config file information.  Some of these
@@ -1323,7 +1317,7 @@ configInputKbd(IDevPtr inputp)
 
 #define NULL_IF_EMPTY(s) (s[0] ? s : (xfree(s), (char *)NULL))
 
-  if (!noXkbExtension && !XkbInitialMap) {
+  if (!noXkbExtension) {
     if ((s = xf86SetStrOption(inputp->commonOptions, "XkbKeymap", NULL))) {
       xf86Info.xkbkeymap = NULL_IF_EMPTY(s);
       xf86Msg(X_CONFIG, "XKB: keymap: \"%s\" "
@@ -1456,12 +1450,13 @@ checkCoreInputDevices(serverLayoutPtr servlayoutp, Bool implicitLayout)
     IDevPtr corePointer = NULL, coreKeyboard = NULL;
     Bool foundPointer = FALSE, foundKeyboard = FALSE;
     const char *pointerMsg = NULL, *keyboardMsg = NULL;
-    IDevPtr indp;
+    IDevPtr indp, i;
     IDevRec Pointer, Keyboard;
     XF86ConfInputPtr confInput;
     XF86ConfInputRec defPtr, defKbd;
     int count = 0;
     MessageType from = X_DEFAULT;
+    int found = 0;
 
     /*
      * First check if a core pointer or core keyboard have been specified
@@ -1611,6 +1606,35 @@ checkCoreInputDevices(serverLayoutPtr servlayoutp, Bool implicitLayout)
 	/* This shouldn't happen. */
 	xf86Msg(X_ERROR, "Cannot locate a core pointer device.\n");
 	return FALSE;
+    }
+
+    /*
+     * always synthesize a 'mouse' section configured to send core
+     * events, unless a 'void' section is found, in which case the user
+     * probably wants to run footless.
+     */
+    for (i = servlayoutp->inputs; i->identifier && i->driver; i++) {
+	if (!strcmp(i->driver, "void") || !strcmp(i->driver, "mouse")) {
+	    found = 1; break;
+	}
+    }
+    if (!found) {
+	xf86Msg(X_INFO, "No default mouse found, adding one\n");
+	bzero(&defPtr, sizeof(defPtr));
+	defPtr.inp_identifier = "<default pointer>";
+	defPtr.inp_driver = "mouse";
+	confInput = &defPtr;
+	foundPointer = configInput(&Pointer, confInput, from);
+        if (foundPointer) {
+	    count++;
+	    indp = xnfrealloc(servlayoutp->inputs,
+			      (count + 1) * sizeof(IDevRec));
+	    indp[count - 1] = Pointer;
+	    indp[count - 1].extraOptions =
+				xf86addNewOption(NULL, "AlwaysCore", NULL);
+	    indp[count].identifier = NULL;
+	    servlayoutp->inputs = indp;
+	}
     }
 
     confInput = NULL;
@@ -2219,6 +2243,7 @@ configMonitor(MonPtr monitorp, XF86ConfMonitorPtr conf_monitor)
     monitorp->widthmm = conf_monitor->mon_width;
     monitorp->heightmm = conf_monitor->mon_height;
     monitorp->reducedblanking = FALSE;
+    monitorp->maxPixClock = 0;
     monitorp->options = conf_monitor->mon_option_lst;
 
     /*
@@ -2515,9 +2540,6 @@ configDRI(XF86ConfDRIPtr drip)
     return TRUE;
 }
 #endif
-
-/* Extension enable/disable in miinitext.c */
-extern Bool EnableDisableExtension(char *name, Bool enable);
 
 static Bool
 configExtensions(XF86ConfExtensionsPtr conf_ext)

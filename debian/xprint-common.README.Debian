@@ -1,0 +1,82 @@
+xprint for Debian
+===========================
+
+This package supplies Xprt, the Xprint server.  It is able to work with the
+mozilla printing system, allowing non-latin characters and MathML to be
+printed, among other improvements over the default mozilla printing driver. 
+
+
+Running the Xprint server
+-----------------------
+
+The Xprint server is started and stopped via /etc/init.d/xprint, 
+provided in package xprint-common.
+
+As of version 0.0.8, Xprint supports TrueType fonts.
+
+Xprint requires a print server such as lprng or CUPS to be installed.  It
+uses lpc or lpstat to identify available printers.
+
+The Xprint server is not registered in /etc/inetd.conf.  If you require the use
+of the Xprint server across a network, you will be responsible for
+this yourself (use update-inetd to register the server). Note that
+this question is not the same as using a networked printer via a local
+Xprint server.  The printers themselves are configured via /etc/cups/printers.conf,
+/etc/printcap or similar, independently of Xprint.
+
+
+-----------------------------
+Xprint server will not start:
+Error: could not open default font 'fixed'
+
+Some users have reported experiencing this problem, which prevents Xprt from 
+starting.  We have not yet been able to precisely pinpoint the cause of the
+problem. It appears to happen when some TrueType fonts are not correctly 
+installed.  It may be that Xprt finds the bad fonts and quits working through
+the font list, rather than simply ignoring the bad fonts as it ought to. Hence 
+Xprt does not manage to get to the font directory in the font list containing
+the fixed fonts.
+
+Some users have reported a workaround in /etc/init.d/xprint:
+In line 343, use
+    "sort -u -r"
+instead of
+    "sort -u"
+
+This has not been patched in to the package since it does not actually fix 
+the problem, it simply provides an alternative means of (hopefully) finding a
+fixed font, by reversing the order in which font directories are searched.
+
+
+
+Running Xprint clients
+----------------------
+
+Client programs such as mozilla will require the Xprint server to be 
+identified in variable XPSERVERLIST. This variable is automatically defined
+for all X sessions in /etc/X11/Xsession.d/92xprint-xpserverlist.sh. If
+required, the value for this variable can be obtained manually using
+/etc/init.d/xprint, via "/etc/init.d/xprint get_xpserverlist". 
+
+You may find it helpful to define your default printer, with, for example,
+	export LPDEST=lp
+Unfortunately, default printers set within CUPS are not currently
+recognised.
+
+You can test that Xprt is working by running xplsprinters. 
+xphelloworld prints a simple test page.  Both these test programs are provided 
+by xprint, along with a handful of others.
+
+
+Printing Problems
+-----------------
+
+If you experience the problem that words are run together on the
+printed page with no spaces between them, then please read
+README.printing-problems for further instructions.
+
+This file also describes how to change the printer resolution settings if your
+image on paper is printed too large or too small.
+
+
+ -- Drew Parsons <dparsons@debian.org>, 17 Feb 2005

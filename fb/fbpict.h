@@ -1,5 +1,4 @@
 /*
- * $XFree86: xc/programs/Xserver/fb/fbpict.h,v 1.7 2001/07/18 10:15:02 keithp Exp $
  *
  * Copyright © 2000 Keith Packard, member of The XFree86 Project, Inc.
  *
@@ -30,6 +29,13 @@
 #define _FBPICT_H_
 
 #include "renderedge.h"
+
+
+#if defined(__GNUC__)
+#define INLINE __inline__
+#else
+#define INLINE
+#endif
 
 #define FbIntMult(a,b,t) ( (t) = (a) * (b) + 0x80, ( ( ( (t)>>8 ) + (t) )>>8 ) )
 #define FbIntDiv(a,b)	 (((CARD16) (a) * 255) / (b))
@@ -67,6 +73,37 @@
 #define Red(x) (((x) >> 16) & 0xff)
 #define Green(x) (((x) >> 8) & 0xff)
 #define Blue(x) ((x) & 0xff)
+
+/**
+ * Returns TRUE if the fbComposeGetSolid can be used to get a single solid
+ * color representing every source sampling location of the picture.
+ */
+static INLINE Bool
+fbCanGetSolid(PicturePtr pict)
+{
+    if (pict->pDrawable == NULL ||
+	pict->pDrawable->width != 1 ||
+	pict->pDrawable->height != 1)
+    {
+	return FALSE;
+    }
+    if (pict->repeat != RepeatNormal)
+	return FALSE;
+
+    switch (pict->format) {
+    case PICT_a8r8g8b8:
+    case PICT_x8r8g8b8:
+    case PICT_a8b8g8r8:
+    case PICT_x8b8g8r8:
+    case PICT_r8g8b8:
+    case PICT_b8g8r8:
+    case PICT_r5g6b5:
+    case PICT_b5g6r5:
+	return TRUE;
+    default:
+	return FALSE;
+    }
+}
 
 #define fbComposeGetSolid(pict, bits, fmt) { \
     FbBits	*__bits__; \
@@ -320,12 +357,6 @@
 #define FASTCALL __attribute__((regparm(3)))
 #else
 #define FASTCALL
-#endif
-
-#if defined(__GNUC__)
-#define INLINE __inline__
-#else
-#define INLINE
 #endif
 
 typedef struct _FbComposeData {

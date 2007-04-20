@@ -116,30 +116,10 @@ extern Bool noXkbExtension;
     xf86UnblockSIGIO(__sigstate); \
 }
 
-#ifdef XTESTEXT1
-
-#define	XTestSERVER_SIDE
-#include <X11/extensions/xtestext1.h>
-extern short xtest_mousex;
-extern short xtest_mousey;
-extern int   on_steal_input;          
-extern Bool  XTestStealKeyData();
-extern void  XTestStealMotionData();
-#define ENQUEUE(ev, code, direction, dev_type) \
-  (ev)->u.u.detail = (code); \
-  (ev)->u.u.type   = (direction); \
-  if (!on_steal_input ||  \
-      XTestStealKeyData((ev)->u.u.detail, (ev)->u.u.type, dev_type, \
-			xtest_mousex, xtest_mousey)) \
-  EqEnqueue((ev))
-#else /* ! XTESTEXT1 */
-
 #define ENQUEUE(ev, code, direction, dev_type) \
   (ev)->u.u.detail = (code); \
   (ev)->u.u.type   = (direction); \
   EqEnqueue((ev))
-
-#endif
 
 /*
  * The first of many hacks to get VT switching to work under
@@ -1275,12 +1255,8 @@ xf86InterceptSigIll(void (*sigillhandler)(void))
     xf86SigIllHandler = sigillhandler;
 }
 
-#ifdef HAVE_EXECINFO_H
-#define HAVE_BACKTRACE
-#include <execinfo.h>
-#endif
-
 #ifdef HAVE_BACKTRACE
+#include <execinfo.h>
 
 static __inline__ void xorg_backtrace(void)
 {
@@ -1660,8 +1636,8 @@ xf86VTSwitch()
 
 /* Input handler registration */
 
-_X_EXPORT pointer
-xf86AddInputHandler(int fd, InputHandlerProc proc, pointer data)
+static pointer
+addInputHandler(int fd, InputHandlerProc proc, pointer data)
 {
     IHPtr ih;
 
@@ -1680,25 +1656,33 @@ xf86AddInputHandler(int fd, InputHandlerProc proc, pointer data)
     ih->next = InputHandlers;
     InputHandlers = ih;
 
-    AddEnabledDevice(fd);
-
     return ih;
 }
 
-_X_EXPORT int
-xf86RemoveInputHandler(pointer handler)
-{
-    IHPtr ih, p;
-    int fd;
-    
-    if (!handler)
-	return -1;
+_X_EXPORT pointer
+xf86AddInputHandler(int fd, InputHandlerProc proc, pointer data)
+{   
+    IHPtr ih = addInputHandler(fd, proc, data);
 
-    ih = handler;
-    fd = ih->fd;
-    
-    if (ih->fd >= 0)
-	RemoveEnabledDevice(ih->fd);
+    if (ih)
+        AddEnabledDevice(fd);
+    return ih;
+}
+
+_X_EXPORT pointer
+xf86AddGeneralHandler(int fd, InputHandlerProc proc, pointer data)
+{   
+    IHPtr ih = addInputHandler(fd, proc, data);
+
+    if (ih)
+        AddGeneralSocket(fd);
+    return ih;
+}
+
+static void
+removeInputHandler(IHPtr ih)
+{
+    IHPtr p;
 
     if (ih == InputHandlers)
 	InputHandlers = ih->next;
@@ -1710,6 +1694,43 @@ xf86RemoveInputHandler(pointer handler)
 	    p->next = ih->next;
     }
     xfree(ih);
+}
+
+_X_EXPORT int
+xf86RemoveInputHandler(pointer handler)
+{
+    IHPtr ih;
+    int fd;
+    
+    if (!handler)
+	return -1;
+
+    ih = handler;
+    fd = ih->fd;
+    
+    if (ih->fd >= 0)
+	RemoveEnabledDevice(ih->fd);
+    removeInputHandler(ih);
+
+    return fd;
+}
+
+_X_EXPORT int
+xf86RemoveGeneralHandler(pointer handler)
+{
+    IHPtr ih;
+    int fd;
+    
+    if (!handler)
+	return -1;
+
+    ih = handler;
+    fd = ih->fd;
+    
+    if (ih->fd >= 0)
+	RemoveGeneralSocket(ih->fd);
+    removeInputHandler(ih);
+
     return fd;
 }
 
@@ -1728,6 +1749,20 @@ xf86DisableInputHandler(pointer handler)
 }
 
 _X_EXPORT void
+xf86DisableGeneralHandler(pointer handler)
+{
+    IHPtr ih;
+
+    if (!handler)
+	return;
+
+    ih = handler;
+    ih->enabled = FALSE;
+    if (ih->fd >= 0)
+	RemoveGeneralSocket(ih->fd);
+}
+
+_X_EXPORT void
 xf86EnableInputHandler(pointer handler)
 {
     IHPtr ih;
@@ -1739,6 +1774,20 @@ xf86EnableInputHandler(pointer handler)
     ih->enabled = TRUE;
     if (ih->fd >= 0)
 	AddEnabledDevice(ih->fd);
+}
+
+_X_EXPORT void
+xf86EnableGeneralHandler(pointer handler)
+{
+    IHPtr ih;
+
+    if (!handler)
+	return;
+
+    ih = handler;
+    ih->enabled = TRUE;
+    if (ih->fd >= 0)
+	AddGeneralSocket(ih->fd);
 }
 
 /*
@@ -1761,49 +1810,6 @@ xf86EnableVTSwitch(Bool new)
     }
     return old;
 }
-
-#ifdef XTESTEXT1
-
-void
-XTestGetPointerPos(short *fmousex, short *fmousey)
-{
-  int x,y;
-
-  miPointerPosition(&x, &y);
-  *fmousex = x;
-  *fmousey = y;
-}
-
-
-
-void
-XTestJumpPointer(int jx, int jy, int dev_type)
-{
-  miPointerAbsoluteCursor(jx, jy, GetTimeInMillis() );
-}
-
-void
-XTestGenerateEvent(int dev_type, int keycode, int keystate, int mousex,
-		   int mousey)
-{
-  xEvent tevent;
-  
-  tevent.u.u.type = (dev_type == XE_POINTER) ?
-    (keystate == XTestKEY_UP) ? ButtonRelease : ButtonPress :
-      (keystate == XTestKEY_UP) ? KeyRelease : KeyPress;
-  tevent.u.u.detail = keycode;
-  tevent.u.keyButtonPointer.rootX = mousex;
-  tevent.u.keyButtonPointer.rootY = mousey;
-  tevent.u.keyButtonPointer.time = xf86Info.lastEventTime = GetTimeInMillis();
-#ifdef XINPUT
-  xf86eqEnqueue(&tevent);
-#else
-  mieqEnqueue(&tevent);
-#endif
-  xf86Info.inputPending = TRUE;               /* virtual event */
-}
-
-#endif /* XTESTEXT1 */
 
 void
 xf86ReloadInputDevs(int sig)

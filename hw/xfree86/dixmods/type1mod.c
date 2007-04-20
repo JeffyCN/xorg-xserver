@@ -23,16 +23,15 @@
  * dealings in this Software without prior written authorization from the
  * XFree86 Project.
  */
-/* $XFree86: xc/lib/font/Type1/module/type1mod.c,v 1.10 2002/12/09 17:29:59 dawes Exp $ */
+
+#ifdef HAVE_XORG_CONFIG_H
+#include <xorg-config.h>
+#endif
 
 #include "misc.h"
 
 #include <X11/fonts/fontmod.h>
 #include "xf86Module.h"
-
-#ifdef HAVE_XORG_CONFIG_H
-#include <xorg-config.h>
-#endif
 
 static MODULESETUPPROTO(type1Setup);
 
@@ -55,12 +54,9 @@ static XF86ModuleVersionInfo VersRec =
 	{0,0,0,0}       /* signature, to be patched into the file by a tool */
 };
 
-XF86ModuleData type1ModuleData = { &VersRec, type1Setup, NULL };
+_X_EXPORT XF86ModuleData type1ModuleData = { &VersRec, type1Setup, NULL };
 
 extern void Type1RegisterFontFileFunctions(void);
-#ifdef BUILDCID
-extern void CIDRegisterFontFileFunctions(void);
-#endif
 
 FontModule type1Module = {
     Type1RegisterFontFileFunctions,
@@ -68,23 +64,11 @@ FontModule type1Module = {
     NULL
 };
 
-#ifdef BUILDCID
-FontModule CIDModule = {
-    CIDRegisterFontFileFunctions,
-    "CID",
-    NULL
-};
-#endif
-
 static pointer
 type1Setup(pointer module, pointer opts, int *errmaj, int *errmin)
 {
     type1Module.module = module;
     LoadFont(&type1Module);
-#ifdef BUILDCID
-    CIDModule.module = module;
-    LoadFont(&CIDModule);
-#endif
 
     /* Need a non-NULL return */
     return (pointer)1;

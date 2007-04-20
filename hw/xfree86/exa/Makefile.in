@@ -14,6 +14,11 @@
 
 @SET_MAKE@
 
+#							-*- Makefile -*-
+# Rules for generating files using the C pre-processor
+# (Replaces CppFileTarget from Imake)
+
+
 srcdir = @srcdir@
 top_srcdir = @top_srcdir@
 VPATH = @srcdir@
@@ -36,8 +41,9 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
+DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in \
+	$(top_srcdir)/cpprules.in
 subdir = hw/xfree86/exa
-DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/acinclude.m4 \
 	$(top_srcdir)/configure.ac
@@ -59,7 +65,7 @@ am__vpath_adj = case $$p in \
     *) f=$$p;; \
   esac;
 am__strip_dir = `echo $$p | sed -e 's|^.*/||'`;
-am__installdirs = "$(DESTDIR)$(moduledir)"
+am__installdirs = "$(DESTDIR)$(moduledir)" "$(DESTDIR)$(drivermandir)"
 moduleLTLIBRARIES_INSTALL = $(INSTALL)
 LTLIBRARIES = $(module_LTLIBRARIES)
 libexa_la_DEPENDENCIES = ../../../exa/libexa.la
@@ -78,6 +84,8 @@ LINK = $(LIBTOOL) --tag=CC --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
 	$(AM_LDFLAGS) $(LDFLAGS) -o $@
 SOURCES = $(libexa_la_SOURCES)
 DIST_SOURCES = $(libexa_la_SOURCES)
+drivermanDATA_INSTALL = $(INSTALL_DATA)
+DATA = $(driverman_DATA)
 ETAGS = etags
 CTAGS = ctags
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
@@ -109,6 +117,7 @@ AUTOCONF = @AUTOCONF@
 AUTOHEADER = @AUTOHEADER@
 AUTOMAKE = @AUTOMAKE@
 AWK = @AWK@
+BASE_FONT_PATH = @BASE_FONT_PATH@
 BSD_KBD_MODE_FALSE = @BSD_KBD_MODE_FALSE@
 BSD_KBD_MODE_TRUE = @BSD_KBD_MODE_TRUE@
 BUILDDOCS_FALSE = @BUILDDOCS_FALSE@
@@ -145,6 +154,7 @@ DBE_FALSE = @DBE_FALSE@
 DBE_TRUE = @DBE_TRUE@
 DEBUG_FALSE = @DEBUG_FALSE@
 DEBUG_TRUE = @DEBUG_TRUE@
+DEFAULT_LIBRARY_PATH = @DEFAULT_LIBRARY_PATH@
 DEFAULT_LOGPREFIX = @DEFAULT_LOGPREFIX@
 DEFAULT_MODULE_PATH = @DEFAULT_MODULE_PATH@
 DEFS = @DEFS@
@@ -237,12 +247,6 @@ KDRIVE_LIBS = @KDRIVE_LIBS@
 KDRIVE_PURE_INCS = @KDRIVE_PURE_INCS@
 KDRIVE_PURE_LIBS = @KDRIVE_PURE_LIBS@
 KDRIVE_TRUE = @KDRIVE_TRUE@
-LBXUTIL_CFLAGS = @LBXUTIL_CFLAGS@
-LBXUTIL_LIBS = @LBXUTIL_LIBS@
-LBXUTIL_TEST_CFLAGS = @LBXUTIL_TEST_CFLAGS@
-LBXUTIL_TEST_LIBS = @LBXUTIL_TEST_LIBS@
-LBX_FALSE = @LBX_FALSE@
-LBX_TRUE = @LBX_TRUE@
 LDFLAGS = @LDFLAGS@
 LD_EXPORT_SYMBOLS_FLAG = @LD_EXPORT_SYMBOLS_FLAG@
 LEX = @LEX@
@@ -265,7 +269,6 @@ LNXACPI_TRUE = @LNXACPI_TRUE@
 LNXAPM_FALSE = @LNXAPM_FALSE@
 LNXAPM_TRUE = @LNXAPM_TRUE@
 LN_S = @LN_S@
-LOADER_DEFINES = @LOADER_DEFINES@
 LTLIBOBJS = @LTLIBOBJS@
 MAINT = @MAINT@
 MAINTAINER_MODE_FALSE = @MAINTAINER_MODE_FALSE@
@@ -278,8 +281,6 @@ MAKE_TEXT = @MAKE_TEXT@
 MESA_SOURCE = @MESA_SOURCE@
 MFB_FALSE = @MFB_FALSE@
 MFB_TRUE = @MFB_TRUE@
-MISCUTILS_FALSE = @MISCUTILS_FALSE@
-MISCUTILS_TRUE = @MISCUTILS_TRUE@
 MISC_MAN_DIR = @MISC_MAN_DIR@
 MISC_MAN_SUFFIX = @MISC_MAN_SUFFIX@
 MITSHM_FALSE = @MITSHM_FALSE@
@@ -288,7 +289,6 @@ MKFONTDIR = @MKFONTDIR@
 MKFONTSCALE = @MKFONTSCALE@
 MMX_CAPABLE_FALSE = @MMX_CAPABLE_FALSE@
 MMX_CAPABLE_TRUE = @MMX_CAPABLE_TRUE@
-MODULE_DEFINES = @MODULE_DEFINES@
 MULTIBUFFER_FALSE = @MULTIBUFFER_FALSE@
 MULTIBUFFER_TRUE = @MULTIBUFFER_TRUE@
 NEED_STRLCAT_FALSE = @NEED_STRLCAT_FALSE@
@@ -321,9 +321,9 @@ RGB_DB = @RGB_DB@
 SCREENSAVER_FALSE = @SCREENSAVER_FALSE@
 SCREENSAVER_TRUE = @SCREENSAVER_TRUE@
 SERVERCONFIGdir = @SERVERCONFIGdir@
-SERVER_DEFINES = @SERVER_DEFINES@
 SET_MAKE = @SET_MAKE@
 SHELL = @SHELL@
+SOLARIS_ASM_CFLAGS = @SOLARIS_ASM_CFLAGS@
 SOLARIS_ASM_INLINE_FALSE = @SOLARIS_ASM_INLINE_FALSE@
 SOLARIS_ASM_INLINE_TRUE = @SOLARIS_ASM_INLINE_TRUE@
 SOLARIS_INOUT_ARCH = @SOLARIS_INOUT_ARCH@
@@ -335,7 +335,9 @@ STRIP = @STRIP@
 SUN_KBD_MODE_FALSE = @SUN_KBD_MODE_FALSE@
 SUN_KBD_MODE_TRUE = @SUN_KBD_MODE_TRUE@
 SYS_LIBS = @SYS_LIBS@
+TSLIB_CFLAGS = @TSLIB_CFLAGS@
 TSLIB_FALSE = @TSLIB_FALSE@
+TSLIB_LIBS = @TSLIB_LIBS@
 TSLIB_TRUE = @TSLIB_TRUE@
 USE_CURSES_FALSE = @USE_CURSES_FALSE@
 USE_CURSES_TRUE = @USE_CURSES_TRUE@
@@ -348,6 +350,10 @@ VENDOR_STRING_SHORT = @VENDOR_STRING_SHORT@
 VERSION = @VERSION@
 X11EXAMPLES_DEP_CFLAGS = @X11EXAMPLES_DEP_CFLAGS@
 X11EXAMPLES_DEP_LIBS = @X11EXAMPLES_DEP_LIBS@
+XACE_FALSE = @XACE_FALSE@
+XACE_TRUE = @XACE_TRUE@
+XCALIBRATE_FALSE = @XCALIBRATE_FALSE@
+XCALIBRATE_TRUE = @XCALIBRATE_TRUE@
 XCSECURITY_FALSE = @XCSECURITY_FALSE@
 XCSECURITY_TRUE = @XCSECURITY_TRUE@
 XDMAUTH_FALSE = @XDMAUTH_FALSE@
@@ -374,6 +380,8 @@ XEVIE_TRUE = @XEVIE_TRUE@
 XF86BIGFONT_FALSE = @XF86BIGFONT_FALSE@
 XF86BIGFONT_TRUE = @XF86BIGFONT_TRUE@
 XF86CONFIGFILE = @XF86CONFIGFILE@
+XF86UTILS_FALSE = @XF86UTILS_FALSE@
+XF86UTILS_TRUE = @XF86UTILS_TRUE@
 XGLMODULES_CFLAGS = @XGLMODULES_CFLAGS@
 XGLMODULES_LIBS = @XGLMODULES_LIBS@
 XGLXMODULES_CFLAGS = @XGLXMODULES_CFLAGS@
@@ -547,18 +555,56 @@ INCLUDES = \
 	-I$(srcdir)/../../../exa \
 	-I$(srcdir)/../../../miext/cw
 
-AM_CFLAGS = $(XORG_CFLAGS) @SERVER_DEFINES@ @MODULE_DEFINES@ @LOADER_DEFINES@
+AM_CFLAGS = $(DIX_CFLAGS) $(XORG_CFLAGS)
 libexa_la_SOURCES = \
 	examodule.c
 
 libexa_la_LIBADD = \
 	../../../exa/libexa.la
 
+SED = sed
+SUFFIXES = .pre .man .man.pre
+
+# Translate XCOMM into pound sign with sed, rather than passing -DXCOMM=XCOMM
+# to cpp, because that trick does not work on all ANSI C preprocessors.
+# Delete line numbers from the cpp output (-P is not portable, I guess).
+# Allow XCOMM to be preceded by whitespace and provide a means of generating
+# output lines with trailing backslashes.
+# Allow XHASH to always be substituted, even in cases where XCOMM isn't.
+CPP_SED_MAGIC = $(SED) -e '/^\#  *[0-9][0-9]*  *.*$$/d' \
+                       -e '/^\#line  *[0-9][0-9]*  *.*$$/d' \
+                       -e '/^[         ]*XCOMM$$/s/XCOMM/\#/' \
+                       -e '/^[         ]*XCOMM[^a-zA-Z0-9_]/s/XCOMM/\#/' \
+                       -e '/^[         ]*XHASH/s/XHASH/\#/' \
+                       -e '/\@\@$$/s/\@\@$$/\\/'
+
+
+# Strings to replace in man pages
+XORGRELSTRING = @PACKAGE_STRING@
+XORGMANNAME = X Version 11
+XSERVERNAME = Xorg
+MANDEFS = \
+        -D__vendorversion__="\"$(XORGRELSTRING)\" \"$(XORGMANNAME)\"" \
+        -D__xorgversion__="\"$(XORGRELSTRING)\" \"$(XORGMANNAME)\"" \
+	-D__appmansuffix__=$(APP_MAN_SUFFIX) \
+	-D__filemansuffix__=$(FILE_MAN_SUFFIX) \
+	-D__libmansuffix__=$(LIB_MAN_SUFFIX) \
+	-D__miscmansuffix__=$(MISC_MAN_SUFFIX) \
+	-D__drivermansuffix__=$(DRIVER_MAN_SUFFIX) \
+	-D__adminmansuffix__=$(ADMIN_MAN_SUFFIX) \
+	-D__projectroot__=$(prefix) \
+	-D__xconfigfile__=$(__XCONFIGFILE__) -D__xconfigdir__=$(XCONFIGDIR) \
+	-D__xlogfile__=$(XLOGFILE) -D__xservername__=$(XSERVERNAME) 
+
+drivermandir = $(DRIVER_MAN_DIR)
+driverman_DATA = exa.$(DRIVER_MAN_SUFFIX)
+CLEANFILES = $(driverman_DATA) exa.man
+EXTRA_DIST = exa.man.pre
 all: all-am
 
 .SUFFIXES:
-.SUFFIXES: .c .lo .o .obj
-$(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am  $(am__configure_deps)
+.SUFFIXES: .pre .man .man.pre .c .lo .o .obj
+$(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am $(top_srcdir)/cpprules.in $(am__configure_deps)
 	@for dep in $?; do \
 	  case '$(am__configure_deps)' in \
 	    *$$dep*) \
@@ -655,6 +701,23 @@ clean-libtool:
 distclean-libtool:
 	-rm -f libtool
 uninstall-info-am:
+install-drivermanDATA: $(driverman_DATA)
+	@$(NORMAL_INSTALL)
+	test -z "$(drivermandir)" || $(mkdir_p) "$(DESTDIR)$(drivermandir)"
+	@list='$(driverman_DATA)'; for p in $$list; do \
+	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
+	  f=$(am__strip_dir) \
+	  echo " $(drivermanDATA_INSTALL) '$$d$$p' '$(DESTDIR)$(drivermandir)/$$f'"; \
+	  $(drivermanDATA_INSTALL) "$$d$$p" "$(DESTDIR)$(drivermandir)/$$f"; \
+	done
+
+uninstall-drivermanDATA:
+	@$(NORMAL_UNINSTALL)
+	@list='$(driverman_DATA)'; for p in $$list; do \
+	  f=$(am__strip_dir) \
+	  echo " rm -f '$(DESTDIR)$(drivermandir)/$$f'"; \
+	  rm -f "$(DESTDIR)$(drivermandir)/$$f"; \
+	done
 
 ID: $(HEADERS) $(SOURCES) $(LISP) $(TAGS_FILES)
 	list='$(SOURCES) $(HEADERS) $(LISP) $(TAGS_FILES)'; \
@@ -705,6 +768,7 @@ distclean-tags:
 	-rm -f TAGS ID GTAGS GRTAGS GSYMS GPATH tags
 
 distdir: $(DISTFILES)
+	$(mkdir_p) $(distdir)/../../..
 	@srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`; \
 	topsrcdirstrip=`echo "$(top_srcdir)" | sed 's|.|.|g'`; \
 	list='$(DISTFILES)'; for file in $$list; do \
@@ -733,9 +797,9 @@ distdir: $(DISTFILES)
 	done
 check-am: all-am
 check: check-am
-all-am: Makefile $(LTLIBRARIES)
+all-am: Makefile $(LTLIBRARIES) $(DATA)
 installdirs:
-	for dir in "$(DESTDIR)$(moduledir)"; do \
+	for dir in "$(DESTDIR)$(moduledir)" "$(DESTDIR)$(drivermandir)"; do \
 	  test -z "$$dir" || $(mkdir_p) "$$dir"; \
 	done
 install: install-am
@@ -755,6 +819,7 @@ install-strip:
 mostlyclean-generic:
 
 clean-generic:
+	-test -z "$(CLEANFILES)" || rm -f $(CLEANFILES)
 
 distclean-generic:
 	-test -z "$(CONFIG_CLEAN_FILES)" || rm -f $(CONFIG_CLEAN_FILES)
@@ -783,7 +848,7 @@ info: info-am
 
 info-am:
 
-install-data-am: install-moduleLTLIBRARIES
+install-data-am: install-drivermanDATA install-moduleLTLIBRARIES
 
 install-exec-am:
 
@@ -811,21 +876,33 @@ ps: ps-am
 
 ps-am:
 
-uninstall-am: uninstall-info-am uninstall-moduleLTLIBRARIES
+uninstall-am: uninstall-drivermanDATA uninstall-info-am \
+	uninstall-moduleLTLIBRARIES
 
 .PHONY: CTAGS GTAGS all all-am check check-am clean clean-generic \
 	clean-libtool clean-moduleLTLIBRARIES ctags distclean \
 	distclean-compile distclean-generic distclean-libtool \
 	distclean-tags distdir dvi dvi-am html html-am info info-am \
-	install install-am install-data install-data-am install-exec \
-	install-exec-am install-info install-info-am install-man \
+	install install-am install-data install-data-am \
+	install-drivermanDATA install-exec install-exec-am \
+	install-info install-info-am install-man \
 	install-moduleLTLIBRARIES install-strip installcheck \
 	installcheck-am installdirs maintainer-clean \
 	maintainer-clean-generic mostlyclean mostlyclean-compile \
 	mostlyclean-generic mostlyclean-libtool pdf pdf-am ps ps-am \
-	tags uninstall uninstall-am uninstall-info-am \
-	uninstall-moduleLTLIBRARIES
+	tags uninstall uninstall-am uninstall-drivermanDATA \
+	uninstall-info-am uninstall-moduleLTLIBRARIES
 
+
+.pre:
+	$(RAWCPP) $(RAWCPPFLAGS) $(CPP_FILES_FLAGS) < $< | $(CPP_SED_MAGIC) > $@
+
+.man.pre.man:
+	$(RAWCPP) $(RAWCPPFLAGS) $(MANDEFS) $(EXTRAMANDEFS) < $< | $(CPP_SED_MAGIC) > $@
+
+exa.$(DRIVER_MAN_SUFFIX): exa.man
+	-rm -f exa.$(DRIVER_MAN_SUFFIX)
+	$(LN_S) exa.man exa.$(DRIVER_MAN_SUFFIX)
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:

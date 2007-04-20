@@ -1,4 +1,3 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/dummylib/xalloc.c,v 1.1 2000/02/13 03:06:39 dawes Exp $ */
 
 #ifdef HAVE_XORG_CONFIG_H
 #include <xorg-config.h>
@@ -94,3 +93,19 @@ Xstrdup(const char *s)
 	strcpy(sd, s);
     return sd;
 }
+
+char *
+XNFstrdup(const char *s)
+{
+    char *sd;
+    size_t len;
+
+    if (s == NULL)
+	return NULL;
+    
+    len = strlen(s) + 1;
+    sd = (char *)XNFalloc(len);
+    strlcpy(sd, s, len);
+    return sd;
+}
+

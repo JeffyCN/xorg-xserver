@@ -1,5 +1,3 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/ddc/xf86DDC.c,v 1.26 2003/08/22 17:56:24 dawes Exp $ */
-
 /* xf86DDC.c 
  * 
  * Copyright 1998,1999 by Egbert Eich <Egbert.Eich@Physik.TU-Darmstadt.DE>
@@ -15,20 +13,9 @@
 #include "ddcPriv.h"
 #include <string.h>
 
-#ifdef XFree86LOADER
 static const OptionInfoRec *DDCAvailableOptions(void *unused);
-#endif
 
-const char *i2cSymbols[] = {
-    "xf86CreateI2CDevRec",
-    "xf86I2CDevInit",
-    "xf86I2CWriteRead",
-    "xf86I2CFindDev",
-    "xf86DestroyI2CDevRec",
-    NULL
-};
-
-#ifdef XFree86LOADER
+#if DDC_MODULE
 
 static MODULESETUPPROTO(ddcSetup);
 
@@ -46,7 +33,7 @@ static XF86ModuleVersionInfo ddcVersRec =
     {0,0,0,0}
 };
 
-XF86ModuleData ddcModuleData = { &ddcVersRec, ddcSetup, NULL };
+_X_EXPORT XF86ModuleData ddcModuleData = { &ddcVersRec, ddcSetup, NULL };
 
 ModuleInfoRec DDC = {
     1,
@@ -63,16 +50,7 @@ ddcSetup(pointer module, pointer opts, int *errmaj, int *errmin)
 
     if (!setupDone) {
 	setupDone = TRUE;
-#ifndef REMOVE_LOADER_CHECK_MODULE_INFO
-	if (xf86LoaderCheckSymbol("xf86AddModuleInfo"))
-#endif
 	xf86AddModuleInfo(&DDC, module);
-	/*
-	 * Tell the loader about symbols from other modules that this module
-	 * might refer to.
-	 */
-	LoaderRefSymLists(i2cSymbols, NULL);
-
     } 
     /*
      * The return value must be non-NULL on success even though there
@@ -132,15 +110,24 @@ static const OptionInfoRec DDCOptions[] = {
     { -1,		NULL,		OPTV_NONE,	{0},	FALSE },
 };
 
-#ifdef XFree86LOADER
 /*ARGSUSED*/
 static const OptionInfoRec *
 DDCAvailableOptions(void *unused)
 {
     return (DDCOptions);
 }
-#endif
 
+/**
+ * Attempts to probe the monitor for EDID information, if NoDDC and NoDDC1 are
+ * unset.  EDID information blocks are interpreted and the results returned in
+ * an xf86MonPtr.
+ *
+ * This function does not affect the list of modes used by drivers -- it is up
+ * to the driver to decide policy on what to do with EDID information.
+ *
+ * @return pointer to a new xf86MonPtr containing the EDID information.
+ * @return NULL if no monitor attached or failure to interpret the EDID.
+ */
 xf86MonPtr 
 xf86DoEDID_DDC1(
     int scrnIndex, DDC1SetSpeedProc DDC1SetSpeed, 
@@ -181,6 +168,17 @@ xf86DoEDID_DDC1(
 	return tmp;
 }
 
+/**
+ * Attempts to probe the monitor for EDID information, if NoDDC and NoDDC2 are
+ * unset.  EDID information blocks are interpreted and the results returned in
+ * an xf86MonPtr.
+ *
+ * This function does not affect the list of modes used by drivers -- it is up
+ * to the driver to decide policy on what to do with EDID information.
+ *
+ * @return pointer to a new xf86MonPtr containing the EDID information.
+ * @return NULL if no monitor attached or failure to interpret the EDID.
+ */
 xf86MonPtr
 xf86DoEDID_DDC2(int scrnIndex, I2CBusPtr pBus)
 {
@@ -339,8 +337,12 @@ DDCRead_DDC2(int scrnIndex, I2CBusPtr pBus, int start, int len)
     unsigned char *R_Buffer;
     int i;
     
-    xf86LoaderReqSymLists(i2cSymbols, NULL);
-
+    /*
+     * Slow down the bus so that older monitors don't 
+     * miss things.
+     */
+    pBus->RiseFallTime = 20;
+    
     if (!(dev = xf86I2CFindDev(pBus, 0x00A0))) {
 	dev = xf86CreateI2CDevRec();
 	dev->DevName = "ddc2";
@@ -348,7 +350,6 @@ DDCRead_DDC2(int scrnIndex, I2CBusPtr pBus, int start, int len)
 	dev->ByteTimeout = 2200; /* VESA DDC spec 3 p. 43 (+10 %) */
 	dev->StartTimeout = 550;
 	dev->BitTimeout = 40;
-	dev->ByteTimeout = 40;
 	dev->AcknTimeout = 40;
 
 	dev->pI2CBus = pBus;

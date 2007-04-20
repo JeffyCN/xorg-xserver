@@ -1,0 +1,2 @@
+# xfonts-encodings is not a font package
+xprint-common binary: package-depends-on-an-x-font-package depends: xfonts-encodings

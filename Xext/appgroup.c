@@ -1,4 +1,3 @@
-/* $XFree86: xc/programs/Xserver/Xext/appgroup.c,v 1.10tsi Exp $ */
 /*
 Copyright 1996, 1998, 2001  The Open Group
 
@@ -24,7 +23,6 @@ not be used in advertising or otherwise to promote the sale, use or
 other dealings in this Software without prior written authorization
 from The Open Group.
 */
-/* $Xorg: appgroup.c,v 1.6 2001/02/09 02:04:32 xorgcvs Exp $ */
 
 #define NEED_REPLIES
 #define NEED_EVENTS
@@ -43,9 +41,8 @@ from The Open Group.
 #include "servermd.h"
 #define _XAG_SERVER_
 #include <X11/extensions/Xagstr.h>
-#include <X11/extensions/Xagsrv.h>
-#define _SECURITY_SERVER
-#include <X11/extensions/security.h>
+#include "xacestr.h"
+#include "securitysrv.h"
 #include <X11/Xfuncproto.h>
 
 #define XSERV_t
@@ -77,10 +74,6 @@ static int		ProcXagDispatch(ClientPtr client);
 static int              SProcXagDispatch(ClientPtr client);
 static void		XagResetProc(ExtensionEntry* extEntry);
 
-#if 0
-static unsigned char	XagReqCode = 0;
-static int		XagErrorBase;
-#endif
 static int		XagCallbackRefCount = 0;
 
 static RESTYPE		RT_APPGROUP;
@@ -100,7 +93,7 @@ int XagAppGroupFree(
 
     if (pAppGrp->leader)
 	for (i = 0; i < pAppGrp->nclients; i++) {
-	    pAppGrp->clients[i]->appgroup = NULL;
+	    if (pAppGrp->clients[i] == NULL) continue;
 	    CloseDownClient (pAppGrp->clients[i]);
 	}
 
@@ -129,60 +122,10 @@ void XagClientStateChange(
     pointer nulldata,
     pointer calldata)
 {
-    SecurityAuthorizationPtr pAuth;
     NewClientInfoRec* pci = (NewClientInfoRec*) calldata;
     ClientPtr pClient = pci->client;
-    AppGroupPtr pAppGrp;
-    XID authId = 0;
-
-    if (!pClient->appgroup) {
-	switch (pClient->clientState) {
-
-	case ClientStateAuthenticating:
-	case ClientStateRunning: 
-	case ClientStateCheckingSecurity:
-	    return;
-
-	case ClientStateInitial: 
-	case ClientStateCheckedSecurity:
-	    /* 
-	     * If the client is connecting via a firewall proxy (which
-	     * uses XC-QUERY-SECURITY-1, then the authId is available
-	     * during ClientStateCheckedSecurity, otherwise it's
-	     * available during ClientStateInitial.
-	     *
-	     * Don't get it from pClient because can't guarantee the order
-	     * of the callbacks and the security extension might not have
-	     * plugged it in yet.
-	     */
-	    authId = AuthorizationIDOfClient(pClient);
-	    break;
-
-	case ClientStateGone:
-	case ClientStateRetained:
-	    /*
-	     * Don't get if from AuthorizationIDOfClient because can't
-	     * guarantee the order of the callbacks and the security
-	     * extension may have torn down the client's private data
-	     */
-	    authId = pClient->authId;
-	    break;
-	}
-
-	if (authId == None)
-	    return;
-
-	pAuth = (SecurityAuthorizationPtr)SecurityLookupIDByType(pClient,
-		authId, SecurityAuthorizationResType, SecurityReadAccess);
-
-	if (pAuth == NULL)
-	    return;
-
-	for (pAppGrp = appGrpList; pAppGrp != NULL; pAppGrp = pAppGrp->next)
-	    if (pAppGrp->appgroupId == pAuth->group) break;
-    } else {
-	pAppGrp = pClient->appgroup;
-    }
+    AppGroupPtr pAppGrp = pClient->appgroup;
+    int slot;
 
     if (!pAppGrp)
 	return;
@@ -195,16 +138,22 @@ void XagClientStateChange(
 
     case ClientStateInitial: 
     case ClientStateCheckedSecurity:
+	slot = -1;
 	/* see the comment above about Initial vs. CheckedSecurity */
-	{
+	if (pAppGrp->nclients != 0) {
 	    /* if this client already in AppGroup, don't add it again */
 	    int i;
 	    for (i = 0; i < pAppGrp->nclients; i++)
 		if (pClient == pAppGrp->clients[i]) return;
+		if (slot == -1 && pAppGrp->clients[i] == NULL)
+			slot = i;
 	}
-	pAppGrp->clients = (ClientPtr*) xrealloc (pAppGrp->clients, 
-				++pAppGrp->nclients * sizeof (ClientPtr));
-	pAppGrp->clients[pAppGrp->nclients - 1] = pClient;
+	if (slot == -1) {
+	    slot = pAppGrp->nclients++;
+	    pAppGrp->clients = (ClientPtr*) xrealloc (pAppGrp->clients, 
+				pAppGrp->nclients * sizeof (ClientPtr));
+	}
+	pAppGrp->clients[slot] = pClient;
 	pClient->appgroup = pAppGrp;
 	break;
 
@@ -217,10 +166,6 @@ void XagClientStateChange(
 		    pAppGrp->clients[i] = NULL;
 		    break;
 		}
-	    for (i = 0; i < pAppGrp->nclients; i++)
-		if (pAppGrp->clients[i] == NULL && i + 1 < pAppGrp->nclients)
-		    pAppGrp->clients[i] = pAppGrp->clients[i + 1];
-	    pAppGrp->nclients--;
 	}
 	pClient->appgroup = NULL; /* redundant, pClient will be freed */
 	break;
@@ -230,19 +175,6 @@ void XagClientStateChange(
 void
 XagExtensionInit(INITARGS)
 {
-#if 0
-    ExtensionEntry* extEntry;
-
-    if ((extEntry = AddExtension (XAGNAME,
-				0,
-				XagNumberErrors,
-				ProcXagDispatch,
-				SProcXagDispatch,
-				XagResetProc,
-				StandardMinorOpcode))) {
-	XagReqCode = (unsigned char)extEntry->base;
-	XagErrorBase = extEntry->errorBase;
-#else
     if (AddExtension (XAGNAME,
 		      0,
 		      XagNumberErrors,
@@ -250,8 +182,8 @@ XagExtensionInit(INITARGS)
 		      SProcXagDispatch,
 		      XagResetProc,
 		      StandardMinorOpcode)) {
-#endif
 	RT_APPGROUP = CreateNewResourceType (XagAppGroupFree);
+	XaceRegisterCallback(XACE_AUTH_AVAIL, XagCallClientStateChange, NULL);
     }
 }
 
@@ -818,12 +750,33 @@ void XagGetDeltaInfo(
 }
 
 void XagCallClientStateChange(
-    ClientPtr client)
+    CallbackListPtr *pcbl,
+    pointer nulldata,
+    pointer calldata)
 {
-    if (appGrpList) {
+    XaceAuthAvailRec* rec = (XaceAuthAvailRec*) calldata;
+    ClientPtr pClient = rec->client;
+
+    if (!pClient->appgroup) {
+	SecurityAuthorizationPtr pAuth;
+	XID authId = rec->authId;
+
+	/* can't use SecurityLookupIDByType here -- client
+	 * security state hasn't been setup yet.
+	 */
+	pAuth = (SecurityAuthorizationPtr)LookupIDByType(authId,
+				SecurityAuthorizationResType);
+	if (!pAuth)
+	    return;
+
+	pClient->appgroup = (AppGroupPtr)LookupIDByType(pAuth->group,
+							RT_APPGROUP);
+    }
+
+    if (pClient->appgroup) {
 	NewClientInfoRec clientinfo;
 
-	clientinfo.client = client;
+	clientinfo.client = pClient;
 	XagClientStateChange (NULL, NULL, (pointer)&clientinfo);
     }
 }

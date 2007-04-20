@@ -1,7 +1,4 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/loader/xf86sym.c,v 1.242 2003/10/27 20:51:16 herrb Exp $ */
-
 /*
- *
  * Copyright 1995,96 by Metro Link, Inc.
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
@@ -93,6 +90,13 @@
 #include "xf86sbusBus.h"
 #endif
 #include "compiler.h"
+#include "xf86Crtc.h"
+#include "xf86Modes.h"
+#ifdef RANDR
+#include "xf86RandR12.h"
+#endif
+#include "xf86DDC.h"
+#include "edid.h"
 
 #ifndef HAS_GLIBC_SIGSETJMP
 #if defined(setjmp) && defined(__GNU_LIBRARY__) && \
@@ -241,7 +245,7 @@ extern unsigned short ldw_brx(volatile unsigned char *, int);
 
 /* XFree86 things */
 
-LOOKUP xfree86LookupTab[] = {
+_X_HIDDEN void *xfree86LookupTab[] = {
 
     /* Public OSlib functions */
     SYMFUNC(xf86ReadBIOS)
@@ -359,9 +363,6 @@ LOOKUP xfree86LookupTab[] = {
     SYMFUNC(xf86RegisterStateChangeNotificationCallback)
     SYMFUNC(xf86DeregisterStateChangeNotificationCallback)
     SYMFUNC(xf86NoSharedResources)
-#ifdef async
-    SYMFUNC(xf86QueueAsyncEvent)
-#endif
     /* Shared Accel Accessor Functions */
     SYMFUNC(xf86GetLastScrnFlag)
     SYMFUNC(xf86SetLastScrnFlag)
@@ -374,6 +375,9 @@ LOOKUP xfree86LookupTab[] = {
     SYMFUNC(xf86ClearPrimInitDone)
     SYMFUNC(xf86AllocateEntityPrivateIndex)
     SYMFUNC(xf86GetEntityPrivate)
+
+    /* xf86cvt.c */
+    SYMFUNC(xf86CVTMode)
 
     /* xf86Configure.c */
     SYMFUNC(xf86AddDeviceToConfigure)
@@ -506,7 +510,7 @@ LOOKUP xfree86LookupTab[] = {
     SYMFUNC(xf86AddModuleInfo)
     SYMFUNC(xf86DeleteModuleInfo)
 
-#if defined(__sparc__) && !defined(__OpenBSD__)
+#if (defined(__sparc__) || defined(__sparc)) && !defined(__OpenBSD__)
     /* xf86sbusBus.c */
     SYMFUNC(xf86MatchSbusInstances)
     SYMFUNC(xf86GetSbusInfoForEntity)
@@ -619,6 +623,7 @@ LOOKUP xfree86LookupTab[] = {
 #endif
 
     /* xf86xv.c */
+#ifdef XV
     SYMFUNC(xf86XVScreenInit)
     SYMFUNC(xf86XVRegisterGenericAdaptorDriver)
     SYMFUNC(xf86XVListGenericAdaptors)
@@ -627,6 +632,7 @@ LOOKUP xfree86LookupTab[] = {
     SYMFUNC(xf86XVAllocateVideoAdaptorRec)
     SYMFUNC(xf86XVFreeVideoAdaptorRec)
     SYMFUNC(xf86XVFillKeyHelper)
+    SYMFUNC(xf86XVFillKeyHelperDrawable)
     SYMFUNC(xf86XVClipVideoHelper)
     SYMFUNC(xf86XVCopyYUV12ToPacked)
     SYMFUNC(xf86XVCopyPacked)
@@ -635,6 +641,7 @@ LOOKUP xfree86LookupTab[] = {
     SYMFUNC(xf86XvMCScreenInit)
     SYMFUNC(xf86XvMCCreateAdaptorRec)
     SYMFUNC(xf86XvMCDestroyAdaptorRec)
+#endif
 
     /* xf86VidMode.c */
     SYMFUNC(VidModeExtensionInit)
@@ -744,7 +751,6 @@ LOOKUP xfree86LookupTab[] = {
     SYMFUNC(xf86ReadPciBIOS)
 
     /* Loader functions */
-    SYMFUNC(LoaderDefaultFunc)
     SYMFUNC(LoadSubModule)
     SYMFUNC(DuplicateModule)
     SYMFUNC(LoaderErrorMsg)
@@ -1148,9 +1154,6 @@ LOOKUP xfree86LookupTab[] = {
     SYMVAR(xf86DummyVar3)
 #endif
 
-#ifdef async
-    SYMVAR(xf86CurrentScreen)
-#endif
     /* predefined resource lists from xf86Bus.h */
     SYMVAR(resVgaExclusive)
     SYMVAR(resVgaShared)
@@ -1177,5 +1180,90 @@ LOOKUP xfree86LookupTab[] = {
     /* Pci.c */
     SYMVAR(pciNumBuses)
 
-    {0, 0}
+    /* modes */
+    SYMVAR(xf86CrtcConfigPrivateIndex)
+    SYMFUNC(xf86CrtcConfigInit)
+    SYMFUNC(xf86CrtcConfigPrivateIndex)
+    SYMFUNC(xf86CrtcCreate)
+    SYMFUNC(xf86CrtcDestroy)
+    SYMFUNC(xf86CrtcInUse)
+    SYMFUNC(xf86CrtcRotate)
+    SYMFUNC(xf86CrtcSetMode)
+    SYMFUNC(xf86CrtcSetSizeRange)
+    SYMFUNC(xf86CVTMode)
+    SYMFUNC(xf86DisableUnusedFunctions)
+    SYMFUNC(xf86DPMSSet)
+    SYMFUNC(xf86DuplicateMode)
+    SYMFUNC(xf86DuplicateModes)
+    SYMFUNC(xf86GetDefaultModes)
+    SYMFUNC(xf86GetMonitorModes)
+    SYMFUNC(xf86InitialConfiguration)
+    SYMFUNC(xf86ModeHSync)
+    SYMFUNC(xf86ModesAdd)
+    SYMFUNC(xf86ModesEqual)
+    SYMFUNC(xf86ModeVRefresh)
+    SYMFUNC(xf86OutputCreate)
+    SYMFUNC(xf86OutputDestroy)
+    SYMFUNC(xf86OutputGetEDID)
+    SYMFUNC(xf86OutputGetEDIDModes)
+    SYMFUNC(xf86OutputRename)
+    SYMFUNC(xf86OutputSetEDID)
+    SYMFUNC(xf86PrintModeline)
+    SYMFUNC(xf86ProbeOutputModes)
+    SYMFUNC(xf86PruneInvalidModes)
+    SYMFUNC(xf86SetModeCrtc)
+    SYMFUNC(xf86SetModeDefaultName)
+    SYMFUNC(xf86SetScrnInfoModes)
+    SYMFUNC(xf86ValidateModesClocks)
+    SYMFUNC(xf86ValidateModesFlags)
+    SYMFUNC(xf86ValidateModesSize)
+    SYMFUNC(xf86ValidateModesSync)
+    SYMFUNC(xf86ValidateModesUserConfig)
+    SYMFUNC(xf86DiDGAInit)
+    SYMFUNC(xf86DiDGAReInit)
+    SYMFUNC(xf86DDCGetModes)
+    SYMFUNC(xf86SaveScreen)
+#ifdef RANDR
+    SYMFUNC(xf86RandR12CreateScreenResources)
+    SYMFUNC(xf86RandR12GetOriginalVirtualSize)
+    SYMFUNC(xf86RandR12GetRotation)
+    SYMFUNC(xf86RandR12Init)
+    SYMFUNC(xf86RandR12PreInit)
+    SYMFUNC(xf86RandR12SetConfig)
+    SYMFUNC(xf86RandR12SetRotations)
+#endif
+    SYMFUNC(xf86_cursors_init)
+    SYMFUNC(xf86_reload_cursors)
+    SYMFUNC(xf86_show_cursors)
+    SYMFUNC(xf86_hide_cursors)
+    SYMFUNC(xf86_cursors_fini)
+
+    SYMFUNC(xf86DoEDID_DDC1)
+    SYMFUNC(xf86DoEDID_DDC2)
+    SYMFUNC(xf86InterpretEDID)
+    SYMFUNC(xf86PrintEDID)
+    SYMFUNC(xf86InterpretVdif)
+    SYMFUNC(xf86print_vdif)
+    SYMFUNC(xf86DDCMonitorSet)
+    SYMFUNC(xf86SetDDCproperties)
+
+    SYMFUNC(xf86CreateI2CBusRec)
+    SYMFUNC(xf86CreateI2CDevRec)
+    SYMFUNC(xf86DestroyI2CBusRec)
+    SYMFUNC(xf86DestroyI2CDevRec)
+    SYMFUNC(xf86I2CBusInit)
+    SYMFUNC(xf86I2CDevInit)
+    SYMFUNC(xf86I2CFindBus)
+    SYMFUNC(xf86I2CFindDev)
+    SYMFUNC(xf86I2CGetScreenBuses)
+    SYMFUNC(xf86I2CProbeAddress)
+    SYMFUNC(xf86I2CReadByte)
+    SYMFUNC(xf86I2CReadBytes)
+    SYMFUNC(xf86I2CReadStatus)
+    SYMFUNC(xf86I2CReadWord)
+    SYMFUNC(xf86I2CWriteByte)
+    SYMFUNC(xf86I2CWriteBytes)
+    SYMFUNC(xf86I2CWriteRead)
+    SYMFUNC(xf86I2CWriteVec)
+    SYMFUNC(xf86I2CWriteWord)
 };

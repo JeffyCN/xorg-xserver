@@ -26,7 +26,6 @@
  * holders shall not be used in advertising or otherwise to promote the sale,
  * use or other dealings in this Software without prior written authorization.
  */
-/* $XdotOrg: xc/programs/Xserver/miext/rootless/accel/rlAccel.c,v 1.3 2004/12/09 22:40:35 torrey Exp $ */
 
 /*
  * The accelerated rootless code replaces some GC operations from fb with
@@ -74,9 +73,6 @@ static GCOps rlAccelOps = {
     rlImageGlyphBlt,
     fbPolyGlyphBlt,
     fbPushPixels
-#ifdef NEED_LINEHELPER
-    ,NULL
-#endif
 };
 
 

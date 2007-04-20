@@ -1,0 +1,137 @@
+#
+#    Translators, if you are not familiar with the PO format, gettext
+#    documentation is worth reading, especially sections dedicated to
+#    this format, e.g. by running:
+#         info -n '(gettext)PO Files'
+#         info -n '(gettext)Header Entry'
+#
+#    Some information specific to po-debconf are available at
+#            /usr/share/doc/po-debconf/README-trans
+#         or http://www.debian.org/intl/l10n/po-debconf/README-trans
+#
+#    Developers do not need to manually edit POT or PO files.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: xprint\n"
+"Report-Msgid-Bugs-To: debian-l10n-portuguese@lists.debian.org\n"
+"POT-Creation-Date: 2005-03-15 17:50+1100\n"
+"PO-Revision-Date: 2005-03-26 09:55-0300\n"
+"Last-Translator: André Luís Lopes <andrelop@debian.org>\n"
+"Language-Team: Debian-BR Project <debian-l10n-portuguese@lists.debian.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=ISO-8859-1\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#. Type: string
+#. Description
+#: ../xprint-common.templates:4
+msgid "Default printer resolution"
+msgstr "Resolução padrão de impressoras"
+
+#. Type: string
+#. Description
+#: ../xprint-common.templates:4
+msgid ""
+"By default Xprint assumes a printer resolution of 600dpi. This should be "
+"fine for the majority of printers today."
+msgstr ""
+"Por padrão, o Xprint assume uma resolução de impressão de 600dpi. Essa "
+"resolução é adequada para a maioria das impressoras atuais."
+
+#. Type: string
+#. Description
+#: ../xprint-common.templates:4
+msgid ""
+"On certain 1200dpi printers, however, the image might appear squashed in "
+"the corner of the page, or it might be blown up too large on 300dpi "
+"printers. If you are experiencing these kinds of printing problems, you may "
+"want to set the default printer resolution to a more appropriate value. "
+"See /usr/share/doc/xprint-common/README.printing-problems.gz for more "
+"details."
+msgstr ""
+"Em certas impressoras com resolução de 1200dpi, porém, imagens podem "
+"aparecer achatadas no canto da página ou podem parecer muito grandes "
+"em impressoras 300dpi. Caso você esteja tendo esses tipos de problemas "
+"de impressão, você pode desejar configurar a resolução padrão da "
+"impressora para um valor mais apropriado. Consulte o arquivo "
+"/usr/share/doc/xprint-common/README.printing-problems.gz para maiores "
+"detalhes."
+
+#, fuzzy
+#~ msgid ""
+#~ "If you are experiencing these kinds of printing problems, you may want to "
+#~ "set the default printer resolution to a different value."
+#~ msgstr ""
+#~ "Caso você esteja passando por esses tipos de problemas de impressão, você "
+#~ "pode desejar definir a resolução padrão da impressão para um valor que "
+#~ "sua impressora possa utilizar."
+
+#~ msgid ""
+#~ "This value is written into the *default-printer-resolution variable in  /"
+#~ "etc/Xprint/C/print/attributes/document.  If you have a more complex setup "
+#~ "with different printers, each of different resolutions, then you will "
+#~ "need to manually create an entry for each of them separately."
+#~ msgstr ""
+#~ "Esse valor é escrito na variável *default-printer-resolution em /etc/"
+#~ "Xprint/C/print/attributes/document. Caso você possua uma configuração "
+#~ "mais complexa com diferentes impressoras, cada uma com diferentes "
+#~ "resoluções, você precisará criar manualmente uma entrada para cada uma "
+#~ "delas separadamente."
+
+#~ msgid ""
+#~ "The default printer resolution given here should be a number only, "
+#~ "without the \"dpi\".  That is, type \"300\" or \"1200\" (for example), or "
+#~ "just press enter to  accept the default value."
+#~ msgstr ""
+#~ "A resolução padrão da impressora informada aqui deverá ser somente um "
+#~ "número, sem o \"dpi\". Isto é, informe \"300\" ou \"1200\" (por exemplo) "
+#~ "ou somente pressione Enter para aceitar o valor padrão."
+
+#~ msgid "Remove old config files in /etc/Xprint?"
+#~ msgstr "Remover antifgos arquivos de configuração em /etc/Xprint ?"
+
+#~ msgid ""
+#~ "Configuration files for Xprint, found in /etc/Xprint, are now defined for "
+#~ "different locales, so the default paper is set to A4 for most locales, "
+#~ "but set to letter paper for the United States (en_US)."
+#~ msgstr ""
+#~ "Os arquivos de configuração para o Xprint, encontrados em /etc/Xprint, "
+#~ "são agora definidos para diferentes locales, portanto o papel padrão está "
+#~ "definido como A4 para a maioria dos locales, mas definido papel letra "
+#~ "para os Estados Unidos (en_US)."
+
+#~ msgid ""
+#~ "The previous config files in /etc/Xprint should be removed.  If you have "
+#~ "made any local changes to them, those changes should be placed in the new "
+#~ "locations."
+#~ msgstr ""
+#~ "Os arquivos de configurações anteriores em /etc/Xprint deverão ser "
+#~ "removidos. Caso você tenha feito quaisquer mudanças locais nesses "
+#~ "arquivos, essas mudanças deverão ser colocadas nos novos locais."
+
+#~ msgid ""
+#~ "The deprecated config files are:\n"
+#~ "    - /etc/Xprint/attributes     (moved to /etc/Xprint/C/print/"
+#~ "attributes\n"
+#~ "      or /etc/Xprint/en_US/print/attributes)\n"
+#~ "    - /etc/Xprint/ddx-config     (moved to /etc/Xprint/C/print/ddx-"
+#~ "config)\n"
+#~ "    - /etc/Xprint/SecurityPolicy (no longer used)"
+#~ msgstr ""
+#~ "Os arquivos de configuração obsoletos são :\n"
+#~ "    - /etc/Xprint/attributes     (movido para /etc/Xprint/C/print/"
+#~ "attributes\n"
+#~ "      ou /etc/Xprint/en_US/print/attributes)\n"
+#~ "    - /etc/Xprint/ddx-config     (movido para /etc/Xprint/C/print/ddx-"
+#~ "config)\n"
+#~ "    - /etc/Xprint/SecurityPolicy (não é mais usado)"
+
+#~ msgid ""
+#~ "I recommend you remove these deprecated files, unless you have made "
+#~ "specific changes to them, in which case you should move your customised "
+#~ "files to their new locations."
+#~ msgstr ""
+#~ "É recomendado que você remova esses arquivos obsoletos, a menos que você "
+#~ "tenha feito mudanças específicas nos mesmos. Nese caso você deverá mover "
+#~ "seus arquivos personalizados para seus novos locais."

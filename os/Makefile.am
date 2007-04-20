@@ -1,6 +1,6 @@
 noinst_LTLIBRARIES = libos.la libcwrapper.la
 
-AM_CFLAGS = $(DIX_CFLAGS) @SERVER_DEFINES@ @LOADER_DEFINES@
+AM_CFLAGS = $(DIX_CFLAGS)
 
 # FIXME: Add support for these in configure.ac
 K5AUTH_SOURCES = k5auth.c
@@ -9,7 +9,6 @@ INTERNALMALLOC_SOURCES = xalloc.c
 
 XCSECURITY_SOURCES = secauth.c
 XDMCP_SOURCES = xdmcp.c
-LBX_SOURCES = lbxio.c
 STRLCAT_SOURCES = strlcat.c strlcpy.c
 XORG_SOURCES = log.c
 
@@ -38,10 +37,6 @@ if XDMCP
 libos_la_SOURCES += $(XDMCP_SOURCES)
 endif
 
-if LBX
-libos_la_SOURCES += $(LBX_SOURCES)
-endif
-
 if NEED_STRLCAT
 libos_la_SOURCES += $(STRLCAT_SOURCES)
 endif
@@ -54,4 +49,4 @@ libcwrapper_la_CFLAGS = \
 	$(AM_CFLAGS)
 
 EXTRA_DIST = $(K5AUTH_SOURCES) $(SECURERPC_SOURCES) $(INTERNALMALLOC_SOURCES) \
-     $(XCSECURITY_SOURCES) $(XDMCP_SOURCES) $(LBX_SOURCES) $(STRLCAT_SOURCES)
+     $(XCSECURITY_SOURCES) $(XDMCP_SOURCES) $(STRLCAT_SOURCES)

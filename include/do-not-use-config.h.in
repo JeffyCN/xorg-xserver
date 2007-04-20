@@ -3,6 +3,9 @@
 /* Build AIGLX loader */
 #undef AIGLX
 
+/* Default base font path */
+#undef BASE_FONT_PATH
+
 /* Support BigRequests extension */
 #undef BIGREQS
 
@@ -59,6 +62,9 @@
 /* Use GetTimeInMillis */
 #undef DDXTIME
 
+/* Default library install path */
+#undef DEFAULT_LIBRARY_PATH
+
 /* Default log location */
 #undef DEFAULT_LOGPREFIX
 
@@ -67,12 +73,6 @@
 
 /* Support DGA extension */
 #undef DGA
-
-/* Prefer dlloader modules to elfloader */
-#undef DLOPEN_HACK
-
-/* Use libdl-based loader */
-#undef DLOPEN_SUPPORT
 
 /* Support DPMS extension */
 #undef DPMSExtension
@@ -147,6 +147,9 @@
 /* Has backtrace support */
 #undef HAVE_BACKTRACE
 
+/* Define to 1 if you have the `clock_gettime' function. */
+#undef HAVE_CLOCK_GETTIME
+
 /* Define to 1 if you have the <dbm.h> header file. */
 #undef HAVE_DBM_H
 
@@ -168,6 +171,9 @@
 
 /* Define to 1 if you have the `geteuid' function. */
 #undef HAVE_GETEUID
+
+/* Define to 1 if you have the `getisax' function. */
+#undef HAVE_GETISAX
 
 /* Define to 1 if you have the `getopt' function. */
 #undef HAVE_GETOPT
@@ -306,14 +312,20 @@
 /* Build VESA-based kdrive servers */
 #undef KDRIVEVESA
 
-/* Support LBX extension */
-#undef LBX
+/* Name of the period field in struct kbd_repeat */
+#undef LNX_KBD_PERIOD_NAME
+
+/* Support os-specific local connections */
+#undef LOCALCONN
 
 /* Support MIT Misc extension */
 #undef MITMISC
 
 /* Support MIT-SHM extension */
 #undef MITSHM
+
+/* Have monotonic clock from clock_gettime() */
+#undef MONOTONIC_CLOCK
 
 /* Build Multibuffer extension */
 #undef MULTIBUFFER
@@ -356,6 +368,15 @@
 
 /* Define to the version of this package. */
 #undef PACKAGE_VERSION
+
+/* Major version of this package */
+#undef PACKAGE_VERSION_MAJOR
+
+/* Minor version of this package */
+#undef PACKAGE_VERSION_MINOR
+
+/* Patch version of this package */
+#undef PACKAGE_VERSION_PATCHLEVEL
 
 /* Internal define for Xinerama */
 #undef PANORAMIX
@@ -437,6 +458,9 @@
 /* Build TOG-CUP extension */
 #undef TOGCUP
 
+/* Have tslib support */
+#undef TSLIB
+
 /* Support UNIX socket connections */
 #undef UNIXCONN
 
@@ -467,8 +491,14 @@
 /* System has wscons console */
 #undef WSCONS_SUPPORT
 
+/* Build X-ACE extension */
+#undef XACE
+
 /* Build APPGROUP extension */
 #undef XAPPGROUP
+
+/* Build XCalibrate extension */
+#undef XCALIBRATE
 
 /* Support XCMisc extension */
 #undef XCMISC
@@ -499,6 +529,9 @@
 
 /* Support XFixes extension */
 #undef XFIXES
+
+/* Building loadable XFree86 server */
+#undef XFree86LOADER
 
 /* Building XFree86 server */
 #undef XFree86Server
@@ -600,14 +633,8 @@
    `char[]'. */
 #undef YYTEXT_POINTER
 
-/* BSD-compliant source */
-#undef _BSD_SOURCE
-
-/* POSIX-compliant source */
-#undef _POSIX_SOURCE
-
-/* X/Open-compliant source */
-#undef _XOPEN_SOURCE
+/* Enable GNU and other extensions to the C environment for glibc */
+#undef _GNU_SOURCE
 
 /* Define to 1 if unsigned long is 64 bits. */
 #undef _XSERVER64

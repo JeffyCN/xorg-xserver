@@ -1,6 +1,4 @@
-/* $XdotOrg: xserver/xorg/render/render.c,v 1.13 2006/02/10 22:00:30 anholt Exp $ */
 /*
- * $XFree86: xc/programs/Xserver/render/render.c,v 1.27tsi Exp $
  *
  * Copyright © 2000 SuSE, Inc.
  *
@@ -48,6 +46,12 @@
 #include "glyphstr.h"
 #include <X11/Xfuncproto.h>
 #include "cursorstr.h"
+
+#if HAVE_STDINT_H
+#include <stdint.h>
+#elif !defined(UINT32_MAX)
+#define UINT32_MAX 0xffffffffU
+#endif
 
 static int ProcRenderQueryVersion (ClientPtr pClient);
 static int ProcRenderQueryPictFormats (ClientPtr pClient);
@@ -1105,11 +1109,14 @@ ProcRenderAddGlyphs (ClientPtr client)
     }
 
     nglyphs = stuff->nglyphs;
+    if (nglyphs > UINT32_MAX / sizeof(GlyphNewRec))
+	    return BadAlloc;
+
     if (nglyphs <= NLOCALGLYPH)
 	glyphsBase = glyphsLocal;
     else
     {
-	glyphsBase = (GlyphNewPtr) ALLOCATE_LOCAL (nglyphs * sizeof (GlyphNewRec));
+	glyphsBase = (GlyphNewPtr) Xalloc (nglyphs * sizeof (GlyphNewRec));
 	if (!glyphsBase)
 	    return BadAlloc;
     }
@@ -1166,7 +1173,7 @@ ProcRenderAddGlyphs (ClientPtr client)
     }
 
     if (glyphsBase != glyphsLocal)
-	DEALLOCATE_LOCAL (glyphsBase);
+	Xfree (glyphsBase);
     return client->noClientException;
 bail:
     while (glyphs != glyphsBase)
@@ -1175,7 +1182,7 @@ bail:
 	xfree (glyphs->glyph);
     }
     if (glyphsBase != glyphsLocal)
-	DEALLOCATE_LOCAL (glyphsBase);
+	Xfree (glyphsBase);
     return err;
 }
 

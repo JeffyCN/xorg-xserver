@@ -71,10 +71,11 @@ am__liblinux_la_SOURCES_DIST = lnx_init.c lnx_video.c lnx_io.c \
 	$(srcdir)/../shared/libc_wrapper.c \
 	$(srcdir)/../shared/at_scancode.c lnx_acpi.c lnx_apm.c \
 	$(srcdir)/lnx_axp.c $(srcdir)/../shared/xf86Axp.c \
-	$(srcdir)/../shared/ia64Pci.c
+	$(srcdir)/lnx_ia64.c $(srcdir)/../shared/ia64Pci.c
 @LNXACPI_TRUE@am__objects_1 = lnx_acpi.lo lnx_apm.lo
 @LNXAPM_TRUE@am__objects_2 = lnx_apm.lo
-@LINUX_ALPHA_FALSE@@LINUX_IA64_TRUE@am__objects_3 = ia64Pci.lo
+@LINUX_ALPHA_FALSE@@LINUX_IA64_TRUE@am__objects_3 = lnx_ia64.lo \
+@LINUX_ALPHA_FALSE@@LINUX_IA64_TRUE@	ia64Pci.lo
 @LINUX_ALPHA_TRUE@am__objects_3 = lnx_axp.lo xf86Axp.lo
 am_liblinux_la_OBJECTS = lnx_init.lo lnx_video.lo lnx_io.lo lnx_kbd.lo \
 	lnx_mouse.lo lnx_pci.lo lnx_agp.lo lnx_kmod.lo lnx_KbdMap.lo \
@@ -127,6 +128,7 @@ AUTOCONF = @AUTOCONF@
 AUTOHEADER = @AUTOHEADER@
 AUTOMAKE = @AUTOMAKE@
 AWK = @AWK@
+BASE_FONT_PATH = @BASE_FONT_PATH@
 BSD_KBD_MODE_FALSE = @BSD_KBD_MODE_FALSE@
 BSD_KBD_MODE_TRUE = @BSD_KBD_MODE_TRUE@
 BUILDDOCS_FALSE = @BUILDDOCS_FALSE@
@@ -163,6 +165,7 @@ DBE_FALSE = @DBE_FALSE@
 DBE_TRUE = @DBE_TRUE@
 DEBUG_FALSE = @DEBUG_FALSE@
 DEBUG_TRUE = @DEBUG_TRUE@
+DEFAULT_LIBRARY_PATH = @DEFAULT_LIBRARY_PATH@
 DEFAULT_LOGPREFIX = @DEFAULT_LOGPREFIX@
 DEFAULT_MODULE_PATH = @DEFAULT_MODULE_PATH@
 DEFS = @DEFS@
@@ -255,12 +258,6 @@ KDRIVE_LIBS = @KDRIVE_LIBS@
 KDRIVE_PURE_INCS = @KDRIVE_PURE_INCS@
 KDRIVE_PURE_LIBS = @KDRIVE_PURE_LIBS@
 KDRIVE_TRUE = @KDRIVE_TRUE@
-LBXUTIL_CFLAGS = @LBXUTIL_CFLAGS@
-LBXUTIL_LIBS = @LBXUTIL_LIBS@
-LBXUTIL_TEST_CFLAGS = @LBXUTIL_TEST_CFLAGS@
-LBXUTIL_TEST_LIBS = @LBXUTIL_TEST_LIBS@
-LBX_FALSE = @LBX_FALSE@
-LBX_TRUE = @LBX_TRUE@
 LDFLAGS = @LDFLAGS@
 LD_EXPORT_SYMBOLS_FLAG = @LD_EXPORT_SYMBOLS_FLAG@
 LEX = @LEX@
@@ -283,7 +280,6 @@ LNXACPI_TRUE = @LNXACPI_TRUE@
 LNXAPM_FALSE = @LNXAPM_FALSE@
 LNXAPM_TRUE = @LNXAPM_TRUE@
 LN_S = @LN_S@
-LOADER_DEFINES = @LOADER_DEFINES@
 LTLIBOBJS = @LTLIBOBJS@
 MAINT = @MAINT@
 MAINTAINER_MODE_FALSE = @MAINTAINER_MODE_FALSE@
@@ -296,8 +292,6 @@ MAKE_TEXT = @MAKE_TEXT@
 MESA_SOURCE = @MESA_SOURCE@
 MFB_FALSE = @MFB_FALSE@
 MFB_TRUE = @MFB_TRUE@
-MISCUTILS_FALSE = @MISCUTILS_FALSE@
-MISCUTILS_TRUE = @MISCUTILS_TRUE@
 MISC_MAN_DIR = @MISC_MAN_DIR@
 MISC_MAN_SUFFIX = @MISC_MAN_SUFFIX@
 MITSHM_FALSE = @MITSHM_FALSE@
@@ -306,7 +300,6 @@ MKFONTDIR = @MKFONTDIR@
 MKFONTSCALE = @MKFONTSCALE@
 MMX_CAPABLE_FALSE = @MMX_CAPABLE_FALSE@
 MMX_CAPABLE_TRUE = @MMX_CAPABLE_TRUE@
-MODULE_DEFINES = @MODULE_DEFINES@
 MULTIBUFFER_FALSE = @MULTIBUFFER_FALSE@
 MULTIBUFFER_TRUE = @MULTIBUFFER_TRUE@
 NEED_STRLCAT_FALSE = @NEED_STRLCAT_FALSE@
@@ -339,9 +332,9 @@ RGB_DB = @RGB_DB@
 SCREENSAVER_FALSE = @SCREENSAVER_FALSE@
 SCREENSAVER_TRUE = @SCREENSAVER_TRUE@
 SERVERCONFIGdir = @SERVERCONFIGdir@
-SERVER_DEFINES = @SERVER_DEFINES@
 SET_MAKE = @SET_MAKE@
 SHELL = @SHELL@
+SOLARIS_ASM_CFLAGS = @SOLARIS_ASM_CFLAGS@
 SOLARIS_ASM_INLINE_FALSE = @SOLARIS_ASM_INLINE_FALSE@
 SOLARIS_ASM_INLINE_TRUE = @SOLARIS_ASM_INLINE_TRUE@
 SOLARIS_INOUT_ARCH = @SOLARIS_INOUT_ARCH@
@@ -353,7 +346,9 @@ STRIP = @STRIP@
 SUN_KBD_MODE_FALSE = @SUN_KBD_MODE_FALSE@
 SUN_KBD_MODE_TRUE = @SUN_KBD_MODE_TRUE@
 SYS_LIBS = @SYS_LIBS@
+TSLIB_CFLAGS = @TSLIB_CFLAGS@
 TSLIB_FALSE = @TSLIB_FALSE@
+TSLIB_LIBS = @TSLIB_LIBS@
 TSLIB_TRUE = @TSLIB_TRUE@
 USE_CURSES_FALSE = @USE_CURSES_FALSE@
 USE_CURSES_TRUE = @USE_CURSES_TRUE@
@@ -366,6 +361,10 @@ VENDOR_STRING_SHORT = @VENDOR_STRING_SHORT@
 VERSION = @VERSION@
 X11EXAMPLES_DEP_CFLAGS = @X11EXAMPLES_DEP_CFLAGS@
 X11EXAMPLES_DEP_LIBS = @X11EXAMPLES_DEP_LIBS@
+XACE_FALSE = @XACE_FALSE@
+XACE_TRUE = @XACE_TRUE@
+XCALIBRATE_FALSE = @XCALIBRATE_FALSE@
+XCALIBRATE_TRUE = @XCALIBRATE_TRUE@
 XCSECURITY_FALSE = @XCSECURITY_FALSE@
 XCSECURITY_TRUE = @XCSECURITY_TRUE@
 XDMAUTH_FALSE = @XDMAUTH_FALSE@
@@ -392,6 +391,8 @@ XEVIE_TRUE = @XEVIE_TRUE@
 XF86BIGFONT_FALSE = @XF86BIGFONT_FALSE@
 XF86BIGFONT_TRUE = @XF86BIGFONT_TRUE@
 XF86CONFIGFILE = @XF86CONFIGFILE@
+XF86UTILS_FALSE = @XF86UTILS_FALSE@
+XF86UTILS_TRUE = @XF86UTILS_TRUE@
 XGLMODULES_CFLAGS = @XGLMODULES_CFLAGS@
 XGLMODULES_LIBS = @XGLMODULES_LIBS@
 XGLXMODULES_CFLAGS = @XGLXMODULES_CFLAGS@
@@ -563,7 +564,9 @@ noinst_LTLIBRARIES = liblinux.la $(am__append_1)
 @LINUX_ALPHA_TRUE@       $(srcdir)/lnx_axp.c \
 @LINUX_ALPHA_TRUE@       $(srcdir)/../shared/xf86Axp.c
 
-@LINUX_IA64_TRUE@PLATFORM_PCI_SUPPORT = $(srcdir)/../shared/ia64Pci.c
+@LINUX_IA64_TRUE@PLATFORM_PCI_SUPPORT = $(srcdir)/lnx_ia64.c $(srcdir)/../shared/ia64Pci.c
+@LINUX_IA64_TRUE@PLATFORM_DEFINES = -DOS_PROBE_PCI_CHIPSET=lnxProbePciChipset
+@LINUX_IA64_TRUE@PLATFORM_INCLUDES = -I$(srcdir)/../shared
 @LINUX_ALPHA_TRUE@libev56_la_CFLAGS = $(AM_CFLAGS) -mcpu=ev56
 @LINUX_ALPHA_TRUE@libev56_la_SOURCES = lnx_ev56.c
 @LINUX_ALPHA_TRUE@liblinux_la_LIBADD = libev56.la
@@ -585,13 +588,12 @@ liblinux_la_SOURCES = lnx_init.c lnx_video.c lnx_io.c lnx_kbd.c lnx_mouse.c \
                      $(APM_SOURCES) \
                      $(PLATFORM_PCI_SUPPORT)
 
-AM_CFLAGS = -DUSESTDRES -DHAVE_SYSV_IPC $(XORG_CFLAGS) @SERVER_DEFINES@ @LOADER_DEFINES@
-INCLUDES = $(XORG_INCS) -I/usr/include/drm # FIXME this last part is crack
+AM_CFLAGS = -DUSESTDRES -DHAVE_SYSV_IPC $(XORG_CFLAGS) $(PLATFORM_DEFINES)
+INCLUDES = $(XORG_INCS) $(PLATFORM_INCLUDES) -I/usr/include/drm # FIXME this last part is crack
 
 # FIXME: These need to be added to the build
 LNX_EXTRA_SOURCES = \
 	lnx_font.c \
-	lnx_ia64.c \
 	lnx_jstk.c \
 	lnxResource.c
 
@@ -599,8 +601,8 @@ EXTRA_DIST = \
 	$(LNX_EXTRA_SOURCES) \
 	lnx.h \
 	lnx_kbd.h \
-	$(srcdir)/../shared/ia64Pci.h \
-	$(srcdir)/../shared/xf86Axp.h
+	$(srcdir)/../shared/xf86Axp.h \
+	$(srcdir)/../shared/ia64Pci.h
 
 all: all-am
 
@@ -666,6 +668,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/lnx_agp.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/lnx_apm.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/lnx_axp.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/lnx_ia64.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/lnx_init.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/lnx_io.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/lnx_kbd.Plo@am__quote@
@@ -784,6 +787,13 @@ xf86Axp.lo: $(srcdir)/../shared/xf86Axp.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$(srcdir)/../shared/xf86Axp.c' object='xf86Axp.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o xf86Axp.lo `test -f '$(srcdir)/../shared/xf86Axp.c' || echo '$(srcdir)/'`$(srcdir)/../shared/xf86Axp.c
+
+lnx_ia64.lo: $(srcdir)/lnx_ia64.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT lnx_ia64.lo -MD -MP -MF "$(DEPDIR)/lnx_ia64.Tpo" -c -o lnx_ia64.lo `test -f '$(srcdir)/lnx_ia64.c' || echo '$(srcdir)/'`$(srcdir)/lnx_ia64.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/lnx_ia64.Tpo" "$(DEPDIR)/lnx_ia64.Plo"; else rm -f "$(DEPDIR)/lnx_ia64.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$(srcdir)/lnx_ia64.c' object='lnx_ia64.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o lnx_ia64.lo `test -f '$(srcdir)/lnx_ia64.c' || echo '$(srcdir)/'`$(srcdir)/lnx_ia64.c
 
 ia64Pci.lo: $(srcdir)/../shared/ia64Pci.c
 @am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT ia64Pci.lo -MD -MP -MF "$(DEPDIR)/ia64Pci.Tpo" -c -o ia64Pci.lo `test -f '$(srcdir)/../shared/ia64Pci.c' || echo '$(srcdir)/'`$(srcdir)/../shared/ia64Pci.c; \

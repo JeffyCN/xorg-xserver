@@ -22,6 +22,7 @@
  *
  * Authors:
  *    Eric Anholt <eric@anholt.net>
+ *    Michel Dänzer <michel@tungstengraphics.com>
  *
  */
 
@@ -58,6 +59,59 @@ exaPixmapIsPinned (PixmapPtr pPix)
 }
 
 /**
+ * The fallback path for UTS/DFS failing is to just memcpy.  exaCopyDirtyToSys
+ * and exaCopyDirtyToFb both needed to do this loop.
+ */
+static void
+exaMemcpyBox (PixmapPtr pPixmap, BoxPtr pbox, CARD8 *src, int src_pitch,
+	      CARD8 *dst, int dst_pitch)
+ {
+    int i, cpp = pPixmap->drawable.bitsPerPixel / 8;
+    int bytes = (pbox->x2 - pbox->x1) * cpp;
+
+    src += pbox->y1 * src_pitch + pbox->x1 * cpp;
+    dst += pbox->y1 * dst_pitch + pbox->x1 * cpp;
+
+    for (i = pbox->y2 - pbox->y1; i; i--) {
+	memcpy (dst, src, bytes);
+	src += src_pitch;
+	dst += dst_pitch;
+    }
+}
+ 
+/**
+ * Returns TRUE if the pixmap is dirty (has been modified in its current
+ * location compared to the other), or lacks a private for tracking
+ * dirtiness.
+ */
+static Bool
+exaPixmapIsDirty (PixmapPtr pPix)
+{
+    ExaPixmapPriv (pPix);
+
+    return pExaPixmap == NULL ||
+	REGION_NOTEMPTY (pScreen, DamageRegion(pExaPixmap->pDamage));
+}
+
+/**
+ * Returns TRUE if the pixmap is either pinned in FB, or has a sufficient score
+ * to be considered "should be in framebuffer".  That's just anything that has
+ * had more acceleration than fallbacks, or has no score yet.
+ *
+ * Only valid if using a migration scheme that tracks score.
+ */
+static Bool
+exaPixmapShouldBeInFB (PixmapPtr pPix)
+{
+    ExaPixmapPriv (pPix);
+
+    if (exaPixmapIsPinned (pPix))
+	return TRUE;
+
+    return pExaPixmap->score >= 0;
+}
+
+/**
  * If the pixmap is currently dirty, this copies at least the dirty area from
  * the framebuffer  memory copy to the system memory copy.  Both areas must be
  * allocated.
@@ -67,54 +121,62 @@ exaCopyDirtyToSys (PixmapPtr pPixmap)
 {
     ExaScreenPriv (pPixmap->drawable.pScreen);
     ExaPixmapPriv (pPixmap);
+    RegionPtr pRegion = DamageRegion (pExaPixmap->pDamage);
     CARD8 *save_ptr;
     int save_pitch;
-
-    if (!pExaPixmap->dirty)
-	return;
+    BoxPtr pBox = REGION_RECTS(pRegion);
+    int nbox = REGION_NUM_RECTS(pRegion);
+    Bool do_sync = FALSE;
 
     save_ptr = pPixmap->devPrivate.ptr;
     save_pitch = pPixmap->devKind;
     pPixmap->devPrivate.ptr = pExaPixmap->fb_ptr;
     pPixmap->devKind = pExaPixmap->fb_pitch;
 
-    if (pExaScr->info->DownloadFromScreen == NULL ||
-	!pExaScr->info->DownloadFromScreen (pPixmap,
-					    0,
-					    0,
-					    pPixmap->drawable.width,
-					    pPixmap->drawable.height,
-					    pExaPixmap->sys_ptr,
-					    pExaPixmap->sys_pitch))
-    {
-	char *src, *dst;
-	int src_pitch, dst_pitch, i, bytes;
+    while (nbox--) {
+	pBox->x1 = max(pBox->x1, 0);
+	pBox->y1 = max(pBox->y1, 0);
+	pBox->x2 = min(pBox->x2, pPixmap->drawable.width);
+	pBox->y2 = min(pBox->y2, pPixmap->drawable.height);
 
-	exaPrepareAccess(&pPixmap->drawable, EXA_PREPARE_SRC);
+	if (pBox->x1 >= pBox->x2 || pBox->y1 >= pBox->y2)
+	    continue;
 
-	dst = pExaPixmap->sys_ptr;
-	dst_pitch = pExaPixmap->sys_pitch;
-	src = pExaPixmap->fb_ptr;
-	src_pitch = pExaPixmap->fb_pitch;
-	bytes = src_pitch < dst_pitch ? src_pitch : dst_pitch;
-
-	for (i = 0; i < pPixmap->drawable.height; i++) {
-	    memcpy (dst, src, bytes);
-	    dst += dst_pitch;
-	    src += src_pitch;
+	if (pExaScr->info->DownloadFromScreen == NULL ||
+	    !pExaScr->info->DownloadFromScreen (pPixmap,
+						pBox->x1, pBox->y1,
+						pBox->x2 - pBox->x1,
+						pBox->y2 - pBox->y1,
+						pExaPixmap->sys_ptr
+						+ pBox->y1 * pExaPixmap->sys_pitch
+						+ pBox->x1 * pPixmap->drawable.bitsPerPixel / 8,
+						pExaPixmap->sys_pitch))
+	{
+	    exaPrepareAccess(&pPixmap->drawable, EXA_PREPARE_SRC);
+	    exaMemcpyBox (pPixmap, pBox,
+			  pExaPixmap->fb_ptr, pExaPixmap->fb_pitch,
+			  pExaPixmap->sys_ptr, pExaPixmap->sys_pitch);
+	    exaFinishAccess(&pPixmap->drawable, EXA_PREPARE_SRC);
 	}
-	exaFinishAccess(&pPixmap->drawable, EXA_PREPARE_SRC);
+	else
+	    do_sync = TRUE;
+
+	pBox++;
     }
 
     /* Make sure the bits have actually landed, since we don't necessarily sync
      * when accessing pixmaps in system memory.
      */
-    exaWaitSync (pPixmap->drawable.pScreen);
+    if (do_sync)
+	exaWaitSync (pPixmap->drawable.pScreen);
 
     pPixmap->devPrivate.ptr = save_ptr;
     pPixmap->devKind = save_pitch;
 
-    pExaPixmap->dirty = FALSE;
+    /* The previously damaged bits are now no longer damaged but valid */
+    REGION_UNION(pPixmap->drawable.pScreen,
+		 &pExaPixmap->validReg, &pExaPixmap->validReg, pRegion);
+    DamageEmpty (pExaPixmap->pDamage);
 }
 
 /**
@@ -127,49 +189,59 @@ exaCopyDirtyToFb (PixmapPtr pPixmap)
 {
     ExaScreenPriv (pPixmap->drawable.pScreen);
     ExaPixmapPriv (pPixmap);
+    RegionPtr pRegion = DamageRegion (pExaPixmap->pDamage);
     CARD8 *save_ptr;
     int save_pitch;
-
-    if (!pExaPixmap->dirty)
-	return;
+    BoxPtr pBox = REGION_RECTS(pRegion);
+    int nbox = REGION_NUM_RECTS(pRegion);
+    Bool do_sync = FALSE;
 
     save_ptr = pPixmap->devPrivate.ptr;
     save_pitch = pPixmap->devKind;
     pPixmap->devPrivate.ptr = pExaPixmap->fb_ptr;
     pPixmap->devKind = pExaPixmap->fb_pitch;
 
-    if (pExaScr->info->UploadToScreen == NULL ||
-	!pExaScr->info->UploadToScreen (pPixmap,
-					0,
-					0,
-					pPixmap->drawable.width,
-					pPixmap->drawable.height,
-					pExaPixmap->sys_ptr,
-					pExaPixmap->sys_pitch))
-    {
-	char *src, *dst;
-	int src_pitch, dst_pitch, i, bytes;
+    while (nbox--) {
+	pBox->x1 = max(pBox->x1, 0);
+	pBox->y1 = max(pBox->y1, 0);
+	pBox->x2 = min(pBox->x2, pPixmap->drawable.width);
+	pBox->y2 = min(pBox->y2, pPixmap->drawable.height);
 
-	exaPrepareAccess(&pPixmap->drawable, EXA_PREPARE_DEST);
+	if (pBox->x1 >= pBox->x2 || pBox->y1 >= pBox->y2)
+	    continue;
 
-	dst = pExaPixmap->fb_ptr;
-	dst_pitch = pExaPixmap->fb_pitch;
-	src = pExaPixmap->sys_ptr;
-	src_pitch = pExaPixmap->sys_pitch;
-	bytes = src_pitch < dst_pitch ? src_pitch : dst_pitch;
-
-	for (i = 0; i < pPixmap->drawable.height; i++) {
-	    memcpy (dst, src, bytes);
-	    dst += dst_pitch;
-	    src += src_pitch;
+	if (pExaScr->info->UploadToScreen == NULL ||
+	    !pExaScr->info->UploadToScreen (pPixmap,
+					    pBox->x1, pBox->y1,
+					    pBox->x2 - pBox->x1,
+					    pBox->y2 - pBox->y1,
+					    pExaPixmap->sys_ptr
+					    + pBox->y1 * pExaPixmap->sys_pitch
+					    + pBox->x1 * pPixmap->drawable.bitsPerPixel / 8,
+					    pExaPixmap->sys_pitch))
+	{
+	    exaPrepareAccess(&pPixmap->drawable, EXA_PREPARE_DEST);
+	    exaMemcpyBox (pPixmap, pBox,
+			  pExaPixmap->sys_ptr, pExaPixmap->sys_pitch,
+			  pExaPixmap->fb_ptr, pExaPixmap->fb_pitch);
+	    exaFinishAccess(&pPixmap->drawable, EXA_PREPARE_DEST);
 	}
-	exaFinishAccess(&pPixmap->drawable, EXA_PREPARE_DEST);
+	else
+	    do_sync = TRUE;
+
+	pBox++;
     }
+
+    if (do_sync)
+	exaMarkSync (pPixmap->drawable.pScreen);
 
     pPixmap->devPrivate.ptr = save_ptr;
     pPixmap->devKind = save_pitch;
 
-    pExaPixmap->dirty = FALSE;
+    /* The previously damaged bits are now no longer damaged but valid */
+    REGION_UNION(pPixmap->drawable.pScreen,
+		 &pExaPixmap->validReg, &pExaPixmap->validReg, pRegion);
+    DamageEmpty (pExaPixmap->pDamage);
 }
 
 /**
@@ -177,18 +249,19 @@ exaCopyDirtyToFb (PixmapPtr pPixmap)
  * Called when the memory manager decides it's time to kick the pixmap out of
  * framebuffer entirely.
  */
-static void
+void
 exaPixmapSave (ScreenPtr pScreen, ExaOffscreenArea *area)
 {
     PixmapPtr pPixmap = area->privData;
     ExaPixmapPriv(pPixmap);
+    RegionPtr pDamageReg = DamageRegion(pExaPixmap->pDamage);
 
-    DBG_MIGRATE (("Save %p (%p) (%dx%d)\n",
-		  (void*)pPixmap->drawable.id,
+    DBG_MIGRATE (("Save %p (%p) (%dx%d) (%c)\n", pPixmap,
 		  (void*)(ExaGetPixmapPriv(pPixmap)->area ?
                           ExaGetPixmapPriv(pPixmap)->area->offset : 0),
 		  pPixmap->drawable.width,
-		  pPixmap->drawable.height));
+		  pPixmap->drawable.height,
+		  exaPixmapIsDirty(pPixmap) ? 'd' : 'c'));
 
     if (exaPixmapIsOffscreen(pPixmap)) {
 	exaCopyDirtyToSys (pPixmap);
@@ -200,10 +273,9 @@ exaPixmapSave (ScreenPtr pScreen, ExaOffscreenArea *area)
     pExaPixmap->fb_ptr = NULL;
     pExaPixmap->area = NULL;
 
-    /* Mark it dirty now, to say that there is important data in the
-     * system-memory copy.
-     */
-    pExaPixmap->dirty = TRUE;
+    /* Mark all valid bits as damaged, so they'll get copied to FB next time */
+    REGION_UNION(pPixmap->drawable.pScreen, pDamageReg, pDamageReg,
+		 &pExaPixmap->validReg);
 }
 
 /**
@@ -259,11 +331,12 @@ exaMoveInPixmap (PixmapPtr pPixmap)
 				       pExaPixmap->area->offset;
     }
 
-    DBG_MIGRATE (("-> 0x%lx (0x%x) (%dx%d)\n", pPixmap->drawable.id,
+    DBG_MIGRATE (("-> %p (0x%x) (%dx%d) (%c)\n", pPixmap,
 		  (ExaGetPixmapPriv(pPixmap)->area ?
                    ExaGetPixmapPriv(pPixmap)->area->offset : 0),
 		  pPixmap->drawable.width,
-		  pPixmap->drawable.height));
+		  pPixmap->drawable.height,
+		  exaPixmapIsDirty(pPixmap) ? 'd' : 'c'));
 
     exaCopyDirtyToFb (pPixmap);
 
@@ -287,14 +360,15 @@ exaMoveOutPixmap (PixmapPtr pPixmap)
     if (exaPixmapIsPinned(pPixmap))
 	return;
 
-    DBG_MIGRATE (("<- 0x%p (0x%p) (%dx%d)\n",
-		  (void*)pPixmap->drawable.id,
-		  (void*)(ExaGetPixmapPriv(pPixmap)->area ?
-                          ExaGetPixmapPriv(pPixmap)->area->offset : 0),
-		  pPixmap->drawable.width,
-		  pPixmap->drawable.height));
-
     if (exaPixmapIsOffscreen(pPixmap)) {
+
+	DBG_MIGRATE (("<- %p (%p) (%dx%d) (%c)\n", pPixmap,
+		      (void*)(ExaGetPixmapPriv(pPixmap)->area ?
+			      ExaGetPixmapPriv(pPixmap)->area->offset : 0),
+		      pPixmap->drawable.width,
+		      pPixmap->drawable.height,
+		      exaPixmapIsDirty(pPixmap) ? 'd' : 'c'));
+
 	exaCopyDirtyToSys (pPixmap);
 
 	pPixmap->devPrivate.ptr = pExaPixmap->sys_ptr;
@@ -377,6 +451,63 @@ exaMigrateTowardSys (PixmapPtr pPixmap)
 }
 
 /**
+ * If the pixmap has both a framebuffer and system memory copy, this function
+ * asserts that both of them are the same.
+ */
+static Bool
+exaAssertNotDirty (PixmapPtr pPixmap)
+{
+    ExaPixmapPriv (pPixmap);
+    CARD8 *dst, *src;
+    RegionPtr pValidReg = &pExaPixmap->validReg;
+    int dst_pitch, src_pitch, cpp, y, nbox = REGION_NUM_RECTS(pValidReg);
+    BoxPtr pBox = REGION_RECTS(pValidReg);
+    Bool ret = TRUE;
+
+    if (pExaPixmap == NULL || pExaPixmap->fb_ptr == NULL)
+	return ret;
+
+    dst = pExaPixmap->sys_ptr;
+    dst_pitch = pExaPixmap->sys_pitch;
+    src = pExaPixmap->fb_ptr;
+    src_pitch = pExaPixmap->fb_pitch;
+    cpp = pPixmap->drawable.bitsPerPixel / 8;
+
+    exaPrepareAccess(&pPixmap->drawable, EXA_PREPARE_SRC);
+    while (nbox--) {
+	    int rowbytes;
+
+	    pBox->x1 = max(pBox->x1, 0);
+	    pBox->y1 = max(pBox->y1, 0);
+	    pBox->x2 = min(pBox->x2, pPixmap->drawable.width);
+	    pBox->y2 = min(pBox->y2, pPixmap->drawable.height);
+
+	    if (pBox->x1 >= pBox->x2 || pBox->y1 >= pBox->y2)
+		continue;
+
+	    rowbytes = (pBox->x2 - pBox->x1) * cpp;
+	    src += pBox->y1 * src_pitch + pBox->x1 * cpp;
+	    dst += pBox->y1 * dst_pitch + pBox->x1 * cpp;
+
+	    for (y = pBox->y2 - pBox->y1; y; y--) {
+		if (memcmp(dst + pBox->y1 * dst_pitch + pBox->x1 * cpp,
+			   src + pBox->y1 * src_pitch + pBox->x1 * cpp,
+			   (pBox->x2 - pBox->x1) * cpp) != 0) {
+		    ret = FALSE;
+		    break;
+		}
+		src += src_pitch;
+		dst += dst_pitch;
+	    }
+	    src -= pBox->y1 * src_pitch + pBox->x1 * cpp;
+	    dst -= pBox->y1 * dst_pitch + pBox->x1 * cpp;
+    }
+    exaFinishAccess(&pPixmap->drawable, EXA_PREPARE_SRC);
+
+    return ret;
+}
+
+/**
  * Performs migration of the pixmaps according to the operation information
  * provided in pixmaps and can_accel and the migration scheme chosen in the
  * config file.
@@ -388,6 +519,20 @@ exaDoMigration (ExaMigrationPtr pixmaps, int npixmaps, Bool can_accel)
     ExaScreenPriv(pScreen);
     int i, j;
 
+    /* If this debugging flag is set, check each pixmap for whether it is marked
+     * as clean, and if so, actually check if that's the case.  This should help
+     * catch issues with failing to mark a drawable as dirty.  While it will
+     * catch them late (after the operation happened), it at least explains what
+     * went wrong, and instrumenting the code to find what operation happened
+     * to the pixmap last shouldn't be hard.
+     */
+    if (pExaScr->checkDirtyCorrectness) {
+	for (i = 0; i < npixmaps; i++) {
+	    if (!exaPixmapIsDirty (pixmaps[i].pPix) &&
+		!exaAssertNotDirty (pixmaps[i].pPix))
+		ErrorF("%s: Pixmap %d dirty but not marked as such!\n", __func__, i);
+	}
+    }
     /* If anything is pinned in system memory, we won't be able to
      * accelerate.
      */
@@ -403,7 +548,40 @@ exaDoMigration (ExaMigrationPtr pixmaps, int npixmaps, Bool can_accel)
 	}
     }
 
-    if (pExaScr->migration == ExaMigrationGreedy) {
+    if (pExaScr->migration == ExaMigrationSmart) {
+	/* If we've got something as a destination that we shouldn't cause to
+	 * become newly dirtied, take the unaccelerated route.
+	 */
+	for (i = 0; i < npixmaps; i++) {
+	    if (pixmaps[i].as_dst && !exaPixmapShouldBeInFB (pixmaps[i].pPix) &&
+		!exaPixmapIsDirty (pixmaps[i].pPix))
+	    {
+		for (i = 0; i < npixmaps; i++) {
+		    if (!exaPixmapIsDirty (pixmaps[i].pPix))
+			exaMoveOutPixmap (pixmaps[i].pPix);
+		}
+		return;
+	    }
+	}
+
+	/* If we aren't going to accelerate, then we migrate everybody toward
+	 * system memory, and kick out if it's free.
+	 */
+	if (!can_accel) {
+	    for (i = 0; i < npixmaps; i++) {
+		exaMigrateTowardSys (pixmaps[i].pPix);
+		if (!exaPixmapIsDirty (pixmaps[i].pPix))
+		    exaMoveOutPixmap (pixmaps[i].pPix);
+	    }
+	    return;
+	}
+
+	/* Finally, the acceleration path.  Move them all in. */
+	for (i = 0; i < npixmaps; i++) {
+	    exaMigrateTowardFb(pixmaps[i].pPix);
+	    exaMoveInPixmap(pixmaps[i].pPix);
+	}
+    } else if (pExaScr->migration == ExaMigrationGreedy) {
 	/* If we can't accelerate, either because the driver can't or because one of
 	 * the pixmaps is pinned in system memory, then we migrate everybody toward
 	 * system memory.

@@ -1,8 +1,8 @@
 Index: xorg-server/configure.ac
 ===================================================================
---- xorg-server.orig/configure.ac	2006-09-27 21:00:27.000000000 -0400
-+++ xorg-server/configure.ac	2006-09-27 22:38:20.000000000 -0400
-@@ -376,6 +376,9 @@
+--- xorg-server.orig/configure.ac	2007-03-15 00:46:31.000000000 +0100
++++ xorg-server/configure.ac	2007-03-15 00:57:26.000000000 +0100
+@@ -388,6 +388,9 @@
  AC_ARG_WITH(rgb-path,         AS_HELP_STRING([--with-rgb-path=PATH], [Path to RGB database (default: ${datadir}/X11/rgb)]),
  				[ RGBPATH="$withval" ],
  				[ RGBPATH="${datadir}/X11/rgb" ])
@@ -12,23 +12,23 @@ Index: xorg-server/configure.ac
  AC_ARG_WITH(dri-driver-path,  AS_HELP_STRING([--with-dri-driver-path=PATH], [Path to DRI drivers (default: ${libdir}/dri)]),
  				[ DRI_DRIVER_PATH="$withval" ],
  				[ DRI_DRIVER_PATH="${libdir}/dri" ])
-@@ -807,6 +810,7 @@
+@@ -827,6 +830,7 @@
  
  AC_DEFINE_DIR(COMPILEDDEFAULTFONTPATH, FONTPATH, [Default font path])
  AC_DEFINE_DIR(RGB_DB, RGBPATH, [Default RGB path])
 +AC_DEFINE_DIR(SERVERCONFIGdir, SERVERCONFIG, [Server config path])
+ AC_DEFINE_DIR(BASE_FONT_PATH, FONTDIR, [Default base font path])
  AC_DEFINE_DIR(DRI_DRIVER_PATH, DRI_DRIVER_PATH, [Default DRI driver path])
  AC_DEFINE_UNQUOTED(XVENDORNAME, ["$VENDOR_STRING"], [Vendor name])
- AC_DEFINE_UNQUOTED(XVENDORNAMESHORT, ["$VENDOR_STRING_SHORT"], [Short vendor name])
 Index: xorg-server/Xext/Makefile.am
 ===================================================================
---- xorg-server.orig/Xext/Makefile.am	2006-09-27 21:00:27.000000000 -0400
-+++ xorg-server/Xext/Makefile.am	2006-09-27 22:38:20.000000000 -0400
-@@ -73,7 +73,6 @@
- if XCSECURITY   
- BUILTIN_SRCS += $(XCSECURITY_SRCS)
+--- xorg-server.orig/Xext/Makefile.am	2007-03-15 00:09:12.000000000 +0100
++++ xorg-server/Xext/Makefile.am	2007-03-15 00:57:02.000000000 +0100
+@@ -34,7 +34,6 @@
+ 	xcmisc.c
  
+ # Extra configuration files ship with some extensions
 -SERVERCONFIGdir = $(libdir)/xserver
- SERVERCONFIG_DATA = SecurityPolicy
- AM_CFLAGS += -DDEFAULTPOLICYFILE=\"$(SERVERCONFIGdir)/SecurityPolicy\"
- endif
+ SERVERCONFIG_DATA =
+ 
+ # Optional sources included if extension enabled by configure.ac rules

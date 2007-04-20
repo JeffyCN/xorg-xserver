@@ -1,5 +1,3 @@
-/* $Xorg: xkbInit.c,v 1.3 2000/08/17 19:53:47 cpqbld Exp $ */
-/* $XdotOrg: xserver/xorg/xkb/xkbInit.c,v 1.12 2006/03/25 21:52:49 daniels Exp $ */
 /************************************************************
 Copyright (c) 1993 by Silicon Graphics Computer Systems, Inc.
 
@@ -25,7 +23,6 @@ OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION  WITH
 THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 ********************************************************/
-/* $XFree86: xc/programs/Xserver/xkb/xkbInit.c,v 3.32tsi Exp $ */
 
 #ifdef HAVE_DIX_CONFIG_H
 #include <dix-config.h>
@@ -127,7 +124,6 @@ typedef struct	_SrvXkmInfo {
 
 char	*		XkbBaseDirectory=	XKB_BASE_DIRECTORY;
 char	*		XkbBinDirectory=	XKB_BIN_DIRECTORY;
-char	*		XkbInitialMap=		NULL;
 int	 		XkbWantAccessX=		0;	
 static XkbFileInfo *	_XkbInitFileInfo=	NULL;
 
@@ -495,35 +491,6 @@ XkbEventCauseRec	cause;
     file.file=NULL;
     bzero(&file.xkbinfo,sizeof(XkbFileInfo));
     bzero(&changes,sizeof(XkbChangesRec));
-    if (XkbInitialMap!=NULL) {
-	if ((file.file=XkbDDXOpenConfigFile(XkbInitialMap,NULL,0))!=NULL) {
-	    XkmReadFile(file.file,0,XkmKeymapLegal,&file.xkbinfo);
-	    if (file.xkbinfo.xkb==NULL) {
-		LogMessage(X_ERROR,
-				"Error loading keymap file %s (%s in %s)\n"
-				"\treverting to defaults\n",
-				XkbInitialMap, _XkbErrMessages[_XkbErrCode],
-				(_XkbErrLocation?_XkbErrLocation:"unknown"));
-		fclose(file.file);
-		file.file= NULL;
-		bzero(&file.xkbinfo,sizeof(XkbFileInfo));
-	    }
-	    else {
-		if (_XkbInitFileInfo!=NULL) {
-		    XkbDescPtr	tmp;
-		    if ((tmp=_XkbInitFileInfo->xkb)!=NULL) {
-			XkbFreeKeyboard(tmp,XkbAllComponentsMask,True);
-			_XkbInitFileInfo->xkb= NULL;
-		    }
-		}
-		_XkbInitFileInfo= &file.xkbinfo;
-	    }
-	}
-	else {
-	    LogMessage(X_ERROR, "Error opening keymap file %s, reverting to defaults\n",
-	    	    XkbInitialMap);
-	}
-    }
     pXDev->key->xkbInfo= xkbi= _XkbTypedCalloc(1,XkbSrvInfoRec);
     if ( xkbi ) {
 	XkbDescPtr	xkb;
@@ -906,20 +873,6 @@ XkbProcessArguments(int argc,char *argv[],int i)
 	    return -1;
 	}
     }
-    else if (strncmp(argv[i], "-xkbmap", 7) == 0) {
-	if(++i < argc) {
-	    if (strlen(argv[i]) < PATH_MAX) {
-		XkbInitialMap= argv[i];
-		return 2;
-	    } else {
-		LogMessage(X_ERROR, "-xkbmap pathname too long\n");
-		return -1;
-	    }
-	}
-	else {
-	    return -1;
-	}
-    }
     else if ((strncmp(argv[i],"-accessx",8)==0)||
                  (strncmp(argv[i],"+accessx",8)==0)) {
 	int j=1;	    
@@ -982,5 +935,4 @@ XkbUseMsg(void)
     ErrorF("                       enable/disable accessx key sequences\n");
     ErrorF("-ardelay               set XKB autorepeat delay\n");
     ErrorF("-arinterval            set XKB autorepeat interval\n");
-    ErrorF("-xkbmap                XKB keyboard description to load on startup\n");
 }

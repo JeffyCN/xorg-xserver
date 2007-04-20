@@ -1,0 +1,39 @@
+diff -ruN xserver-old/hw/xprint/extras/ttf2pt1/ft.c xorg-server/hw/xprint/extras/ttf2pt1/ft.c
+--- xorg-server-old/hw/xprint/extras/ttf2pt1/ft.c	2006-06-27 13:14:02.000000000 +1000
++++ xorg-server/hw/xprint/extras/ttf2pt1/ft.c	2006-06-27 13:18:56.000000000 +1000
+@@ -36,15 +36,15 @@
+ 
+ #ifdef XP_PSTEXT
+ #include "os.h"
+-#include "Xproto.h"
+-#include "font.h"
+-#include "fontstruct.h"
+-#include "fntfilst.h"
+-#include "fontutil.h"
+-#include "fontenc.h"
+-#include "ft.h"
++#include <X11/Xproto.h>
++#include <X11/fonts/font.h>
++#include <X11/fonts/fontstruct.h>
++#include <X11/fonts/fntfilst.h>
++#include <X11/fonts/fontutil.h>
++#include <X11/fonts/fontenc.h>
++#include <X11/fonts/ft.h>
+ #define NOT_IN_FTFUNCS
+-#include "ftfuncs.h"
++#include <X11/fonts/ftfuncs.h>
+ #endif /* XP_PSTEXT */
+ 
+ #include "pt1.h"
+diff -ruN xorg-server-old/hw/xprint/extras/ttf2pt1/ttf2pt1.c xorg-server/hw/xprint/extras/ttf2pt1/ttf2pt1.c
+--- xorg-server-old/hw/xprint/extras/ttf2pt1/ttf2pt1.c	2006-06-27 13:14:02.000000000 +1000
++++ xorg-server/hw/xprint/extras/ttf2pt1/ttf2pt1.c	2006-06-27 13:15:49.000000000 +1000
+@@ -1698,7 +1698,7 @@
+ 
+ #ifdef XP_PSTEXT
+ FT_Face         xp_pstext_ft_face     = NULL; /* used by ft.c */
+-FontPtr       xp_xtf                = NULL;
++FTFontPtr       xp_xtf                = NULL;
+ const char     *xp_psfontname         = NULL;
+ unsigned long   xp_font_block_offset  = 0UL;
+ 

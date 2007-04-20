@@ -38,8 +38,7 @@ build_triplet = @build@
 host_triplet = @host@
 @XCSECURITY_TRUE@am__append_1 = $(XCSECURITY_SOURCES)
 @XDMCP_TRUE@am__append_2 = $(XDMCP_SOURCES)
-@LBX_TRUE@am__append_3 = $(LBX_SOURCES)
-@NEED_STRLCAT_TRUE@am__append_4 = $(STRLCAT_SOURCES)
+@NEED_STRLCAT_TRUE@am__append_3 = $(STRLCAT_SOURCES)
 subdir = os
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
@@ -64,21 +63,19 @@ libcwrapper_la_OBJECTS = $(am_libcwrapper_la_OBJECTS)
 libos_la_LIBADD =
 am__libos_la_SOURCES_DIST = WaitFor.c access.c auth.c connection.c \
 	io.c mitauth.c oscolor.c oscolor.h osdep.h osinit.c utils.c \
-	xdmauth.c xstrans.c xprintf.c log.c secauth.c xdmcp.c lbxio.c \
+	xdmauth.c xstrans.c xprintf.c log.c secauth.c xdmcp.c \
 	strlcat.c strlcpy.c
 am__objects_1 = log.lo
 am__objects_2 = secauth.lo
 @XCSECURITY_TRUE@am__objects_3 = $(am__objects_2)
 am__objects_4 = xdmcp.lo
 @XDMCP_TRUE@am__objects_5 = $(am__objects_4)
-am__objects_6 = lbxio.lo
-@LBX_TRUE@am__objects_7 = $(am__objects_6)
-am__objects_8 = strlcat.lo strlcpy.lo
-@NEED_STRLCAT_TRUE@am__objects_9 = $(am__objects_8)
+am__objects_6 = strlcat.lo strlcpy.lo
+@NEED_STRLCAT_TRUE@am__objects_7 = $(am__objects_6)
 am_libos_la_OBJECTS = WaitFor.lo access.lo auth.lo connection.lo io.lo \
 	mitauth.lo oscolor.lo osinit.lo utils.lo xdmauth.lo xstrans.lo \
 	xprintf.lo $(am__objects_1) $(am__objects_3) $(am__objects_5) \
-	$(am__objects_7) $(am__objects_9)
+	$(am__objects_7)
 libos_la_OBJECTS = $(am_libos_la_OBJECTS)
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)/include -I$(top_builddir)/include -I$(top_builddir)/include -I$(top_builddir)/include -I$(top_builddir)/include -I$(top_builddir)/include -I$(top_builddir)/include -I$(top_builddir)/include
 depcomp = $(SHELL) $(top_srcdir)/depcomp
@@ -124,6 +121,7 @@ AUTOCONF = @AUTOCONF@
 AUTOHEADER = @AUTOHEADER@
 AUTOMAKE = @AUTOMAKE@
 AWK = @AWK@
+BASE_FONT_PATH = @BASE_FONT_PATH@
 BSD_KBD_MODE_FALSE = @BSD_KBD_MODE_FALSE@
 BSD_KBD_MODE_TRUE = @BSD_KBD_MODE_TRUE@
 BUILDDOCS_FALSE = @BUILDDOCS_FALSE@
@@ -160,6 +158,7 @@ DBE_FALSE = @DBE_FALSE@
 DBE_TRUE = @DBE_TRUE@
 DEBUG_FALSE = @DEBUG_FALSE@
 DEBUG_TRUE = @DEBUG_TRUE@
+DEFAULT_LIBRARY_PATH = @DEFAULT_LIBRARY_PATH@
 DEFAULT_LOGPREFIX = @DEFAULT_LOGPREFIX@
 DEFAULT_MODULE_PATH = @DEFAULT_MODULE_PATH@
 DEFS = @DEFS@
@@ -252,12 +251,6 @@ KDRIVE_LIBS = @KDRIVE_LIBS@
 KDRIVE_PURE_INCS = @KDRIVE_PURE_INCS@
 KDRIVE_PURE_LIBS = @KDRIVE_PURE_LIBS@
 KDRIVE_TRUE = @KDRIVE_TRUE@
-LBXUTIL_CFLAGS = @LBXUTIL_CFLAGS@
-LBXUTIL_LIBS = @LBXUTIL_LIBS@
-LBXUTIL_TEST_CFLAGS = @LBXUTIL_TEST_CFLAGS@
-LBXUTIL_TEST_LIBS = @LBXUTIL_TEST_LIBS@
-LBX_FALSE = @LBX_FALSE@
-LBX_TRUE = @LBX_TRUE@
 LDFLAGS = @LDFLAGS@
 LD_EXPORT_SYMBOLS_FLAG = @LD_EXPORT_SYMBOLS_FLAG@
 LEX = @LEX@
@@ -280,7 +273,6 @@ LNXACPI_TRUE = @LNXACPI_TRUE@
 LNXAPM_FALSE = @LNXAPM_FALSE@
 LNXAPM_TRUE = @LNXAPM_TRUE@
 LN_S = @LN_S@
-LOADER_DEFINES = @LOADER_DEFINES@
 LTLIBOBJS = @LTLIBOBJS@
 MAINT = @MAINT@
 MAINTAINER_MODE_FALSE = @MAINTAINER_MODE_FALSE@
@@ -293,8 +285,6 @@ MAKE_TEXT = @MAKE_TEXT@
 MESA_SOURCE = @MESA_SOURCE@
 MFB_FALSE = @MFB_FALSE@
 MFB_TRUE = @MFB_TRUE@
-MISCUTILS_FALSE = @MISCUTILS_FALSE@
-MISCUTILS_TRUE = @MISCUTILS_TRUE@
 MISC_MAN_DIR = @MISC_MAN_DIR@
 MISC_MAN_SUFFIX = @MISC_MAN_SUFFIX@
 MITSHM_FALSE = @MITSHM_FALSE@
@@ -303,7 +293,6 @@ MKFONTDIR = @MKFONTDIR@
 MKFONTSCALE = @MKFONTSCALE@
 MMX_CAPABLE_FALSE = @MMX_CAPABLE_FALSE@
 MMX_CAPABLE_TRUE = @MMX_CAPABLE_TRUE@
-MODULE_DEFINES = @MODULE_DEFINES@
 MULTIBUFFER_FALSE = @MULTIBUFFER_FALSE@
 MULTIBUFFER_TRUE = @MULTIBUFFER_TRUE@
 NEED_STRLCAT_FALSE = @NEED_STRLCAT_FALSE@
@@ -336,9 +325,9 @@ RGB_DB = @RGB_DB@
 SCREENSAVER_FALSE = @SCREENSAVER_FALSE@
 SCREENSAVER_TRUE = @SCREENSAVER_TRUE@
 SERVERCONFIGdir = @SERVERCONFIGdir@
-SERVER_DEFINES = @SERVER_DEFINES@
 SET_MAKE = @SET_MAKE@
 SHELL = @SHELL@
+SOLARIS_ASM_CFLAGS = @SOLARIS_ASM_CFLAGS@
 SOLARIS_ASM_INLINE_FALSE = @SOLARIS_ASM_INLINE_FALSE@
 SOLARIS_ASM_INLINE_TRUE = @SOLARIS_ASM_INLINE_TRUE@
 SOLARIS_INOUT_ARCH = @SOLARIS_INOUT_ARCH@
@@ -350,7 +339,9 @@ STRIP = @STRIP@
 SUN_KBD_MODE_FALSE = @SUN_KBD_MODE_FALSE@
 SUN_KBD_MODE_TRUE = @SUN_KBD_MODE_TRUE@
 SYS_LIBS = @SYS_LIBS@
+TSLIB_CFLAGS = @TSLIB_CFLAGS@
 TSLIB_FALSE = @TSLIB_FALSE@
+TSLIB_LIBS = @TSLIB_LIBS@
 TSLIB_TRUE = @TSLIB_TRUE@
 USE_CURSES_FALSE = @USE_CURSES_FALSE@
 USE_CURSES_TRUE = @USE_CURSES_TRUE@
@@ -363,6 +354,10 @@ VENDOR_STRING_SHORT = @VENDOR_STRING_SHORT@
 VERSION = @VERSION@
 X11EXAMPLES_DEP_CFLAGS = @X11EXAMPLES_DEP_CFLAGS@
 X11EXAMPLES_DEP_LIBS = @X11EXAMPLES_DEP_LIBS@
+XACE_FALSE = @XACE_FALSE@
+XACE_TRUE = @XACE_TRUE@
+XCALIBRATE_FALSE = @XCALIBRATE_FALSE@
+XCALIBRATE_TRUE = @XCALIBRATE_TRUE@
 XCSECURITY_FALSE = @XCSECURITY_FALSE@
 XCSECURITY_TRUE = @XCSECURITY_TRUE@
 XDMAUTH_FALSE = @XDMAUTH_FALSE@
@@ -389,6 +384,8 @@ XEVIE_TRUE = @XEVIE_TRUE@
 XF86BIGFONT_FALSE = @XF86BIGFONT_FALSE@
 XF86BIGFONT_TRUE = @XF86BIGFONT_TRUE@
 XF86CONFIGFILE = @XF86CONFIGFILE@
+XF86UTILS_FALSE = @XF86UTILS_FALSE@
+XF86UTILS_TRUE = @XF86UTILS_TRUE@
 XGLMODULES_CFLAGS = @XGLMODULES_CFLAGS@
 XGLMODULES_LIBS = @XGLMODULES_LIBS@
 XGLXMODULES_CFLAGS = @XGLXMODULES_CFLAGS@
@@ -556,7 +553,7 @@ target_alias = @target_alias@
 xglmoduledir = @xglmoduledir@
 xpconfigdir = @xpconfigdir@
 noinst_LTLIBRARIES = libos.la libcwrapper.la
-AM_CFLAGS = $(DIX_CFLAGS) @SERVER_DEFINES@ @LOADER_DEFINES@
+AM_CFLAGS = $(DIX_CFLAGS)
 
 # FIXME: Add support for these in configure.ac
 K5AUTH_SOURCES = k5auth.c
@@ -564,13 +561,12 @@ SECURERPC_SOURCES = rpcauth.c
 INTERNALMALLOC_SOURCES = xalloc.c
 XCSECURITY_SOURCES = secauth.c
 XDMCP_SOURCES = xdmcp.c
-LBX_SOURCES = lbxio.c
 STRLCAT_SOURCES = strlcat.c strlcpy.c
 XORG_SOURCES = log.c
 libos_la_SOURCES = WaitFor.c access.c auth.c connection.c io.c \
 	mitauth.c oscolor.c oscolor.h osdep.h osinit.c utils.c \
 	xdmauth.c xstrans.c xprintf.c $(XORG_SOURCES) $(am__append_1) \
-	$(am__append_2) $(am__append_3) $(am__append_4)
+	$(am__append_2) $(am__append_3)
 libcwrapper_la_SOURCES = \
 	$(top_srcdir)/hw/xfree86/os-support/shared/libc_wrapper.c
 
@@ -580,7 +576,7 @@ libcwrapper_la_CFLAGS = \
 	$(AM_CFLAGS)
 
 EXTRA_DIST = $(K5AUTH_SOURCES) $(SECURERPC_SOURCES) $(INTERNALMALLOC_SOURCES) \
-     $(XCSECURITY_SOURCES) $(XDMCP_SOURCES) $(LBX_SOURCES) $(STRLCAT_SOURCES)
+     $(XCSECURITY_SOURCES) $(XDMCP_SOURCES) $(STRLCAT_SOURCES)
 
 all: all-am
 
@@ -640,7 +636,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/auth.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/connection.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/io.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/lbxio.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libcwrapper_la-libc_wrapper.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/log.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/mitauth.Plo@am__quote@

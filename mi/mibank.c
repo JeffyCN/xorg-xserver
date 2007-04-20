@@ -44,7 +44,6 @@
  * CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-/* $XFree86: xc/programs/Xserver/mi/mibank.c,v 1.15 2003/11/10 18:39:16 tsi Exp $ */
 
 /*
  * This thing originated from an idea of Edwin Goei and his bank switching
@@ -1364,9 +1363,6 @@ static GCOps miBankGCOps =
     miBankImageGlyphBlt,
     miBankPolyGlyphBlt,
     miBankPushPixels,
-#ifdef NEED_LINEHELPER
-    NULL,               /* LineHelper */
-#endif
     {NULL}              /* devPrivate */
 };
 

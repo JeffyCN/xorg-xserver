@@ -30,7 +30,6 @@
  *		Peter Busch
  *		Harold L Hunt II
  */
-/* $XFree86: xc/programs/Xserver/hw/xwin/winkeybd.c,v 1.12 2002/10/17 08:18:22 alanh Exp $ */
 
 
 #ifdef HAVE_XWIN_CONFIG_H
@@ -259,24 +258,12 @@ winKeybdProc (DeviceIntPtr pDeviceInt, int iState)
       else 
 	{
 
-	  if (XkbInitialMap) 
-	    {
-	      names.keymap = XkbInitialMap;
-	      names.keycodes = NULL;
-	      names.types = NULL;
-	      names.compat = NULL;
-	      names.symbols = NULL;
-	      names.geometry = NULL;
-	    } 
-	  else 
-	    {
-	      names.keymap = g_winInfo.xkb.keymap;
-	      names.keycodes = g_winInfo.xkb.keycodes;
-	      names.types = g_winInfo.xkb.types;
-	      names.compat = g_winInfo.xkb.compat;
-	      names.symbols = g_winInfo.xkb.symbols;
-	      names.geometry = g_winInfo.xkb.geometry;
-	    }
+          names.keymap = g_winInfo.xkb.keymap;
+          names.keycodes = g_winInfo.xkb.keycodes;
+          names.types = g_winInfo.xkb.types;
+          names.compat = g_winInfo.xkb.compat;
+          names.symbols = g_winInfo.xkb.symbols;
+          names.geometry = g_winInfo.xkb.geometry;
 
 	  winErrorFVerb(2, "Rules = \"%s\" Model = \"%s\" Layout = \"%s\""
 		 " Variant = \"%s\" Options = \"%s\"\n",

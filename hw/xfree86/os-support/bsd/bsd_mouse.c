@@ -1,4 +1,3 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/os-support/bsd/bsd_mouse.c,v 1.28 2004/02/06 17:15:36 tsi Exp $ */
 
 /*
  * Copyright (c) 1999-2003 by The XFree86 Project, Inc.
@@ -401,7 +400,7 @@ wsconsReadInput(InputInfoPtr pInfo)
     XisbBlockDuration(pMse->buffer, -1);
     pBuf = (unsigned char *)eventList;
     n = 0;
-    while ((c = XisbRead(pMse->buffer)) >= 0 && n < sizeof(eventList)) {
+    while (n < sizeof(eventList) && (c = XisbRead(pMse->buffer)) >= 0) {
 	pBuf[n++] = (unsigned char)c;
     }
 

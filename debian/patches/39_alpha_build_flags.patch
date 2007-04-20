@@ -1,9 +1,9 @@
 Index: hw/xfree86/os-support/linux/Makefile.am
 ===================================================================
---- hw/xfree86/os-support/linux/Makefile.am.orig	2007-02-06 00:15:25.000000000 +0100
-+++ hw/xfree86/os-support/linux/Makefile.am	2007-02-06 00:15:55.000000000 +0100
-@@ -4,7 +4,12 @@
- PLATFORM_PCI_SUPPORT = $(srcdir)/../shared/ia64Pci.c
+--- hw/xfree86/os-support/linux/Makefile.am.orig	2007-02-04 07:41:11.000000000 +0100
++++ hw/xfree86/os-support/linux/Makefile.am	2007-02-04 08:12:21.000000000 +0100
+@@ -6,7 +6,12 @@
+ PLATFORM_INCLUDES = -I$(srcdir)/../shared
  endif
  if LINUX_ALPHA
 -PLATFORM_PCI_SUPPORT = lnx_ev56.c \

@@ -269,7 +269,10 @@ ProcCompositeNameWindowPixmap (ClientPtr client)
 	client->errorValue = stuff->window;
 	return BadWindow;
     }
-    
+
+    if (!pWin->viewable)
+	return BadMatch;
+
     LEGAL_NEW_RESOURCE (stuff->pixmap, client);
     
     cw = GetCompWindow (pWin);
@@ -501,7 +504,8 @@ ProcCompositeReleaseOverlayWindow (ClientPtr client)
 	return BadMatch;
     }
 
-    FreeResource(pOc->resource, 0);
+    /* The delete function will free the client structure */
+    FreeResource (pOc->resource, 0);
 
     cs = GetCompScreen(pScreen);
     if (cs->pOverlayClients == NULL) {

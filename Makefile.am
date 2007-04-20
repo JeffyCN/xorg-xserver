@@ -11,7 +11,6 @@ endif
 
 if CFB
 CFB_DIR=cfb
-CFB16_DIR=cfb16
 CFB32_DIR=cfb32
 endif
 
@@ -25,15 +24,6 @@ endif
 
 if GLX
 GLX_DIR=GL
-endif
-
-if XPRINT
-XPDDX_DIR=Xprint
-XPCONFIG_DIR=XpConfig
-endif
-
-if LBX
-LBX_DIR=lbx
 endif
 
 if XINPUT
@@ -61,7 +51,6 @@ SUBDIRS = \
 	$(MFB_DIR) \
 	$(AFB_DIR) \
 	$(CFB_DIR) \
-	$(CFB16_DIR) \
 	$(CFB32_DIR) \
 	record \
 	xfixes \
@@ -69,11 +58,8 @@ SUBDIRS = \
 	$(XTRAP_DIR) \
 	$(COMPOSITE_DIR) \
 	$(GLX_DIR) \
-	$(LBX_DIR) \
 	exa \
-	hw \
-	$(XPDDX_DIR) \
-	$(XPCONFIG_DIR)
+	hw
 
 aclocaldir = $(datadir)/aclocal
 aclocal_DATA = xorg-server.m4
@@ -100,7 +86,6 @@ DIST_SUBDIRS = \
 	mfb \
 	afb \
 	cfb \
-	cfb16 \
 	cfb32 \
 	record \
 	xfixes \
@@ -109,10 +94,7 @@ DIST_SUBDIRS = \
 	composite \
 	GL \
 	exa \
-	hw \
-	Xprint \
-	XpConfig \
-	lbx
+	hw
 
 # gross hack
 relink: all

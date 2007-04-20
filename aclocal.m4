@@ -6585,7 +6585,7 @@ AC_DEFUN([XORG_MACROS_VERSION],[
 	XORG_MACROS_needed_major=`echo $XORG_MACROS_needed_version | sed 's/\..*$//'`
 	XORG_MACROS_needed_minor=`echo $XORG_MACROS_needed_version | sed -e 's/^[0-9]*\.//' -e 's/\..*$//'`]
 	AC_MSG_CHECKING([if xorg-macros used to generate configure is at least ${XORG_MACROS_needed_major}.${XORG_MACROS_needed_minor}])
-	[XORG_MACROS_version=1.1.2
+	[XORG_MACROS_version=1.1.5
 	XORG_MACROS_major=`echo $XORG_MACROS_version | sed 's/\..*$//'`
 	XORG_MACROS_minor=`echo $XORG_MACROS_version | sed -e 's/^[0-9]*\.//' -e 's/\..*$//'`]
 	if test $XORG_MACROS_major -ne $XORG_MACROS_needed_major ; then
@@ -6989,7 +6989,8 @@ dnl
 # --------------------
 # Adds --with/without-release-string and changes the PACKAGE and
 # PACKAGE_TARNAME to use "$PACKAGE{_TARNAME}-$RELEASE_VERSION".  If
-# no option is given, PACKAGE and PACKAGE_TARNAME are unchanged.
+# no option is given, PACKAGE and PACKAGE_TARNAME are unchanged.  Also
+# defines PACKAGE_VERSION_{MAJOR,MINOR,PATCHLEVEL} for modules to use.
  
 AC_DEFUN([XORG_RELEASE_VERSION],[
 	AC_ARG_WITH(release-version,
@@ -7002,6 +7003,23 @@ AC_DEFUN([XORG_RELEASE_VERSION],[
 		PACKAGE_TARNAME="$PACKAGE_TARNAME-$RELEASE_VERSION"
 		AC_MSG_NOTICE([Building with package name set to $PACKAGE])
 	fi
+	AC_DEFINE_UNQUOTED([PACKAGE_VERSION_MAJOR],
+		[`echo $PACKAGE_VERSION | cut -d . -f 1`],
+		[Major version of this package])
+	PVM=`echo $PACKAGE_VERSION | cut -d . -f 2`
+	if test "x$PVM" = "x"; then
+		PVM="0"
+	fi
+	AC_DEFINE_UNQUOTED([PACKAGE_VERSION_MINOR],
+		[$PVM],
+		[Minor version of this package])
+	PVP=`echo $PACKAGE_VERSION | cut -d . -f 3`
+	if test "x$PVP" = "x"; then
+		PVP="0"
+	fi
+	AC_DEFINE_UNQUOTED([PACKAGE_VERSION_PATCHLEVEL],
+		[$PVP],
+		[Patch version of this package])
 ])
 
 dnl $XdotOrg: lib/xtrans/xtrans.m4,v 1.6 2005/07/26 18:59:11 alanc Exp $
@@ -7064,8 +7082,9 @@ AC_DEFUN([XTRANS_TCP_FLAGS],[
 # -------------------------
 # Standard checks for which Xtrans transports to use by the Xorg packages
 # that use Xtrans functions
-AC_DEFUN([XTRANS_CONNECTION_FLAGS],
-[AC_REQUIRE([AC_TYPE_SIGNAL])
+AC_DEFUN([XTRANS_CONNECTION_FLAGS],[
+ AC_REQUIRE([AC_CANONICAL_HOST])
+ AC_REQUIRE([AC_TYPE_SIGNAL])
  AC_ARG_ENABLE(unix-transport,
 	AC_HELP_STRING([--enable-unix-transport],[Enable UNIX domain socket transport]),
 	[UNIXCONN=$enableval], [UNIXCONN=yes])
@@ -7083,6 +7102,19 @@ AC_DEFUN([XTRANS_CONNECTION_FLAGS],
 	AC_DEFINE(TCPCONN,1,[Support TCP socket connections])
 	XTRANS_TCP_FLAGS
  fi
+ [case $host_os in
+	solaris*|sco*|sysv4*)	localdef="yes" ;;
+	*)			localdef="no"  ;;
+ esac]
+ AC_ARG_ENABLE(local-transport,
+	AC_HELP_STRING([--enable-local-transport],[Enable os-specific local transport]),
+	[LOCALCONN=$enableval], [LOCALCONN=$localdef])
+ AC_MSG_CHECKING([if Xtrans should support os-specific local connections])
+ AC_MSG_RESULT($LOCALCONN)
+ if test "$LOCALCONN" = "yes"; then
+	AC_DEFINE(LOCALCONN,1,[Support os-specific local connections])
+ fi
+ 
 ]) # XTRANS_CONNECTION_FLAGS
 
 

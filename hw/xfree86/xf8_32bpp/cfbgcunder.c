@@ -1,4 +1,3 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/xf8_32bpp/cfbgcunder.c,v 1.5 2001/12/14 19:59:52 dawes Exp $ */
 /***********************************************************
 
 Copyright 1987, 1998  The Open Group
@@ -125,9 +124,6 @@ static GCOps cfbTEOps1Rect = {
     useTEGlyphBlt,
     usePolyGlyphBlt,
     usePushPixels
-#ifdef NEED_LINEHELPER
-    ,NULL
-#endif
 };
 
 static GCOps cfbNonTEOps1Rect = {
@@ -156,9 +152,6 @@ static GCOps cfbNonTEOps1Rect = {
     useImageGlyphBlt,
     usePolyGlyphBlt,
     usePushPixels
-#ifdef NEED_LINEHELPER
-    ,NULL
-#endif
 };
 
 static GCOps cfbTEOps = {
@@ -182,9 +175,6 @@ static GCOps cfbTEOps = {
     useTEGlyphBlt,
     usePolyGlyphBlt,
     usePushPixels
-#ifdef NEED_LINEHELPER
-    ,NULL
-#endif
 };
 
 static GCOps cfbNonTEOps = {
@@ -212,9 +202,6 @@ static GCOps cfbNonTEOps = {
     useImageGlyphBlt,
     usePolyGlyphBlt,
     usePushPixels
-#ifdef NEED_LINEHELPER
-    ,NULL
-#endif
 };
 
 static GCOps *

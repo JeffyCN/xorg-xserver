@@ -43,17 +43,20 @@ host_triplet = @host@
 @RES_TRUE@am__append_3 = $(RES_SRCS)
 @SCREENSAVER_TRUE@am__append_4 = $(SCREENSAVER_SRCS)
 @XINERAMA_TRUE@am__append_5 = $(XINERAMA_SRCS)
-@XCSECURITY_TRUE@am__append_6 = $(XCSECURITY_SRCS)
-@XCSECURITY_TRUE@am__append_7 = -DDEFAULTPOLICYFILE=\"$(SERVERCONFIGdir)/SecurityPolicy\"
-@XEVIE_TRUE@am__append_8 = $(XEVIE_SRCS)
-@XPRINT_TRUE@am__append_9 = $(XPRINT_SRCS)
-@APPGROUP_TRUE@am__append_10 = $(APPGROUP_SRCS)
-@CUP_TRUE@am__append_11 = $(CUP_SRCS)
-@EVI_TRUE@am__append_12 = $(EVI_SRCS)
-@MULTIBUFFER_TRUE@am__append_13 = $(MULTIBUFFER_SRCS)
-@FONTCACHE_TRUE@am__append_14 = $(FONTCACHE_SRCS)
-@XF86BIGFONT_TRUE@am__append_15 = $(BIGFONT_SRCS)
-@DPMSExtension_TRUE@am__append_16 = $(DPMS_SRCS)
+@XACE_TRUE@am__append_6 = $(XACE_SRCS)
+@XCSECURITY_TRUE@am__append_7 = $(XCSECURITY_SRCS)
+@XCSECURITY_TRUE@am__append_8 = SecurityPolicy
+@XCSECURITY_TRUE@am__append_9 = -DDEFAULTPOLICYFILE=\"$(SERVERCONFIGdir)/SecurityPolicy\"
+@XCALIBRATE_TRUE@am__append_10 = $(XCALIBRATE_SRCS)
+@XEVIE_TRUE@am__append_11 = $(XEVIE_SRCS)
+@XPRINT_TRUE@am__append_12 = $(XPRINT_SRCS)
+@APPGROUP_TRUE@am__append_13 = $(APPGROUP_SRCS)
+@CUP_TRUE@am__append_14 = $(CUP_SRCS)
+@EVI_TRUE@am__append_15 = $(EVI_SRCS)
+@MULTIBUFFER_TRUE@am__append_16 = $(MULTIBUFFER_SRCS)
+@FONTCACHE_TRUE@am__append_17 = $(FONTCACHE_SRCS)
+@XF86BIGFONT_TRUE@am__append_18 = $(BIGFONT_SRCS)
+@DPMSExtension_TRUE@am__append_19 = $(DPMS_SRCS)
 subdir = Xext
 DIST_COMMON = $(am__sdk_HEADERS_DIST) $(srcdir)/Makefile.am \
 	$(srcdir)/Makefile.in
@@ -75,62 +78,66 @@ CONFIG_CLEAN_FILES =
 LTLIBRARIES = $(noinst_LTLIBRARIES)
 libXext_la_LIBADD =
 am__libXext_la_SOURCES_DIST = shape.c sleepuntil.c sleepuntil.h \
-	xtest.c xtest1di.c xtest1dd.c xtest1dd.h shm.c shmint.h \
-	panoramiX.c panoramiX.h panoramiXh.h panoramiXsrv.h \
-	panoramiXprocs.c panoramiXSwap.c security.c xevie.c xprint.c \
-	appgroup.c appgroup.h xf86bigfont.c bigreq.c mitmisc.c sync.c \
-	xcmisc.c xvmain.c xvdisp.c xvmc.c xvdix.h xvmcext.h xvdisp.h \
-	xres.c saver.c cup.c EVI.c sampleEVI.c EVIstruct.h mbuf.c \
-	fontcache.c dpms.c dpmsproc.h
+	xtest.c shm.c shmint.h panoramiX.c panoramiX.h panoramiXh.h \
+	panoramiXsrv.h panoramiXprocs.c panoramiXSwap.c xace.c xace.h \
+	xacestr.h security.c securitysrv.h xcalibrate.c xevie.c \
+	xprint.c appgroup.c appgroup.h xf86bigfont.c bigreq.c \
+	mitmisc.c sync.c xcmisc.c xvmain.c xvdisp.c xvmc.c xvdix.h \
+	xvmcext.h xvdisp.h xres.c saver.c cup.c EVI.c sampleEVI.c \
+	EVIstruct.h mbuf.c fontcache.c dpms.c dpmsproc.h
 am__objects_1 = shm.lo
 @MITSHM_TRUE@am__objects_2 = $(am__objects_1)
 am__objects_3 = panoramiX.lo panoramiXprocs.lo panoramiXSwap.lo
 @XINERAMA_TRUE@am__objects_4 = $(am__objects_3)
-am__objects_5 = security.lo
-@XCSECURITY_TRUE@am__objects_6 = $(am__objects_5)
-am__objects_7 = xevie.lo
-@XEVIE_TRUE@am__objects_8 = $(am__objects_7)
-am__objects_9 = xprint.lo
-@XPRINT_TRUE@am__objects_10 = $(am__objects_9)
-am__objects_11 = appgroup.lo
-@APPGROUP_TRUE@am__objects_12 = $(am__objects_11)
-am__objects_13 = xf86bigfont.lo
-@XF86BIGFONT_TRUE@am__objects_14 = $(am__objects_13)
-am__objects_15 = shape.lo sleepuntil.lo xtest.lo xtest1di.lo \
-	xtest1dd.lo $(am__objects_2) $(am__objects_4) $(am__objects_6) \
-	$(am__objects_8) $(am__objects_10) $(am__objects_12) \
-	$(am__objects_14)
-am__objects_16 = xvmain.lo xvdisp.lo xvmc.lo
-@XV_TRUE@am__objects_17 = $(am__objects_16)
-am__objects_18 = xres.lo
-@RES_TRUE@am__objects_19 = $(am__objects_18)
-am__objects_20 = saver.lo
-@SCREENSAVER_TRUE@am__objects_21 = $(am__objects_20)
-am__objects_22 = cup.lo
-@CUP_TRUE@am__objects_23 = $(am__objects_22)
-am__objects_24 = EVI.lo sampleEVI.lo
-@EVI_TRUE@am__objects_25 = $(am__objects_24)
-am__objects_26 = mbuf.lo
-@MULTIBUFFER_TRUE@am__objects_27 = $(am__objects_26)
-am__objects_28 = fontcache.lo
-@FONTCACHE_TRUE@am__objects_29 = $(am__objects_28)
-am__objects_30 = dpms.lo
-@DPMSExtension_TRUE@am__objects_31 = $(am__objects_30)
-am__objects_32 = bigreq.lo mitmisc.lo shape.lo sync.lo xcmisc.lo \
-	$(am__objects_17) $(am__objects_19) $(am__objects_21) \
-	$(am__objects_23) $(am__objects_25) $(am__objects_27) \
-	$(am__objects_29) $(am__objects_31)
-am_libXext_la_OBJECTS = $(am__objects_15) $(am__objects_32)
+am__objects_5 = xace.lo
+@XACE_TRUE@am__objects_6 = $(am__objects_5)
+am__objects_7 = security.lo
+@XCSECURITY_TRUE@am__objects_8 = $(am__objects_7)
+am__objects_9 = xcalibrate.lo
+@XCALIBRATE_TRUE@am__objects_10 = $(am__objects_9)
+am__objects_11 = xevie.lo
+@XEVIE_TRUE@am__objects_12 = $(am__objects_11)
+am__objects_13 = xprint.lo
+@XPRINT_TRUE@am__objects_14 = $(am__objects_13)
+am__objects_15 = appgroup.lo
+@APPGROUP_TRUE@am__objects_16 = $(am__objects_15)
+am__objects_17 = xf86bigfont.lo
+@XF86BIGFONT_TRUE@am__objects_18 = $(am__objects_17)
+am__objects_19 = shape.lo sleepuntil.lo xtest.lo $(am__objects_2) \
+	$(am__objects_4) $(am__objects_6) $(am__objects_8) \
+	$(am__objects_10) $(am__objects_12) $(am__objects_14) \
+	$(am__objects_16) $(am__objects_18)
+am__objects_20 = xvmain.lo xvdisp.lo xvmc.lo
+@XV_TRUE@am__objects_21 = $(am__objects_20)
+am__objects_22 = xres.lo
+@RES_TRUE@am__objects_23 = $(am__objects_22)
+am__objects_24 = saver.lo
+@SCREENSAVER_TRUE@am__objects_25 = $(am__objects_24)
+am__objects_26 = cup.lo
+@CUP_TRUE@am__objects_27 = $(am__objects_26)
+am__objects_28 = EVI.lo sampleEVI.lo
+@EVI_TRUE@am__objects_29 = $(am__objects_28)
+am__objects_30 = mbuf.lo
+@MULTIBUFFER_TRUE@am__objects_31 = $(am__objects_30)
+am__objects_32 = fontcache.lo
+@FONTCACHE_TRUE@am__objects_33 = $(am__objects_32)
+am__objects_34 = dpms.lo
+@DPMSExtension_TRUE@am__objects_35 = $(am__objects_34)
+am__objects_36 = bigreq.lo mitmisc.lo shape.lo sync.lo xcmisc.lo \
+	$(am__objects_21) $(am__objects_23) $(am__objects_25) \
+	$(am__objects_27) $(am__objects_29) $(am__objects_31) \
+	$(am__objects_33) $(am__objects_35)
+am_libXext_la_OBJECTS = $(am__objects_19) $(am__objects_36)
 libXext_la_OBJECTS = $(am_libXext_la_OBJECTS)
 @XORG_FALSE@am_libXext_la_rpath =
 @XORG_TRUE@am_libXext_la_rpath =
 libXextbuiltin_la_LIBADD =
 am__libXextbuiltin_la_SOURCES_DIST = shape.c sleepuntil.c sleepuntil.h \
-	xtest.c xtest1di.c xtest1dd.c xtest1dd.h shm.c shmint.h \
-	panoramiX.c panoramiX.h panoramiXh.h panoramiXsrv.h \
-	panoramiXprocs.c panoramiXSwap.c security.c xevie.c xprint.c \
-	appgroup.c appgroup.h xf86bigfont.c
-@XORG_TRUE@am_libXextbuiltin_la_OBJECTS = $(am__objects_15)
+	xtest.c shm.c shmint.h panoramiX.c panoramiX.h panoramiXh.h \
+	panoramiXsrv.h panoramiXprocs.c panoramiXSwap.c xace.c xace.h \
+	xacestr.h security.c securitysrv.h xcalibrate.c xevie.c \
+	xprint.c appgroup.c appgroup.h xf86bigfont.c
+@XORG_TRUE@am_libXextbuiltin_la_OBJECTS = $(am__objects_19)
 libXextbuiltin_la_OBJECTS = $(am_libXextbuiltin_la_OBJECTS)
 @XORG_TRUE@am_libXextbuiltin_la_rpath =
 libXextmodule_la_LIBADD =
@@ -138,7 +145,7 @@ am__libXextmodule_la_SOURCES_DIST = bigreq.c mitmisc.c shape.c sync.c \
 	xcmisc.c xvmain.c xvdisp.c xvmc.c xvdix.h xvmcext.h xvdisp.h \
 	xres.c saver.c cup.c EVI.c sampleEVI.c EVIstruct.h mbuf.c \
 	fontcache.c dpms.c dpmsproc.h
-@XORG_TRUE@am_libXextmodule_la_OBJECTS = $(am__objects_32)
+@XORG_TRUE@am_libXextmodule_la_OBJECTS = $(am__objects_36)
 libXextmodule_la_OBJECTS = $(am_libXextmodule_la_OBJECTS)
 @XORG_TRUE@am_libXextmodule_la_rpath =
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)/include -I$(top_builddir)/include -I$(top_builddir)/include -I$(top_builddir)/include -I$(top_builddir)/include -I$(top_builddir)/include -I$(top_builddir)/include -I$(top_builddir)/include
@@ -200,6 +207,7 @@ AUTOCONF = @AUTOCONF@
 AUTOHEADER = @AUTOHEADER@
 AUTOMAKE = @AUTOMAKE@
 AWK = @AWK@
+BASE_FONT_PATH = @BASE_FONT_PATH@
 BSD_KBD_MODE_FALSE = @BSD_KBD_MODE_FALSE@
 BSD_KBD_MODE_TRUE = @BSD_KBD_MODE_TRUE@
 BUILDDOCS_FALSE = @BUILDDOCS_FALSE@
@@ -236,6 +244,7 @@ DBE_FALSE = @DBE_FALSE@
 DBE_TRUE = @DBE_TRUE@
 DEBUG_FALSE = @DEBUG_FALSE@
 DEBUG_TRUE = @DEBUG_TRUE@
+DEFAULT_LIBRARY_PATH = @DEFAULT_LIBRARY_PATH@
 DEFAULT_LOGPREFIX = @DEFAULT_LOGPREFIX@
 DEFAULT_MODULE_PATH = @DEFAULT_MODULE_PATH@
 DEFS = @DEFS@
@@ -328,12 +337,6 @@ KDRIVE_LIBS = @KDRIVE_LIBS@
 KDRIVE_PURE_INCS = @KDRIVE_PURE_INCS@
 KDRIVE_PURE_LIBS = @KDRIVE_PURE_LIBS@
 KDRIVE_TRUE = @KDRIVE_TRUE@
-LBXUTIL_CFLAGS = @LBXUTIL_CFLAGS@
-LBXUTIL_LIBS = @LBXUTIL_LIBS@
-LBXUTIL_TEST_CFLAGS = @LBXUTIL_TEST_CFLAGS@
-LBXUTIL_TEST_LIBS = @LBXUTIL_TEST_LIBS@
-LBX_FALSE = @LBX_FALSE@
-LBX_TRUE = @LBX_TRUE@
 LDFLAGS = @LDFLAGS@
 LD_EXPORT_SYMBOLS_FLAG = @LD_EXPORT_SYMBOLS_FLAG@
 LEX = @LEX@
@@ -356,7 +359,6 @@ LNXACPI_TRUE = @LNXACPI_TRUE@
 LNXAPM_FALSE = @LNXAPM_FALSE@
 LNXAPM_TRUE = @LNXAPM_TRUE@
 LN_S = @LN_S@
-LOADER_DEFINES = @LOADER_DEFINES@
 LTLIBOBJS = @LTLIBOBJS@
 MAINT = @MAINT@
 MAINTAINER_MODE_FALSE = @MAINTAINER_MODE_FALSE@
@@ -369,8 +371,6 @@ MAKE_TEXT = @MAKE_TEXT@
 MESA_SOURCE = @MESA_SOURCE@
 MFB_FALSE = @MFB_FALSE@
 MFB_TRUE = @MFB_TRUE@
-MISCUTILS_FALSE = @MISCUTILS_FALSE@
-MISCUTILS_TRUE = @MISCUTILS_TRUE@
 MISC_MAN_DIR = @MISC_MAN_DIR@
 MISC_MAN_SUFFIX = @MISC_MAN_SUFFIX@
 MITSHM_FALSE = @MITSHM_FALSE@
@@ -379,7 +379,6 @@ MKFONTDIR = @MKFONTDIR@
 MKFONTSCALE = @MKFONTSCALE@
 MMX_CAPABLE_FALSE = @MMX_CAPABLE_FALSE@
 MMX_CAPABLE_TRUE = @MMX_CAPABLE_TRUE@
-MODULE_DEFINES = @MODULE_DEFINES@
 MULTIBUFFER_FALSE = @MULTIBUFFER_FALSE@
 MULTIBUFFER_TRUE = @MULTIBUFFER_TRUE@
 NEED_STRLCAT_FALSE = @NEED_STRLCAT_FALSE@
@@ -412,9 +411,9 @@ RGB_DB = @RGB_DB@
 SCREENSAVER_FALSE = @SCREENSAVER_FALSE@
 SCREENSAVER_TRUE = @SCREENSAVER_TRUE@
 SERVERCONFIGdir = @SERVERCONFIGdir@
-SERVER_DEFINES = @SERVER_DEFINES@
 SET_MAKE = @SET_MAKE@
 SHELL = @SHELL@
+SOLARIS_ASM_CFLAGS = @SOLARIS_ASM_CFLAGS@
 SOLARIS_ASM_INLINE_FALSE = @SOLARIS_ASM_INLINE_FALSE@
 SOLARIS_ASM_INLINE_TRUE = @SOLARIS_ASM_INLINE_TRUE@
 SOLARIS_INOUT_ARCH = @SOLARIS_INOUT_ARCH@
@@ -426,7 +425,9 @@ STRIP = @STRIP@
 SUN_KBD_MODE_FALSE = @SUN_KBD_MODE_FALSE@
 SUN_KBD_MODE_TRUE = @SUN_KBD_MODE_TRUE@
 SYS_LIBS = @SYS_LIBS@
+TSLIB_CFLAGS = @TSLIB_CFLAGS@
 TSLIB_FALSE = @TSLIB_FALSE@
+TSLIB_LIBS = @TSLIB_LIBS@
 TSLIB_TRUE = @TSLIB_TRUE@
 USE_CURSES_FALSE = @USE_CURSES_FALSE@
 USE_CURSES_TRUE = @USE_CURSES_TRUE@
@@ -439,6 +440,10 @@ VENDOR_STRING_SHORT = @VENDOR_STRING_SHORT@
 VERSION = @VERSION@
 X11EXAMPLES_DEP_CFLAGS = @X11EXAMPLES_DEP_CFLAGS@
 X11EXAMPLES_DEP_LIBS = @X11EXAMPLES_DEP_LIBS@
+XACE_FALSE = @XACE_FALSE@
+XACE_TRUE = @XACE_TRUE@
+XCALIBRATE_FALSE = @XCALIBRATE_FALSE@
+XCALIBRATE_TRUE = @XCALIBRATE_TRUE@
 XCSECURITY_FALSE = @XCSECURITY_FALSE@
 XCSECURITY_TRUE = @XCSECURITY_TRUE@
 XDMAUTH_FALSE = @XDMAUTH_FALSE@
@@ -465,6 +470,8 @@ XEVIE_TRUE = @XEVIE_TRUE@
 XF86BIGFONT_FALSE = @XF86BIGFONT_FALSE@
 XF86BIGFONT_TRUE = @XF86BIGFONT_TRUE@
 XF86CONFIGFILE = @XF86CONFIGFILE@
+XF86UTILS_FALSE = @XF86UTILS_FALSE@
+XF86UTILS_TRUE = @XF86UTILS_TRUE@
 XGLMODULES_CFLAGS = @XGLMODULES_CFLAGS@
 XGLMODULES_LIBS = @XGLMODULES_LIBS@
 XGLXMODULES_CFLAGS = @XGLXMODULES_CFLAGS@
@@ -641,21 +648,23 @@ xpconfigdir = @xpconfigdir@
 #                    that Xorg loads
 @XORG_TRUE@noinst_LTLIBRARIES = libXext.la libXextbuiltin.la libXextmodule.la
 INCLUDES = -I$(top_srcdir)/hw/xfree86/dixmods/extmod
-AM_CFLAGS = $(DIX_CFLAGS) @SERVER_DEFINES@ @LOADER_DEFINES@ \
-	$(am__append_7)
+AM_CFLAGS = $(DIX_CFLAGS) $(am__append_9)
 @XORG_TRUE@sdk_HEADERS = xvdix.h xvmcext.h
 
 # Sources always included in libXextbuiltin.la & libXext.la
-BUILTIN_SRCS = shape.c sleepuntil.c sleepuntil.h xtest.c xtest1di.c \
-	xtest1dd.c xtest1dd.h $(am__append_1) $(am__append_5) \
-	$(am__append_6) $(am__append_8) $(am__append_9) \
-	$(am__append_10) $(am__append_15)
+BUILTIN_SRCS = shape.c sleepuntil.c sleepuntil.h xtest.c \
+	$(am__append_1) $(am__append_5) $(am__append_6) \
+	$(am__append_7) $(am__append_10) $(am__append_11) \
+	$(am__append_12) $(am__append_13) $(am__append_18)
 
 # Sources always included in libXextmodule.la & libXext.la
 MODULE_SRCS = bigreq.c mitmisc.c shape.c sync.c xcmisc.c \
 	$(am__append_2) $(am__append_3) $(am__append_4) \
-	$(am__append_11) $(am__append_12) $(am__append_13) \
-	$(am__append_14) $(am__append_16)
+	$(am__append_14) $(am__append_15) $(am__append_16) \
+	$(am__append_17) $(am__append_19)
+
+# Extra configuration files ship with some extensions
+SERVERCONFIG_DATA = $(am__append_8)
 
 # Optional sources included if extension enabled by configure.ac rules
 
@@ -674,9 +683,14 @@ SCREENSAVER_SRCS = saver.c
 # Xinerama extension: making multiple video devices act as one virtual screen
 XINERAMA_SRCS = panoramiX.c panoramiX.h panoramiXh.h panoramiXsrv.h panoramiXprocs.c panoramiXSwap.c 
 
+# X-ACE extension: provides hooks for building security policy extensions
+# like XC-Security, X-SELinux & XTSol
+XACE_SRCS = xace.c xace.h xacestr.h
+
 # Security extension: multi-level security to protect clients from each other
-XCSECURITY_SRCS = security.c
-@XCSECURITY_TRUE@SERVERCONFIG_DATA = SecurityPolicy
+XCSECURITY_SRCS = security.c securitysrv.h
+XCALIBRATE_SRCS = xcalibrate.c
+# XCalibrare needs tslib
 
 # X EVent Interception Extension: allows accessibility helpers & composite
 # managers to intercept events from input devices and transform as needed
@@ -714,13 +728,14 @@ libXext_la_SOURCES = $(BUILTIN_SRCS) $(MODULE_SRCS)
 @XORG_TRUE@libXextbuiltin_la_SOURCES = $(BUILTIN_SRCS)
 @XORG_TRUE@libXextmodule_la_SOURCES = $(MODULE_SRCS)
 EXTRA_DIST = \
-	README.xtest1-ddx \
-	SecurityPolicy \
+	$(SERVERCONFIG_DATA) \
 	$(MITSHM_SRCS) \
 	$(XV_SRCS) \
 	$(RES_SRCS) \
 	$(SCREENSAVER_SRCS) \
+	$(XACE_SRCS) \
 	$(XCSECURITY_SRCS) \
+	$(XCALIBRATE_SRCS) \
 	$(XINERAMA_SRCS) \
 	$(XEVIE_SRCS) \
 	$(XPRINT_SRCS) \
@@ -806,14 +821,14 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/shm.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sleepuntil.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sync.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xace.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xcalibrate.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xcmisc.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xevie.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xf86bigfont.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xprint.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xres.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xtest.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xtest1dd.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xtest1di.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xvdisp.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xvmain.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xvmc.Plo@am__quote@

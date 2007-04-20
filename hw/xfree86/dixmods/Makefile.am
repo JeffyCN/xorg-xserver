@@ -10,26 +10,28 @@ if XTRAP
 XTRAPMOD = libxtrap.la
 endif
 
+if DBE
+DBEMOD = libdbe.la
+endif
+
 module_LTLIBRARIES = libafb.la \
                      libcfb.la \
-                     libcfb16.la \
                      libcfb32.la \
                      libfb.la \
                      libmfb.la \
                      libshadow.la
 
 extsmoduledir = $(moduledir)/extensions
-extsmodule_LTLIBRARIES = libdbe.la \
-                         librecord.la \
+extsmodule_LTLIBRARIES = librecord.la \
+			 $(DBEMOD) \
                          $(GLXMODS) \
                          $(XTRAPMOD)
 
 fontsmoduledir = $(moduledir)/fonts
-fontsmodule_LTLIBRARIES = libbitmap.la \
-                          libfreetype.la \
+fontsmodule_LTLIBRARIES = libfreetype.la \
                           libtype1.la
 
-AM_CFLAGS = @XORG_CFLAGS@ @DIX_CFLAGS@ @SERVER_DEFINES@ @LOADER_DEFINES@
+AM_CFLAGS = @XORG_CFLAGS@ @DIX_CFLAGS@
 INCLUDES = @XORG_INCS@ \
            -I$(top_srcdir)/afb \
            -I$(top_srcdir)/cfb \
@@ -47,18 +49,9 @@ libafb_la_LDFLAGS = -avoid-version
 libafb_la_LIBADD = $(top_builddir)/afb/libafb.la
 libafb_la_SOURCES = afbmodule.c
 
-# libbitmap is just a wrapper around the bitmap font code in Xfont.
-# it doesn't even make sense to have it loadable, but, welcome to X.
-libbitmap_la_SOURCES = bitmapmod.c
-libbitmap_la_LDFLAGS = -avoid-version # `pkg-config --libs xfont`
-
 libcfb_la_LDFLAGS = -avoid-version
 libcfb_la_LIBADD = $(top_builddir)/cfb/libcfb.la
 libcfb_la_SOURCES = cfbmodule.c
-
-libcfb16_la_LDFLAGS = -avoid-version
-libcfb16_la_LIBADD = $(top_builddir)/cfb16/libcfb16.la
-libcfb16_la_SOURCES = cfb16module.c
 
 libcfb32_la_LDFLAGS = -avoid-version
 libcfb32_la_LIBADD = $(top_builddir)/cfb32/libcfb32.la
@@ -71,6 +64,7 @@ libdbe_la_SOURCES = dbemodule.c
 libfb_la_LDFLAGS = -avoid-version
 libfb_la_LIBADD = $(top_builddir)/fb/libfb.la
 libfb_la_SOURCES = $(top_builddir)/fb/fbcmap.c fbmodule.c
+libfb_la_CFLAGS = -DXFree86Server $(AM_CFLAGS)
 
 libglx_la_LDFLAGS = -avoid-version
 if AIGLX
@@ -100,8 +94,10 @@ libtype1_la_LDFLAGS = -avoid-version
 libtype1_la_SOURCES = type1mod.c
 
 libdixmods_la_SOURCES = $(top_srcdir)/mi/miinitext.c
+libdixmods_la_CFLAGS = -DXFree86LOADER $(AM_CFLAGS)
 
 libxorgxkb_la_SOURCES = xkbVT.c xkbPrivate.c xkbKillSrv.c
+libxorgxkb_la_LIBADD = $(top_builddir)/dix/libdix.la
 
 libxtrap_la_LDFLAGS = -avoid-version
 libxtrap_la_LIBADD = $(top_builddir)/XTrap/libxtrap.la

@@ -1,5 +1,5 @@
 #!/usr/bin/make -f
-# $Id: xsfbs-autoreconf.mk 2284 2006-06-06 18:02:50Z branden $
+# $Id$
 
 # Automagical conversion of autoreconf results into quilt patches.
 

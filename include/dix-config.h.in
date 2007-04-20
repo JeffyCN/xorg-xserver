@@ -112,6 +112,9 @@
 /* Define to 1 if you have the `geteuid' function. */
 #undef HAVE_GETEUID
 
+/* Define to 1 if you have the `getisax' function. */
+#undef HAVE_GETISAX
+
 /* Define to 1 if you have the `getopt' function. */
 #undef HAVE_GETOPT
 
@@ -222,6 +225,9 @@
 /* Support IPv6 for TCP connections */
 #undef IPv6
 
+/* Support os-specific local connections */
+#undef LOCALCONN
+
 /* Support MIT Misc extension */
 #undef MITMISC
 
@@ -230,6 +236,9 @@
 
 /* Disable some debugging code */
 #undef NDEBUG
+
+/* Enable some debugging code */
+#undef DEBUG
 
 /* Name of package */
 #undef PACKAGE
@@ -301,6 +310,9 @@
 
 /* unaligned word accesses behave as expected */
 #undef WORKING_UNALIGNED_INT
+
+/* Build X-ACE extension */
+#undef XACE
 
 /* Support XCMisc extension */
 #undef XCMISC
@@ -374,9 +386,6 @@
 /* Support Xv extension */
 #undef XV
 
-/* Build LBX extension */
-#undef LBX
-
 /* Build APPGROUP extension */
 #undef XAPPGROUP
 
@@ -401,16 +410,8 @@
 /* Endian order */
 #undef X_BYTE_ORDER
 
-/* BSD-compliant source */
-#undef _BSD_SOURCE
-
-/* POSIX-compliant source */
-#undef _POSIX_SOURCE
-
-#ifndef _XOPEN_SOURCE
-/* X/Open-compliant source */
-#undef _XOPEN_SOURCE
-#endif
+/* Enable GNU and other extensions to the C environment for GLIBC */
+#undef _GNU_SOURCE
 
 /* Define to empty if `const' does not conform to ANSI C. */
 #undef const
@@ -435,5 +436,8 @@
 
 /* Define to 1 if modules should avoid the libcwrapper */
 #undef NO_LIBCWRAPPER
+
+/* Have a monotonic clock from clock_gettime() */
+#undef MONOTONIC_CLOCK
 
 #endif /* _DIX_CONFIG_H_ */

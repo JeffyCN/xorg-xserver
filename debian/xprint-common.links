@@ -1,0 +1,5 @@
+etc/Xprint/C/print/attributes		usr/share/Xprint/xserver/C/print/attributes
+etc/Xprint/C/print/Xprinters		usr/share/Xprint/xserver/C/print/Xprinters
+etc/Xprint/C/print/ddx-config		usr/share/Xprint/xserver/C/print/ddx-config
+etc/Xprint/en_US/print/attributes	usr/share/Xprint/xserver/en_US/print/attributes
+usr/share/Xprint/xserver/README		usr/share/doc/xprint-common/README

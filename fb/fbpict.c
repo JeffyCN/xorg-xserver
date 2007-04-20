@@ -1,5 +1,4 @@
 /*
- * $XFree86: xc/programs/Xserver/fb/fbpict.c,v 1.15 2002/09/26 02:56:48 keithp Exp $
  *
  * Copyright © 2000 SuSE, Inc.
  *
@@ -844,7 +843,7 @@ fbComposite (CARD8      op,
     int		    n;
     BoxPtr	    pbox;
     CompositeFunc   func = NULL;
-    Bool	    srcRepeat = pSrc->pDrawable && pSrc->repeat == RepeatNormal;
+    Bool	    srcRepeat = pSrc->pDrawable && pSrc->repeat;
     Bool	    maskRepeat = FALSE;
     Bool	    srcAlphaMap = pSrc->alphaMap != 0;
     Bool	    maskAlphaMap = FALSE;
@@ -892,9 +891,8 @@ fbComposite (CARD8      op,
     case PictOpOver:
 	if (pMask)
 	{
-	    if (srcRepeat &&
-		pSrc->pDrawable->width == 1 &&
-		pSrc->pDrawable->height == 1)
+	    if (fbCanGetSolid(pSrc) &&
+		!maskRepeat)
 	    {
 		srcRepeat = FALSE;
 		if (PICT_FORMAT_COLOR(pSrc->format)) {
@@ -925,6 +923,8 @@ fbComposite (CARD8      op,
 #endif
 				func = fbCompositeSolidMask_nx8x8888;
 			    break;
+			default:
+			    break;
 			}
 			break;
 		    case PICT_a8r8g8b8:
@@ -946,6 +946,8 @@ fbComposite (CARD8      op,
 				else
 #endif
 				    func = fbCompositeSolidMask_nx8888x0565C;
+				break;
+			    default:
 				break;
 			    }
 			}
@@ -970,6 +972,8 @@ fbComposite (CARD8      op,
 #endif
 				    func = fbCompositeSolidMask_nx8888x0565C;
 				break;
+			    default:
+				break;
 			    }
 			}
 			break;
@@ -985,16 +989,22 @@ fbComposite (CARD8      op,
 			case PICT_x8b8g8r8:
 			    func = fbCompositeSolidMask_nx1xn;
 			    break;
+			default:
+			    break;
 			}
 			break;
+		    default:
+			break;
 		    }
+		default:
+		    break;
 		}
 	    }
-	    else /* has mask and non-repeating source */
+	    else if (! srcRepeat) /* has mask and non-repeating source */
 	    {
 		if (pSrc->pDrawable == pMask->pDrawable &&
 		    xSrc == xMask && ySrc == yMask &&
-		    !pMask->componentAlpha)
+		    !pMask->componentAlpha && !maskRepeat)
 		{
 		    /* source == mask: non-premultiplied data */
 		    switch (pSrc->format) {
@@ -1016,7 +1026,11 @@ fbComposite (CARD8      op,
 				    func = fbCompositeSrc_8888RevNPx0565mmx;
 #endif
 				break;
+			    default:
+				break;
 			    }
+			    break;
+			default:
 			    break;
 			}
 			break;
@@ -1038,9 +1052,15 @@ fbComposite (CARD8      op,
 				    func = fbCompositeSrc_8888RevNPx0565mmx;
 #endif
 				break;
+			    default:
+				break;
 			    }
 			    break;
+			default:
+			    break;
 			}
+			break;
+		    default:
 			break;
 		    }
 		    break;
@@ -1048,9 +1068,7 @@ fbComposite (CARD8      op,
 		else
 		{
 		    /* non-repeating source, repeating mask => translucent window */
-		    if (maskRepeat &&
-			pMask->pDrawable->width == 1 &&
-			pMask->pDrawable->height == 1)
+		    if (fbCanGetSolid(pMask))
 		    {
 			if (pSrc->format == PICT_x8r8g8b8 &&
 			    pDst->format == PICT_x8r8g8b8 &&
@@ -1067,9 +1085,7 @@ fbComposite (CARD8      op,
 	}
 	else /* no mask */
 	{
-	    if (srcRepeat &&
-		pSrc->pDrawable->width == 1 &&
-		pSrc->pDrawable->height == 1)
+	    if (fbCanGetSolid(pSrc))
 	    {
 		/* no mask and repeating source */
 		switch (pSrc->format) {
@@ -1094,11 +1110,15 @@ fbComposite (CARD8      op,
 			}
 #endif
 			break;
+		    default:
+			break;
 		    }
+		    break;
+		default:
 		    break;
 		}
 	    }
-	    else
+	    else if (! srcRepeat)
 	    {
 		switch (pSrc->format) {
 		case PICT_a8r8g8b8:
@@ -1118,6 +1138,8 @@ fbComposite (CARD8      op,
 		    case PICT_r5g6b5:
 			func = fbCompositeSrc_8888x0565;
 			break;
+		    default:
+			break;
 		    }
 		    break;
 		case PICT_x8r8g8b8:
@@ -1129,6 +1151,8 @@ fbComposite (CARD8      op,
 			    func = fbCompositeCopyAreammx;
 #endif
 			break;
+		    default:
+			break;
 		    }
 		case PICT_x8b8g8r8:
 		    switch (pDst->format) {
@@ -1138,6 +1162,8 @@ fbComposite (CARD8      op,
 			if (fbHaveMMX())
 			    func = fbCompositeCopyAreammx;
 #endif
+			break;
+		    default:
 			break;
 		    }
 		    break;
@@ -1158,12 +1184,16 @@ fbComposite (CARD8      op,
 		    case PICT_b5g6r5:
 			func = fbCompositeSrc_8888x0565;
 			break;
+		    default:
+			break;
 		    }
 		    break;
 		case PICT_r5g6b5:
 		    switch (pDst->format) {
 		    case PICT_r5g6b5:
 			func = fbCompositeSrc_0565x0565;
+			break;
+		    default:
 			break;
 		    }
 		    break;
@@ -1172,7 +1202,11 @@ fbComposite (CARD8      op,
 		    case PICT_b5g6r5:
 			func = fbCompositeSrc_0565x0565;
 			break;
+		    default:
+			break;
 		    }
+		    break;
+		default:
 		    break;
 		}
 	    }
@@ -1192,6 +1226,8 @@ fbComposite (CARD8      op,
 #endif
 			func = fbCompositeSrcAdd_8888x8888;
 		    break;
+		default:
+		    break;
 		}
 		break;
 	    case PICT_a8b8g8r8:
@@ -1203,6 +1239,8 @@ fbComposite (CARD8      op,
 		    else
 #endif
 			func = fbCompositeSrcAdd_8888x8888;
+		    break;
+		default:
 		    break;
 		}
 		break;
@@ -1216,6 +1254,8 @@ fbComposite (CARD8      op,
 #endif
 			func = fbCompositeSrcAdd_8000x8000;
 		    break;
+		default:
+		    break;
 		}
 		break;
 	    case PICT_a1:
@@ -1223,7 +1263,11 @@ fbComposite (CARD8      op,
 		case PICT_a1:
 		    func = fbCompositeSrcAdd_1000x1000;
 		    break;
+		default:
+		    break;
 		}
+		break;
+	    default:
 		break;
 	    }
 	}
@@ -1347,6 +1391,10 @@ fbPictureInit (ScreenPtr pScreen, PictFormatPtr formats, int nformats)
  */
 #if !defined(__amd64__) && !defined(__x86_64__)
 
+#ifdef HAVE_GETISAX
+#include <sys/auxv.h>
+#endif
+
 enum CPUFeatures {
     NoFeatures = 0,
     MMX = 0x1,
@@ -1357,7 +1405,23 @@ enum CPUFeatures {
 };
 
 static unsigned int detectCPUFeatures(void) {
+    unsigned int features = 0;
     unsigned int result;
+
+#ifdef HAVE_GETISAX
+    if (getisax(&result, 1)) {
+        if (result & AV_386_CMOV)
+            features |= CMOV;
+        if (result & AV_386_MMX)
+            features |= MMX;
+        if (result & AV_386_AMD_MMX)
+            features |= MMX_Extensions;
+        if (result & AV_386_SSE)
+            features |= SSE;
+        if (result & AV_386_SSE2)
+            features |= SSE2;
+    }
+#else
     char vendor[13];
     vendor[0] = 0;
     vendor[12] = 0;
@@ -1366,7 +1430,8 @@ static unsigned int detectCPUFeatures(void) {
      * %esp here. We can't declare either one as clobbered
      * since they are special registers (%ebx is the "PIC
      * register" holding an offset to global data, %esp the
-     * stack pointer), so we need to make sure they have their+      * original values when we access the output operands.
+     * stack pointer), so we need to make sure they have their
+     * original values when we access the output operands.
      */
     __asm__ ("pushf\n"
              "pop %%eax\n"
@@ -1402,7 +1467,6 @@ static unsigned int detectCPUFeatures(void) {
              : "%eax", "%ecx", "%edx"
         );
 
-    unsigned int features = 0;
     if (result) {
         /* result now contains the standard feature bits */
         if (result & (1 << 15))
@@ -1436,6 +1500,7 @@ static unsigned int detectCPUFeatures(void) {
                 features |= MMX_Extensions;
         }
     }
+#endif /* HAVE_GETISAX */
     return features;
 }
 

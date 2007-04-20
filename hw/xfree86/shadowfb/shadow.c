@@ -6,7 +6,6 @@
    Pre-fb-write callbacks and RENDER support - Nolan Leake (nolan@vmware.com)
 */
 
-/* $XFree86: xc/programs/Xserver/hw/xfree86/shadowfb/shadow.c,v 1.20tsi Exp $ */
 
 #ifdef HAVE_XORG_CONFIG_H
 #include <xorg-config.h>
@@ -1830,9 +1829,6 @@ GCOps ShadowGCOps = {
     ShadowPolyText16, ShadowImageText8, 
     ShadowImageText16, ShadowImageGlyphBlt, 
     ShadowPolyGlyphBlt, ShadowPushPixels,
-#ifdef NEED_LINEHELPER
-    NULL,
-#endif
     {NULL}		/* devPrivate */
 };
 

@@ -1,4 +1,3 @@
-/* $Xorg: mibstore.c,v 1.4 2001/02/09 02:05:20 xorgcvs Exp $ */
 /***********************************************************
 
 Copyright 1987, 1998  The Open Group
@@ -42,7 +41,6 @@ implied warranty.
 
 ******************************************************************/
 
-/* $XFree86: xc/programs/Xserver/mi/mibstore.c,v 1.10tsi Exp $ */
 
 #define NEED_EVENTS
 #ifdef HAVE_DIX_CONFIG_H
@@ -293,9 +291,6 @@ static void	    miBSPolyGlyphBlt(DrawablePtr pDrawable, GCPtr pGC,
 static void	    miBSPushPixels(GCPtr pGC, PixmapPtr pBitMap,
 				   DrawablePtr pDst, int w, int h,
 				   int x, int y);
-#ifdef NEED_LINEHELPER
-static void	    miBSLineHelper(void);
-#endif
 
 static GCOps miBSGCOps = {
     miBSFillSpans,	miBSSetSpans,	    miBSPutImage,	
@@ -305,9 +300,6 @@ static GCOps miBSGCOps = {
     miBSPolyFillArc,	miBSPolyText8,	    miBSPolyText16,
     miBSImageText8,	miBSImageText16,    miBSImageGlyphBlt,
     miBSPolyGlyphBlt,	miBSPushPixels
-#ifdef NEED_LINEHELPER
-    , miBSLineHelper
-#endif
 };
 
 #define FUNC_PROLOGUE(pGC, pPriv) \
@@ -2234,24 +2226,6 @@ miBSPushPixels(pGC, pBitMap, pDst, w, h, x, y)
 
     EPILOGUE (pGC);
 }
-
-#ifdef NEED_LINEHELPER
-/*-
- *-----------------------------------------------------------------------
- * miBSLineHelper --
- *
- * Results: should never be called
- *
- * Side Effects: server dies
- *
- *-----------------------------------------------------------------------
- */
-static void
-miBSLineHelper()
-{
-    FatalError("miBSLineHelper called\n");
-}
-#endif
 
 /*-
  *-----------------------------------------------------------------------

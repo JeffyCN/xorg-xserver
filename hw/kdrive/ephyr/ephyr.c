@@ -40,6 +40,8 @@ extern DeviceIntPtr pKdKeyboard;
 
 static int mouseState = 0;
 
+Bool   EphyrWantGrayScale = 0;
+
 Bool
 ephyrInitialize (KdCardInfo *card, EphyrPriv *priv)
 {
@@ -73,14 +75,18 @@ Bool
 ephyrScreenInitialize (KdScreenInfo *screen, EphyrScrPriv *scrpriv)
 {
   int width = 640, height = 480; 
-
+  unsigned long redMask, greenMask, blueMask;
+  
   if (hostx_want_screen_size(&width, &height) 
       || !screen->width || !screen->height)
     {
       screen->width = width;
       screen->height = height;
     }
-  
+
+  if (EphyrWantGrayScale)
+    screen->fb[0].depth = 8;
+
   if (screen->fb[0].depth && screen->fb[0].depth != hostx_get_depth())
     {
       if (screen->fb[0].depth < hostx_get_depth()
@@ -98,12 +104,15 @@ ephyrScreenInitialize (KdScreenInfo *screen, EphyrScrPriv *scrpriv)
   
   if (screen->fb[0].depth <= 8)
     {
-      screen->fb[0].visuals = ((1 << StaticGray) |
-			       (1 << GrayScale) |
-			       (1 << StaticColor) |
-			       (1 << PseudoColor) |
-			       (1 << TrueColor) |
-			       (1 << DirectColor));
+      if (EphyrWantGrayScale)
+	screen->fb[0].visuals = ((1 << StaticGray) | (1 << GrayScale));
+      else
+	screen->fb[0].visuals = ((1 << StaticGray) |
+				 (1 << GrayScale) |
+				 (1 << StaticColor) |
+				 (1 << PseudoColor) |
+				 (1 << TrueColor) |
+				 (1 << DirectColor));
       
       screen->fb[0].redMask   = 0x00;
       screen->fb[0].greenMask = 0x00;
@@ -119,30 +128,24 @@ ephyrScreenInitialize (KdScreenInfo *screen, EphyrScrPriv *scrpriv)
 	{
 	  screen->fb[0].depth = 15;
 	  screen->fb[0].bitsPerPixel = 16;
-	  
-	  hostx_get_visual_masks (&screen->fb[0].redMask,
-				  &screen->fb[0].greenMask,
-				  &screen->fb[0].blueMask);
-	  
 	}
       else if (screen->fb[0].depth <= 16)
 	{
 	  screen->fb[0].depth = 16;
 	  screen->fb[0].bitsPerPixel = 16;
-	  
-	  hostx_get_visual_masks (&screen->fb[0].redMask,
-				  &screen->fb[0].greenMask,
-				  &screen->fb[0].blueMask);
 	}
       else
 	{
 	  screen->fb[0].depth = 24;
 	  screen->fb[0].bitsPerPixel = 32;
-	  
-	  hostx_get_visual_masks (&screen->fb[0].redMask,
-				  &screen->fb[0].greenMask,
-				  &screen->fb[0].blueMask);
 	}
+
+      hostx_get_visual_masks (&redMask, &greenMask, &blueMask);
+
+      screen->fb[0].redMask = (Pixel) redMask;
+      screen->fb[0].greenMask = (Pixel) greenMask;
+      screen->fb[0].blueMask = (Pixel) blueMask;
+
     }
   
   scrpriv->randr = screen->randr;
@@ -667,6 +670,8 @@ ephyrRestore (KdCardInfo *card)
 void
 ephyrScreenFini (KdScreenInfo *screen)
 {
+    xfree(screen->driver);
+    screen->driver = NULL;
 }
 
 /*  

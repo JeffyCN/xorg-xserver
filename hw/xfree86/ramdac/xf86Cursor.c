@@ -1,4 +1,3 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/ramdac/xf86Cursor.c,v 1.19tsi Exp $ */
 
 #ifdef HAVE_XORG_CONFIG_H
 #include <xorg-config.h>
@@ -200,10 +199,11 @@ xf86CursorEnableDisableFBAccess(
 	pScreen->devPrivates[xf86CursorScreenIndex].ptr;
 
     if (!enable && ScreenPriv->CurrentCursor != NullCursor) {
-	ScreenPriv->SavedCursor = ScreenPriv->CurrentCursor;
+	CursorPtr   currentCursor = ScreenPriv->CurrentCursor;
 	xf86CursorSetCursor(pScreen, NullCursor, ScreenPriv->x, ScreenPriv->y);
 	ScreenPriv->isUp = FALSE;
 	ScreenPriv->SWCursor = TRUE;
+	ScreenPriv->SavedCursor = currentCursor;
     }
 
     if (ScreenPriv->EnableDisableFBAccess)

@@ -66,7 +66,7 @@ libinit_a_OBJECTS = $(am_libinit_a_OBJECTS)
 LTLIBRARIES = $(noinst_LTLIBRARIES)
 libcommon_la_LIBADD =
 am__libcommon_la_SOURCES_DIST = xf86Configure.c xf86Bus.c xf86Config.c \
-	xf86Cursor.c xf86DGA.c xf86DPMS.c xf86DoProbe.c \
+	xf86Cursor.c xf86cvt.c xf86DGA.c xf86DPMS.c xf86DoProbe.c \
 	xf86DoScanPci.c xf86Events.c xf86Globals.c xf86Io.c \
 	xf86AutoConfig.c xf86MiscExt.c xf86Option.c xf86VidMode.c \
 	xf86fbman.c xf86cmap.c xf86Helper.c xf86PM.c xf86Mode.c \
@@ -84,7 +84,7 @@ am__objects_6 = xf86Xinput.lo xisb.lo
 am__objects_7 = xf86RandR.lo
 am__objects_8 = xf86Kbd@XORG_OS_KBD@.lo
 am_libcommon_la_OBJECTS = xf86Configure.lo xf86Bus.lo xf86Config.lo \
-	xf86Cursor.lo xf86DGA.lo xf86DPMS.lo xf86DoProbe.lo \
+	xf86Cursor.lo xf86cvt.lo xf86DGA.lo xf86DPMS.lo xf86DoProbe.lo \
 	xf86DoScanPci.lo xf86Events.lo xf86Globals.lo xf86Io.lo \
 	xf86AutoConfig.lo xf86MiscExt.lo xf86Option.lo xf86VidMode.lo \
 	xf86fbman.lo xf86cmap.lo xf86Helper.lo xf86PM.lo xf86Mode.lo \
@@ -112,7 +112,7 @@ am__sdk_HEADERS_DIST = compiler.h fourcc.h xf86.h xf86Module.h \
 	xf86Opt.h xf86PciInfo.h xf86Priv.h xf86Privstr.h \
 	xf86Resources.h xf86cmap.h xf86fbman.h xf86str.h xf86Xinput.h \
 	xisb.h xf86xv.h xf86xvmc.h atKeynames.h xf86Version.h \
-	xorgVersion.h xf86sbusBus.h xf86xvpriv.h
+	xorgVersion.h xf86sbusBus.h xf86xvpriv.h xf86Keymap.h
 am__vpath_adj_setup = srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`;
 am__vpath_adj = case $$p in \
     $(srcdir)/*) f=`echo "$$p" | sed "s|^$$srcdirstrip/||"`;; \
@@ -153,6 +153,7 @@ AUTOCONF = @AUTOCONF@
 AUTOHEADER = @AUTOHEADER@
 AUTOMAKE = @AUTOMAKE@
 AWK = @AWK@
+BASE_FONT_PATH = @BASE_FONT_PATH@
 BSD_KBD_MODE_FALSE = @BSD_KBD_MODE_FALSE@
 BSD_KBD_MODE_TRUE = @BSD_KBD_MODE_TRUE@
 BUILDDOCS_FALSE = @BUILDDOCS_FALSE@
@@ -189,6 +190,7 @@ DBE_FALSE = @DBE_FALSE@
 DBE_TRUE = @DBE_TRUE@
 DEBUG_FALSE = @DEBUG_FALSE@
 DEBUG_TRUE = @DEBUG_TRUE@
+DEFAULT_LIBRARY_PATH = @DEFAULT_LIBRARY_PATH@
 DEFAULT_LOGPREFIX = @DEFAULT_LOGPREFIX@
 DEFAULT_MODULE_PATH = @DEFAULT_MODULE_PATH@
 DEFS = @DEFS@
@@ -281,12 +283,6 @@ KDRIVE_LIBS = @KDRIVE_LIBS@
 KDRIVE_PURE_INCS = @KDRIVE_PURE_INCS@
 KDRIVE_PURE_LIBS = @KDRIVE_PURE_LIBS@
 KDRIVE_TRUE = @KDRIVE_TRUE@
-LBXUTIL_CFLAGS = @LBXUTIL_CFLAGS@
-LBXUTIL_LIBS = @LBXUTIL_LIBS@
-LBXUTIL_TEST_CFLAGS = @LBXUTIL_TEST_CFLAGS@
-LBXUTIL_TEST_LIBS = @LBXUTIL_TEST_LIBS@
-LBX_FALSE = @LBX_FALSE@
-LBX_TRUE = @LBX_TRUE@
 LDFLAGS = @LDFLAGS@
 LD_EXPORT_SYMBOLS_FLAG = @LD_EXPORT_SYMBOLS_FLAG@
 LEX = @LEX@
@@ -309,7 +305,6 @@ LNXACPI_TRUE = @LNXACPI_TRUE@
 LNXAPM_FALSE = @LNXAPM_FALSE@
 LNXAPM_TRUE = @LNXAPM_TRUE@
 LN_S = @LN_S@
-LOADER_DEFINES = @LOADER_DEFINES@
 LTLIBOBJS = @LTLIBOBJS@
 MAINT = @MAINT@
 MAINTAINER_MODE_FALSE = @MAINTAINER_MODE_FALSE@
@@ -322,8 +317,6 @@ MAKE_TEXT = @MAKE_TEXT@
 MESA_SOURCE = @MESA_SOURCE@
 MFB_FALSE = @MFB_FALSE@
 MFB_TRUE = @MFB_TRUE@
-MISCUTILS_FALSE = @MISCUTILS_FALSE@
-MISCUTILS_TRUE = @MISCUTILS_TRUE@
 MISC_MAN_DIR = @MISC_MAN_DIR@
 MISC_MAN_SUFFIX = @MISC_MAN_SUFFIX@
 MITSHM_FALSE = @MITSHM_FALSE@
@@ -332,7 +325,6 @@ MKFONTDIR = @MKFONTDIR@
 MKFONTSCALE = @MKFONTSCALE@
 MMX_CAPABLE_FALSE = @MMX_CAPABLE_FALSE@
 MMX_CAPABLE_TRUE = @MMX_CAPABLE_TRUE@
-MODULE_DEFINES = @MODULE_DEFINES@
 MULTIBUFFER_FALSE = @MULTIBUFFER_FALSE@
 MULTIBUFFER_TRUE = @MULTIBUFFER_TRUE@
 NEED_STRLCAT_FALSE = @NEED_STRLCAT_FALSE@
@@ -365,9 +357,9 @@ RGB_DB = @RGB_DB@
 SCREENSAVER_FALSE = @SCREENSAVER_FALSE@
 SCREENSAVER_TRUE = @SCREENSAVER_TRUE@
 SERVERCONFIGdir = @SERVERCONFIGdir@
-SERVER_DEFINES = @SERVER_DEFINES@
 SET_MAKE = @SET_MAKE@
 SHELL = @SHELL@
+SOLARIS_ASM_CFLAGS = @SOLARIS_ASM_CFLAGS@
 SOLARIS_ASM_INLINE_FALSE = @SOLARIS_ASM_INLINE_FALSE@
 SOLARIS_ASM_INLINE_TRUE = @SOLARIS_ASM_INLINE_TRUE@
 SOLARIS_INOUT_ARCH = @SOLARIS_INOUT_ARCH@
@@ -379,7 +371,9 @@ STRIP = @STRIP@
 SUN_KBD_MODE_FALSE = @SUN_KBD_MODE_FALSE@
 SUN_KBD_MODE_TRUE = @SUN_KBD_MODE_TRUE@
 SYS_LIBS = @SYS_LIBS@
+TSLIB_CFLAGS = @TSLIB_CFLAGS@
 TSLIB_FALSE = @TSLIB_FALSE@
+TSLIB_LIBS = @TSLIB_LIBS@
 TSLIB_TRUE = @TSLIB_TRUE@
 USE_CURSES_FALSE = @USE_CURSES_FALSE@
 USE_CURSES_TRUE = @USE_CURSES_TRUE@
@@ -392,6 +386,10 @@ VENDOR_STRING_SHORT = @VENDOR_STRING_SHORT@
 VERSION = @VERSION@
 X11EXAMPLES_DEP_CFLAGS = @X11EXAMPLES_DEP_CFLAGS@
 X11EXAMPLES_DEP_LIBS = @X11EXAMPLES_DEP_LIBS@
+XACE_FALSE = @XACE_FALSE@
+XACE_TRUE = @XACE_TRUE@
+XCALIBRATE_FALSE = @XCALIBRATE_FALSE@
+XCALIBRATE_TRUE = @XCALIBRATE_TRUE@
 XCSECURITY_FALSE = @XCSECURITY_FALSE@
 XCSECURITY_TRUE = @XCSECURITY_TRUE@
 XDMAUTH_FALSE = @XDMAUTH_FALSE@
@@ -418,6 +416,8 @@ XEVIE_TRUE = @XEVIE_TRUE@
 XF86BIGFONT_FALSE = @XF86BIGFONT_FALSE@
 XF86BIGFONT_TRUE = @XF86BIGFONT_TRUE@
 XF86CONFIGFILE = @XF86CONFIGFILE@
+XF86UTILS_FALSE = @XF86UTILS_FALSE@
+XF86UTILS_TRUE = @XF86UTILS_TRUE@
 XGLMODULES_CFLAGS = @XGLMODULES_CFLAGS@
 XGLMODULES_LIBS = @XGLMODULES_LIBS@
 XGLXMODULES_CFLAGS = @XGLXMODULES_CFLAGS@
@@ -600,7 +600,7 @@ MODEDEFSOURCES = $(srcdir)/vesamodes $(srcdir)/extramodes
 BUILT_SOURCES = xf86DefModeSet.c
 AM_LDFLAGS = -r
 libcommon_la_SOURCES = xf86Configure.c xf86Bus.c xf86Config.c \
-                      xf86Cursor.c xf86DGA.c xf86DPMS.c \
+                      xf86Cursor.c xf86cvt.c xf86DGA.c xf86DPMS.c \
                       xf86DoProbe.c xf86DoScanPci.c xf86Events.c \
                       xf86Globals.c xf86Io.c xf86AutoConfig.c \
                       xf86MiscExt.c xf86Option.c \
@@ -622,7 +622,7 @@ sdk_HEADERS = compiler.h fourcc.h xf86.h xf86Module.h xf86Opt.h \
               xf86PciInfo.h xf86Priv.h xf86Privstr.h xf86Resources.h \
               xf86cmap.h xf86fbman.h xf86str.h $(XISDKINCS) \
               $(XVSDKINCS) atKeynames.h xf86Version.h xorgVersion.h \
-              xf86sbusBus.h xf86xv.h xf86xvmc.h xf86xvpriv.h
+              xf86sbusBus.h xf86xv.h xf86xvmc.h xf86xvpriv.h xf86Keymap.h
 
 DISTCLEANFILES = xf86Build.h
 CLEANFILES = $(BUILT_SOURCES)
@@ -666,7 +666,7 @@ EXTRA_DIST = \
 	modeline2c.pl \
         $(DISTKBDSOURCES)
 
-AM_CFLAGS = $(XORG_CFLAGS) @SERVER_DEFINES@ @LOADER_DEFINES@
+AM_CFLAGS = $(XORG_CFLAGS)
 all: $(BUILT_SOURCES)
 	$(MAKE) $(AM_MAKEFLAGS) all-am
 
@@ -755,6 +755,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xf86XKB.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xf86Xinput.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xf86cmap.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xf86cvt.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xf86fbBus.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xf86fbman.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xf86isaBus.Plo@am__quote@
