@@ -32,6 +32,8 @@ Build-Depends: debhelper (>= 4.0.0), pkg-config, bison, flex,
  libxfixes-dev (>= 1:3.0.0)
 Build-Conflicts: xlibs-static-dev
 Standards-Version: 3.7.2.0
+XS-Vcs-Git: git://git.debian.org/git/pkg-xorg/xserver/xorg-server
+XS-Vcs-Browser: http://git.debian.org/?p=pkg-xorg/xserver/xorg-server.git
 
 Package: xserver-xorg-core
 Architecture: any
