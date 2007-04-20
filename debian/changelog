@@ -1,3 +1,9 @@
+xorg-server (2:1.3.0.0-1) experimental; urgency=low
+
+  * New upstream release
+
+ -- David Nusinow <dnusinow@debian.org>  Thu, 19 Apr 2007 22:27:05 -0400
+
 xorg-server (2:1.2.99.905-3) experimental; urgency=low
 
   [ Julien Cristau ]
