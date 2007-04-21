@@ -1,8 +1,8 @@
-diff --git a/hw/xfree86/common/xf86Config.c b/hw/xfree86/common/xf86Config.c
-index 22d229c..1b387d5 100644
---- a/hw/xfree86/common/xf86Config.c
-+++ b/hw/xfree86/common/xf86Config.c
-@@ -254,6 +254,7 @@ xf86ModulelistFromConfig(pointer **optlist)
+Index: xorg-server/hw/xfree86/common/xf86Config.c
+===================================================================
+--- xorg-server.orig/hw/xfree86/common/xf86Config.c	2007-04-21 09:31:59.000000000 -0400
++++ xorg-server/hw/xfree86/common/xf86Config.c	2007-04-21 09:33:43.000000000 -0400
+@@ -254,6 +254,7 @@
      char *ignore[] = { "GLcore", "speedo", "bitmap", "drm", NULL };
      pointer *optarray;
      XF86LoadPtr modp;
@@ -10,7 +10,7 @@ index 22d229c..1b387d5 100644
      
      /*
       * make sure the config file has been parsed and that we have a
-@@ -266,34 +267,66 @@ xf86ModulelistFromConfig(pointer **optlist)
+@@ -266,35 +267,73 @@
      }
      
      if (xf86configptr->conf_modules) {
@@ -70,7 +70,27 @@ index 22d229c..1b387d5 100644
 +	            ptr = xf86addNewLoadDirective(ptr, ModuleDefaults[i].name, XF86_LOAD_MODULE, ModuleDefaults[i].load_opt);
 +            }
 +         }
-+
+     } else {
+ 	xf86configptr->conf_modules = xnfcalloc(1, sizeof(XF86ConfModuleRec));
++	for (i=0 ; ModuleDefaults[i].name != NULL ; i++) {
++	    if (ModuleDefaults[i].toLoad == TRUE) {
++		XF86ConfModulePtr ptr = xf86configptr->conf_modules;
++		ptr = xf86addNewLoadDirective(ptr, ModuleDefaults[i].name, XF86_LOAD_MODULE, ModuleDefaults[i].load_opt);
++	    }
++	}
+     }
+ 
+-    if (count == 0) {
+-	XF86ConfModulePtr ptr = xf86configptr->conf_modules;
+-	ptr = xf86addNewLoadDirective(ptr, "extmod", XF86_LOAD_MODULE, NULL);
+-	ptr = xf86addNewLoadDirective(ptr, "dbe", XF86_LOAD_MODULE, NULL);
+-	ptr = xf86addNewLoadDirective(ptr, "glx", XF86_LOAD_MODULE, NULL);
+-	ptr = xf86addNewLoadDirective(ptr, "freetype", XF86_LOAD_MODULE, NULL);
+-	ptr = xf86addNewLoadDirective(ptr, "type1", XF86_LOAD_MODULE, NULL);
+-	ptr = xf86addNewLoadDirective(ptr, "record", XF86_LOAD_MODULE, NULL);
+-	ptr = xf86addNewLoadDirective(ptr, "dri", XF86_LOAD_MODULE, NULL);
+-	count = 7;
+-    }
 +	    /*
 +	     * Walk the list of modules in the "Module" section to determine how
 +	     * many we have.
@@ -85,25 +105,10 @@ index 22d229c..1b387d5 100644
 +	            count++;
 +	        modp = (XF86LoadPtr) modp->list.next;
 +	    }
-     } else {
--	xf86configptr->conf_modules = xnfcalloc(1, sizeof(XF86ConfModuleRec));
--    }
--
--    if (count == 0) {
--	XF86ConfModulePtr ptr = xf86configptr->conf_modules;
--	ptr = xf86addNewLoadDirective(ptr, "extmod", XF86_LOAD_MODULE, NULL);
--	ptr = xf86addNewLoadDirective(ptr, "dbe", XF86_LOAD_MODULE, NULL);
--	ptr = xf86addNewLoadDirective(ptr, "glx", XF86_LOAD_MODULE, NULL);
--	ptr = xf86addNewLoadDirective(ptr, "freetype", XF86_LOAD_MODULE, NULL);
--	ptr = xf86addNewLoadDirective(ptr, "type1", XF86_LOAD_MODULE, NULL);
--	ptr = xf86addNewLoadDirective(ptr, "record", XF86_LOAD_MODULE, NULL);
--	ptr = xf86addNewLoadDirective(ptr, "dri", XF86_LOAD_MODULE, NULL);
--	count = 7;
-+	    xf86configptr->conf_modules = xnfcalloc(1, sizeof(XF86ConfModuleRec));
-     }
  
      /*
-@@ -303,22 +336,22 @@ xf86ModulelistFromConfig(pointer **optlist)
+      * allocate the memory and walk the list again to fill in the pointers
+@@ -303,22 +342,22 @@
      optarray = xnfalloc((count + 1) * sizeof(pointer));
      count = 0;
      if (xf86configptr->conf_modules) {
@@ -135,11 +140,11 @@ index 22d229c..1b387d5 100644
      return modulearray;
  }
  
-diff --git a/hw/xfree86/common/xf86Config.h b/hw/xfree86/common/xf86Config.h
-index 0786ec6..3fe74fa 100644
---- a/hw/xfree86/common/xf86Config.h
-+++ b/hw/xfree86/common/xf86Config.h
-@@ -46,6 +46,23 @@ typedef enum _ConfigStatus {
+Index: xorg-server/hw/xfree86/common/xf86Config.h
+===================================================================
+--- xorg-server.orig/hw/xfree86/common/xf86Config.h	2007-04-21 09:31:59.000000000 -0400
++++ xorg-server/hw/xfree86/common/xf86Config.h	2007-04-21 09:33:00.000000000 -0400
+@@ -46,6 +46,23 @@
      CONFIG_NOFILE
  } ConfigStatus;
  
@@ -163,11 +168,11 @@ index 0786ec6..3fe74fa 100644
  /*
   * prototypes
   */
-diff --git a/hw/xfree86/doc/man/xorg.conf.man.pre b/hw/xfree86/doc/man/xorg.conf.man.pre
-index f05ada6..a97196b 100644
---- a/hw/xfree86/doc/man/xorg.conf.man.pre
-+++ b/hw/xfree86/doc/man/xorg.conf.man.pre
-@@ -639,6 +639,20 @@ Example: the Type 1 font rasteriser can be loaded with the following entry:
+Index: xorg-server/hw/xfree86/doc/man/xorg.conf.man.pre
+===================================================================
+--- xorg-server.orig/hw/xfree86/doc/man/xorg.conf.man.pre	2007-04-21 09:32:00.000000000 -0400
++++ xorg-server/hw/xfree86/doc/man/xorg.conf.man.pre	2007-04-21 09:33:00.000000000 -0400
+@@ -639,6 +639,20 @@
  .B "Load \*qtype1\*q"
  .RE
  .RE
@@ -188,11 +193,11 @@ index f05ada6..a97196b 100644
  .PP
  The second form of entry is a
  .BR SubSection,
-diff --git a/hw/xfree86/parser/Module.c b/hw/xfree86/parser/Module.c
-index f3ed9d1..7cd94ea 100644
---- a/hw/xfree86/parser/Module.c
-+++ b/hw/xfree86/parser/Module.c
-@@ -76,6 +76,7 @@ static xf86ConfigSymTabRec ModuleTab[] =
+Index: xorg-server/hw/xfree86/parser/Module.c
+===================================================================
+--- xorg-server.orig/hw/xfree86/parser/Module.c	2007-04-21 09:32:00.000000000 -0400
++++ xorg-server/hw/xfree86/parser/Module.c	2007-04-21 09:33:00.000000000 -0400
+@@ -76,6 +76,7 @@
  {
  	{ENDSECTION, "endsection"},
  	{LOAD, "load"},
@@ -200,7 +205,7 @@ index f3ed9d1..7cd94ea 100644
  	{LOAD_DRIVER, "loaddriver"},
  	{SUBSECTION, "subsection"},
  	{-1, ""},
-@@ -141,6 +142,13 @@ xf86parseModuleSection (void)
+@@ -141,6 +142,13 @@
  				xf86addNewLoadDirective (ptr->mod_load_lst, val.str,
  									 XF86_LOAD_MODULE, NULL);
  			break;
@@ -214,7 +219,7 @@ index f3ed9d1..7cd94ea 100644
  		case LOAD_DRIVER:
  			if (xf86getSubToken (&(ptr->mod_comment)) != STRING)
  				Error (QUOTE_MSG, "LoadDriver");
-@@ -257,6 +265,15 @@ xf86freeModules (XF86ConfModulePtr ptr)
+@@ -257,6 +265,15 @@
  		lptr = lptr->list.next;
  		xf86conffree (prev);
  	}
@@ -230,11 +235,11 @@ index f3ed9d1..7cd94ea 100644
  	TestFree (ptr->mod_comment);
  	xf86conffree (ptr);
  }
-diff --git a/hw/xfree86/parser/xf86Parser.h b/hw/xfree86/parser/xf86Parser.h
-index a682927..d5a9d87 100644
---- a/hw/xfree86/parser/xf86Parser.h
-+++ b/hw/xfree86/parser/xf86Parser.h
-@@ -82,6 +82,7 @@ XF86ConfFilesRec, *XF86ConfFilesPtr;
+Index: xorg-server/hw/xfree86/parser/xf86Parser.h
+===================================================================
+--- xorg-server.orig/hw/xfree86/parser/xf86Parser.h	2007-04-21 09:32:00.000000000 -0400
++++ xorg-server/hw/xfree86/parser/xf86Parser.h	2007-04-21 09:33:00.000000000 -0400
+@@ -82,6 +82,7 @@
  /* Values for load_type */
  #define XF86_LOAD_MODULE	0
  #define XF86_LOAD_DRIVER	1
@@ -242,7 +247,7 @@ index a682927..d5a9d87 100644
  
  typedef struct
  {
-@@ -97,6 +98,7 @@ XF86LoadRec, *XF86LoadPtr;
+@@ -97,6 +98,7 @@
  typedef struct
  {
  	XF86LoadPtr mod_load_lst;
@@ -250,11 +255,11 @@ index a682927..d5a9d87 100644
  	char *mod_comment;
  }
  XF86ConfModuleRec, *XF86ConfModulePtr;
-diff --git a/hw/xfree86/parser/xf86tokens.h b/hw/xfree86/parser/xf86tokens.h
-index d5948dd..822bbb9 100644
---- a/hw/xfree86/parser/xf86tokens.h
-+++ b/hw/xfree86/parser/xf86tokens.h
-@@ -170,6 +170,7 @@ typedef enum {
+Index: xorg-server/hw/xfree86/parser/xf86tokens.h
+===================================================================
+--- xorg-server.orig/hw/xfree86/parser/xf86tokens.h	2007-04-21 09:32:00.000000000 -0400
++++ xorg-server/hw/xfree86/parser/xf86tokens.h	2007-04-21 09:33:00.000000000 -0400
+@@ -170,6 +170,7 @@
      /* Module tokens */
      LOAD,
      LOAD_DRIVER,
