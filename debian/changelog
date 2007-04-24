@@ -1,3 +1,14 @@
+xorg-server (2:1.3.0.0.dfsg-3) UNRElEASED; urgency=low
+
+  * Include 94_use_default_font_path.diff. This patch is like Eugene's patch
+    to always look in the default font path from the past, but now we provide
+    an option to disable looking in the default font path at runtime. This
+    will allow people to specify additional font paths in their xorg.conf
+    without losing their current paths. This will also help avoid people
+    having ye olde "fixed font" problem.
+
+ -- David Nusinow <dnusinow@debian.org>  Tue, 24 Apr 2007 00:18:04 -0400
+
 xorg-server (2:1.3.0.0.dfsg-2) unstable; urgency=low
 
   * Add Brice Goglin's fix for 05_module_defaults.diff, so that it also works
