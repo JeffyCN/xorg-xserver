@@ -1,7 +1,7 @@
 Index: xorg-server/hw/xfree86/common/xf86Config.c
 ===================================================================
---- xorg-server.orig/hw/xfree86/common/xf86Config.c	2007-04-24 00:16:32.000000000 -0400
-+++ xorg-server/hw/xfree86/common/xf86Config.c	2007-04-24 00:17:32.000000000 -0400
+--- xorg-server.orig/hw/xfree86/common/xf86Config.c	2007-04-24 21:39:54.000000000 -0400
++++ xorg-server/hw/xfree86/common/xf86Config.c	2007-04-24 21:39:54.000000000 -0400
 @@ -637,16 +637,24 @@
    char *log_buf;
  
@@ -77,8 +77,8 @@ Index: xorg-server/hw/xfree86/common/xf86Config.c
  	|| !configDRI(xf86configptr->conf_dri)
 Index: xorg-server/hw/xfree86/common/xf86Privstr.h
 ===================================================================
---- xorg-server.orig/hw/xfree86/common/xf86Privstr.h	2007-04-21 09:31:59.000000000 -0400
-+++ xorg-server/hw/xfree86/common/xf86Privstr.h	2007-04-24 00:17:32.000000000 -0400
+--- xorg-server.orig/hw/xfree86/common/xf86Privstr.h	2007-04-24 21:33:59.000000000 -0400
++++ xorg-server/hw/xfree86/common/xf86Privstr.h	2007-04-24 21:39:54.000000000 -0400
 @@ -166,6 +166,8 @@
      MessageType		randRFrom;
      Bool		aiglx;
@@ -88,3 +88,19 @@ Index: xorg-server/hw/xfree86/common/xf86Privstr.h
      Bool        ignoreABI;
      struct {
  	Bool		disabled;		/* enable/disable deactivating
+Index: xorg-server/hw/xfree86/doc/man/xorg.conf.man.pre
+===================================================================
+--- xorg-server.orig/hw/xfree86/doc/man/xorg.conf.man.pre	2007-04-24 21:40:36.000000000 -0400
++++ xorg-server/hw/xfree86/doc/man/xorg.conf.man.pre	2007-04-24 21:43:29.000000000 -0400
+@@ -664,6 +664,11 @@
+ .BI "Option \*qAIGLX\*q \*q" boolean \*q
+ enable or disable AIGLX. AIGLX is enabled by default.
+ .TP 7
++.BI "Option \*qUseDefaultFontPath\*q \*q" boolean \*q
++Include the default font path even if other paths are specified in
++xorg.conf. If enabled, other font paths are included as well. Enabled by
++default.
++.TP 7
+ .BI "Option \*qIgnoreABI\*q \*q" boolean \*q
+ Allow modules built for a different, potentially incompatible version of
+ the X server to load. Disabled by default.
