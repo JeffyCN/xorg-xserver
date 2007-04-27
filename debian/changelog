@@ -6,8 +6,11 @@ xorg-server (2:1.3.0.0.dfsg-3) UNRElEASED; urgency=low
     will allow people to specify additional font paths in their xorg.conf
     without losing their current paths. This will also help avoid people
     having ye olde "fixed font" problem.
+  * Fix compilation warnings for 05_module_defaults.diff. Previously the patch
+    used a generic pointer for the options record, but now we use the actual
+    XF86OptionsPtr type.
 
- -- David Nusinow <dnusinow@debian.org>  Tue, 24 Apr 2007 00:18:04 -0400
+ -- David Nusinow <dnusinow@debian.org>  Thu, 26 Apr 2007 22:37:06 -0400
 
 xorg-server (2:1.3.0.0.dfsg-2) unstable; urgency=low
 
