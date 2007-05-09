@@ -1,3 +1,11 @@
+xorg-server (2:1.3.0.0.dfsg-4) unstable; urgency=low
+
+  * Cherry-pick patch from upstream git to fix security issue in the Xrender
+    extension: malicious clients can cause a division by zero in the server
+    (closes: #422936). Reference: CVE-2007-2437. Thanks, Micah Anderson!
+
+ -- Julien Cristau <jcristau@debian.org>  Wed, 09 May 2007 02:11:08 +0200
+
 xorg-server (2:1.3.0.0.dfsg-3) unstable; urgency=low
 
   * Include 94_use_default_font_path.diff. This patch is like Eugene's patch
