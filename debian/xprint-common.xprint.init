@@ -324,7 +324,7 @@ get_system_fontlist()
             ## List all fonts in all locales installed on this machine
             (
               [ -d "/usr/share/fonts" ] && find /usr/share/fonts -name fonts.dir
-              find "${XPROJECTROOT}/lib/X11/fonts" -name fonts.dir 
+              [ -d "${XPROJECTROOT}/lib/X11/fonts" ] && find "${XPROJECTROOT}/lib/X11/fonts" -name fonts.dir 
             ) | 
               while read i ; do echo "${i%/fonts.dir}" ; done
           ) | sort -u
