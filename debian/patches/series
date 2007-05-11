@@ -3,6 +3,7 @@
 03_xnest_manpage_overhaul.diff
 04_read_rom_in_chunks.diff
 05_module_defaults.diff
+06_use_proc_instead_of_sysfs_for_pci_domains.diff
 07_xorgconf_manpage_overhaul.diff -p0
 08_s390_servermd.diff 
 09_debian_xserver_rtff.diff -p0
