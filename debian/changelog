@@ -13,6 +13,9 @@ xorg-server (2:1.3.0.0.dfsg-5) UNRELEASED; urgency=low
     config file during installation. Closes: #222932.
   * Fix warning in /etc/init.d/xprint when /usr/lib/X11/fonts does not exist.
     Closes: #422352. Thanks Cristian Ionescu-Idbohrn!
+  * Pull upstream commit 9c80eda826448822328bb678a7d284cc43fffb17 to disable
+    RandR's fake xinerama geometry when there's more than one protocol screen
+    (closes: #420679).
 
   [ Julien Cristau ]
   * Add patch to make sure that the ramdac symbols are present in the server
