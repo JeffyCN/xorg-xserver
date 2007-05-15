@@ -40,7 +40,7 @@ Architecture: any
 Depends: x11-common (>= 1:7.0.0), ${shlibs:Depends}, ${misc:Depends}, xserver-xorg
 Recommends: xkb-data, xfonts-base
 Suggests: xfonts-100dpi | xfonts-75dpi, xfonts-scalable
-Conflicts: xserver-xorg (<< 6.8.2-38), xserver-xfree86 (<< 1:7.0.0), xserver-xorg-video, xserver-common
+Conflicts: xserver-xorg (<< 6.8.2-38), xserver-xfree86 (<< 1:7.0.0), xserver-xorg-video, xserver-common, fglrx-driver
 Replaces: xserver-xorg (<< 6.8.2-38), xserver-xfree86 (<< 1:7.0.0), xserver-common
 Provides: xserver
 Description: X.Org X server -- core server

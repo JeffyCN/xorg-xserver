@@ -5,7 +5,7 @@ xorg-server (2:1.3.0.0.dfsg-5) UNRELEASED; urgency=low
     recent GNU Mach. Thanks Samuel Thibault!
   * Add 06_use_proc_instead_of_sysfs_for_pci_domains.diff since sysfs-based
     PCI management code is broken at least on sparc and powerpc.
-    Closes: #422077, #422095. Thanks to Jim Watson for testing! 
+    Closes: #422077, #422095. Thanks to Jim Watson for testing!
   * Install the Xephyr README, closes: #395888.
   * Update 07_xorgconf_manpage_overhaul.diff to drop the reference to the
     xorg.conf example which we do not install since Xserver 1.3 does automatic
@@ -20,8 +20,10 @@ xorg-server (2:1.3.0.0.dfsg-5) UNRELEASED; urgency=low
   [ Julien Cristau ]
   * Add patch to make sure that the ramdac symbols are present in the server
     and drivers can use them (closes: #423129).
+  * xserver-xorg-core Conflicts with fglrx-driver, which broke with 1.3.
+    We'll need to make this versioned (or drop it) when fglrx is fixed.
 
- -- Julien Cristau <jcristau@debian.org>  Fri, 11 May 2007 00:48:11 +0200
+ -- Julien Cristau <jcristau@debian.org>  Tue, 15 May 2007 13:37:20 +0200
 
 xorg-server (2:1.3.0.0.dfsg-4) unstable; urgency=low
 
