@@ -53,6 +53,7 @@ typedef struct _DRIDrawablePrivRec
     int			drawableIndex;
     ScreenPtr		pScreen;
     int 		refCount;
+    int 		nrects;
 } DRIDrawablePrivRec, *DRIDrawablePrivPtr;
 
 struct _DRIContextPrivRec
@@ -72,6 +73,11 @@ struct _DRIContextPrivRec
 #define DRI_SCREEN_PRIV_FROM_INDEX(screenIndex) ((DRIScreenPrivPtr) \
     (screenInfo.screens[screenIndex]->devPrivates[DRIScreenPrivIndex].ptr))
 
+#define DRI_ENT_PRIV(pScrn)  \
+    ((DRIEntPrivIndex < 0) ? \
+     NULL:		     \
+     ((DRIEntPrivPtr)(xf86GetEntityPrivate((pScrn)->entityList[0], \
+					   DRIEntPrivIndex)->ptr)))
 
 typedef struct _DRIScreenPrivRec
 {
@@ -87,6 +93,8 @@ typedef struct _DRIScreenPrivRec
     void**		partial3DContextStore; /* parital 3D context        */
     DRIInfoPtr		pDriverInfo;
     int                 nrWindows;
+    int                 nrWindowsVisible;
+    int                 nrWalked;
     drm_clip_rect_t  private_buffer_rect; /* management of private buffers */
     DrawablePtr         fullscreen; /* pointer to fullscreen drawable */
     drm_clip_rect_t  fullscreen_rect; /* fake rect for fullscreen mode */
@@ -100,6 +108,25 @@ typedef struct _DRIScreenPrivRec
     Bool		wrapped;
     Bool		windowsTouched;
     int			lockRefCount;
+    drm_handle_t        hLSAREA;      /* Handle to SAREA containing lock, for mapping */
+    XF86DRILSAREAPtr    pLSAREA;      /* Mapped pointer to SAREA containing lock */
+    int*                pLockRefCount;
+    int*                pLockingContext;
 } DRIScreenPrivRec, *DRIScreenPrivPtr;
+
+
+typedef struct _DRIEntPrivRec {
+    int drmFD;
+    Bool drmOpened;
+    Bool sAreaGrabbed;
+    drm_handle_t hLSAREA;
+    XF86DRILSAREAPtr pLSAREA;
+    unsigned long sAreaSize;
+    int lockRefCount;
+    int lockingContext;
+    ScreenPtr resOwner;
+    Bool keepFDOpen;
+    int refCount;
+} DRIEntPrivRec, *DRIEntPrivPtr;
 
 #endif /* DRI_STRUCT_H */

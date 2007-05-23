@@ -39,8 +39,5 @@ Xneomagic_LDADD = \
 	@KDRIVE_LIBS@               \
 	@XSERVER_LIBS@		  
 
-
-Xneomagic_DEPENDENCIES =                 \
-	libneomagic.a               \
-	${FBDEV_LIBS}               \
-	${VESA_LIBS}                
+relink:
+	rm -f $(bin_PROGRAMS) && make $(bin_PROGRAMS)

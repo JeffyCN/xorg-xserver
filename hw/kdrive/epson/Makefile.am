@@ -25,4 +25,5 @@ Xepson_LDADD = \
 	@KDRIVE_LIBS@                          \
 	@XSERVER_LIBS@				
 
-Xepson_DEPENDENCIES = libepson.a
+relink:
+	rm -f $(bin_PROGRAMS) && make $(bin_PROGRAMS)

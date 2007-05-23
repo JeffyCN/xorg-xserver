@@ -64,6 +64,8 @@ OR PERFORMANCE OF THIS SOFTWARE.
 #include <X11/Xos.h>
 #include <stdio.h>
 #include <time.h>
+#include <sys/time.h>
+#include <sys/resource.h>
 #include "misc.h"
 #include <X11/X.h>
 #define XSERV_t
@@ -117,7 +119,7 @@ OR PERFORMANCE OF THIS SOFTWARE.
 #endif
 
 #ifdef XKB
-#include <X11/extensions/XKBsrv.h>
+#include <xkbsrv.h>
 #endif
 #ifdef XCSECURITY
 #include "securitysrv.h"
@@ -136,10 +138,7 @@ _X_EXPORT Bool noTestExtensions;
 _X_EXPORT Bool noBigReqExtension = FALSE;
 #endif
 #ifdef COMPOSITE
- /* COMPOSITE is disabled by default for now until the
-  * interface is stable */
- #define COMPOSITE_DEFAULT FALSE
-_X_EXPORT Bool noCompositeExtension = !COMPOSITE_DEFAULT;
+_X_EXPORT Bool noCompositeExtension = FALSE;
 #endif
 
 #ifdef DAMAGE
@@ -245,10 +244,6 @@ _X_EXPORT Bool noXvExtension = FALSE;
 Bool CoreDump;
 
 #ifdef PANORAMIX
-Bool PanoramiXVisibilityNotifySent = FALSE;
-Bool PanoramiXMapped = FALSE;
-Bool PanoramiXWindowExposureSent = FALSE;
-Bool PanoramiXOneExposeRequest = FALSE;
 Bool PanoramiXExtensionDisabledHack = FALSE;
 #endif
 
@@ -271,7 +266,7 @@ long Memory_fail = 0;
 #include <stdlib.h>  /* for random() */
 #endif
 
-char *dev_tty_from_init = NULL;		/* since we need to parse it anyway */
+static char *dev_tty_from_init = NULL;	/* since we need to parse it anyway */
 
 OsSigHandlerPtr
 OsSignal(sig, handler)
@@ -802,7 +797,13 @@ ProcessCommandLine(int argc, char *argv[])
 		UseMsg();
 	}
 	else if ( strcmp( argv[i], "-core") == 0)
+	{
+	    struct rlimit   core_limit;
 	    CoreDump = TRUE;
+	    getrlimit (RLIMIT_CORE, &core_limit);
+	    core_limit.rlim_cur = core_limit.rlim_max;
+	    setrlimit (RLIMIT_CORE, &core_limit);
+	}
 	else if ( strcmp( argv[i], "-dpi") == 0)
 	{
 	    if(++i < argc)
@@ -1871,7 +1872,7 @@ Fopen(char *file, char *type)
     pidlist = cur;
 
 #ifdef DEBUG
-    ErrorF("Popen: `%s', fp = %p\n", command, iop);
+    ErrorF("Fopen(%s), fp = %p\n", file, iop);
 #endif
 
     return iop;

@@ -544,7 +544,7 @@ xf86GetPciDomain(PCITAG Tag)
     pPCI = xf86GetPciHostConfigFromTag(Tag);
 
     if (pPCI && (result = PCI_DOM_FROM_BUS(pPCI->busnum)))
-	return result;
+	return result + 1;
 
     if (!pPCI || pPCI->fakeDevice)
 	return 1;		/* Domain 0 is reserved */
@@ -570,7 +570,8 @@ linuxMapPci(int ScreenNum, int Flags, PCITAG Tag,
 
 	xf86InitVidMem();
 
-	if (((fd = linuxPciOpenFile(Tag ,FALSE)) < 0) ||
+       prot = ((Flags & VIDMEM_READONLY) == 0);
+       if (((fd = linuxPciOpenFile(Tag, prot)) < 0) ||
 	    (ioctl(fd, mmap_ioctl, 0) < 0))
 	    break;
 
@@ -683,28 +684,28 @@ xf86MapDomainMemory(int ScreenNum, int Flags, PCITAG Tag,
 		    ADDRESS Base, unsigned long Size)
 {
     int domain = xf86GetPciDomain(Tag);
-    int fd;
+    int fd = -1;
     pointer addr;
 
     /*
      * We use /proc/bus/pci on non-legacy addresses or if the Linux sysfs
      * legacy_mem interface is unavailable.
      */
-    if (Base > 1024*1024)
-	return linuxMapPci(ScreenNum, Flags, Tag, Base, Size,
+    if (Base >= 1024*1024)
+	addr = linuxMapPci(ScreenNum, Flags, Tag, Base, Size,
 			   PCIIOC_MMAP_IS_MEM);
-
-    if ((fd = linuxOpenLegacy(Tag, "legacy_mem")) < 0)
-	return linuxMapPci(ScreenNum, Flags, Tag, Base, Size,
+    else if ((fd = linuxOpenLegacy(Tag, "legacy_mem")) < 0)
+	addr = linuxMapPci(ScreenNum, Flags, Tag, Base, Size,
 			   PCIIOC_MMAP_IS_MEM);
+    else
+	addr = mmap(NULL, Size, PROT_READ|PROT_WRITE, MAP_SHARED, fd, Base);
 
-    addr = mmap(NULL, Size, PROT_READ|PROT_WRITE, MAP_SHARED, fd, Base);
-    if (addr == MAP_FAILED) {
-	close (fd);
+    if (fd >= 0)
+	close(fd);
+    if (addr == NULL || addr == MAP_FAILED) {
 	perror("mmap failure");
 	FatalError("xf86MapDomainMem():  mmap() failure\n");
     }
-    close(fd);
     return addr;
 }
 
@@ -772,8 +773,8 @@ xf86ReadDomainMemory(PCITAG Tag, ADDRESS Base, int Len, unsigned char *Buf)
     bus  = PCI_BUS_NO_DOMAIN(PCI_BUS_FROM_TAG(Tag));
     dev  = PCI_DEV_FROM_TAG(Tag);
     func = PCI_FUNC_FROM_TAG(Tag);
-    sprintf(file, "/sys/devices/pci%04x:%02x/%04x:%02x:%02x.%1x/rom",
-	    dom, bus, dom, bus, dev, func);
+    sprintf(file, "/sys/bus/pci/devices/%04x:%02x:%02x.%1x/rom",
+	    dom, bus, dev, func);
 
     /*
      * If the caller wants the ROM and the sysfs rom interface exists,

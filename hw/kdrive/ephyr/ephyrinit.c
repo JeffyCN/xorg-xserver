@@ -51,7 +51,24 @@ InitOutput (ScreenInfo *pScreenInfo, int argc, char **argv)
 void
 InitInput (int argc, char **argv)
 {
-  KdInitInput (&EphyrMouseFuncs, &EphyrKeyboardFuncs);
+  KdKeyboardInfo *ki;
+  KdPointerInfo *pi;
+        
+  ki = KdNewKeyboard();
+  if (!ki)
+    FatalError("Couldn't create Xephyr keyboard\n");
+  ki->driver = &EphyrKeyboardDriver;
+  KdAddKeyboardDriver(&EphyrKeyboardDriver);
+  KdAddKeyboard(ki);
+
+  pi = KdNewPointer();
+  if (!pi)
+    FatalError("Couldn't create Xephyr pointer\n");
+  pi->driver = &EphyrMouseDriver;
+  KdAddPointerDriver(&EphyrMouseDriver);
+  KdAddPointer(pi);
+
+  KdInitInput();
 }
 
 void
@@ -64,7 +81,7 @@ ddxUseMsg (void)
   ErrorF("-host-cursor  Re-use exisiting X host server cursor\n");
   ErrorF("-fullscreen   Attempt to run Xephyr fullscreen\n");
   ErrorF("-grayscale    Simulate 8bit grayscale\n");
-  ErrorF("-fakexa	Simulate acceleration using software rendering\n");
+  ErrorF("-fakexa       Simulate acceleration using software rendering\n");
   ErrorF("\n");
 
   exit(1);

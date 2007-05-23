@@ -507,7 +507,7 @@ RRCrtcInit (void)
 int
 ProcRRGetCrtcInfo (ClientPtr client)
 {
-    REQUEST(xRRGetCrtcInfoReq);;
+    REQUEST(xRRGetCrtcInfoReq);
     xRRGetCrtcInfoReply	rep;
     RRCrtcPtr			crtc;
     CARD8			*extra;
@@ -521,7 +521,7 @@ ProcRRGetCrtcInfo (ClientPtr client)
     int				width, height;
     
     REQUEST_SIZE_MATCH(xRRGetCrtcInfoReq);
-    crtc = LookupCrtc(client, stuff->crtc, SecurityReadAccess);
+    crtc = LookupCrtc(client, stuff->crtc, DixReadAccess);
 
     if (!crtc)
 	return RRErrorBase + BadRRCrtc;
@@ -867,7 +867,7 @@ ProcRRGetCrtcGammaSize (ClientPtr client)
     int				n;
 
     REQUEST_SIZE_MATCH(xRRGetCrtcGammaSizeReq);
-    crtc = LookupCrtc (client, stuff->crtc, SecurityReadAccess);
+    crtc = LookupCrtc (client, stuff->crtc, DixReadAccess);
     if (!crtc)
 	return RRErrorBase + BadRRCrtc;
     
@@ -894,7 +894,7 @@ ProcRRGetCrtcGamma (ClientPtr client)
     unsigned long		len;
     
     REQUEST_SIZE_MATCH(xRRGetCrtcGammaReq);
-    crtc = LookupCrtc (client, stuff->crtc, SecurityReadAccess);
+    crtc = LookupCrtc (client, stuff->crtc, DixReadAccess);
     if (!crtc)
 	return RRErrorBase + BadRRCrtc;
     
@@ -927,7 +927,7 @@ ProcRRSetCrtcGamma (ClientPtr client)
     CARD16			*red, *green, *blue;
     
     REQUEST_AT_LEAST_SIZE(xRRSetCrtcGammaReq);
-    crtc = LookupCrtc (client, stuff->crtc, SecurityWriteAccess);
+    crtc = LookupCrtc (client, stuff->crtc, DixWriteAccess);
     if (!crtc)
 	return RRErrorBase + BadRRCrtc;
     

@@ -1,0 +1,37 @@
+D-BUS Configuration API v0.1
+----------------------------
+
+The X server will register the bus name org.x.config.displayN, and the 
+object /org/x/config/N, where N is the display number.
+
+Currently only hotplugging of input devices is supported.
+
+org.x.config.input:
+    org.x.config.input.add:
+        Takes an argument of key/value option pairs in arrays, e.g.:
+         [ss][ss][ss][ss]
+        is the signature for four options.  These options will be passed
+        to the input driver as with any others.
+        Option names beginning with _ are not allowed; they are reserved
+        for internal use.
+
+        Returns one signed int32, which is the device id of the new device.
+        If the return value is a negative number, it represents the X
+        Status, as defined in X.h. BadMatch will be returned if the options
+        given do not match any device.  BadValue is returned for a malformed
+        message.  (Example: 8 is new device id 8. -8 is BadMatch.)
+
+        Notably, BadAlloc is never returned: the server internally signals
+        to D-BUS that the attempt failed for lack of memory.
+
+    org.x.config.input.remove:
+        Takes one int32 argument, which is the device ID to remove, i.e.:
+         i
+        is the signature.
+
+        Returns one signed int32 which represents an X status as defined in
+        X.h. See org.x.config.input.add. Error codes are negative numbers.
+
+    org.x.config.input.listDevices:
+        Lists the currently active devices. No argument. 
+        Return value is sequence of <id> <name> <id> <name> ...

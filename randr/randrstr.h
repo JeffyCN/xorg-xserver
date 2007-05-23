@@ -564,6 +564,7 @@ RRCrtcGammaSetSize (RRCrtcPtr	crtc,
  * Return the area of the frame buffer scanned out by the crtc,
  * taking into account the current mode and rotation
  */
+
 void
 RRCrtcGetScanoutSize(RRCrtcPtr crtc, int *width, int *height);
 

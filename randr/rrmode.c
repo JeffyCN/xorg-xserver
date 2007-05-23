@@ -283,15 +283,14 @@ ProcRRCreateMode (ClientPtr client)
     xRRModeInfo		*modeInfo;
     long		units_after;
     char		*name;
-    int			error;
+    int			error, rc;
     RRModePtr		mode;
     
     REQUEST_AT_LEAST_SIZE (xRRCreateModeReq);
-    pWin = (WindowPtr)SecurityLookupWindow(stuff->window, client,
-					   SecurityReadAccess);
+    rc = dixLookupWindow(&pWin, stuff->window, client, DixReadAccess);
+    if (rc != Success)
+	return rc;
 
-    if (!pWin)
-	return BadWindow;
     pScreen = pWin->drawable.pScreen;
     pScrPriv = rrGetScrPriv(pScreen);
     
@@ -353,7 +352,7 @@ ProcRRAddOutputMode (ClientPtr client)
     RROutputPtr	output;
     
     REQUEST_SIZE_MATCH(xRRAddOutputModeReq);
-    output = LookupOutput(client, stuff->output, SecurityReadAccess);
+    output = LookupOutput(client, stuff->output, DixReadAccess);
 
     if (!output)
     {
@@ -379,7 +378,7 @@ ProcRRDeleteOutputMode (ClientPtr client)
     RROutputPtr	output;
     
     REQUEST_SIZE_MATCH(xRRDeleteOutputModeReq);
-    output = LookupOutput(client, stuff->output, SecurityReadAccess);
+    output = LookupOutput(client, stuff->output, DixReadAccess);
 
     if (!output)
     {

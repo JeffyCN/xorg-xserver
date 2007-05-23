@@ -95,6 +95,8 @@ fbAddTraps (PicturePtr	pPicture,
 	}
 	traps++;
     }
+
+    fbFinishAccess (pPicture->pDrawable);
 }
 
 void
@@ -115,6 +117,9 @@ fbRasterizeTrapezoid (PicturePtr    pPicture,
     RenderEdge	l, r;
     xFixed	t, b;
     
+    if (!xTrapezoidValid (trap))
+	return;
+
     fbGetDrawable (pPicture->pDrawable, buf, stride, bpp, pxoff, pyoff);
 
     width = pPicture->pDrawable->width;
@@ -142,6 +147,8 @@ fbRasterizeTrapezoid (PicturePtr    pPicture,
 	
 	fbRasterizeEdges (buf, bpp, width, stride, &l, &r, t, b);
     }
+
+    fbFinishAccess (pPicture->pDrawable);
 }
 
 static int

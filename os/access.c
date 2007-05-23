@@ -202,9 +202,7 @@ SOFTWARE.
 #include "dixstruct.h"
 #include "osdep.h"
 
-#ifdef XACE
 #include "xace.h"
-#endif
 
 #ifndef PATH_MAX
 #ifdef MAXPATHLEN
@@ -236,8 +234,8 @@ static Bool NewHost(int /*family*/,
 		    int /*len*/,
 		    int /* addingLocalHosts */);
 
-int LocalClientCredAndGroups(ClientPtr client, int *pUid, int *pGid, 
-                             int **pSuppGids, int *nSuppGids);
+static int LocalClientCredAndGroups(ClientPtr client, int *pUid, int *pGid, 
+				    int **pSuppGids, int *nSuppGids);
 
 
 /* XFree86 bug #156: To keep track of which hosts were explicitly requested in
@@ -1433,7 +1431,7 @@ LocalClientCred(ClientPtr client, int *pUid, int *pGid)
  *
  * Used by localuser & localgroup ServerInterpreted access control forms below
  */
-int
+static int
 LocalClientCredAndGroups(ClientPtr client, int *pUid, int *pGid, 
 			 int **pSuppGids, int *nSuppGids)
 {
@@ -1528,11 +1526,11 @@ AuthorizedClient(ClientPtr client)
 {
     if (!client || defeatAccessControl)
 	return TRUE;
-#ifdef XACE
+
     /* untrusted clients can't change host access */
-    if (!XaceHook(XACE_HOSTLIST_ACCESS, client, SecurityWriteAccess))
+    if (!XaceHook(XACE_HOSTLIST_ACCESS, client, DixWriteAccess))
 	return FALSE;
-#endif
+
     return LocalClient(client);
 }
 

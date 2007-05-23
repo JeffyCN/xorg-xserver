@@ -22,8 +22,7 @@ Xvesa_SOURCES = \
 Xvesa_LDADD = \
 	libvesa.a 				\
 	@KDRIVE_LIBS@				\
-	@KDRIVE_LIBS@                          \
 	@XSERVER_LIBS@
 
-Xvesa_DEPENDENCIES = \
-	libvesa.a
+relink:
+	rm -f $(bin_PROGRAMS) && make $(bin_PROGRAMS)

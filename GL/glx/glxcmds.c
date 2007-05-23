@@ -59,19 +59,6 @@
 #include "indirect_table.h"
 #include "indirect_util.h"
 
-_X_HIDDEN int
-glxCountBits(int word)
-{
-    int ret = 0;
-
-    while (word) {
-        ret += (word & 1);
-        word >>= 1;
-    }
-
-    return ret;
-}
-
 /************************************************************************/
 
 void
@@ -454,6 +441,7 @@ static int GetDrawableOrPixmap( __GLXcontext *glxc, GLXDrawable drawId,
     __GLcontextModes *modes;
     __GLXdrawable *pGlxDraw;
     __GLXpixmap *drawPixmap = NULL;
+    int rc;
 
     /* This is the GLX 1.3 case - the client passes in a GLXWindow and
      * we just return the __GLXdrawable.  The first time a GLXPixmap
@@ -479,8 +467,8 @@ static int GetDrawableOrPixmap( __GLXcontext *glxc, GLXDrawable drawId,
      * GLXWindow with the same XID as an X Window, so we wont get any
      * resource ID clashes.  Effectively, the X Window is now also a
      * GLXWindow. */
-    pDraw = (DrawablePtr) LookupDrawable(drawId, client);
-    if (pDraw) {
+    rc = dixLookupDrawable(&pDraw, drawId, client, 0, DixUnknownAccess);
+    if (rc == Success) {
 	if (pDraw->type == DRAWABLE_WINDOW) {
 	    VisualID vid = wVisual((WindowPtr)pDraw);
 
@@ -1031,6 +1019,7 @@ __glXCreateARGBConfig(__GLXscreen *screen)
     VisualPtr visual;
     int i;
 
+    /* search for a 32-bit visual */
     visual = NULL;
     for (i = 0; i < screen->pScreen->numVisuals; i++) 
 	if (screen->pScreen->visuals[i].nplanes == 32) {
@@ -1049,8 +1038,22 @@ __glXCreateARGBConfig(__GLXscreen *screen)
     if (modes == NULL)
 	return;
 
-    modes->next = screen->modes;
-    screen->modes = modes;
+    /* Insert this new mode at the TAIL of the linked list.
+     * Previously, the mode was incorrectly inserted at the head of the
+     * list, causing find_mesa_visual() to be off by one.  This would
+     * GLX clients to blow up if they attempted to use the last mode
+     * in the list!
+     */
+    {
+        __GLcontextModes *prev = NULL, *m;
+        for (m = screen->modes; m; m = m->next)
+            prev = m;
+        if (prev)
+            prev->next = modes;
+        else
+            screen->modes = modes;
+    }
+
     screen->numUsableVisuals++;
     screen->numVisuals++;
 
@@ -1116,6 +1119,9 @@ int DoGetFBConfigs(__GLXclientState *cl, unsigned screen, GLboolean do_swap)
     }
     pGlxScreen = __glXActiveScreens[screen];
 
+    /* Create the "extra" 32bpp ARGB visual, if not already added.
+     * XXX This is questionable place to do so!  Re-examine this someday.
+     */
     __glXCreateARGBConfig(pGlxScreen);
 
     reply.numFBConfigs = pGlxScreen->numUsableVisuals;
@@ -1212,12 +1218,12 @@ static int ValidateCreateDrawable(ClientPtr client,
     ScreenPtr pScreen;
     VisualPtr pVisual;
     __GLXscreen *pGlxScreen;
-    int i;
+    int i, rc;
 
     LEGAL_NEW_RESOURCE(glxDrawableId, client);
 
-    pDraw = (DrawablePtr) LookupDrawable(drawablId, client);
-    if (!pDraw || pDraw->type != type) {
+    rc = dixLookupDrawable(&pDraw, drawablId, client, 0, DixUnknownAccess);
+    if (rc != Success || pDraw->type != type) {
 	client->errorValue = drawablId;
 	return type == DRAWABLE_WINDOW ? BadWindow : BadPixmap;
     }
@@ -1693,8 +1699,8 @@ DoGetDrawableAttributes(__GLXclientState *cl, XID drawId)
 
     /* XXX this is merely less wrong, see fdo bug #8991 */
     pixmap = (PixmapPtr) glxPixmap->pDraw;
-    if (!(glxCountBits(pixmap->drawable.width) == 1 &&
-	  glxCountBits(pixmap->drawable.height) == 1)
+    if ((pixmap->drawable.width & (pixmap->drawable.width - 1)) ||
+	(pixmap->drawable.height & (pixmap->drawable.height - 1))
 	/* || strstr(CALL_GetString(GL_EXTENSIONS,
 	             "GL_ARB_texture_non_power_of_two")) */)
 	attributes[1] = GLX_TEXTURE_RECTANGLE_EXT;
@@ -2057,10 +2063,11 @@ int __glXDisp_BindSwapBarrierSGIX(__GLXclientState *cl, GLbyte *pc)
     xGLXBindSwapBarrierSGIXReq *req = (xGLXBindSwapBarrierSGIXReq *) pc;
     XID drawable = req->drawable;
     int barrier = req->barrier;
-    DrawablePtr pDraw = (DrawablePtr) LookupDrawable(drawable, client);
-    int screen;
+    DrawablePtr pDraw;
+    int screen, rc;
 
-    if (pDraw && (pDraw->type == DRAWABLE_WINDOW)) {
+    rc = dixLookupDrawable(&pDraw, drawable, client, 0, DixUnknownAccess);
+    if (rc == Success && (pDraw->type == DRAWABLE_WINDOW)) {
 	screen = pDraw->pScreen->myNum;
         if (__glXSwapBarrierFuncs &&
             __glXSwapBarrierFuncs[screen].bindSwapBarrierFunc) {

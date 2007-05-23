@@ -89,6 +89,7 @@ OR PERFORMANCE OF THIS SOFTWARE.
 #include <stdlib.h>	/* for malloc() */
 #include <errno.h>
 
+#include "input.h"
 #include "site.h"
 #include "opaque.h"
 
@@ -220,7 +221,7 @@ LogInit(const char *fname, const char *backup)
 }
 
 void
-LogClose()
+LogClose(void)
 {
     if (logFile) {
 	fclose(logFile);
@@ -404,6 +405,7 @@ void
 AbortServer(void)
 {
     OsCleanup(TRUE);
+    CloseDownDevices();
     AbortDDX();
     fflush(stderr);
     if (CoreDump)
@@ -614,7 +616,7 @@ Error(char *str)
 }
 
 void
-LogPrintMarkers()
+LogPrintMarkers(void)
 {
     /* Show what the message marker symbols mean. */
     ErrorF("Markers: ");

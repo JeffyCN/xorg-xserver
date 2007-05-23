@@ -438,7 +438,7 @@ RROutputInit (void)
 int
 ProcRRGetOutputInfo (ClientPtr client)
 {
-    REQUEST(xRRGetOutputInfoReq);;
+    REQUEST(xRRGetOutputInfoReq);
     xRRGetOutputInfoReply	rep;
     RROutputPtr			output;
     CARD8			*extra;
@@ -452,7 +452,7 @@ ProcRRGetOutputInfo (ClientPtr client)
     int				i, n;
     
     REQUEST_SIZE_MATCH(xRRGetOutputInfoReq);
-    output = LookupOutput(client, stuff->output, SecurityReadAccess);
+    output = LookupOutput(client, stuff->output, DixReadAccess);
 
     if (!output)
     {
