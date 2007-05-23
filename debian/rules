@@ -34,7 +34,7 @@ INSTALL=/usr/bin/install
 # kill the .las.
 confflags += --disable-static \
 	     --enable-xorg \
-	     --with-mesa-source=/usr/share/mesa-source \
+	     --with-mesa-source=/home/julien/src/xsf/git/lib/mesa \
 		 --with-default-font-path="/usr/share/fonts/X11/misc,/usr/share/fonts/X11/cyrillic,/usr/share/fonts/X11/100dpi/:unscaled,/usr/share/fonts/X11/75dpi/:unscaled,/usr/share/fonts/X11/Type1,/usr/share/fonts/X11/100dpi,/usr/share/fonts/X11/75dpi,/var/lib/defoma/x-ttcidfont-conf.d/dirs/TrueType" \
 		 --with-serverconfig-path=/etc/X11/xserver \
 		 --with-rgb-path=/etc/X11/rgb \
@@ -44,7 +44,7 @@ confflags += --disable-static \
 		 --enable-kdrive \
 		 --enable-xephyr \
 	     --disable-lbx \
-	     --enable-xprint \
+	     --disable-xprint \
 	     --enable-freetype \
 		 --disable-xorgconfig \
 		 --disable-xorgcfg \
@@ -102,8 +102,8 @@ install: build
 	install -m 755 debian/local/xvfb-run debian/tmp/usr/bin
 	install debian/local/xvfb-run.1 debian/tmp/usr/share/man/man1
 	
-	# something funny going on with Xprinters, will have to sort it out upstream
-	mv debian/tmp/usr/lib/X11/xserver/C/print/Xprinters.ghostscript debian/tmp/usr/lib/X11/xserver/C/print/Xprinters
+#	# something funny going on with Xprinters, will have to sort it out upstream
+#	mv debian/tmp/usr/lib/X11/xserver/C/print/Xprinters.ghostscript debian/tmp/usr/lib/X11/xserver/C/print/Xprinters
 
 
 # stub to start building deb files, used by binary-indep and binary-arch
@@ -140,7 +140,7 @@ binary-arch: build install
 	$(INSTALL) -m 755 debian/xserver-xorg-core.bug.script debian/xserver-xorg-core/usr/share/bug/xserver-xorg-core/script
 	dh_installdebconf -a
 	dh_installman -a
-	$(INSTALL) -m 644 $(CURDIR)/debian/xprint-overrides $(CURDIR)/debian/xprint/usr/share/lintian/overrides/xprint
+#	$(INSTALL) -m 644 $(CURDIR)/debian/xprint-overrides $(CURDIR)/debian/xprint/usr/share/lintian/overrides/xprint
 	# xprint docs are linked to xprint-common
 	rm -rf debian/xprint/usr/share/doc/xprint
 	
@@ -162,26 +162,26 @@ endif
 
 # Build architecture-independent files here (xprint-common)
 binary-indep: build install
-	$(MAKE) -f debian/rules DH_OPTIONS=-i binary-initial
-	dh_install -i --sourcedir=debian/tmp --list-missing -Xusr/share/man -Xusr/include/xorg -Xusr/share/aclocal -Xusr/lib/xorg/modules -Xusr/lib/pkgconfig/xorg-server.pc -Xusr/bin -XSecurityPolicy -Xvar/lib/xkb -Xusr/lib/X11/Cards -Xusr/lib/X11/Options
-	
-	$(INSTALL) -m 644 $(CURDIR)/debian/xprint-common-overrides $(CURDIR)/debian/xprint-common/usr/share/lintian/overrides/xprint-common
-	# split Xprint config files so font files do not land in /etc
-	# (for xprint-common only)
-	mv debian/xprint-common/usr/share/Xprint/xserver/C/print/attributes debian/xprint-common/etc/Xprint/C/print/attributes
-	mv debian/xprint-common/usr/share/Xprint/xserver/C/print/Xprinters debian/xprint-common/etc/Xprint/C/print/Xprinters
-	mv debian/xprint-common/usr/share/Xprint/xserver/C/print/ddx-config debian/xprint-common/etc/Xprint/C/print/ddx-config
-	mv debian/xprint-common/usr/share/Xprint/xserver/en_US/print/attributes debian/xprint-common/etc/Xprint/en_US/print/attributes
-	# dh_install cannot rename files, sigh
-	$(INSTALL) -m 644 $(CURDIR)/debian/xprint-common.default $(CURDIR)/debian/xprint-common/etc/default/xprint
-	dh_installinit -p xprint-common --name=xprint
-	
-	dh_installdocs -i
-	dh_installchangelogs -i
-	dh_installdebconf -i
-	dh_link -i
-	
-	$(MAKE) -f debian/rules DH_OPTIONS=-i binary-deb
+#	$(MAKE) -f debian/rules DH_OPTIONS=-i binary-initial
+#	dh_install -i --sourcedir=debian/tmp --list-missing -Xusr/share/man -Xusr/include/xorg -Xusr/share/aclocal -Xusr/lib/xorg/modules -Xusr/lib/pkgconfig/xorg-server.pc -Xusr/bin -XSecurityPolicy -Xvar/lib/xkb -Xusr/lib/X11/Cards -Xusr/lib/X11/Options
+#	
+#	$(INSTALL) -m 644 $(CURDIR)/debian/xprint-common-overrides $(CURDIR)/debian/xprint-common/usr/share/lintian/overrides/xprint-common
+#	# split Xprint config files so font files do not land in /etc
+#	# (for xprint-common only)
+#	mv debian/xprint-common/usr/share/Xprint/xserver/C/print/attributes debian/xprint-common/etc/Xprint/C/print/attributes
+#	mv debian/xprint-common/usr/share/Xprint/xserver/C/print/Xprinters debian/xprint-common/etc/Xprint/C/print/Xprinters
+#	mv debian/xprint-common/usr/share/Xprint/xserver/C/print/ddx-config debian/xprint-common/etc/Xprint/C/print/ddx-config
+#	mv debian/xprint-common/usr/share/Xprint/xserver/en_US/print/attributes debian/xprint-common/etc/Xprint/en_US/print/attributes
+#	# dh_install cannot rename files, sigh
+#	$(INSTALL) -m 644 $(CURDIR)/debian/xprint-common.default $(CURDIR)/debian/xprint-common/etc/default/xprint
+#	dh_installinit -p xprint-common --name=xprint
+#	
+#	dh_installdocs -i
+#	dh_installchangelogs -i
+#	dh_installdebconf -i
+#	dh_link -i
+#	
+#	$(MAKE) -f debian/rules DH_OPTIONS=-i binary-deb
 
 
 binary: binary-indep binary-arch
