@@ -1,3 +1,27 @@
+xorg-server (2:1.3.99.0~git20070523-1) UNRELEASED; urgency=low
+
+  * New upstream snapshot.
+    + Update patches:
+      - 04_read_rom_in_chunks.diff refreshed;
+      - 05_module_defaults.diff dropped (applied upstream);
+      - 07_xorgconf_manpage_overhaul.diff updated;
+      - 09_debian_xserver_rtff.diff disabled (doesn't apply, and isn't even
+        used AFAICS;
+      - 12_security_policy_in_etc.diff updated;
+      - 13_debian_add_xkbpath_env_variable.diff refreshed;
+      - 21_glx_align_fixes.patch updated;
+      - 23_kfreebsd_support.diff updated;
+      - 32_disable_sparc_pci_bridge.diff dropped (applied upstream);
+      - 34_xorg.conf_man_typos.patch dropped (applied upstream);
+      - 39_alpha_build_flags.patch dropped (applied upstream);
+      - 44_fedora-xephyr-keysym-madness.diff dropped (different fix applied
+        upstream);
+      - 45_CVE-2007-2437.diff dropped (applied upstream);
+      - 46_export-ramdac-symbols.diff refreshed;
+      - 94_use_default_font_path.diff dropped (applied upstream).
+
+ -- Julien Cristau <jcristau@debian.org>  Wed, 23 May 2007 18:18:37 +0200
+
 xorg-server (2:1.3.0.0.dfsg-5) unstable; urgency=low
 
   [ Brice Goglin ]

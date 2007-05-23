@@ -1,11 +1,11 @@
 Index: xorg-server/GL/glx/Makefile.am
 ===================================================================
---- xorg-server.orig/GL/glx/Makefile.am	2007-03-15 00:57:26.000000000 +0100
-+++ xorg-server/GL/glx/Makefile.am	2007-03-15 00:57:37.000000000 +0100
-@@ -15,7 +15,8 @@
+--- xorg-server.orig/GL/glx/Makefile.am	2007-05-23 18:05:09.000000000 +0200
++++ xorg-server/GL/glx/Makefile.am	2007-05-23 18:05:28.000000000 +0200
+@@ -14,7 +14,8 @@
+ 	-I@MESA_SOURCE@/src/mesa/glapi \
  	-I@MESA_SOURCE@/src/mesa/main \
  	-DXFree86Server \
- 	-DNO_LIBCWRAPPER \
 -	@GLX_DEFINES@
 +	@GLX_DEFINES@ \
 +	@GLX_ARCH_DEFINES@
@@ -14,9 +14,9 @@ Index: xorg-server/GL/glx/Makefile.am
  #sdk_HEADERS =
 Index: xorg-server/configure.ac
 ===================================================================
---- xorg-server.orig/configure.ac	2007-03-15 00:57:26.000000000 +0100
-+++ xorg-server/configure.ac	2007-03-15 00:57:37.000000000 +0100
-@@ -207,6 +207,7 @@
+--- xorg-server.orig/configure.ac	2007-05-23 18:02:13.000000000 +0200
++++ xorg-server/configure.ac	2007-05-23 18:05:15.000000000 +0200
+@@ -273,6 +273,7 @@
  	case $host_os in
  		*netbsd*)	AC_DEFINE(USE_ALPHA_PIO, 1, [NetBSD PIO alpha IO]) ;;
  	esac
@@ -24,7 +24,7 @@ Index: xorg-server/configure.ac
  	;;
    arm*)
  	ARM_VIDEO=yes
-@@ -235,6 +236,7 @@
+@@ -302,6 +303,7 @@
  	xorg_loader_sparcmuldiv="yes"
  	SPARC64_VIDEO=yes
  	BSD_ARCH_SOURCES="sparc64_video.c ioperm_noop.c"
@@ -32,7 +32,7 @@ Index: xorg-server/configure.ac
  	;;
    x86_64*|amd64*)
    	use_x86_asm="yes"
-@@ -248,8 +250,16 @@
+@@ -316,8 +318,16 @@
  				SYS_LIBS=-lamd64
  				;;
  	esac
@@ -51,15 +51,13 @@ Index: xorg-server/configure.ac
  AM_CONDITIONAL(ALPHA_VIDEO, [test "x$ALPHA_VIDEO" = xyes])
 Index: xorg-server/hw/dmx/glxProxy/Makefile.am
 ===================================================================
---- xorg-server.orig/hw/dmx/glxProxy/Makefile.am	2007-03-15 00:57:26.000000000 +0100
-+++ xorg-server/hw/dmx/glxProxy/Makefile.am	2007-03-15 00:57:37.000000000 +0100
-@@ -31,8 +31,7 @@
-                         renderpixswap.c \
+--- xorg-server.orig/hw/dmx/glxProxy/Makefile.am	2007-05-23 17:22:18.000000000 +0200
++++ xorg-server/hw/dmx/glxProxy/Makefile.am	2007-05-23 18:06:28.000000000 +0200
+@@ -32,6 +32,7 @@
                          unpack.h
  
--AM_CFLAGS = \
-- \
-+AM_CFLAGS = @GLX_ARCH_DEFINES@ \
+ AM_CFLAGS = \
++	    @GLX_ARCH_DEFINES@ \
+             $(DIX_CFLAGS) \
              -I$(top_srcdir)/hw/dmx \
              -I$(top_srcdir)/include \
-             -I$(top_srcdir)/GL/include \

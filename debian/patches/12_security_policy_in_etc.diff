@@ -1,18 +1,18 @@
 Index: xorg-server/configure.ac
 ===================================================================
---- xorg-server.orig/configure.ac	2007-03-15 00:46:31.000000000 +0100
-+++ xorg-server/configure.ac	2007-03-15 00:57:26.000000000 +0100
-@@ -388,6 +388,9 @@
+--- xorg-server.orig/configure.ac	2007-05-23 17:21:52.000000000 +0200
++++ xorg-server/configure.ac	2007-05-23 18:02:13.000000000 +0200
+@@ -465,6 +465,9 @@
  AC_ARG_WITH(rgb-path,         AS_HELP_STRING([--with-rgb-path=PATH], [Path to RGB database (default: ${datadir}/X11/rgb)]),
  				[ RGBPATH="$withval" ],
  				[ RGBPATH="${datadir}/X11/rgb" ])
 +AC_ARG_WITH(serverconfig-path, AS_HELP_STRING([--with-serverconfig-path=PATH], [Path to server config (default: ${libdir}/xserver)]),
-+               [ SERVERCONFIG="$withval" ],
-+               [ SERVERCONFIG="${libdir}/xserver" ])
- AC_ARG_WITH(dri-driver-path,  AS_HELP_STRING([--with-dri-driver-path=PATH], [Path to DRI drivers (default: ${libdir}/dri)]),
- 				[ DRI_DRIVER_PATH="$withval" ],
- 				[ DRI_DRIVER_PATH="${libdir}/dri" ])
-@@ -827,6 +830,7 @@
++				[ SERVERCONFIG="$withval" ],
++				[ SERVERCONFIG="${libdir}/xserver" ])
+ APPLE_APPLICATIONS_DIR="${bindir}/Applications"
+ AC_ARG_WITH(apple-applications-dir,AS_HELP_STRING([--with-apple-applications-dir=PATH], [Path to the Applications directory (default: ${bindir}/Applications)]),
+                                [ APPLE_APPLICATIONS_DIR="${withval}" ].
+@@ -938,6 +941,7 @@
  
  AC_DEFINE_DIR(COMPILEDDEFAULTFONTPATH, FONTPATH, [Default font path])
  AC_DEFINE_DIR(RGB_DB, RGBPATH, [Default RGB path])
@@ -22,8 +22,8 @@ Index: xorg-server/configure.ac
  AC_DEFINE_UNQUOTED(XVENDORNAME, ["$VENDOR_STRING"], [Vendor name])
 Index: xorg-server/Xext/Makefile.am
 ===================================================================
---- xorg-server.orig/Xext/Makefile.am	2007-03-15 00:09:12.000000000 +0100
-+++ xorg-server/Xext/Makefile.am	2007-03-15 00:57:02.000000000 +0100
+--- xorg-server.orig/Xext/Makefile.am	2007-05-16 15:51:05.000000000 +0200
++++ xorg-server/Xext/Makefile.am	2007-05-23 18:00:38.000000000 +0200
 @@ -34,7 +34,6 @@
  	xcmisc.c
  

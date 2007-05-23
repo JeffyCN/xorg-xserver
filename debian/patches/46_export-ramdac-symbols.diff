@@ -11,9 +11,9 @@ be explicitly exported to drivers (Debian #423129).
 
 Index: xorg-server/hw/xfree86/loader/xf86sym.c
 ===================================================================
---- xorg-server.orig/hw/xfree86/loader/xf86sym.c	2007-05-11 01:20:46.000000000 +0200
-+++ xorg-server/hw/xfree86/loader/xf86sym.c	2007-05-11 01:37:11.000000000 +0200
-@@ -97,6 +97,11 @@
+--- xorg-server.orig/hw/xfree86/loader/xf86sym.c	2007-05-23 17:22:18.000000000 +0200
++++ xorg-server/hw/xfree86/loader/xf86sym.c	2007-05-23 18:15:23.000000000 +0200
+@@ -96,6 +96,11 @@
  #endif
  #include "xf86DDC.h"
  #include "edid.h"
@@ -25,7 +25,7 @@ Index: xorg-server/hw/xfree86/loader/xf86sym.c
  
  #ifndef HAS_GLIBC_SIGSETJMP
  #if defined(setjmp) && defined(__GNU_LIBRARY__) && \
-@@ -1266,4 +1271,50 @@
+@@ -1255,4 +1260,50 @@
      SYMFUNC(xf86I2CWriteRead)
      SYMFUNC(xf86I2CWriteVec)
      SYMFUNC(xf86I2CWriteWord)
