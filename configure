@@ -22898,8 +22898,8 @@ rm -f core conftest.err conftest.$ac_objext conftest_ipa8_conftest.oo \
 	{ echo "$as_me:$LINENO: result: $SYS_ENDIAN__SWAP" >&5
 echo "${ECHO_T}$SYS_ENDIAN__SWAP" >&6; }
 
-	{ echo "$as_me:$LINENO: checking for bswap_16 variant of <sys/endian.h> byteswapping macros" >&5
-echo $ECHO_N "checking for bswap_16 variant of <sys/endian.h> byteswapping macros... $ECHO_C" >&6; }
+	{ echo "$as_me:$LINENO: checking for bswap16 variant of <sys/endian.h> byteswapping macros" >&5
+echo $ECHO_N "checking for bswap16 variant of <sys/endian.h> byteswapping macros... $ECHO_C" >&6; }
 	cat >conftest.$ac_ext <<_ACEOF
 /* confdefs.h.  */
 _ACEOF
@@ -22914,7 +22914,7 @@ main ()
 {
 
 int a = 1, b;
-b = bswap_16(a);
+b = bswap16(a);
 
   ;
   return 0;
@@ -22954,7 +22954,7 @@ echo "${ECHO_T}$SYS_ENDIAN_BSWAP" >&6; }
 
     	if test "$SYS_ENDIAN_BSWAP" = "yes" ; then
 		USE_SYS_ENDIAN_H=yes
-		BSWAP=bswap_
+		BSWAP=bswap
 	else
 	    	if test "$SYS_ENDIAN__SWAP" = "yes" ; then
 			USE_SYS_ENDIAN_H=yes
@@ -33514,12 +33514,12 @@ if test -n "$PKG_CONFIG"; then
         pkg_cv_XPRINT_CFLAGS="$XPRINT_CFLAGS"
     else
         if test -n "$PKG_CONFIG" && \
-    { (echo "$as_me:$LINENO: \$PKG_CONFIG --exists --print-errors \"printproto x11 xfont \$XDMCP_MODULES xau\"") >&5
-  ($PKG_CONFIG --exists --print-errors "printproto x11 xfont $XDMCP_MODULES xau") 2>&5
+    { (echo "$as_me:$LINENO: \$PKG_CONFIG --exists --print-errors \"printproto x11 xfont \$XDMCP_MODULES xau \$PIXMAN\"") >&5
+  ($PKG_CONFIG --exists --print-errors "printproto x11 xfont $XDMCP_MODULES xau $PIXMAN") 2>&5
   ac_status=$?
   echo "$as_me:$LINENO: \$? = $ac_status" >&5
   (exit $ac_status); }; then
-  pkg_cv_XPRINT_CFLAGS=`$PKG_CONFIG --cflags "printproto x11 xfont $XDMCP_MODULES xau" 2>/dev/null`
+  pkg_cv_XPRINT_CFLAGS=`$PKG_CONFIG --cflags "printproto x11 xfont $XDMCP_MODULES xau $PIXMAN" 2>/dev/null`
 else
   pkg_failed=yes
 fi
@@ -33532,12 +33532,12 @@ if test -n "$PKG_CONFIG"; then
         pkg_cv_XPRINT_LIBS="$XPRINT_LIBS"
     else
         if test -n "$PKG_CONFIG" && \
-    { (echo "$as_me:$LINENO: \$PKG_CONFIG --exists --print-errors \"printproto x11 xfont \$XDMCP_MODULES xau\"") >&5
-  ($PKG_CONFIG --exists --print-errors "printproto x11 xfont $XDMCP_MODULES xau") 2>&5
+    { (echo "$as_me:$LINENO: \$PKG_CONFIG --exists --print-errors \"printproto x11 xfont \$XDMCP_MODULES xau \$PIXMAN\"") >&5
+  ($PKG_CONFIG --exists --print-errors "printproto x11 xfont $XDMCP_MODULES xau $PIXMAN") 2>&5
   ac_status=$?
   echo "$as_me:$LINENO: \$? = $ac_status" >&5
   (exit $ac_status); }; then
-  pkg_cv_XPRINT_LIBS=`$PKG_CONFIG --libs "printproto x11 xfont $XDMCP_MODULES xau" 2>/dev/null`
+  pkg_cv_XPRINT_LIBS=`$PKG_CONFIG --libs "printproto x11 xfont $XDMCP_MODULES xau $PIXMAN" 2>/dev/null`
 else
   pkg_failed=yes
 fi
@@ -33556,14 +33556,14 @@ else
         _pkg_short_errors_supported=no
 fi
         if test $_pkg_short_errors_supported = yes; then
-	        XPRINT_PKG_ERRORS=`$PKG_CONFIG --short-errors --errors-to-stdout --print-errors "printproto x11 xfont $XDMCP_MODULES xau"`
+	        XPRINT_PKG_ERRORS=`$PKG_CONFIG --short-errors --errors-to-stdout --print-errors "printproto x11 xfont $XDMCP_MODULES xau $PIXMAN"`
         else
-	        XPRINT_PKG_ERRORS=`$PKG_CONFIG --errors-to-stdout --print-errors "printproto x11 xfont $XDMCP_MODULES xau"`
+	        XPRINT_PKG_ERRORS=`$PKG_CONFIG --errors-to-stdout --print-errors "printproto x11 xfont $XDMCP_MODULES xau $PIXMAN"`
         fi
 	# Put the nasty error message in config.log where it belongs
 	echo "$XPRINT_PKG_ERRORS" >&5
 
-	{ { echo "$as_me:$LINENO: error: Package requirements (printproto x11 xfont $XDMCP_MODULES xau) were not met:
+	{ { echo "$as_me:$LINENO: error: Package requirements (printproto x11 xfont $XDMCP_MODULES xau $PIXMAN) were not met:
 
 $XPRINT_PKG_ERRORS
 
@@ -33574,7 +33574,7 @@ Alternatively, you may set the environment variables XPRINT_CFLAGS
 and XPRINT_LIBS to avoid the need to call pkg-config.
 See the pkg-config man page for more details.
 " >&5
-echo "$as_me: error: Package requirements (printproto x11 xfont $XDMCP_MODULES xau) were not met:
+echo "$as_me: error: Package requirements (printproto x11 xfont $XDMCP_MODULES xau $PIXMAN) were not met:
 
 $XPRINT_PKG_ERRORS
 

@@ -37,6 +37,7 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
+@XINERAMA_TRUE@am__append_1 = ${XINERAMA_SRCS}
 subdir = randr
 DIST_COMMON = $(am__sdk_HEADERS_DIST) $(srcdir)/Makefile.am \
 	$(srcdir)/Makefile.in
@@ -57,9 +58,14 @@ CONFIG_HEADER = $(top_builddir)/include/do-not-use-config.h \
 CONFIG_CLEAN_FILES =
 LTLIBRARIES = $(noinst_LTLIBRARIES)
 librandr_la_LIBADD =
+am__librandr_la_SOURCES_DIST = mirandr.c randr.c randrstr.h rrcrtc.c \
+	rrdispatch.c rrinfo.c rrmode.c rroutput.c rrpointer.c \
+	rrproperty.c rrscreen.c rrsdispatch.c rrxinerama.c
+am__objects_1 = rrxinerama.lo
+@XINERAMA_TRUE@am__objects_2 = $(am__objects_1)
 am_librandr_la_OBJECTS = mirandr.lo randr.lo rrcrtc.lo rrdispatch.lo \
 	rrinfo.lo rrmode.lo rroutput.lo rrpointer.lo rrproperty.lo \
-	rrscreen.lo rrsdispatch.lo rrxinerama.lo
+	rrscreen.lo rrsdispatch.lo $(am__objects_2)
 librandr_la_OBJECTS = $(am_librandr_la_OBJECTS)
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)/include -I$(top_builddir)/include -I$(top_builddir)/include -I$(top_builddir)/include -I$(top_builddir)/include -I$(top_builddir)/include -I$(top_builddir)/include -I$(top_builddir)/include
 depcomp = $(SHELL) $(top_srcdir)/depcomp
@@ -73,7 +79,7 @@ CCLD = $(CC)
 LINK = $(LIBTOOL) --tag=CC --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
 	$(AM_LDFLAGS) $(LDFLAGS) -o $@
 SOURCES = $(librandr_la_SOURCES)
-DIST_SOURCES = $(librandr_la_SOURCES)
+DIST_SOURCES = $(am__librandr_la_SOURCES_DIST)
 am__sdk_HEADERS_DIST = randrstr.h
 am__vpath_adj_setup = srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`;
 am__vpath_adj = case $$p in \
@@ -584,22 +590,11 @@ xglmoduledir = @xglmoduledir@
 xpconfigdir = @xpconfigdir@
 noinst_LTLIBRARIES = librandr.la
 AM_CFLAGS = $(DIX_CFLAGS)
+XINERAMA_SRCS = rrxinerama.c
 @XORG_TRUE@sdk_HEADERS = randrstr.h
-librandr_la_SOURCES = \
-	mirandr.c	\
-	randr.c		\
-	randrstr.h	\
-	rrcrtc.c	\
-	rrdispatch.c	\
-	rrinfo.c	\
-	rrmode.c	\
-	rroutput.c	\
-	rrpointer.c	\
-	rrproperty.c	\
-	rrscreen.c	\
-	rrsdispatch.c	\
-	rrxinerama.c
-
+librandr_la_SOURCES = mirandr.c randr.c randrstr.h rrcrtc.c \
+	rrdispatch.c rrinfo.c rrmode.c rroutput.c rrpointer.c \
+	rrproperty.c rrscreen.c rrsdispatch.c $(am__append_1)
 all: all-am
 
 .SUFFIXES:

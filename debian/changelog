@@ -25,7 +25,6 @@ xorg-server (2:1.3.99.0~git20070528-1) UNRELEASED; urgency=low
     + Bump serverminver to this version, videoabiver to 1.9, inputabiver to
       0.9 (so this doesn't clash with a release and drivers have to be
       rebuilt).
-  * Disable xprint for now, it fails to build.
 
   [ David Nusinow ]
   * Remove patches that were pushed upstream
@@ -37,7 +36,10 @@ xorg-server (2:1.3.99.0~git20070528-1) UNRELEASED; urgency=low
     + 16_s390_fix.diff
     + 23_kfreebsd_support.diff
 
- -- David Nusinow <dnusinow@debian.org>  Mon, 28 May 2007 22:09:07 -0400
+  [ Drew Parsons ]
+  * Update Xprint build to include pixman.
+
+ -- Drew Parsons <dparsons@debian.org>  Wed, 30 May 2007 02:13:49 +1000
 
 xorg-server (2:1.3.0.0.dfsg-5) unstable; urgency=low
 
