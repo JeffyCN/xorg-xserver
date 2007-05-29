@@ -123,19 +123,19 @@ b = __swap16(a);
 ], [SYS_ENDIAN__SWAP='yes'], [SYS_ENDIAN__SWAP='no'])
 	AC_MSG_RESULT([$SYS_ENDIAN__SWAP])
 
-	AC_MSG_CHECKING([for bswap_16 variant of <sys/endian.h> byteswapping macros])
+	AC_MSG_CHECKING([for bswap16 variant of <sys/endian.h> byteswapping macros])
 	AC_LINK_IFELSE([AC_LANG_PROGRAM([
 #include <sys/endian.h>
  ], [
 int a = 1, b;
-b = bswap_16(a);
+b = bswap16(a);
  ])
 ], [SYS_ENDIAN_BSWAP='yes'], [SYS_ENDIAN_BSWAP='no'])
 	AC_MSG_RESULT([$SYS_ENDIAN_BSWAP])
 
     	if test "$SYS_ENDIAN_BSWAP" = "yes" ; then
 		USE_SYS_ENDIAN_H=yes
-		BSWAP=bswap_
+		BSWAP=bswap
 	else	
 	    	if test "$SYS_ENDIAN__SWAP" = "yes" ; then
 			USE_SYS_ENDIAN_H=yes
@@ -465,6 +465,9 @@ AC_ARG_WITH(xkb-output,       AS_HELP_STRING([--with-xkb-output=PATH], [Path to 
 AC_ARG_WITH(rgb-path,         AS_HELP_STRING([--with-rgb-path=PATH], [Path to RGB database (default: ${datadir}/X11/rgb)]),
 				[ RGBPATH="$withval" ],
 				[ RGBPATH="${datadir}/X11/rgb" ])
+AC_ARG_WITH(serverconfig-path, AS_HELP_STRING([--with-serverconfig-path=PATH], [Path to server config (default: ${libdir}/xserver)]),
+				[ SERVERCONFIG="$withval" ],
+				[ SERVERCONFIG="${libdir}/xserver" ])
 APPLE_APPLICATIONS_DIR="${bindir}/Applications"
 AC_ARG_WITH(apple-applications-dir,AS_HELP_STRING([--with-apple-applications-dir=PATH], [Path to the Applications directory (default: ${bindir}/Applications)]),
                                [ APPLE_APPLICATIONS_DIR="${withval}" ].
@@ -938,6 +941,7 @@ VENDOR_MAN_VERSION="Version ${VENDOR_VERSION_STRING}"
 
 AC_DEFINE_DIR(COMPILEDDEFAULTFONTPATH, FONTPATH, [Default font path])
 AC_DEFINE_DIR(RGB_DB, RGBPATH, [Default RGB path])
+AC_DEFINE_DIR(SERVERCONFIGdir, SERVERCONFIG, [Server config path])
 AC_DEFINE_DIR(BASE_FONT_PATH, FONTDIR, [Default base font path])
 AC_DEFINE_DIR(DRI_DRIVER_PATH, DRI_DRIVER_PATH, [Default DRI driver path])
 AC_DEFINE_UNQUOTED(XVENDORNAME, ["$VENDOR_STRING"], [Vendor name])
