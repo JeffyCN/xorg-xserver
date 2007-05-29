@@ -1,16 +1,10 @@
 001_ubuntu_add_extra_modelines_from_xorg.patch -p1
 02_libvgahw_gcc4_volatile_fix.diff
-03_xnest_manpage_overhaul.diff
-04_read_rom_in_chunks.diff
 06_use_proc_instead_of_sysfs_for_pci_domains.diff
 07_xorgconf_manpage_overhaul.diff -p0
-08_s390_servermd.diff 
 10_dont_look_in_home_for_config.diff -p0
-12_security_policy_in_etc.diff
 13_debian_add_xkbpath_env_variable.diff
-16_s390_fix.diff
 21_glx_align_fixes.patch
-23_kfreebsd_support.diff
 24_hurd_ioperm_fix.diff
 46_export-ramdac-symbols.diff
 91_ttf2pt1
