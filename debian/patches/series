@@ -4,8 +4,6 @@
 10_dont_look_in_home_for_config.diff -p0
 13_debian_add_xkbpath_env_variable.diff
 21_glx_align_fixes.patch
-24_hurd_ioperm_fix.diff
-46_export-ramdac-symbols.diff
 91_ttf2pt1
 91_ttf2pt1_updates
 92_xprint-security-holes-fix.patch
