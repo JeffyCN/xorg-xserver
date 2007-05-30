@@ -68,8 +68,7 @@ am_libfb_la_OBJECTS = libfb_la-fb24_32.lo libfb_la-fballpriv.lo \
 	libfb_la-fbpush.lo libfb_la-fbscreen.lo libfb_la-fbseg.lo \
 	libfb_la-fbsetsp.lo libfb_la-fbsolid.lo libfb_la-fbstipple.lo \
 	libfb_la-fbtile.lo libfb_la-fbtrap.lo libfb_la-fbutil.lo \
-	libfb_la-fbwindow.lo libfb_la-fbpseudocolor.lo \
-	libfb_la-fbedge.lo
+	libfb_la-fbwindow.lo libfb_la-fbpseudocolor.lo
 libfb_la_OBJECTS = $(am_libfb_la_OBJECTS)
 libfbmmx_la_LIBADD =
 am_libfbmmx_la_OBJECTS = libfbmmx_la-fbmmx.lo
@@ -87,8 +86,7 @@ am__objects_1 = libwfb_la-fb24_32.lo libwfb_la-fballpriv.lo \
 	libwfb_la-fbscreen.lo libwfb_la-fbseg.lo libwfb_la-fbsetsp.lo \
 	libwfb_la-fbsolid.lo libwfb_la-fbstipple.lo \
 	libwfb_la-fbtile.lo libwfb_la-fbtrap.lo libwfb_la-fbutil.lo \
-	libwfb_la-fbwindow.lo libwfb_la-fbpseudocolor.lo \
-	libwfb_la-fbedge.lo
+	libwfb_la-fbwindow.lo libwfb_la-fbpseudocolor.lo
 am_libwfb_la_OBJECTS = $(am__objects_1)
 libwfb_la_OBJECTS = $(am_libwfb_la_OBJECTS)
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)/include -I$(top_builddir)/include -I$(top_builddir)/include -I$(top_builddir)/include -I$(top_builddir)/include -I$(top_builddir)/include -I$(top_builddir)/include -I$(top_builddir)/include
@@ -676,9 +674,7 @@ libfb_la_SOURCES = \
 	fbutil.c	\
 	fbwindow.c	\
 	fbpseudocolor.c \
-	fbpseudocolor.h \
-	fbedge.c	\
-	fbedgeimp.h
+	fbpseudocolor.h
 
 libwfb_la_SOURCES = $(libfb_la_SOURCES)
 libfb_la_LIBADD = libfbmmx.la
@@ -746,7 +742,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libfb_la-fbbltone.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libfb_la-fbbstore.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libfb_la-fbcopy.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libfb_la-fbedge.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libfb_la-fbfill.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libfb_la-fbfillrect.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libfb_la-fbfillsp.Plo@am__quote@
@@ -779,7 +774,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libwfb_la-fbbltone.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libwfb_la-fbbstore.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libwfb_la-fbcopy.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libwfb_la-fbedge.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libwfb_la-fbfill.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libwfb_la-fbfillrect.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libwfb_la-fbfillsp.Plo@am__quote@
@@ -1042,13 +1036,6 @@ libfb_la-fbpseudocolor.lo: fbpseudocolor.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libfb_la_CFLAGS) $(CFLAGS) -c -o libfb_la-fbpseudocolor.lo `test -f 'fbpseudocolor.c' || echo '$(srcdir)/'`fbpseudocolor.c
 
-libfb_la-fbedge.lo: fbedge.c
-@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libfb_la_CFLAGS) $(CFLAGS) -MT libfb_la-fbedge.lo -MD -MP -MF "$(DEPDIR)/libfb_la-fbedge.Tpo" -c -o libfb_la-fbedge.lo `test -f 'fbedge.c' || echo '$(srcdir)/'`fbedge.c; \
-@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libfb_la-fbedge.Tpo" "$(DEPDIR)/libfb_la-fbedge.Plo"; else rm -f "$(DEPDIR)/libfb_la-fbedge.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='fbedge.c' object='libfb_la-fbedge.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libfb_la_CFLAGS) $(CFLAGS) -c -o libfb_la-fbedge.lo `test -f 'fbedge.c' || echo '$(srcdir)/'`fbedge.c
-
 libfbmmx_la-fbmmx.lo: fbmmx.c
 @am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libfbmmx_la_CFLAGS) $(CFLAGS) -MT libfbmmx_la-fbmmx.lo -MD -MP -MF "$(DEPDIR)/libfbmmx_la-fbmmx.Tpo" -c -o libfbmmx_la-fbmmx.lo `test -f 'fbmmx.c' || echo '$(srcdir)/'`fbmmx.c; \
 @am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libfbmmx_la-fbmmx.Tpo" "$(DEPDIR)/libfbmmx_la-fbmmx.Plo"; else rm -f "$(DEPDIR)/libfbmmx_la-fbmmx.Tpo"; exit 1; fi
@@ -1272,13 +1259,6 @@ libwfb_la-fbpseudocolor.lo: fbpseudocolor.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='fbpseudocolor.c' object='libwfb_la-fbpseudocolor.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libwfb_la_CFLAGS) $(CFLAGS) -c -o libwfb_la-fbpseudocolor.lo `test -f 'fbpseudocolor.c' || echo '$(srcdir)/'`fbpseudocolor.c
-
-libwfb_la-fbedge.lo: fbedge.c
-@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libwfb_la_CFLAGS) $(CFLAGS) -MT libwfb_la-fbedge.lo -MD -MP -MF "$(DEPDIR)/libwfb_la-fbedge.Tpo" -c -o libwfb_la-fbedge.lo `test -f 'fbedge.c' || echo '$(srcdir)/'`fbedge.c; \
-@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libwfb_la-fbedge.Tpo" "$(DEPDIR)/libwfb_la-fbedge.Plo"; else rm -f "$(DEPDIR)/libwfb_la-fbedge.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='fbedge.c' object='libwfb_la-fbedge.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libwfb_la_CFLAGS) $(CFLAGS) -c -o libwfb_la-fbedge.lo `test -f 'fbedge.c' || echo '$(srcdir)/'`fbedge.c
 
 mostlyclean-libtool:
 	-rm -f *.lo

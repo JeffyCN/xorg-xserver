@@ -65,8 +65,9 @@ am_Xprt_OBJECTS = Xprt-attributes.$(OBJEXT) Xprt-AttrValid.$(OBJEXT) \
 	Xprt-dpmsstubs-wrapper.$(OBJEXT) Xprt-fbcmap_mi.$(OBJEXT)
 Xprt_OBJECTS = $(am_Xprt_OBJECTS)
 Xprt_DEPENDENCIES = ps/libps.la raster/libraster.la pcl/libpcl.la \
-	pcl-mono/libpcl.la ../../fb/libfb.la ../../render/librender.la \
-	../../mi/libmi.la ../../Xext/libXext.la
+	pcl-mono/libpcl.la $(top_builddir)/fb/libfb.la \
+	$(top_builddir)/render/librender.la \
+	$(top_builddir)/mi/libmi.la $(top_builddir)/Xext/libXext.la
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)/include -I$(top_builddir)/include -I$(top_builddir)/include -I$(top_builddir)/include -I$(top_builddir)/include -I$(top_builddir)/include -I$(top_builddir)/include -I$(top_builddir)/include
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
@@ -594,9 +595,9 @@ Xprt_CFLAGS = @DIX_CFLAGS@ @XPRINT_CFLAGS@ \
 
 Xprt_LDFLAGS = -L$(top_srcdir)
 Xprt_LDADD = @XPRINT_LIBS@ ps/libps.la raster/libraster.la  \
-	pcl/libpcl.la pcl-mono/libpcl.la ../../fb/libfb.la \
-	../../render/librender.la ../../mi/libmi.la ../../Xext/libXext.la \
-	@FREETYPE_LIBS@
+	pcl/libpcl.la pcl-mono/libpcl.la $(top_builddir)/fb/libfb.la \
+	$(top_builddir)/render/librender.la $(top_builddir)/mi/libmi.la \
+	$(top_builddir)/Xext/libXext.la  @FREETYPE_LIBS@
 
 Xprt_SOURCES = \
 	attributes.c		\
