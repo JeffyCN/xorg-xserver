@@ -37,7 +37,6 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-@MMX_CAPABLE_TRUE@am__append_1 = -DUSE_MMX
 subdir = fb
 DIST_COMMON = $(am__sdk_HEADERS_DIST) $(srcdir)/Makefile.am \
 	$(srcdir)/Makefile.in
@@ -57,7 +56,7 @@ CONFIG_HEADER = $(top_builddir)/include/do-not-use-config.h \
 	$(top_builddir)/include/kdrive-config.h
 CONFIG_CLEAN_FILES =
 LTLIBRARIES = $(noinst_LTLIBRARIES)
-libfb_la_DEPENDENCIES = libfbmmx.la
+libfb_la_LIBADD =
 am_libfb_la_OBJECTS = libfb_la-fb24_32.lo libfb_la-fballpriv.lo \
 	libfb_la-fbarc.lo libfb_la-fbbits.lo libfb_la-fbblt.lo \
 	libfb_la-fbbltone.lo libfb_la-fbbstore.lo libfb_la-fbcopy.lo \
@@ -70,9 +69,6 @@ am_libfb_la_OBJECTS = libfb_la-fb24_32.lo libfb_la-fballpriv.lo \
 	libfb_la-fbtile.lo libfb_la-fbtrap.lo libfb_la-fbutil.lo \
 	libfb_la-fbwindow.lo libfb_la-fbpseudocolor.lo
 libfb_la_OBJECTS = $(am_libfb_la_OBJECTS)
-libfbmmx_la_LIBADD =
-am_libfbmmx_la_OBJECTS = libfbmmx_la-fbmmx.lo
-libfbmmx_la_OBJECTS = $(am_libfbmmx_la_OBJECTS)
 libwfb_la_LIBADD =
 am__objects_1 = libwfb_la-fb24_32.lo libwfb_la-fballpriv.lo \
 	libwfb_la-fbarc.lo libwfb_la-fbbits.lo libwfb_la-fbblt.lo \
@@ -100,10 +96,8 @@ LTCOMPILE = $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) \
 CCLD = $(CC)
 LINK = $(LIBTOOL) --tag=CC --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
 	$(AM_LDFLAGS) $(LDFLAGS) -o $@
-SOURCES = $(libfb_la_SOURCES) $(libfbmmx_la_SOURCES) \
-	$(libwfb_la_SOURCES)
-DIST_SOURCES = $(libfb_la_SOURCES) $(libfbmmx_la_SOURCES) \
-	$(libwfb_la_SOURCES)
+SOURCES = $(libfb_la_SOURCES) $(libwfb_la_SOURCES)
+DIST_SOURCES = $(libfb_la_SOURCES) $(libwfb_la_SOURCES)
 am__sdk_HEADERS_DIST = fb.h fbrop.h fbpseudocolor.h fboverlay.h \
 	wfbrename.h
 am__vpath_adj_setup = srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`;
@@ -163,6 +157,7 @@ BUILD_LINUXDOC_FALSE = @BUILD_LINUXDOC_FALSE@
 BUILD_LINUXDOC_TRUE = @BUILD_LINUXDOC_TRUE@
 BUILD_PDFDOC_FALSE = @BUILD_PDFDOC_FALSE@
 BUILD_PDFDOC_TRUE = @BUILD_PDFDOC_TRUE@
+BUILD_TIME = @BUILD_TIME@
 BUILD_XORGCFG_FALSE = @BUILD_XORGCFG_FALSE@
 BUILD_XORGCFG_TRUE = @BUILD_XORGCFG_TRUE@
 CC = @CC@
@@ -333,8 +328,6 @@ MITSHM_FALSE = @MITSHM_FALSE@
 MITSHM_TRUE = @MITSHM_TRUE@
 MKFONTDIR = @MKFONTDIR@
 MKFONTSCALE = @MKFONTSCALE@
-MMX_CAPABLE_FALSE = @MMX_CAPABLE_FALSE@
-MMX_CAPABLE_TRUE = @MMX_CAPABLE_TRUE@
 MULTIBUFFER_FALSE = @MULTIBUFFER_FALSE@
 MULTIBUFFER_TRUE = @MULTIBUFFER_TRUE@
 NEED_STRLCAT_FALSE = @NEED_STRLCAT_FALSE@
@@ -613,7 +606,7 @@ sysconfdir = @sysconfdir@
 target_alias = @target_alias@
 xglmoduledir = @xglmoduledir@
 xpconfigdir = @xpconfigdir@
-noinst_LTLIBRARIES = libfb.la libwfb.la libfbmmx.la
+noinst_LTLIBRARIES = libfb.la libwfb.la
 INCLUDES = \
 	-I$(top_srcdir)/hw/xfree86/os-support \
 	-I$(top_srcdir)/hw/xfree86/os-support/bus \
@@ -621,21 +614,8 @@ INCLUDES = \
 
 AM_CFLAGS = $(DIX_CFLAGS)
 @XORG_TRUE@sdk_HEADERS = fb.h fbrop.h fbpseudocolor.h fboverlay.h wfbrename.h
-libfb_la_CFLAGS = $(AM_CFLAGS) $(am__append_1)
-@MMX_CAPABLE_TRUE@libfbmmx_la_CFLAGS = \
-@MMX_CAPABLE_TRUE@	$(DIX_CFLAGS)				\
-@MMX_CAPABLE_TRUE@	-DUSE_MMX				\
-@MMX_CAPABLE_TRUE@	-mmmx					\
-@MMX_CAPABLE_TRUE@	-msse					\
-@MMX_CAPABLE_TRUE@	-Winline				\
-@MMX_CAPABLE_TRUE@	--param inline-unit-growth=10000	\
-@MMX_CAPABLE_TRUE@        --param large-function-growth=10000
-
+libfb_la_CFLAGS = $(AM_CFLAGS)
 libwfb_la_CFLAGS = $(AM_CFLAGS) -DFB_ACCESS_WRAPPER
-libfbmmx_la_SOURCES = \
-	fbmmx.c		\
-	fbmmx.h
-
 libfb_la_SOURCES = \
 	fb.h		\
 	fb24_32.c	\
@@ -677,7 +657,6 @@ libfb_la_SOURCES = \
 	fbpseudocolor.h
 
 libwfb_la_SOURCES = $(libfb_la_SOURCES)
-libfb_la_LIBADD = libfbmmx.la
 EXTRA_DIST = fbcmap.c fbcmap_mi.c
 all: all-am
 
@@ -723,8 +702,6 @@ clean-noinstLTLIBRARIES:
 	done
 libfb.la: $(libfb_la_OBJECTS) $(libfb_la_DEPENDENCIES) 
 	$(LINK)  $(libfb_la_LDFLAGS) $(libfb_la_OBJECTS) $(libfb_la_LIBADD) $(LIBS)
-libfbmmx.la: $(libfbmmx_la_OBJECTS) $(libfbmmx_la_DEPENDENCIES) 
-	$(LINK)  $(libfbmmx_la_LDFLAGS) $(libfbmmx_la_OBJECTS) $(libfbmmx_la_LIBADD) $(LIBS)
 libwfb.la: $(libwfb_la_OBJECTS) $(libwfb_la_DEPENDENCIES) 
 	$(LINK)  $(libwfb_la_LDFLAGS) $(libwfb_la_OBJECTS) $(libwfb_la_LIBADD) $(LIBS)
 
@@ -765,7 +742,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libfb_la-fbtrap.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libfb_la-fbutil.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libfb_la-fbwindow.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libfbmmx_la-fbmmx.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libwfb_la-fb24_32.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libwfb_la-fballpriv.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libwfb_la-fbarc.Plo@am__quote@
@@ -1035,13 +1011,6 @@ libfb_la-fbpseudocolor.lo: fbpseudocolor.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='fbpseudocolor.c' object='libfb_la-fbpseudocolor.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libfb_la_CFLAGS) $(CFLAGS) -c -o libfb_la-fbpseudocolor.lo `test -f 'fbpseudocolor.c' || echo '$(srcdir)/'`fbpseudocolor.c
-
-libfbmmx_la-fbmmx.lo: fbmmx.c
-@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libfbmmx_la_CFLAGS) $(CFLAGS) -MT libfbmmx_la-fbmmx.lo -MD -MP -MF "$(DEPDIR)/libfbmmx_la-fbmmx.Tpo" -c -o libfbmmx_la-fbmmx.lo `test -f 'fbmmx.c' || echo '$(srcdir)/'`fbmmx.c; \
-@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libfbmmx_la-fbmmx.Tpo" "$(DEPDIR)/libfbmmx_la-fbmmx.Plo"; else rm -f "$(DEPDIR)/libfbmmx_la-fbmmx.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='fbmmx.c' object='libfbmmx_la-fbmmx.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libfbmmx_la_CFLAGS) $(CFLAGS) -c -o libfbmmx_la-fbmmx.lo `test -f 'fbmmx.c' || echo '$(srcdir)/'`fbmmx.c
 
 libwfb_la-fb24_32.lo: fb24_32.c
 @am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libwfb_la_CFLAGS) $(CFLAGS) -MT libwfb_la-fb24_32.lo -MD -MP -MF "$(DEPDIR)/libwfb_la-fb24_32.Tpo" -c -o libwfb_la-fb24_32.lo `test -f 'fb24_32.c' || echo '$(srcdir)/'`fb24_32.c; \

@@ -61,7 +61,6 @@ libddc_a_AR = $(AR) $(ARFLAGS)
 libddc_a_LIBADD =
 am_libddc_a_OBJECTS = xf86DDC.$(OBJEXT) edid.$(OBJEXT) \
 	interpret_edid.$(OBJEXT) print_edid.$(OBJEXT) \
-	interpret_vdif.$(OBJEXT) print_vdif.$(OBJEXT) \
 	ddcProperty.$(OBJEXT)
 libddc_a_OBJECTS = $(am_libddc_a_OBJECTS)
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)/include -I$(top_builddir)/include -I$(top_builddir)/include -I$(top_builddir)/include -I$(top_builddir)/include -I$(top_builddir)/include -I$(top_builddir)/include -I$(top_builddir)/include
@@ -134,6 +133,7 @@ BUILD_LINUXDOC_FALSE = @BUILD_LINUXDOC_FALSE@
 BUILD_LINUXDOC_TRUE = @BUILD_LINUXDOC_TRUE@
 BUILD_PDFDOC_FALSE = @BUILD_PDFDOC_FALSE@
 BUILD_PDFDOC_TRUE = @BUILD_PDFDOC_TRUE@
+BUILD_TIME = @BUILD_TIME@
 BUILD_XORGCFG_FALSE = @BUILD_XORGCFG_FALSE@
 BUILD_XORGCFG_TRUE = @BUILD_XORGCFG_TRUE@
 CC = @CC@
@@ -304,8 +304,6 @@ MITSHM_FALSE = @MITSHM_FALSE@
 MITSHM_TRUE = @MITSHM_TRUE@
 MKFONTDIR = @MKFONTDIR@
 MKFONTSCALE = @MKFONTSCALE@
-MMX_CAPABLE_FALSE = @MMX_CAPABLE_FALSE@
-MMX_CAPABLE_TRUE = @MMX_CAPABLE_TRUE@
 MULTIBUFFER_FALSE = @MULTIBUFFER_FALSE@
 MULTIBUFFER_TRUE = @MULTIBUFFER_TRUE@
 NEED_STRLCAT_FALSE = @NEED_STRLCAT_FALSE@
@@ -584,10 +582,10 @@ sysconfdir = @sysconfdir@
 target_alias = @target_alias@
 xglmoduledir = @xglmoduledir@
 xpconfigdir = @xpconfigdir@
-sdk_HEADERS = edid.h vdif.h xf86DDC.h
+sdk_HEADERS = edid.h xf86DDC.h
 noinst_LIBRARIES = libddc.a
 libddc_a_SOURCES = xf86DDC.c edid.c interpret_edid.c print_edid.c \
-                   interpret_vdif.c print_vdif.c ddcProperty.c
+                   ddcProperty.c
 
 INCLUDES = $(XORG_INCS) -I$(srcdir)/../i2c
 AM_CFLAGS = $(DIX_CFLAGS) $(XORG_CFLAGS)
@@ -642,9 +640,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ddcProperty.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/edid.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/interpret_edid.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/interpret_vdif.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/print_edid.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/print_vdif.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xf86DDC.Po@am__quote@
 
 .c.o:

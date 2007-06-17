@@ -113,19 +113,19 @@
 /* Cygwin has /dev/windows for signaling new win32 messages */
 #undef HAS_DEVWINDOWS
 
-/* Have the `getdtablesize' function. */
+/* Have the 'getdtablesize' function. */
 #undef HAS_GETDTABLESIZE
 
-/* Have the `getifaddrs' function. */
+/* Have the 'getifaddrs' function. */
 #undef HAS_GETIFADDRS
 
-/* Have the `getpeereid' function. */
+/* Have the 'getpeereid' function. */
 #undef HAS_GETPEEREID
 
-/* Have the `getpeerucred' function. */
+/* Have the 'getpeerucred' function. */
 #undef HAS_GETPEERUCRED
 
-/* Have the `mmap' function. */
+/* Have the 'mmap' function. */
 #undef HAS_MMAP
 
 /* Define to 1 if NetBSD built-in MTRR support is available */
@@ -354,7 +354,7 @@
 /* Disable some debugging code */
 #undef NDEBUG
 
-/* Do not have `strcasecmp'. */
+/* Do not have 'strcasecmp'. */
 #undef NEED_STRCASECMP
 
 /* Need XFree86 helper functions */
