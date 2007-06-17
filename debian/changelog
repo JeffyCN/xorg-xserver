@@ -1,4 +1,4 @@
-xorg-server (2:1.3.99.0~git20070529-1) UNRELEASED; urgency=low
+xorg-server (2:1.3.99.0~git20070606-1) UNRELEASED; urgency=low
 
   [ Julien Cristau ]
   * New upstream snapshot.
