@@ -1,0 +1,34 @@
+Backport to 7.2 of commit 47c1c948e69cfba950ad37a3133fa2db0bd0ff2c
+Original Author: Daniel Stone <daniel@fooishbar.org>
+Date:   Tue Aug 15 15:25:16 2006 +0300
+
+    kdrive/input: only run special key behaviours on non-XKB
+    Only attempt to manually deal with special key behaviours (e.g. terminating
+    the server) when not using XKB, and leave locking behaviour up to GKVE.
+
+https://bugs.freedesktop.org/show_bug.cgi?id=10313
+Debian bug #415025
+
+--- xorg-server-1.2.0/hw/kdrive/src/kinput.c	2007-01-22 21:39:15.000000000 -0800
++++ xorg-server-1.2.0/hw/kdrive/src/kinput.c	2007-04-09 18:58:43.562841000 -0700
+@@ -1303,20 +1303,6 @@
+ 	    xE.u.u.type = KeyPress;
+ 	xE.u.u.detail = key_code;
+ 	
+-	switch (KEYCOL1(key_code)) 
+-	{
+-	case XK_Num_Lock:
+-	case XK_Scroll_Lock:
+-	case XK_Shift_Lock:
+-	case XK_Caps_Lock:
+-	    if (xE.u.u.type == KeyRelease)
+-		return;
+-	    if (IsKeyDown (key_code))
+-		xE.u.u.type = KeyRelease;
+-	    else
+-		xE.u.u.type = KeyPress;
+-	}
+-	
+ 	/*
+ 	 * Check pressed keys which are already down
+ 	 */

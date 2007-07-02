@@ -19,6 +19,7 @@
 39_alpha_build_flags.patch -p0
 40_consolidate_portPriv_pDraw_assignments.diff
 41_vbe_filter_less.diff
+42_only_run_special_key_behaviours_on_non-XKB.diff
 44_fedora-xephyr-keysym-madness.diff
 45_CVE-2007-2437.diff
 46_export-ramdac-symbols.diff
