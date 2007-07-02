@@ -18,6 +18,7 @@
 34_xorg.conf_man_typos.patch
 39_alpha_build_flags.patch -p0
 40_consolidate_portPriv_pDraw_assignments.diff
+41_vbe_filter_less.diff
 44_fedora-xephyr-keysym-madness.diff
 45_CVE-2007-2437.diff
 46_export-ramdac-symbols.diff

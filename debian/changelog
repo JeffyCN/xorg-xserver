@@ -2,8 +2,10 @@ xorg-server (2:1.3.0.0.dfsg-7) UNRELEASED; urgency=low
 
   * Add 40_consolidate_portPriv_pDraw_assignments.diff to avoid a crash
     in xf86XVReputVideo (closes: #424899).
+  * Add 41_vbe_filter_less.diff to not reject VESA modes early since
+    xf86ValidateModes should handle them just fine (closes: #424684).
 
- -- Brice Goglin <Brice.Goglin@ens-lyon.org>  Mon, 02 Jul 2007 21:18:45 +0200
+ -- Brice Goglin <Brice.Goglin@ens-lyon.org>  Mon, 02 Jul 2007 21:21:27 +0200
 
 xorg-server (2:1.3.0.0.dfsg-6) unstable; urgency=low
 
