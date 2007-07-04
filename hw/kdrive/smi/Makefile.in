@@ -69,7 +69,6 @@ Xsmi_OBJECTS = $(am_Xsmi_OBJECTS)
 am__DEPENDENCIES_1 = libsmi.a \
 	$(top_builddir)/hw/kdrive/fbdev/libfbdev.a \
 	$(top_builddir)/hw/kdrive/vesa/libvesa.a
-Xsmi_DEPENDENCIES = $(am__DEPENDENCIES_1)
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)/include -I$(top_builddir)/include -I$(top_builddir)/include -I$(top_builddir)/include -I$(top_builddir)/include -I$(top_builddir)/include -I$(top_builddir)/include -I$(top_builddir)/include
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
@@ -259,6 +258,7 @@ KDRIVE_HW_FALSE = @KDRIVE_HW_FALSE@
 KDRIVE_HW_TRUE = @KDRIVE_HW_TRUE@
 KDRIVE_INCS = @KDRIVE_INCS@
 KDRIVE_LIBS = @KDRIVE_LIBS@
+KDRIVE_LOCAL_LIBS = @KDRIVE_LOCAL_LIBS@
 KDRIVE_PURE_INCS = @KDRIVE_PURE_INCS@
 KDRIVE_PURE_LIBS = @KDRIVE_PURE_LIBS@
 KDRIVE_TRUE = @KDRIVE_TRUE@
@@ -609,6 +609,7 @@ Xsmi_LDADD = \
 	@KDRIVE_LIBS@                          \
 	@XSERVER_LIBS@					
 
+Xsmi_DEPENDENCIES = @KDRIVE_LOCAL_LIBS@
 all: all-am
 
 .SUFFIXES:

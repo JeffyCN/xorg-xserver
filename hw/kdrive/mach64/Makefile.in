@@ -69,7 +69,6 @@ am_Xmach64_OBJECTS = mach64stub.$(OBJEXT)
 Xmach64_OBJECTS = $(am_Xmach64_OBJECTS)
 am__DEPENDENCIES_1 = libmach64.a \
 	$(top_builddir)/hw/kdrive/vesa/libvesa.a
-Xmach64_DEPENDENCIES = $(am__DEPENDENCIES_1)
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)/include -I$(top_builddir)/include -I$(top_builddir)/include -I$(top_builddir)/include -I$(top_builddir)/include -I$(top_builddir)/include -I$(top_builddir)/include -I$(top_builddir)/include
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
@@ -259,6 +258,7 @@ KDRIVE_HW_FALSE = @KDRIVE_HW_FALSE@
 KDRIVE_HW_TRUE = @KDRIVE_HW_TRUE@
 KDRIVE_INCS = @KDRIVE_INCS@
 KDRIVE_LIBS = @KDRIVE_LIBS@
+KDRIVE_LOCAL_LIBS = @KDRIVE_LOCAL_LIBS@
 KDRIVE_PURE_INCS = @KDRIVE_PURE_INCS@
 KDRIVE_PURE_LIBS = @KDRIVE_PURE_LIBS@
 KDRIVE_TRUE = @KDRIVE_TRUE@
@@ -606,6 +606,7 @@ Xmach64_LDADD = \
 	@KDRIVE_LIBS@					\
 	@XSERVER_LIBS@
 
+Xmach64_DEPENDENCIES = @KDRIVE_LOCAL_LIBS@
 all: all-am
 
 .SUFFIXES:

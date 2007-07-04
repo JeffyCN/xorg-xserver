@@ -71,8 +71,6 @@ binPROGRAMS_INSTALL = $(INSTALL_PROGRAM)
 PROGRAMS = $(bin_PROGRAMS)
 am_Xephyr_OBJECTS = ephyrinit.$(OBJEXT)
 Xephyr_OBJECTS = $(am_Xephyr_OBJECTS)
-Xephyr_DEPENDENCIES = libxephyr.a libxephyr-hostx.a \
-	../../../exa/libexa.la
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)/include -I$(top_builddir)/include -I$(top_builddir)/include -I$(top_builddir)/include -I$(top_builddir)/include -I$(top_builddir)/include -I$(top_builddir)/include -I$(top_builddir)/include
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
@@ -264,6 +262,7 @@ KDRIVE_HW_FALSE = @KDRIVE_HW_FALSE@
 KDRIVE_HW_TRUE = @KDRIVE_HW_TRUE@
 KDRIVE_INCS = @KDRIVE_INCS@
 KDRIVE_LIBS = @KDRIVE_LIBS@
+KDRIVE_LOCAL_LIBS = @KDRIVE_LOCAL_LIBS@
 KDRIVE_PURE_INCS = @KDRIVE_PURE_INCS@
 KDRIVE_PURE_LIBS = @KDRIVE_PURE_LIBS@
 KDRIVE_TRUE = @KDRIVE_TRUE@
@@ -613,6 +612,7 @@ Xephyr_LDADD = \
 	@KDRIVE_LIBS@					\
         @XEPHYR_LIBS@
 
+Xephyr_DEPENDENCIES = @KDRIVE_LOCAL_LIBS@
 all: all-am
 
 .SUFFIXES:

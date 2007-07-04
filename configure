@@ -1208,6 +1208,7 @@ KDRIVE_INCS
 KDRIVE_PURE_INCS
 KDRIVE_CFLAGS
 KDRIVE_PURE_LIBS
+KDRIVE_LOCAL_LIBS
 KDRIVE_LIBS
 KDRIVELINUX_TRUE
 KDRIVELINUX_FALSE
@@ -5122,7 +5123,7 @@ ia64-*-hpux*)
   ;;
 *-*-irix6*)
   # Find out which ABI we are using.
-  echo '#line 5125 "configure"' > conftest.$ac_ext
+  echo '#line 5126 "configure"' > conftest.$ac_ext
   if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
   (eval $ac_compile) 2>&5
   ac_status=$?
@@ -8144,11 +8145,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:8147: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:8148: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:8151: \$? = $ac_status" >&5
+   echo "$as_me:8152: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -8412,11 +8413,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:8415: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:8416: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:8419: \$? = $ac_status" >&5
+   echo "$as_me:8420: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -8516,11 +8517,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:8519: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:8520: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:8523: \$? = $ac_status" >&5
+   echo "$as_me:8524: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -10813,7 +10814,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 10816 "configure"
+#line 10817 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -10913,7 +10914,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 10916 "configure"
+#line 10917 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -13249,11 +13250,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:13252: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:13253: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:13256: \$? = $ac_status" >&5
+   echo "$as_me:13257: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -13353,11 +13354,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:13356: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:13357: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:13360: \$? = $ac_status" >&5
+   echo "$as_me:13361: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -14914,11 +14915,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:14917: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:14918: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:14921: \$? = $ac_status" >&5
+   echo "$as_me:14922: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -15018,11 +15019,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:15021: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:15022: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:15025: \$? = $ac_status" >&5
+   echo "$as_me:15026: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -17205,11 +17206,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:17208: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:17209: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:17212: \$? = $ac_status" >&5
+   echo "$as_me:17213: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -17473,11 +17474,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:17476: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:17477: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:17480: \$? = $ac_status" >&5
+   echo "$as_me:17481: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
@@ -17577,11 +17578,11 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:17580: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:17581: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:17584: \$? = $ac_status" >&5
+   echo "$as_me:17585: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -27884,7 +27885,7 @@ Alternatively, you may set the environment variables DBUS_CFLAGS
 and DBUS_LIBS to avoid the need to call pkg-config.
 See the pkg-config man page for more details.
 
-To get pkg-config, see <http://www.freedesktop.org/software/pkgconfig>.
+To get pkg-config, see <http://pkg-config.freedesktop.org/>.
 See \`config.log' for more details." >&5
 echo "$as_me: error: The pkg-config script could not be found or is too old.  Make sure it
 is in your PATH or set the PKG_CONFIG environment variable to the full
@@ -27894,7 +27895,7 @@ Alternatively, you may set the environment variables DBUS_CFLAGS
 and DBUS_LIBS to avoid the need to call pkg-config.
 See the pkg-config man page for more details.
 
-To get pkg-config, see <http://www.freedesktop.org/software/pkgconfig>.
+To get pkg-config, see <http://pkg-config.freedesktop.org/>.
 See \`config.log' for more details." >&2;}
    { (exit 1); exit 1; }; }
 else
@@ -27985,7 +27986,7 @@ cat >>confdefs.h <<\_ACEOF
 #define COMPOSITE 1
 _ACEOF
 
-	REQUIRED_MODULES="$REQUIRED_MODULES compositeproto >= 0.3"
+	REQUIRED_MODULES="$REQUIRED_MODULES compositeproto >= 0.4"
 	COMPOSITE_LIB='$(top_builddir)/composite/libcomposite.la'
 	COMPOSITE_INC='-I$(top_srcdir)/composite'
 fi
@@ -28182,7 +28183,7 @@ Alternatively, you may set the environment variables XLIB_CFLAGS
 and XLIB_LIBS to avoid the need to call pkg-config.
 See the pkg-config man page for more details.
 
-To get pkg-config, see <http://www.freedesktop.org/software/pkgconfig>.
+To get pkg-config, see <http://pkg-config.freedesktop.org/>.
 See \`config.log' for more details." >&5
 echo "$as_me: error: The pkg-config script could not be found or is too old.  Make sure it
 is in your PATH or set the PKG_CONFIG environment variable to the full
@@ -28192,7 +28193,7 @@ Alternatively, you may set the environment variables XLIB_CFLAGS
 and XLIB_LIBS to avoid the need to call pkg-config.
 See the pkg-config man page for more details.
 
-To get pkg-config, see <http://www.freedesktop.org/software/pkgconfig>.
+To get pkg-config, see <http://pkg-config.freedesktop.org/>.
 See \`config.log' for more details." >&2;}
    { (exit 1); exit 1; }; }
 else
@@ -28293,7 +28294,7 @@ Alternatively, you may set the environment variables GL_CFLAGS
 and GL_LIBS to avoid the need to call pkg-config.
 See the pkg-config man page for more details.
 
-To get pkg-config, see <http://www.freedesktop.org/software/pkgconfig>.
+To get pkg-config, see <http://pkg-config.freedesktop.org/>.
 See \`config.log' for more details." >&5
 echo "$as_me: error: The pkg-config script could not be found or is too old.  Make sure it
 is in your PATH or set the PKG_CONFIG environment variable to the full
@@ -28303,7 +28304,7 @@ Alternatively, you may set the environment variables GL_CFLAGS
 and GL_LIBS to avoid the need to call pkg-config.
 See the pkg-config man page for more details.
 
-To get pkg-config, see <http://www.freedesktop.org/software/pkgconfig>.
+To get pkg-config, see <http://pkg-config.freedesktop.org/>.
 See \`config.log' for more details." >&2;}
    { (exit 1); exit 1; }; }
 else
@@ -28480,7 +28481,7 @@ Alternatively, you may set the environment variables DRIPROTO_CFLAGS
 and DRIPROTO_LIBS to avoid the need to call pkg-config.
 See the pkg-config man page for more details.
 
-To get pkg-config, see <http://www.freedesktop.org/software/pkgconfig>.
+To get pkg-config, see <http://pkg-config.freedesktop.org/>.
 See \`config.log' for more details." >&5
 echo "$as_me: error: The pkg-config script could not be found or is too old.  Make sure it
 is in your PATH or set the PKG_CONFIG environment variable to the full
@@ -28490,7 +28491,7 @@ Alternatively, you may set the environment variables DRIPROTO_CFLAGS
 and DRIPROTO_LIBS to avoid the need to call pkg-config.
 See the pkg-config man page for more details.
 
-To get pkg-config, see <http://www.freedesktop.org/software/pkgconfig>.
+To get pkg-config, see <http://pkg-config.freedesktop.org/>.
 See \`config.log' for more details." >&2;}
    { (exit 1); exit 1; }; }
 else
@@ -28591,7 +28592,7 @@ Alternatively, you may set the environment variables LIBDRM_CFLAGS
 and LIBDRM_LIBS to avoid the need to call pkg-config.
 See the pkg-config man page for more details.
 
-To get pkg-config, see <http://www.freedesktop.org/software/pkgconfig>.
+To get pkg-config, see <http://pkg-config.freedesktop.org/>.
 See \`config.log' for more details." >&5
 echo "$as_me: error: The pkg-config script could not be found or is too old.  Make sure it
 is in your PATH or set the PKG_CONFIG environment variable to the full
@@ -28601,7 +28602,7 @@ Alternatively, you may set the environment variables LIBDRM_CFLAGS
 and LIBDRM_LIBS to avoid the need to call pkg-config.
 See the pkg-config man page for more details.
 
-To get pkg-config, see <http://www.freedesktop.org/software/pkgconfig>.
+To get pkg-config, see <http://pkg-config.freedesktop.org/>.
 See \`config.log' for more details." >&2;}
    { (exit 1); exit 1; }; }
 else
@@ -28702,7 +28703,7 @@ Alternatively, you may set the environment variables GL_CFLAGS
 and GL_LIBS to avoid the need to call pkg-config.
 See the pkg-config man page for more details.
 
-To get pkg-config, see <http://www.freedesktop.org/software/pkgconfig>.
+To get pkg-config, see <http://pkg-config.freedesktop.org/>.
 See \`config.log' for more details." >&5
 echo "$as_me: error: The pkg-config script could not be found or is too old.  Make sure it
 is in your PATH or set the PKG_CONFIG environment variable to the full
@@ -28712,7 +28713,7 @@ Alternatively, you may set the environment variables GL_CFLAGS
 and GL_LIBS to avoid the need to call pkg-config.
 See the pkg-config man page for more details.
 
-To get pkg-config, see <http://www.freedesktop.org/software/pkgconfig>.
+To get pkg-config, see <http://pkg-config.freedesktop.org/>.
 See \`config.log' for more details." >&2;}
    { (exit 1); exit 1; }; }
 else
@@ -29843,7 +29844,7 @@ Alternatively, you may set the environment variables XSERVERCFLAGS_CFLAGS
 and XSERVERCFLAGS_LIBS to avoid the need to call pkg-config.
 See the pkg-config man page for more details.
 
-To get pkg-config, see <http://www.freedesktop.org/software/pkgconfig>.
+To get pkg-config, see <http://pkg-config.freedesktop.org/>.
 See \`config.log' for more details." >&5
 echo "$as_me: error: The pkg-config script could not be found or is too old.  Make sure it
 is in your PATH or set the PKG_CONFIG environment variable to the full
@@ -29853,7 +29854,7 @@ Alternatively, you may set the environment variables XSERVERCFLAGS_CFLAGS
 and XSERVERCFLAGS_LIBS to avoid the need to call pkg-config.
 See the pkg-config man page for more details.
 
-To get pkg-config, see <http://www.freedesktop.org/software/pkgconfig>.
+To get pkg-config, see <http://pkg-config.freedesktop.org/>.
 See \`config.log' for more details." >&2;}
    { (exit 1); exit 1; }; }
 else
@@ -29954,7 +29955,7 @@ Alternatively, you may set the environment variables XSERVERLIBS_CFLAGS
 and XSERVERLIBS_LIBS to avoid the need to call pkg-config.
 See the pkg-config man page for more details.
 
-To get pkg-config, see <http://www.freedesktop.org/software/pkgconfig>.
+To get pkg-config, see <http://pkg-config.freedesktop.org/>.
 See \`config.log' for more details." >&5
 echo "$as_me: error: The pkg-config script could not be found or is too old.  Make sure it
 is in your PATH or set the PKG_CONFIG environment variable to the full
@@ -29964,7 +29965,7 @@ Alternatively, you may set the environment variables XSERVERLIBS_CFLAGS
 and XSERVERLIBS_LIBS to avoid the need to call pkg-config.
 See the pkg-config man page for more details.
 
-To get pkg-config, see <http://www.freedesktop.org/software/pkgconfig>.
+To get pkg-config, see <http://pkg-config.freedesktop.org/>.
 See \`config.log' for more details." >&2;}
    { (exit 1); exit 1; }; }
 else
@@ -30757,7 +30758,7 @@ Alternatively, you may set the environment variables GL_CFLAGS
 and GL_LIBS to avoid the need to call pkg-config.
 See the pkg-config man page for more details.
 
-To get pkg-config, see <http://www.freedesktop.org/software/pkgconfig>.
+To get pkg-config, see <http://pkg-config.freedesktop.org/>.
 See \`config.log' for more details." >&5
 echo "$as_me: error: The pkg-config script could not be found or is too old.  Make sure it
 is in your PATH or set the PKG_CONFIG environment variable to the full
@@ -30767,7 +30768,7 @@ Alternatively, you may set the environment variables GL_CFLAGS
 and GL_LIBS to avoid the need to call pkg-config.
 See the pkg-config man page for more details.
 
-To get pkg-config, see <http://www.freedesktop.org/software/pkgconfig>.
+To get pkg-config, see <http://pkg-config.freedesktop.org/>.
 See \`config.log' for more details." >&2;}
    { (exit 1); exit 1; }; }
 else
@@ -30869,7 +30870,7 @@ Alternatively, you may set the environment variables XDMXCONFIG_DEP_CFLAGS
 and XDMXCONFIG_DEP_LIBS to avoid the need to call pkg-config.
 See the pkg-config man page for more details.
 
-To get pkg-config, see <http://www.freedesktop.org/software/pkgconfig>.
+To get pkg-config, see <http://pkg-config.freedesktop.org/>.
 See \`config.log' for more details." >&5
 echo "$as_me: error: The pkg-config script could not be found or is too old.  Make sure it
 is in your PATH or set the PKG_CONFIG environment variable to the full
@@ -30879,7 +30880,7 @@ Alternatively, you may set the environment variables XDMXCONFIG_DEP_CFLAGS
 and XDMXCONFIG_DEP_LIBS to avoid the need to call pkg-config.
 See the pkg-config man page for more details.
 
-To get pkg-config, see <http://www.freedesktop.org/software/pkgconfig>.
+To get pkg-config, see <http://pkg-config.freedesktop.org/>.
 See \`config.log' for more details." >&2;}
    { (exit 1); exit 1; }; }
 else
@@ -30982,7 +30983,7 @@ Alternatively, you may set the environment variables DMXEXAMPLES_DEP_CFLAGS
 and DMXEXAMPLES_DEP_LIBS to avoid the need to call pkg-config.
 See the pkg-config man page for more details.
 
-To get pkg-config, see <http://www.freedesktop.org/software/pkgconfig>.
+To get pkg-config, see <http://pkg-config.freedesktop.org/>.
 See \`config.log' for more details." >&5
 echo "$as_me: error: The pkg-config script could not be found or is too old.  Make sure it
 is in your PATH or set the PKG_CONFIG environment variable to the full
@@ -30992,7 +30993,7 @@ Alternatively, you may set the environment variables DMXEXAMPLES_DEP_CFLAGS
 and DMXEXAMPLES_DEP_LIBS to avoid the need to call pkg-config.
 See the pkg-config man page for more details.
 
-To get pkg-config, see <http://www.freedesktop.org/software/pkgconfig>.
+To get pkg-config, see <http://pkg-config.freedesktop.org/>.
 See \`config.log' for more details." >&2;}
    { (exit 1); exit 1; }; }
 else
@@ -31094,7 +31095,7 @@ Alternatively, you may set the environment variables DMXXMUEXAMPLES_DEP_CFLAGS
 and DMXXMUEXAMPLES_DEP_LIBS to avoid the need to call pkg-config.
 See the pkg-config man page for more details.
 
-To get pkg-config, see <http://www.freedesktop.org/software/pkgconfig>.
+To get pkg-config, see <http://pkg-config.freedesktop.org/>.
 See \`config.log' for more details." >&5
 echo "$as_me: error: The pkg-config script could not be found or is too old.  Make sure it
 is in your PATH or set the PKG_CONFIG environment variable to the full
@@ -31104,7 +31105,7 @@ Alternatively, you may set the environment variables DMXXMUEXAMPLES_DEP_CFLAGS
 and DMXXMUEXAMPLES_DEP_LIBS to avoid the need to call pkg-config.
 See the pkg-config man page for more details.
 
-To get pkg-config, see <http://www.freedesktop.org/software/pkgconfig>.
+To get pkg-config, see <http://pkg-config.freedesktop.org/>.
 See \`config.log' for more details." >&2;}
    { (exit 1); exit 1; }; }
 else
@@ -31206,7 +31207,7 @@ Alternatively, you may set the environment variables DMXXIEXAMPLES_DEP_CFLAGS
 and DMXXIEXAMPLES_DEP_LIBS to avoid the need to call pkg-config.
 See the pkg-config man page for more details.
 
-To get pkg-config, see <http://www.freedesktop.org/software/pkgconfig>.
+To get pkg-config, see <http://pkg-config.freedesktop.org/>.
 See \`config.log' for more details." >&5
 echo "$as_me: error: The pkg-config script could not be found or is too old.  Make sure it
 is in your PATH or set the PKG_CONFIG environment variable to the full
@@ -31216,7 +31217,7 @@ Alternatively, you may set the environment variables DMXXIEXAMPLES_DEP_CFLAGS
 and DMXXIEXAMPLES_DEP_LIBS to avoid the need to call pkg-config.
 See the pkg-config man page for more details.
 
-To get pkg-config, see <http://www.freedesktop.org/software/pkgconfig>.
+To get pkg-config, see <http://pkg-config.freedesktop.org/>.
 See \`config.log' for more details." >&2;}
    { (exit 1); exit 1; }; }
 else
@@ -31318,7 +31319,7 @@ Alternatively, you may set the environment variables XTSTEXAMPLES_DEP_CFLAGS
 and XTSTEXAMPLES_DEP_LIBS to avoid the need to call pkg-config.
 See the pkg-config man page for more details.
 
-To get pkg-config, see <http://www.freedesktop.org/software/pkgconfig>.
+To get pkg-config, see <http://pkg-config.freedesktop.org/>.
 See \`config.log' for more details." >&5
 echo "$as_me: error: The pkg-config script could not be found or is too old.  Make sure it
 is in your PATH or set the PKG_CONFIG environment variable to the full
@@ -31328,7 +31329,7 @@ Alternatively, you may set the environment variables XTSTEXAMPLES_DEP_CFLAGS
 and XTSTEXAMPLES_DEP_LIBS to avoid the need to call pkg-config.
 See the pkg-config man page for more details.
 
-To get pkg-config, see <http://www.freedesktop.org/software/pkgconfig>.
+To get pkg-config, see <http://pkg-config.freedesktop.org/>.
 See \`config.log' for more details." >&2;}
    { (exit 1); exit 1; }; }
 else
@@ -31430,7 +31431,7 @@ Alternatively, you may set the environment variables XRESEXAMPLES_DEP_CFLAGS
 and XRESEXAMPLES_DEP_LIBS to avoid the need to call pkg-config.
 See the pkg-config man page for more details.
 
-To get pkg-config, see <http://www.freedesktop.org/software/pkgconfig>.
+To get pkg-config, see <http://pkg-config.freedesktop.org/>.
 See \`config.log' for more details." >&5
 echo "$as_me: error: The pkg-config script could not be found or is too old.  Make sure it
 is in your PATH or set the PKG_CONFIG environment variable to the full
@@ -31440,7 +31441,7 @@ Alternatively, you may set the environment variables XRESEXAMPLES_DEP_CFLAGS
 and XRESEXAMPLES_DEP_LIBS to avoid the need to call pkg-config.
 See the pkg-config man page for more details.
 
-To get pkg-config, see <http://www.freedesktop.org/software/pkgconfig>.
+To get pkg-config, see <http://pkg-config.freedesktop.org/>.
 See \`config.log' for more details." >&2;}
    { (exit 1); exit 1; }; }
 else
@@ -31542,7 +31543,7 @@ Alternatively, you may set the environment variables X11EXAMPLES_DEP_CFLAGS
 and X11EXAMPLES_DEP_LIBS to avoid the need to call pkg-config.
 See the pkg-config man page for more details.
 
-To get pkg-config, see <http://www.freedesktop.org/software/pkgconfig>.
+To get pkg-config, see <http://pkg-config.freedesktop.org/>.
 See \`config.log' for more details." >&5
 echo "$as_me: error: The pkg-config script could not be found or is too old.  Make sure it
 is in your PATH or set the PKG_CONFIG environment variable to the full
@@ -31552,7 +31553,7 @@ Alternatively, you may set the environment variables X11EXAMPLES_DEP_CFLAGS
 and X11EXAMPLES_DEP_LIBS to avoid the need to call pkg-config.
 See the pkg-config man page for more details.
 
-To get pkg-config, see <http://www.freedesktop.org/software/pkgconfig>.
+To get pkg-config, see <http://pkg-config.freedesktop.org/>.
 See \`config.log' for more details." >&2;}
    { (exit 1); exit 1; }; }
 else
@@ -32996,7 +32997,7 @@ Alternatively, you may set the environment variables XORG_MODULES_CFLAGS
 and XORG_MODULES_LIBS to avoid the need to call pkg-config.
 See the pkg-config man page for more details.
 
-To get pkg-config, see <http://www.freedesktop.org/software/pkgconfig>.
+To get pkg-config, see <http://pkg-config.freedesktop.org/>.
 See \`config.log' for more details." >&5
 echo "$as_me: error: The pkg-config script could not be found or is too old.  Make sure it
 is in your PATH or set the PKG_CONFIG environment variable to the full
@@ -33006,7 +33007,7 @@ Alternatively, you may set the environment variables XORG_MODULES_CFLAGS
 and XORG_MODULES_LIBS to avoid the need to call pkg-config.
 See the pkg-config man page for more details.
 
-To get pkg-config, see <http://www.freedesktop.org/software/pkgconfig>.
+To get pkg-config, see <http://pkg-config.freedesktop.org/>.
 See \`config.log' for more details." >&2;}
    { (exit 1); exit 1; }; }
 else
@@ -33543,7 +33544,7 @@ Alternatively, you may set the environment variables XPRINT_CFLAGS
 and XPRINT_LIBS to avoid the need to call pkg-config.
 See the pkg-config man page for more details.
 
-To get pkg-config, see <http://www.freedesktop.org/software/pkgconfig>.
+To get pkg-config, see <http://pkg-config.freedesktop.org/>.
 See \`config.log' for more details." >&5
 echo "$as_me: error: The pkg-config script could not be found or is too old.  Make sure it
 is in your PATH or set the PKG_CONFIG environment variable to the full
@@ -33553,7 +33554,7 @@ Alternatively, you may set the environment variables XPRINT_CFLAGS
 and XPRINT_LIBS to avoid the need to call pkg-config.
 See the pkg-config man page for more details.
 
-To get pkg-config, see <http://www.freedesktop.org/software/pkgconfig>.
+To get pkg-config, see <http://pkg-config.freedesktop.org/>.
 See \`config.log' for more details." >&2;}
    { (exit 1); exit 1; }; }
 else
@@ -33922,7 +33923,7 @@ Alternatively, you may set the environment variables XWINMODULES_CFLAGS
 and XWINMODULES_LIBS to avoid the need to call pkg-config.
 See the pkg-config man page for more details.
 
-To get pkg-config, see <http://www.freedesktop.org/software/pkgconfig>.
+To get pkg-config, see <http://pkg-config.freedesktop.org/>.
 See \`config.log' for more details." >&5
 echo "$as_me: error: The pkg-config script could not be found or is too old.  Make sure it
 is in your PATH or set the PKG_CONFIG environment variable to the full
@@ -33932,7 +33933,7 @@ Alternatively, you may set the environment variables XWINMODULES_CFLAGS
 and XWINMODULES_LIBS to avoid the need to call pkg-config.
 See the pkg-config man page for more details.
 
-To get pkg-config, see <http://www.freedesktop.org/software/pkgconfig>.
+To get pkg-config, see <http://pkg-config.freedesktop.org/>.
 See \`config.log' for more details." >&2;}
    { (exit 1); exit 1; }; }
 else
@@ -34046,7 +34047,7 @@ Alternatively, you may set the environment variables XWINMODULES_CFLAGS
 and XWINMODULES_LIBS to avoid the need to call pkg-config.
 See the pkg-config man page for more details.
 
-To get pkg-config, see <http://www.freedesktop.org/software/pkgconfig>.
+To get pkg-config, see <http://pkg-config.freedesktop.org/>.
 See \`config.log' for more details." >&5
 echo "$as_me: error: The pkg-config script could not be found or is too old.  Make sure it
 is in your PATH or set the PKG_CONFIG environment variable to the full
@@ -34056,7 +34057,7 @@ Alternatively, you may set the environment variables XWINMODULES_CFLAGS
 and XWINMODULES_LIBS to avoid the need to call pkg-config.
 See the pkg-config man page for more details.
 
-To get pkg-config, see <http://www.freedesktop.org/software/pkgconfig>.
+To get pkg-config, see <http://pkg-config.freedesktop.org/>.
 See \`config.log' for more details." >&2;}
    { (exit 1); exit 1; }; }
 else
@@ -35297,7 +35298,8 @@ _ACEOF
 	    ;;
     esac
     KDRIVE_STUB_LIB='$(top_builddir)/hw/kdrive/src/libkdrivestubs.a'
-    KDRIVE_LIBS="$XSERVERLIBS_LIBS $DIX_LIB $CONFIG_LIB $KDRIVE_LIB $TSLIB_LIBS $KDRIVE_OS_LIB $KDRIVE_PURE_LIBS $KDRIVE_STUB_LIB"
+    KDRIVE_LOCAL_LIBS="$DIX_LIB $CONFIG_LIB $KDRIVE_LIB $TSLIB_LIBS $KDRIVE_OS_LIB $KDRIVE_PURE_LIBS $KDRIVE_STUB_LIB"
+    KDRIVE_LIBS="$XSERVERLIBS_LIBS $KDRIVE_LOCAL_LIBS"
 
     # check if we can build Xephyr
 
@@ -35371,166 +35373,13 @@ else
 echo "${ECHO_T}yes" >&6; }
 	xephyr="yes"
 fi
-    XEPHYR_LIBS="$XEPHYR_LIBS $XSERVER_LIBS"
-
-    # Xephyr needs nanosleep() which is in librt on Solaris
-    { echo "$as_me:$LINENO: checking for nanosleep" >&5
-echo $ECHO_N "checking for nanosleep... $ECHO_C" >&6; }
-if test "${ac_cv_func_nanosleep+set}" = set; then
-  echo $ECHO_N "(cached) $ECHO_C" >&6
-else
-  cat >conftest.$ac_ext <<_ACEOF
-/* confdefs.h.  */
-_ACEOF
-cat confdefs.h >>conftest.$ac_ext
-cat >>conftest.$ac_ext <<_ACEOF
-/* end confdefs.h.  */
-/* Define nanosleep to an innocuous variant, in case <limits.h> declares nanosleep.
-   For example, HP-UX 11i <limits.h> declares gettimeofday.  */
-#define nanosleep innocuous_nanosleep
-
-/* System header to define __stub macros and hopefully few prototypes,
-    which can conflict with char nanosleep (); below.
-    Prefer <limits.h> to <assert.h> if __STDC__ is defined, since
-    <limits.h> exists even on freestanding compilers.  */
-
-#ifdef __STDC__
-# include <limits.h>
-#else
-# include <assert.h>
-#endif
-
-#undef nanosleep
-
-/* Override any GCC internal prototype to avoid an error.
-   Use char because int might match the return type of a GCC
-   builtin and then its argument prototype would still apply.  */
-#ifdef __cplusplus
-extern "C"
-#endif
-char nanosleep ();
-/* The GNU C library defines this for functions which it implements
-    to always fail with ENOSYS.  Some functions are actually named
-    something starting with __ and the normal name is an alias.  */
-#if defined __stub_nanosleep || defined __stub___nanosleep
-choke me
-#endif
-
-int
-main ()
-{
-return nanosleep ();
-  ;
-  return 0;
-}
-_ACEOF
-rm -f conftest.$ac_objext conftest$ac_exeext
-if { (ac_try="$ac_link"
-case "(($ac_try" in
-  *\"* | *\`* | *\\*) ac_try_echo=\$ac_try;;
-  *) ac_try_echo=$ac_try;;
-esac
-eval "echo \"\$as_me:$LINENO: $ac_try_echo\"") >&5
-  (eval "$ac_link") 2>conftest.er1
-  ac_status=$?
-  grep -v '^ *+' conftest.er1 >conftest.err
-  rm -f conftest.er1
-  cat conftest.err >&5
-  echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); } && {
-	 test -z "$ac_c_werror_flag" ||
-	 test ! -s conftest.err
-       } && test -s conftest$ac_exeext &&
-       $as_test_x conftest$ac_exeext; then
-  ac_cv_func_nanosleep=yes
-else
-  echo "$as_me: failed program was:" >&5
-sed 's/^/| /' conftest.$ac_ext >&5
-
-	ac_cv_func_nanosleep=no
-fi
-
-rm -f core conftest.err conftest.$ac_objext conftest_ipa8_conftest.oo \
-      conftest$ac_exeext conftest.$ac_ext
-fi
-{ echo "$as_me:$LINENO: result: $ac_cv_func_nanosleep" >&5
-echo "${ECHO_T}$ac_cv_func_nanosleep" >&6; }
-if test $ac_cv_func_nanosleep = yes; then
-  :
-else
-  { echo "$as_me:$LINENO: checking for nanosleep in -lrt" >&5
-echo $ECHO_N "checking for nanosleep in -lrt... $ECHO_C" >&6; }
-if test "${ac_cv_lib_rt_nanosleep+set}" = set; then
-  echo $ECHO_N "(cached) $ECHO_C" >&6
-else
-  ac_check_lib_save_LIBS=$LIBS
-LIBS="-lrt  $LIBS"
-cat >conftest.$ac_ext <<_ACEOF
-/* confdefs.h.  */
-_ACEOF
-cat confdefs.h >>conftest.$ac_ext
-cat >>conftest.$ac_ext <<_ACEOF
-/* end confdefs.h.  */
-
-/* Override any GCC internal prototype to avoid an error.
-   Use char because int might match the return type of a GCC
-   builtin and then its argument prototype would still apply.  */
-#ifdef __cplusplus
-extern "C"
-#endif
-char nanosleep ();
-int
-main ()
-{
-return nanosleep ();
-  ;
-  return 0;
-}
-_ACEOF
-rm -f conftest.$ac_objext conftest$ac_exeext
-if { (ac_try="$ac_link"
-case "(($ac_try" in
-  *\"* | *\`* | *\\*) ac_try_echo=\$ac_try;;
-  *) ac_try_echo=$ac_try;;
-esac
-eval "echo \"\$as_me:$LINENO: $ac_try_echo\"") >&5
-  (eval "$ac_link") 2>conftest.er1
-  ac_status=$?
-  grep -v '^ *+' conftest.er1 >conftest.err
-  rm -f conftest.er1
-  cat conftest.err >&5
-  echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); } && {
-	 test -z "$ac_c_werror_flag" ||
-	 test ! -s conftest.err
-       } && test -s conftest$ac_exeext &&
-       $as_test_x conftest$ac_exeext; then
-  ac_cv_lib_rt_nanosleep=yes
-else
-  echo "$as_me: failed program was:" >&5
-sed 's/^/| /' conftest.$ac_ext >&5
-
-	ac_cv_lib_rt_nanosleep=no
-fi
-
-rm -f core conftest.err conftest.$ac_objext conftest_ipa8_conftest.oo \
-      conftest$ac_exeext conftest.$ac_ext
-LIBS=$ac_check_lib_save_LIBS
-fi
-{ echo "$as_me:$LINENO: result: $ac_cv_lib_rt_nanosleep" >&5
-echo "${ECHO_T}$ac_cv_lib_rt_nanosleep" >&6; }
-if test $ac_cv_lib_rt_nanosleep = yes; then
-  XEPHYR_LIBS="$XEPHYR_LIBS -lrt"
-fi
-
-fi
-
 
 
 
 
 
 fi
+
 
 
 
@@ -35887,7 +35736,7 @@ Alternatively, you may set the environment variables XORGCONFIG_DEP_CFLAGS
 and XORGCONFIG_DEP_LIBS to avoid the need to call pkg-config.
 See the pkg-config man page for more details.
 
-To get pkg-config, see <http://www.freedesktop.org/software/pkgconfig>.
+To get pkg-config, see <http://pkg-config.freedesktop.org/>.
 See \`config.log' for more details." >&5
 echo "$as_me: error: The pkg-config script could not be found or is too old.  Make sure it
 is in your PATH or set the PKG_CONFIG environment variable to the full
@@ -35897,7 +35746,7 @@ Alternatively, you may set the environment variables XORGCONFIG_DEP_CFLAGS
 and XORGCONFIG_DEP_LIBS to avoid the need to call pkg-config.
 See the pkg-config man page for more details.
 
-To get pkg-config, see <http://www.freedesktop.org/software/pkgconfig>.
+To get pkg-config, see <http://pkg-config.freedesktop.org/>.
 See \`config.log' for more details." >&2;}
    { (exit 1); exit 1; }; }
 else
@@ -36010,7 +35859,7 @@ Alternatively, you may set the environment variables XORGCFG_DEP_CFLAGS
 and XORGCFG_DEP_LIBS to avoid the need to call pkg-config.
 See the pkg-config man page for more details.
 
-To get pkg-config, see <http://www.freedesktop.org/software/pkgconfig>.
+To get pkg-config, see <http://pkg-config.freedesktop.org/>.
 See \`config.log' for more details." >&5
 echo "$as_me: error: The pkg-config script could not be found or is too old.  Make sure it
 is in your PATH or set the PKG_CONFIG environment variable to the full
@@ -36020,7 +35869,7 @@ Alternatively, you may set the environment variables XORGCFG_DEP_CFLAGS
 and XORGCFG_DEP_LIBS to avoid the need to call pkg-config.
 See the pkg-config man page for more details.
 
-To get pkg-config, see <http://www.freedesktop.org/software/pkgconfig>.
+To get pkg-config, see <http://pkg-config.freedesktop.org/>.
 See \`config.log' for more details." >&2;}
    { (exit 1); exit 1; }; }
 else
@@ -38591,6 +38440,7 @@ KDRIVE_INCS!$KDRIVE_INCS$ac_delim
 KDRIVE_PURE_INCS!$KDRIVE_PURE_INCS$ac_delim
 KDRIVE_CFLAGS!$KDRIVE_CFLAGS$ac_delim
 KDRIVE_PURE_LIBS!$KDRIVE_PURE_LIBS$ac_delim
+KDRIVE_LOCAL_LIBS!$KDRIVE_LOCAL_LIBS$ac_delim
 KDRIVE_LIBS!$KDRIVE_LIBS$ac_delim
 KDRIVELINUX_TRUE!$KDRIVELINUX_TRUE$ac_delim
 KDRIVELINUX_FALSE!$KDRIVELINUX_FALSE$ac_delim
@@ -38636,7 +38486,6 @@ DIX_CFLAGS!$DIX_CFLAGS$ac_delim
 libdir!$libdir$ac_delim
 exec_prefix!$exec_prefix$ac_delim
 prefix!$prefix$ac_delim
-APP_MAN_SUFFIX!$APP_MAN_SUFFIX$ac_delim
 _ACEOF
 
   if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 97; then
@@ -38678,6 +38527,7 @@ _ACEOF
 ac_delim='%!_!# '
 for ac_last_try in false false false false false :; do
   cat >conf$$subs.sed <<_ACEOF
+APP_MAN_SUFFIX!$APP_MAN_SUFFIX$ac_delim
 LIB_MAN_SUFFIX!$LIB_MAN_SUFFIX$ac_delim
 FILE_MAN_SUFFIX!$FILE_MAN_SUFFIX$ac_delim
 MISC_MAN_SUFFIX!$MISC_MAN_SUFFIX$ac_delim
@@ -38693,7 +38543,7 @@ LIBOBJS!$LIBOBJS$ac_delim
 LTLIBOBJS!$LTLIBOBJS$ac_delim
 _ACEOF
 
-  if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 13; then
+  if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 14; then
     break
   elif $ac_last_try; then
     { { echo "$as_me:$LINENO: error: could not make $CONFIG_STATUS" >&5

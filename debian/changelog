@@ -1,4 +1,4 @@
-xorg-server (2:1.3.99.0~git20070617-1) UNRELEASED; urgency=low
+xorg-server (2:1.3.99.0~git20070703-1) UNRELEASED; urgency=low
 
   [ Julien Cristau ]
   * New upstream snapshot.
@@ -41,7 +41,7 @@ xorg-server (2:1.3.99.0~git20070617-1) UNRELEASED; urgency=low
   [ Drew Parsons ]
   * Update Xprint build to include pixman.
 
- -- Julien Cristau <jcristau@debian.org>  Sun, 17 Jun 2007 15:26:59 +0100
+ -- Julien Cristau <jcristau@debian.org>  Wed, 04 Jul 2007 04:27:54 +0200
 
 xorg-server (2:1.3.0.0.dfsg-5) unstable; urgency=low
 

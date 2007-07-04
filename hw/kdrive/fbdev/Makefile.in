@@ -67,7 +67,6 @@ PROGRAMS = $(bin_PROGRAMS)
 am__Xfbdev_SOURCES_DIST = fbinit.c
 @KDRIVEFBDEV_TRUE@am_Xfbdev_OBJECTS = fbinit.$(OBJEXT)
 Xfbdev_OBJECTS = $(am_Xfbdev_OBJECTS)
-@KDRIVEFBDEV_TRUE@Xfbdev_DEPENDENCIES = libfbdev.a
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)/include -I$(top_builddir)/include -I$(top_builddir)/include -I$(top_builddir)/include -I$(top_builddir)/include -I$(top_builddir)/include -I$(top_builddir)/include -I$(top_builddir)/include
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
@@ -257,6 +256,7 @@ KDRIVE_HW_FALSE = @KDRIVE_HW_FALSE@
 KDRIVE_HW_TRUE = @KDRIVE_HW_TRUE@
 KDRIVE_INCS = @KDRIVE_INCS@
 KDRIVE_LIBS = @KDRIVE_LIBS@
+KDRIVE_LOCAL_LIBS = @KDRIVE_LOCAL_LIBS@
 KDRIVE_PURE_INCS = @KDRIVE_PURE_INCS@
 KDRIVE_PURE_LIBS = @KDRIVE_PURE_LIBS@
 KDRIVE_TRUE = @KDRIVE_TRUE@
@@ -595,6 +595,7 @@ libfbdev_a_SOURCES = \
 @KDRIVEFBDEV_TRUE@	@KDRIVE_LIBS@					\
 @KDRIVEFBDEV_TRUE@	@XSERVER_LIBS@
 
+@KDRIVEFBDEV_TRUE@Xfbdev_DEPENDENCIES = @KDRIVE_LOCAL_LIBS@
 all: all-am
 
 .SUFFIXES:

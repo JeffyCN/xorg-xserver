@@ -89,7 +89,6 @@ Xati_OBJECTS = $(am_Xati_OBJECTS)
 @KDRIVEVESA_TRUE@	$(top_builddir)/hw/kdrive/vesa/libvesa.a
 am__DEPENDENCIES_3 = libati.a $(am__DEPENDENCIES_1) \
 	$(am__DEPENDENCIES_2)
-Xati_DEPENDENCIES = $(am__DEPENDENCIES_3)
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)/include -I$(top_builddir)/include -I$(top_builddir)/include -I$(top_builddir)/include -I$(top_builddir)/include -I$(top_builddir)/include -I$(top_builddir)/include -I$(top_builddir)/include
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
@@ -279,6 +278,7 @@ KDRIVE_HW_FALSE = @KDRIVE_HW_FALSE@
 KDRIVE_HW_TRUE = @KDRIVE_HW_TRUE@
 KDRIVE_INCS = @KDRIVE_INCS@
 KDRIVE_LIBS = @KDRIVE_LIBS@
+KDRIVE_LOCAL_LIBS = @KDRIVE_LOCAL_LIBS@
 KDRIVE_PURE_INCS = @KDRIVE_PURE_INCS@
 KDRIVE_PURE_LIBS = @KDRIVE_PURE_LIBS@
 KDRIVE_TRUE = @KDRIVE_TRUE@
@@ -642,6 +642,7 @@ Xati_LDADD = \
 	@KDRIVE_LIBS@			\
 	@XSERVER_LIBS@
 
+Xati_DEPENDENCIES = @KDRIVE_LOCAL_LIBS@
 all: all-am
 
 .SUFFIXES:
