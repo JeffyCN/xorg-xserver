@@ -1,6 +1,4 @@
 /*
- * Id: kinput.c,v 1.1 1999/11/02 03:54:46 keithp Exp $
- *
  * Copyright © 1999 Keith Packard
  * Copyright © 2006 Nokia Corporation
  *
@@ -22,7 +20,6 @@
  * TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
  * PERFORMANCE OF THIS SOFTWARE.
  */
-/* $RCSId: xc/programs/Xserver/hw/kdrive/kinput.c,v 1.30 2002/11/13 16:37:39 keithp Exp $ */
 
 #ifdef HAVE_CONFIG_H
 #include <kdrive-config.h>
@@ -740,6 +737,9 @@ KdKeyboardProc(DeviceIntPtr pDevice, int onoff)
     DevicePtr   pDev = (DevicePtr)pDevice;
     KdKeyboardInfo *ki;
     Atom xiclass;
+#ifdef XKB
+    XkbComponentNamesRec names;
+#endif
 
     if (!pDev)
 	return BadImplementation;
@@ -788,11 +788,9 @@ KdKeyboardProc(DeviceIntPtr pDevice, int onoff)
         KdInitModMap(ki);
         KdInitAutoRepeats(ki);
 
-#ifndef XKB
+#ifdef XKB
         if (!noXkbExtension) {
             memset(&names, 0, sizeof(XkbComponentNamesRec));
-            if (XkbInitialMap) 
-                names.keymap = XkbInitialMap;
 
             XkbSetRulesDflts ("base", "pc105", "us", NULL, NULL);
             ret = XkbInitKeyboardDeviceStruct (pDevice,

@@ -45,7 +45,6 @@
  * the sale, use or other dealings in this Software without prior written
  * authorization from the copyright holder(s) and author(s).
  */
-/* $XConsortium: xf86Xinput.c /main/14 1996/10/27 11:05:25 kaleb $ */
 
 #ifdef HAVE_XORG_CONFIG_H
 #include <xorg-config.h>
@@ -84,9 +83,7 @@
 
 #include <stdarg.h>
 
-#include "osdep.h"		/* EnabledDevices */
 #include <X11/Xpoll.h>
-#include "xf86_OSproc.h"	/* sigio stuff */
 
 #include "mi.h"
 
@@ -408,7 +405,7 @@ NewInputDeviceRequest (InputOption *options, DeviceIntPtr *pdev)
 
     dev = pInfo->dev;
     ActivateDevice(dev);
-    if (dev->inited && dev->startup)
+    if (dev->inited && dev->startup && xf86Screens[0]->vtSema)
         EnableDevice(dev);
 
     *pdev = dev;

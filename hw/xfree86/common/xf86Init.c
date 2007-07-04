@@ -1,4 +1,3 @@
-
 /*
  * Loosely based on code bearing the following copyright:
  *
@@ -39,15 +38,12 @@
 #include <errno.h>
 
 #undef HAS_UTSNAME
-#if !defined(WIN32) && !defined(__UNIXOS2__)
+#if !defined(WIN32)
 #define HAS_UTSNAME 1
 #include <sys/utsname.h>
 #endif
 
 #define NEED_EVENTS
-#ifdef __UNIXOS2__
-#define I_NEED_OS2_H
-#endif
 #include <X11/X.h>
 #include <X11/Xmd.h>
 #include <X11/Xproto.h>
@@ -104,10 +100,6 @@ static void xf86PrintMarkers(void);
 static void xf86PrintDefaultModulePath(void);
 static void xf86PrintDefaultLibraryPath(void);
 static void xf86RunVtInit(void);
-
-#ifdef __UNIXOS2__
-extern void os2ServerVideoAccess();
-#endif
 
 #ifdef XF86PM
 void (*xf86OSPMClose)(void) = NULL;
@@ -267,10 +259,6 @@ InitOutput(ScreenInfo *pScreenInfo, int argc, char **argv)
   Bool			 pix24Fail = FALSE;
   Bool			 autoconfig = FALSE;
   
-#ifdef __UNIXOS2__
-  os2ServerVideoAccess();  /* See if we have access to the screen before doing anything */
-#endif
-
   xf86Initialising = TRUE;
 
   /* Do this early? */
@@ -981,7 +969,7 @@ InitInput(argc, argv)
      int     	  argc;
      char    	  **argv;
 {
-    IDevPtr pDev;
+    IDevPtr* pDev;
     InputDriverPtr pDrv;
     InputInfoPtr pInfo;
 
@@ -990,9 +978,9 @@ InitInput(argc, argv)
 
     if (serverGeneration == 1) {
 	/* Call the PreInit function for each input device instance. */
-	for (pDev = xf86ConfigLayout.inputs; pDev && pDev->identifier; pDev++) {
-	    if ((pDrv = xf86LookupInputDriver(pDev->driver)) == NULL) {
-		xf86Msg(X_ERROR, "No Input driver matching `%s'\n", pDev->driver);
+	for (pDev = xf86ConfigLayout.inputs; pDev && *pDev; pDev++) {
+	    if ((pDrv = xf86LookupInputDriver((*pDev)->driver)) == NULL) {
+		xf86Msg(X_ERROR, "No Input driver matching `%s'\n", (*pDev)->driver);
 		/* XXX For now, just continue. */
 		continue;
 	    }
@@ -1002,14 +990,14 @@ InitInput(argc, argv)
 		    pDrv->driverName);
 		continue;
 	    }
-	    pInfo = pDrv->PreInit(pDrv, pDev, 0);
+	    pInfo = pDrv->PreInit(pDrv, *pDev, 0);
 	    if (!pInfo) {
 		xf86Msg(X_ERROR, "PreInit returned NULL for \"%s\"\n",
-			pDev->identifier);
+			(*pDev)->identifier);
 		continue;
 	    } else if (!(pInfo->flags & XI86_CONFIGURED)) {
 		xf86Msg(X_ERROR, "PreInit failed for input device \"%s\"\n",
-			pDev->identifier);
+			(*pDev)->identifier);
 		xf86DeleteInput(pInfo, 0);
 		continue;
 	    }
@@ -1065,9 +1053,7 @@ OsVendorInit()
 
 #ifdef O_NONBLOCK
   if (!beenHere) {
-#if !defined(__EMX__)
     if (geteuid() == 0 && getuid() != geteuid())
-#endif
     {
       int status;
 

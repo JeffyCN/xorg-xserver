@@ -22,8 +22,9 @@
  */
 
 /**
- * @file This is a copy of edid_modes.c from the X Server, for compatibility
- * with old X Servers.
+ * @file This file covers code to convert a xf86MonPtr containing EDID-probed
+ * information into a list of modes, including applying monitor-specific
+ * quirks to fix broken EDID data.
  */
 #ifdef HAVE_XORG_CONFIG_H
 #include <xorg-config.h>
@@ -91,11 +92,16 @@ static Bool quirk_prefer_large_60 (int scrnIndex, xf86MonPtr DDC)
 	DDC->vendor.prod_id == 44358)
 	return TRUE;
 
-    /* Samsung SyncMaster 226BW */
+    /* Bug #10814: Samsung SyncMaster 225BW */
+    if (memcmp (DDC->vendor.name, "SAM", 4) == 0 &&
+	DDC->vendor.prod_id == 596)
+	return TRUE;
+
+    /* Bug #10545: Samsung SyncMaster 226BW */
     if (memcmp (DDC->vendor.name, "SAM", 4) == 0 &&
 	DDC->vendor.prod_id == 638)
 	return TRUE;
-    
+
     return FALSE;
 }
 
