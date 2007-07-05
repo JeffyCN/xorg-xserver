@@ -1,8 +1,12 @@
 xorg-server (2:1.3.0.0.dfsg-8) UNRELEASED; urgency=low
 
+  [ Brice Goglin ]
   * Add 47_fbdevhw_magic_numbers.diff.
 
- -- Brice Goglin <Brice.Goglin@ens-lyon.org>  Tue, 10 Jul 2007 20:52:40 +0200
+  [ Julien Cristau ]
+  * Don't build the type1 font module.
+
+ -- Julien Cristau <jcristau@debian.org>  Wed, 11 Jul 2007 05:25:27 +0200
 
 xorg-server (2:1.3.0.0.dfsg-7) unstable; urgency=low
 

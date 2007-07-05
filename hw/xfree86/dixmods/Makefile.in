@@ -36,6 +36,7 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
+@BUILD_TYPE1_TRUE@am__append_1 = libtype1.la
 subdir = hw/xfree86/dixmods
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
@@ -108,8 +109,10 @@ libshadow_la_DEPENDENCIES = $(top_builddir)/miext/shadow/libshadow.la
 am_libshadow_la_OBJECTS = shmodule.lo
 libshadow_la_OBJECTS = $(am_libshadow_la_OBJECTS)
 libtype1_la_LIBADD =
-am_libtype1_la_OBJECTS = type1mod.lo
+am__libtype1_la_SOURCES_DIST = type1mod.c
+@BUILD_TYPE1_TRUE@am_libtype1_la_OBJECTS = type1mod.lo
 libtype1_la_OBJECTS = $(am_libtype1_la_OBJECTS)
+@BUILD_TYPE1_TRUE@am_libtype1_la_rpath = -rpath $(fontsmoduledir)
 libxorgxkb_la_DEPENDENCIES = $(top_builddir)/dix/libdix.la
 am_libxorgxkb_la_OBJECTS = xkbVT.lo xkbPrivate.lo xkbKillSrv.lo
 libxorgxkb_la_OBJECTS = $(am_libxorgxkb_la_OBJECTS)
@@ -142,7 +145,7 @@ DIST_SOURCES = $(libGLcore_la_SOURCES) $(libafb_la_SOURCES) \
 	$(libfb_la_SOURCES) $(libfreetype_la_SOURCES) \
 	$(libglx_la_SOURCES) $(libmfb_la_SOURCES) \
 	$(librecord_la_SOURCES) $(libshadow_la_SOURCES) \
-	$(libtype1_la_SOURCES) $(libxorgxkb_la_SOURCES) \
+	$(am__libtype1_la_SOURCES_DIST) $(libxorgxkb_la_SOURCES) \
 	$(libxtrap_la_SOURCES)
 RECURSIVE_TARGETS = all-recursive check-recursive dvi-recursive \
 	html-recursive info-recursive install-data-recursive \
@@ -194,6 +197,8 @@ BUILD_LINUXDOC_FALSE = @BUILD_LINUXDOC_FALSE@
 BUILD_LINUXDOC_TRUE = @BUILD_LINUXDOC_TRUE@
 BUILD_PDFDOC_FALSE = @BUILD_PDFDOC_FALSE@
 BUILD_PDFDOC_TRUE = @BUILD_PDFDOC_TRUE@
+BUILD_TYPE1_FALSE = @BUILD_TYPE1_FALSE@
+BUILD_TYPE1_TRUE = @BUILD_TYPE1_TRUE@
 BUILD_XORGCFG_FALSE = @BUILD_XORGCFG_FALSE@
 BUILD_XORGCFG_TRUE = @BUILD_XORGCFG_TRUE@
 CC = @CC@
@@ -632,9 +637,7 @@ extsmodule_LTLIBRARIES = librecord.la \
                          $(XTRAPMOD)
 
 fontsmoduledir = $(moduledir)/fonts
-fontsmodule_LTLIBRARIES = libfreetype.la \
-                          libtype1.la
-
+fontsmodule_LTLIBRARIES = libfreetype.la $(am__append_1)
 AM_CFLAGS = @XORG_CFLAGS@ @DIX_CFLAGS@
 INCLUDES = @XORG_INCS@ \
            -I$(top_srcdir)/afb \
@@ -682,8 +685,8 @@ libshadow_la_LIBADD = $(top_builddir)/miext/shadow/libshadow.la
 libshadow_la_SOURCES = shmodule.c
 libfreetype_la_LDFLAGS = -avoid-version
 libfreetype_la_SOURCES = ftmodule.c
-libtype1_la_LDFLAGS = -avoid-version
-libtype1_la_SOURCES = type1mod.c
+@BUILD_TYPE1_TRUE@libtype1_la_LDFLAGS = -avoid-version
+@BUILD_TYPE1_TRUE@libtype1_la_SOURCES = type1mod.c
 libdixmods_la_SOURCES = $(top_srcdir)/mi/miinitext.c
 libdixmods_la_CFLAGS = -DXFree86LOADER $(AM_CFLAGS)
 libxorgxkb_la_SOURCES = xkbVT.c xkbPrivate.c xkbKillSrv.c
@@ -839,7 +842,7 @@ librecord.la: $(librecord_la_OBJECTS) $(librecord_la_DEPENDENCIES)
 libshadow.la: $(libshadow_la_OBJECTS) $(libshadow_la_DEPENDENCIES) 
 	$(LINK) -rpath $(moduledir) $(libshadow_la_LDFLAGS) $(libshadow_la_OBJECTS) $(libshadow_la_LIBADD) $(LIBS)
 libtype1.la: $(libtype1_la_OBJECTS) $(libtype1_la_DEPENDENCIES) 
-	$(LINK) -rpath $(fontsmoduledir) $(libtype1_la_LDFLAGS) $(libtype1_la_OBJECTS) $(libtype1_la_LIBADD) $(LIBS)
+	$(LINK) $(am_libtype1_la_rpath) $(libtype1_la_LDFLAGS) $(libtype1_la_OBJECTS) $(libtype1_la_LIBADD) $(LIBS)
 libxorgxkb.la: $(libxorgxkb_la_OBJECTS) $(libxorgxkb_la_DEPENDENCIES) 
 	$(LINK)  $(libxorgxkb_la_LDFLAGS) $(libxorgxkb_la_OBJECTS) $(libxorgxkb_la_LIBADD) $(LIBS)
 libxtrap.la: $(libxtrap_la_OBJECTS) $(libxtrap_la_DEPENDENCIES) 
