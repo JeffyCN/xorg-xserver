@@ -140,9 +140,9 @@ $(STAMP_DIR)/patch: $(STAMP_DIR)/prepare
 		echo "Couldn't find quilt. Please install it or add it to the build-depends for this package."; \
 		exit 1; \
 	fi; \
-	if quilt next; then \
+	if quilt next >/dev/null 2>&1; then \
 	  echo -n "Applying patches..."; \
-	  if quilt push -a -v >$(STAMP_DIR)/log/patch 2>&1; then \
+	  if quilt push -a -v 2>&1 | tee $(STAMP_DIR)/log/patch; then \
 	    echo "successful."; \
 	  else \
 	    echo "failed! (check $(STAMP_DIR)/log/patch for details)"; \
@@ -159,7 +159,7 @@ unpatch:
 	rm -f $(STAMP_DIR)/patch
 	@echo -n "Unapplying patches..."; \
 	if [ -e $(STAMP_DIR)/patches/applied-patches ]; then \
-	  if quilt pop -a -v >$(STAMP_DIR)/log/unpatch 2>&1; then \
+	  if quilt pop -a -v 2>&1 | tee $(STAMP_DIR)/log/unpatch; then \
 	    echo "successful."; \
 	  else \
 	    echo "failed! (check $(STAMP_DIR)/log/unpatch for details)"; \
