@@ -1,11 +1,10 @@
 #!/usr/bin/make -f
-# $Id$
 
-# Debian rules file for xorg-x11 source package
+# Debian X Strike Force Build System (XSFBS): Make portion
 
 # Copyright 1996 Stephen Early
 # Copyright 1997 Mark Eichin
-# Copyright 1998-2005 Branden Robinson
+# Copyright 1998-2005, 2007 Branden Robinson
 # Copyright 2005 David Nusinow
 #
 # Licensed under the GNU General Public License, version 2.  See the file
@@ -21,6 +20,11 @@
 
 # Pass $(DH_OPTIONS) into the environment for debhelper's benefit.
 export DH_OPTIONS
+
+# force quilt to not use ~/.quiltrc
+QUILT = quilt --quiltrc /dev/null
+# force QUILT_PATCHES to the default in case it is exported in the environment
+QUILT_PATCHES = patches/
 
 # Set up parameters for the upstream build environment.
 
@@ -127,7 +131,7 @@ $(STAMP_DIR)/prepare: $(STAMP_DIR)/stampdir
 	if [ ! -e $(STAMP_DIR)/log ]; then \
 		mkdir $(STAMP_DIR)/log; \
 	fi; \
-	if [ ! -e patches ]; then \
+	if [ -e debian/patches ] && [ ! -e patches ]; then \
 		ln -s debian/patches patches; \
 	fi; \
 	>$@
@@ -141,9 +145,9 @@ $(STAMP_DIR)/patch: $(STAMP_DIR)/prepare
 		echo "Couldn't find quilt. Please install it or add it to the build-depends for this package."; \
 		exit 1; \
 	fi; \
-	if quilt next; then \
+	if $(QUILT) next >/dev/null 2>&1; then \
 	  echo -n "Applying patches..."; \
-	  if quilt push -a -v >$(STAMP_DIR)/log/patch 2>&1; then \
+	  if $(QUILT) push -a -v 2>&1 | tee $(STAMP_DIR)/log/patch; then \
 	    echo "successful."; \
 	  else \
 	    echo "failed! (check $(STAMP_DIR)/log/patch for details)"; \
@@ -160,7 +164,7 @@ unpatch:
 	rm -f $(STAMP_DIR)/patch
 	@echo -n "Unapplying patches..."; \
 	if [ -e $(STAMP_DIR)/patches/applied-patches ]; then \
-	  if quilt pop -a -v >$(STAMP_DIR)/log/unpatch 2>&1; then \
+	  if $(QUILT) pop -a -v 2>&1 | tee $(STAMP_DIR)/log/unpatch; then \
 	    echo "successful."; \
 	  else \
 	    echo "failed! (check $(STAMP_DIR)/log/unpatch for details)"; \
@@ -296,17 +300,17 @@ patch-audit: prepare unpatch
 	@echo -n "Auditing patches..."; \
 	>$(STAMP_DIR)/log/patch; \
 	FUZZY=; \
-	while [ -n "$$(quilt next)" ]; do \
-	  RESULT=$$(quilt push -v | tee -a $(STAMP_DIR)/log/patch | grep ^Hunk | sed 's/^Hunk.*\(succeeded\|FAILED\).*/\1/');\
+	while [ -n "$$($(QUILT) next)" ]; do \
+	  RESULT=$$($(QUILT) push -v | tee -a $(STAMP_DIR)/log/patch | grep ^Hunk | sed 's/^Hunk.*\(succeeded\|FAILED\).*/\1/');\
 	  case "$$RESULT" in \
 	    succeeded) \
-	      echo "fuzzy patch: $$(quilt top)" \
-	        | tee -a $(STAMP_DIR)/log/$$(quilt top); \
+	      echo "fuzzy patch: $$($(QUILT) top)" \
+	        | tee -a $(STAMP_DIR)/log/$$($(QUILT) top); \
 	      FUZZY=yes; \
 	      ;; \
 	    FAILED) \
-	      echo "broken patch: $$(quilt next)" \
-	        | tee -a $(STAMP_DIR)/log/$$(quilt next); \
+	      echo "broken patch: $$($(QUILT) next)" \
+	        | tee -a $(STAMP_DIR)/log/$$($(QUILT) next); \
 	      exit 1; \
 	      ;; \
 	  esac; \
@@ -359,7 +363,7 @@ VIDEOABI = $(shell cat /usr/share/xserver-xorg/videoabiver 2>/dev/null)
 INPUTABI = $(shell cat /usr/share/xserver-xorg/inputabiver 2>/dev/null)
 SERVER_DEPENDS = xserver-xorg-core (>= $(SERVERMINVERS))
 VIDDRIVER_PROVIDES = xserver-xorg-video-$(VIDEOABI)
-INPDRIVER_PROVIDES = xserver-xorg-video-$(INPUTABI)
+INPDRIVER_PROVIDES = xserver-xorg-input-$(INPUTABI)
 ifeq ($(PACKAGE),)
 PACKAGE=$(shell awk '/^Package:/ { print $$2; exit }' < debian/control)
 endif
