@@ -24,6 +24,7 @@
 44_fedora-xephyr-keysym-madness.diff
 45_CVE-2007-2437.diff
 46_export-ramdac-symbols.diff
+47_fbdevhw_magic_numbers.diff
 91_ttf2pt1
 91_ttf2pt1_updates
 92_xprint-security-holes-fix.patch
