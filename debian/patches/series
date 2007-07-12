@@ -26,6 +26,7 @@
 46_export-ramdac-symbols.diff
 47_fbdevhw_magic_numbers.diff
 48_disable_type1.diff
+49_map_keyboard_driver_to_kbd.diff -p0
 91_ttf2pt1
 91_ttf2pt1_updates
 92_xprint-security-holes-fix.patch

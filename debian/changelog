@@ -5,8 +5,13 @@ xorg-server (2:1.3.0.0.dfsg-8) UNRELEASED; urgency=low
 
   [ Julien Cristau ]
   * Don't build the type1 font module.
+  * Add patch by Alan Coopersmith to map (case-insensitively) the old
+    "keyboard" input driver to "kbd" (addresses: #428794).  I'm not
+    reassigning the bug to xserver-xorg-core for now so as not to break
+    testing by letting xserver-xorg-input-keyboard transition before the fixed
+    xorg-server.
 
- -- Julien Cristau <jcristau@debian.org>  Wed, 11 Jul 2007 05:25:27 +0200
+ -- Julien Cristau <jcristau@debian.org>  Thu, 12 Jul 2007 15:06:37 +0200
 
 xorg-server (2:1.3.0.0.dfsg-7) unstable; urgency=low
 
