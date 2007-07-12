@@ -147,9 +147,11 @@ $(STAMP_DIR)/patch: $(STAMP_DIR)/prepare
 	fi; \
 	if $(QUILT) next >/dev/null 2>&1; then \
 	  echo -n "Applying patches..."; \
-	  if $(QUILT) push -a -v 2>&1 | tee $(STAMP_DIR)/log/patch; then \
+	  if $(QUILT) push -a -v >$(STAMP_DIR)/log/patch 2>&1; then \
+	    cat $(STAMP_DIR)/log/patch; \
 	    echo "successful."; \
 	  else \
+	    cat $(STAMP_DIR)/log/patch; \
 	    echo "failed! (check $(STAMP_DIR)/log/patch for details)"; \
 	    exit 1; \
 	  fi; \
@@ -164,9 +166,11 @@ unpatch:
 	rm -f $(STAMP_DIR)/patch
 	@echo -n "Unapplying patches..."; \
 	if [ -e $(STAMP_DIR)/patches/applied-patches ]; then \
-	  if $(QUILT) pop -a -v 2>&1 | tee $(STAMP_DIR)/log/unpatch; then \
+	  if $(QUILT) pop -a -v >$(STAMP_DIR)/log/unpatch 2>&1; then \
+	    cat $(STAMP_DIR)/log/unpatch; \
 	    echo "successful."; \
 	  else \
+	    cat $(STAMP_DIR)/log/unpatch; \
 	    echo "failed! (check $(STAMP_DIR)/log/unpatch for details)"; \
 	    exit 1; \
 	  fi; \
