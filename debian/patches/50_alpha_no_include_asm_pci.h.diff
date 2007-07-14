@@ -1,10 +1,11 @@
-<asm/pci.h> isn't exported to userspace, and the same definitions are
-both in <sys/io.h> and later in lnx.h.
+<asm/pci.h> isn't exported to userspace, and the same defines are
+also in lnx.h.
+Add unistd.h include for syscall().
 
 Index: xorg-server/hw/xfree86/os-support/linux/lnx.h
 ===================================================================
---- xorg-server.orig/hw/xfree86/os-support/linux/lnx.h	2007-07-14 18:04:59.000000000 +0200
-+++ xorg-server/hw/xfree86/os-support/linux/lnx.h	2007-07-14 18:05:54.000000000 +0200
+--- xorg-server.orig/hw/xfree86/os-support/linux/lnx.h	2007-07-14 19:40:30.000000000 +0200
++++ xorg-server/hw/xfree86/os-support/linux/lnx.h	2007-07-14 20:03:37.000000000 +0200
 @@ -11,7 +11,6 @@
  
  /* new pciconfig_iobase syscall added in 2.2.15 and 2.3.99 */
@@ -13,3 +14,18 @@ Index: xorg-server/hw/xfree86/os-support/linux/lnx.h
  extern long (*_iobase)(unsigned, int, int, int);
  
  /*
+Index: xorg-server/hw/xfree86/os-support/linux/lnx_axp.c
+===================================================================
+--- xorg-server.orig/hw/xfree86/os-support/linux/lnx_axp.c	2007-07-14 20:03:46.000000000 +0200
++++ xorg-server/hw/xfree86/os-support/linux/lnx_axp.c	2007-07-14 20:05:52.000000000 +0200
+@@ -112,8 +112,8 @@
+ /*
+  * pciconfig_iobase wrappers and dynamic i/o selection
+  */
+-#include <linux/unistd.h>
+-#include <asm/pci.h>
++#include "lnx.h"
++#include <unistd.h>
+ #include <errno.h>
+ 
+ /* glibc versions (single hose only) */
