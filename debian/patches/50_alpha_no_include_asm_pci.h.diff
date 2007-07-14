@@ -1,0 +1,16 @@
+<asm/pci.h> isn't exported to userspace, and the same definitions are
+both in <sys/io.h> and later in lnx.h.
+
+Index: xorg-server/hw/xfree86/os-support/linux/lnx.h
+===================================================================
+--- xorg-server.orig/hw/xfree86/os-support/linux/lnx.h	2007-07-14 12:12:07.000000000 +0200
++++ xorg-server/hw/xfree86/os-support/linux/lnx.h	2007-07-14 12:12:30.000000000 +0200
+@@ -11,7 +11,7 @@
+ 
+ /* new pciconfig_iobase syscall added in 2.2.15 and 2.3.99 */
+ #  include <linux/unistd.h>
+-#  include <asm/pci.h>
++#  include <sys/io.h>
+ extern long (*_iobase)(unsigned, int, int, int);
+ 
+ /*

@@ -32,9 +32,11 @@ Preserve compatibility with old xorg.conf files that have "keyboard" or
 https://bugs.freedesktop.org/show_bug.cgi?id=11301
 Debian bug#428794
 
---- hw/xfree86/common/xf86Init.c	2007-05-18 18:26:06.499884000 -0700
-+++ hw/xfree86/common/xf86Init.c	2007-05-22 16:13:04.691806000 -0700
-@@ -1033,6 +1033,14 @@
+Index: hw/xfree86/common/xf86Init.c
+===================================================================
+--- hw/xfree86/common/xf86Init.c.orig	2007-07-14 12:14:29.000000000 +0200
++++ hw/xfree86/common/xf86Init.c	2007-07-14 12:15:21.000000000 +0200
+@@ -1032,6 +1032,14 @@
  
  		continue;
  	    }
@@ -49,7 +51,7 @@ Debian bug#428794
  #endif
  
  	    if ((pDrv = MatchInput(pDev)) == NULL) {
-@@ -1953,6 +1961,11 @@
+@@ -1951,6 +1959,11 @@
  	if (name == NULL || *name == '\0')
  	    continue;
  
