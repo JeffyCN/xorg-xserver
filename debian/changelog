@@ -1,3 +1,12 @@
+xorg-server (2:1.3.0.0.dfsg-10) unstable; urgency=medium
+
+  * hw/xfree86/common/compiler.h and <sys/io.h> declare incompatible
+    prototypes for outb and friends, so change the patch from -9 to not
+    #include <sys/io.h> and rely on declarations in lnx.h itself for the
+    IOBASE_* macros.
+
+ -- Julien Cristau <jcristau@debian.org>  Sat, 14 Jul 2007 18:06:14 +0200
+
 xorg-server (2:1.3.0.0.dfsg-9) unstable; urgency=medium
 
   * Include <sys/io.h> instead of <asm/pci.h> in
