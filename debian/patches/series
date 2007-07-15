@@ -28,6 +28,7 @@
 48_disable_type1.diff
 49_map_keyboard_driver_to_kbd.diff -p0
 50_alpha_no_include_asm_pci.h.diff
+51_xkb-and-loathing.diff
 91_ttf2pt1
 91_ttf2pt1_updates
 92_xprint-security-holes-fix.patch
