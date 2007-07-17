@@ -2,8 +2,9 @@ xorg-server (2:1.3.0.0.dfsg-12) UNRELEASED; urgency=low
 
   * Add 51_xkb-and-loathing.diff to fix a hang in OpenOffice.org
     when opening menus, closes: #433131.
+  * Install the exa(4) manpage.
 
- -- Brice Goglin <Brice.Goglin@ens-lyon.org>  Sun, 15 Jul 2007 09:37:20 +0200
+ -- Brice Goglin <Brice.Goglin@ens-lyon.org>  Tue, 17 Jul 2007 11:29:10 +0200
 
 xorg-server (2:1.3.0.0.dfsg-11) unstable; urgency=low
 
