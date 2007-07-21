@@ -4,7 +4,7 @@
 04_read_rom_in_chunks.diff
 05_module_defaults.diff
 06_use_proc_instead_of_sysfs_for_pci_domains.diff
-07_xorgconf_manpage_overhaul.diff -p0
+07_stolen_from_HEAD_xorgconf_manpage.diff
 08_s390_servermd.diff 
 09_debian_xserver_rtff.diff -p0
 10_dont_look_in_home_for_config.diff -p0
@@ -15,7 +15,6 @@
 23_kfreebsd_support.diff
 24_hurd_ioperm_fix.diff
 32_disable_sparc_pci_bridge.diff
-34_xorg.conf_man_typos.patch
 39_alpha_build_flags.patch -p0
 40_consolidate_portPriv_pDraw_assignments.diff
 41_vbe_filter_less.diff
