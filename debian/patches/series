@@ -8,6 +8,7 @@
 08_s390_servermd.diff 
 09_debian_xserver_rtff.diff -p0
 10_dont_look_in_home_for_config.diff -p0
+11_define_XFree86Server.diff
 12_security_policy_in_etc.diff
 13_debian_add_xkbpath_env_variable.diff
 16_s390_fix.diff
