@@ -1,0 +1,32 @@
+From: George Sapountzis <gsap7@yahoo.gr>
+Date: Thu, 5 Apr 2007 16:13:47 +0000 (+0300)
+Subject: glx: Remove stray __GLinterface.
+X-Git-Url: http://gitweb.freedesktop.org/?p=xorg/xserver.git;a=commitdiff;h=a4e2fc703484fffed8dd50c1b4b24c564be4d3cd
+
+glx: Remove stray __GLinterface.
+
+__GLinterface was droped from glcore.h
+---
+
+--- a/GL/glx/glxext.c
++++ b/GL/glx/glxext.c
+@@ -275,7 +275,7 @@ static GLboolean errorOccured = GL_FALSE
+ /*
+ ** The GL was will call this routine if an error occurs.
+ */
+-void __glXErrorCallBack(__GLinterface *gc, GLenum code)
++void __glXErrorCallBack(GLenum code)
+ {
+     errorOccured = GL_TRUE;
+ }
+--- a/GL/glx/glxext.h
++++ b/GL/glx/glxext.h
+@@ -66,7 +66,7 @@ typedef struct {
+ extern GLboolean __glXFreeContext(__GLXcontext *glxc);
+ extern void __glXFlushContextCache(void);
+ 
+-extern void __glXErrorCallBack(__GLinterface *gc, GLenum code);
++extern void __glXErrorCallBack(GLenum code);
+ extern void __glXClearErrorOccured(void);
+ extern GLboolean __glXErrorOccured(void);
+ extern void __glXResetLargeCommandStatus(__GLXclientState*);

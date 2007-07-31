@@ -304,6 +304,7 @@ RES_TRUE = @RES_TRUE@
 RGB_DB = @RGB_DB@
 SCREENSAVER_FALSE = @SCREENSAVER_FALSE@
 SCREENSAVER_TRUE = @SCREENSAVER_TRUE@
+SED = sed
 SERVERCONFIGdir = @SERVERCONFIGdir@
 SET_MAKE = @SET_MAKE@
 SHELL = @SHELL@
@@ -539,7 +540,6 @@ appmandir = $(APP_MAN_DIR)
 appman_DATA = Xorg.$(APP_MAN_SUFFIX)
 filemandir = $(FILE_MAN_DIR)
 fileman_DATA = xorg.conf.$(FILE_MAN_SUFFIX)
-SED = sed
 SUFFIXES = .pre .man .man.pre
 
 # Translate XCOMM into pound sign with sed, rather than passing -DXCOMM=XCOMM

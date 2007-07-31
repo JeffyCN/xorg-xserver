@@ -55,14 +55,11 @@ CONFIG_HEADER = $(top_builddir)/include/do-not-use-config.h \
 CONFIG_CLEAN_FILES =
 LTLIBRARIES = $(noinst_LTLIBRARIES)
 libtnl_la_LIBADD =
-nodist_libtnl_la_OBJECTS = t_array_api.lo t_array_import.lo \
-	t_context.lo t_pipeline.lo t_save_api.lo t_save_loopback.lo \
-	t_save_playback.lo t_vb_arbprogram.lo t_vb_arbprogram_sse.lo \
-	t_vb_arbshader.lo t_vb_cull.lo t_vb_fog.lo t_vb_light.lo \
-	t_vb_normals.lo t_vb_points.lo t_vb_program.lo t_vb_render.lo \
-	t_vb_texgen.lo t_vb_texmat.lo t_vb_vertex.lo t_vertex.lo \
-	t_vertex_generic.lo t_vertex_sse.lo t_vp_build.lo t_vtx_api.lo \
-	t_vtx_eval.lo t_vtx_exec.lo t_vtx_generic.lo t_vtx_x86.lo
+nodist_libtnl_la_OBJECTS = t_context.lo t_draw.lo t_pipeline.lo \
+	t_vb_cull.lo t_vb_fog.lo t_vb_light.lo t_vb_normals.lo \
+	t_vb_points.lo t_vb_program.lo t_vb_render.lo t_vb_texgen.lo \
+	t_vb_texmat.lo t_vb_vertex.lo t_vertex.lo t_vertex_generic.lo \
+	t_vertex_sse.lo t_vp_build.lo
 libtnl_la_OBJECTS = $(nodist_libtnl_la_OBJECTS)
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)/include -I$(top_builddir)/include -I$(top_builddir)/include -I$(top_builddir)/include -I$(top_builddir)/include -I$(top_builddir)/include -I$(top_builddir)/include -I$(top_builddir)/include
 depcomp = $(SHELL) $(top_srcdir)/depcomp
@@ -313,6 +310,7 @@ RES_TRUE = @RES_TRUE@
 RGB_DB = @RGB_DB@
 SCREENSAVER_FALSE = @SCREENSAVER_FALSE@
 SCREENSAVER_TRUE = @SCREENSAVER_TRUE@
+SED = @SED@
 SERVERCONFIGdir = @SERVERCONFIGdir@
 SET_MAKE = @SET_MAKE@
 SHELL = @SHELL@
@@ -549,7 +547,6 @@ AM_CFLAGS = \
 
 INCLUDES = -I@MESA_SOURCE@/include \
            -I../X \
-           -I../array_cache \
            -I../glapi \
            -I../main \
            -I../math \
@@ -561,16 +558,9 @@ INCLUDES = -I@MESA_SOURCE@/include \
            -I.. \
            -I$(top_srcdir)/hw/xfree86/os-support
 
-nodist_libtnl_la_SOURCES = t_array_api.c \
-                      t_array_import.c \
-                      t_context.c \
+nodist_libtnl_la_SOURCES = t_context.c \
+                      t_draw.c \
                       t_pipeline.c \
-                      t_save_api.c \
-                      t_save_loopback.c \
-                      t_save_playback.c \
-                      t_vb_arbprogram.c \
-                      t_vb_arbprogram_sse.c \
-                      t_vb_arbshader.c \
                       t_vb_cull.c \
                       t_vb_fog.c \
                       t_vb_light.c \
@@ -584,12 +574,7 @@ nodist_libtnl_la_SOURCES = t_array_api.c \
                       t_vertex.c \
                       t_vertex_generic.c \
                       t_vertex_sse.c \
-                      t_vp_build.c \
-                      t_vtx_api.c \
-                      t_vtx_eval.c \
-                      t_vtx_exec.c \
-                      t_vtx_generic.c \
-                      t_vtx_x86.c
+                      t_vp_build.c
 
 all: all-am
 
@@ -642,16 +627,9 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/t_array_api.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/t_array_import.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/t_context.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/t_draw.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/t_pipeline.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/t_save_api.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/t_save_loopback.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/t_save_playback.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/t_vb_arbprogram.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/t_vb_arbprogram_sse.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/t_vb_arbshader.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/t_vb_cull.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/t_vb_fog.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/t_vb_light.Plo@am__quote@
@@ -666,11 +644,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/t_vertex_generic.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/t_vertex_sse.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/t_vp_build.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/t_vtx_api.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/t_vtx_eval.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/t_vtx_exec.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/t_vtx_generic.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/t_vtx_x86.Plo@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	if $(COMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" -c -o $@ $<; \

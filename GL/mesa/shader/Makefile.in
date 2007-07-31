@@ -56,9 +56,10 @@ CONFIG_CLEAN_FILES =
 LTLIBRARIES = $(noinst_LTLIBRARIES)
 libshader_la_LIBADD =
 nodist_libshader_la_OBJECTS = arbprogparse.lo arbprogram.lo \
-	atifragshader.lo nvfragparse.lo nvprogram.lo nvvertexec.lo \
-	nvvertparse.lo program.lo shaderobjects.lo \
-	shaderobjects_3dlabs.lo
+	atifragshader.lo nvfragparse.lo nvprogram.lo nvvertparse.lo \
+	prog_debug.lo prog_execute.lo prog_instruction.lo \
+	prog_parameter.lo prog_print.lo program.lo programopt.lo \
+	prog_statevars.lo shader_api.lo
 libshader_la_OBJECTS = $(nodist_libshader_la_OBJECTS)
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)/include -I$(top_builddir)/include -I$(top_builddir)/include -I$(top_builddir)/include -I$(top_builddir)/include -I$(top_builddir)/include -I$(top_builddir)/include -I$(top_builddir)/include
 depcomp = $(SHELL) $(top_srcdir)/depcomp
@@ -316,6 +317,7 @@ RES_TRUE = @RES_TRUE@
 RGB_DB = @RGB_DB@
 SCREENSAVER_FALSE = @SCREENSAVER_FALSE@
 SCREENSAVER_TRUE = @SCREENSAVER_TRUE@
+SED = @SED@
 SERVERCONFIGdir = @SERVERCONFIGdir@
 SET_MAKE = @SET_MAKE@
 SHELL = @SHELL@
@@ -553,7 +555,6 @@ AM_CFLAGS = \
 
 INCLUDES = -I@MESA_SOURCE@/include \
            -I../X \
-           -I../array_cache \
            -I../glapi \
            -I../main \
            -I../math \
@@ -572,11 +573,16 @@ nodist_libshader_la_SOURCES = \
                       atifragshader.c \
                       nvfragparse.c \
                       nvprogram.c \
-                      nvvertexec.c \
-		      nvvertparse.c \
+                      nvvertparse.c \
+                      prog_debug.c \
+                      prog_execute.c \
+                      prog_instruction.c \
+                      prog_parameter.c \
+                      prog_print.c \
                       program.c \
-                      shaderobjects.c \
-		      shaderobjects_3dlabs.c
+                      programopt.c \
+                      prog_statevars.c \
+                      shader_api.c
 
 all: all-recursive
 
@@ -634,11 +640,16 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/atifragshader.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/nvfragparse.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/nvprogram.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/nvvertexec.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/nvvertparse.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/prog_debug.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/prog_execute.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/prog_instruction.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/prog_parameter.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/prog_print.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/prog_statevars.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/program.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/shaderobjects.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/shaderobjects_3dlabs.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/programopt.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/shader_api.Plo@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	if $(COMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" -c -o $@ $<; \

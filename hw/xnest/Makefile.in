@@ -332,6 +332,7 @@ RES_TRUE = @RES_TRUE@
 RGB_DB = @RGB_DB@
 SCREENSAVER_FALSE = @SCREENSAVER_FALSE@
 SCREENSAVER_TRUE = @SCREENSAVER_TRUE@
+SED = sed
 SERVERCONFIGdir = @SERVERCONFIGdir@
 SET_MAKE = @SET_MAKE@
 SHELL = @SHELL@
@@ -617,7 +618,6 @@ EXTRA_DIST = os2Stub.c \
              screensaver \
 	     Xnest.man.pre
 
-SED = sed
 SUFFIXES = .pre .man .man.pre .$(APP_MAN_SUFFIX) .man
 
 # Translate XCOMM into pound sign with sed, rather than passing -DXCOMM=XCOMM

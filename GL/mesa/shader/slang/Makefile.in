@@ -55,16 +55,14 @@ CONFIG_HEADER = $(top_builddir)/include/do-not-use-config.h \
 CONFIG_CLEAN_FILES =
 LTLIBRARIES = $(noinst_LTLIBRARIES)
 libslang_la_LIBADD =
-nodist_libslang_la_OBJECTS = slang_analyse.lo \
-	slang_assemble_assignment.lo slang_assemble.lo \
-	slang_assemble_conditional.lo slang_assemble_constructor.lo \
-	slang_assemble_typeinfo.lo slang_compile.lo \
-	slang_compile_function.lo slang_compile_operation.lo \
-	slang_compile_struct.lo slang_compile_variable.lo \
-	slang_execute.lo slang_execute_x86.lo slang_export.lo \
-	slang_library_texsample.lo slang_library_noise.lo \
-	slang_link.lo slang_preprocess.lo slang_storage.lo \
-	slang_utility.lo
+nodist_libslang_la_OBJECTS = slang_builtin.lo slang_codegen.lo \
+	slang_compile.lo slang_compile_function.lo \
+	slang_compile_operation.lo slang_compile_struct.lo \
+	slang_compile_variable.lo slang_emit.lo slang_ir.lo \
+	slang_label.lo slang_library_noise.lo slang_link.lo \
+	slang_log.lo slang_mem.lo slang_preprocess.lo slang_print.lo \
+	slang_simplify.lo slang_storage.lo slang_typeinfo.lo \
+	slang_utility.lo slang_vartable.lo
 libslang_la_OBJECTS = $(nodist_libslang_la_OBJECTS)
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)/include -I$(top_builddir)/include -I$(top_builddir)/include -I$(top_builddir)/include -I$(top_builddir)/include -I$(top_builddir)/include -I$(top_builddir)/include -I$(top_builddir)/include
 depcomp = $(SHELL) $(top_srcdir)/depcomp
@@ -315,6 +313,7 @@ RES_TRUE = @RES_TRUE@
 RGB_DB = @RGB_DB@
 SCREENSAVER_FALSE = @SCREENSAVER_FALSE@
 SCREENSAVER_TRUE = @SCREENSAVER_TRUE@
+SED = @SED@
 SERVERCONFIGdir = @SERVERCONFIGdir@
 SET_MAKE = @SET_MAKE@
 SHELL = @SHELL@
@@ -552,7 +551,6 @@ AM_CFLAGS = \
 INCLUDES = -I@MESA_SOURCE@/include \
            -I../grammar \
            -I../../X \
-           -I../../array_cache \
            -I../../glapi \
            -I../../main \
            -I../../math \
@@ -563,26 +561,27 @@ INCLUDES = -I@MESA_SOURCE@/include \
            -I../.. \
            -I$(top_srcdir)/hw/xfree86/os-support
 
-nodist_libslang_la_SOURCES = slang_analyse.c \
-		      slang_assemble_assignment.c \
-		      slang_assemble.c \
-		      slang_assemble_conditional.c \
-		      slang_assemble_constructor.c \
-		      slang_assemble_typeinfo.c \
+nodist_libslang_la_SOURCES = slang_builtin.c \
+		      slang_codegen.c \
 		      slang_compile.c \
 		      slang_compile_function.c \
 		      slang_compile_operation.c \
 		      slang_compile_struct.c \
 		      slang_compile_variable.c \
-		      slang_execute.c \
-		      slang_execute_x86.c \
-		      slang_export.c \
-		      slang_library_texsample.c \
+		      slang_emit.c \
+		      slang_ir.c \
+		      slang_label.c \
 		      slang_library_noise.c \
 		      slang_link.c \
+		      slang_log.c \
+		      slang_mem.c \
 		      slang_preprocess.c \
+		      slang_print.c \
+		      slang_simplify.c \
 		      slang_storage.c \
-		      slang_utility.c
+		      slang_typeinfo.c \
+		      slang_utility.c \
+		      slang_vartable.c
 
 all: all-am
 
@@ -635,26 +634,27 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/slang_analyse.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/slang_assemble.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/slang_assemble_assignment.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/slang_assemble_conditional.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/slang_assemble_constructor.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/slang_assemble_typeinfo.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/slang_builtin.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/slang_codegen.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/slang_compile.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/slang_compile_function.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/slang_compile_operation.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/slang_compile_struct.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/slang_compile_variable.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/slang_execute.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/slang_execute_x86.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/slang_export.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/slang_emit.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/slang_ir.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/slang_label.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/slang_library_noise.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/slang_library_texsample.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/slang_link.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/slang_log.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/slang_mem.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/slang_preprocess.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/slang_print.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/slang_simplify.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/slang_storage.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/slang_typeinfo.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/slang_utility.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/slang_vartable.Plo@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	if $(COMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" -c -o $@ $<; \

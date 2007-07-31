@@ -55,9 +55,9 @@ CONFIG_HEADER = $(top_builddir)/include/do-not-use-config.h \
 CONFIG_CLEAN_FILES =
 LTLIBRARIES = $(noinst_LTLIBRARIES)
 libX_la_LIBADD =
-am_libX_la_OBJECTS = xf86glx.lo xf86glx_util.lo
-nodist_libX_la_OBJECTS = xm_api.lo xm_buffer.lo xm_dd.lo xm_line.lo \
-	xm_span.lo xm_tri.lo driverfuncs.lo
+am_libX_la_OBJECTS = xf86glx.lo
+nodist_libX_la_OBJECTS = xm_api.lo xm_buffer.lo xm_dd.lo xm_image.lo \
+	xm_line.lo xm_span.lo xm_tri.lo driverfuncs.lo
 libX_la_OBJECTS = $(am_libX_la_OBJECTS) $(nodist_libX_la_OBJECTS)
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)/include -I$(top_builddir)/include -I$(top_builddir)/include -I$(top_builddir)/include -I$(top_builddir)/include -I$(top_builddir)/include -I$(top_builddir)/include -I$(top_builddir)/include
 depcomp = $(SHELL) $(top_srcdir)/depcomp
@@ -308,6 +308,7 @@ RES_TRUE = @RES_TRUE@
 RGB_DB = @RGB_DB@
 SCREENSAVER_FALSE = @SCREENSAVER_FALSE@
 SCREENSAVER_TRUE = @SCREENSAVER_TRUE@
+SED = @SED@
 SERVERCONFIGdir = @SERVERCONFIGdir@
 SET_MAKE = @SET_MAKE@
 SHELL = @SHELL@
@@ -539,7 +540,6 @@ xpconfigdir = @xpconfigdir@
 noinst_LTLIBRARIES = libX.la
 INCLUDES = -I@MESA_SOURCE@/include \
            -I../X \
-           -I../array_cache \
            -I../glapi \
            -I../main \
            -I../math \
@@ -559,18 +559,14 @@ INCLUDES = -I@MESA_SOURCE@/include \
 AM_CFLAGS = \
 	$(DIX_CFLAGS) \
 	-DXFree86Server \
-	@GLX_DEFINES@ \
-	-DXFree86Server
+	@GLX_DEFINES@
 
-libX_la_SOURCES = xf86glx.c \
-                  xf86glx_util.c \
-                  xf86glx_util.h \
-                  xf86glxint.h
-
+libX_la_SOURCES = xf86glx.c
 nodist_libX_la_SOURCES = \
                   xm_api.c \
 		  xm_buffer.c \
                   xm_dd.c \
+                  xm_image.c \
                   xm_line.c \
                   xm_span.c \
                   xm_tri.c \
@@ -629,10 +625,10 @@ distclean-compile:
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/driverfuncs.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xf86glx.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xf86glx_util.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xm_api.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xm_buffer.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xm_dd.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xm_image.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xm_line.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xm_span.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xm_tri.Plo@am__quote@

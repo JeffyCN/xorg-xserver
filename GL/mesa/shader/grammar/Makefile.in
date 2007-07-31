@@ -306,6 +306,7 @@ RES_TRUE = @RES_TRUE@
 RGB_DB = @RGB_DB@
 SCREENSAVER_FALSE = @SCREENSAVER_FALSE@
 SCREENSAVER_TRUE = @SCREENSAVER_TRUE@
+SED = @SED@
 SERVERCONFIGdir = @SERVERCONFIGdir@
 SET_MAKE = @SET_MAKE@
 SHELL = @SHELL@
@@ -542,7 +543,6 @@ AM_CFLAGS = \
 
 INCLUDES = -I@MESA_SOURCE@/include \
            -I../../X \
-           -I../../array_cache \
            -I../../glapi \
            -I../../main \
            -I../../math \
