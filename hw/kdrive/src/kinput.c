@@ -2294,6 +2294,7 @@ ChangeDeviceControl(register ClientPtr client, DeviceIntPtr pDev,
         return Success;
 
     case DEVICE_CORE:
+    case DEVICE_ENABLE:
         return Success;
 
     default:
@@ -2317,13 +2318,11 @@ NewInputDeviceRequest(InputOption *options, DeviceIntPtr *pdev)
                 pi = KdNewPointer();
                 if (!pi)
                     return BadAlloc;
-                pi->options = options;
             }
             else if (strcmp(option->value, "keyboard") == 0) {
                 ki = KdNewKeyboard();
                 if (!ki)
                     return BadAlloc;
-                ki->options = options;
             }
             else {
                 ErrorF("unrecognised device type!\n");
@@ -2332,8 +2331,19 @@ NewInputDeviceRequest(InputOption *options, DeviceIntPtr *pdev)
         }
     }
 
+    if (!ki && !pi) {
+        ErrorF("unrecognised device identifier!\n");
+        return BadValue;
+    }
+
     for (option = options; option; option = option->next) {
-        if (strcmp(option->key, "driver") == 0) {
+        if (strcmp(option->key, "device") == 0) {
+            if (pi && option->value)
+                pi->path = KdSaveString(option->value);
+            else if (ki && option->value)
+                ki->path = KdSaveString(option->value);
+        }
+        else if (strcmp(option->key, "driver") == 0) {
             if (pi) {
                 pi->driver = KdFindPointerDriver(option->value);
                 if (!pi->driver) {
@@ -2341,6 +2351,7 @@ NewInputDeviceRequest(InputOption *options, DeviceIntPtr *pdev)
                     KdFreePointer(pi);
                     return BadValue;
                 }
+                pi->options = options;
             }
             else if (ki) {
                 ki->driver = KdFindKeyboardDriver(option->value);
@@ -2349,6 +2360,7 @@ NewInputDeviceRequest(InputOption *options, DeviceIntPtr *pdev)
                     KdFreeKeyboard(ki);
                     return BadValue;
                 }
+                ki->options = options;
             }
         }
     }
@@ -2382,4 +2394,5 @@ NewInputDeviceRequest(InputOption *options, DeviceIntPtr *pdev)
 void
 DeleteInputDeviceRequest(DeviceIntPtr pDev)
 {
+    RemoveDevice(pDev);
 }

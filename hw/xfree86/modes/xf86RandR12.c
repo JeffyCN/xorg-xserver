@@ -750,6 +750,10 @@ xf86RandR12CrtcSet (ScreenPtr	pScreen,
 	    output->crtc = new_crtc;
 	}
     }
+    for (ro = 0; ro < num_randr_outputs; ro++) 
+        if (randr_outputs[ro]->pendingProperties)
+	    changed = TRUE;
+
     /* XXX need device-independent mode setting code through an API */
     if (changed)
     {
@@ -947,7 +951,6 @@ xf86RandR12SetInfo12 (ScreenPtr pScreen)
 	    return FALSE;
 	}
 
-	RROutputSetCrtc (output->randr_output, randr_crtc);
 	RROutputSetPhysicalSize(output->randr_output, 
 				output->mm_width,
 				output->mm_height);

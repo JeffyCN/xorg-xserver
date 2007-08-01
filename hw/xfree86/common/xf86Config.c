@@ -1,5 +1,3 @@
-
-
 /*
  * Loosely based on code bearing the following copyright:
  *
@@ -779,7 +777,9 @@ typedef enum {
     FLAG_AIGLX,
     FLAG_IGNORE_ABI,
     FLAG_ALLOW_EMPTY_INPUT,
-    FLAG_USE_DEFAULT_FONT_PATH
+    FLAG_USE_DEFAULT_FONT_PATH,
+    FLAG_AUTO_ADD_DEVICES,
+    FLAG_AUTO_ENABLE_DEVICES,
 } FlagValues;
    
 static OptionInfoRec FlagOptions[] = {
@@ -857,6 +857,10 @@ static OptionInfoRec FlagOptions[] = {
 	{0}, FALSE },
   { FLAG_USE_DEFAULT_FONT_PATH,  "UseDefaultFontPath",			OPTV_BOOLEAN,
 	{0}, FALSE },
+  { FLAG_AUTO_ADD_DEVICES,       "AutoAddDevices",                      OPTV_BOOLEAN,
+        {0}, TRUE },
+  { FLAG_AUTO_ENABLE_DEVICES,    "AutoEnableDevices",                   OPTV_BOOLEAN,
+        {0}, TRUE },
   { -1,				NULL,				OPTV_NONE,
 	{0}, FALSE },
 };
@@ -919,6 +923,30 @@ configServerFlags(XF86ConfFlagsPtr flagsconf, XF86OptionPtr layoutopts)
     if (xf86Info.ignoreABI) {
 	    xf86Msg(X_CONFIG, "Ignoring ABI Version\n");
     }
+
+    if (xf86IsOptionSet(FlagOptions, FLAG_AUTO_ADD_DEVICES)) {
+        xf86GetOptValBool(FlagOptions, FLAG_AUTO_ADD_DEVICES,
+                          &xf86Info.autoAddDevices);
+        from = X_CONFIG;
+    }
+    else {
+        xf86Info.autoAddDevices = TRUE;
+        from = X_DEFAULT;
+    }
+    xf86Msg(from, "%sutomatically adding devices\n",
+            xf86Info.autoAddDevices ? "A" : "Not a");
+
+    if (xf86IsOptionSet(FlagOptions, FLAG_AUTO_ENABLE_DEVICES)) {
+        xf86GetOptValBool(FlagOptions, FLAG_AUTO_ENABLE_DEVICES,
+                          &xf86Info.autoEnableDevices);
+        from = X_CONFIG;
+    }
+    else {
+        xf86Info.autoEnableDevices = TRUE;
+        from = X_DEFAULT;
+    }
+    xf86Msg(from, "%sutomatically enabling devices\n",
+            xf86Info.autoEnableDevices ? "A" : "Not a");
 
     /*
      * Set things up based on the config file information.  Some of these
@@ -990,6 +1018,7 @@ configServerFlags(XF86ConfFlagsPtr flagsconf, XF86OptionPtr layoutopts)
 	    } else if (!xf86NameCmp(s,"sync")) {
 		xf86Msg(X_CONFIG, "Syncing logfile enabled\n");
 		xf86Info.log = LogSync;
+		LogSetParameter(XLOG_FLUSH, TRUE);
 		LogSetParameter(XLOG_SYNC, TRUE);
 	    } else {
 		xf86Msg(X_WARNING,"Unknown Log option\n");
@@ -1947,11 +1976,14 @@ configScreen(confScreenPtr screenp, XF86ConfScreenPtr conf_screen, int scrnum,
 }
 
 typedef enum {
-    MON_REDUCEDBLANKING
+    MON_REDUCEDBLANKING,
+    MON_MAX_PIX_CLOCK,
 } MonitorValues;
 
 static OptionInfoRec MonitorOptions[] = {
   { MON_REDUCEDBLANKING,      "ReducedBlanking",        OPTV_BOOLEAN,
+       {0}, FALSE },
+  { MON_MAX_PIX_CLOCK,	      "MaxPixClock",		OPTV_FREQ,
        {0}, FALSE },
   { -1,                                NULL,                   OPTV_NONE,
        {0}, FALSE },
@@ -2099,11 +2131,11 @@ configMonitor(MonPtr monitorp, XF86ConfMonitorPtr conf_monitor)
 	    return FALSE;
     }
 
-    /* Check wether this Monitor accepts Reduced Blanking modelines */
     xf86ProcessOptions(-1, monitorp->options, MonitorOptions);
-
     xf86GetOptValBool(MonitorOptions, MON_REDUCEDBLANKING,
                       &monitorp->reducedblanking);
+    xf86GetOptValFreq(MonitorOptions, MON_MAX_PIX_CLOCK, OPTUNITS_KHZ,
+		      &monitorp->maxPixClock);
     return TRUE;
 }
 

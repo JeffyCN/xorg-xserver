@@ -46,8 +46,6 @@
  * authorization from the copyright holder(s) and author(s).
  */
 
-#define INCLUDE_DEPRECATED 1
-
 #ifdef HAVE_XORG_CONFIG_H
 #include <xorg-config.h>
 #endif
@@ -350,9 +348,6 @@ _X_HIDDEN void *xfree86LookupTab[] = {
     SYMFUNC(xf86FindScreenForEntity)
     SYMFUNC(xf86FindPciDeviceVendor)
     SYMFUNC(xf86FindPciClass)
-#ifdef INCLUDE_DEPRECATED
-    SYMFUNC(xf86EnablePciBusMaster)
-#endif
     SYMFUNC(xf86RegisterStateChangeNotificationCallback)
     SYMFUNC(xf86DeregisterStateChangeNotificationCallback)
     SYMFUNC(xf86NoSharedResources)
@@ -711,15 +706,6 @@ _X_HIDDEN void *xfree86LookupTab[] = {
     SYMFUNC(DPMSSet)
     SYMFUNC(DPMSSupported)
 #endif
-/* xf86Debug.c */
-#ifdef BUILDDEBUG
-    SYMFUNC(xf86Break1)
-    SYMFUNC(xf86Break2)
-    SYMFUNC(xf86Break3)
-    SYMFUNC(xf86SPTimestamp)
-    SYMFUNC(xf86STimestamp)
-#endif
-
     SYMFUNC(pciFindFirst)
     SYMFUNC(pciFindNext)
     SYMFUNC(pciWriteByte)
@@ -1132,13 +1118,6 @@ _X_HIDDEN void *xfree86LookupTab[] = {
     SYMVAR(xf86Screens)
     SYMVAR(byte_reversed)
     SYMVAR(xf86inSuspend)
-    /* debugging variables */
-#ifdef BUILDDEBUG
-    SYMVAR(xf86p8bit)
-    SYMVAR(xf86DummyVar1)
-    SYMVAR(xf86DummyVar2)
-    SYMVAR(xf86DummyVar3)
-#endif
 
     /* predefined resource lists from xf86Bus.h */
     SYMVAR(resVgaExclusive)

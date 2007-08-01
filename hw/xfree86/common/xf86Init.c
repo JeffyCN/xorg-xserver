@@ -230,9 +230,6 @@ PostConfigInit(void)
 #ifdef SIGXFSZ
        signal(SIGXFSZ,xf86SigHandler);
 #endif
-#ifdef MEMDEBUG
-       signal(SIGUSR2,xf86SigMemDebug);
-#endif
     }
 
 #ifdef XF86PM
@@ -316,39 +313,6 @@ InitOutput(ScreenInfo *pScreenInfo, int argc, char **argv)
         LoaderSetOptions(LDR_OPT_ABI_MISMATCH_NONFATAL);
     }
 
-#ifdef TESTING
-    {
-	char **list, **l;
-	const char *subdirs[] = {
-		"drivers",
-		NULL
-	};
-	const char *patlist[] = {
-		"(.*)_drv\\.so",
-		"(.*)_drv\\.o",
-		NULL
-	};
-	ErrorF("Getting module listing...\n");
-	list = LoaderListDirs(NULL, NULL);
-	if (list)
-	    for (l = list; *l; l++)
-		ErrorF("module: %s\n", *l);
-	LoaderFreeDirList(list);
-	ErrorF("Getting video driver listing...\n");
-	list = LoaderListDirs(subdirs, NULL);
-	if (list)
-	    for (l = list; *l; l++)
-		ErrorF("video driver: %s\n", *l);
-	LoaderFreeDirList(list);
-	ErrorF("Getting driver listing...\n");
-	list = LoaderListDirs(NULL, patlist);
-	if (list)
-	    for (l = list; *l; l++)
-		ErrorF("video driver: %s\n", *l);
-	LoaderFreeDirList(list);
-    }
-#endif
-	
     /* Force load mandatory base modules */
     if (!xf86LoadModules(baseModules, NULL))
 	FatalError("Unable to load required base modules, Exiting...\n");
@@ -740,7 +704,7 @@ InitOutput(ScreenInfo *pScreenInfo, int argc, char **argv)
       }
       *VT = xf86Info.vtno;
     
-      VTAtom = MakeAtom(VT_ATOM_NAME, sizeof(VT_ATOM_NAME), TRUE);
+      VTAtom = MakeAtom(VT_ATOM_NAME, sizeof(VT_ATOM_NAME) - 1, TRUE);
 
       for (i = 0, ret = Success; i < xf86NumScreens && ret == Success; i++) {
 	ret = xf86RegisterRootWindowProperty(xf86Screens[i]->scrnIndex,
@@ -760,27 +724,6 @@ InitOutput(ScreenInfo *pScreenInfo, int argc, char **argv)
 	    break;
 	}
     }
-
-#if BITMAP_SCANLINE_UNIT == 64
-    /*
-     * cfb24 doesn't currently work on architectures with a 64 bit
-     * BITMAP_SCANLINE_UNIT, so check for 24 bit pixel size for pixmaps
-     * or framebuffers.
-     */
-    {
-	Bool usesCfb24 = FALSE;
-
-	if (PIX24TOBPP(pix24) == 24)
-	    usesCfb24 = TRUE;
-	for (i = 0; i < xf86NumScreens; i++)
-	    if (xf86Screens[i]->bitsPerPixel == 24)
-		usesCfb24 = TRUE;
-	if (usesCfb24) {
-	    FatalError("24-bit pixel size is not supported on systems with"
-			" 64-bit scanlines.\n");
-	}
-    }
-#endif
 
 #ifdef XKB
     xf86InitXkb();
@@ -938,14 +881,6 @@ InitOutput(ScreenInfo *pScreenInfo, int argc, char **argv)
     xf86Msg(xf86Info.randRFrom, "RandR %s\n",
 	    xf86Info.disableRandR ? "disabled" : "enabled");
 #endif
-#ifdef NOT_USED
-      /*
-       * Here we have to let the driver getting access of the VT. Note that
-       * this doesn't mean that the graphics board may access automatically
-       * the monitor. If the monitor is shared this is done in xf86CrossScreen!
-       */
-      if (!xf86Info.sharedMonitor) (xf86Screens[i]->EnterLeaveMonitor)(ENTER);
-#endif
   }
 
   xf86PostScreenInit();
@@ -979,6 +914,17 @@ InitInput(argc, argv)
     if (serverGeneration == 1) {
 	/* Call the PreInit function for each input device instance. */
 	for (pDev = xf86ConfigLayout.inputs; pDev && *pDev; pDev++) {
+	    /* Replace obsolete keyboard driver with kbd */
+	    if (!xf86NameCmp((*pDev)->driver, "keyboard")) {
+		xf86MsgVerb(X_WARNING, 0,
+			    "*** WARNING the legacy keyboard driver \"%s\" has been removed\n",
+			    (*pDev)->driver);
+		xf86MsgVerb(X_WARNING, 0,
+			    "*** Using the new \"kbd\" driver for \"%s\".\n",
+			    (*pDev)->identifier);
+		strcpy((*pDev)->driver, "kbd");
+            }
+
 	    if ((pDrv = xf86LookupInputDriver((*pDev)->driver)) == NULL) {
 		xf86Msg(X_ERROR, "No Input driver matching `%s'\n", (*pDev)->driver);
 		/* XXX For now, just continue. */
@@ -1036,7 +982,9 @@ OsVendorInit()
   signal(SIGCHLD, SIG_DFL);	/* Need to wait for child processes */
 #endif
   OsDelayInitColors = TRUE;
+#ifndef BUILTIN_FONTS
   loadableFonts = TRUE;
+#endif
 
   if (!beenHere)
     xf86LogInit();
@@ -1720,7 +1668,7 @@ xf86PrintBanner()
     t.tm_sec = BUILD_TIME % 100;
     t.tm_min = (BUILD_TIME / 100) % 100;
     t.tm_hour = (BUILD_TIME / 10000) % 100;
-    if (strftime(buf, sizeof(buf), "%d %B %Y  %I:%M:%s%p", &t))
+    if (strftime(buf, sizeof(buf), "%d %B %Y  %I:%M:%S%p", &t))
        ErrorF("Build Date: %s\n", buf);
 #else
     if (strftime(buf, sizeof(buf), "%d %B %Y", &t))
@@ -1823,16 +1771,17 @@ xf86LoadModules(char **list, pointer *optlist)
 
     for (i = 0; list[i] != NULL; i++) {
 
-#ifndef NORMALISE_MODULE_NAME
-	name = xstrdup(list[i]);
-#else
 	/* Normalise the module name */
 	name = xf86NormalizeName(list[i]);
-#endif
 
 	/* Skip empty names */
 	if (name == NULL || *name == '\0')
 	    continue;
+
+	/* Replace obsolete keyboard driver with kbd */
+	if (!xf86NameCmp(name, "keyboard")) {
+	    strcpy(name, "kbd");
+	}
 
 	if (optlist)
 	    opt = optlist[i];
