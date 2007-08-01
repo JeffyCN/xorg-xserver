@@ -85,40 +85,40 @@ Description: X.Org X server -- development files
  This module can be found as the module 'xserver/xorg' at
  :pserver:anoncvs@cvs.freedesktop.org:/cvs/xorg
 
-Package: xdmx
-Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}
-Description: Distributed Multihead X server
- Xdmx is a proxy X server that uses one or more other X servers as its
- display device(s).  It provides multi-head X functionality for displays that
- might be located on different machines.  Xdmx functions as a front-end X server
- that acts as a proxy to a set of back-end X servers.  All of the visible
- rendering is passed to the back-end X servers.  Clients connect to the Xdmx
- front-end, and everything appears as it would in a regular multi-head
- configuration.  If Xinerama is enabled (e.g., with +xinerama on the command
- line), the clients see a single large screen.
- .
- More information about X.Org can be found at:
- <URL:http://xorg.freedesktop.org>
- <URL:http://lists.freedesktop.org/mailman/listinfo/xorg>
- .
- This module can be found as the module 'xserver/xorg' at
- :pserver:anoncvs@cvs.freedesktop.org:/cvs/xorg
-
-Package: xdmx-tools
-Architecture: any
-Depends: xdmx, ${shlibs:Depends}, ${misc:Depends}
-Replaces: xdmx (<= 2:1.1.1-10)
-Description: Distributed Multihead X tools
- This package provides a collection of tools used for administration of
- the Xdmx server; see the xdmx package for more information.
- .
- More information about X.Org can be found at:
- <URL:http://xorg.freedesktop.org>
- <URL:http://lists.freedesktop.org/mailman/listinfo/xorg>
- .
- This module can be found as the module 'xserver/xorg' at
- :pserver:anoncvs@cvs.freedesktop.org:/cvs/xorg
+#Package: xdmx
+#Architecture: any
+#Depends: ${shlibs:Depends}, ${misc:Depends}
+#Description: Distributed Multihead X server
+# Xdmx is a proxy X server that uses one or more other X servers as its
+# display device(s).  It provides multi-head X functionality for displays that
+# might be located on different machines.  Xdmx functions as a front-end X server
+# that acts as a proxy to a set of back-end X servers.  All of the visible
+# rendering is passed to the back-end X servers.  Clients connect to the Xdmx
+# front-end, and everything appears as it would in a regular multi-head
+# configuration.  If Xinerama is enabled (e.g., with +xinerama on the command
+# line), the clients see a single large screen.
+# .
+# More information about X.Org can be found at:
+# <URL:http://xorg.freedesktop.org>
+# <URL:http://lists.freedesktop.org/mailman/listinfo/xorg>
+# .
+# This module can be found as the module 'xserver/xorg' at
+# :pserver:anoncvs@cvs.freedesktop.org:/cvs/xorg
+#
+#Package: xdmx-tools
+#Architecture: any
+#Depends: xdmx, ${shlibs:Depends}, ${misc:Depends}
+#Replaces: xdmx (<= 2:1.1.1-10)
+#Description: Distributed Multihead X tools
+# This package provides a collection of tools used for administration of
+# the Xdmx server; see the xdmx package for more information.
+# .
+# More information about X.Org can be found at:
+# <URL:http://xorg.freedesktop.org>
+# <URL:http://lists.freedesktop.org/mailman/listinfo/xorg>
+# .
+# This module can be found as the module 'xserver/xorg' at
+# :pserver:anoncvs@cvs.freedesktop.org:/cvs/xorg
 
 Package: xnest
 Architecture: any
@@ -175,36 +175,36 @@ Description: Next Generation Nested X Server
  result it supports newer extensions than xnest, including render and
  composite.
 
-Package: xprint
-Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}, xprint-common, libxfont1 (>= 1:1.1)
-Recommends: xprint-utils
-Conflicts: xprt (<= 4.3.0.dfsg.1-10)
-Description: Xprint - the X11 print system (binary)
- Xprint is an advanced printing system which enables X11 applications
- to use devices like printers, FAX or create documents in formats like
- PostScript, PDF, PCL, etc.
- .
- This package provides Xprt, the Xprint server compiled from
- xprint.mozdev.org, an X.org subproject.  Xprint provides superior support
- for printing from mozilla, including non-latin characters and MathML.
- TrueType fonts are supported.
- .
- Xprint uses ttf2pt1 internally for some font support.
-
-Package: xprint-common
-Architecture: all
-Depends: xbase-clients, xfonts-encodings, x11-common (>= 1:7.0.12), ${shlibs:Depends}, ${misc:Depends}
-Recommends: xprint, xfonts-base
-Conflicts: xprt-common
-Replaces: xprt-common
-Description: Xprint - the X11 print system (configuration files)
- Xprint is an advanced printing system which enables X11 applications
- to use devices like printers, FAX or create documents in formats like
- PostScript, PDF, PCL, etc.
- .
- This package provides the configuration and postscript definition files
- required to run Xprt, the Xprint server. Xprt is provided by xprint.
+#Package: xprint
+#Architecture: any
+#Depends: ${shlibs:Depends}, ${misc:Depends}, xprint-common, libxfont1 (>= 1:1.1)
+#Recommends: xprint-utils
+#Conflicts: xprt (<= 4.3.0.dfsg.1-10)
+#Description: Xprint - the X11 print system (binary)
+# Xprint is an advanced printing system which enables X11 applications
+# to use devices like printers, FAX or create documents in formats like
+# PostScript, PDF, PCL, etc.
+# .
+# This package provides Xprt, the Xprint server compiled from
+# xprint.mozdev.org, an X.org subproject.  Xprint provides superior support
+# for printing from mozilla, including non-latin characters and MathML.
+# TrueType fonts are supported.
+# .
+# Xprint uses ttf2pt1 internally for some font support.
+#
+#Package: xprint-common
+#Architecture: all
+#Depends: xbase-clients, xfonts-encodings, x11-common (>= 1:7.0.12), ${shlibs:Depends}, ${misc:Depends}
+#Recommends: xprint, xfonts-base
+#Conflicts: xprt-common
+#Replaces: xprt-common
+#Description: Xprint - the X11 print system (configuration files)
+# Xprint is an advanced printing system which enables X11 applications
+# to use devices like printers, FAX or create documents in formats like
+# PostScript, PDF, PCL, etc.
+# .
+# This package provides the configuration and postscript definition files
+# required to run Xprt, the Xprint server. Xprt is provided by xprint.
 
 Package: xserver-xorg-core-dbg
 Architecture: any

@@ -28,6 +28,13 @@ else
 	confflags += --build=$(DEB_BUILD_GNU_TYPE) --host=$(DEB_HOST_GNU_TYPE)
 endif
 
+BUILD_XPRINT = false
+ifeq ($(BUILD_XPRINT), true)
+	confflags += --enable-xprint
+else
+	confflags += --disable-xprint
+endif
+
 INSTALL=/usr/bin/install
 
 # disable-static is so we don't get libfoo.a for modules.  now if only we could
@@ -39,12 +46,11 @@ confflags += --disable-static \
 	     --with-serverconfig-path=/etc/X11/xserver \
 	     --with-rgb-path=/etc/X11/rgb \
 	     --enable-xtrap \
-	     --enable-dmx \
+	     --disable-dmx \
 	     --enable-vfb \
 	     --enable-kdrive \
 	     --enable-xephyr \
 	     --disable-lbx \
-	     --enable-xprint \
 	     --enable-freetype \
 	     --disable-xorgconfig \
 	     --disable-xorgcfg \
@@ -141,9 +147,11 @@ binary-arch: build install
 	$(INSTALL) -m 755 debian/xserver-xorg-core.bug.script debian/xserver-xorg-core/usr/share/bug/xserver-xorg-core/script
 	dh_installdebconf -a
 	dh_installman -a
+ifeq ($(BUILD_XPRINT), true)
 	$(INSTALL) -m 644 $(CURDIR)/debian/xprint-overrides $(CURDIR)/debian/xprint/usr/share/lintian/overrides/xprint
 	# xprint docs are linked to xprint-common
 	rm -rf debian/xprint/usr/share/doc/xprint
+endif
 	
 	dh_link -a
 	dh_strip -a --exclude=usr/lib/xorg/modules \
@@ -166,6 +174,7 @@ binary-indep: build install
 	$(MAKE) -f debian/rules DH_OPTIONS=-i binary-initial
 	dh_install -i --sourcedir=debian/tmp --list-missing -Xusr/share/man -Xusr/include/xorg -Xusr/share/aclocal -Xusr/lib/xorg/modules -Xusr/lib/pkgconfig/xorg-server.pc -Xusr/bin -XSecurityPolicy -Xvar/lib/xkb -Xusr/lib/X11/Cards -Xusr/lib/X11/Options
 	
+ifeq ($(BUILD_XPRINT), true)
 	$(INSTALL) -m 644 $(CURDIR)/debian/xprint-common-overrides $(CURDIR)/debian/xprint-common/usr/share/lintian/overrides/xprint-common
 	# split Xprint config files so font files do not land in /etc
 	# (for xprint-common only)
@@ -176,6 +185,7 @@ binary-indep: build install
 	# dh_install cannot rename files, sigh
 	$(INSTALL) -m 644 $(CURDIR)/debian/xprint-common.default $(CURDIR)/debian/xprint-common/etc/default/xprint
 	dh_installinit -p xprint-common --name=xprint
+endif
 	
 	dh_installdocs -i
 	dh_installchangelogs -i ChangeLog
