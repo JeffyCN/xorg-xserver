@@ -53,7 +53,8 @@ confflags += --disable-static \
 	     --enable-xfree86-utils \
 	     --with-os-name="$(shell uname)" \
 	     --with-os-vendor=Debian \
-	     --with-int10=x86emu
+	     --with-int10=x86emu \
+	     --disable-type1
 
 build: patch build-stamp
 build-stamp: 

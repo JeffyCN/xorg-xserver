@@ -4,6 +4,10 @@
 10_dont_look_in_home_for_config.diff -p0
 13_debian_add_xkbpath_env_variable.diff
 21_glx_align_fixes.patch
+41_vbe_filter_less.diff
+#47_fbdevhw_magic_numbers.diff
+#48_disable_type1.diff
+#51_xkb-and-loathing.diff
 91_ttf2pt1
 91_ttf2pt1_updates
 92_xprint-security-holes-fix.patch

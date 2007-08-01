@@ -44,6 +44,90 @@ xorg-server (2:1.3.99.0~git20070703-1) UNRELEASED; urgency=low
 
  -- Julien Cristau <jcristau@debian.org>  Wed, 04 Jul 2007 04:32:34 +0200
 
+xorg-server (2:1.3.0.0.dfsg-12) UNRELEASED; urgency=low
+
+  [ Brice Goglin ]
+  * Add 51_xkb-and-loathing.diff to fix a hang in OpenOffice.org
+    when opening menus, closes: #433131.
+  * Install the exa(4) and fbdevhw(4) manpages.
+
+  [ Julien Cristau ]
+  * Update the xorg.conf(5) manpage to get documentation for RandR 1.2
+    options:
+    + 07_stolen_from_HEAD_xorgconf_manpage.diff: new patch;
+    + 07_xorgconf_manpage_overhaul.diff dropped;
+    + 34_xorg.conf_man_typos.patch dropped;
+    + 05_module_defaults.diff, 94_use_default_font_path.diff: dropped hunks
+      applying to hw/xfree86/doc/man/xorg.conf.man.pre.
+  * Add patch 11_define_XFree86Server.diff: XFree86Server needs to be defined
+    in xorg-server.h and exported to drivers.
+
+ -- Julien Cristau <jcristau@debian.org>  Tue, 24 Jul 2007 21:09:17 +0200
+
+xorg-server (2:1.3.0.0.dfsg-11) unstable; urgency=low
+
+  * Yet another alpha build fix: also remove the asm/pci.h include from
+    os-support/linux/lnx_axp.c.  Include "lnx.h" and <unistd.h> instead.
+
+ -- Julien Cristau <jcristau@debian.org>  Sat, 14 Jul 2007 20:09:35 +0200
+
+xorg-server (2:1.3.0.0.dfsg-10) unstable; urgency=medium
+
+  * hw/xfree86/common/compiler.h and <sys/io.h> declare incompatible
+    prototypes for outb and friends, so change the patch from -9 to not
+    #include <sys/io.h> and rely on declarations in lnx.h itself for the
+    IOBASE_* macros.
+
+ -- Julien Cristau <jcristau@debian.org>  Sat, 14 Jul 2007 18:06:14 +0200
+
+xorg-server (2:1.3.0.0.dfsg-9) unstable; urgency=medium
+
+  * Include <sys/io.h> instead of <asm/pci.h> in
+    hw/xfree86/os-support/linux/lnx.h, as the latter isn't exported to
+    userspace anymore; fixes FTBFS on alpha.  Thanks, Steve Langasek!
+
+ -- Julien Cristau <jcristau@debian.org>  Sat, 14 Jul 2007 12:17:10 +0200
+
+xorg-server (2:1.3.0.0.dfsg-8) unstable; urgency=medium
+
+  * Medium-urgency upload to get the fix for #428794 in testing faster,
+    hopefully.
+
+  [ Brice Goglin ]
+  * Add 47_fbdevhw_magic_numbers.diff: patch by Adam Jackson to keep the
+    fbdev2xfree_timing() function from changing the pixel clock value if the
+    fbdev driver claims that it is 0.
+
+  [ Julien Cristau ]
+  * Don't build the type1 font module.
+  * Add patch by Alan Coopersmith to map (case-insensitively) the old
+    "keyboard" input driver to "kbd" (addresses: #428794).  I'm not
+    reassigning the bug to xserver-xorg-core for now so as not to break
+    testing by letting xserver-xorg-input-keyboard transition before the fixed
+    xorg-server.
+
+ -- Julien Cristau <jcristau@debian.org>  Sat, 14 Jul 2007 01:48:20 +0200
+
+xorg-server (2:1.3.0.0.dfsg-7) unstable; urgency=low
+
+  [ Brice Goglin ]
+  * Add 40_consolidate_portPriv_pDraw_assignments.diff to avoid a crash
+    in xf86XVReputVideo (closes: #424899, #431655).
+  * Add 41_vbe_filter_less.diff to not reject VESA modes early since
+    xf86ValidateModes should handle them just fine (closes: #424684).
+  * Add 42_only_run_special_key_behaviours_on_non-XKB.diff to fix special
+    keys in Xephyr (closes: #415025).
+  * Add 43_xephyr_crash_at_exit.diff to avoid crashing Xephyr when first
+    client disconnect (closes: #420421).
+
+ -- Julien Cristau <jcristau@debian.org>  Wed, 04 Jul 2007 23:42:40 +0200
+
+xorg-server (2:1.3.0.0.dfsg-6) unstable; urgency=low
+
+  * Change fglrx conflict to << 8.37.6 (closes: #424975).
+
+ -- Julien Cristau <jcristau@debian.org>  Fri, 01 Jun 2007 14:58:39 +0200
+
 xorg-server (2:1.3.0.0.dfsg-5) unstable; urgency=low
 
   [ Brice Goglin ]

@@ -1,0 +1,46 @@
+* Fri Sep 22 2006 Adam Jackson <ajackson@redhat.com> 1.1.1-41.fc6
+- xorg-x11-server-1.1.1-vbe-filter-less.patch: Be gentler about rejecting
+  VESA modes early, since xf86ValidateModes should handle them just fine.
+
+http://cvs.fedora.redhat.com/viewcvs/devel/xorg-x11-server/xorg-x11-server-1.1.1-vbe-filter-less.patch?rev=1.1&view=auto
+Debian bug #424684 (and maybe #428711)
+
+Index: xorg-server/hw/xfree86/vbe/vbeModes.c
+===================================================================
+--- xorg-server.orig/hw/xfree86/vbe/vbeModes.c	2007-07-05 17:55:24.000000000 +0200
++++ xorg-server/hw/xfree86/vbe/vbeModes.c	2007-07-05 17:57:01.000000000 +0200
+@@ -152,34 +152,6 @@
+ 	xf86ErrorFVerb(DEBUG_VERB, "*");
+     }
+ 
+-    /*
+-     * Check if there's a valid monitor mode that this one can be matched
+-     * up with.  The actual matching is done later.
+-     */
+-    if (modeOK) {
+-	Bool sizeMatch = FALSE;
+-	modeOK = FALSE;
+-	for (p = pScrn->monitor->Modes; p != NULL; p = p->next) {
+-	    if ((p->HDisplay != mode->XResolution) ||
+-		(p->VDisplay != mode->YResolution) ||
+-		(p->Flags & (V_INTERLACE | V_DBLSCAN | V_CLKDIV2)))
+-		continue;
+-	    sizeMatch = TRUE;
+-	    /* XXX could support the various V_ flags */
+-	    status = xf86CheckModeForMonitor(p, pScrn->monitor);
+-	    if (status == MODE_OK) {
+-		modeOK = TRUE;
+-		break;
+-	    }
+-	}
+-	if (sizeMatch && !modeOK) {
+-	    xf86DrvMsg(pScrn->scrnIndex, X_INFO,
+-		       "Not using built-in mode \"%dx%d\" (%s)\n",
+-		        mode->XResolution, mode->YResolution,
+-		        xf86ModeStatusToString(status));
+-	}
+-    }
+-
+     xf86ErrorFVerb(DEBUG_VERB,
+ 	    "Mode: %x (%dx%d)\n", id, mode->XResolution, mode->YResolution);
+     xf86ErrorFVerb(DEBUG_VERB,
