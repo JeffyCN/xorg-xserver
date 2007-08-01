@@ -26,6 +26,7 @@ xorg-server (2:1.3.99.0~git20070703-1) UNRELEASED; urgency=low
       0.9 (so this doesn't clash with a release and drivers have to be
       rebuilt).
     + Bump build-dep on compositeproto to >= 0.4.
+  * Install the upstream changelog.
 
   [ David Nusinow ]
   * Remove patches that were pushed upstream
@@ -42,7 +43,7 @@ xorg-server (2:1.3.99.0~git20070703-1) UNRELEASED; urgency=low
   [ Drew Parsons ]
   * Update Xprint build to include pixman.
 
- -- Julien Cristau <jcristau@debian.org>  Wed, 04 Jul 2007 04:32:34 +0200
+ -- Julien Cristau <jcristau@debian.org>  Wed, 01 Aug 2007 15:28:09 +0200
 
 xorg-server (2:1.3.0.0.dfsg-12) UNRELEASED; urgency=low
 
