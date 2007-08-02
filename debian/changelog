@@ -2,6 +2,14 @@ xorg-server (2:1.3.99.0-1) UNRELEASED; urgency=low
 
   [ Julien Cristau, David Nusinow ]
   * New upstream release candidate.
+    + X is now more tolerant of devices without a CtrlProc (closes: 269860).
+    + cvt(1) and gtf(1) typos fixed (closes: #432065).
+    + Make sure DRIScreenPrivIndex is -1 when no DRI screen private is
+      allocated. (closes: #413697).
+    + __glXDRIscreenProbe: Use drmOpen/CloseOnce (closes: #419614).
+    + segfault in swrast_Triangle fixed in mesa (closes: #407502).
+    + the Xvfb manpage doesn't refer to /usr/tmp anymore (closes: #270257).
+    + typos in Xserver(1) fixed (closes: #306688).
 
   * Remove patches that were pushed upstream
     + 03_xnest_manpage_overhaul.diff
@@ -45,11 +53,12 @@ xorg-server (2:1.3.99.0-1) UNRELEASED; urgency=low
   * Bump build-dep on compositeproto to >= 0.4.
   * Install the upstream changelog.
   * Disable the xprint and dmx DDX for now, they fail to build.
+  * xserver-xorg-dev needs a dependency on libpixman-dev.
 
   [ Drew Parsons ]
   * Update Xprint build to include pixman.
 
- -- Julien Cristau <jcristau@debian.org>  Wed, 01 Aug 2007 23:33:41 +0200
+ -- Julien Cristau <jcristau@debian.org>  Thu, 02 Aug 2007 03:17:21 +0200
 
 xorg-server (2:1.3.0.0.dfsg-12) UNRELEASED; urgency=low
 
