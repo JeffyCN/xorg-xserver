@@ -48,7 +48,8 @@ xorg-server (2:1.3.99.0-1) UNRELEASED; urgency=low
 
   [ Julien Cristau ]
   * Add build-dep on x11proto-input-dev (>= 1.4.2), libpixman-dev
-    (>= 0.9.0), libdbus-1-dev, libhal-dev.
+    (>= 0.9.0), libdbus-1-dev, libhal-dev (except on hurd-i386 for the last
+    two).
   * Bump build-dep on mesa-swx11-source to >> 7.0.1~rc2-1.
   * Bump serverminver to this version, videoabiver to 1.9, inputabiver to
     0.9 (so this doesn't clash with a release and drivers have to be
@@ -61,7 +62,7 @@ xorg-server (2:1.3.99.0-1) UNRELEASED; urgency=low
   [ Drew Parsons ]
   * Update Xprint build to include pixman.
 
- -- Julien Cristau <jcristau@debian.org>  Thu, 02 Aug 2007 03:17:21 +0200
+ -- Julien Cristau <jcristau@debian.org>  Sat, 11 Aug 2007 18:37:57 +0200
 
 xorg-server (2:1.3.0.0.dfsg-12) unstable; urgency=low
 

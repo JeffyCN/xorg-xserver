@@ -30,7 +30,7 @@ Build-Depends: debhelper (>= 4.0.0), pkg-config, bison, flex,
  libxpm-dev (>= 1:3.5.3-1), libxaw7-dev (>= 1:0.99.1-1),
  libxt-dev (>= 1:0.99.1-1), libxmu-dev (>= 1:0.99.1-1),
  libxtst-dev (>= 1:0.99.1-1), libxres-dev (>= 1:0.99.1-1),
- libxfixes-dev (>= 1:3.0.0), libdbus-1-dev, libhal-dev
+ libxfixes-dev (>= 1:3.0.0), libdbus-1-dev [!hurd-i386], libhal-dev [!hurd-i386]
 Build-Conflicts: xlibs-static-dev
 Standards-Version: 3.7.2.0
 XS-Vcs-Git: git://git.debian.org/git/pkg-xorg/xserver/xorg-server
