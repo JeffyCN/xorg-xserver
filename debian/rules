@@ -58,7 +58,7 @@ confflags += --disable-static \
 	     --with-xkb-output=/var/lib/xkb \
 	     --enable-xfree86-utils \
 	     --with-os-name="$(shell uname)" \
-	     --with-os-vendor=Debian \
+	     --with-os-vendor="Debian ($(SOURCE_NAME) $(SOURCE_VERSION))" \
 	     --with-int10=x86emu \
 	     --disable-type1
 
@@ -90,7 +90,7 @@ clean: xsfclean
 	rm -f hw/xfree86/common/xf86Build.h
 	# more generated files
 	rm -f include/dix-config.h include/do-not-use-config.h \
-		include/xorg-config.h include/xorg-server.h
+		include/xorg-config.h include/xorg-server.h ylwrap
 	
 	dh_clean
 
