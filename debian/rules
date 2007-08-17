@@ -90,7 +90,7 @@ clean: xsfclean
 	rm -f hw/xfree86/common/xf86Build.h
 	# more generated files
 	rm -f include/dix-config.h include/do-not-use-config.h \
-		include/xorg-config.h include/xorg-server.h ylwrap
+		include/xorg-config.h include/xorg-server.h
 	
 	dh_clean
 
