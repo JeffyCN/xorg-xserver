@@ -58,6 +58,7 @@ xorg-server (2:1.3.99.0-1) UNRELEASED; urgency=low
   * Install the upstream changelog.
   * Disable the xprint and dmx DDX for now, they fail to build.
   * xserver-xorg-dev needs a dependency on libpixman-dev.
+  * Add explanations about our tarball and upstream URL to debian/copyright.
 
   [ Drew Parsons ]
   * Update Xprint build to include pixman.
@@ -70,7 +71,7 @@ xorg-server (2:1.3.99.0-1) UNRELEASED; urgency=low
     claims the PCI ID of your primary video card, then it will choose a
     fallback based on your system.
 
- -- David Nusinow <dnusinow@debian.org>  Thu, 16 Aug 2007 22:47:49 -0400
+ -- Julien Cristau <jcristau@debian.org>  Fri, 17 Aug 2007 20:08:59 +0200
 
 xorg-server (2:1.3.0.0.dfsg-12) unstable; urgency=low
 
