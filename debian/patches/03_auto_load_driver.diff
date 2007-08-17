@@ -1,0 +1,305 @@
+diff --git a/hw/xfree86/common/xf86AutoConfig.c b/hw/xfree86/common/xf86AutoConfig.c
+index 4f6a98a..ff22ea6 100644
+--- a/hw/xfree86/common/xf86AutoConfig.c
++++ b/hw/xfree86/common/xf86AutoConfig.c
+@@ -39,6 +39,7 @@
+ #include "xf86Config.h"
+ #include "xf86Priv.h"
+ #include "xf86_OSlib.h"
++#include "dirent.h"
+ 
+ /* Sections for the default built-in configuration. */
+ 
+@@ -287,3 +288,179 @@ xf86AutoConfig(void)
+ 
+     return (ret == CONFIG_OK);
+ }
++
++int 
++xchomp(char *line)
++{
++    size_t len = 0;
++
++    if (!line) {
++        return 1;
++    }
++
++    len = strlen(line);
++    if (line[len - 1] == '\n' && len > 0) {
++        line[len - 1] = '\0';
++        return 0;
++    }
++}
++
++GDevPtr
++autoConfigDevice(void)
++{
++    GDevPtr ptr = NULL;
++    confScreenPtr scrn = NULL;
++    pciVideoPtr *pciptr, info = NULL;
++    DIR *idsdir;
++    FILE *fp;
++    struct dirent *direntry;
++    char *line = NULL;
++    size_t len;
++    ssize_t read;
++    char path_name[256], vendor_str[5], chip_str[5];
++    int vendor, chip;
++    int i, j;
++    char *matches[20]; /* If we have more than 20 drivers we're in trouble */
++    
++    if (!xf86configptr) {
++        goto end;
++    }
++
++    ptr = (GDevPtr)xalloc(sizeof(GDevRec));
++    if (!ptr) {
++        goto end;
++    }
++    memset((GDevPtr)ptr, 0, sizeof(GDevRec));
++    ptr->chipID = -1;
++    ptr->chipRev = -1;
++    ptr->irq = -1;
++    for (i=0 ; i<20 ; i++)
++        matches[i] = NULL;
++
++    /* Find the primary device, and get some information about it. */
++    if (xf86PciVideoInfo) {
++	    for (pciptr = xf86PciVideoInfo; (info = *pciptr); pciptr++) {
++	        if (xf86IsPrimaryPci(info)) {
++	    	break;
++	        }
++	    }
++	    if (!info) {
++	        ErrorF("Primary device is not PCI\n");
++	    }
++    } else {
++        ErrorF("xf86PciVideoInfo is not set\n");
++    }
++
++    if (!info) {
++        ErrorF("Could not get primary PCI info\n");
++        goto end;
++    }
++
++    idsdir = opendir("/usr/share/xserver-xorg/pci");
++    if (idsdir) {
++        direntry = readdir(idsdir);
++        /* Read the directory */
++        while (direntry) {
++            if (direntry->d_name[0] == '.') {
++                direntry = readdir(idsdir);
++                continue;
++            }
++            len = strlen(direntry->d_name);
++            /* A tiny bit of sanity checking. We should probably do better */
++            if (direntry->d_name[len-3] == 'i' && \
++                direntry->d_name[len-2] == 'd' &&  \
++                direntry->d_name[len-1] == 's') { 
++
++                /* We need the full path name to open the file */
++                path_name[0] = '\0';
++                strncat(path_name, "/usr/share/xserver-xorg/pci/", 256);
++                strncat(path_name, direntry->d_name, (256 - strlen(path_name)));
++                fp = fopen(path_name, "r");
++                if (fp == NULL) {
++                    xf86Msg(X_ERROR, "Could not open %s for reading. Exiting.\n", path_name);
++                    goto end;
++                }
++                /* Read the file */
++                while ((read = getline(&line, &len, fp)) != -1) {
++                    xchomp(line);
++                    if (isdigit(line[0])) {
++                        strncpy(vendor_str, line, 4);
++                        vendor_str[4] = '\0';
++                        strncpy(chip_str, &line[4], 4);
++                        chip_str[4] = '\0';
++                        vendor = (int)strtol(vendor_str, NULL, 16);
++                        chip = (int)strtol(chip_str, NULL, 16);
++                        if (vendor == info->vendor && chip == info->chipType) {
++                            i = 0;
++                            while (matches[i]) {
++                                i++;
++                            }
++                            matches[i] = (char*)xalloc(sizeof(char) * strlen(direntry->d_name) -  3);
++                            if (!matches[i]) {
++                                xf86Msg(X_ERROR, "Could not allocate space for the module name. Exiting.\n");
++                                goto end;
++                            }
++                            /* hack off the .ids suffix. This should guard
++                             * against other problems, but it will end up
++                             * taking off anything after the first '.' */
++                            for (j = 0; j < (strlen(direntry->d_name) - 3) ; j++) {
++                                if (direntry->d_name[j] == '.') {
++                                    matches[i][j] = '\0';
++                                    break;
++                                } else {
++                                    matches[i][j] = direntry->d_name[j];
++                                }
++                            }
++                            xf86Msg(X_INFO, "Matched %s from file name %s in autoconfig\n", matches[i], direntry->d_name);
++
++                        }
++                    } else {
++                        /* TODO Handle driver overrides here */
++                    }
++                }
++                fclose(fp);
++            }
++            direntry = readdir(idsdir);
++        }
++    }
++
++    /* TODO Handle multiple drivers claiming to support the same PCI ID */
++    if (matches[0]) {
++        ptr->driver = matches[0];
++    } else {
++        #if defined  __i386__ || defined __amd64__ || defined __hurd__
++        ptr->driver = "vesa";
++        #elif defined __alpha__
++        ptr->driver = "vga";
++        #elif defined __sparc__
++        ptr->driver = "sunffb";
++        #else
++        ptr->driver = "fbdev";
++        #endif
++    }
++
++    xf86Msg(X_DEFAULT, "Matched %s for the autocnfigured driver\n", ptr->driver);
++    ptr->active = TRUE;
++    ptr->claimed = FALSE;
++    /* TODO Handle multiple screen sections */
++    if (xf86ConfigLayout.screens && !xf86ConfigLayout.screens->screen->device) {   
++        xf86ConfigLayout.screens->screen->device = ptr;
++        ptr->myScreenSection = xf86ConfigLayout.screens->screen;
++    }
++    xf86Msg(X_DEFAULT, "Assigned the driver to the xf86ConfigLayout\n");
++
++    i = 0;
++    while (matches[i]) {
++        if (matches[i] != ptr->driver) {
++            xfree(matches[i]);
++        }
++        i++;
++    }
++    xfree(line);
++    closedir(idsdir);
++
++    ptr->identifier = "Autoconfigured Video Device";
++
++    end:
++    return ptr;
++}
+diff --git a/hw/xfree86/common/xf86Config.c b/hw/xfree86/common/xf86Config.c
+index 3c29497..12b7b3e 100644
+--- a/hw/xfree86/common/xf86Config.c
++++ b/hw/xfree86/common/xf86Config.c
+@@ -1928,8 +1928,10 @@ configScreen(confScreenPtr screenp, XF86ConfScreenPtr conf_screen, int scrnum,
+ 	    return FALSE;
+     }
+     screenp->device     = xnfcalloc(1, sizeof(GDevRec));
+-    configDevice(screenp->device,conf_screen->scrn_device, TRUE);
+-    screenp->device->myScreenSection = screenp;
++    if (configDevice(screenp->device,conf_screen->scrn_device, TRUE))
++        screenp->device->myScreenSection = screenp;
++    else
++        screenp->device = NULL;
+     screenp->options = conf_screen->scrn_option_lst;
+     
+     /*
+@@ -2218,13 +2220,17 @@ configDevice(GDevPtr devicep, XF86ConfDevicePtr conf_device, Bool active)
+ {
+     int i;
+ 
++    if (!conf_device) {
++        return FALSE;
++    }
++
+     if (active)
+ 	xf86Msg(X_CONFIG, "|   |-->Device \"%s\"\n",
+ 		conf_device->dev_identifier);
+     else
+ 	xf86Msg(X_CONFIG, "|-->Inactive Device \"%s\"\n",
+ 		conf_device->dev_identifier);
+-	
++
+     devicep->identifier = conf_device->dev_identifier;
+     devicep->vendor = conf_device->dev_vendor;
+     devicep->board = conf_device->dev_board;
+diff --git a/hw/xfree86/common/xf86Config.h b/hw/xfree86/common/xf86Config.h
+index 7fc161d..a96a3b9 100644
+--- a/hw/xfree86/common/xf86Config.h
++++ b/hw/xfree86/common/xf86Config.h
+@@ -34,6 +34,8 @@
+ #define _xf86_config_h
+ 
+ #include "xf86Optrec.h"
++#include "xf86Parser.h"
++#include "xf86str.h"
+ 
+ #ifdef HAVE_PARSER_DECLS
+ /*
+@@ -76,5 +78,7 @@ Bool xf86BuiltinInputDriver(const char *);
+ ConfigStatus xf86HandleConfigFile(Bool);
+ 
+ Bool xf86AutoConfig(void);
++GDevPtr autoConfigDevice(void);
++int xchomp(char *line);
+ 
+ #endif /* _xf86_config_h */
+diff --git a/hw/xfree86/common/xf86Init.c b/hw/xfree86/common/xf86Init.c
+index bf7dac6..65c284f 100644
+--- a/hw/xfree86/common/xf86Init.c
++++ b/hw/xfree86/common/xf86Init.c
+@@ -347,6 +347,15 @@ InitOutput(ScreenInfo *pScreenInfo, int argc, char **argv)
+     }
+ 
+     /* Load all driver modules specified in the config file */
++    /* If there aren't any specified in the config file, autoconfig them */
++    /* FIXME: Does not handle multiple active screen sections, but I'm not
++     * sure if we really want to handle that case*/
++    if (!xf86ConfigLayout.screens->screen->device) {
++        if (!autoConfigDevice()) {
++            xf86Msg(X_ERROR, "Automatic driver configuration failed\n");
++            return ;
++        }
++    }
+     if ((modulelist = xf86DriverlistFromConfig())) {
+       xf86LoadModules(modulelist, NULL);
+       xfree(modulelist);
+diff --git a/hw/xfree86/parser/Screen.c b/hw/xfree86/parser/Screen.c
+index 79e1d24..4df2b05 100644
+--- a/hw/xfree86/parser/Screen.c
++++ b/hw/xfree86/parser/Screen.c
+@@ -526,15 +526,7 @@ xf86validateScreen (XF86ConfigPtr p)
+ 			}
+ 		}
+ 
+-		device = xf86findDevice (screen->scrn_device_str, p->conf_device_lst);
+-		if (!device)
+-		{
+-			xf86validationError (UNDEFINED_DEVICE_MSG,
+-						  screen->scrn_device_str, screen->scrn_identifier);
+-			return (FALSE);
+-		}
+-		else
+-			screen->scrn_device = device;
++		screen->scrn_device= xf86findDevice (screen->scrn_device_str, p->conf_device_lst);
+ 
+ 		adaptor = screen->scrn_adaptor_lst;
+ 		while (adaptor)
+diff --git a/hw/xfree86/parser/read.c b/hw/xfree86/parser/read.c
+index 9f79696..308ee03 100644
+--- a/hw/xfree86/parser/read.c
++++ b/hw/xfree86/parser/read.c
+@@ -80,8 +80,8 @@ static xf86ConfigSymTabRec TopLevelTab[] =
+ static int
+ xf86validateConfig (XF86ConfigPtr p)
+ {
+-	if (!xf86validateDevice (p))
+-		return FALSE;
++	/*if (!xf86validateDevice (p))
++		return FALSE;*/
+ 	if (!xf86validateScreen (p))
+ 		return FALSE;
+ 	if (!xf86validateInput (p))
