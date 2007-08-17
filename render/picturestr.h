@@ -1,6 +1,4 @@
 /*
- * $Id$
- *
  * Copyright © 2000 SuSE, Inc.
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
@@ -660,6 +658,10 @@ AddTraps (PicturePtr	pPicture,
 	  INT16		yOff,
 	  int		ntraps,
 	  xTrap		*traps);
+
+pixman_image_t *
+PixmanImageFromPicture (PicturePtr pPict,
+			Bool hasClip);
 
 PicturePtr
 CreateSolidPicture (Picture pid,

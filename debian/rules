@@ -28,33 +28,39 @@ else
 	confflags += --build=$(DEB_BUILD_GNU_TYPE) --host=$(DEB_HOST_GNU_TYPE)
 endif
 
+BUILD_XPRINT = false
+ifeq ($(BUILD_XPRINT), true)
+	confflags += --enable-xprint
+else
+	confflags += --disable-xprint
+endif
+
 INSTALL=/usr/bin/install
 
 # disable-static is so we don't get libfoo.a for modules.  now if only we could
 # kill the .las.
 confflags += --disable-static \
 	     --enable-xorg \
-		 --enable-dri \
 	     --with-mesa-source=/usr/share/mesa-source \
-		 --with-default-font-path="/usr/share/fonts/X11/misc,/usr/share/fonts/X11/cyrillic,/usr/share/fonts/X11/100dpi/:unscaled,/usr/share/fonts/X11/75dpi/:unscaled,/usr/share/fonts/X11/Type1,/usr/share/fonts/X11/100dpi,/usr/share/fonts/X11/75dpi,/var/lib/defoma/x-ttcidfont-conf.d/dirs/TrueType" \
-		 --with-serverconfig-path=/etc/X11/xserver \
-		 --with-rgb-path=/etc/X11/rgb \
+	     --with-default-font-path="/usr/share/fonts/X11/misc,/usr/share/fonts/X11/cyrillic,/usr/share/fonts/X11/100dpi/:unscaled,/usr/share/fonts/X11/75dpi/:unscaled,/usr/share/fonts/X11/Type1,/usr/share/fonts/X11/100dpi,/usr/share/fonts/X11/75dpi,/var/lib/defoma/x-ttcidfont-conf.d/dirs/TrueType" \
+	     --with-serverconfig-path=/etc/X11/xserver \
+	     --with-rgb-path=/etc/X11/rgb \
 	     --enable-xtrap \
-	     --enable-dmx \
+	     --disable-dmx \
 	     --enable-vfb \
-		 --enable-kdrive \
-		 --enable-xephyr \
+	     --enable-kdrive \
+	     --enable-xephyr \
 	     --disable-lbx \
-	     --enable-xprint \
 	     --enable-freetype \
-		 --disable-xorgconfig \
-		 --disable-xorgcfg \
-		 --with-xkb-path=/usr/share/X11/xkb \
-		 --with-xkb-output=/var/lib/xkb \
+	     --disable-xorgconfig \
+	     --disable-xorgcfg \
+	     --with-xkb-path=/usr/share/X11/xkb \
+	     --with-xkb-output=/var/lib/xkb \
 	     --enable-xfree86-utils \
 	     --with-os-name="$(shell uname)" \
-	     --with-os-vendor=Debian \
-	     --with-int10=x86emu
+	     --with-os-vendor="Debian ($(SOURCE_NAME) $(SOURCE_VERSION))" \
+	     --with-int10=x86emu \
+	     --disable-type1
 
 build: patch build-stamp
 build-stamp: 
@@ -84,7 +90,7 @@ clean: xsfclean
 	rm -f hw/xfree86/common/xf86Build.h
 	# more generated files
 	rm -f include/dix-config.h include/do-not-use-config.h \
-		include/xorg-config.h include/xorg-server.h
+		include/xorg-config.h include/xorg-server.h ylwrap
 	
 	dh_clean
 
@@ -128,7 +134,7 @@ binary-arch: build install
 	$(MAKE) -f debian/rules DH_OPTIONS=-a binary-initial
 	
 	dh_installdocs -a
-	dh_installchangelogs -a
+	dh_installchangelogs -a ChangeLog
 	dh_install -a --sourcedir=debian/tmp --list-missing -Xusr/share/man/man1/Xprt -Xusr/lib/X11/xserver -Xetc/X11/Xsession.d/92xprint-xpserverlist
 	$(INSTALL) -d $(CURDIR)/debian/xserver-xorg-dev/usr/share/xserver-xorg
 	$(INSTALL) -m644 $(CURDIR)/debian/videoabiver \
@@ -141,9 +147,11 @@ binary-arch: build install
 	$(INSTALL) -m 755 debian/xserver-xorg-core.bug.script debian/xserver-xorg-core/usr/share/bug/xserver-xorg-core/script
 	dh_installdebconf -a
 	dh_installman -a
+ifeq ($(BUILD_XPRINT), true)
 	$(INSTALL) -m 644 $(CURDIR)/debian/xprint-overrides $(CURDIR)/debian/xprint/usr/share/lintian/overrides/xprint
 	# xprint docs are linked to xprint-common
 	rm -rf debian/xprint/usr/share/doc/xprint
+endif
 	
 	dh_link -a
 	dh_strip -a --exclude=usr/lib/xorg/modules \
@@ -166,6 +174,7 @@ binary-indep: build install
 	$(MAKE) -f debian/rules DH_OPTIONS=-i binary-initial
 	dh_install -i --sourcedir=debian/tmp --list-missing -Xusr/share/man -Xusr/include/xorg -Xusr/share/aclocal -Xusr/lib/xorg/modules -Xusr/lib/pkgconfig/xorg-server.pc -Xusr/bin -XSecurityPolicy -Xvar/lib/xkb -Xusr/lib/X11/Cards -Xusr/lib/X11/Options
 	
+ifeq ($(BUILD_XPRINT), true)
 	$(INSTALL) -m 644 $(CURDIR)/debian/xprint-common-overrides $(CURDIR)/debian/xprint-common/usr/share/lintian/overrides/xprint-common
 	# split Xprint config files so font files do not land in /etc
 	# (for xprint-common only)
@@ -176,9 +185,10 @@ binary-indep: build install
 	# dh_install cannot rename files, sigh
 	$(INSTALL) -m 644 $(CURDIR)/debian/xprint-common.default $(CURDIR)/debian/xprint-common/etc/default/xprint
 	dh_installinit -p xprint-common --name=xprint
+endif
 	
 	dh_installdocs -i
-	dh_installchangelogs -i
+	dh_installchangelogs -i ChangeLog
 	dh_installdebconf -i
 	dh_link -i
 	

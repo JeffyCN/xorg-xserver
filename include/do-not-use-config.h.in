@@ -27,6 +27,12 @@
 /* Support Composite Extension */
 #undef COMPOSITE
 
+/* Use the D-Bus input configuration API */
+#undef CONFIG_DBUS_API
+
+/* Use the HAL hotplug API */
+#undef CONFIG_HAL
+
 /* Define to one of `_getb67', `GETB67', `getb67' for Cray-2 and Cray-YMP
    systems. This function is required for `alloca.c' support on those systems.
    */
@@ -113,19 +119,19 @@
 /* Cygwin has /dev/windows for signaling new win32 messages */
 #undef HAS_DEVWINDOWS
 
-/* Have the `getdtablesize' function. */
+/* Have the 'getdtablesize' function. */
 #undef HAS_GETDTABLESIZE
 
-/* Have the `getifaddrs' function. */
+/* Have the 'getifaddrs' function. */
 #undef HAS_GETIFADDRS
 
-/* Have the `getpeereid' function. */
+/* Have the 'getpeereid' function. */
 #undef HAS_GETPEEREID
 
-/* Have the `getpeerucred' function. */
+/* Have the 'getpeerucred' function. */
 #undef HAS_GETPEERUCRED
 
-/* Have the `mmap' function. */
+/* Have the 'mmap' function. */
 #undef HAS_MMAP
 
 /* Define to 1 if NetBSD built-in MTRR support is available */
@@ -171,7 +177,7 @@
 /* Define to 1 if you have the <dbm.h> header file. */
 #undef HAVE_DBM_H
 
-/* Have D-BUS support */
+/* Have D-Bus support */
 #undef HAVE_DBUS
 
 /* Define to 1 if you have the <dirent.h> header file, and it defines `DIR'.
@@ -354,7 +360,7 @@
 /* Disable some debugging code */
 #undef NDEBUG
 
-/* Do not have `strcasecmp'. */
+/* Do not have 'strcasecmp'. */
 #undef NEED_STRCASECMP
 
 /* Need XFree86 helper functions */

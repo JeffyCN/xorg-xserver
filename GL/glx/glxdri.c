@@ -374,20 +374,13 @@ __glXDRIbindTexImage(__GLXcontext *baseContext,
 {
     RegionPtr	pRegion = NULL;
     PixmapPtr	pixmap;
-    int		w, h, bpp, override = 0;
-    GLenum	target, format, type;
+    int		bpp, override = 0;
+    GLenum	format, type;
     ScreenPtr pScreen = glxPixmap->pScreen;
     __GLXDRIscreen * const screen =
 	(__GLXDRIscreen *) __glXgetActiveScreen(pScreen->myNum);
 
     pixmap = (PixmapPtr) glxPixmap->pDraw;
-    w = pixmap->drawable.width;
-    h = pixmap->drawable.height;
-
-    if (h & (h - 1) || w & (w - 1))
-	target = GL_TEXTURE_RECTANGLE_ARB;
-    else
-	target = GL_TEXTURE_2D;
 
     if (screen->texOffsetStart && screen->driScreen.setTexOffset) {
 	__GLXpixmap **texOffsetOverride = screen->texOffsetOverride;
@@ -416,7 +409,7 @@ alreadyin:
 
 	glxPixmap->pDRICtx = &((__GLXDRIcontext*)baseContext)->driContext;
 
-	CALL_GetIntegerv(GET_DISPATCH(), (target == GL_TEXTURE_2D ?
+	CALL_GetIntegerv(GET_DISPATCH(), (glxPixmap->target == GL_TEXTURE_2D ?
 					  GL_TEXTURE_BINDING_2D :
 					  GL_TEXTURE_BINDING_RECTANGLE_NV,
 					  &texname));
@@ -481,7 +474,7 @@ nooverride:
 					   pixmap->drawable.y) );
 
 	CALL_TexImage2D( GET_DISPATCH(),
-			 (target,
+			 (glxPixmap->target,
 			  0,
 			  bpp == 4 ? 4 : 3,
 			  pixmap->drawable.width,
@@ -511,7 +504,7 @@ nooverride:
 					       pixmap->drawable.y + p[i].y1) );
 
 	    CALL_TexSubImage2D( GET_DISPATCH(),
-				(target,
+				(glxPixmap->target,
 				 0,
 				 p[i].x1, p[i].y1,
 				 p[i].x2 - p[i].x1, p[i].y2 - p[i].y1,
@@ -758,9 +751,16 @@ static __DRIscreen *findScreen(__DRInativeDisplay *dpy, int scrn)
 
 static GLboolean windowExists(__DRInativeDisplay *dpy, __DRIid draw)
 {
-    WindowPtr pWin = (WindowPtr) LookupIDByType(draw, RT_WINDOW);
+    DrawablePtr pDrawable = (DrawablePtr) LookupIDByType(draw, RT_WINDOW);
+    int unused;
+    drm_clip_rect_t *pRects;
 
-    return pWin == NULL ? GL_FALSE : GL_TRUE;
+    return pDrawable ? DRIGetDrawableInfo(pDrawable->pScreen, pDrawable,
+					  (unsigned*)&unused, (unsigned*)&unused,
+					  &unused, &unused, &unused, &unused,
+					  &unused, &pRects, &unused, &unused,
+					  &unused, &pRects)
+		     : GL_FALSE;
 }
 
 static GLboolean createContext(__DRInativeDisplay *dpy, int screen,
@@ -815,10 +815,8 @@ createDrawable(__DRInativeDisplay *dpy, int screen,
 	return GL_FALSE;
 
     __glXDRIenterServer(GL_FALSE);
-    retval = DRICreateDrawable(screenInfo.screens[screen],
-			    drawable,
-			    pDrawable,
-			    hHWDrawable);
+    retval = DRICreateDrawable(screenInfo.screens[screen], __pGlxClient,
+			       pDrawable, hHWDrawable);
     __glXDRIleaveServer(GL_FALSE);
     return retval;
 }
@@ -834,9 +832,8 @@ destroyDrawable(__DRInativeDisplay *dpy, int screen, __DRIid drawable)
 	return GL_FALSE;
 
     __glXDRIenterServer(GL_FALSE);
-    retval = DRIDestroyDrawable(screenInfo.screens[screen],
-			     drawable,
-			     pDrawable);
+    retval = DRIDestroyDrawable(screenInfo.screens[screen], __pGlxClient,
+				pDrawable);
     __glXDRIleaveServer(GL_FALSE);
     return retval;
 }
@@ -886,8 +883,32 @@ getDrawableInfo(__DRInativeDisplay *dpy, int screen,
     if (*numClipRects > 0) {
 	size = sizeof (drm_clip_rect_t) * *numClipRects;
 	*ppClipRects = xalloc (size);
-	if (*ppClipRects != NULL)
-	    memcpy (*ppClipRects, pClipRects, size);
+
+	/* Clip cliprects to screen dimensions (redirected windows) */
+	if (*ppClipRects != NULL) {
+	    ScreenPtr pScreen = screenInfo.screens[screen];
+	    int i, j;
+
+	    for (i = 0, j = 0; i < *numClipRects; i++) {
+	        (*ppClipRects)[j].x1 = max(pClipRects[i].x1, 0);
+		(*ppClipRects)[j].y1 = max(pClipRects[i].y1, 0);
+		(*ppClipRects)[j].x2 = min(pClipRects[i].x2, pScreen->width);
+		(*ppClipRects)[j].y2 = min(pClipRects[i].y2, pScreen->height);
+
+		if ((*ppClipRects)[j].x1 < (*ppClipRects)[j].x2 &&
+		    (*ppClipRects)[j].y1 < (*ppClipRects)[j].y2) {
+		    j++;
+		}
+	    }
+
+	    if (*numClipRects != j) {
+		*numClipRects = j;
+		*ppClipRects = xrealloc (*ppClipRects,
+					 sizeof (drm_clip_rect_t) *
+					 *numClipRects);
+	    }
+	} else
+	    *numClipRects = 0;
     }
     else {
       *ppClipRects = NULL;
@@ -903,7 +924,7 @@ getDrawableInfo(__DRInativeDisplay *dpy, int screen,
       *ppBackClipRects = NULL;
     }
 
-    return GL_TRUE;
+    return retval;
 }
 
 static int
@@ -949,7 +970,6 @@ static Bool
 glxDRIEnterVT (int index, int flags)
 {
     __GLXDRIscreen *screen = (__GLXDRIscreen *) __glXgetActiveScreen(index);
-    Bool ret;
 
     LogMessage(X_INFO, "AIGLX: Resuming AIGLX clients after VT switch\n");
 
