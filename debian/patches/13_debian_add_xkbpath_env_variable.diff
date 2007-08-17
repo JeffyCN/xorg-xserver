@@ -1,7 +1,7 @@
 Index: xorg-server/xkb/xkbInit.c
 ===================================================================
---- xorg-server.orig/xkb/xkbInit.c	2007-05-28 22:09:34.000000000 -0400
-+++ xorg-server/xkb/xkbInit.c	2007-05-28 22:09:39.000000000 -0400
+--- xorg-server.orig/xkb/xkbInit.c	2007-08-16 22:37:00.000000000 -0400
++++ xorg-server/xkb/xkbInit.c	2007-08-16 22:47:28.000000000 -0400
 @@ -835,6 +835,14 @@
  extern unsigned char	XkbDfltAccessXOptions;
  
@@ -19,9 +19,9 @@ Index: xorg-server/xkb/xkbInit.c
      if (strcmp(argv[i],"-kb")==0) {
 Index: xorg-server/os/utils.c
 ===================================================================
---- xorg-server.orig/os/utils.c	2007-05-28 22:09:34.000000000 -0400
-+++ xorg-server/os/utils.c	2007-05-28 22:09:39.000000000 -0400
-@@ -701,6 +701,7 @@
+--- xorg-server.orig/os/utils.c	2007-08-16 22:37:00.000000000 -0400
++++ xorg-server/os/utils.c	2007-08-16 22:47:28.000000000 -0400
+@@ -683,6 +683,7 @@
   */
  void InitGlobals(void)
  {

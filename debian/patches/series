@@ -1,5 +1,6 @@
 001_ubuntu_add_extra_modelines_from_xorg.patch -p1
 02_libvgahw_gcc4_volatile_fix.diff
+03_auto_load_driver.diff
 06_use_proc_instead_of_sysfs_for_pci_domains.diff
 10_dont_look_in_home_for_config.diff -p0
 13_debian_add_xkbpath_env_variable.diff
