@@ -1,3 +1,267 @@
+commit 9a747b0b81d0bd9eea7d02601703df266d6c5eca
+Author: Fredrik Höglund <fredrik@kde.org>
+Date:   Wed Aug 15 19:19:11 2007 +0200
+
+    EXA: Wrap Trapezoids to prevent excessive migration of the alpha pixmap.
+    
+    miTrapezoids creates an alpha pixmap and initializes the contents
+    using PolyFillRect, which causes the pixmap to be moved in for
+    acceleration. The subsequent call to RasterizeTrapezoid won't be
+    accelerated by EXA, which causing the pixmap to be moved back out
+    again.
+    
+    By wrapping Trapezoids and using ExaCheckPolyFillRect instead of
+    PolyFillRect to initialize the pixmap, we avoid this roundtrip.
+    (cherry picked from commit daee59b1703ac07c2def9e9fecc479e59b93f761)
+
+commit d37edeff997219b1944a15cc0c9d7db64868ea70
+Author: Dave Jones <davej@redhat.com>
+Date:   Thu Aug 16 09:46:27 2007 +0200
+
+    Kdrive: fix nasty thinko in TslibEnable()
+
+commit 026534f945ae5652592a090a9d41375ca37ab618
+Author: Alan Coopersmith <alan.coopersmith@sun.com>
+Date:   Wed Aug 15 16:47:53 2007 -0700
+
+    Update pci.ids to 2007-08-15 snapshot
+    
+    Remove nvidia ids in extrapci.ids that are now in pci.ids
+
+commit 6cef7b9611297cb1d93cefe3890b26b69c87bce2
+Author: Alan Coopersmith <alan.coopersmith@sun.com>
+Date:   Wed Aug 15 16:44:49 2007 -0700
+
+    Correct XErrorDB path and make it configurable (used by DTrace support)
+
+commit 0f9e89b4e309e570d7d366489d250ca2143f0ad7
+Author: Fredrik Höglund <fredrik@kde.org>
+Date:   Tue Aug 14 22:47:49 2007 +0200
+
+    Fix the value comparisons in the IDLETIME wakeup handler.
+    
+    LessThan/GreaterThan comparisons were used in the wakeup handler,
+    and LessOrEqual/GreaterOrEqual in the block handler.
+    
+    Change it to use LessOrEqual/GreaterOrEqual in both functions,
+    since this is what XSyncNegativeComparison and
+    XSyncPositiveComparison imply.
+
+commit 6a195e816b9d60f728d77cc1c23538e7af00a879
+Author: Kristian Høgsberg <krh@redhat.com>
+Date:   Mon Aug 13 10:43:48 2007 -0400
+
+    Revert "Implement damage tracking for AIGLX."
+    
+    This reverts commit 2243b30e54df07892f75e3d65b687abe5b183cf3.  The existing
+    DRI interface doesn't let us get from a __DRIdrawable to the corresponding
+    X drawable, and thus, we can't implement AIGLX damage tracking with the
+    current interface.
+
+commit 03f9da672466b9ab9a9814d784b8c44f1030587e
+Author: Samuel Thibault <samuel.thibault@ens-lyon.org>
+Date:   Sun Aug 12 03:07:04 2007 +0200
+
+    xfree86: Improve default mouse handling on the Hurd
+    
+    Make /dev/mouse the default device.  This makes Xorg works with empty
+    or missing InputDevice sections.
+
+commit c5741438a3a171f493e9da32a6b39f73403f6993
+Author: Alan Coopersmith <alan.coopersmith@sun.com>
+Date:   Fri Aug 10 16:13:55 2007 -0700
+
+    Only use evdev drivers in Xephyr #ifdef linux
+
+commit 59961e47df4ea621a6713a8c7d060555f8746c3a
+Author: Alan Coopersmith <alan.coopersmith@sun.com>
+Date:   Fri Aug 10 16:08:41 2007 -0700
+
+    xorgcfg needs PIXMAN_CFLAGS in order to build libc_wrapper.c
+
+commit 2243b30e54df07892f75e3d65b687abe5b183cf3
+Author: Kristian Høgsberg <krh@redhat.com>
+Date:   Fri Aug 10 15:53:05 2007 -0400
+
+    Implement damage tracking for AIGLX.
+
+commit ff4bd3addb48df3eacc4b121cc249a7f38eb981a
+Author: Eric Anholt <eric@anholt.net>
+Date:   Wed Aug 8 14:24:42 2007 -0700
+
+    Fix the swapped decode of the EDID DTD h/v sync polarity fields.
+    
+    As a result, we can remove the quirks that existed to flip the bits back around
+    for us.  This is not confirmed in all cases due to lack of bugs containing EDID
+    blocks associated with the quirks, but is likely true.
+
+commit 2926cf1da7e4ed63573bfaecdd7e19beb3057d9b
+Author: Gustavo Pichorim Boiko <boiko@mandriva.com>
+Date:   Thu Aug 2 18:09:52 2007 -0300
+
+    [PATCH] Allocate the right number of entries for saving crtcs
+
+commit b2dcfbca2441ca8c561f86a78a76ab59ecbb40e4
+Author: Keith Packard <keithp@koto.keithp.com>
+Date:   Wed Aug 8 12:16:12 2007 -0700
+
+    RRScanOldConfig cannot use RRFirstOutput before output is configured.
+    
+    RRFirstOutput returns the first active output, which won't be set until
+    after RRScanOldConfig is finished running. Instead, just use the first
+    output (which is the only output present with an old driver, after all).
+
+commit ab3f601149e15789edfb7c9a0c33387070279582
+Author: Tiago Vignatti <tiagov@balalaika.(none)>
+Date:   Tue Aug 7 23:17:32 2007 -0300
+
+    Updates some piece of the dead mouse evdev code under the new hotplug scheme.
+    I exported the evdev driver to Xephyr server. I'm running it using something
+    like:
+        $ ./hw/kdrive/ephyr/Xephyr :1 -mouse evdev,,device=/dev/input/event4 -keybd \
+        evdev,,device=/dev/input/event1,xkbmodel=abnt2,xkblayout=br
+    
+    It also closes /#5668.
+
+commit 7d1a749b210ba5b9f8d0e5a1feb9a9ef9fa4d992
+Author: Tiago Vignatti <tiagov@balalaika.(none)>
+Date:   Tue Aug 7 22:59:12 2007 -0300
+
+    Export device path key options to be called by the command line of server.
+
+commit aee3588a4a6829326770c84b860061f47f2cbcae
+Author: Tiago Vignatti <tiagov@balalaika.(none)>
+Date:   Tue Aug 7 22:49:07 2007 -0300
+
+    Update KdUseMsg() for completeness.
+
+commit 30259d5a4e95ff20b30807e5e207ab5995a3fdaf
+Author: Daniel Stone <daniel@fooishbar.org>
+Date:   Tue Aug 7 20:58:49 2007 +0300
+
+    Hotplug: HAL: Fix error handling
+    
+    Don't use our DBusError for property getting, because we simply don't care:
+    this fixes D-Bus error spew to stderr.  Thanks Michel Dänzer for debugging
+    and testing.
+
+commit aef255425a3521d66c3405d34f7787628a22703e
+Author: Daniel Stone <daniel@fooishbar.org>
+Date:   Tue Aug 7 16:37:42 2007 +0300
+
+    Config: HAL: Use input.xkb namespace
+    
+    Use an explicit input.xkb.foo namespace, not input.xkb_foo.
+
+commit 838e59c02ec06446fc180fb9d86fa8793c7b9903
+Author: Daniel Stone <daniel@fooishbar.org>
+Date:   Mon Aug 6 16:07:20 2007 +0300
+
+    configure.ac: Add $CONFIG_LIB to server libraries
+    
+    Make sure all DDXes get $CONFIG_LIB.  Build-tested with Xvfb and Xdmx.
+
+commit b4193a2eee80895c5641e77488df0e72a73a3d99
+Author: Keith Packard <keithp@koto.keithp.com>
+Date:   Tue Aug 7 12:45:53 2007 -0700
+
+    RRScanOldConfig wasn't getting crtcs set correctly
+    
+    The output crtc is set by RRCrtcNotify, which is called at the end of
+    RRScanOldConfig. Several uses of output->crtc in this function were wrong.
+
+commit 2b93cbb5f8bac9b1b75f723baaa728430b5fefff
+Author: Keith Packard <keithp@koto.keithp.com>
+Date:   Tue Aug 7 12:44:19 2007 -0700
+
+    Decrement mode count when removing RandR output mode.
+    
+    Removing an output mode without decrementing the mode count scrambles the
+    output mode array badly.
+
+commit fef4c7a6f1a1ef34233b36137bb66d9a657307fb
+Author: Eric Anholt <eric@anholt.net>
+Date:   Tue Aug 7 09:01:14 2007 -0700
+
+    Fix driver build after pixman changes.
+
+commit 1339e57485db5a285cfbecbe0bba7154458680ad
+Author: Tiago Vignatti <tiagov@balalaika.(none)>
+Date:   Tue Aug 7 04:24:34 2007 -0300
+
+    Fix typo.
+
+commit d9ee5f3e3a3a814ebcd257736c305b41139cc354
+Author: Tiago Vignatti <tiagov@balalaika.(none)>
+Date:   Tue Aug 7 04:22:26 2007 -0300
+
+    Clean a little bit the code.
+
+commit 7a5eb3e96b74daaaeb6babf46b13d698280aa3f6
+Author: Tiago Vignatti <tiagov@balalaika.(none)>
+Date:   Tue Aug 7 02:16:44 2007 -0300
+
+    Let xkb options be passed through command line in kdrive servers. I start my
+    Xephyr using something like:
+    
+        ./hw/kdrive/ephyr/Xephyr :1 -fp /usr/share/fonts/X11/misc/ -mouse ephyr -keybd ephyr,,xkblayout=br,xkbmodel=abnt2
+
+commit 955d5f6c0d14fae63bfe7c4ab39ee0a708919479
+Author: Tiago Vignatti <tiagov@balalaika.(none)>
+Date:   Tue Aug 7 01:39:29 2007 -0300
+
+    When we call Xephyr with '-pointer' a new pointer is added inside the server
+    and the Xephyr virtual mouse keeps alive. With this patch the semantic changes
+    turning '-pointer' && 'Xephyr virtual mouse' always false.
+    
+    Now we can open a device pointer and pass its options in Xephyr's command line
+    without having other pointer unused.
+
+commit aa3c6aaaab213200591d29ddb2921adfb87ee5b4
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Mon Aug 6 19:00:59 2007 -0400
+
+    Require pixman-1 0.9.4, update pixman includes to new scheme
+
+commit 74feba4d77d74979a0ea478d666439ffc55001e5
+Author: Aaron Plattner <aplattner@nvidia.com>
+Date:   Wed Aug 1 14:30:03 2007 -0700
+
+    Don't unwrap too early in libwfb for Composite.
+    
+    Don't call fbFinishWrap until the pixman_image_t that stores the pointer is
+    actually freed.  This prevents corruption or crashes caused by accessing a
+    wrapped pointer after the wrapping is torn down.
+
+commit f6aa2200f2fb4f4d4bb51e67d68e86aabcac0c4b
+Author: Roland "Test-tools" Bär <roland@verifysoft.de>
+Date:   Mon Aug 6 12:37:52 2007 -0700
+
+    Probable off by one buffer overflow in .../xorgconfig/xorgconfig.c
+    
+    X.Org Bug #11858 <http://bugs.freedesktop.org/show_bug.cgi?id=11858>
+    Patch #11005 <http://bugs.freedesktop.org/attachment.cgi?id=11005>
+
+commit e717eb82dc2e55f852919312d04f5cfc8ee55bc8
+Author: Dave Airlie <airlied@redhat.com>
+Date:   Thu Aug 2 10:50:01 2007 +1000
+
+    xserver: stop bcopy from going really slow
+    
+    The outport is most likely unnecessary on any currently used hardware,
+    the byte copy is necessary from what I know on IA64 and friends so leave it.
+    
+    Add a new API entry point which lets a driver select the old behaviour if
+    such a needs is ever found.
+    
+    This gives me ~20% speed up on startup on 945 hardware.
+
+commit 600ef07113caa7a901c7d486bc8ebd1ae47f885c
+Author: Tiago Vignatti <tiagov@balalaika.(none)>
+Date:   Fri Aug 3 15:33:41 2007 -0300
+
+    Fix kdrive command line parser.
+
 commit f3955c0a020b39021050cd33c20a17f14fc4b579
 Author: Arkadiusz Miskiewicz <arekm@maven.pl>
 Date:   Wed Aug 1 21:04:22 2007 +0300

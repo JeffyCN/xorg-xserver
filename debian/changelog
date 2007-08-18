@@ -1,4 +1,4 @@
-xorg-server (2:1.3.99.0-1) UNRELEASED; urgency=low
+xorg-server (2:1.3.99.0-1) experimental; urgency=low
 
   [ Julien Cristau, David Nusinow ]
   * New upstream release candidate.
@@ -15,7 +15,7 @@ xorg-server (2:1.3.99.0-1) UNRELEASED; urgency=low
     + 03_xnest_manpage_overhaul.diff
     + 04_read_rom_in_chunks.diff
     + 05_module_defaults.diff
-    + 07_xorgconf_manpage_overhaul.diff
+    + 07_stolen_from_HEAD_xorgconf_manpage.diff
     + 08_s390_servermd.diff
     + 12_security_policy_in_etc.diff
     + 16_s390_fix.diff
@@ -29,6 +29,7 @@ xorg-server (2:1.3.99.0-1) UNRELEASED; urgency=low
     + 44_fedora-xephyr-keysym-madness.diff (different fix applied upstream)
     + 45_CVE-2007-2437.diff
     + 46_export-ramdac-symbols.diff
+    + 49_map_keyboard_driver_to_kbd.diff
     + 50_alpha_no_include_asm_pci.h.diff
     + 94_use_default_font_path.diff
     + 125_glx_remove-stray__GLinterface.diff,
@@ -71,7 +72,7 @@ xorg-server (2:1.3.99.0-1) UNRELEASED; urgency=low
     claims the PCI ID of your primary video card, then it will choose a
     fallback based on your system.
 
- -- Julien Cristau <jcristau@debian.org>  Fri, 17 Aug 2007 20:08:59 +0200
+ -- Julien Cristau <jcristau@debian.org>  Sat, 18 Aug 2007 18:28:49 +0200
 
 xorg-server (2:1.3.0.0.dfsg-12) unstable; urgency=low
 
