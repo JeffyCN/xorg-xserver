@@ -67,7 +67,7 @@ Description: X.Org X server -- core server
 
 Package: xserver-xorg-dev
 Architecture: any
-Depends: ${misc:Depends}, libpixman-dev
+Depends: ${misc:Depends}, libpixman-1-dev
 Description: X.Org X server -- development files
  This package provides development files for the X.Org ('Xorg') X server.
  This is not quite the same as the DDK (Driver Development Kit) from the
