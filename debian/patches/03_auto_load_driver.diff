@@ -1,7 +1,7 @@
 Index: xorg-server/hw/xfree86/common/xf86AutoConfig.c
 ===================================================================
 --- xorg-server.orig/hw/xfree86/common/xf86AutoConfig.c	2007-08-19 16:06:52.000000000 -0400
-+++ xorg-server/hw/xfree86/common/xf86AutoConfig.c	2007-08-19 16:09:40.000000000 -0400
++++ xorg-server/hw/xfree86/common/xf86AutoConfig.c	2007-08-19 16:13:56.000000000 -0400
 @@ -39,6 +39,7 @@
  #include "xf86Config.h"
  #include "xf86Priv.h"
@@ -10,7 +10,7 @@ Index: xorg-server/hw/xfree86/common/xf86AutoConfig.c
  
  /* Sections for the default built-in configuration. */
  
-@@ -287,3 +288,184 @@
+@@ -287,3 +288,191 @@
  
      return (ret == CONFIG_OK);
  }
@@ -117,9 +117,16 @@ Index: xorg-server/hw/xfree86/common/xf86AutoConfig.c
 +                                chip_str[0] = '\0';
 +                                chip = -1;
 +                        } else {
-+                                strncpy(chip_str, &line[4], 4);
-+                                chip_str[4] = '\0';
-+                                chip = (int)strtol(chip_str, NULL, 16);
++                                /* Handle trailing whitespace */
++                                if (isspace(&line[4])) {
++                                    chip_str[0] = '\0';
++                                    chip = -1;
++                                } else {
++                                /* Ok, it's a real ID */
++                                    strncpy(chip_str, &line[4], 4);
++                                    chip_str[4] = '\0';
++                                    chip = (int)strtol(chip_str, NULL, 16);
++                                }
 +                        }
 +                        if (vendor == info->vendor && 
 +                               (chip == info->chipType || chip == -1)) {
