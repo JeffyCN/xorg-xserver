@@ -1,3 +1,11 @@
+xorg-server (2:1.3.99.0-2) experimental; urgency=low
+
+  * Improve 03_auto_load_driver.diff
+    + Move memory cleanup and directory closing to after the end label to
+      prevent leaks. Thanks Julien.
+
+ -- David Nusinow <dnusinow@debian.org>  Sun, 19 Aug 2007 16:00:42 -0400
+
 xorg-server (2:1.3.99.0-1) experimental; urgency=low
 
   [ Julien Cristau, David Nusinow ]
