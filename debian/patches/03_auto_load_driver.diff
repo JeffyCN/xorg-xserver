@@ -177,7 +177,7 @@ Index: xorg-server/hw/xfree86/common/xf86AutoConfig.c
 +        #endif
 +    }
 +
-+    xf86Msg(X_DEFAULT, "Matched %s for the autocnfigured driver\n", ptr->driver);
++    xf86Msg(X_DEFAULT, "Matched %s for the autoconfigured driver\n", ptr->driver);
 +    ptr->active = TRUE;
 +    ptr->claimed = FALSE;
 +    /* TODO Handle multiple screen sections */
