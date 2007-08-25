@@ -1,11 +1,16 @@
 xorg-server (2:1.3.99.0-3) unreleased; urgency=low
 
+  [ David Nusinow ]
   * Refactor auto_load_driver patch to allow the same method to be used when
     there is no xorg.conf present
   * Add 04_auto_load_driver_no_config.diff to use my auto_load_driver method
-    when there's no xorg.conf present 
+    when there's no xorg.conf present
 
- -- David Nusinow <dnusinow@debian.org>  Thu, 23 Aug 2007 22:37:41 -0400
+  [ Brice Goglin ]
+  * Simplify output redirections in the reportbug script,
+    thanks Justin Pryzby, closes: #358390.
+
+ -- Brice Goglin <bgoglin@debian.org>  Sat, 25 Aug 2007 14:18:07 +0200
 
 xorg-server (2:1.3.99.0-2) experimental; urgency=low
 
