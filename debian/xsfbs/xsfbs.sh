@@ -59,13 +59,6 @@ fi
 
 ARCHITECTURE="$(dpkg --print-installation-architecture)"
 
-LAPTOP=""
-if [ -n "$(which laptop-detect)" ]; then
-    if laptop-detect >/dev/null; then
-	LAPTOP=true
-    fi
-fi
-
 if [ "$1" = "reconfigure" ] || [ -n "$DEBCONF_RECONFIGURE" ]; then
   RECONFIGURE="true"
 else
