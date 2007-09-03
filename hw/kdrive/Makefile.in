@@ -349,7 +349,7 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 xglmoduledir = @xglmoduledir@
 xpconfigdir = @xpconfigdir@
-@KDRIVEVESA_TRUE@VESA_SUBDIRS = vesa ati chips epson i810 mach64 mga neomagic nvidia pm2 r128 \
+@KDRIVEVESA_TRUE@VESA_SUBDIRS = vesa ati chips epson i810 mach64 mga nvidia pm2 r128 \
 @KDRIVEVESA_TRUE@               smi via
 
 @BUILD_KDRIVEFBDEVLIB_TRUE@FBDEV_SUBDIRS = fbdev

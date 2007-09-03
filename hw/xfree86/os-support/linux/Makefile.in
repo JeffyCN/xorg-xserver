@@ -395,7 +395,7 @@ noinst_LTLIBRARIES = liblinux.la $(am__append_1)
 @LINUX_IA64_TRUE@PLATFORM_PCI_SUPPORT = $(srcdir)/lnx_ia64.c $(srcdir)/../shared/ia64Pci.c
 @LINUX_IA64_TRUE@PLATFORM_DEFINES = -DOS_PROBE_PCI_CHIPSET=lnxProbePciChipset
 @LINUX_IA64_TRUE@PLATFORM_INCLUDES = -I$(srcdir)/../shared
-@LINUX_ALPHA_TRUE@liblinuxev56_la_CFLAGS = -mcpu=ev56
+@LINUX_ALPHA_TRUE@liblinuxev56_la_CFLAGS = $(AM_CFLAGS) -mcpu=ev56
 @LINUX_ALPHA_TRUE@liblinuxev56_la_SOURCES = lnx_ev56.c
 @LNXACPI_TRUE@ACPI_SRCS = lnx_acpi.c lnx_apm.c
 @LNXAPM_TRUE@APM_SRCS = lnx_apm.c

@@ -56,8 +56,7 @@ LIBRARIES = $(noinst_LIBRARIES)
 ARFLAGS = cru
 libneomagic_a_AR = $(AR) $(ARFLAGS)
 libneomagic_a_LIBADD =
-am_libneomagic_a_OBJECTS = backend.$(OBJEXT) neomagic.$(OBJEXT) \
-	neo_draw.$(OBJEXT)
+am_libneomagic_a_OBJECTS = neomagic.$(OBJEXT) neo_draw.$(OBJEXT)
 libneomagic_a_OBJECTS = $(am_libneomagic_a_OBJECTS)
 am__installdirs = "$(DESTDIR)$(bindir)"
 binPROGRAMS_INSTALL = $(INSTALL_PROGRAM)
@@ -381,8 +380,6 @@ INCLUDES = \
 
 noinst_LIBRARIES = libneomagic.a
 libneomagic_a_SOURCES = \
-	backend.h                   \
-	backend.c                   \
 	neomagic.c                  \
 	neomagic.h                  \
 	neo_draw.c
@@ -483,7 +480,6 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/backend.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/neo_draw.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/neomagic.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/neomagicstub.Po@am__quote@
