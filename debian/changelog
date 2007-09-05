@@ -1,8 +1,8 @@
 xorg-server (2:1.3.99.2-2) UNRELEASED; urgency=low
 
   * Add proper depends to xserver-xorg-dev:
-    x11proto-core-dev, x11proto-input-dev(>= 1.4), x11proto-xext-dev,
-    x11proto-video-dev, x11proto-randr-dev (>= 1.2), x11proto-render-dev(>=
+    x11proto-core-dev, x11proto-input-dev (>= 1.4), x11proto-xext-dev,
+    x11proto-video-dev, x11proto-randr-dev (>= 1.2), x11proto-render-dev (>=
     2:0.9.3), x11proto-fonts-dev
 
  -- Julien Cristau <jcristau@debian.org>  Wed, 05 Sep 2007 23:21:41 +0200

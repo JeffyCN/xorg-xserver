@@ -67,7 +67,7 @@ Description: X.Org X server -- core server
 
 Package: xserver-xorg-dev
 Architecture: any
-Depends: ${misc:Depends}, libpixman-1-dev, x11proto-core-dev, x11proto-input-dev(>= 1.4), x11proto-xext-dev, x11proto-video-dev, x11proto-randr-dev (>= 1.2), x11proto-render-dev(>= 2:0.9.3), x11proto-fonts-dev
+Depends: ${misc:Depends}, libpixman-1-dev, x11proto-core-dev, x11proto-input-dev (>= 1.4), x11proto-xext-dev, x11proto-video-dev, x11proto-randr-dev (>= 1.2), x11proto-render-dev (>= 2:0.9.3), x11proto-fonts-dev
 Description: X.Org X server -- development files
  This package provides development files for the X.Org ('Xorg') X server.
  This is not quite the same as the DDK (Driver Development Kit) from the
