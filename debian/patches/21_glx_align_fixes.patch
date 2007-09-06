@@ -1,7 +1,7 @@
 Index: xorg-server/GL/glx/Makefile.am
 ===================================================================
---- xorg-server.orig/GL/glx/Makefile.am	2007-08-23 21:57:04.000000000 -0400
-+++ xorg-server/GL/glx/Makefile.am	2007-08-23 21:57:10.000000000 -0400
+--- xorg-server.orig/GL/glx/Makefile.am	2007-09-06 11:39:53.000000000 +0200
++++ xorg-server/GL/glx/Makefile.am	2007-09-06 11:42:06.000000000 +0200
 @@ -14,7 +14,8 @@
  	-I@MESA_SOURCE@/src/mesa/glapi \
  	-I@MESA_SOURCE@/src/mesa/main \
@@ -14,9 +14,9 @@ Index: xorg-server/GL/glx/Makefile.am
  #sdk_HEADERS =
 Index: xorg-server/configure.ac
 ===================================================================
---- xorg-server.orig/configure.ac	2007-08-23 21:57:04.000000000 -0400
-+++ xorg-server/configure.ac	2007-08-23 21:57:10.000000000 -0400
-@@ -282,6 +282,7 @@
+--- xorg-server.orig/configure.ac	2007-09-06 11:39:53.000000000 +0200
++++ xorg-server/configure.ac	2007-09-06 11:42:06.000000000 +0200
+@@ -280,6 +280,7 @@
  	case $host_os in
  		*netbsd*)	AC_DEFINE(USE_ALPHA_PIO, 1, [NetBSD PIO alpha IO]) ;;
  	esac
@@ -24,7 +24,7 @@ Index: xorg-server/configure.ac
  	;;
    arm*)
  	ARM_VIDEO=yes
-@@ -311,6 +312,7 @@
+@@ -309,6 +310,7 @@
  	xorg_loader_sparcmuldiv="yes"
  	SPARC64_VIDEO=yes
  	BSD_ARCH_SOURCES="sparc64_video.c ioperm_noop.c"
@@ -32,7 +32,7 @@ Index: xorg-server/configure.ac
  	;;
    x86_64*|amd64*)
    	use_x86_asm="yes"
-@@ -325,8 +327,16 @@
+@@ -323,8 +325,16 @@
  				SYS_LIBS=-lamd64
  				;;
  	esac
@@ -51,8 +51,8 @@ Index: xorg-server/configure.ac
  AM_CONDITIONAL(ALPHA_VIDEO, [test "x$ALPHA_VIDEO" = xyes])
 Index: xorg-server/hw/dmx/glxProxy/Makefile.am
 ===================================================================
---- xorg-server.orig/hw/dmx/glxProxy/Makefile.am	2007-08-23 21:57:04.000000000 -0400
-+++ xorg-server/hw/dmx/glxProxy/Makefile.am	2007-08-23 21:57:10.000000000 -0400
+--- xorg-server.orig/hw/dmx/glxProxy/Makefile.am	2007-09-06 11:39:53.000000000 +0200
++++ xorg-server/hw/dmx/glxProxy/Makefile.am	2007-09-06 11:42:06.000000000 +0200
 @@ -32,6 +32,7 @@
                          unpack.h
  
