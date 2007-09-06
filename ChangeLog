@@ -1,3 +1,327 @@
+commit 99dd8b9414d1eb7aabc682be0b9cfd7a27eb2a6b
+Author: Eric Anholt <eric@anholt.net>
+Date:   Thu Sep 6 01:42:43 2007 -0700
+
+    Bump version to 1.4.0.
+
+commit f73fd98a8636c0df3133a8b9428f3f23ecc788b4
+Author: Daniel Stone <daniel@fooishbar.org>
+Date:   Wed Sep 5 17:46:23 2007 -0700
+
+    Fix key repeats during VT switch.
+    
+    Add keyc->postdown, which represents the key state as of the last mieqEnqueue
+    call, and use it when we need to know the posted state, instead of the
+    processed state (keyc->down).  Add small functions to getevents.c to query and
+    modify key state in postdown and use them all through, eliminating previously
+    broken uses.
+    (cherry picked from commit 81c28ffd2b13a83770eadcfd7829d35d319d637f)
+
+commit 3c5fe1ec377688ab2edc6137b74a7c04b3bc2e7e
+Author: Keith Packard <keithp@koto.keithp.com>
+Date:   Wed Sep 5 14:19:19 2007 -0700
+
+    Deliver correct event when releasing keys on VT switch.
+    
+    In commit 41bb9fce47f6366cc3f7d45790f7883f74289b5a, the event delivery loop
+    for Xinput enabled keyboards was changed and accidentally used the wrong
+    index variable, causing random events to be delivered when returning from VT
+    switch.
+    
+    In addition, in commit aeba855b07832354f59678e20cc29a085e42bd99,
+    SIGIO was blocked during delivery of these events, but not for the entire
+    period the xf86Events array was being used. Block SIGIO for the whole loop
+    to avoid other event delivery from trashing the key release events.
+    (cherry picked from commit aa7ed1f5f35cd043bc38d985500aa0a32e857e84)
+    (cherry picked from commit accd71bda6f958ea6892ad3a10879232d345774c)
+
+commit 70ed110538413e96cefbf0a1c276b52dc62c5aae
+Author: Eric Anholt <eric@anholt.net>
+Date:   Wed Sep 5 13:30:02 2007 -0700
+
+    Fix server version reporting to be the server package version.
+    
+    Previously, the server version reported by xdpyinfo and Xorg -version would
+    bear some vague resemblance to a X.Org katamari version, but in the presence
+    of modularization (and client-server relationships with different katamari
+    versions on each side) those numbers don't really make sense.  Instead, just
+    report the package version.
+    
+    When branching a stable branch, master's version should be immediately updated
+    to the endpoint of the stable branch plus a snapshot of 1 (for example,
+    1.4.0.1 after server-1.4-branch).  The stable branch should then be changed to
+    RC0 at that time (1.3.99.0, for example).
+    
+    This scheme was partially attempted for server 1.3, but lacked the appropriate
+    master updates, thus why it had to be revisited now.  While here, we can also
+    remove a lot of versioning complexity since everything is based on the package
+    version.
+    
+    (cherry picked from commit 47300ed2be59d0ba7ea9345b954bf3104877c095)
+
+commit b328d553723ecf8f893783e91ec00ee6054acb74
+Author: Alan Hourihane <alanh@fairlite.demon.co.uk>
+Date:   Thu Aug 30 21:57:41 2007 +0100
+
+    Allow yres_virtual to be greater for some kernel fbdev drivers.
+    
+    (temporary fix for older fbdev drivers)
+    (cherry picked from commit 87495fc7064d5e0a7575a0713b6895a4172df0fa)
+
+commit b69e6165136ff76ba4649bb9d11906fef27b78bc
+Author: Keith Packard <keithp@koto.keithp.com>
+Date:   Sat Sep 1 21:14:22 2007 -0700
+
+    [COMPOSITE] Composite used for pixmap population on redirect. (Bug #7447)
+    
+    compNewPixmap copies bits from the parent window to the redirected child
+    pixmap to populate the pixmap with reasonable data. It cannot always use
+    CopyArea as that only works across matching depths. Use Composite when
+    the depths do not match.
+    (cherry picked from commit f98dfec79dadb70fa7bba84e7335f92b3a73dc02)
+
+commit 87f98178417718d8720566a2df04857a682a2d15
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Fri Aug 31 22:11:13 2007 -0700
+
+    [RANDR] Don't mark Xinerama as active if no crtcs are enabled. (bug #11504).
+    
+    Clients expect any Xinerama-enabled screen to report at least one
+    monitor, but with RandR, there may not be any enabled crtcs. In this case,
+    tell the client that Xinerama is not active.
+    (cherry picked from commit 1afdf8b0a92437dffe84fa98b6083b3d8fd55e27)
+
+commit 61460cf095a655d8711b79225080a8c2808dbbc4
+Author: Marius Gedminas <mgedmin@b4net.lt>
+Date:   Fri Aug 31 21:36:37 2007 -0700
+
+    [RANDR] Compare only milliseconds of config time. (Bug #6502)
+    
+    The timestamp transferred in the X protocol is a 32-bit number of
+    milliseconds.
+    
+    The timestamp stored in the server is a structure that contains two fields:
+    months (!) and milliseconds.
+    
+    When the server passes the config timestamp to the client, it discards the
+    months part and sends only the milliseconds part.
+    
+    When the server receives the config timestamp from the client, it tries to
+    guess the "months" part by looking at the current time and then maybe adding
+    or
+    subtracting one.  The guess is wrong after the server has been running long
+    enough (several hours).
+    
+    I have added two ErrorF calls around the 'if' statement that returns
+    RRSetConfigInvalidConfigTimestamp in randr/randr.c and my Xorg.0.log has
+    this:
+    
+      randr request got good config time: 0:-2103495671
+    
+    for the first few successful xrandr calls, and
+    
+      randr request failed with RRSetConfigInvalidConfigTime: client passed
+      1:-2103495671, server has 0:-2103495671
+    
+    when it fails.  The server has been running for 8 and a half hours.
+    
+    The obvious fix would be to ignore the months field and only compare the
+    milliseconds.
+    (cherry picked from commit 0dc2bb6101704d0fd25f36e2c3df79687f119f5b)
+
+commit ec56c5e958248ea0161dda885fa59752b20f5d7c
+Author: Eric Anholt <eric@anholt.net>
+Date:   Fri Aug 31 20:02:52 2007 -0700
+
+    Bump version to 1.3.99.2.
+
+commit 5efc4bd7d0e2020242127d8ed83efb8d2d76a151
+Author: Eric Anholt <eric@anholt.net>
+Date:   Fri Aug 31 18:27:41 2007 -0700
+
+    Remove backend.[ch] from neomagic to fix distcheck.
+    (cherry picked from commit 917e3bb83a48da7618fce463cf6283be36cd9084)
+
+commit 1a125b521434da7ba3a41b6398c7f094867908e0
+Author: Eric Anholt <eric@anholt.net>
+Date:   Fri Aug 31 15:16:01 2007 -0700
+
+    Bug #7364: Require renderproto 0.9.3 on 64-bit, and fix build with it.
+    
+    (cherry picked from commit 07630d897ef37cad8b79d073d9edc891d5a7bddd)
+
+commit f499c2ea0a90a69713daef8f9497463229384964
+Author: Eric Anholt <eric@anholt.net>
+Date:   Fri Aug 31 13:00:23 2007 -0700
+
+    Bug #7186: Fix an excessive request size limitation that broke big-requests.
+    
+    MAXBUFSIZE appears to be a leftover of some previous time.  Instead, just
+    use maxBigRequestSize when bigreqs are available (limiting buffers to ~16MB).
+    When bigreqs are not available, needed won't be larger than the maximum
+    size of a non-bigreqs request (256kB).
+    (cherry picked from commit ca82d4bddf235c9b68d51d68636bab40eafb9889)
+
+commit 3e9ecdcb132bb223febc396626211aa2681e4c79
+Author: Matthieu Herrb <matthieu@bluenote.herrb.com>
+Date:   Thu Aug 23 22:11:56 2007 +0200
+
+    Remove an extra cast.
+    
+    Thou should not apply patches manually without testing.
+    (cherry picked from commit a66c0f1dca2958835ff65a5b50579e3304ed316a)
+
+commit a964d541283e93b1096150275ba2d95594bf77ea
+Author: Otto Moerbeek <otto@openbsd.org>
+Date:   Thu Aug 23 21:59:25 2007 +0200
+
+    A high resolution device that's moving fast can potentially generate
+    an int overflow, making dx*dx+dy*dy negative. Now pow(negative,
+    non-integer) yields NaN, so you loose.  Use fp math to avoid that.
+    (cherry picked from commit 12d27cf33c6d963eae77795c0d247175907162a5)
+
+commit bcd6708895e5c2fda423bb13fe42b078ef293b13
+Author: Egbert Eich <eich@freedesktop.org>
+Date:   Thu Aug 30 12:50:21 2007 +0200
+
+    Fixing a misleading comment which could suggest a GPL violation.
+    
+    The author of the int10 code looked at the VBIOS POSTing code
+    in DOSEMU to get some initial idea on how to POST a VBIOS.
+    To give credit to the DOSEMU Team for this inspiration a comment
+    was added to the code which could suggest that code from the
+    GPLed DOSEMU was directly incorporated into this code.
+    This patch should clearify the situation.
+    (cherry picked from commit 1d11e4bc4ccb169fb23fc18583f0b648f0a6a4e0)
+
+commit ed001ed363d11aff3df9a7de2f72075e0b2cfb7b
+Author: Eric Anholt <eric@anholt.net>
+Date:   Wed Aug 29 15:54:32 2007 -0700
+
+    Bug #9629: Remove badly-licensed neomagic kdrive files.
+    
+    Licensing issues of these files include:
+    - They claim to be licensed under the GPL, yet we haven't allowed that in the
+      xserver repository in the past.
+    - They refer the user to the top of the tree for GPL license text, yet it isn't
+      there.
+    - They claim to be derived from the (MIT-licensed) ati kdrive code, yet don't
+      follow the licensing terms of those files.
+    (cherry picked from commit 87295b66a972a2bd194a79af6aa4f715018fcded)
+
+commit 5182fbf302beae93ea5b71a40a23528ee83fa1cc
+Author: Alex Deucher <alex@botch2.(none)>
+Date:   Wed Aug 22 19:26:34 2007 -0400
+
+    Add _X_EXPORT to exported functions in hw/xfree86/modes/*
+    
+    Also add missing exports to hw/xfree86/loader/xf86sym.c
+    (cherry picked from commit 81f8b652d99ee0f7116c1e34aed0e585d23a91fb)
+
+commit 37954c019afd92edbe4aaa9d6deb6efaad7bf088
+Author: Brian Paul <brian.paul@tungstengraphics.com>
+Date:   Thu Aug 23 19:38:53 2007 +0200
+
+    glx: fix crash when freeing visuals
+    
+    Don't set screen->num_vis to a value greater than the actual number of visuals.
+    
+    X.Org Bug #10809 <http://bugs.freedesktop.org/show_bug.cgi?id=10809>
+    (cherry picked from commit ff089e6cae634ac3eb509abd448a250bcbb17275)
+
+commit d34b66402c9205aae38316c5855f3b492a7612c2
+Author: Dave Airlie <airlied@redhat.com>
+Date:   Thu Aug 23 16:22:03 2007 +1000
+
+    randr: fixup crtc and output destroy
+    
+    if you are moving pointers, you want to move the pointers not just a byte
+    (cherry picked from commit 76bf3cd7b8c6189b6b08518cde00c8bd991bdfb7)
+
+commit efac9c9c2e7cfa974fb0e7737832f0e34d156f65
+Author: Keith Packard <keithp@koto.keithp.com>
+Date:   Sun Aug 19 20:28:05 2007 -0700
+
+    Ref count cursors used in hw/xfree86/modes code.
+    
+    The multi-crtc cursor code in hw/xfree86/modes holds a reference to the
+    current cursor. This reference must be correctly ref counted so the cursor
+    is not freed out from underneath this code.
+    (cherry picked from commit 7dc8531548cc9573e28bb04363dcbb3af5864c9a)
+
+commit 248b220b3e2bf8d999241543b69be3022a728b3a
+Author: Alex Deucher <alex@botch2.com>
+Date:   Tue Aug 21 00:37:33 2007 -0400
+
+    add xf86_crtc_clip_video_helper to xf86sym.c
+    (cherry picked from commit 1f6ddae003ec65d6bc567831bf32bf75dfefdd6c)
+
+commit 242c05e326646cbe1ab6ced54504456fee327bce
+Author: Alex Deucher <alex@botch2.com>
+Date:   Mon Aug 20 19:46:38 2007 -0400
+
+    move intel crtc xv clipping helper to the xserver
+    
+    The code is generic and can be used by any overlay-based card when
+    adding randr 1.2 support.  Tested on radeon.
+    (cherry picked from commit 53c04351c462d2ae307684e50d5960debe1ee557)
+
+commit dd33e936b39d1c5229353d3f25c47e3b87de8498
+Author: Fredrik Höglund <fredrik@kde.org>
+Date:   Sat Aug 18 19:02:18 2007 +0200
+
+    EXA: Fix a couple of logic errors in exaGetPixmapFirstPixel.
+    
+    The fb pointer would be left uninitialized when exaPixmapIsOffscreen
+    returned false. When it returned true and the pixmap was damaged,
+    fb would be initialized from the pixmap's devPrivate.ptr before the
+    exaDoMigration and exaPrepareAccess calls, at which point
+    devPrivate.ptr would still be pointing at offscreen memory.
+    (cherry picked from commit 3c448b0eb67337b56641e09a6d168aad6745e3ef)
+
+commit ec126e29e4a270577bba6337ed6f4ec8dbce46f9
+Author: Søren Sandmann Pedersen <sandmann@redhat.com>
+Date:   Tue Aug 21 14:26:14 2007 -0400
+
+    Require pixman 0.9.5; Use pixman_image_set_source_clipping() to fix
+    bug 11620 (reported by Jens Stroebel.
+    (cherry picked from commit 53941c8e68014619d3ded7f8bc0f07d9a38bb9b1)
+
+commit 71ddf917d7449b721582c910c5026faa457597fe
+Author: Aaron Plattner <aplattner@nvidia.com>
+Date:   Thu Aug 16 17:43:29 2007 -0700
+
+    stride is in FbBits-sized chunks, but xoff is not.
+    
+    Fixes corruption problems with composite rendering to redirected windows in
+    depth 16.
+    (cherry picked from commit 6a32a96d8df184c3ace4847beb48fdcb846d2286)
+
+commit 7cc53ae10adb7f8bb59f904b1362b7391b327f83
+Author: Aaron Plattner <aplattner@nvidia.com>
+Date:   Thu Aug 16 14:57:18 2007 -0700
+
+    Bug #12015: Use the right offsets in the dst arguments of pixman_blt.
+    (cherry picked from commit 32666d77227fcd2c066de16bf3c07366f92b0457)
+
+commit 2bf6cb3074d9c0dcd706e8e083747c6d84b70e30
+Author: Julien Cristau <jcristau@debian.org>
+Date:   Tue Aug 21 18:17:35 2007 +0200
+
+    config: fix default xkb model (pc105, not keyboard)
+    (cherry picked from commit 6ef4ecd82670c37a354243166750d76a97959c8b)
+
+commit fd4dc5a98e600b267ee22a3fb47c093c3e1b26d6
+Author: Julien Cristau <jcristau@debian.org>
+Date:   Mon Aug 20 12:57:06 2007 +0200
+
+    xfree86: Fix build on Linux/alpha.
+    
+    A bunch of CFLAGS had gone missing, so the build failed with errors like:
+    ../../../../../hw/xfree86/os-support/linux/lnx_ev56.c:7:19: error: input.h: No such file or directory
+    ../../../../../hw/xfree86/os-support/linux/lnx_ev56.c:8:24: error: scrnintstr.h: No such file or directory
+    (cherry picked from commit a1fe36b772f7edc162ea97368f86588c0fb77148)
+
 commit 9a747b0b81d0bd9eea7d02601703df266d6c5eca
 Author: Fredrik Höglund <fredrik@kde.org>
 Date:   Wed Aug 15 19:19:11 2007 +0200
