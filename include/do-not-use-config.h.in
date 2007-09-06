@@ -617,9 +617,6 @@
 /* Vendor man version */
 #undef XORG_MAN_VERSION
 
-/* Vendor release */
-#undef XORG_RELEASE
-
 /* Building Xorg server */
 #undef XORG_SERVER
 
