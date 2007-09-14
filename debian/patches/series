@@ -7,6 +7,8 @@
 13_debian_add_xkbpath_env_variable.diff
 21_glx_align_fixes.patch
 41_vbe_filter_less.diff
+42_fix_RemoveGeneralSocket_crash_from_dbus.diff
+43_allow_override_BIOS_EDID_preferred_mode.diff
 #47_fbdevhw_magic_numbers.diff
 #48_disable_type1.diff
 #51_xkb-and-loathing.diff
