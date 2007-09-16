@@ -21,7 +21,6 @@
  *
  * Authors:  Alan Hourihane, <alanh@fairlite.demon.co.uk>
  */
-/* $RCSId: xc/programs/Xserver/hw/kdrive/pcmcia/pcmciastub.c,v 1.1 2001/05/23 08:56:09 alanh Exp $ */
 
 #ifdef HAVE_CONFIG_H
 #include <kdrive-config.h>
@@ -45,7 +44,8 @@ InitOutput (ScreenInfo *pScreenInfo, int argc, char **argv)
 void
 InitInput (int argc, char **argv)
 {
-    KdInitInput (&LinuxMouseFuncs, &LinuxKeyboardFuncs);
+    KdOsAddInputDrivers ();
+    KdInitInput ();
 }
 
 extern pcmciaDisplayModeRec pcmciaDefaultModes[];

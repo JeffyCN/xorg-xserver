@@ -1,6 +1,4 @@
 /*
- * $Id$
- *
  * Copyright © 2002 Keith Packard
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
@@ -28,12 +26,12 @@
 
 #include "damageextint.h"
 
-unsigned char	DamageReqCode;
-int		DamageEventBase;
-int		DamageErrorBase;
-int		DamageClientPrivateIndex;
-RESTYPE		DamageExtType;
-RESTYPE		DamageExtWinType;
+static unsigned char	DamageReqCode;
+static int		DamageEventBase;
+static int		DamageErrorBase;
+static int		DamageClientPrivateIndex;
+static RESTYPE		DamageExtType;
+static RESTYPE		DamageExtWinType;
 
 /* Version of the damage extension supported by the server, as opposed to the
  * DAMAGE_* defines from damageproto for what version the proto header
@@ -180,13 +178,17 @@ ProcDamageCreate (ClientPtr client)
     DamageExtPtr	pDamageExt;
     DamageReportLevel	level;
     RegionPtr		pRegion;
+    int			rc;
     
     REQUEST(xDamageCreateReq);
 
     REQUEST_SIZE_MATCH(xDamageCreateReq);
     LEGAL_NEW_RESOURCE(stuff->damage, client);
-    SECURITY_VERIFY_DRAWABLE (pDrawable, stuff->drawable, client,
-			      SecurityReadAccess);
+    rc = dixLookupDrawable(&pDrawable, stuff->drawable, client, 0,
+			   DixReadAccess);
+    if (rc != Success)
+	return rc;
+
     switch (stuff->level) {
     case XDamageReportRawRectangles:
 	level = DamageReportRawRegion;
@@ -244,7 +246,7 @@ ProcDamageDestroy (ClientPtr client)
     DamageExtPtr    pDamageExt;
 
     REQUEST_SIZE_MATCH(xDamageDestroyReq);
-    VERIFY_DAMAGEEXT(pDamageExt, stuff->damage, client, SecurityWriteAccess);
+    VERIFY_DAMAGEEXT(pDamageExt, stuff->damage, client, DixWriteAccess);
     FreeResource (stuff->damage, RT_NONE);
     return (client->noClientException);
 }
@@ -258,9 +260,9 @@ ProcDamageSubtract (ClientPtr client)
     RegionPtr	    pParts;
 
     REQUEST_SIZE_MATCH(xDamageSubtractReq);
-    VERIFY_DAMAGEEXT(pDamageExt, stuff->damage, client, SecurityWriteAccess);
-    VERIFY_REGION_OR_NONE(pRepair, stuff->repair, client, SecurityWriteAccess);
-    VERIFY_REGION_OR_NONE(pParts, stuff->parts, client, SecurityWriteAccess);
+    VERIFY_DAMAGEEXT(pDamageExt, stuff->damage, client, DixWriteAccess);
+    VERIFY_REGION_OR_NONE(pRepair, stuff->repair, client, DixWriteAccess);
+    VERIFY_REGION_OR_NONE(pParts, stuff->parts, client, DixWriteAccess);
 
     if (pDamageExt->level != DamageReportRawRegion)
     {
@@ -288,10 +290,14 @@ ProcDamageAdd (ClientPtr client)
     REQUEST(xDamageAddReq);
     DrawablePtr	    pDrawable;
     RegionPtr	    pRegion;
+    int		    rc;
 
     REQUEST_SIZE_MATCH(xDamageAddReq);
-    VERIFY_REGION(pRegion, stuff->region, client, SecurityWriteAccess);
-    SECURITY_VERIFY_DRAWABLE (pDrawable, stuff->drawable, client, SecurityReadAccess);
+    VERIFY_REGION(pRegion, stuff->region, client, DixWriteAccess);
+    rc = dixLookupDrawable(&pDrawable, stuff->drawable, client, 0,
+			   DixReadAccess);
+    if (rc != Success)
+	return rc;
 
     /* The region is relative to the drawable origin, so translate it out to
      * screen coordinates like damage expects.
@@ -311,7 +317,7 @@ static const int version_requests[] = {
 
 #define NUM_VERSION_REQUESTS	(sizeof (version_requests) / sizeof (version_requests[0]))
     
-int	(*ProcDamageVector[XDamageNumberRequests])(ClientPtr) = {
+static int (*ProcDamageVector[XDamageNumberRequests])(ClientPtr) = {
 /*************** Version 1 ******************/
     ProcDamageQueryVersion,
     ProcDamageCreate,
@@ -400,7 +406,7 @@ SProcDamageAdd (ClientPtr client)
     return (*ProcDamageVector[stuff->damageReqType]) (client);
 }
 
-int	(*SProcDamageVector[XDamageNumberRequests])(ClientPtr) = {
+static int (*SProcDamageVector[XDamageNumberRequests])(ClientPtr) = {
 /*************** Version 1 ******************/
     SProcDamageQueryVersion,
     SProcDamageCreate,
@@ -470,7 +476,7 @@ FreeDamageExtWin (pointer value, XID wid)
     return Success;
 }
 
-void
+static void
 SDamageNotifyEvent (xDamageNotifyEvent *from,
 		    xDamageNotifyEvent *to)
 {

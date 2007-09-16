@@ -1,40 +1,19 @@
 001_ubuntu_add_extra_modelines_from_xorg.patch -p1
 02_libvgahw_gcc4_volatile_fix.diff
-03_xnest_manpage_overhaul.diff
-04_read_rom_in_chunks.diff
-05_module_defaults.diff
+03_auto_load_driver.diff
+04_auto_load_driver_no_conf.diff
 06_use_proc_instead_of_sysfs_for_pci_domains.diff
-07_stolen_from_HEAD_xorgconf_manpage.diff
-08_s390_servermd.diff 
-09_debian_xserver_rtff.diff -p0
 10_dont_look_in_home_for_config.diff -p0
-11_define_XFree86Server.diff
-12_security_policy_in_etc.diff
 13_debian_add_xkbpath_env_variable.diff
-16_s390_fix.diff
 21_glx_align_fixes.patch
-23_kfreebsd_support.diff
-24_hurd_ioperm_fix.diff
-32_disable_sparc_pci_bridge.diff
-39_alpha_build_flags.patch -p0
-40_consolidate_portPriv_pDraw_assignments.diff
 41_vbe_filter_less.diff
-42_only_run_special_key_behaviours_on_non-XKB.diff
-43_xephyr_crash_at_exit.diff
-44_fedora-xephyr-keysym-madness.diff
-45_CVE-2007-2437.diff
-46_export-ramdac-symbols.diff
-47_fbdevhw_magic_numbers.diff
-48_disable_type1.diff
-49_map_keyboard_driver_to_kbd.diff -p0
-50_alpha_no_include_asm_pci.h.diff
-51_xkb-and-loathing.diff
+42_fix_RemoveGeneralSocket_crash_from_dbus.diff
+43_allow_override_BIOS_EDID_preferred_mode.diff
+#47_fbdevhw_magic_numbers.diff
+#48_disable_type1.diff
+#51_xkb-and-loathing.diff
 91_ttf2pt1
 91_ttf2pt1_updates
 92_xprint-security-holes-fix.patch
 93_spooltodir_check_file_exists
 93_xprint_fonts_fix
-94_use_default_font_path.diff
-125_glx_remove-stray__GLinterface.diff
-126_glxproxy_remove-stray__GLinterface.diff
-127_mesa-6.5.3-compat.diff

@@ -1,6 +1,4 @@
 /*
- * $Id$
- *
  * Copyright © 2003 Keith Packard
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
@@ -45,7 +43,8 @@ InitOutput (ScreenInfo *pScreenInfo, int argc, char **argv)
 void
 InitInput (int argc, char **argv)
 {
-    KdInitInput (&LinuxMouseFuncs, &LinuxKeyboardFuncs);
+    KdOsAddInputDrivers ();
+    KdInitInput ();
 }
 
 void

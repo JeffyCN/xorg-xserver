@@ -6,7 +6,7 @@ INCLUDES = $(XORG_INCS) -I$(srcdir)/../parser -I$(srcdir)/../dixmods/extmod \
 	   -I$(srcdir)/../ramdac
 
 #AM_LDFLAGS = -r
-AM_CFLAGS = -DIN_LOADER $(XORG_CFLAGS)
+AM_CFLAGS = -DIN_LOADER $(DIX_CFLAGS) $(XORG_CFLAGS)
 
 if XORG_LOADER_SPARC
 SPARC_SOURCES = SparcMulDiv.S

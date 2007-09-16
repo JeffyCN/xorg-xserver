@@ -1,0 +1,28 @@
+Index: xorg-server/hw/xfree86/common/xf86AutoConfig.c
+===================================================================
+--- xorg-server.orig/hw/xfree86/common/xf86AutoConfig.c	2007-08-23 22:28:33.000000000 -0400
++++ xorg-server/hw/xfree86/common/xf86AutoConfig.c	2007-08-23 22:30:10.000000000 -0400
+@@ -220,22 +220,7 @@
+     char *driver = NULL;
+     ConfigStatus ret;
+ 
+-    /* Find the primary device, and get some information about it. */
+-    if (xf86PciVideoInfo) {
+-	for (pciptr = xf86PciVideoInfo; (info = *pciptr); pciptr++) {
+-	    if (xf86IsPrimaryPci(info)) {
+-		break;
+-	    }
+-	}
+-	if (!info) {
+-	    ErrorF("Primary device is not PCI\n");
+-	}
+-    } else {
+-	ErrorF("xf86PciVideoInfo is not set\n");
+-    }
+-
+-    if (info)
+-	driver = videoPtrToDriverName(info);
++    driver = chooseVideoDriver();
+ 
+     AppendToConfig(BUILTIN_MODULE_SECTION);
+     AppendToConfig(BUILTIN_MONITOR_SECTION);

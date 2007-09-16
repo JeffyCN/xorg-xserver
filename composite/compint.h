@@ -1,6 +1,4 @@
 /*
- * $Id$
- *
  * Copyright © 2006 Sun Microsystems
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
@@ -171,9 +169,6 @@ extern RESTYPE		CompositeClientSubwindowsType;
  * compalloc.c
  */
 
-void
-compReportDamage (DamagePtr pDamage, RegionPtr pRegion, void *closure);
-
 Bool
 compRedirectWindow (ClientPtr pClient, WindowPtr pWin, int update);
 
@@ -237,6 +232,9 @@ compCheckTree (ScreenPtr pScreen);
 #define compCheckTree(s)
 #endif
 
+PictFormatPtr
+compWindowFormat (WindowPtr pWin);
+
 void
 compSetPixmap (WindowPtr pWin, PixmapPtr pPixmap);
 
@@ -291,18 +289,6 @@ compWindowUpdate (WindowPtr pWin);
 
 void
 deleteCompOverlayClientsForScreen (ScreenPtr pScreen);
-
-int
-ProcCompositeGetOverlayWindow (ClientPtr client);
-
-int
-ProcCompositeReleaseOverlayWindow (ClientPtr client);
-
-int
-SProcCompositeGetOverlayWindow (ClientPtr client);
-
-int
-SProcCompositeReleaseOverlayWindow (ClientPtr client);
 
 WindowPtr
 CompositeRealChildHead (WindowPtr pWin);

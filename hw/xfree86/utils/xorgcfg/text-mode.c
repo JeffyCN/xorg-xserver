@@ -46,19 +46,14 @@
 #include "xf86config.h"
 #include "loader.h"
 
-#define IS_KBDDRIV(X) ((strcmp((X),"kbd") == 0) || \
-	(strcmp((X), "keyboard") == 0))
+#define IS_KBDDRIV(X) ((strcmp((X),"kbd") == 0))
 
 #ifndef PROJECT_ROOT
 #define PROJECT_ROOT "/usr"
 #endif
 
 #ifndef XKB_RULES_DIR
-#ifndef __UNIXOS2__
 #define XKB_RULES_DIR PROJECT_ROOT "/share/X11/xkb/rules"
-#else
-#define XKB_RULES_DIR XF86CONFIGDIR "/xkb/rules"
-#endif
 #endif
 
 #define CONTROL_A	1
@@ -213,11 +208,7 @@ TextMode(void)
 		   "The "__XCONFIGFILE__" file usually resides in /etc. A "
 		   "sample "__XCONFIGFILE__" file is supplied with "
 #else
-#ifndef __UNIXOS2__
 		   "The "__XCONFIGFILE__" file usually resides in " PROJECT_ROOT "/etc/X11 "
-#else
-		   "The "__XCONFIGFILE__" file usually resides in "XF86CONFIGDIR" "
-#endif
 		   "or /etc/X11. A sample "__XCONFIGFILE__" file is supplied with "
 #endif
 		   __XSERVERNAME__"; it is configured for a standard VGA card and "
@@ -307,11 +298,7 @@ WriteXF86Config(void)
     refresh();
     xf86config = DialogInput("Write "__XCONFIGFILE__, "Write configuration to file:",
 			     10, 60, XF86Config_path ? XF86Config_path :
-#ifndef __UNIXOS2__
 			     "/etc/X11/"__XCONFIGFILE__, "  Ok  ", " Cancel ", 0);
-#else
-			     XF86CONFIGDIR"/"__XCONFIGFILE__, "  Ok  ", " Cancel ", 0);
-#endif
 
     if (xf86config == NULL)
 	return (-1);
@@ -356,14 +343,8 @@ WriteXF86Config(void)
 }
 
 static char *protocols[] = {
-#ifdef __UNIXOS2__
-    "OS2Mouse",
-#endif
 #ifdef __SCO__
     "OsMouse",
-#endif
-#ifdef __UNIXWARE__
-    "Xqueue",
 #endif
 #ifdef WSCONS_SUPPORT
     "wsmouse",
@@ -553,8 +534,6 @@ MouseConfig(void)
 	str = "/dev/wsmouse";
 #elif defined(__FreeBSD__) || defined(__DragonFly__)
 	str = "/dev/sysmouse";
-#elif defined(__UNIXOS2__)
-	str = "mouse$";
 #elif defined(__linux__)
 	str = "/dev/input/mice";
 #else
@@ -744,11 +723,7 @@ KeyboardConfig(void)
 		input->inp_option_lst =
 		    xf86addNewOption(input->inp_option_lst,
 			XtNewString("XkbLayout"), XtNewString("us"));
-#if defined(USE_DEPRECATED_KEYBOARD_DRIVER)
-		input->inp_driver = XtNewString("keyboard");
-#else
 		input->inp_driver = XtNewString("kbd");
-#endif
 		XF86Config->conf_input_lst =
 		    xf86addInput(XF86Config, input);
 	    }
@@ -824,11 +799,7 @@ KeyboardConfig(void)
 		XtNewString("XkbLayout"), XtNewString(layout));
 
     if (input->inp_driver == NULL) {
-#if defined(USE_DEPRECATED_KEYBOARD_DRIVER)
-	input->inp_driver = XtNewString("keyboard");
-#else
 	input->inp_driver = XtNewString("kbd");
-#endif
 	XF86Config->conf_input_lst =
 	    xf86addInput(XF86Config->conf_input_lst, input);
     }
@@ -2123,7 +2094,7 @@ LayoutConfig(void)
 		    else
 			iref->iref_option_lst =
 			    xf86addNewOption(iref->iref_option_lst,
-					  "CorePointer", NULL);
+					  XtNewString("CorePointer"), NULL);
 		    option = xf86findOption(mref->iref_option_lst,
 					    "CorePointer");
 		    XtFree(option->opt_name);
@@ -2221,7 +2192,7 @@ LayoutConfig(void)
 		    else
 			iref->iref_option_lst =
 			    xf86addNewOption(iref->iref_option_lst,
-					  "CoreKeyboard", NULL);
+					  XtNewString("CoreKeyboard"), NULL);
 		    option = xf86findOption(kref->iref_option_lst,
 					    "CoreKeyboard");
 		    XtFree(option->opt_name);

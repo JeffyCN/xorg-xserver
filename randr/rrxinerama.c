@@ -116,14 +116,15 @@ ProcRRXineramaGetState(ClientPtr client)
     REQUEST(xPanoramiXGetStateReq);
     WindowPtr			pWin;
     xPanoramiXGetStateReply	rep;
-    register int		n;
+    register int		n, rc;
     ScreenPtr			pScreen;
     rrScrPrivPtr		pScrPriv;
     Bool			active = FALSE;
 
     REQUEST_SIZE_MATCH(xPanoramiXGetStateReq);
-    pWin = LookupWindow(stuff->window, client);
-    if(!pWin) return BadWindow;
+    rc = dixLookupWindow(&pWin, stuff->window, client, DixUnknownAccess);
+    if(rc != Success)
+	return rc;
 
     pScreen = pWin->drawable.pScreen;
     pScrPriv = rrGetScrPriv(pScreen);
@@ -147,12 +148,6 @@ ProcRRXineramaGetState(ClientPtr client)
 }
 
 static Bool
-RRXineramaScreenActive (ScreenPtr pScreen)
-{
-    return rrGetScrPriv(pScreen) != NULL;
-}
-
-static Bool
 RRXineramaCrtcActive (RRCrtcPtr crtc)
 {
     return crtc->mode != NULL && crtc->numOutputs > 0;
@@ -164,7 +159,7 @@ RRXineramaScreenCount (ScreenPtr pScreen)
     int	i, n;
     
     n = 0;
-    if (RRXineramaScreenActive (pScreen))
+    if (rrGetScrPriv (pScreen))
     {
 	rrScrPriv(pScreen);
 	for (i = 0; i < pScrPriv->numCrtcs; i++)
@@ -174,17 +169,24 @@ RRXineramaScreenCount (ScreenPtr pScreen)
     return n;
 }
 
+static Bool
+RRXineramaScreenActive (ScreenPtr pScreen)
+{
+    return RRXineramaScreenCount (pScreen) > 0;
+}
+
 int
 ProcRRXineramaGetScreenCount(ClientPtr client)
 {
     REQUEST(xPanoramiXGetScreenCountReq);
     WindowPtr				pWin;
     xPanoramiXGetScreenCountReply	rep;
-    register int			n;
+    register int			n, rc;
 
     REQUEST_SIZE_MATCH(xPanoramiXGetScreenCountReq);
-    pWin = LookupWindow(stuff->window, client);
-    if(!pWin) return BadWindow;
+    rc = dixLookupWindow(&pWin, stuff->window, client, DixUnknownAccess);
+    if (rc != Success)
+	return rc;
     
     rep.type = X_Reply;
     rep.length = 0;
@@ -206,11 +208,12 @@ ProcRRXineramaGetScreenSize(ClientPtr client)
     WindowPtr				pWin, pRoot;
     ScreenPtr				pScreen;
     xPanoramiXGetScreenSizeReply	rep;
-    register int			n;
+    register int			n, rc;
 
     REQUEST_SIZE_MATCH(xPanoramiXGetScreenSizeReq);
-    pWin = LookupWindow (stuff->window, client);
-    if(!pWin)  return BadWindow;
+    rc = dixLookupWindow(&pWin, stuff->window, client, DixUnknownAccess);
+    if (rc != Success)
+	return rc;
 
     pScreen = pWin->drawable.pScreen;
     pRoot = WindowTable[pScreen->myNum];

@@ -19,7 +19,6 @@
  * TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
  * PERFORMANCE OF THIS SOFTWARE.
  */
-/* $Header$ */
 
 #ifdef HAVE_DIX_CONFIG_H
 #include <dix-config.h>
@@ -169,7 +168,3 @@ cwFiniRender (ScreenPtr pScreen);
 
 void
 miInitializeCompositeWrapper(ScreenPtr pScreen);
-
-/* Must be called before miInitializeCompositeWrapper */
-void
-miDisableCompositeWrapper(ScreenPtr pScreen);

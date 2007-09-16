@@ -21,6 +21,8 @@ install-sh
 libtool
 ltmain.sh
 missing
+tags
+ylwrap
 xorg-server.pc
 stamp-h?
 do-not-use-config.h
@@ -267,3 +269,4 @@ mfb/mfbteblack.c
 mfb/mfbtewhite.c
 mfb/mfbtileC.c
 mfb/mfbtileG.c
+.*.swp
