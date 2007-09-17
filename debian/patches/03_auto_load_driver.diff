@@ -114,7 +114,7 @@ Index: xorg-server/hw/xfree86/common/xf86AutoConfig.c
 +            }
 +            len = strlen(direntry->d_name);
 +            /* A tiny bit of sanity checking. We should probably do better */
-+            if (strncmp(direntry->d_name[len-4], ".ids", 4) == 0) {
++            if (strncmp(&(direntry->d_name[len-4]), ".ids", 4) == 0) {
 +                /* We need the full path name to open the file */
 +                strncpy(path_name, "/usr/share/xserver-xorg/pci/", 256);
 +                strncat(path_name, direntry->d_name, (256 - strlen(path_name)));
