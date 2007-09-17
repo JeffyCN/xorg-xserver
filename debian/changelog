@@ -1,5 +1,6 @@
 xorg-server (2:1.4-3) UNRELEASED; urgency=low
 
+  [ David Nusinow ]
   * Minor cleanups of 03_autoload_drivers.diff. Thanks to Julien for
     spotting all these ugly bits
     + Newline after #else when picking the driver (this is the failsafe
@@ -8,7 +9,10 @@ xorg-server (2:1.4-3) UNRELEASED; urgency=low
       for ".ids"
     + Use strncpy instead of strncat unnecessarily
 
- -- David Nusinow <dnusinow@debian.org>  Sun, 16 Sep 2007 20:18:34 -0400
+  [ Brice Goglin ]
+  * Build the Xfbdev server in new package xserver-xfbdev, closes: #439764.
+
+ -- Brice Goglin <bgoglin@debian.org>  Mon, 17 Sep 2007 07:50:56 +0200
 
 xorg-server (2:1.4-2) unstable; urgency=low
 
