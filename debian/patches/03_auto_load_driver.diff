@@ -1,7 +1,7 @@
 Index: xorg-server/hw/xfree86/common/xf86AutoConfig.c
 ===================================================================
---- xorg-server.orig/hw/xfree86/common/xf86AutoConfig.c	2007-09-16 19:14:28.000000000 -0400
-+++ xorg-server/hw/xfree86/common/xf86AutoConfig.c	2007-09-16 19:22:30.000000000 -0400
+--- xorg-server.orig/hw/xfree86/common/xf86AutoConfig.c	2007-09-16 20:14:26.000000000 -0400
++++ xorg-server/hw/xfree86/common/xf86AutoConfig.c	2007-09-16 20:18:17.000000000 -0400
 @@ -39,6 +39,7 @@
  #include "xf86Config.h"
  #include "xf86Priv.h"
@@ -10,7 +10,7 @@ Index: xorg-server/hw/xfree86/common/xf86AutoConfig.c
  
  /* Sections for the default built-in configuration. */
  
-@@ -287,3 +288,200 @@
+@@ -287,3 +288,199 @@
  
      return (ret == CONFIG_OK);
  }
@@ -116,8 +116,7 @@ Index: xorg-server/hw/xfree86/common/xf86AutoConfig.c
 +            /* A tiny bit of sanity checking. We should probably do better */
 +            if (strncmp(direntry->d_name[len-4], ".ids", 4) == 0) {
 +                /* We need the full path name to open the file */
-+                path_name[0] = '\0';
-+                strncat(path_name, "/usr/share/xserver-xorg/pci/", 256);
++                strncpy(path_name, "/usr/share/xserver-xorg/pci/", 256);
 +                strncat(path_name, direntry->d_name, (256 - strlen(path_name)));
 +                fp = fopen(path_name, "r");
 +                if (fp == NULL) {
@@ -213,8 +212,8 @@ Index: xorg-server/hw/xfree86/common/xf86AutoConfig.c
 +}
 Index: xorg-server/hw/xfree86/common/xf86Config.c
 ===================================================================
---- xorg-server.orig/hw/xfree86/common/xf86Config.c	2007-09-16 19:14:28.000000000 -0400
-+++ xorg-server/hw/xfree86/common/xf86Config.c	2007-09-16 19:15:52.000000000 -0400
+--- xorg-server.orig/hw/xfree86/common/xf86Config.c	2007-09-16 20:14:26.000000000 -0400
++++ xorg-server/hw/xfree86/common/xf86Config.c	2007-09-16 20:15:29.000000000 -0400
 @@ -1928,8 +1928,10 @@
  	    return FALSE;
      }
@@ -249,8 +248,8 @@ Index: xorg-server/hw/xfree86/common/xf86Config.c
      devicep->board = conf_device->dev_board;
 Index: xorg-server/hw/xfree86/common/xf86Config.h
 ===================================================================
---- xorg-server.orig/hw/xfree86/common/xf86Config.h	2007-09-16 19:14:28.000000000 -0400
-+++ xorg-server/hw/xfree86/common/xf86Config.h	2007-09-16 19:15:52.000000000 -0400
+--- xorg-server.orig/hw/xfree86/common/xf86Config.h	2007-09-16 20:14:26.000000000 -0400
++++ xorg-server/hw/xfree86/common/xf86Config.h	2007-09-16 20:15:29.000000000 -0400
 @@ -34,6 +34,8 @@
  #define _xf86_config_h
  
@@ -271,8 +270,8 @@ Index: xorg-server/hw/xfree86/common/xf86Config.h
  #endif /* _xf86_config_h */
 Index: xorg-server/hw/xfree86/common/xf86Init.c
 ===================================================================
---- xorg-server.orig/hw/xfree86/common/xf86Init.c	2007-09-16 19:14:28.000000000 -0400
-+++ xorg-server/hw/xfree86/common/xf86Init.c	2007-09-16 19:15:52.000000000 -0400
+--- xorg-server.orig/hw/xfree86/common/xf86Init.c	2007-09-16 20:14:26.000000000 -0400
++++ xorg-server/hw/xfree86/common/xf86Init.c	2007-09-16 20:15:29.000000000 -0400
 @@ -347,6 +347,15 @@
      }
  
@@ -291,8 +290,8 @@ Index: xorg-server/hw/xfree86/common/xf86Init.c
        xfree(modulelist);
 Index: xorg-server/hw/xfree86/parser/Screen.c
 ===================================================================
---- xorg-server.orig/hw/xfree86/parser/Screen.c	2007-09-16 19:14:28.000000000 -0400
-+++ xorg-server/hw/xfree86/parser/Screen.c	2007-09-16 19:15:52.000000000 -0400
+--- xorg-server.orig/hw/xfree86/parser/Screen.c	2007-09-16 20:14:26.000000000 -0400
++++ xorg-server/hw/xfree86/parser/Screen.c	2007-09-16 20:15:29.000000000 -0400
 @@ -526,15 +526,7 @@
  			}
  		}
@@ -312,8 +311,8 @@ Index: xorg-server/hw/xfree86/parser/Screen.c
  		while (adaptor)
 Index: xorg-server/hw/xfree86/parser/read.c
 ===================================================================
---- xorg-server.orig/hw/xfree86/parser/read.c	2007-09-16 19:14:28.000000000 -0400
-+++ xorg-server/hw/xfree86/parser/read.c	2007-09-16 19:15:52.000000000 -0400
+--- xorg-server.orig/hw/xfree86/parser/read.c	2007-09-16 20:14:26.000000000 -0400
++++ xorg-server/hw/xfree86/parser/read.c	2007-09-16 20:15:29.000000000 -0400
 @@ -80,8 +80,8 @@
  static int
  xf86validateConfig (XF86ConfigPtr p)
