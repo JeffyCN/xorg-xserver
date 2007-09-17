@@ -1,8 +1,10 @@
-xorg-server (2:1.4-3) unstable; urgency=low
+xorg-server (2:1.4-3) UNRELEASED; urgency=low
 
   * Minor cleanups of 03_autoload_drivers.diff
     + Newline after #else when picking the driver (this is the failsafe
       choice)
+    + Change by hacked "ids" file name suffix check to use strncmp and check
+      for ".ids"
 
  -- David Nusinow <dnusinow@debian.org>  Sun, 16 Sep 2007 19:14:30 -0400
 
