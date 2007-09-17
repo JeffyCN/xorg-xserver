@@ -182,6 +182,21 @@ Description: Next Generation Nested X Server
  .
  This package is built from the X.org xserver module.
 
+Package: xserver-xfbdev
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Recommends: xbase-clients
+Description: Linux framebuffer device tiny X server
+ xserver-xfbdev is a Linux framebuffer device tiny X server based on the
+ kdrive X server.
+ .
+ More information about X.Org can be found at:
+ <URL:http://www.X.org>
+ <URL:http://xorg.freedesktop.org>
+ <URL:http://lists.freedesktop.org/mailman/listinfo/xorg>
+ .
+ This package is built from the X.org xserver module.
+
 #Package: xprint
 #Architecture: any
 #Depends: ${shlibs:Depends}, ${misc:Depends}, xprint-common, libxfont1 (>= 1:1.1)
