@@ -1,22 +1,14 @@
-#
-#    Translators, if you are not familiar with the PO format, gettext
-#    documentation is worth reading, especially sections dedicated to
-#    this format, e.g. by running:
-#         info -n '(gettext)PO Files'
-#         info -n '(gettext)Header Entry'
-#
-#    Some information specific to po-debconf are available at
-#            /usr/share/doc/po-debconf/README-trans
-#         or http://www.debian.org/intl/l10n/po-debconf/README-trans
-#
-#    Developers do not need to manually edit POT or PO files.
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-03-16 11:10+1100\n"
+"Report-Msgid-Bugs-To: debian-x@lists.debian.org\n"
+"POT-Creation-Date: 2007-09-18 20:35+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -26,25 +18,25 @@ msgstr ""
 
 #. Type: string
 #. Description
-#: ../xprint-common.templates:4
-msgid "Default printer resolution"
+#: ../xprint-common.templates:2001
+msgid "Default printer resolution:"
 msgstr ""
 
 #. Type: string
 #. Description
-#: ../xprint-common.templates:4
+#: ../xprint-common.templates:2001
 msgid ""
-"By default Xprint assumes a printer resolution of 600dpi. This should be "
-"fine for the majority of printers today."
+"By default, Xprint assumes a printer resolution of 600 dpi. This should be "
+"well suited for the majority of printers."
 msgstr ""
 
 #. Type: string
 #. Description
-#: ../xprint-common.templates:4
+#: ../xprint-common.templates:2001
 msgid ""
-"On certain 1200dpi printers, however, the image might appear squashed in the "
-"corner of the page, or it might be blown up too large on 300dpi printers. If "
-"you are experiencing these kinds of printing problems, you may want to set "
-"the default printer resolution to a more appropriate value. See /usr/share/"
-"doc/xprint-common/README.printing-problems.gz for more details."
+"On certain 1200 dpi printers, however, the image might appear squashed in "
+"the corner of the page, or it might be blown up too large on 300 dpi "
+"printers. If you are experiencing such printing problems, you may want to "
+"set the default printer resolution to a more appropriate value. See /usr/"
+"share/doc/xprint-common/README.printing-problems.gz for more details."
 msgstr ""

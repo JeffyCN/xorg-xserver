@@ -5,8 +5,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: xprint\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2007-01-13 20:34+0100\n"
+"Report-Msgid-Bugs-To: debian-x@lists.debian.org\n"
+"POT-Creation-Date: 2007-09-18 20:35+0200\n"
 "PO-Revision-Date: 2007-01-24 10:21+0100\n"
 "Last-Translator: Jacobo Tarrio <jtarrio@debian.org>\n"
 "Language-Team: Galician <proxecto@trasno.net>\n"
@@ -16,29 +16,43 @@ msgstr ""
 
 #. Type: string
 #. Description
-#: ../xprint-common.templates:1001
-msgid "Default printer resolution"
+#: ../xprint-common.templates:2001
+#, fuzzy
+#| msgid "Default printer resolution"
+msgid "Default printer resolution:"
 msgstr "Resolución de impresión por defecto"
 
 #. Type: string
 #. Description
-#: ../xprint-common.templates:1001
+#: ../xprint-common.templates:2001
+#, fuzzy
+#| msgid ""
+#| "By default Xprint assumes a printer resolution of 600dpi. This should be "
+#| "fine for the majority of printers today."
 msgid ""
-"By default Xprint assumes a printer resolution of 600dpi. This should be "
-"fine for the majority of printers today."
+"By default, Xprint assumes a printer resolution of 600 dpi. This should be "
+"well suited for the majority of printers."
 msgstr ""
 "Por defecto, Xprint supón unha resolución de impresión de 600ppp. Este valor "
 "é axeitado para a maioría das impresoras actuais."
 
 #. Type: string
 #. Description
-#: ../xprint-common.templates:1001
+#: ../xprint-common.templates:2001
+#, fuzzy
+#| msgid ""
+#| "On certain 1200dpi printers, however, the image might appear squashed in "
+#| "the corner of the page, or it might be blown up too large on 300dpi "
+#| "printers. If you are experiencing these kinds of printing problems, you "
+#| "may want to set the default printer resolution to a more appropriate "
+#| "value. See /usr/share/doc/xprint-common/README.printing-problems.gz for "
+#| "more details."
 msgid ""
-"On certain 1200dpi printers, however, the image might appear squashed in the "
-"corner of the page, or it might be blown up too large on 300dpi printers. If "
-"you are experiencing these kinds of printing problems, you may want to set "
-"the default printer resolution to a more appropriate value. See /usr/share/"
-"doc/xprint-common/README.printing-problems.gz for more details."
+"On certain 1200 dpi printers, however, the image might appear squashed in "
+"the corner of the page, or it might be blown up too large on 300 dpi "
+"printers. If you are experiencing such printing problems, you may want to "
+"set the default printer resolution to a more appropriate value. See /usr/"
+"share/doc/xprint-common/README.printing-problems.gz for more details."
 msgstr ""
 "Nembargantes, nalgunhas impresoras de 1200ppp a imaxe pode aparecer "
 "aplastada nunha esquina da páxina, ou pode aparecer grande de máis en "

@@ -5,8 +5,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: xprint 1/0.1.0.alpha1-11\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-03-16 11:10+1100\n"
+"Report-Msgid-Bugs-To: debian-x@lists.debian.org\n"
+"POT-Creation-Date: 2007-09-18 20:35+0200\n"
 "PO-Revision-Date: 2005-08-21 20:45+0930\n"
 "Last-Translator: Clytie Siddall <clytie@riverland.net.au>\n"
 "Language-Team: Vietnamese <gnomevi-list@lists.sourceforge.net>\n"
@@ -18,25 +18,47 @@ msgstr ""
 
 #. Type: string
 #. Description
-#: ../xprint-common.templates:4
-msgid "Default printer resolution"
+#: ../xprint-common.templates:2001
+#, fuzzy
+#| msgid "Default printer resolution"
+msgid "Default printer resolution:"
 msgstr "Độ phân giải máy in mặc định"
 
 #. Type: string
 #. Description
-#: ../xprint-common.templates:4
+#: ../xprint-common.templates:2001
+#, fuzzy
+#| msgid ""
+#| "By default Xprint assumes a printer resolution of 600dpi. This should be "
+#| "fine for the majority of printers today."
 msgid ""
-"By default Xprint assumes a printer resolution of 600dpi. This should be "
-"fine for the majority of printers today."
-msgstr "Mặc định là trình Xprint giả sử độ phân giải là 600 chấm/insơ. Đây nên hữu ích cho phần lớn máy in hiện thời."
+"By default, Xprint assumes a printer resolution of 600 dpi. This should be "
+"well suited for the majority of printers."
+msgstr ""
+"Mặc định là trình Xprint giả sử độ phân giải là 600 chấm/insơ. Đây nên hữu "
+"ích cho phần lớn máy in hiện thời."
 
 #. Type: string
 #. Description
-#: ../xprint-common.templates:4
+#: ../xprint-common.templates:2001
+#, fuzzy
+#| msgid ""
+#| "On certain 1200dpi printers, however, the image might appear squashed in "
+#| "the corner of the page, or it might be blown up too large on 300dpi "
+#| "printers. If you are experiencing these kinds of printing problems, you "
+#| "may want to set the default printer resolution to a more appropriate "
+#| "value. See /usr/share/doc/xprint-common/README.printing-problems.gz for "
+#| "more details."
 msgid ""
-"On certain 1200dpi printers, however, the image might appear squashed in the "
-"corner of the page, or it might be blown up too large on 300dpi printers. If "
-"you are experiencing these kinds of printing problems, you may want to set "
-"the default printer resolution to a more appropriate value. See /usr/share/"
-"doc/xprint-common/README.printing-problems.gz for more details."
-msgstr "Tuy nhiên, trên một số máy in 1200 chấm/insơ nào đó, có lẽ ảnh sẽ hình như bị nén vào góc trang, hoặc nó có lẽ bị bung quá lớn trên máy in 300 chấm/insơ. Nếu bạn gặp khó khăn in như thế, bạn có thể muốn đặt độ phân giải máy in mặc định thành một giá trị thích hợp với máy in bạn. Hãy xem tập tin Đọc Đi </usr/share/doc/xprint-common/README.printing-problems.gz> để tìm chi tiết."
+"On certain 1200 dpi printers, however, the image might appear squashed in "
+"the corner of the page, or it might be blown up too large on 300 dpi "
+"printers. If you are experiencing such printing problems, you may want to "
+"set the default printer resolution to a more appropriate value. See /usr/"
+"share/doc/xprint-common/README.printing-problems.gz for more details."
+msgstr ""
+"Tuy nhiên, trên một số máy in 1200 chấm/insơ nào đó, có lẽ ảnh sẽ hình như "
+"bị nén vào góc trang, hoặc nó có lẽ bị bung quá lớn trên máy in 300 chấm/"
+"insơ. Nếu bạn gặp khó khăn in như thế, bạn có thể muốn đặt độ phân giải máy "
+"in mặc định thành một giá trị thích hợp với máy in bạn. Hãy xem tập tin Đọc "
+"Đi </usr/share/doc/xprint-common/README.printing-problems.gz> để tìm chi "
+"tiết."
