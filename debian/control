@@ -44,7 +44,7 @@ Suggests: xfonts-100dpi | xfonts-75dpi, xfonts-scalable
 Conflicts: xserver-xorg (<< 6.8.2-38), xserver-xfree86 (<< 1:7.0.0), xserver-xorg-video, xserver-common, xserver-xorg-video-1.0, xserver-xorg-input, xserver-xorg-video-1.9
 Replaces: xserver-xorg (<< 6.8.2-38), xserver-xfree86 (<< 1:7.0.0), xserver-common
 Provides: xserver
-Description: X.Org X server -- core server
+Description: X.Org X server - core server
  The X.Org X server is an X server for several architectures and operating
  systems, which is derived from the XFree86 4.x series of X servers.
  .
@@ -53,8 +53,8 @@ Description: X.Org X server -- core server
  .
  The X.Org server either needs fonts installed on the local host, or needs to
  know of a remote hosts that provides font services (with xfs, for instance).
- The former means that fonts packages are mandatory.  The latter means that
- font packages may be gratuitous.  To err on the side of caution, install at
+ The former means that fonts packages are mandatory. The latter means that
+ font packages may be gratuitous. To err on the side of caution, install at
  least the xfonts-base, xfonts-100dpi or xfonts-75dpi, and xfonts-scalable
  packages.
  .
@@ -68,7 +68,7 @@ Description: X.Org X server -- core server
 Package: xserver-xorg-dev
 Architecture: any
 Depends: ${misc:Depends}, libpixman-1-dev, x11proto-core-dev, x11proto-input-dev (>= 1.4), x11proto-xext-dev, x11proto-video-dev, x11proto-randr-dev (>= 1.2), x11proto-render-dev (>= 2:0.9.3), x11proto-fonts-dev
-Description: X.Org X server -- development files
+Description: X.Org X server - development files
  This package provides development files for the X.Org ('Xorg') X server.
  This is not quite the same as the DDK (Driver Development Kit) from the
  XFree86 4.x and X.Org 6.7, 6.8 and 6.9 series of servers; it provides
@@ -88,14 +88,14 @@ Description: X.Org X server -- development files
 #Package: xdmx
 #Architecture: any
 #Depends: ${shlibs:Depends}, ${misc:Depends}
-#Description: Distributed Multihead X server
+#Description: distributed multihead X server
 # Xdmx is a proxy X server that uses one or more other X servers as its
-# display device(s).  It provides multi-head X functionality for displays that
-# might be located on different machines.  Xdmx functions as a front-end X server
-# that acts as a proxy to a set of back-end X servers.  All of the visible
-# rendering is passed to the back-end X servers.  Clients connect to the Xdmx
+# display device(s). It provides multi-head X functionality for displays that
+# might be located on different machines. Xdmx functions as a front-end X server
+# that acts as a proxy to a set of back-end X servers. All of the visible
+# rendering is passed to the back-end X servers. Clients connect to the Xdmx
 # front-end, and everything appears as it would in a regular multi-head
-# configuration.  If Xinerama is enabled (e.g., with +xinerama on the command
+# configuration. If Xinerama is enabled (e.g., with +xinerama on the command
 # line), the clients see a single large screen.
 # .
 # More information about X.Org can be found at:
@@ -144,8 +144,8 @@ Depends: ${shlibs:Depends}, ${misc:Depends}
 Recommends: xbase-clients, xfonts-base
 Description: Virtual Framebuffer 'fake' X server
  Xvfb provides an X server that can run on machines with no display hardware
- and no physical input devices.  It emulates a dumb framebuffer using virtual
- memory.  The primary use of this server was intended to be server testing,
+ and no physical input devices. It emulates a dumb framebuffer using virtual
+ memory. The primary use of this server was intended to be server testing,
  but other novel uses for it have been found, including testing clients
  against unusual depths and screen configurations, doing batch processing with
  Xvfb as a background rendering engine, load testing, as an aid to porting the
@@ -155,7 +155,7 @@ Description: Virtual Framebuffer 'fake' X server
  .
  This package also contains a convenience script called xvfb-run which
  simplifies the automated execution of X clients in a virtual server
- environment.  This convenience script requires the use of the xauth
+ environment. This convenience script requires the use of the xauth
  program.
  .
  More information about X.Org can be found at:
@@ -169,9 +169,9 @@ Package: xserver-xephyr
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
 Recommends: xbase-clients
-Description: Next Generation Nested X Server
- xserver-xephyr is an X server that can be run inside another X server,
- much like Xnest. Xephyr though, is based on the kdrive X server, and as a
+Description: nested X server
+ Xephyr is an X server that can be run inside another X server,
+ much like xnest. It is based on the kdrive X server, and as a
  result it supports newer extensions than Xnest, including render and
  composite.
  .
@@ -202,14 +202,14 @@ Description: Linux framebuffer device tiny X server
 #Depends: ${shlibs:Depends}, ${misc:Depends}, xprint-common, libxfont1 (>= 1:1.1)
 #Recommends: xprint-utils
 #Conflicts: xprt (<= 4.3.0.dfsg.1-10)
-#Description: Xprint - the X11 print system (binary)
+#Description: X11 print system (binary)
 # Xprint is an advanced printing system which enables X11 applications
-# to use devices like printers, FAX or create documents in formats like
+# to use devices like printers, fax or create documents in formats like
 # PostScript, PDF, PCL, etc.
 # .
 # This package provides Xprt, the Xprint server compiled from
-# xprint.mozdev.org, an X.org subproject.  Xprint provides superior support
-# for printing from mozilla, including non-latin characters and MathML.
+# xprint.mozdev.org, an X.org subproject. Xprint provides superior support
+# for printing from Mozilla, including non-Latin characters and MathML.
 # TrueType fonts are supported.
 # .
 # Xprint uses ttf2pt1 internally for some font support.
@@ -232,7 +232,7 @@ Description: Linux framebuffer device tiny X server
 # to use devices like printers, FAX or create documents in formats like
 # PostScript, PDF, PCL, etc.
 # .
-# This package provides the configuration and postscript definition files
+# This package provides the configuration and Postscript definition files
 # required to run Xprt, the Xprint server. Xprt is provided by xprint.
 # .
 # More information about X.Org can be found at:
@@ -253,5 +253,5 @@ Description: Xorg - the X.Org X server (debugging symbols)
  The X.Org server supports most modern graphics hardware from most vendors,
  and supersedes all XFree86 X servers.
  .
- This package provides debugging symbols for the Xorg X server and associated
+ This package provides debugging symbols for the X.org X server and associated
  modules.

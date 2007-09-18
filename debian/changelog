@@ -12,6 +12,11 @@ xorg-server (2:1.4-3) UNRELEASED; urgency=low
   [ Brice Goglin ]
   * Build the Xfbdev server in new package xserver-xfbdev, closes: #439764.
 
+  [ Christian Perrier ]
+  * Debconf templates and debian/control reviewed by the debian-l10n-
+    english team as part of the Smith review project. Closes: #442210
+  * Debconf translation updates:
+
  -- Brice Goglin <bgoglin@debian.org>  Mon, 17 Sep 2007 07:50:56 +0200
 
 xorg-server (2:1.4-2) unstable; urgency=low
