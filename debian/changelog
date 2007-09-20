@@ -28,7 +28,13 @@ xorg-server (2:1.4-3) UNRELEASED; urgency=low
     - Hebrew. Closes: #443204
     - Bulgarian. Closes: #443226
 
- -- Brice Goglin <bgoglin@debian.org>  Mon, 17 Sep 2007 07:50:56 +0200
+  [ Julien Cristau ]
+  * Add patch backported from upstream commit
+    13949f997289068354e83bc83e50d97b8232efb1 to remove the type1 module: patch
+    05_kill_type1.diff replaces 48_disable_type1.diff, and is now enabled in
+    debian/patches/series.
+
+ -- Julien Cristau <jcristau@debian.org>  Tue, 18 Sep 2007 21:05:33 +0200
 
 xorg-server (2:1.4-2) unstable; urgency=low
 

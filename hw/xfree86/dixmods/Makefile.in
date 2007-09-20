@@ -142,12 +142,6 @@ libshadow_la_OBJECTS = $(am_libshadow_la_OBJECTS)
 libshadow_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
 	$(libshadow_la_LDFLAGS) $(LDFLAGS) -o $@
-libtype1_la_LIBADD =
-am_libtype1_la_OBJECTS = type1mod.lo
-libtype1_la_OBJECTS = $(am_libtype1_la_OBJECTS)
-libtype1_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
-	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
-	$(libtype1_la_LDFLAGS) $(LDFLAGS) -o $@
 libwfb_la_DEPENDENCIES = $(top_builddir)/fb/libwfb.la
 am_libwfb_la_OBJECTS = libwfb_la-fbcmap_mi.lo libwfb_la-fbmodule.lo
 libwfb_la_OBJECTS = $(am_libwfb_la_OBJECTS)
@@ -182,16 +176,16 @@ SOURCES = $(libGLcore_la_SOURCES) $(libafb_la_SOURCES) \
 	$(libfb_la_SOURCES) $(libfreetype_la_SOURCES) \
 	$(libglx_la_SOURCES) $(libmfb_la_SOURCES) \
 	$(librecord_la_SOURCES) $(libshadow_la_SOURCES) \
-	$(libtype1_la_SOURCES) $(libwfb_la_SOURCES) \
-	$(libxorgxkb_la_SOURCES) $(libxtrap_la_SOURCES)
+	$(libwfb_la_SOURCES) $(libxorgxkb_la_SOURCES) \
+	$(libxtrap_la_SOURCES)
 DIST_SOURCES = $(libGLcore_la_SOURCES) $(libafb_la_SOURCES) \
 	$(libcfb_la_SOURCES) $(libcfb32_la_SOURCES) \
 	$(libdbe_la_SOURCES) $(libdixmods_la_SOURCES) \
 	$(libfb_la_SOURCES) $(libfreetype_la_SOURCES) \
 	$(libglx_la_SOURCES) $(libmfb_la_SOURCES) \
 	$(librecord_la_SOURCES) $(libshadow_la_SOURCES) \
-	$(libtype1_la_SOURCES) $(libwfb_la_SOURCES) \
-	$(libxorgxkb_la_SOURCES) $(libxtrap_la_SOURCES)
+	$(libwfb_la_SOURCES) $(libxorgxkb_la_SOURCES) \
+	$(libxtrap_la_SOURCES)
 RECURSIVE_TARGETS = all-recursive check-recursive dvi-recursive \
 	html-recursive info-recursive install-data-recursive \
 	install-dvi-recursive install-exec-recursive \
@@ -514,9 +508,7 @@ extsmodule_LTLIBRARIES = librecord.la \
                          $(XTRAPMOD)
 
 fontsmoduledir = $(moduledir)/fonts
-fontsmodule_LTLIBRARIES = libfreetype.la \
-                          libtype1.la
-
+fontsmodule_LTLIBRARIES = libfreetype.la
 AM_CFLAGS = @XORG_CFLAGS@ @DIX_CFLAGS@
 INCLUDES = @XORG_INCS@ \
            -I$(top_srcdir)/dbe \
@@ -565,8 +557,6 @@ libshadow_la_LIBADD = $(top_builddir)/miext/shadow/libshadow.la
 libshadow_la_SOURCES = shmodule.c
 libfreetype_la_LDFLAGS = -avoid-version
 libfreetype_la_SOURCES = ftmodule.c
-libtype1_la_LDFLAGS = -avoid-version
-libtype1_la_SOURCES = type1mod.c
 libdixmods_la_SOURCES = $(top_srcdir)/mi/miinitext.c
 libdixmods_la_CFLAGS = -DXFree86LOADER $(AM_CFLAGS)
 libxorgxkb_la_SOURCES = xkbVT.c xkbPrivate.c xkbKillSrv.c
@@ -721,8 +711,6 @@ librecord.la: $(librecord_la_OBJECTS) $(librecord_la_DEPENDENCIES)
 	$(librecord_la_LINK) -rpath $(extsmoduledir) $(librecord_la_OBJECTS) $(librecord_la_LIBADD) $(LIBS)
 libshadow.la: $(libshadow_la_OBJECTS) $(libshadow_la_DEPENDENCIES) 
 	$(libshadow_la_LINK) -rpath $(moduledir) $(libshadow_la_OBJECTS) $(libshadow_la_LIBADD) $(LIBS)
-libtype1.la: $(libtype1_la_OBJECTS) $(libtype1_la_DEPENDENCIES) 
-	$(libtype1_la_LINK) -rpath $(fontsmoduledir) $(libtype1_la_OBJECTS) $(libtype1_la_LIBADD) $(LIBS)
 libwfb.la: $(libwfb_la_OBJECTS) $(libwfb_la_DEPENDENCIES) 
 	$(libwfb_la_LINK) -rpath $(moduledir) $(libwfb_la_OBJECTS) $(libwfb_la_LIBADD) $(LIBS)
 libxorgxkb.la: $(libxorgxkb_la_OBJECTS) $(libxorgxkb_la_DEPENDENCIES) 
@@ -751,7 +739,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/mfbmodule.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/recordmod.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/shmodule.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/type1mod.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xf86XTrapModule.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xkbKillSrv.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xkbPrivate.Plo@am__quote@
