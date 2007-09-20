@@ -16,11 +16,17 @@ xorg-server (2:1.4-3) UNRELEASED; urgency=low
   * Debconf templates and debian/control reviewed by the debian-l10n-
     english team as part of the Smith review project. Closes: #442210
   * Debconf translation updates:
-    - Hungarian. Closes: #442956
-    - Tamil. Closes: #443027
     - Swedish. Closes: #443047
     - Czech. Closes: #443100
     - French
+    - Vietnamese. Closes: #443174
+  * New debconf translations
+    - Hungarian. Closes: #442956
+    - Thai. Closes: #442962
+    - Tamil. Closes: #443027
+    - Basque. Closes: #443156
+    - Hebrew. Closes: #443204
+    - Bulgarian. Closes: #443226
 
  -- Brice Goglin <bgoglin@debian.org>  Mon, 17 Sep 2007 07:50:56 +0200
 
