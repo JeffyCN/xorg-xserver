@@ -20,6 +20,7 @@ xorg-server (2:1.4-3) UNRELEASED; urgency=low
     - Czech. Closes: #443100
     - French
     - Vietnamese. Closes: #443174
+    - Italian. Closes: #422414
   * New debconf translations
     - Hungarian. Closes: #442956
     - Thai. Closes: #442962
