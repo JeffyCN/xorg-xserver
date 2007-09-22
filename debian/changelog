@@ -8,6 +8,11 @@ xorg-server (2:1.4-3) UNRELEASED; urgency=low
     + Change by hacked "ids" file name suffix check to use strncmp and check
       for ".ids"
     + Use strncpy instead of strncat unnecessarily
+  * Add support for a partially configured device section 
+    Implemented in 03_autoload_driver.diff. Now if you have a device section
+    but lack a driver, it'll use the settings. This will allow you to just
+    have a device section and enable EXA but not have to specify the driver or
+    anything else.
 
   [ Brice Goglin ]
   * Build the Xfbdev server in new package xserver-xfbdev, closes: #439764.
