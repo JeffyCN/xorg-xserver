@@ -16,6 +16,9 @@ xorg-server (2:1.4-3) UNRELEASED; urgency=low
 
   [ Brice Goglin ]
   * Build the Xfbdev server in new package xserver-xfbdev, closes: #439764.
+  * Add upstream commit 27ad5d74c20f01516a1bff73be283f8982fcf0fe as patch
+    44_XKB_mapping_changes_for_all_core-sending_devices.diff to fix broken
+    xmodmap invocation in .xsession, closes: #443044.
 
   [ Christian Perrier ]
   * Debconf templates and debian/control reviewed by the debian-l10n-
@@ -42,7 +45,7 @@ xorg-server (2:1.4-3) UNRELEASED; urgency=low
     debian/patches/series.
   * Don't build kdrive-based servers we're not shipping.
 
- -- Julien Cristau <jcristau@debian.org>  Sun, 23 Sep 2007 13:55:28 +0200
+ -- Brice Goglin <bgoglin@debian.org>  Sun, 23 Sep 2007 17:32:49 +0200
 
 xorg-server (2:1.4-2) unstable; urgency=low
 

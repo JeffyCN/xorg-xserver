@@ -10,6 +10,7 @@
 41_vbe_filter_less.diff
 42_fix_RemoveGeneralSocket_crash_from_dbus.diff
 43_allow_override_BIOS_EDID_preferred_mode.diff
+44_XKB_mapping_changes_for_all_core-sending_devices.diff
 #47_fbdevhw_magic_numbers.diff
 #51_xkb-and-loathing.diff
 91_ttf2pt1
