@@ -19,6 +19,9 @@ xorg-server (2:1.4-3) UNRELEASED; urgency=low
   * Add upstream commit 27ad5d74c20f01516a1bff73be283f8982fcf0fe as patch
     44_XKB_mapping_changes_for_all_core-sending_devices.diff to fix broken
     xmodmap invocation in .xsession, closes: #443044.
+  * Add upstream commit 0e800ca4651a947ccef239e6fe7bf64aab92257c as patch
+    45_GetKeyboardEvents_reject_out-of-range_keycodes.diff to fix crash
+    in GetKeyboardValuatorEvents, closes: #443697.
 
   [ Christian Perrier ]
   * Debconf templates and debian/control reviewed by the debian-l10n-
@@ -45,7 +48,7 @@ xorg-server (2:1.4-3) UNRELEASED; urgency=low
     debian/patches/series.
   * Don't build kdrive-based servers we're not shipping.
 
- -- Brice Goglin <bgoglin@debian.org>  Sun, 23 Sep 2007 17:32:49 +0200
+ -- Brice Goglin <bgoglin@debian.org>  Sun, 23 Sep 2007 18:23:39 +0200
 
 xorg-server (2:1.4-2) unstable; urgency=low
 

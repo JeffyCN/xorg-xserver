@@ -1,0 +1,33 @@
+From: Daniel Stone <daniel@fooishbar.org>
+Date: Sun, 23 Sep 2007 09:43:31 +0000 (+0300)
+Subject: GetKeyboardEvents: Reject out-of-range keycodes (bug #12528)
+X-Git-Url: http://gitweb.freedesktop.org/?p=xorg/xserver.git;a=commitdiff;h=0e800ca4651a947ccef239e6fe7bf64aab92257c
+
+GetKeyboardEvents: Reject out-of-range keycodes (bug #12528)
+
+We can only deal with keycodes between 8 and 255, so make sure that we never
+accept anything out of this range.
+
+http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=443697
+---
+
+--- a/dix/getevents.c
++++ b/dix/getevents.c
+@@ -402,6 +402,7 @@ GetKeyboardValuatorEvents(xEvent *events
+     if (!events)
+         return 0;
+ 
++    /* DO NOT WANT */
+     if (type != KeyPress && type != KeyRelease)
+         return 0;
+ 
+@@ -409,6 +410,9 @@ GetKeyboardValuatorEvents(xEvent *events
+         (pDev->coreEvents && !inputInfo.keyboard->key))
+         return 0;
+ 
++    if (key_code < 8 || key_code > 255)
++        return 0;
++
+     if (pDev->coreEvents)
+         numEvents = 2;
+     else
