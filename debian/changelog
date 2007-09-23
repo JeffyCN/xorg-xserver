@@ -40,8 +40,9 @@ xorg-server (2:1.4-3) UNRELEASED; urgency=low
     13949f997289068354e83bc83e50d97b8232efb1 to remove the type1 module: patch
     05_kill_type1.diff replaces 48_disable_type1.diff, and is now enabled in
     debian/patches/series.
+  * Don't build kdrive-based servers we're not shipping.
 
- -- Christian Perrier <bubulle@debian.org>  Sun, 23 Sep 2007 08:39:42 +0200
+ -- Julien Cristau <jcristau@debian.org>  Sun, 23 Sep 2007 13:55:28 +0200
 
 xorg-server (2:1.4-2) unstable; urgency=low
 
