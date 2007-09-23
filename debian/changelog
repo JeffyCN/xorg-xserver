@@ -8,7 +8,7 @@ xorg-server (2:1.4-3) UNRELEASED; urgency=low
     + Change by hacked "ids" file name suffix check to use strncmp and check
       for ".ids"
     + Use strncpy instead of strncat unnecessarily
-  * Add support for a partially configured device section 
+  * Add support for a partially configured device section
     Implemented in 03_autoload_driver.diff. Now if you have a device section
     but lack a driver, it'll use the settings. This will allow you to just
     have a device section and enable EXA but not have to specify the driver or
@@ -33,6 +33,7 @@ xorg-server (2:1.4-3) UNRELEASED; urgency=low
     - Basque. Closes: #443156
     - Hebrew. Closes: #443204
     - Bulgarian. Closes: #443226
+    - Finnish. Closes: #443611
 
   [ Julien Cristau ]
   * Add patch backported from upstream commit
@@ -40,7 +41,7 @@ xorg-server (2:1.4-3) UNRELEASED; urgency=low
     05_kill_type1.diff replaces 48_disable_type1.diff, and is now enabled in
     debian/patches/series.
 
- -- Julien Cristau <jcristau@debian.org>  Tue, 18 Sep 2007 21:05:33 +0200
+ -- Christian Perrier <bubulle@debian.org>  Sun, 23 Sep 2007 08:39:42 +0200
 
 xorg-server (2:1.4-2) unstable; urgency=low
 
