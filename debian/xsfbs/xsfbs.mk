@@ -272,29 +272,6 @@ prune-upstream-tree:
 	dh_testdir
 	grep -rvh '^#' debian/prune/ | xargs --no-run-if-empty rm -rf
 
-# Change to what should be the correct directory, ensure it is, and if
-# so, create the .orig.tar.gz file.  Exclude the debian directory and its
-# contents, and any .svn directories and their contents (so that we can safely
-# build an .orig.tar.gz from SVN checkout, not just an export).
-#
-# Note: This rule is for Debian package maintainers' convenience, and is not
-# needed for conventional build scenarios.
-#
-# This rule *IS* the recommended method for creating a new .orig.tar.gz file,
-# for the rare situations when one is needed.
-.PHONY: make-orig-tar-gz
-make-orig-tar-gz: clean prune-upstream-tree
-	( cd .. \
-	  && if [ $(shell basename $(CURDIR)) != $(SOURCE_NAME)-$(NO_EPOCH_VER) ]; then \
-	    echo "Our current working directory has the wrong name. Renaming..." >&2; \
-		mv $(CURDIR) $(SOURCE_NAME)-$(NO_EPOCH_VER); \
-	  fi; \
-	    tar --exclude=debian --exclude=debian/* \
-	        --exclude=.svn --exclude=.svn/* \
-	        -cf - $(SOURCE_NAME)-$(NO_EPOCH_VER) \
-	    | gzip -9 >$(SOURCE_NAME)_$(NO_EPOCH_VER).orig.tar.gz; \
-	   )
-
 # Verify that there are no offsets or fuzz in the patches we apply.
 #
 # Note: This rule is for Debian package maintainers' convenience, and is not
