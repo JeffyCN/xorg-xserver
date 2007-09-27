@@ -244,7 +244,7 @@ Description: nested X server
 #
 Package: xserver-xorg-core-dbg
 Architecture: any
-Depends: xserver-xorg-core (= ${Source-Version})
+Depends: xserver-xorg-core (= ${binary:Version})
 Priority: extra
 Description: Xorg - the X.Org X server (debugging symbols)
  The Xorg X server is an X server for several architectures and operating

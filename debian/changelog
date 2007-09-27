@@ -48,8 +48,9 @@ xorg-server (2:1.4-3) UNRELEASED; urgency=low
     05_kill_type1.diff replaces 48_disable_type1.diff, and is now enabled in
     debian/patches/series.
   * Don't build kdrive-based servers we're not shipping.
+  * Use ${binary:Version} instead of ${Source-Version}.
 
- -- Julien Cristau <jcristau@debian.org>  Wed, 26 Sep 2007 17:33:29 +0200
+ -- Julien Cristau <jcristau@debian.org>  Thu, 27 Sep 2007 20:47:19 +0200
 
 xorg-server (2:1.4-2) unstable; urgency=low
 
