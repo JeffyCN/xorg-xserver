@@ -44,14 +44,14 @@ Suggests: xfonts-100dpi | xfonts-75dpi, xfonts-scalable
 Conflicts: xserver-xorg (<< 6.8.2-38), xserver-xfree86 (<< 1:7.0.0), xserver-xorg-video, xserver-common, xserver-xorg-video-1.0, xserver-xorg-input, xserver-xorg-video-1.9
 Replaces: xserver-xorg (<< 6.8.2-38), xserver-xfree86 (<< 1:7.0.0), xserver-common
 Provides: xserver
-Description: X.Org X server - core server
- The X.Org X server is an X server for several architectures and operating
+Description: Xorg X server - core server
+ The Xorg X server is an X server for several architectures and operating
  systems, which is derived from the XFree86 4.x series of X servers.
  .
- The X.Org server supports most modern graphics hardware from most vendors,
+ The Xorg server supports most modern graphics hardware from most vendors,
  and supersedes all XFree86 X servers.
  .
- The X.Org server either needs fonts installed on the local host, or needs to
+ The Xorg server either needs fonts installed on the local host, or needs to
  know of a remote hosts that provides font services (with xfs, for instance).
  The former means that fonts packages are mandatory. The latter means that
  font packages may be gratuitous. To err on the side of caution, install at
@@ -68,7 +68,7 @@ Description: X.Org X server - core server
 Package: xserver-xorg-dev
 Architecture: any
 Depends: ${misc:Depends}, libpixman-1-dev, x11proto-core-dev, x11proto-input-dev (>= 1.4), x11proto-xext-dev, x11proto-video-dev, x11proto-randr-dev (>= 1.2), x11proto-render-dev (>= 2:0.9.3), x11proto-fonts-dev
-Description: X.Org X server - development files
+Description: Xorg X server - development files
  This package provides development files for the X.Org ('Xorg') X server.
  This is not quite the same as the DDK (Driver Development Kit) from the
  XFree86 4.x and X.Org 6.7, 6.8 and 6.9 series of servers; it provides
@@ -171,7 +171,7 @@ Depends: ${shlibs:Depends}, ${misc:Depends}
 Recommends: xbase-clients
 Description: nested X server
  Xephyr is an X server that can be run inside another X server,
- much like xnest. It is based on the kdrive X server, and as a
+ much like Xnest. It is based on the kdrive X server, and as a
  result it supports newer extensions than Xnest, including render and
  composite.
  .
@@ -247,11 +247,11 @@ Architecture: any
 Depends: xserver-xorg-core (= ${Source-Version})
 Priority: extra
 Description: Xorg - the X.Org X server (debugging symbols)
- The X.Org X server is an X server for several architectures and operating
+ The Xorg X server is an X server for several architectures and operating
  systems, which is derived from the XFree86 4.x series of X servers.
  .
- The X.Org server supports most modern graphics hardware from most vendors,
+ The Xorg server supports most modern graphics hardware from most vendors,
  and supersedes all XFree86 X servers.
  .
- This package provides debugging symbols for the X.org X server and associated
+ This package provides debugging symbols for the Xorg X server and associated
  modules.
