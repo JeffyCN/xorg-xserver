@@ -4,6 +4,7 @@
 04_auto_load_driver_no_conf.diff
 05_kill_type1.diff
 06_use_proc_instead_of_sysfs_for_pci_domains.diff
+07_autoconfig_screen_with_device_section.diff
 10_dont_look_in_home_for_config.diff -p0
 13_debian_add_xkbpath_env_variable.diff
 21_glx_align_fixes.patch

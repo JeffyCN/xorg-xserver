@@ -13,6 +13,10 @@ xorg-server (2:1.4-3) UNRELEASED; urgency=low
     but lack a driver, it'll use the settings. This will allow you to just
     have a device section and enable EXA but not have to specify the driver or
     anything else.
+  * Add 07_autoconfig_screen_with_device_section.diff
+    This patch allows the Screen section to not specify a device section. If
+    this happens, the server will automatically use the first device section
+    listed in the xorg.conf instead
 
   [ Brice Goglin ]
   * Allow building the Xfbdev server in new package xserver-xfbdev, but leave
@@ -50,7 +54,7 @@ xorg-server (2:1.4-3) UNRELEASED; urgency=low
   * Don't build kdrive-based servers we're not shipping.
   * Use ${binary:Version} instead of ${Source-Version}.
 
- -- Julien Cristau <jcristau@debian.org>  Thu, 27 Sep 2007 20:47:19 +0200
+ -- David Nusinow <dnusinow@debian.org>  Thu, 27 Sep 2007 22:21:10 -0400
 
 xorg-server (2:1.4-2) unstable; urgency=low
 
