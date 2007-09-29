@@ -1,3 +1,11 @@
+xorg-server (2:1.4-4) UNRELEASED; urgency=low
+
+  * Add conflict on xserver-xorg-input-wacom (<< 0.7.8) to xserver-xorg-core.
+    That driver is built against the old ABI, but doesn't provide
+    xserver-xorg-input.
+
+ -- Julien Cristau <jcristau@debian.org>  Sun, 30 Sep 2007 01:03:20 +0200
+
 xorg-server (2:1.4-3) unstable; urgency=low
 
   [ David Nusinow ]
