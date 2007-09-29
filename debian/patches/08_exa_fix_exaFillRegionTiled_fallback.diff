@@ -1,0 +1,20 @@
+commit aa11204d4a81de851155ae3f01d4c897263fd7b0
+Author: Michel Dänzer <michel@tungstengraphics.com>
+Date:   Tue Sep 25 19:51:29 2007 +0200
+
+    EXA: Punt on fallback case not handled correctly in exaFillRegionTiled.
+
+diff --git a/exa/exa_accel.c b/exa/exa_accel.c
+index cc383cc..acc5dbe 100644
+--- a/exa/exa_accel.c
++++ b/exa/exa_accel.c
+@@ -1223,7 +1223,8 @@ exaFillRegionTiled (DrawablePtr	pDrawable,
+     }
+ 
+ fallback:
+-    if (alu != GXcopy || planemask != FB_ALLONES)
++    if (alu != GXcopy || planemask != FB_ALLONES || pPatOrg->x != 0 ||
++	pPatOrg->y != 0)
+ 	return FALSE;
+     EXA_FALLBACK(("from %p to %p (%c,%c)\n", pTile, pDrawable,
+ 		  exaDrawableLocation(&pTile->drawable),

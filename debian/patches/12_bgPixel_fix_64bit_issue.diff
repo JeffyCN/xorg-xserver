@@ -1,0 +1,33 @@
+From 9adea807038b64292403ede982075fe1dcfd4c9a Mon Sep 17 00:00:00 2001
+From: Hong Liu <hong.liu@intel.com>
+Date: Tue, 4 Sep 2007 08:46:46 +0100
+Subject: [PATCH] bgPixel (unsigned long) is 64-bit on x86_64, so -1 != 0xffffffff
+
+This patch should fix bug 8080.
+---
+ hw/xfree86/xaa/xaaGC.c |    9 +++++----
+ 1 files changed, 5 insertions(+), 4 deletions(-)
+
+diff --git a/hw/xfree86/xaa/xaaGC.c b/hw/xfree86/xaa/xaaGC.c
+index f3434c9..b3dc83a 100644
+--- a/hw/xfree86/xaa/xaaGC.c
++++ b/hw/xfree86/xaa/xaaGC.c
+@@ -80,10 +80,11 @@ XAAValidateGC(
+     }
+ 
+     if(pGC->depth != 32) {
+-	if(pGC->bgPixel == -1) /* -1 is reserved for transparency */
+-	    pGC->bgPixel = 0x7fffffff; 
+-	if(pGC->fgPixel == -1) /* -1 is reserved for transparency */
+-	    pGC->fgPixel = 0x7fffffff; 
++	/* 0xffffffff is reserved for transparency */
++	if(pGC->bgPixel == 0xffffffff)
++	    pGC->bgPixel = 0x7fffffff;
++	if(pGC->fgPixel == 0xffffffff)
++	    pGC->fgPixel = 0x7fffffff;
+     }
+ 
+     if((pDraw->type == DRAWABLE_PIXMAP) && !IS_OFFSCREEN_PIXMAP(pDraw)){
+-- 
+1.5.3.2
+

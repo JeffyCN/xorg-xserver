@@ -53,8 +53,16 @@ xorg-server (2:1.4-3) UNRELEASED; urgency=low
     debian/patches/series.
   * Don't build kdrive-based servers we're not shipping.
   * Use ${binary:Version} instead of ${Source-Version}.
+  * Add 08_exa_fix_exaFillRegionTiled_fallback.diff by Michel Dänzer to punt
+    on fallback case not handled correctly in exaFillRegionTiled (backported
+    from master's c7d6d1f5).
+  * Add 11_exa_no_negative_tile_offsets.diff by Michel Dänzer to make sure
+    tile offsets passed to drivers are never negative (backported from
+    master's 006f6525).
+  * Add 12_bgPixel_fix_64bit_issue.diff by Hong Liu: bgPixel (unsigned long)
+    is 64-bit on x86_64, so -1 != 0xffffffff (master's 9adea807).
 
- -- David Nusinow <dnusinow@debian.org>  Thu, 27 Sep 2007 22:21:10 -0400
+ -- Julien Cristau <jcristau@debian.org>  Sat, 29 Sep 2007 15:42:08 +0200
 
 xorg-server (2:1.4-2) unstable; urgency=low
 
