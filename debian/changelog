@@ -1,10 +1,16 @@
 xorg-server (2:1.4-4) UNRELEASED; urgency=low
 
+  [ Julien Cristau ]
   * Add conflict on xserver-xorg-input-wacom (<< 0.7.8) to xserver-xorg-core.
     That driver is built against the old ABI, but doesn't provide
     xserver-xorg-input.
 
- -- Julien Cristau <jcristau@debian.org>  Sun, 30 Sep 2007 01:03:20 +0200
+  [ David Nusinow ]
+  * Add 14_default_screen_section.diff. This allows you to not have a screen
+    section in your xorg.conf. A basic default one with a simple identifier
+    will be created for you in this case using all default values
+
+ -- David Nusinow <dnusinow@debian.org>  Sun, 30 Sep 2007 19:51:49 -0400
 
 xorg-server (2:1.4-3) unstable; urgency=low
 
