@@ -14,8 +14,9 @@ xorg-server (2:1.4-4) UNRELEASED; urgency=low
   * Debconf translations:
   * Galician. Closes: #444764
   * German. Closes: #444917
+  * Brazilian Portuguese. Closes: #445266
 
- -- Christian Perrier <bubulle@debian.org>  Tue, 02 Oct 2007 19:41:35 +0200
+ -- Christian Perrier <bubulle@debian.org>  Thu, 04 Oct 2007 20:01:43 +0200
 
 xorg-server (2:1.4-3) unstable; urgency=low
 
