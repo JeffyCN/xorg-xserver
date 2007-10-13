@@ -17,8 +17,9 @@ xorg-server (2:1.4-4) UNRELEASED; urgency=low
   * Brazilian Portuguese. Closes: #445266
   * Russian. Closes: #443859
   * Portuguese. Closes: #445051
+  * Slovak. Closes: #446418
 
- -- Christian Perrier <bubulle@debian.org>  Thu, 04 Oct 2007 20:05:23 +0200
+ -- Christian Perrier <bubulle@debian.org>  Sat, 13 Oct 2007 09:18:19 +0200
 
 xorg-server (2:1.4-3) unstable; urgency=low
 
