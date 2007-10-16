@@ -19,7 +19,11 @@ xorg-server (2:1.4-4) UNRELEASED; urgency=low
   * Portuguese. Closes: #445051
   * Slovak. Closes: #446418
 
- -- Christian Perrier <bubulle@debian.org>  Sat, 13 Oct 2007 09:18:19 +0200
+  [ Brice Goglin ]
+  * Bump x11proto-core-dev build-dependency to >= 7.0.9,
+    thanks Max Kellermann, closes: #446869.
+
+ -- Brice Goglin <bgoglin@debian.org>  Tue, 16 Oct 2007 18:23:20 +0200
 
 xorg-server (2:1.4-3) unstable; urgency=low
 
