@@ -4,6 +4,10 @@ xorg-server (2:1.4-4) UNRELEASED; urgency=low
   * Add conflict on xserver-xorg-input-wacom (<< 0.7.8) to xserver-xorg-core.
     That driver is built against the old ABI, but doesn't provide
     xserver-xorg-input.
+  * New patch 15_keyboard_leds.diff by Paulo César Pereira de Andrade
+    <pcpa@mandriva.com.br> from upstream bug#12434 to fix keyboard leds.
+    The problem should be fixed properly in 1.4.1, but this patch will do for
+    now (closes: #440743 and its pile of duplicates).
 
   [ David Nusinow ]
   * Add 14_default_screen_section.diff. This allows you to not have a screen
@@ -23,7 +27,7 @@ xorg-server (2:1.4-4) UNRELEASED; urgency=low
   * Bump x11proto-core-dev build-dependency to >= 7.0.9,
     thanks Max Kellermann, closes: #446869.
 
- -- Brice Goglin <bgoglin@debian.org>  Tue, 16 Oct 2007 18:23:20 +0200
+ -- Julien Cristau <jcristau@debian.org>  Wed, 24 Oct 2007 02:12:41 +0200
 
 xorg-server (2:1.4-3) unstable; urgency=low
 
