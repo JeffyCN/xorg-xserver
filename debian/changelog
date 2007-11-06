@@ -29,8 +29,11 @@ xorg-server (2:1.4.1~git20071105-1) unstable; urgency=low
 
   [ David Nusinow ]
   * New upstream stable snapshot
+  * Remove patches merged in this snapshot
+    + 42_fix_RemoveGeneralSocket_crash_from_dbus.diff
+    + 44_XKB_mapping_changes_for_all_core-sending_devices.diff
 
- -- David Nusinow <dnusinow@debian.org>  Mon, 05 Nov 2007 22:27:14 -0500
+ -- David Nusinow <dnusinow@debian.org>  Mon, 05 Nov 2007 22:42:36 -0500
 
 xorg-server (2:1.4-3) unstable; urgency=low
 
