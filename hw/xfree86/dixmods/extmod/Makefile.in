@@ -65,9 +65,11 @@ am__libextmod_la_SOURCES_DIST = modinit.c modinit.h xf86dga.c \
 	xf86dga2.c dgaproc.h xf86dgaext.h xf86misc.c xf86miscproc.h \
 	xf86vmode.c vidmodeproc.h xvmod.c xvmodproc.h
 @DGA_TRUE@am__objects_1 = xf86dga.lo xf86dga2.lo
-@XV_TRUE@am__objects_2 = xvmod.lo
-am_libextmod_la_OBJECTS = modinit.lo $(am__objects_1) xf86misc.lo \
-	xf86vmode.lo $(am__objects_2)
+@XF86MISC_TRUE@am__objects_2 = xf86misc.lo
+@XF86VIDMODE_TRUE@am__objects_3 = xf86vmode.lo
+@XV_TRUE@am__objects_4 = xvmod.lo
+am_libextmod_la_OBJECTS = modinit.lo $(am__objects_1) $(am__objects_2) \
+	$(am__objects_3) $(am__objects_4)
 libextmod_la_OBJECTS = $(am_libextmod_la_OBJECTS)
 libextmod_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
@@ -383,6 +385,8 @@ extsmoduledir = $(moduledir)/extensions
 extsmodule_LTLIBRARIES = libextmod.la
 @DGA_TRUE@DGA_SRCS = xf86dga.c xf86dga2.c dgaproc.h xf86dgaext.h
 @XV_TRUE@XV_SRCS = xvmod.c xvmodproc.h
+@XF86MISC_TRUE@XF86MISC_SRCS = xf86misc.c xf86miscproc.h
+@XF86VIDMODE_TRUE@XF86VMODE_SRCS = xf86vmode.c vidmodeproc.h
 AM_CFLAGS = @DIX_CFLAGS@ @XORG_CFLAGS@
 INCLUDES = @XORG_INCS@ \
            -I$(top_srcdir)/afb \
@@ -396,10 +400,8 @@ libextmod_la_LDFLAGS = -avoid-version
 libextmod_la_SOURCES = modinit.c \
                        modinit.h \
                        $(DGA_SRCS) \
-                       xf86misc.c \
-                       xf86miscproc.h \
-                       xf86vmode.c \
-                       vidmodeproc.h \
+                       $(XF86MISC_SRCS) \
+                       $(XF86VMODE_SRCS) \
                        $(XV_SRCS)
 
 libextmod_la_LIBADD = $(top_builddir)/Xext/libXextmodule.la
