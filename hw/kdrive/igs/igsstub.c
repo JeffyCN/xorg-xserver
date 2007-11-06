@@ -1,6 +1,4 @@
 /*
- * $RCSId: xc/programs/Xserver/hw/kdrive/igs/igsstub.c,v 1.2 2000/05/24 23:52:48 keithp Exp $
- *
  * Copyright © 2000 Keith Packard
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
@@ -56,7 +54,8 @@ InitOutput (ScreenInfo *pScreenInfo, int argc, char **argv)
 void
 InitInput (int argc, char **argv)
 {
-    KdInitInput (&LinuxMouseFuncs, &LinuxKeyboardFuncs);
+    KdOsAddInputDrivers ();
+    KdInitInput ();
 }
 
 void

@@ -88,10 +88,15 @@ ExaCheckPutImage (DrawablePtr pDrawable, GCPtr pGC, int depth,
 		 int x, int y, int w, int h, int leftPad, int format,
 		 char *bits)
 {
+    PixmapPtr pPixmap = exaGetDrawablePixmap(pDrawable);
+    int xoff, yoff;
+
     EXA_FALLBACK(("to %p (%c)\n", pDrawable, exaDrawableLocation(pDrawable)));
     exaPrepareAccess (pDrawable, EXA_PREPARE_DEST);
     fbPutImage (pDrawable, pGC, depth, x, y, w, h, leftPad, format, bits);
     exaFinishAccess (pDrawable, EXA_PREPARE_DEST);
+    exaGetDrawableDeltas(pDrawable, pPixmap, &xoff, &yoff);
+    exaPixmapDirty(pPixmap, x + xoff, y + yoff, x + xoff + w, y + yoff + h);
 }
 
 RegionPtr
@@ -201,32 +206,11 @@ ExaCheckPolyFillRect (DrawablePtr pDrawable, GCPtr pGC,
 {
     EXA_FALLBACK(("to %p (%c)\n", pDrawable, exaDrawableLocation(pDrawable)));
 
-    if (nrect) {
-	int x1 = max(prect->x, 0), y1 = max(prect->y, 0);
-	int x2 = min(prect->x + prect->width, pDrawable->width);
-	int y2 = min(prect->y + prect->height, pDrawable->height);
-
-	exaPrepareAccess (pDrawable, EXA_PREPARE_DEST);
-	exaPrepareAccessGC (pGC);
-	fbPolyFillRect (pDrawable, pGC, nrect, prect);
-	exaFinishAccessGC (pGC);
-	exaFinishAccess (pDrawable, EXA_PREPARE_DEST);
-
-	/* Only track bounding box of damage, as this path can degenerate to
-	 * zillions of damage boxes
-	 */
-	while (--nrect)
-	{
-	    prect++;
-	    x1 = min(x1, prect->x);
-	    x2 = max(x2, prect->x + prect->width);
-	    y1 = min(y1, prect->y);
-	    y2 = max(y2, prect->y + prect->height);
-	}
-
-	exaDrawableDirty (pDrawable, pDrawable->x + x1, pDrawable->y + y1,
-			  pDrawable->x + x2, pDrawable->y + y2);
-    }
+    exaPrepareAccess (pDrawable, EXA_PREPARE_DEST);
+    exaPrepareAccessGC (pGC);
+    fbPolyFillRect (pDrawable, pGC, nrect, prect);
+    exaFinishAccessGC (pGC);
+    exaFinishAccess (pDrawable, EXA_PREPARE_DEST);
 }
 
 void
@@ -385,31 +369,48 @@ ExaCheckComposite (CARD8      op,
 /**
  * Gets the 0,0 pixel of a pixmap.  Used for doing solid fills of tiled pixmaps
  * that happen to be 1x1.  Pixmap must be at least 8bpp.
+ *
+ * XXX This really belongs in fb, so it can be aware of tiling and etc.
  */
 CARD32
 exaGetPixmapFirstPixel (PixmapPtr pPixmap)
 {
     CARD32 pixel;
+    void *fb;
+    Bool need_finish = FALSE;
+    BoxRec box;
     ExaMigrationRec pixmaps[1];
+    ExaPixmapPriv (pPixmap);
 
-    pixmaps[0].as_dst = FALSE;
-    pixmaps[0].as_src = TRUE;
-    pixmaps[0].pPix = pPixmap;
-    exaDoMigration (pixmaps, 1, FALSE);
+    fb = pExaPixmap->sys_ptr;
 
-    exaPrepareAccess(&pPixmap->drawable, EXA_PREPARE_SRC);
+    /* Try to avoid framebuffer readbacks */
+    if (exaPixmapIsOffscreen(pPixmap) &&
+        miPointInRegion(DamageRegion(pExaPixmap->pDamage), 0, 0,  &box))
+    {
+	need_finish = TRUE;
+	pixmaps[0].as_dst = FALSE;
+	pixmaps[0].as_src = TRUE;
+	pixmaps[0].pPix = pPixmap;
+	exaDoMigration (pixmaps, 1, FALSE);
+	exaPrepareAccess(&pPixmap->drawable, EXA_PREPARE_SRC);
+	fb = pPixmap->devPrivate.ptr;
+    }
+
     switch (pPixmap->drawable.bitsPerPixel) {
     case 32:
-	pixel = *(CARD32 *)(pPixmap->devPrivate.ptr);
+	pixel = *(CARD32 *)fb;
 	break;
     case 16:
-	pixel = *(CARD16 *)(pPixmap->devPrivate.ptr);
+	pixel = *(CARD16 *)fb;
 	break;
     default:
-	pixel = *(CARD8 *)(pPixmap->devPrivate.ptr);
+	pixel = *(CARD8 *)fb;
 	break;
     }
-    exaFinishAccess(&pPixmap->drawable, EXA_PREPARE_SRC);
+
+    if (need_finish)
+	exaFinishAccess(&pPixmap->drawable, EXA_PREPARE_SRC);
 
     return pixel;
 }

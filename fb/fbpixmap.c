@@ -1,6 +1,4 @@
 /*
- * Id: fbpixmap.c,v 1.1 1999/11/02 03:54:45 keithp Exp $
- *
  * Copyright © 1998 Keith Packard
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
@@ -43,11 +41,7 @@ fbCreatePixmapBpp (ScreenPtr pScreen, int width, int height, int depth, int bpp)
     if (paddedWidth / 4 > 32767 || height > 32767)
 	return NullPixmap;
     datasize = height * paddedWidth;
-#ifdef PIXPRIV
     base = pScreen->totalPixmapSize;
-#else
-    base = sizeof (PixmapRec);
-#endif
     adjust = 0;
     if (base & 7)
 	adjust = 8 - (base & 7);

@@ -38,7 +38,7 @@ THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #include <X11/Xproto.h>
 #include <X11/keysym.h>
 #include "inputstr.h"
-#include <X11/extensions/XKBsrv.h>
+#include <xkbsrv.h>
 #if !defined(WIN32) && !defined(Lynx)
 #include <sys/time.h>
 #endif
@@ -52,9 +52,9 @@ pointer	XkbLastRepeatEvent=	NULL;
 
 unsigned short	XkbDfltAccessXTimeout= 	120;
 unsigned int	XkbDfltAccessXTimeoutMask= DFLT_TIMEOUT_CTRLS;
-unsigned int	XkbDfltAccessXTimeoutValues= 0;
-unsigned int	XkbDfltAccessXTimeoutOptionsMask= DFLT_TIMEOUT_OPTS;
-unsigned int	XkbDfltAccessXTimeoutOptionsValues= 0;
+static unsigned int XkbDfltAccessXTimeoutValues= 0;
+static unsigned int XkbDfltAccessXTimeoutOptionsMask= DFLT_TIMEOUT_OPTS;
+static unsigned int XkbDfltAccessXTimeoutOptionsValues= 0;
 unsigned int	XkbDfltAccessXFeedback= XkbAccessXFeedbackMask;
 unsigned short	XkbDfltAccessXOptions=  XkbAX_AllOptionsMask & ~(XkbAX_IndicatorFBMask|XkbAX_SKReleaseFBMask|XkbAX_SKRejectFBMask);
 
@@ -361,10 +361,7 @@ XkbControlsPtr	ctrls;
 	if (keybd->kbdfeed->ctrl.autoRepeat && 
 	    ((xkbi->slowKey != xkbi->mouseKey) || (!xkbi->mouseKeysAccel)) &&
 	     (ctrls->enabled_ctrls&XkbRepeatKeysMask)) {
-#ifndef AIXV3
-	    if (BitIsOn(keybd->kbdfeed->ctrl.autoRepeats,xkbi->slowKey))
-#endif
-	    {
+	    if (BitIsOn(keybd->kbdfeed->ctrl.autoRepeats,xkbi->slowKey)) {
 		xkbi->repeatKey = xkbi->slowKey;
 		xkbi->repeatKeyTimer= TimerSet(xkbi->repeatKeyTimer,
 					0, ctrls->repeat_delay,
@@ -530,10 +527,7 @@ KeySym *	sym = XkbKeySymsPtr(xkbi->desc,key);
 	if ((keybd->kbdfeed->ctrl.autoRepeat) &&
 		((ctrls->enabled_ctrls&(XkbSlowKeysMask|XkbRepeatKeysMask))==
 							XkbRepeatKeysMask)) {
-#ifndef AIXV3
-	    if (BitIsOn(keybd->kbdfeed->ctrl.autoRepeats,key))
-#endif
-	    {
+	    if (BitIsOn(keybd->kbdfeed->ctrl.autoRepeats,key)) {
 #ifdef DEBUG
 		if (xkbDebugFlags&0x10)
 		    ErrorF("Starting software autorepeat...\n");
@@ -698,6 +692,8 @@ ProcessPointerEvent(	register xEvent  *	xE,
 DeviceIntPtr	dev = (DeviceIntPtr)LookupKeyboardDevice();
 XkbSrvInfoPtr	xkbi = dev->key->xkbInfo;
 unsigned 	changed = 0;
+ProcessInputProc backupproc;
+xkbDeviceInfoPtr xkbPrivPtr = XKBDEVICEINFO(mouse);
 
     xkbi->shiftKeyCount = 0;
     xkbi->lastPtrEventTime= xE->u.keyButtonPointer.time;
@@ -709,7 +705,26 @@ unsigned 	changed = 0;
 	xkbi->lockedPtrButtons&= ~(1<<(xE->u.u.detail&0x7));
 	changed |= XkbPointerButtonMask;
     }
-    CoreProcessPointerEvent(xE,mouse,count);
+
+    /* Guesswork. mostly. 
+     * xkb actuall goes through some effort to transparently wrap the
+     * processInputProcs (see XkbSetExtension). But we all love fun, so the
+     * previous XKB implementation just hardcoded the CPPE call here instead
+     * of unwrapping like anybody with any sense of decency would do. 
+     * I got no clue what the correct thing to do is, but my guess is that
+     * it's not hardcoding. I may be wrong. whatever it is, don't come whining
+     * to me. I just work here. 
+     *
+     * Anyway. here's the old call, if you don't like the wrapping, revert it.
+     *
+     * CoreProcessPointerEvent(xE,mouse,count);
+     *
+     *          see. it's still steaming. told you. (whot)
+     */
+    UNWRAP_PROCESS_INPUT_PROC(mouse, xkbPrivPtr, backupproc);
+    mouse->public.processInputProc(xE, mouse, count);
+    COND_WRAP_PROCESS_INPUT_PROC(mouse, xkbPrivPtr,
+				     backupproc, xkbUnwrapProc);
 
     xkbi->state.ptr_buttons = mouse->button->state;
     

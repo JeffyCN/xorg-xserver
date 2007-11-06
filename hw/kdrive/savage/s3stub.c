@@ -1,6 +1,4 @@
 /*
- * Id: s3stub.c,v 1.1 1999/11/02 08:19:15 keithp Exp $
- *
  * Copyright 1999 SuSE, Inc.
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
@@ -22,7 +20,6 @@
  *
  * Author:  Keith Packard, SuSE, Inc.
  */
-/* $RCSId: xc/programs/Xserver/hw/kdrive/savage/s3stub.c,v 1.3 2000/02/23 20:30:05 dawes Exp $ */
 
 #ifdef HAVE_CONFIG_H
 #include <kdrive-config.h>
@@ -60,12 +57,8 @@ InitOutput (ScreenInfo *pScreenInfo, int argc, char **argv)
 void
 InitInput (int argc, char **argv)
 {
-#ifdef VXWORKS
-    KdInitInput (&VxWorksMouseFuncs, &VxWorksKeyboardFuncs);
-#endif
-#ifdef linux
-    KdInitInput (&LinuxMouseFuncs, &LinuxKeyboardFuncs);
-#endif
+    KdOsAddInputDrivers ();
+    KdInitInput ();
 }
 
 extern int	s3CpuTimeout;

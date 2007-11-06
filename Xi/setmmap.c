@@ -76,9 +76,9 @@ SOFTWARE.
  */
 
 int
-SProcXSetDeviceModifierMapping(register ClientPtr client)
+SProcXSetDeviceModifierMapping(ClientPtr client)
 {
-    register char n;
+    char n;
 
     REQUEST(xSetDeviceModifierMappingReq);
     swaps(&stuff->length, n);
@@ -122,7 +122,7 @@ ProcXSetDeviceModifierMapping(ClientPtr client)
     if (ret == MappingSuccess || ret == MappingBusy || ret == MappingFailed) {
 	rep.success = ret;
 	if (ret == MappingSuccess)
-	    SendDeviceMappingNotify(MappingModifier, 0, 0, dev);
+	    SendDeviceMappingNotify(client, MappingModifier, 0, 0, dev);
 	WriteReplyToClient(client, sizeof(xSetDeviceModifierMappingReply),
 			   &rep);
     } else {
@@ -145,7 +145,7 @@ void
 SRepXSetDeviceModifierMapping(ClientPtr client, int size,
 			      xSetDeviceModifierMappingReply * rep)
 {
-    register char n;
+    char n;
 
     swaps(&rep->sequenceNumber, n);
     swapl(&rep->length, n);

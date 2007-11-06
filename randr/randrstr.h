@@ -564,6 +564,7 @@ RRCrtcGammaSetSize (RRCrtcPtr	crtc,
  * Return the area of the frame buffer scanned out by the crtc,
  * taking into account the current mode and rotation
  */
+
 void
 RRCrtcGetScanoutSize(RRCrtcPtr crtc, int *width, int *height);
 
@@ -693,9 +694,6 @@ RROutputSetCrtcs (RROutputPtr	output,
 		  RRCrtcPtr	*crtcs,
 		  int		numCrtcs);
 
-void
-RROutputSetCrtc (RROutputPtr output, RRCrtcPtr crtc);
-    
 Bool
 RROutputSetConnection (RROutputPtr  output,
 		       CARD8	    connection);
@@ -801,7 +799,6 @@ Query state:
 	    1.2:
 		RRScreenSetSizeRange
 		RROutputSetCrtcs
-		RROutputSetCrtc
 		RRModeGet
 		RROutputSetModes
 		RROutputSetConnection
@@ -821,7 +818,6 @@ Query state:
 		RRCrtcCreate
 		RROutputCreate
 		RROutputSetCrtcs
-		RROutputSetCrtc
 		RROutputSetConnection
 		RROutputSetSubpixelOrder
 		RROldModeAdd	• This adds modes one-at-a-time

@@ -126,7 +126,7 @@ exaGetDrawablePixmap(DrawablePtr pDrawable)
  * the backing drawable. These coordinates are nonzero only for redirected
  * windows.
  */
-static void
+void
 exaGetDrawableDeltas (DrawablePtr pDrawable, PixmapPtr pPixmap,
 		      int *xp, int *yp)
 {
@@ -170,29 +170,6 @@ exaPixmapDirty (PixmapPtr pPix, int x1, int y1, int x2, int y2)
     REGION_INIT(pScreen, &region, &box, 1);
     REGION_UNION(pScreen, pDamageReg, pDamageReg, &region);
     REGION_UNINIT(pScreen, &region);
-}
-
-/**
- * exaDrawableDirty() marks a pixmap backing a drawable as dirty, allowing for
- * optimizations in pixmap migration when no changes have occurred.
- */
-void
-exaDrawableDirty (DrawablePtr pDrawable, int x1, int y1, int x2, int y2)
-{
-    PixmapPtr pPix = exaGetDrawablePixmap(pDrawable);
-    int xoff, yoff;
-
-    x1 = max(x1, pDrawable->x);
-    y1 = max(y1, pDrawable->y);
-    x2 = min(x2, pDrawable->x + pDrawable->width);
-    y2 = min(y2, pDrawable->y + pDrawable->height);
-
-    if (x1 >= x2 || y1 >= y2)
-	return;
-
-    exaGetDrawableDeltas(pDrawable, pPix, &xoff, &yoff);
-
-    exaPixmapDirty(pPix, x1 + xoff, y1 + yoff, x2 + xoff, y2 + yoff);
 }
 
 static Bool
@@ -321,6 +298,9 @@ exaPixmapIsOffscreen(PixmapPtr p)
      */
     if (p->devPrivate.ptr == NULL)
 	return TRUE;
+
+    if (pExaScr->info->PixmapIsOffscreen)
+	return pExaScr->info->PixmapIsOffscreen(p);
 
     return ((unsigned long) ((CARD8 *) p->devPrivate.ptr -
 			     (CARD8 *) pExaScr->info->memoryBase) <
@@ -546,6 +526,7 @@ exaCloseScreen(int i, ScreenPtr pScreen)
     if (ps) {
 	ps->Composite = pExaScr->SavedComposite;
 	ps->Glyphs = pExaScr->SavedGlyphs;
+	ps->Trapezoids = pExaScr->SavedTrapezoids;
     }
 #endif
 
@@ -588,6 +569,45 @@ exaDriverInit (ScreenPtr		pScreen,
 #ifdef RENDER
     PictureScreenPtr ps;
 #endif
+
+    if (!pScreenInfo)
+	return FALSE;
+
+    if (!pScreenInfo->memoryBase) {
+	LogMessage(X_ERROR, "EXA(%d): ExaDriverRec::memoryBase must be "
+		   "non-zero\n", pScreen->myNum);
+	return FALSE;
+    }
+
+    if (!pScreenInfo->memorySize) {
+	LogMessage(X_ERROR, "EXA(%d): ExaDriverRec::memorySize must be "
+		   "non-zero\n", pScreen->myNum);
+	return FALSE;
+    }
+
+    if (pScreenInfo->offScreenBase > pScreenInfo->memorySize) {
+	LogMessage(X_ERROR, "EXA(%d): ExaDriverRec::offScreenBase must be <= "
+		   "ExaDriverRec::memorySize\n", pScreen->myNum);
+	return FALSE;
+    }
+
+    if (!pScreenInfo->PrepareSolid) {
+	LogMessage(X_ERROR, "EXA(%d): ExaDriverRec::PrepareSolid must be "
+		   "non-NULL\n", pScreen->myNum);
+	return FALSE;
+    }
+
+    if (!pScreenInfo->PrepareCopy) {
+	LogMessage(X_ERROR, "EXA(%d): ExaDriverRec::PrepareCopy must be "
+		   "non-NULL\n", pScreen->myNum);
+	return FALSE;
+    }
+
+    if (!pScreenInfo->WaitMarker) {
+	LogMessage(X_ERROR, "EXA(%d): ExaDriverRec::WaitMarker must be "
+		   "non-NULL\n", pScreen->myNum);
+	return FALSE;
+    }
 
     if (pScreenInfo->exa_major != EXA_VERSION_MAJOR ||
 	pScreenInfo->exa_minor > EXA_VERSION_MINOR)
@@ -665,11 +685,10 @@ exaDriverInit (ScreenPtr		pScreen,
 
 	pExaScr->SavedGlyphs = ps->Glyphs;
 	ps->Glyphs = exaGlyphs;
-    }
-#endif
 
-#ifdef COMPOSITE
-    miDisableCompositeWrapper(pScreen);
+	pExaScr->SavedTrapezoids = ps->Trapezoids;
+	ps->Trapezoids = exaTrapezoids;
+    }
 #endif
 
 #ifdef MITSHM

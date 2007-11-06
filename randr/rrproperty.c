@@ -378,7 +378,7 @@ ProcRRListOutputProperties (ClientPtr client)
     
     REQUEST_SIZE_MATCH(xRRListOutputPropertiesReq);
 
-    output = LookupOutput (client, stuff->output, SecurityReadAccess);
+    output = LookupOutput (client, stuff->output, DixReadAccess);
     
     if (!output)
         return RRErrorBase + BadRROutput;
@@ -423,7 +423,7 @@ ProcRRQueryOutputProperty (ClientPtr client)
     
     REQUEST_SIZE_MATCH(xRRQueryOutputPropertyReq);
 
-    output = LookupOutput (client, stuff->output, SecurityReadAccess);
+    output = LookupOutput (client, stuff->output, DixReadAccess);
     
     if (!output)
         return RRErrorBase + BadRROutput;
@@ -463,7 +463,7 @@ ProcRRConfigureOutputProperty (ClientPtr client)
     
     REQUEST_AT_LEAST_SIZE(xRRConfigureOutputPropertyReq);
 
-    output = LookupOutput (client, stuff->output, SecurityReadAccess);
+    output = LookupOutput (client, stuff->output, DixReadAccess);
     
     if (!output)
         return RRErrorBase + BadRROutput;
@@ -508,7 +508,7 @@ ProcRRChangeOutputProperty (ClientPtr client)
     totalSize = len * sizeInBytes;
     REQUEST_FIXED_SIZE(xRRChangeOutputPropertyReq, totalSize);
 
-    output = LookupOutput (client, stuff->output, SecurityWriteAccess);
+    output = LookupOutput (client, stuff->output, DixWriteAccess);
     if (!output)
 	return RRErrorBase + BadRROutput;
     
@@ -540,7 +540,7 @@ ProcRRDeleteOutputProperty (ClientPtr client)
               
     REQUEST_SIZE_MATCH(xRRDeleteOutputPropertyReq);
     UpdateCurrentTime();
-    output = LookupOutput (client, stuff->output, SecurityWriteAccess);
+    output = LookupOutput (client, stuff->output, DixWriteAccess);
     if (!output)
         return RRErrorBase + BadRROutput;
     
@@ -569,8 +569,8 @@ ProcRRGetOutputProperty (ClientPtr client)
     if (stuff->delete)
 	UpdateCurrentTime();
     output = LookupOutput (client, stuff->output, 
-			   stuff->delete ? SecurityWriteAccess :
-			   SecurityReadAccess);
+			   stuff->delete ? DixWriteAccess :
+			   DixReadAccess);
     if (!output)
 	return RRErrorBase + BadRROutput;
 

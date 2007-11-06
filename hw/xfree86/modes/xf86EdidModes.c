@@ -22,8 +22,9 @@
  */
 
 /**
- * @file This is a copy of edid_modes.c from the X Server, for compatibility
- * with old X Servers.
+ * @file This file covers code to convert a xf86MonPtr containing EDID-probed
+ * information into a list of modes, including applying monitor-specific
+ * quirks to fix broken EDID data.
  */
 #ifdef HAVE_XORG_CONFIG_H
 #include <xorg-config.h>
@@ -49,31 +50,11 @@
 
 typedef enum {
     DDC_QUIRK_NONE = 0,
-    /* Force detailed sync polarity to -h +v */
-    DDC_QUIRK_DT_SYNC_HM_VP = 1 << 0,
     /* First detailed mode is bogus, prefer largest mode at 60hz */
-    DDC_QUIRK_PREFER_LARGE_60 = 1 << 1,
+    DDC_QUIRK_PREFER_LARGE_60 = 1 << 0,
     /* 135MHz clock is too high, drop a bit */
-    DDC_QUIRK_135_CLOCK_TOO_HIGH = 1 << 2
+    DDC_QUIRK_135_CLOCK_TOO_HIGH = 1 << 1,
 } ddc_quirk_t;
-
-static Bool quirk_dt_sync_hm_vp (int scrnIndex, xf86MonPtr DDC)
-{
-    /* Belinea 1924S1W */
-    if (memcmp (DDC->vendor.name, "MAX", 4) == 0 &&
-	DDC->vendor.prod_id == 1932)
-	return TRUE;
-    /* Belinea 10 20 30W */
-    if (memcmp (DDC->vendor.name, "MAX", 4) == 0 &&
-	DDC->vendor.prod_id == 2007)
-	return TRUE;
-    /* ViewSonic VX2025wm (bug #9941) */
-    if (memcmp (DDC->vendor.name, "VSC", 4) == 0 &&
-	DDC->vendor.prod_id == 58653)
-	return TRUE;
-
-    return FALSE;
-}
 
 static Bool quirk_prefer_large_60 (int scrnIndex, xf86MonPtr DDC)
 {
@@ -87,11 +68,16 @@ static Bool quirk_prefer_large_60 (int scrnIndex, xf86MonPtr DDC)
 	DDC->vendor.prod_id == 44358)
 	return TRUE;
 
-    /* Samsung SyncMaster 226BW */
+    /* Bug #10814: Samsung SyncMaster 225BW */
+    if (memcmp (DDC->vendor.name, "SAM", 4) == 0 &&
+	DDC->vendor.prod_id == 596)
+	return TRUE;
+
+    /* Bug #10545: Samsung SyncMaster 226BW */
     if (memcmp (DDC->vendor.name, "SAM", 4) == 0 &&
 	DDC->vendor.prod_id == 638)
 	return TRUE;
-    
+
     return FALSE;
 }
 
@@ -112,10 +98,6 @@ typedef struct {
 } ddc_quirk_map_t;
 
 static const ddc_quirk_map_t ddc_quirks[] = {
-    { 
-	quirk_dt_sync_hm_vp,	DDC_QUIRK_DT_SYNC_HM_VP,
-	"Set detailed timing sync polarity to -h +v"
-    },
     {
 	quirk_prefer_large_60,   DDC_QUIRK_PREFER_LARGE_60,
 	"Detailed timing is not preferred, use largest mode at 60Hz"
@@ -207,6 +189,19 @@ DDCModeFromDetailedTiming(int scrnIndex, struct detailed_timings *timing,
 {
     DisplayModePtr Mode;
 
+    /*
+     * Refuse to create modes that are insufficiently large.  64 is a random
+     * number, maybe the spec says something about what the minimum is.  In
+     * particular I see this frequently with _old_ EDID, 1.0 or so, so maybe
+     * our parser is just being too aggresive there.
+     */
+    if (timing->h_active < 64 || timing->v_active < 64) {
+	xf86DrvMsg(scrnIndex, X_INFO,
+		   "%s: Ignoring tiny %dx%d mode\n", __func__,
+		   timing->h_active, timing->v_active);
+	return NULL;
+    }
+
     /* We don't do stereo */
     if (timing->stereo) {
         xf86DrvMsg(scrnIndex, X_INFO,
@@ -251,25 +246,64 @@ DDCModeFromDetailedTiming(int scrnIndex, struct detailed_timings *timing,
     if (timing->interlaced)
         Mode->Flags |= V_INTERLACE;
 
-    if (quirks & DDC_QUIRK_DT_SYNC_HM_VP)
-	Mode->Flags |= V_NHSYNC | V_PVSYNC;
+    if (timing->misc & 0x02)
+	Mode->Flags |= V_PVSYNC;
     else
-    {
-	if (timing->misc & 0x02)
-	    Mode->Flags |= V_PHSYNC;
-	else
-	    Mode->Flags |= V_NHSYNC;
-    
-	if (timing->misc & 0x01)
-	    Mode->Flags |= V_PVSYNC;
-	else
-	    Mode->Flags |= V_NVSYNC;
-    }
+	Mode->Flags |= V_NVSYNC;
+
+    if (timing->misc & 0x01)
+	Mode->Flags |= V_PHSYNC;
+    else
+	Mode->Flags |= V_NHSYNC;
 
     return Mode;
 }
 
-DisplayModePtr
+/*
+ *
+ */
+static void
+DDCGuessRangesFromModes(int scrnIndex, MonPtr Monitor, DisplayModePtr Modes)
+{
+    DisplayModePtr Mode = Modes;
+
+    if (!Monitor || !Modes)
+        return;
+
+    /* set up the ranges for scanning through the modes */
+    Monitor->nHsync = 1;
+    Monitor->hsync[0].lo = 1024.0;
+    Monitor->hsync[0].hi = 0.0;
+
+    Monitor->nVrefresh = 1;
+    Monitor->vrefresh[0].lo = 1024.0;
+    Monitor->vrefresh[0].hi = 0.0;
+
+    while (Mode) {
+        if (!Mode->HSync)
+            Mode->HSync = ((float) Mode->Clock ) / ((float) Mode->HTotal);
+
+        if (!Mode->VRefresh)
+            Mode->VRefresh = (1000.0 * ((float) Mode->Clock)) / 
+                ((float) (Mode->HTotal * Mode->VTotal));
+
+        if (Mode->HSync < Monitor->hsync[0].lo)
+            Monitor->hsync[0].lo = Mode->HSync;
+
+        if (Mode->HSync > Monitor->hsync[0].hi)
+            Monitor->hsync[0].hi = Mode->HSync;
+
+        if (Mode->VRefresh < Monitor->vrefresh[0].lo)
+            Monitor->vrefresh[0].lo = Mode->VRefresh;
+
+        if (Mode->VRefresh > Monitor->vrefresh[0].hi)
+            Monitor->vrefresh[0].hi = Mode->VRefresh;
+
+        Mode = Mode->next;
+    }
+}
+
+_X_EXPORT DisplayModePtr
 xf86DDCGetModes(int scrnIndex, xf86MonPtr DDC)
 {
     int preferred, i;
@@ -350,4 +384,108 @@ xf86DDCGetModes(int scrnIndex, xf86MonPtr DDC)
 	    best->type |= M_T_PREFERRED;
     }
     return Modes;
+}
+
+/*
+ * Fill out MonPtr with xf86MonPtr information.
+ */
+_X_EXPORT void
+xf86DDCMonitorSet(int scrnIndex, MonPtr Monitor, xf86MonPtr DDC)
+{
+    DisplayModePtr Modes = NULL, Mode;
+    int i, clock;
+    Bool have_hsync = FALSE, have_vrefresh = FALSE, have_maxpixclock = FALSE;
+
+    if (!Monitor || !DDC)
+        return;
+
+    Monitor->DDC = DDC;
+
+    Monitor->widthmm = 10 * DDC->features.hsize;
+    Monitor->heightmm = 10 * DDC->features.vsize;
+
+    /* If this is a digital display, then we can use reduced blanking */
+    if (DDC->features.input_type)
+        Monitor->reducedblanking = TRUE;
+    /* Allow the user to also enable this through config */
+
+    Modes = xf86DDCGetModes(scrnIndex, DDC);
+
+    /* Skip EDID ranges if they were specified in the config file */
+    have_hsync = (Monitor->nHsync != 0);
+    have_vrefresh = (Monitor->nVrefresh != 0);
+    have_maxpixclock = (Monitor->maxPixClock != 0);
+
+    /* Go through the detailed monitor sections */
+    for (i = 0; i < DET_TIMINGS; i++) {
+        switch (DDC->det_mon[i].type) {
+        case DS_RANGES:
+	    if (!have_hsync) {
+		if (!Monitor->nHsync)
+		    xf86DrvMsg(scrnIndex, X_INFO,
+			    "Using EDID range info for horizontal sync\n");
+		Monitor->hsync[Monitor->nHsync].lo =
+		    DDC->det_mon[i].section.ranges.min_h;
+		Monitor->hsync[Monitor->nHsync].hi =
+		    DDC->det_mon[i].section.ranges.max_h;
+		Monitor->nHsync++;
+	    } else {
+		xf86DrvMsg(scrnIndex, X_INFO,
+			"Using hsync ranges from config file\n");
+	    }
+
+	    if (!have_vrefresh) {
+		if (!Monitor->nVrefresh)
+		    xf86DrvMsg(scrnIndex, X_INFO,
+			    "Using EDID range info for vertical refresh\n");
+		Monitor->vrefresh[Monitor->nVrefresh].lo =
+		    DDC->det_mon[i].section.ranges.min_v;
+		Monitor->vrefresh[Monitor->nVrefresh].hi =
+		    DDC->det_mon[i].section.ranges.max_v;
+		Monitor->nVrefresh++;
+	    } else {
+		xf86DrvMsg(scrnIndex, X_INFO,
+			"Using vrefresh ranges from config file\n");
+	    }
+
+	    clock = DDC->det_mon[i].section.ranges.max_clock * 1000;
+	    if (!have_maxpixclock && clock > Monitor->maxPixClock)
+		Monitor->maxPixClock = clock;
+
+            break;
+        default:
+            break;
+        }
+    }
+
+    if (Modes) {
+        /* Print Modes */
+        xf86DrvMsg(scrnIndex, X_INFO, "Printing DDC gathered Modelines:\n");
+
+        Mode = Modes;
+        while (Mode) {
+            xf86PrintModeline(scrnIndex, Mode);
+            Mode = Mode->next;
+        }
+
+        /* Do we still need ranges to be filled in? */
+        if (!Monitor->nHsync || !Monitor->nVrefresh)
+            DDCGuessRangesFromModes(scrnIndex, Monitor, Modes);
+
+        /* look for last Mode */
+        Mode = Modes;
+
+        while (Mode->next)
+            Mode = Mode->next;
+
+        /* add to MonPtr */
+        if (Monitor->Modes) {
+            Monitor->Last->next = Modes;
+            Modes->prev = Monitor->Last;
+            Monitor->Last = Mode;
+        } else {
+            Monitor->Modes = Modes;
+            Monitor->Last = Mode;
+        }
+    }
 }

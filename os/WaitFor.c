@@ -67,9 +67,6 @@ SOFTWARE.
 #include <X11/X.h>
 #include "misc.h"
 
-#ifdef __UNIXOS2__
-#define select(n,r,w,x,t) os2PseudoSelect(n,r,w,x,t)
-#endif
 #include "osdep.h"
 #include <X11/Xpoll.h>
 #include "dixstruct.h"
@@ -337,10 +334,7 @@ WaitForSomething(int *pClientsReady)
 	    if (XFD_ANYSET(&tmp_set))
 		QueueWorkProc(EstablishNewConnections, NULL,
 			      (pointer)&LastSelectMask);
-#ifdef DPMSExtension
-	    if (XFD_ANYSET (&devicesReadable) && (DPMSPowerLevel != DPMSModeOn))
-		DPMSSet(DPMSModeOn);
-#endif
+
 	    if (XFD_ANYSET (&devicesReadable) || XFD_ANYSET (&clientsReadable))
 		break;
 #ifdef WIN32

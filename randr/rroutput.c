@@ -249,6 +249,7 @@ RROutputDeleteUserMode (RROutputPtr output,
 
     memmove (output->userModes + m, output->userModes + m + 1,
 	     (output->numUserModes - m - 1) * sizeof (RRModePtr));
+    output->numUserModes--;
     RRModeDestroy (mode);
     return Success;
 }
@@ -284,15 +285,6 @@ RROutputSetCrtcs (RROutputPtr	output,
     output->numCrtcs = numCrtcs;
     RROutputChanged (output, TRUE);
     return TRUE;
-}
-
-void
-RROutputSetCrtc (RROutputPtr output, RRCrtcPtr crtc)
-{
-    if (output->crtc == crtc)
-	return;
-    output->crtc = crtc;
-    RROutputChanged (output, FALSE);
 }
 
 Bool
@@ -438,7 +430,7 @@ RROutputInit (void)
 int
 ProcRRGetOutputInfo (ClientPtr client)
 {
-    REQUEST(xRRGetOutputInfoReq);;
+    REQUEST(xRRGetOutputInfoReq);
     xRRGetOutputInfoReply	rep;
     RROutputPtr			output;
     CARD8			*extra;
@@ -452,7 +444,7 @@ ProcRRGetOutputInfo (ClientPtr client)
     int				i, n;
     
     REQUEST_SIZE_MATCH(xRRGetOutputInfoReq);
-    output = LookupOutput(client, stuff->output, SecurityReadAccess);
+    output = LookupOutput(client, stuff->output, DixReadAccess);
 
     if (!output)
     {

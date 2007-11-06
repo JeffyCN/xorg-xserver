@@ -1,6 +1,4 @@
 /*
- * Id: ts.c,v 1.1 1999/11/02 18:39:28 keithp Exp $
- *
  * Copyright © 1999 Keith Packard
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
@@ -21,7 +19,6 @@
  * TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
  * PERFORMANCE OF THIS SOFTWARE.
  */
-/* $RCSId: xc/programs/Xserver/hw/kdrive/itsy/ts.c,v 1.1 1999/11/19 13:53:54 hohndel Exp $ */
 
 #ifdef HAVE_CONFIG_H
 #include <kdrive-config.h>
@@ -63,7 +60,7 @@ itsyTsReadBytes (int fd, char *buf, int len, int min)
 }
 
 void
-itsyTsRead (int tsPort)
+itsyTsRead (KdPointerInfo *pi, int tsPort)
 {
     ts_event	    event;
     long	    buf[3];
@@ -89,7 +86,7 @@ itsyTsRead (int tsPort)
 	    x = 0;
 	    y = 0;
 	}
-	KdEnqueueMouseEvent (flags, x, y);
+	KdEnqueuePointerEvent (pi, flags, x, y, 0);
     }
 }
 
@@ -204,7 +201,8 @@ itsyTsFini (int tsPort)
 	close (tsPort);
 }
 
-KdMouseFuncs itsyTsMouseFuncs = {
+KdPointerDriver itsyTsMouseDriver = {
+    "itsyts",
     itsyTsInit,
     itsyTsRead,
     itsyTsFini

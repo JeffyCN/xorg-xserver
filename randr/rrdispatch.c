@@ -22,6 +22,9 @@
 
 #include "randrstr.h"
 
+#define SERVER_RANDR_MAJOR	1
+#define SERVER_RANDR_MINOR	2
+
 Bool
 RRClientKnowsRates (ClientPtr	pClient)
 {
@@ -49,8 +52,8 @@ ProcRRQueryVersion (ClientPtr client)
      * Report the current version; the current
      * spec says they're all compatible after 1.0
      */
-    rep.majorVersion = RANDR_MAJOR;
-    rep.minorVersion = RANDR_MINOR;
+    rep.majorVersion = SERVER_RANDR_MAJOR;
+    rep.minorVersion = SERVER_RANDR_MINOR;
     if (client->swapped) {
     	swaps(&rep.sequenceNumber, n);
     	swapl(&rep.length, n);
@@ -70,14 +73,15 @@ ProcRRSelectInput (ClientPtr client)
     WindowPtr	pWin;
     RREventPtr	pRREvent, *pHead;
     XID		clientResource;
+    int		rc;
 
     REQUEST_SIZE_MATCH(xRRSelectInputReq);
-    pWin = SecurityLookupWindow (stuff->window, client, SecurityWriteAccess);
-    if (!pWin)
-	return BadWindow;
+    rc = dixLookupWindow(&pWin, stuff->window, client, DixWriteAccess);
+    if (rc != Success)
+	return rc;
     pHead = (RREventPtr *)SecurityLookupIDByType(client,
 						 pWin->drawable.id, RREventType,
-						 SecurityWriteAccess);
+						 DixWriteAccess);
 
     if (stuff->enable & (RRScreenChangeNotifyMask|
 			 RRCrtcChangeNotifyMask|

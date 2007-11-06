@@ -8,11 +8,19 @@ if XF86UTILS
 XF86UTILS_SUBDIR = utils
 endif
 
+if MFB
+MFB_SUBDIR = xf1bpp xf4bpp
+endif
+
+if CFB
+CFB_SUBDIR = xf8_16bpp xf8_32bpp
+endif
+
 DOC_SUBDIR = doc
 
 SUBDIRS = common ddc dummylib i2c x86emu int10 fbdevhw os-support parser rac \
-          ramdac shadowfb vbe vgahw xaa xf1bpp xf4bpp xf8_16bpp \
-	  xf8_32bpp loader scanpci dixmods exa modes \
+	  ramdac shadowfb vbe vgahw xaa $(MFB_SUBDIR) $(CFB_SUBDIR) \
+	  loader scanpci dixmods exa modes \
 	  $(DRI_SUBDIR) $(XF86UTILS_SUBDIR) $(DOC_SUBDIR)
 
 DIST_SUBDIRS = common ddc dummylib i2c x86emu int10 fbdevhw os-support \
@@ -22,7 +30,7 @@ DIST_SUBDIRS = common ddc dummylib i2c x86emu int10 fbdevhw os-support \
 
 bin_PROGRAMS = Xorg
 
-AM_CFLAGS = @XORG_CFLAGS@
+AM_CFLAGS = $(DIX_CFLAGS) @XORG_CFLAGS@
 INCLUDES = @XORG_INCS@ 
 
 Xorg_SOURCES = xorg.c
@@ -37,7 +45,7 @@ libosandcommon_la_LIBADD = \
 osandcommon.c xorg.c:
 	touch $@
 
-DISTCLEANFILES = osandcommon.c xorg.c xorg.conf.example xorg.conf.example.pre
+DISTCLEANFILES = osandcommon.c xorg.c
 
 XORG_LIBS = \
             @XORG_CORE_LIBS@ \
@@ -63,16 +71,17 @@ Xorg_LDADD = $(XORG_LIBS) \
 Xorg_LDFLAGS = $(LD_EXPORT_SYMBOLS_FLAG)
 
 BUILT_SOURCES = xorg.conf.example
+DISTCLEANFILES += xorg.conf.example xorg.conf.example.pre
 EXTRA_DIST = xorgconf.cpp
 
 if SOLARIS_ASM_INLINE
 # Needs to be built before any files are compiled when using Sun compilers
 # so in*/out* inline definitions are properly processed.
 
-BUILT_SOURCES += os-support/solaris/solaris-$(SOLARIS_INOUT_ARCH).il
+BUILT_SOURCES += os-support/solaris/solaris-@SOLARIS_INOUT_ARCH@.il
 
-os-support/solaris/solaris-$(SOLARIS_INOUT_ARCH).il:
-	cd os-support/solaris ; make solaris-$(SOLARIS_INOUT_ARCH).il
+os-support/solaris/solaris-@SOLARIS_INOUT_ARCH@.il:
+	cd os-support/solaris ; make solaris-@SOLARIS_INOUT_ARCH@.il
 endif
 
 # do not use $(mkdir_p) if you want automake 1.7 to work

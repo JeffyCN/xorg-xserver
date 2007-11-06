@@ -60,12 +60,11 @@ ATI_LIBS =				\
 Xati_LDADD = \
 	$(ATI_LIBS)			\
 	@KDRIVE_LIBS@			\
-	@XSERVER_LIBS@			
+	@XSERVER_LIBS@
 
+Xati_DEPENDENCIES =	\
+	libati.a 			\
+	@KDRIVE_LOCAL_LIBS@
 
-Xati_DEPENDENCIES =                     \
-        libati.a                        \
-        $(FBDEV_LIBS)                   \
-        $(VESA_LIBS)                    \
-        $(DRI_LIBS)                     
-
+relink:
+	rm -f $(bin_PROGRAMS) && make $(bin_PROGRAMS)

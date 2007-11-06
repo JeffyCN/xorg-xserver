@@ -1,6 +1,4 @@
 /*
- * Id: vxkbd.c,v 1.1 1999/11/24 08:35:24 keithp Exp $
- *
  * Copyright © 1999 Network Computing Devices, Inc.  All rights reserved.
  *
  * Author: Keith Packard
@@ -171,7 +169,7 @@ static int  kbdFd = -1;
 #include <event.h>
 #include <kbd_ioctl.h>
 
-extern KeybdCtrl    defaultKeyboardControl;
+extern KeyboardCtrl    defaultKeyboardControl;
 
 static void
 VxWorksSetAutorepeat (unsigned char *repeats, Bool on)
@@ -235,7 +233,7 @@ void
 VxWorksKeyboardLeds (int leds)
 {
     DeviceIntPtr	pKeyboard = (DeviceIntPtr) LookupKeyboardDevice ();
-    KeybdCtrl		*ctrl = &pKeyboard->kbdfeed->ctrl;
+    KeyboardCtrl		*ctrl = &pKeyboard->kbdfeed->ctrl;
     led_ioctl_info	led_info;
     int			i;
 
