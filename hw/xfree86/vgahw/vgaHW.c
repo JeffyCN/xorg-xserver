@@ -434,16 +434,12 @@ mmioWriteFCR(vgaHWPtr hwp, CARD8 value)
 static void
 mmioWriteAttr(vgaHWPtr hwp, CARD8 index, CARD8 value)
 {
-    volatile CARD8 tmp;
-
     if (hwp->paletteEnabled)
 	index &= ~0x20;
     else
 	index |= 0x20;
 
-    /* gcc-4.0 -O2 is broken : needs a volatile assignment */ 
-    tmp = minb(hwp->IOBase + VGA_IN_STAT_1_OFFSET);
-
+    (void) minb(hwp->IOBase + VGA_IN_STAT_1_OFFSET);
     moutb(VGA_ATTR_INDEX, index);
     moutb(VGA_ATTR_DATA_W, value);
 }
@@ -451,16 +447,12 @@ mmioWriteAttr(vgaHWPtr hwp, CARD8 index, CARD8 value)
 static CARD8
 mmioReadAttr(vgaHWPtr hwp, CARD8 index)
 {
-    volatile CARD8 tmp;
-  
     if (hwp->paletteEnabled)
 	index &= ~0x20;
     else
 	index |= 0x20;
 
-    /* gcc-4.0 -O2 is broken : needs a volatile assignment */ 
-    tmp = minb(hwp->IOBase + VGA_IN_STAT_1_OFFSET);
-
+    (void) minb(hwp->IOBase + VGA_IN_STAT_1_OFFSET);
     moutb(VGA_ATTR_INDEX, index);
     return minb(VGA_ATTR_DATA_R);
 }
@@ -480,11 +472,7 @@ mmioReadMiscOut(vgaHWPtr hwp)
 static void
 mmioEnablePalette(vgaHWPtr hwp)
 {
-    volatile CARD8 tmp;
-    
-    /* gcc-4.0 -O2 is broken : needs a volatile assignment */ 
-    tmp = minb(hwp->IOBase + VGA_IN_STAT_1_OFFSET);
-    
+    (void) minb(hwp->IOBase + VGA_IN_STAT_1_OFFSET);
     moutb(VGA_ATTR_INDEX, 0x00);
     hwp->paletteEnabled = TRUE;
 }
@@ -492,11 +480,7 @@ mmioEnablePalette(vgaHWPtr hwp)
 static void
 mmioDisablePalette(vgaHWPtr hwp)
 {
-    volatile CARD8 tmp;
-    
-    /* gcc-4.0 -O2 is broken : needs a volatile assignment */ 
-    tmp = minb(hwp->IOBase + VGA_IN_STAT_1_OFFSET);
-    
+    (void) minb(hwp->IOBase + VGA_IN_STAT_1_OFFSET);
     moutb(VGA_ATTR_INDEX, 0x20);
     hwp->paletteEnabled = FALSE;
 }

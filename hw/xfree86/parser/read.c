@@ -80,10 +80,10 @@ static xf86ConfigSymTabRec TopLevelTab[] =
 static int
 xf86validateConfig (XF86ConfigPtr p)
 {
-	/*if (!xf86validateDevice (p))
-		return FALSE;*/
-	/*if (!xf86validateScreen (p))
-		return FALSE;*/
+	if (!xf86validateDevice (p))
+		return FALSE;
+	if (!xf86validateScreen (p))
+		return FALSE;
 	if (!xf86validateInput (p))
 		return FALSE;
 	if (!xf86validateLayout (p))

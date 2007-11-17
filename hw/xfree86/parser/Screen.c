@@ -526,7 +526,15 @@ xf86validateScreen (XF86ConfigPtr p)
 			}
 		}
 
-		screen->scrn_device= xf86findDevice (screen->scrn_device_str, p->conf_device_lst);
+		device = xf86findDevice (screen->scrn_device_str, p->conf_device_lst);
+		if (!device)
+		{
+			xf86validationError (UNDEFINED_DEVICE_MSG,
+						  screen->scrn_device_str, screen->scrn_identifier);
+			return (FALSE);
+		}
+		else
+			screen->scrn_device = device;
 
 		adaptor = screen->scrn_adaptor_lst;
 		while (adaptor)

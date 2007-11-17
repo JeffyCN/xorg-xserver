@@ -4,7 +4,7 @@ xpcdir = @xpconfigdir@/C/print
 
 
 Xprinters.ghostscript: $(srcdir)/Xprinters
-	sed < $(srcdir)/Xprinters "s/#Printer xp_pdf_spooldir_HOME_Xprintjobs/Printer xp_pdf_spooldir_HOME_Xprintjobs/" > Xprinters.ghostscript
+	sed < $(srcdir)/Xprinters "s/#Printer xp_pdf_spooldir_tmp_Xprintjobs/Printer xp_pdf_spooldir_tmp_Xprintjobs/" > Xprinters.ghostscript
 
 
 

@@ -1187,8 +1187,7 @@ exaFillRegionTiled (DrawablePtr	pDrawable,
 	    int dstY = pBox->y1;
 	    int tileY;
 
-	    modulus(dstY - pDrawable->y - pPatOrg->y, tileHeight, tileY);
-
+	    tileY = (dstY - pDrawable->y - pPatOrg->y) % tileHeight;
 	    while (height > 0) {
 		int width = pBox->x2 - pBox->x1;
 		int dstX = pBox->x1;
@@ -1199,8 +1198,7 @@ exaFillRegionTiled (DrawablePtr	pDrawable,
 		    h = height;
 		height -= h;
 
-		modulus(dstX - pDrawable->x - pPatOrg->x, tileWidth, tileX);
-
+		tileX = (dstX - pDrawable->x - pPatOrg->x) % tileWidth;
 		while (width > 0) {
 		    int w = tileWidth - tileX;
 		    if (w > width)
@@ -1225,8 +1223,7 @@ exaFillRegionTiled (DrawablePtr	pDrawable,
     }
 
 fallback:
-    if (alu != GXcopy || planemask != FB_ALLONES || pPatOrg->x != 0 ||
-	pPatOrg->y != 0)
+    if (alu != GXcopy || planemask != FB_ALLONES)
 	return FALSE;
     EXA_FALLBACK(("from %p to %p (%c,%c)\n", pTile, pDrawable,
 		  exaDrawableLocation(&pTile->drawable),

@@ -835,14 +835,6 @@ extern unsigned int	XkbDfltAccessXFeedback;
 extern unsigned char	XkbDfltAccessXOptions;
 
 int
-xkbInitGlobals()
-{
-    char * xkbpath= getenv("XKBPATH");
-    if (xkbpath!=NULL)
-	XkbBaseDirectory= xkbpath;
-}
-
-int
 XkbProcessArguments(int argc,char *argv[],int i)
 {
     if (strcmp(argv[i],"-kb")==0) {

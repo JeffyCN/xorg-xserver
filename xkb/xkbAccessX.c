@@ -141,7 +141,6 @@ xEvent		xE;
     else if (isRepeat)
 	XkbLastRepeatEvent=	(pointer)&xE;
     XkbProcessKeyboardEvent(&xE,keybd,1L);
-
     XkbLastRepeatEvent= NULL;
     return;
     
@@ -309,19 +308,14 @@ xkbControlsNotify	cn;
 static CARD32
 AccessXRepeatKeyExpire(OsTimerPtr timer,CARD32 now,pointer arg)
 {
+XkbSrvInfoPtr	xkbi= ((DeviceIntPtr)arg)->key->xkbInfo;
 KeyCode		key;
-DeviceIntPtr    dev = (DeviceIntPtr)arg;
-XkbSrvInfoPtr	xkbi= dev->key->xkbInfo;
-BOOL            coreEvent = FALSE;
 
     if (xkbi->repeatKey==0)
 	return 0;
-
-    coreEvent = (dev == inputInfo.keyboard);
-
     key= xkbi->repeatKey;
-    AccessXKeyboardEvent(dev, coreEvent ? KeyRelease : DeviceKeyRelease,key,True);
-    AccessXKeyboardEvent(dev, coreEvent ? KeyPress : DeviceKeyPress ,key,True);
+    AccessXKeyboardEvent((DeviceIntPtr)arg,KeyRelease,key,True);
+    AccessXKeyboardEvent((DeviceIntPtr)arg,KeyPress,key,True);
     return xkbi->desc->ctrls->repeat_interval;
 }
 

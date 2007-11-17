@@ -22,18 +22,19 @@
 
 
 # Sample entry for the "PSspooldir" model
-# Just add a printer called "xp_ps_spooldir_HOME_Xprintjobs" to "Xprinters"
+# Just add a printer called "xp_ps_spooldir_tmp_Xprintjobs" to "Xprinters"
 # and you will get an extra printer which files the PostScript jobs
-# in the "$HOME/Xprintjobs/" directory.
-xp_ps_spooldir_HOME_Xprintjobs.xp-model-identifier: PSspooldir
+# in the "/tmp/Xprintjobs/" directory.
+xp_ps_spooldir_tmp_Xprintjobs.xp-model-identifier: PSspooldir
 
 # Sample entry for the "PS2PDFspooldir-GS" model
-# Just add a printer called "xp_pdf_spooldir_HOME_Xprintjobs" to "Xprinters"
+# Just add a printer called "xp_pdf_spooldir_tmp_Xprintjobs" to "Xprinters"
 # and you will get an extra printer which convertes the PostScript jobs
-# to PDF using "ps2pdf" and files them into the "$HOME/Xprintjobs/" directory.
+# to PDF using "ps2pdf" and files them into the "/tmp/Xprintjobs/" directory.
 # NOTE: Future versions of Xprint will use the PDF DDX instead directly
 # instead of relying on GhostScript/ps2pdf...
-xp_pdf_spooldir_HOME_Xprintjobs.xp-model-identifier: PS2PDFspooldir-GS
+xp_pdf_spooldir_tmp_Xprintjobs.xp-model-identifier: PS2PDFspooldir-GS
+
 
 # IMPORTANT EXAMPLES
 #

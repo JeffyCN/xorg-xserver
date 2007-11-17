@@ -30,10 +30,10 @@
 
 ########################################################################
 # Preconfigured entry for the PSspooldir model
-# (which sends jobs to $HOME/Xprintjobs instead to a physical printer)
+# (which sends jobs to /tmp/Xprintjobs instead to a physical printer)
 ########################################################################
-#Printer xp_pdf_spooldir_HOME_Xprintjobs
-Printer xp_ps_spooldir_HOME_Xprintjobs
+#Printer xp_pdf_spooldir_tmp_Xprintjobs
+Printer xp_ps_spooldir_tmp_Xprintjobs
 
 ########################################################################
 # Add individual printers to the list of printers managed by the
