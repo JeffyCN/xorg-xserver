@@ -1,4 +1,4 @@
-xorg-server (2:1.4.1~git20071105-1) UNRELEASED; urgency=low
+xorg-server (2:1.4.1~git20071117-1) unstable; urgency=low
 
   [ Julien Cristau ]
   * Add conflict on xserver-xorg-input-wacom (<< 0.7.8) to xserver-xorg-core.
@@ -32,7 +32,7 @@ xorg-server (2:1.4.1~git20071105-1) UNRELEASED; urgency=low
     + 44_XKB_mapping_changes_for_all_core-sending_devices.diff
   * Make xephyr recommend xfonts-base. Closes: #451542
 
- -- David Nusinow <dnusinow@debian.org>  Sat, 17 Nov 2007 12:08:47 -0500
+ -- David Nusinow <dnusinow@debian.org>  Sat, 17 Nov 2007 18:54:02 -0500
 
 xorg-server (2:1.4-3) unstable; urgency=low
 
