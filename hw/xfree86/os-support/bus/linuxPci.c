@@ -148,7 +148,7 @@ linuxPciOpenFile(PCITAG tag, Bool write)
 	int		domain, bus, dev, func;
 	char		file[64];
 	struct stat	ignored;
-	static int is26 = -1;
+	static int is26 = 0;
 
 	domain = PCI_DOM_FROM_TAG(tag);
 	bus  = PCI_BUS_NO_DOMAIN(PCI_BUS_FROM_TAG(tag));

@@ -683,6 +683,7 @@ VerifyDisplayName(const char *d)
  */
 void InitGlobals(void)
 {
+    xkbInitGlobals();
     ddxInitGlobals();
 }
 

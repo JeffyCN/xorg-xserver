@@ -3,7 +3,7 @@ PATH=/usr/bin:/usr/sbin:/bin:/sbin:/usr/local/bin
 export PATH
 
 verbose_msgs="false"
-DEFAULT_SPOOLDIR=/tmp/Xprintjobs
+DEFAULT_SPOOLDIR=`perl -e '@x = getpwuid($>); print $x[7]'`/Xprintjobs
 
 usage()
 {
@@ -74,7 +74,6 @@ verbose "# umask=\"$permmask\""
 
 if [ ! -d "${DEFAULT_SPOOLDIR}" ] ; then 
   mkdir "${DEFAULT_SPOOLDIR}"
-  chmod a+rwxt "${DEFAULT_SPOOLDIR}"
 fi
 
 if [ "${permmask}" != "" ] ; then
@@ -109,8 +108,21 @@ fi
 # which may screw-up further processing by other shell scripts ...
 filename="`echo \"${filename}\" | tr '[:blank:]' '_' | tr -c -d '[:alnum:]_.-'`"
 
+# consider that the end name might be too long:
+# 1. Calculate the length of the suffix (I think we need to count in bytes)
+filename_length="`echo \"${filename_suffix}\" | wc -c`"
+# 2. remove this length from 256
+filename_length="`echo \"256-${filename_length}\" | bc`"
+# 3. and keep only the first 256 - suffix_length bytes from the name.
+filename="`echo \"${filename}\" | cut -b-${filename_length}`"
+
 # ... add path and suffix ...
-filename="${spooldir}/${filename}${filename_suffix}"
+# ... should be unique, but check anyway
+if [ -e "${spooldir}/${filename}" ]; then
+  filename="`tempfile -d "${spooldir}" -s "_${filename}${filename_suffix}"`"
+else
+  filename="${spooldir}/${filename}${filename_suffix}"
+fi
 
 verbose "# File name is \"$filename\"."
 

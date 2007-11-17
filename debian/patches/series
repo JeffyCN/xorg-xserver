@@ -22,3 +22,4 @@
 92_xprint-security-holes-fix.patch
 93_spooltodir_check_file_exists
 93_xprint_fonts_fix
+send_repeats_to_right_window.diff

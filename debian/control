@@ -171,7 +171,7 @@ Description: Virtual Framebuffer 'fake' X server
 Package: xserver-xephyr
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
-Recommends: xbase-clients
+Recommends: xbase-clients, xfonts-base
 Description: nested X server
  Xephyr is an X server that can be run inside another X server,
  much like Xnest. It is based on the kdrive X server, and as a

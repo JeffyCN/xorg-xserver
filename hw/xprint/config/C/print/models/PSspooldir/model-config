@@ -19,7 +19,7 @@
 #
 # Attributes supported for this printer model
 *content-orientations-supported: portrait landscape reverse-portrait reverse-landscape
-*descriptor: PostScript job spool dir /tmp/Xprintjobs
+*descriptor: PostScript job spool dir $HOME/Xprintjobs
 *document-formats-supported: {POSTSCRIPT 2}
 *input-trays-supported:
 *medium-source-sizes-supported: \
@@ -44,7 +44,7 @@
 }
 
 *plexes-supported: simplex duplex tumble
-*printer-model: "PostScript job spool dir /tmp/Xprintjobs"
+*printer-model: "PostScript job spool dir $HOME/Xprintjobs"
 # 75, 100, 120, 150, 180, 200, 240, 300, 360, 400, 600, 720,
 # 940, 1200 and 2440 are supported DPI values, we limit it here
 # to some common values:
@@ -59,7 +59,7 @@
 # Note that "%xpconfigdir%" is currently only supported in Xprt servers build
 # from xprint.mozdev.org sources, other platforms have replace it with the
 # absolute path name to the script
-*xp-spooler-command: %xpconfigdir%/C/print/models/PSspooldir/spooltodir.sh -d /tmp/Xprintjobs -s .ps -u 077 -p %printer-name% -c %copy-count% -t %job-name% -o "%options%"
+*xp-spooler-command: %xpconfigdir%/C/print/models/PSspooldir/spooltodir.sh -s .ps -u 077 -p %printer-name% -c %copy-count% -t %job-name% -o "%options%"
 
 # NOTE: xp-psddx-* attributes are EXPERIMENTAL for now.
 # xp-psddx-download-fonts defines which fonts should be downloaded as outlines

@@ -92,7 +92,6 @@ extern DeviceAssocRec mouse_assoc;
 			"/etc/X11/%R," "%P/etc/X11/%R," \
 			"%E," "%F," \
 			"/etc/X11/%F," "%P/etc/X11/%F," \
-			"%D/%X," \
 			"/etc/X11/%X-%M," "/etc/X11/%X," "/etc/%X," \
 			"%P/etc/X11/%X.%H," "%P/etc/X11/%X-%M," \
 			"%P/etc/X11/%X," \
@@ -1801,11 +1800,6 @@ configImpliedLayout(serverLayoutPtr servlayoutp, XF86ConfScreenPtr conf_screen)
     if (!servlayoutp)
 	return FALSE;
 
-    if (conf_screen == NULL) {
-	xf86ConfigError("No Screen sections present\n");
-	return FALSE;
-    }
-
     /*
      * which screen section is the active one?
      *
@@ -1893,6 +1887,12 @@ configScreen(confScreenPtr screenp, XF86ConfScreenPtr conf_screen, int scrnum,
     XF86ConfAdaptorLinkPtr conf_adaptor;
     Bool defaultMonitor = FALSE;
 
+    if (!conf_screen) {
+        conf_screen = xnfcalloc(1, sizeof(XF86ConfScreenRec));
+        conf_screen->scrn_identifier = "Default Screen Section";
+        xf86Msg(X_DEFAULT, "No screen section available. Using defaults.\n");
+    }
+
     xf86Msg(from, "|-->Screen \"%s\" (%d)\n", conf_screen->scrn_identifier,
 	    scrnum);
     /*
@@ -1927,9 +1927,20 @@ configScreen(confScreenPtr screenp, XF86ConfScreenPtr conf_screen, int scrnum,
 	if (!configMonitor(screenp->monitor,conf_screen->scrn_monitor))
 	    return FALSE;
     }
+    /* Configure the device. If there isn't one configured, attach to the
+     * first inactive one that we can configure. If there's none that work,
+     * set it to NULL so that the section can be autoconfigured later */
     screenp->device     = xnfcalloc(1, sizeof(GDevRec));
-    configDevice(screenp->device,conf_screen->scrn_device, TRUE);
-    screenp->device->myScreenSection = screenp;
+    if ((!conf_screen->scrn_device) && (xf86configptr->conf_device_lst)) {
+        conf_screen->scrn_device = xf86configptr->conf_device_lst;
+	xf86Msg(X_DEFAULT, "No device specified for screen \"%s\".\n"
+		"\tUsing the first device section listed.\n", screenp->id);
+    }
+    if (configDevice(screenp->device,conf_screen->scrn_device, TRUE)) {
+        screenp->device->myScreenSection = screenp;
+    } else {
+        screenp->device = NULL;
+    }
     screenp->options = conf_screen->scrn_option_lst;
     
     /*
@@ -2218,13 +2229,17 @@ configDevice(GDevPtr devicep, XF86ConfDevicePtr conf_device, Bool active)
 {
     int i;
 
+    if (!conf_device) {
+        return FALSE;
+    }
+
     if (active)
 	xf86Msg(X_CONFIG, "|   |-->Device \"%s\"\n",
 		conf_device->dev_identifier);
     else
 	xf86Msg(X_CONFIG, "|-->Inactive Device \"%s\"\n",
 		conf_device->dev_identifier);
-	
+
     devicep->identifier = conf_device->dev_identifier;
     devicep->vendor = conf_device->dev_vendor;
     devicep->board = conf_device->dev_board;
