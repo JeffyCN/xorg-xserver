@@ -33,9 +33,10 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-@XCSECURITY_TRUE@am__append_1 = $(XCSECURITY_SRCS)
-@XDMCP_TRUE@am__append_2 = $(XDMCP_SRCS)
-@NEED_STRLCAT_TRUE@am__append_3 = $(STRLCAT_SRCS)
+@SECURE_RPC_TRUE@am__append_1 = $(SECURERPC_SRCS)
+@XCSECURITY_TRUE@am__append_2 = $(XCSECURITY_SRCS)
+@XDMCP_TRUE@am__append_3 = $(XDMCP_SRCS)
+@NEED_STRLCAT_TRUE@am__append_4 = $(STRLCAT_SRCS)
 @XSERVER_DTRACE_TRUE@noinst_PROGRAMS = os.O$(EXEEXT)
 subdir = os
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in
@@ -64,19 +65,21 @@ libcwrapper_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
 libos_la_LIBADD =
 am__libos_la_SOURCES_DIST = WaitFor.c access.c auth.c connection.c \
 	io.c mitauth.c oscolor.c oscolor.h osdep.h osinit.c utils.c \
-	xdmauth.c xstrans.c xprintf.c log.c secauth.c xdmcp.c \
-	strlcat.c strlcpy.c
+	xdmauth.c xstrans.c xprintf.c log.c rpcauth.c secauth.c \
+	xdmcp.c strlcat.c strlcpy.c
 am__objects_1 = log.lo
-am__objects_2 = secauth.lo
-@XCSECURITY_TRUE@am__objects_3 = $(am__objects_2)
-am__objects_4 = xdmcp.lo
-@XDMCP_TRUE@am__objects_5 = $(am__objects_4)
-am__objects_6 = strlcat.lo strlcpy.lo
-@NEED_STRLCAT_TRUE@am__objects_7 = $(am__objects_6)
+am__objects_2 = rpcauth.lo
+@SECURE_RPC_TRUE@am__objects_3 = $(am__objects_2)
+am__objects_4 = secauth.lo
+@XCSECURITY_TRUE@am__objects_5 = $(am__objects_4)
+am__objects_6 = xdmcp.lo
+@XDMCP_TRUE@am__objects_7 = $(am__objects_6)
+am__objects_8 = strlcat.lo strlcpy.lo
+@NEED_STRLCAT_TRUE@am__objects_9 = $(am__objects_8)
 am_libos_la_OBJECTS = WaitFor.lo access.lo auth.lo connection.lo io.lo \
 	mitauth.lo oscolor.lo osinit.lo utils.lo xdmauth.lo xstrans.lo \
 	xprintf.lo $(am__objects_1) $(am__objects_3) $(am__objects_5) \
-	$(am__objects_7)
+	$(am__objects_7) $(am__objects_9)
 libos_la_OBJECTS = $(am_libos_la_OBJECTS)
 PROGRAMS = $(noinst_PROGRAMS)
 os_O_SOURCES = os.c
@@ -391,8 +394,8 @@ noinst_LTLIBRARIES = libos.la libcwrapper.la
 AM_CFLAGS = $(DIX_CFLAGS)
 
 # FIXME: Add support for these in configure.ac
-SECURERPC_SRCS = rpcauth.c
 INTERNALMALLOC_SRCS = xalloc.c
+SECURERPC_SRCS = rpcauth.c
 XCSECURITY_SRCS = secauth.c
 XDMCP_SRCS = xdmcp.c
 STRLCAT_SRCS = strlcat.c strlcpy.c
@@ -400,7 +403,7 @@ XORG_SRCS = log.c
 libos_la_SOURCES = WaitFor.c access.c auth.c connection.c io.c \
 	mitauth.c oscolor.c oscolor.h osdep.h osinit.c utils.c \
 	xdmauth.c xstrans.c xprintf.c $(XORG_SRCS) $(am__append_1) \
-	$(am__append_2) $(am__append_3)
+	$(am__append_2) $(am__append_3) $(am__append_4)
 libcwrapper_la_SOURCES = \
 	$(top_srcdir)/hw/xfree86/os-support/shared/libc_wrapper.c
 
@@ -487,6 +490,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/os.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/oscolor.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/osinit.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/rpcauth.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/secauth.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/strlcat.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/strlcpy.Plo@am__quote@
