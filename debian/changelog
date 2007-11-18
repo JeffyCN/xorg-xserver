@@ -28,8 +28,11 @@ xorg-server (2:1.4.1~git20071117-1) unstable; urgency=low
     + fixes a bunch of input-related bugs, notably keyboard leds
       (closes: #440743 and its pile of duplicates)
   * Remove patches merged in this snapshot
+    + 08_exa_fix_exaFillRegionTiled_fallback.diff
+    + 11_exa_no_negative_tile_offsets.diff
     + 42_fix_RemoveGeneralSocket_crash_from_dbus.diff
     + 44_XKB_mapping_changes_for_all_core-sending_devices.diff
+    + 45_GetKeyboardEvents_reject_out-of-range_keycodes.diff
   * Make xephyr recommend xfonts-base. Closes: #451542
 
  -- David Nusinow <dnusinow@debian.org>  Sat, 17 Nov 2007 18:54:02 -0500
