@@ -103,8 +103,6 @@ clean: xsfclean
 	rm -f include/dix-config.h include/do-not-use-config.h \
 		include/xorg-config.h include/xorg-server.h
 	
-	chmod +x configure
-	
 	dh_clean
 
 install: build

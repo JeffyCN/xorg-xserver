@@ -1,9 +1,3 @@
-xorg-server (2:1.4.1~git20071117-2) UNRELEASED; urgency=low
-
-  * chmod +x configure in debian/rules clean, to fix FTBFS.
-
- -- Julien Cristau <jcristau@debian.org>  Mon, 19 Nov 2007 00:52:54 +0100
-
 xorg-server (2:1.4.1~git20071117-1) unstable; urgency=low
 
   [ Julien Cristau ]
