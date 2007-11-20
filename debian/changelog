@@ -1,8 +1,12 @@
 xorg-server (2:1.4.1~git20071119-1) unstable; urgency=low
 
   * Ship a .orig.tar.gz that's been autoreconf'ed. Closes: #451891
+  * Re-enable validation of the screen section of xorg.conf
+    Modify 14_default_screen_section.diff. This also fixes a problem where the
+    server can't find the device section when it is specified in the screen
+    section. Closes: #451950
 
- -- David Nusinow <dnusinow@debian.org>  Mon, 19 Nov 2007 20:00:56 -0500
+ -- David Nusinow <dnusinow@debian.org>  Mon, 19 Nov 2007 20:38:04 -0500
 
 xorg-server (2:1.4.1~git20071117-1) unstable; urgency=low
 

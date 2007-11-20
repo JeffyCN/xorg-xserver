@@ -1,7 +1,7 @@
 Index: xorg-server/hw/xfree86/common/xf86Config.c
 ===================================================================
---- xorg-server.orig/hw/xfree86/common/xf86Config.c	2007-09-30 19:55:22.000000000 -0400
-+++ xorg-server/hw/xfree86/common/xf86Config.c	2007-09-30 20:48:02.000000000 -0400
+--- xorg-server.orig/hw/xfree86/common/xf86Config.c	2007-11-19 20:36:12.000000000 -0500
++++ xorg-server/hw/xfree86/common/xf86Config.c	2007-11-19 20:36:13.000000000 -0500
 @@ -1800,11 +1800,6 @@
      if (!servlayoutp)
  	return FALSE;
@@ -27,18 +27,35 @@ Index: xorg-server/hw/xfree86/common/xf86Config.c
      xf86Msg(from, "|-->Screen \"%s\" (%d)\n", conf_screen->scrn_identifier,
  	    scrnum);
      /*
-Index: xorg-server/hw/xfree86/parser/read.c
+Index: xorg-server/hw/xfree86/parser/Screen.c
 ===================================================================
---- xorg-server.orig/hw/xfree86/parser/read.c	2007-09-30 19:55:22.000000000 -0400
-+++ xorg-server/hw/xfree86/parser/read.c	2007-09-30 19:55:22.000000000 -0400
-@@ -82,8 +82,8 @@
- {
- 	/*if (!xf86validateDevice (p))
- 		return FALSE;*/
--	if (!xf86validateScreen (p))
--		return FALSE;
-+	/*if (!xf86validateScreen (p))
-+		return FALSE;*/
- 	if (!xf86validateInput (p))
- 		return FALSE;
- 	if (!xf86validateLayout (p))
+--- xorg-server.orig/hw/xfree86/parser/Screen.c	2007-11-19 20:36:47.000000000 -0500
++++ xorg-server/hw/xfree86/parser/Screen.c	2007-11-19 20:36:57.000000000 -0500
+@@ -498,12 +498,6 @@
+ 	XF86ConfDevicePtr device;
+ 	XF86ConfAdaptorLinkPtr adaptor;
+ 
+-	if (!screen)
+-	{
+-		xf86validationError ("At least one Screen section is required.");
+-		return (FALSE);
+-	}
+-
+ 	while (screen)
+ 	{
+ 		if (screen->scrn_obso_driver && !screen->scrn_identifier)
+@@ -512,13 +506,7 @@
+ 		monitor = xf86findMonitor (screen->scrn_monitor_str, p->conf_monitor_lst);
+ 		if (screen->scrn_monitor_str)
+ 		{
+-			if (!monitor)
+-			{
+-				xf86validationError (UNDEFINED_MONITOR_MSG,
+-						 	screen->scrn_monitor_str, screen->scrn_identifier);
+-				return (FALSE);
+-			}
+-			else
++			if (monitor)
+ 			{
+ 				screen->scrn_monitor = monitor;
+ 				if (!xf86validateMonitor(p, screen))
