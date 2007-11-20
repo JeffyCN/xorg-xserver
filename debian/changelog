@@ -1,3 +1,9 @@
+xorg-server (2:1.4.1~git20071119-1) unstable; urgency=low
+
+  * Ship a .orig.tar.gz that's been autoreconf'ed. Closes: #451891
+
+ -- David Nusinow <dnusinow@debian.org>  Mon, 19 Nov 2007 20:00:56 -0500
+
 xorg-server (2:1.4.1~git20071117-1) unstable; urgency=low
 
   [ Julien Cristau ]
