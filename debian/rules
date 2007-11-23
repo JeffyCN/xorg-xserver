@@ -44,6 +44,8 @@ endif
 
 INSTALL=/usr/bin/install
 
+VENDOR = $(shell lsb_release -i -s)
+
 # disable-static is so we don't get libfoo.a for modules.  now if only we could
 # kill the .las.
 confflags += --disable-static \
@@ -69,7 +71,7 @@ confflags += --disable-static \
 	     --with-xkb-output=/var/lib/xkb \
 	     --enable-xfree86-utils \
 	     --with-os-name="$(shell uname)" \
-	     --with-os-vendor="Debian ($(SOURCE_NAME) $(SOURCE_VERSION))" \
+	     --with-os-vendor="$(VENDOR) ($(SOURCE_NAME) $(SOURCE_VERSION))" \
 	     --with-int10=x86emu \
 	     --disable-type1
 

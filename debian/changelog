@@ -1,3 +1,11 @@
+xorg-server (2:1.4.1~git20071119-2) UNRELEASED; urgency=low
+
+  * debian/rules: Use lsb_release -i -s to get the vendor name, instead of
+    hardcoding "Debian".
+  * debian/control: build-dep on lsb-release.
+
+ -- Julien Cristau <jcristau@debian.org>  Fri, 23 Nov 2007 22:14:06 +0100
+
 xorg-server (2:1.4.1~git20071119-1) unstable; urgency=low
 
   * Ship a .orig.tar.gz that's been autoreconf'ed. Closes: #451891
