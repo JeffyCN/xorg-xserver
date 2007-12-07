@@ -6,8 +6,10 @@ xorg-server (2:1.4.1~git20071119-2) UNRELEASED; urgency=low
   * Cherry-pick commit f30abe30 from master: edid quirk for MAX 0x77e monitor.
   * Add patch 44_preferredmode_infinite_loop.diff from upstream git: fixes an
     infinite loop when PreferredMode is used in xorg.conf.
+  * Add patch 08_xkb_infinite_loop.diff from upstream bug#13511: papers over
+    an infinite loop in event processing (closes: #451989).
 
- -- Julien Cristau <jcristau@debian.org>  Sun, 02 Dec 2007 00:56:53 +0100
+ -- Julien Cristau <jcristau@debian.org>  Fri, 07 Dec 2007 21:09:24 +0100
 
 xorg-server (2:1.4.1~git20071119-1) unstable; urgency=low
 
