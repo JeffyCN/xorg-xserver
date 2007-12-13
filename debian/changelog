@@ -1,15 +1,27 @@
-xorg-server (2:1.4.1~git20071119-2) UNRELEASED; urgency=low
+xorg-server (2:1.4.1~git20071212-2) UNRELEASED; urgency=low
 
+  * Add patch 08_xkb_infinite_loop.diff from upstream bug#13511: papers over
+    an infinite loop in event processing (closes: #451989).
+
+ -- Julien Cristau <jcristau@debian.org>  Thu, 13 Dec 2007 10:07:34 +0100
+
+xorg-server (2:1.4.1~git20071212-1) unstable; urgency=low
+
+  [ Julien Cristau ]
   * debian/rules: Use lsb_release -i -s to get the vendor name, instead of
     hardcoding "Debian".
   * debian/control: build-dep on lsb-release.
   * Cherry-pick commit f30abe30 from master: edid quirk for MAX 0x77e monitor.
   * Add patch 44_preferredmode_infinite_loop.diff from upstream git: fixes an
     infinite loop when PreferredMode is used in xorg.conf.
-  * Add patch 08_xkb_infinite_loop.diff from upstream bug#13511: papers over
-    an infinite loop in event processing (closes: #451989).
 
- -- Julien Cristau <jcristau@debian.org>  Fri, 07 Dec 2007 21:09:24 +0100
+  [ David Nusinow ]
+  * New upstream version. This is based on the server-1.4-branch, and includes
+    all the changes in the 1.4.0.90 (pre-)release as well as additional fixes.
+    This is primarily a bugfix release
+    + Remove 12_bgPixel_fix_64bit_issue.diff. Applied upstream
+
+ -- David Nusinow <dnusinow@debian.org>  Wed, 12 Dec 2007 20:19:11 -0500
 
 xorg-server (2:1.4.1~git20071119-1) unstable; urgency=low
 
