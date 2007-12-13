@@ -6,7 +6,6 @@
 06_use_proc_instead_of_sysfs_for_pci_domains.diff
 07_autoconfig_screen_with_device_section.diff
 10_dont_look_in_home_for_config.diff -p0
-12_bgPixel_fix_64bit_issue.diff
 13_debian_add_xkbpath_env_variable.diff
 14_default_screen_section.diff
 21_glx_align_fixes.patch

@@ -1,8 +1,8 @@
 Index: xorg-server/hw/xfree86/common/xf86Config.c
 ===================================================================
---- xorg-server.orig/hw/xfree86/common/xf86Config.c	2007-11-19 20:36:12.000000000 -0500
-+++ xorg-server/hw/xfree86/common/xf86Config.c	2007-11-19 20:36:13.000000000 -0500
-@@ -1800,11 +1800,6 @@
+--- xorg-server.orig/hw/xfree86/common/xf86Config.c	2007-12-12 19:43:59.000000000 -0500
++++ xorg-server/hw/xfree86/common/xf86Config.c	2007-12-12 19:44:10.000000000 -0500
+@@ -1801,11 +1801,6 @@
      if (!servlayoutp)
  	return FALSE;
  
@@ -14,7 +14,7 @@ Index: xorg-server/hw/xfree86/common/xf86Config.c
      /*
       * which screen section is the active one?
       *
-@@ -1892,6 +1887,12 @@
+@@ -1893,6 +1888,12 @@
      XF86ConfAdaptorLinkPtr conf_adaptor;
      Bool defaultMonitor = FALSE;
  
@@ -29,8 +29,8 @@ Index: xorg-server/hw/xfree86/common/xf86Config.c
      /*
 Index: xorg-server/hw/xfree86/parser/Screen.c
 ===================================================================
---- xorg-server.orig/hw/xfree86/parser/Screen.c	2007-11-19 20:36:47.000000000 -0500
-+++ xorg-server/hw/xfree86/parser/Screen.c	2007-11-19 20:36:57.000000000 -0500
+--- xorg-server.orig/hw/xfree86/parser/Screen.c	2007-12-12 19:43:02.000000000 -0500
++++ xorg-server/hw/xfree86/parser/Screen.c	2007-12-12 19:44:10.000000000 -0500
 @@ -498,12 +498,6 @@
  	XF86ConfDevicePtr device;
  	XF86ConfAdaptorLinkPtr adaptor;
