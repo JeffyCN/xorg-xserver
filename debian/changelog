@@ -1,9 +1,9 @@
-xorg-server (2:1.4.1~git20071212-2) UNRELEASED; urgency=low
+xorg-server (2:1.4.1~git20071212-2) unstable; urgency=low
 
   * Add patch 08_xkb_infinite_loop.diff from upstream bug#13511: papers over
     an infinite loop in event processing (closes: #451989).
 
- -- Julien Cristau <jcristau@debian.org>  Thu, 13 Dec 2007 10:07:34 +0100
+ -- Julien Cristau <jcristau@debian.org>  Sat, 22 Dec 2007 00:02:01 +0100
 
 xorg-server (2:1.4.1~git20071212-1) unstable; urgency=low
 
