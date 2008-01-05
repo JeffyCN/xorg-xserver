@@ -2,6 +2,7 @@ xorg-server (2:1.4.1~git20080105-1) UNRELEASED; urgency=low
 
   * Don't reference non-existent bug-reporting.txt file in xvfb-run.1
   * New upstream git pull, again from the server-1.4-branch
+    + Drop 08_xkb_infinite_loop.diff, it's upstream now
 
  -- David Nusinow <dnusinow@debian.org>  Sat, 05 Jan 2008 17:48:05 -0500
 
