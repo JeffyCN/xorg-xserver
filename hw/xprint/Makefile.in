@@ -415,6 +415,7 @@ Xprt_SOURCES = \
         $(top_srcdir)/fb/fbcmap_mi.c
 
 EXTRA_DIST = ValTree.c
+CLEANFILES = miinitext-wrapper.c dpmsstubs-wrapper.c
 all: all-recursive
 
 .SUFFIXES:
@@ -878,6 +879,7 @@ install-strip:
 mostlyclean-generic:
 
 clean-generic:
+	-test -z "$(CLEANFILES)" || rm -f $(CLEANFILES)
 
 distclean-generic:
 	-test -z "$(CONFIG_CLEAN_FILES)" || rm -f $(CONFIG_CLEAN_FILES)
