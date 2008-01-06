@@ -1,4 +1,4 @@
-xorg-server (2:1.4.1~git20080105-1) UNRELEASED; urgency=low
+xorg-server (2:1.4.1~git20080105-1) unstable; urgency=low
 
   * Don't reference non-existent bug-reporting.txt file in xvfb-run.1
   * New upstream git pull, again from the server-1.4-branch
@@ -6,7 +6,7 @@ xorg-server (2:1.4.1~git20080105-1) UNRELEASED; urgency=low
   * Improve logging when DPMS is enabled implicitly
     + Adds 08_better_dpms_logging.diff
 
- -- David Nusinow <dnusinow@debian.org>  Sun, 06 Jan 2008 16:10:41 -0500
+ -- David Nusinow <dnusinow@debian.org>  Sun, 06 Jan 2008 16:56:38 -0500
 
 xorg-server (2:1.4.1~git20071212-2) unstable; urgency=low
 
