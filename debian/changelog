@@ -1,8 +1,13 @@
 xorg-server (2:1.4.1~git20080105-2) UNRELEASED; urgency=low
 
+  [ David Nusinow ]
   * Improve dpms logging patch to correctly label message type
 
- -- David Nusinow <dnusinow@debian.org>  Mon, 07 Jan 2008 20:28:26 -0500
+  [ Brice Goglin ]
+  * Grab upstream commit db9ae863536fff80b5463d99e71dc47ae587980d
+    to set DEFAULT_DPI to 96 instead of 75.
+
+ -- Brice Goglin <bgoglin@debian.org>  Sun, 13 Jan 2008 16:20:12 +0100
 
 xorg-server (2:1.4.1~git20080105-1) unstable; urgency=low
 

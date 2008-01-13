@@ -1,0 +1,21 @@
+commit db9ae863536fff80b5463d99e71dc47ae587980d
+Author: Adam Jackson <ajax@aspartame.nwnk.net>
+Date:   Sun Nov 18 11:57:01 2007 -0500
+
+    Bump DEFAULT_DPI to 96.
+    
+    75 is just nonsense.
+
+diff --git a/hw/xfree86/common/xf86Priv.h b/hw/xfree86/common/xf86Priv.h
+index 3da102f..4723f5a 100644
+--- a/hw/xfree86/common/xf86Priv.h
++++ b/hw/xfree86/common/xf86Priv.h
+@@ -120,7 +120,7 @@ extern RootWinPropPtr *xf86RegisteredPropertiesTable;
+ #define DEFAULT_LOG_VERBOSE	3
+ #endif
+ #ifndef DEFAULT_DPI
+-#define DEFAULT_DPI		75
++#define DEFAULT_DPI		96
+ #endif
+ 
+ #define DEFAULT_UNRESOLVED	TRUE
