@@ -18,6 +18,7 @@
 21_glx_align_fixes.patch
 40_default_dpi_96.patch
 41_vbe_filter_less.diff
+42_dont_break_grab_and_focus_for_window_when_redirecting.diff
 43_allow_override_BIOS_EDID_preferred_mode.diff
 44_preferredmode_infinite_loop.diff
 #47_fbdevhw_magic_numbers.diff
