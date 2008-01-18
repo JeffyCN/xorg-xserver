@@ -1,4 +1,4 @@
-xorg-server (2:1.4.1~git20080118-1) UNRELEASED; urgency=low
+xorg-server (2:1.4.1~git20080118-1) unstable; urgency=low
 
   [ Brice Goglin ]
   * Add 42_dont_break_grab_and_focus_for_window_when_redirecting.diff
@@ -10,7 +10,7 @@ xorg-server (2:1.4.1~git20080118-1) UNRELEASED; urgency=low
     + fixes regression introduced by the fix for CVE-2007-6429 in the MIT-SHM
       extension (closes: #461410)
 
- -- Julien Cristau <jcristau@debian.org>  Fri, 18 Jan 2008 21:12:00 +0100
+ -- Brice Goglin <bgoglin@debian.org>  Fri, 18 Jan 2008 22:20:32 +0100
 
 xorg-server (2:1.4.1~git20080105-2) unstable; urgency=low
 
