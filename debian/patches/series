@@ -9,12 +9,6 @@
 10_dont_look_in_home_for_config.diff -p0
 13_debian_add_xkbpath_env_variable.diff
 14_default_screen_section.diff
-15_CVE-2007-6427.diff
-16_CVE-2007-6428.diff
-17_CVE-2007-6429.diff
-18_CVE-2007-5760.diff
-19_CVE-2007-5958.diff
-20_CVE-2008-0006.diff
 21_glx_align_fixes.patch
 40_default_dpi_96.patch
 41_vbe_filter_less.diff
