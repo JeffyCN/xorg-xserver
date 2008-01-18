@@ -15,6 +15,7 @@
 42_dont_break_grab_and_focus_for_window_when_redirecting.diff
 43_allow_override_BIOS_EDID_preferred_mode.diff
 44_preferredmode_infinite_loop.diff
+45_only_XF86_APM_CAPABILITY_CHANGED_for_video_change_acpi_events.diff
 #47_fbdevhw_magic_numbers.diff
 #51_xkb-and-loathing.diff
 91_ttf2pt1
