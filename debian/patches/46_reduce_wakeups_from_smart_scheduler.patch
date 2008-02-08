@@ -21,6 +21,12 @@ Date:   Sun Oct 28 09:37:52 2007 +0100
     
     Signed-off-by: Keith Packard <keithp@koto.keithp.com>
 
+commit 0e9ef65fa583bf2393dd0fda82df6f092387b425
+Author: Keith Packard <keithp@koto.keithp.com>
+Date:   Wed Nov 7 16:33:10 2007 -0800
+
+    Don't frob timers unless SmartSchedule is running
+
 diff --git a/include/dixstruct.h b/include/dixstruct.h
 index dd6347f..bed31dc 100644
 --- a/include/dixstruct.h
@@ -148,3 +154,25 @@ index 31cb0af..6fc1f7d 100644
      return TRUE;
  #else
      return FALSE;
+diff --git a/os/utils.c b/os/utils.c
+index 3228146..ae96a41 100644
+--- a/os/utils.c
++++ b/os/utils.c
+@@ -1527,6 +1527,8 @@ SmartScheduleStopTimer (void)
+ #ifdef SMART_SCHEDULE_POSSIBLE
+     struct itimerval	timer;
+     
++    if (SmartScheduleDisable)
++	return;
+     timer.it_interval.tv_sec = 0;
+     timer.it_interval.tv_usec = 0;
+     timer.it_value.tv_sec = 0;
+@@ -1541,6 +1543,8 @@ SmartScheduleStartTimer (void)
+ #ifdef SMART_SCHEDULE_POSSIBLE
+     struct itimerval	timer;
+     
++    if (SmartScheduleDisable)
++	return;
+     timer.it_interval.tv_sec = 0;
+     timer.it_interval.tv_usec = SmartScheduleInterval * 1000;
+     timer.it_value.tv_sec = 0;
