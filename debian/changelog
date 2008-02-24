@@ -1,9 +1,20 @@
 xorg-server (2:1.4.1~git20080131-2) UNRELEASED; urgency=low
 
+  [ Brice Goglin ]
   * Add 46_reduce_wakeups_from_smart_scheduler.patch to reduce
     power consumption, closes: #462700.
 
- -- Brice Goglin <bgoglin@debian.org>  Fri, 08 Feb 2008 22:57:14 +0100
+  [ Drew Parsons ]
+  * Restore Xprint, cherry-picking commits
+    f7f79724fdea0cc6fda0e90e56431df937d49335 and
+    d67e210f3458b62d7d4a6032aabfda0004d661c1 from master (xserver 1.5).
+    Include patch 94_xprint_XSERVER_LIBS to give new meaning of
+    XSERVER_LIBS as expected in configure.ac from master (see commit
+    a02db0d500cac20d0f0f107d27c064a175018421). Delete
+    94_xprint_XSERVER_LIBS when we upgrade to xserver 1.5.
+    Closes: #448970.
+
+ -- Drew Parsons <dparsons@debian.org>  Mon, 25 Feb 2008 03:25:53 +1100
 
 xorg-server (2:1.4.1~git20080131-1) unstable; urgency=low
 
