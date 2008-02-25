@@ -14,6 +14,12 @@ xorg-server (2:1.4.1~git20080131-2) UNRELEASED; urgency=low
     94_xprint_XSERVER_LIBS when we upgrade to xserver 1.5.
     Closes: #448970.
 
+  [ Julien Cristau ]
+  * Re-enable patch 51_xkb-and-loathing.diff: ignore SIGALRM around calls to
+    Popen()/Pclose() to fix a hang when opening menus in OpenOffice.org
+    (once again closes: #433131)
+  * Refresh all patches to make patch-audit happy.
+
  -- Drew Parsons <dparsons@debian.org>  Mon, 25 Feb 2008 03:25:53 +1100
 
 xorg-server (2:1.4.1~git20080131-1) unstable; urgency=low

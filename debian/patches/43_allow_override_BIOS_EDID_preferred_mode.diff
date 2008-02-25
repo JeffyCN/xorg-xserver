@@ -8,11 +8,9 @@ It should cause the config file to override the EDID/BIOS detected preferred mod
 #	modified:   hw/xfree86/modes/xf86Crtc.c
 #	modified:   hw/xfree86/modes/xf86Crtc.h
 #
-diff --git a/hw/xfree86/common/xf86str.h b/hw/xfree86/common/xf86str.h
-index 086d2bf..31b6343 100644
---- a/hw/xfree86/common/xf86str.h
-+++ b/hw/xfree86/common/xf86str.h
-@@ -132,6 +132,7 @@ typedef enum {
+--- xorg-server.orig/hw/xfree86/common/xf86str.h
++++ xorg-server/hw/xfree86/common/xf86str.h
+@@ -132,6 +132,7 @@
  # define M_T_DEFAULT 0x10	/* (VESA) default modes */
  # define M_T_USERDEF 0x20	/* One of the modes from the config file */
  # define M_T_DRIVER  0x40	/* Supplied by the driver (EDID, etc) */
@@ -20,11 +18,9 @@ index 086d2bf..31b6343 100644
  
  /* Video mode */
  typedef struct _DisplayModeRec {
-diff --git a/hw/xfree86/modes/xf86Crtc.c b/hw/xfree86/modes/xf86Crtc.c
-index d375da8..7196a2e 100644
---- a/hw/xfree86/modes/xf86Crtc.c
-+++ b/hw/xfree86/modes/xf86Crtc.c
-@@ -711,7 +711,8 @@ xf86DefaultMode (xf86OutputPtr output, int width, int height)
+--- xorg-server.orig/hw/xfree86/modes/xf86Crtc.c
++++ xorg-server/hw/xfree86/modes/xf86Crtc.c
+@@ -711,7 +711,8 @@
      for (mode = output->probed_modes; mode; mode = mode->next)
      {
  	int	    dpi;
@@ -34,7 +30,7 @@ index d375da8..7196a2e 100644
  	int	    diff;
  
  	if (xf86ModeWidth (mode, output->initial_rotation) > width ||
-@@ -1415,7 +1416,7 @@ xf86ProbeOutputModes (ScrnInfoPtr scrn, int maxX, int maxY)
+@@ -1415,7 +1416,7 @@
  			mode->prev = NULL;
  			output->probed_modes = mode;
  		    }
@@ -43,7 +39,7 @@ index d375da8..7196a2e 100644
  		}
  		else
  		    mode->type &= ~M_T_PREFERRED;
-@@ -1532,6 +1533,7 @@ xf86InitialConfiguration (ScrnInfoPtr scrn, Bool canGrow)
+@@ -1532,6 +1533,7 @@
      xf86CrtcConfigPtr	config = XF86_CRTC_CONFIG_PTR(scrn);
      int			o, c;
      DisplayModePtr	target_mode = NULL;
@@ -51,7 +47,7 @@ index d375da8..7196a2e 100644
      Rotation		target_rotation = RR_Rotate_0;
      xf86CrtcPtr		*crtcs;
      DisplayModePtr	*modes;
-@@ -1572,43 +1574,34 @@ xf86InitialConfiguration (ScrnInfoPtr scrn, Bool canGrow)
+@@ -1572,43 +1574,34 @@
      }
      
      /*
@@ -115,10 +111,8 @@ index d375da8..7196a2e 100644
      for (o = 0; o < config->num_output; o++)
      {
  	xf86OutputPtr output = config->output[o];
-diff --git a/hw/xfree86/modes/xf86Crtc.h b/hw/xfree86/modes/xf86Crtc.h
-index 9693e12..4c843cd 100644
---- a/hw/xfree86/modes/xf86Crtc.h
-+++ b/hw/xfree86/modes/xf86Crtc.h
+--- xorg-server.orig/hw/xfree86/modes/xf86Crtc.h
++++ xorg-server/hw/xfree86/modes/xf86Crtc.h
 @@ -39,6 +39,9 @@
  #ifndef M_T_DRIVER
  #define M_T_DRIVER	0x40

@@ -19,11 +19,9 @@ Date:   Wed Jan 16 20:24:11 2008 -0500
     where compiz would cause gnome-screensaver to lose its grab when
     compiz unredirects the fullscreen lock window.
 
-diff --git a/dix/window.c b/dix/window.c
-index 33cf76b..1ccf126 100644
---- a/dix/window.c
-+++ b/dix/window.c
-@@ -2993,7 +2993,8 @@ UnrealizeTree(
+--- xorg-server.orig/dix/window.c
++++ xorg-server/dix/window.c
+@@ -3023,7 +3023,8 @@
  	    } 
  #endif
  	    (* Unrealize)(pChild);
