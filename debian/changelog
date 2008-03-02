@@ -20,7 +20,10 @@ xorg-server (2:1.4.1~git20080131-2) UNRELEASED; urgency=low
     (once again closes: #433131)
   * Refresh all patches to make patch-audit happy.
 
- -- Drew Parsons <dparsons@debian.org>  Mon, 25 Feb 2008 03:25:53 +1100
+  [ David Nusinow ]
+  * Add 11_dont_crash_on_bad_dri_mode. See bugzilla #13860
+
+ -- David Nusinow <dnusinow@debian.org>  Sun, 02 Mar 2008 10:02:40 -0500
 
 xorg-server (2:1.4.1~git20080131-1) unstable; urgency=low
 

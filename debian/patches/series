@@ -7,6 +7,7 @@
 07_autoconfig_screen_with_device_section.diff
 08_better_dpms_logging.diff
 10_dont_look_in_home_for_config.diff -p0
+11_dont_crash_on_bad_dri_mode.diff
 13_debian_add_xkbpath_env_variable.diff
 14_default_screen_section.diff
 21_glx_align_fixes.patch
