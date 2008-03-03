@@ -1214,6 +1214,23 @@ xf86SortModes (DisplayModePtr input)
     return output;
 }
 
+static char *
+preferredMode(ScrnInfoPtr pScrn, xf86OutputPtr output)
+{
+    char *preferred_mode = NULL;
+
+    /* Check for a configured preference for a particular mode */
+    preferred_mode = xf86GetOptValString (output->options,
+					  OPTION_PREFERRED_MODE);
+    if (preferred_mode)
+	return preferred_mode;
+
+    if (pScrn->display->modes && *pScrn->display->modes)
+	preferred_mode = *pScrn->display->modes;
+
+    return preferred_mode;
+}
+
 _X_EXPORT void
 xf86ProbeOutputModes (ScrnInfoPtr scrn, int maxX, int maxY)
 {
@@ -1395,8 +1412,7 @@ xf86ProbeOutputModes (ScrnInfoPtr scrn, int maxX, int maxY)
 	output->probed_modes = xf86SortModes (output->probed_modes);
 	
 	/* Check for a configured preference for a particular mode */
-	preferred_mode = xf86GetOptValString (output->options,
-					      OPTION_PREFERRED_MODE);
+	preferred_mode = preferredMode(scrn, output);
 
 	if (preferred_mode)
 	{
