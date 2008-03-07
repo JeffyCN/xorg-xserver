@@ -53,7 +53,6 @@ confflags += --disable-static \
 	     --with-mesa-source=/usr/share/mesa-source \
 	     --with-default-font-path="/usr/share/fonts/X11/misc,/usr/share/fonts/X11/cyrillic,/usr/share/fonts/X11/100dpi/:unscaled,/usr/share/fonts/X11/75dpi/:unscaled,/usr/share/fonts/X11/Type1,/usr/share/fonts/X11/100dpi,/usr/share/fonts/X11/75dpi,/var/lib/defoma/x-ttcidfont-conf.d/dirs/TrueType" \
 	     --with-serverconfig-path=/etc/X11/xserver \
-	     --with-rgb-path=/etc/X11/rgb \
 	     --enable-xtrap \
 	     --enable-dmx \
 	     --enable-vfb \
