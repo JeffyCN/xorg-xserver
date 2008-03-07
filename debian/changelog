@@ -21,6 +21,7 @@ xorg-server (2:1.4.99.901-1) UNRELEASED; urgency=low
       shouldn't be needed with pciaccess
     + 13_debian_add_xkbpath_env_variable.diff: refresh
     + 94_xprint_XSERVER_LIBS: disable, should be fixed upstream
+  * Disable glx, dri and dri2 for now.
 
  -- Julien Cristau <jcristau@debian.org>  Fri, 07 Mar 2008 20:46:15 +0100
 
