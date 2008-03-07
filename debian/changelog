@@ -1,6 +1,26 @@
 xorg-server (2:1.4.99.901-1) UNRELEASED; urgency=low
 
   * New upstream release candidate
+  * Update patches:
+    + 02_libvgahw_gcc4_volatile_fix.diff: delete, the gcc bug this was working
+      around is fixed for a long time
+    + 03_auto_load_driver.diff, 04_auto_load_driver_no_conf.diff,
+      05_kill_type1.diff, 07_autoconfig_screen_with_device_section.diff,
+      08_better_dpms_logging.diff, 10_dont_look_in_home_for_config.diff,
+      11_dont_crash_on_bad_dri_mode.diff, 14_default_screen_section.diff,
+      21_glx_align_fixes.patch, 40_default_dpi_96.patch,
+      41_vbe_filter_less.diff,
+      42_dont_break_grab_and_focus_for_window_when_redirecting.diff,
+      43_allow_override_BIOS_EDID_preferred_mode.diff,
+      44_preferredmode_infinite_loop.diff,
+      45_only_XF86_APM_CAPABILITY_CHANGED_for_video_change_acpi_events.diff,
+      46_reduce_wakeups_from_smart_scheduler.patch,
+      47_fbdevhw_magic_numbers.diff, 51_xkb-and-loathing.diff,
+      93_xprint_fonts_fix: remove, applied upstream
+    + 06_use_proc_instead_of_sysfs_for_pci_domains.diff: disable for now,
+      shouldn't be needed with pciaccess
+    + 13_debian_add_xkbpath_env_variable.diff: refresh
+    + 94_xprint_XSERVER_LIBS: disable, should be fixed upstream
 
  -- Julien Cristau <jcristau@debian.org>  Fri, 07 Mar 2008 20:46:15 +0100
 
