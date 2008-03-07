@@ -92,6 +92,9 @@
 #include "dpmsproc.h"
 #endif
 
+#include <pciaccess.h>
+#include "Pci.h"
+#include "xf86Bus.h"
 
 /* forward declarations */
 
@@ -99,16 +102,14 @@ static void xf86PrintBanner(void);
 static void xf86PrintMarkers(void);
 static void xf86PrintDefaultModulePath(void);
 static void xf86PrintDefaultLibraryPath(void);
-static void xf86RunVtInit(void);
+
+static Bool probe_devices_from_device_sections(DriverPtr drvp);
+static Bool add_matching_devices_to_configure_list(DriverPtr drvp);
+static Bool check_for_matching_devices(DriverPtr drvp);
 
 #ifdef XF86PM
 void (*xf86OSPMClose)(void) = NULL;
 #endif
-
-static char *baseModules[] = {
-	"pcidata",
-	NULL
-};
 
 /* Common pixmap formats */
 
@@ -137,8 +138,8 @@ xf86CreateRootWindow(WindowPtr pWin)
   int err = Success;
   ScreenPtr pScreen = pWin->drawable.pScreen;
   RootWinPropPtr pProp;
-  CreateWindowProcPtr CreateWindow =
-    (CreateWindowProcPtr)(pScreen->devPrivates[xf86CreateRootWindowIndex].ptr);
+  CreateWindowProcPtr CreateWindow = (CreateWindowProcPtr)
+      dixLookupPrivate(&pScreen->devPrivates, xf86CreateRootWindowKey);
 
 #ifdef DEBUG
   ErrorF("xf86CreateRootWindow(%p)\n", pWin);
@@ -154,7 +155,7 @@ xf86CreateRootWindow(WindowPtr pWin)
 
   /* Unhook this function ... */
   pScreen->CreateWindow = CreateWindow;
-  pScreen->devPrivates[xf86CreateRootWindowIndex].ptr = NULL;
+  dixSetPrivate(&pScreen->devPrivates, xf86CreateRootWindowKey, NULL);
 
   /* ... and call the previous CreateWindow fuction, if any */
   if (NULL!=pScreen->CreateWindow) {
@@ -171,12 +172,11 @@ xf86CreateRootWindow(WindowPtr pWin)
 	  Atom prop;
 
 	  prop = MakeAtom(pProp->name, strlen(pProp->name), TRUE);
-	  err = ChangeWindowProperty(pWin,
-				     prop, pProp->type,
-				     pProp->format, PropModeReplace,
-				     pProp->size, pProp->data,
-				     FALSE
-				     );
+	  err = dixChangeWindowProperty(serverClient, pWin,
+					prop, pProp->type,
+					pProp->format, PropModeReplace,
+					pProp->size, pProp->data,
+					FALSE);
 	}
       
       /* Look at err */
@@ -196,13 +196,6 @@ xf86CreateRootWindow(WindowPtr pWin)
   return (ret);
 }
 
-
-/*
- * InitOutput --
- *	Initialize screenInfo for all actually accessible framebuffers.
- *      That includes vt-manager setup, querying all possible devices and
- *      collecting the pixmap formats.
- */
 
 static void
 PostConfigInit(void)
@@ -236,18 +229,246 @@ PostConfigInit(void)
     xf86OSPMClose = xf86OSPMOpen();
 #endif
     
-    /* Run an external VT Init program if specified in the config file */
-    xf86RunVtInit();
-
     /* Do this after XF86Config is read (it's normally in OsInit()) */
     OsInitColors();
 }
 
+
+#define END_OF_MATCHES(m) \
+    (((m).vendor_id == 0) && ((m).device_id == 0) && ((m).subvendor_id == 0))
+
+Bool
+probe_devices_from_device_sections(DriverPtr drvp)
+{
+    int i, j;
+    struct pci_device * pPci;
+    Bool foundScreen = FALSE;
+    const struct pci_id_match * const devices = drvp->supported_devices;
+    GDevPtr *devList;
+    const unsigned numDevs = xf86MatchDevice(drvp->driverName, & devList);
+
+
+    for ( i = 0 ; i < numDevs ; i++ ) {
+	struct pci_device_iterator *iter;
+	unsigned device_id;
+
+
+	/* Find the pciVideoRec associated with this device section.
+	 */
+	iter = pci_id_match_iterator_create(NULL);
+	while ((pPci = pci_device_next(iter)) != NULL) {
+	    if (devList[i]->busID && *devList[i]->busID) {
+		if (xf86ComparePciBusString(devList[i]->busID, 
+					    ((pPci->domain << 8)
+					     | pPci->bus),
+					    pPci->dev,
+					    pPci->func)) {
+		    break;
+		}
+	    }
+	    else if (xf86IsPrimaryPci(pPci)) {
+		break;
+	    }
+	}
+
+	pci_iterator_destroy(iter);
+
+	if (pPci == NULL) {
+	    continue;
+	}
+
+	device_id = (devList[i]->chipID > 0)
+	  ? devList[i]->chipID : pPci->device_id;
+
+
+	/* Once the pciVideoRec is found, determine if the device is supported
+	 * by the driver.  If it is, probe it!
+	 */
+	for ( j = 0 ; ! END_OF_MATCHES( devices[j] ) ; j++ ) {
+	    if ( PCI_ID_COMPARE( devices[j].vendor_id, pPci->vendor_id )
+		 && PCI_ID_COMPARE( devices[j].device_id, device_id )
+		 && ((devices[j].device_class_mask & pPci->device_class)
+		      == devices[j].device_class) ) {
+		int  entry;
+
+		/* Allow the same entity to be used more than once for
+		 * devices with multiple screens per entity.  This assumes
+		 * implicitly that there will be a screen == 0 instance.
+		 *
+		 * FIXME Need to make sure that two different drivers don't
+		 * FIXME claim the same screen > 0 instance.
+		 */
+		if ( (devList[i]->screen == 0) && !xf86CheckPciSlot( pPci ) )
+		  continue;
+
+#ifdef DEBUG
+		ErrorF("%s: card at %d:%d:%d is claimed by a Device section\n",
+		       drvp->driverName, pPci->bus, pPci->dev, pPci->func);
+#endif
+	
+		/* Allocate an entry in the lists to be returned */
+		entry = xf86ClaimPciSlot(pPci, drvp, device_id,
+					  devList[i], devList[i]->active);
+
+		if ((entry == -1) && (devList[i]->screen > 0)) {
+		    unsigned k;
+
+		    for ( k = 0; k < xf86NumEntities; k++ ) {
+			EntityPtr pEnt = xf86Entities[k];
+			if (pEnt->busType != BUS_PCI)
+			  continue;
+
+			if (pEnt->bus.id.pci == pPci) {
+			    entry = k;
+			    xf86AddDevToEntity(k, devList[i]);
+			    break;
+			}
+		    }
+		}
+		
+		if (entry != -1) {
+		    if ((*drvp->PciProbe)(drvp, entry, pPci,
+					  devices[j].match_data)) {
+			foundScreen = TRUE;
+		    }
+		}
+
+		break;
+	    }
+	}
+    }
+
+	
+    return foundScreen;
+}
+
+
+Bool
+add_matching_devices_to_configure_list(DriverPtr drvp)
+{
+    const struct pci_id_match * const devices = drvp->supported_devices;
+    int j;
+    struct pci_device *pPci;
+    struct pci_device_iterator *iter;
+    int numFound = 0;
+
+
+    iter = pci_id_match_iterator_create(NULL);
+    while ((pPci = pci_device_next(iter)) != NULL) {
+	/* Determine if this device is supported by the driver.  If it is,
+	 * add it to the list of devices to configure.
+	 */
+	for (j = 0 ; ! END_OF_MATCHES(devices[j]) ; j++) {
+	    if ( PCI_ID_COMPARE( devices[j].vendor_id, pPci->vendor_id )
+		 && PCI_ID_COMPARE( devices[j].device_id, pPci->device_id )
+		 && ((devices[j].device_class_mask & pPci->device_class)
+		     == devices[j].device_class) ) {
+		if (xf86CheckPciSlot(pPci)) {
+		    GDevPtr pGDev = 
+		      xf86AddDeviceToConfigure(drvp->driverName, pPci, -1);
+		    if (pGDev != NULL) {
+			/* After configure pass 1, chipID and chipRev are
+			 * treated as over-rides, so clobber them here.
+			 */
+			pGDev->chipID = -1;
+			pGDev->chipRev = -1;
+		    }
+
+		    numFound++;
+		}
+
+		break;
+	    }
+	}
+    }
+
+    pci_iterator_destroy(iter);
+
+
+    return (numFound != 0);
+}
+
+
+Bool
+check_for_matching_devices(DriverPtr drvp)
+{
+    const struct pci_id_match * const devices = drvp->supported_devices;
+    int j;
+
+
+    for (j = 0; ! END_OF_MATCHES(devices[j]); j++) {
+	struct pci_device_iterator *iter;
+	struct pci_device *dev;
+	
+	iter = pci_id_match_iterator_create(& devices[j]);
+	dev = pci_device_next(iter);
+	pci_iterator_destroy(iter);
+	
+	if (dev != NULL) {
+	    return TRUE;
+	}
+    }
+
+
+    return FALSE;
+}
+
+
+/**
+ * Call the driver's correct probe function.
+ *
+ * If the driver implements the \c DriverRec::PciProbe entry-point and an
+ * appropriate PCI device (with matching Device section in the xorg.conf file)
+ * is found, it is called.  If \c DriverRec::PciProbe or no devices can be
+ * successfully probed with it (e.g., only non-PCI devices are available),
+ * the driver's \c DriverRec::Probe function is called.
+ * 
+ * \param drv   Driver to probe
+ * 
+ * \return
+ * If a device can be successfully probed by the driver, \c TRUE is
+ * returned.  Otherwise, \c FALSE is returned.
+ */
+Bool
+xf86CallDriverProbe( DriverPtr drv, Bool detect_only )
+{
+    Bool     foundScreen = FALSE;
+
+    if ( drv->PciProbe != NULL ) {
+	if ( xf86DoProbe ) {
+	    assert( detect_only );
+	    foundScreen = check_for_matching_devices( drv );
+	}
+	else if ( xf86DoConfigure && xf86DoConfigurePass1 ) {
+	    assert( detect_only );
+	    foundScreen = add_matching_devices_to_configure_list( drv );
+	}
+	else {
+	    assert( ! detect_only );
+	    foundScreen = probe_devices_from_device_sections( drv );
+	}
+    }
+
+    if ( ! foundScreen && (drv->Probe != NULL) ) {
+	xf86Msg( X_WARNING, "Falling back to old probe method for %s\n",
+		 drv->driverName );
+	foundScreen = (*drv->Probe)( drv, (detect_only) ? PROBE_DETECT 
+				     : PROBE_DEFAULT );
+    }
+
+    return foundScreen;
+}
+
+/*
+ * InitOutput --
+ *	Initialize screenInfo for all actually accessible framebuffers.
+ *      That includes vt-manager setup, querying all possible devices and
+ *      collecting the pixmap formats.
+ */
 void
 InitOutput(ScreenInfo *pScreenInfo, int argc, char **argv)
 {
   int                    i, j, k, scr_index;
-  static unsigned long   generation = 0;
   char                   **modulelist;
   pointer                *optionlist;
   screenLayoutPtr	 layout;
@@ -257,14 +478,6 @@ InitOutput(ScreenInfo *pScreenInfo, int argc, char **argv)
   Bool			 autoconfig = FALSE;
   
   xf86Initialising = TRUE;
-
-  /* Do this early? */
-  if (generation != serverGeneration) {
-      xf86ScreenIndex = AllocateScreenPrivateIndex();
-      xf86CreateRootWindowIndex = AllocateScreenPrivateIndex();
-      xf86PixmapIndex = AllocatePixmapPrivateIndex();
-      generation = serverGeneration;
-  }
 
   if (serverGeneration == 1) {
 
@@ -313,10 +526,6 @@ InitOutput(ScreenInfo *pScreenInfo, int argc, char **argv)
         LoaderSetOptions(LDR_OPT_ABI_MISMATCH_NONFATAL);
     }
 
-    /* Force load mandatory base modules */
-    if (!xf86LoadModules(baseModules, NULL))
-	FatalError("Unable to load required base modules, Exiting...\n");
-    
     xf86OpenConsole();
 
     /* Do a general bus probe.  This will be a PCI probe for x86 platforms */
@@ -347,6 +556,16 @@ InitOutput(ScreenInfo *pScreenInfo, int argc, char **argv)
     }
 
     /* Load all driver modules specified in the config file */
+    /* If there aren't any specified in the config file, autoconfig them */
+    /* FIXME: Does not handle multiple active screen sections, but I'm not
+     * sure if we really want to handle that case*/
+    GDevPtr configured_device = xf86ConfigLayout.screens->screen->device;
+    if ((!configured_device) || (!configured_device->driver)) {
+        if (!autoConfigDevice(configured_device)) {
+            xf86Msg(X_ERROR, "Automatic driver configuration failed\n");
+            return ;
+        }
+    }
     if ((modulelist = xf86DriverlistFromConfig())) {
       xf86LoadModules(modulelist, NULL);
       xfree(modulelist);
@@ -433,16 +652,8 @@ InitOutput(ScreenInfo *pScreenInfo, int argc, char **argv)
 		|| NEED_IO_ENABLED(flags)) 
 		continue;
 	}
-	    
-	if (xf86DriverList[i]->Probe != NULL)
-	    xf86DriverList[i]->Probe(xf86DriverList[i], PROBE_DEFAULT);
-	else {
-	    xf86MsgVerb(X_WARNING, 0,
-			"Driver `%s' has no Probe function (ignoring)\n",
-			xf86DriverList[i]->driverName
-			? xf86DriverList[i]->driverName : "noname");
-	}
-	xf86SetPciVideo(NULL,NONE);
+
+	xf86CallDriverProbe( xf86DriverList[i], FALSE );
     }
 
     /*
@@ -843,8 +1054,8 @@ InitOutput(ScreenInfo *pScreenInfo, int argc, char **argv)
 	 * Hook in our ScrnInfoRec, and initialise some other pScreen
 	 * fields.
 	 */
-	screenInfo.screens[scr_index]->devPrivates[xf86ScreenIndex].ptr
-	  = (pointer)xf86Screens[i];
+	dixSetPrivate(&screenInfo.screens[scr_index]->devPrivates,
+		      xf86ScreenKey, xf86Screens[i]);
 	xf86Screens[i]->pScreen = screenInfo.screens[scr_index];
 	/* The driver should set this, but make sure it is set anyway */
 	xf86Screens[i]->vtSema = TRUE;
@@ -860,8 +1071,9 @@ InitOutput(ScreenInfo *pScreenInfo, int argc, char **argv)
 	     i, xf86Screens[i]->pScreen->CreateWindow );
 #endif
 
-      screenInfo.screens[scr_index]->devPrivates[xf86CreateRootWindowIndex].ptr
-	= (void*)(xf86Screens[i]->pScreen->CreateWindow);
+      dixSetPrivate(&screenInfo.screens[scr_index]->devPrivates,
+		    xf86CreateRootWindowKey,
+		    xf86Screens[i]->pScreen->CreateWindow);
       xf86Screens[i]->pScreen->CreateWindow = xf86CreateRootWindow;
 
 #ifdef RENDER
@@ -916,12 +1128,6 @@ InitInput(argc, argv)
 	for (pDev = xf86ConfigLayout.inputs; pDev && *pDev; pDev++) {
 	    /* Replace obsolete keyboard driver with kbd */
 	    if (!xf86NameCmp((*pDev)->driver, "keyboard")) {
-		xf86MsgVerb(X_WARNING, 0,
-			    "*** WARNING the legacy keyboard driver \"%s\" has been removed\n",
-			    (*pDev)->driver);
-		xf86MsgVerb(X_WARNING, 0,
-			    "*** Using the new \"kbd\" driver for \"%s\".\n",
-			    (*pDev)->identifier);
 		strcpy((*pDev)->driver, "kbd");
             }
 
@@ -975,8 +1181,6 @@ void
 OsVendorInit()
 {
   static Bool beenHere = FALSE;
-
-  xf86WrapperInit();
 
 #ifdef SIGCHLD
   signal(SIGCHLD, SIG_DFL);	/* Need to wait for child processes */
@@ -1080,13 +1284,9 @@ AbortDDX()
   /*
    * try to restore the original video state
    */
-#ifdef HAS_USL_VTS
-  /* Need the sleep when starting X from within another X session */
-  sleep(1);
-#endif
 #ifdef DPMSExtension /* Turn screens back on */
   if (DPMSPowerLevel != DPMSModeOn)
-      DPMSSet(DPMSModeOn);
+      DPMSSet(serverClient, DPMSModeOn);
 #endif
   if (xf86Screens) {
       if (xf86Screens[0]->vtSema)
@@ -1353,15 +1553,6 @@ ddxProcessArgument(int argc, char **argv, int i)
     xf86sFlag = TRUE;
     return 0;
   }
-  if (!strcmp(argv[i], "-bpp"))
-  {
-    ErrorF("The -bpp option is no longer supported.\n"
-	"\tUse -depth to set the color depth, and use -fbbpp if you really\n"
-	"\tneed to force a non-default framebuffer (hardware) pixel format.\n");
-    if (++i >= argc)
-      return 1;
-    return 2;
-  }
   if (!strcmp(argv[i], "-pixmap24"))
   {
     xf86Pix24 = Pix24Use24;
@@ -1474,10 +1665,6 @@ ddxProcessArgument(int argc, char **argv, int i)
     return 1;
   }
 #endif
-  if (!strcmp(argv[i], "-scanpci"))
-  {
-    DoScanPci(argc, argv, i);
-  }
   if (!strcmp(argv[i], "-probe"))
   {
     xf86DoProbe = TRUE;
@@ -1501,8 +1688,9 @@ ddxProcessArgument(int argc, char **argv, int i)
        FatalError("Bus types other than PCI not yet isolable\n");
     }
     if (sscanf(argv[i], "PCI:%d:%d:%d", &bus, &device, &func) == 3) {
-       xf86IsolateDevice.bus = bus;
-       xf86IsolateDevice.device = device;
+       xf86IsolateDevice.domain = PCI_DOM_FROM_BUS(bus);
+       xf86IsolateDevice.bus = PCI_BUS_NO_DOMAIN(bus);
+       xf86IsolateDevice.dev = device;
        xf86IsolateDevice.func = func;
        return 2;
     } else {
@@ -1539,7 +1727,6 @@ ddxUseMsg()
   ErrorF("-config file           specify a configuration file, relative to the\n");
   ErrorF("                       "__XCONFIGFILE__" search path, only root can use absolute\n");
   ErrorF("-probeonly             probe for devices, then exit\n");
-  ErrorF("-scanpci               execute the scanpci module and exit\n");
   ErrorF("-verbose [n]           verbose startup messages\n");
   ErrorF("-logverbose [n]        verbose log messages\n");
   ErrorF("-quiet                 minimal startup messages\n");
@@ -1714,44 +1901,6 @@ static void
 xf86PrintDefaultLibraryPath(void)
 {
   ErrorF("%s\n", DEFAULT_LIBRARY_PATH);
-}
-
-static void
-xf86RunVtInit(void)
-{
-    int i;
-
-    /*
-     * If VTInit was set, run that program with consoleFd as stdin and stdout
-     */
-
-    if (xf86Info.vtinit) {
-      switch(fork()) {
-      case -1:
-          FatalError("xf86RunVtInit: fork failed (%s)\n", strerror(errno));
-          break;
-      case 0:  /* child */
-	  if (setuid(getuid()) == -1) {
-	      xf86Msg(X_ERROR, "xf86RunVtInit: setuid failed (%s)\n",
-			 strerror(errno));
-	      exit(255);
-	  }
-          /* set stdin, stdout to the consoleFd */
-          for (i = 0; i < 2; i++) {
-            if (xf86Info.consoleFd != i) {
-              close(i);
-              dup(xf86Info.consoleFd);
-            }
-          }
-          execl("/bin/sh", "sh", "-c", xf86Info.vtinit, (void *)NULL);
-          xf86Msg(X_WARNING, "exec of /bin/sh failed for VTInit (%s)\n",
-                 strerror(errno));
-          exit(255);
-          break;
-      default:  /* parent */
-          wait(NULL);
-      }
-    }
 }
 
 /*

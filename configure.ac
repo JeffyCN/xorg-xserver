@@ -26,7 +26,7 @@ dnl
 dnl Process this file with autoconf to create configure.
 
 AC_PREREQ(2.57)
-AC_INIT([xorg-server], 1.4.0.90, [https://bugs.freedesktop.org/enter_bug.cgi?product=xorg], xorg-server)
+AC_INIT([xorg-server], 1.4.99.901, [https://bugs.freedesktop.org/enter_bug.cgi?product=xorg], xorg-server)
 AC_CONFIG_SRCDIR([Makefile.am])
 AM_INIT_AUTOMAKE([dist-bzip2 foreign])
 AM_MAINTAINER_MODE
@@ -66,9 +66,17 @@ AC_SYS_LARGEFILE
 XORG_PROG_RAWCPP
 
 dnl Check for dtrace program (needed to build Xserver dtrace probes)
+dnl Also checks for <sys/sdt.h>, since some Linux distros have an 
+dnl ISDN trace program named dtrace
 AC_ARG_WITH(dtrace, AS_HELP_STRING([--with-dtrace=PATH],
 	     [Enable dtrace probes (default: enabled if dtrace found)]),
 	     [WDTRACE=$withval], [WDTRACE=auto])
+dnl Darwin 9 has dtrace, but it doesn't support compilation into ELF...
+if test "x$WDTRACE" = xauto; then
+	case $host_os in
+		darwin*) WDTRACE="no" ;;
+	esac
+fi
 if test "x$WDTRACE" = "xyes" -o "x$WDTRACE" = "xauto" ; then
 	AC_PATH_PROG(DTRACE, [dtrace], [not_found], [$PATH:/usr/sbin])
 	if test "x$DTRACE" = "xnot_found" ; then
@@ -76,6 +84,11 @@ if test "x$WDTRACE" = "xyes" -o "x$WDTRACE" = "xauto" ; then
 			AC_MSG_FAILURE([dtrace requested but not found])
 		fi
 		WDTRACE="no"
+	else
+		AC_CHECK_HEADER(sys/sdt.h, [HAS_SDT_H="yes"], [HAS_SDT_H="no"])
+		if test "x$WDTRACE" = "xauto" -a "x$HAS_SDT_H" = "xno" ; then
+			WDTRACE="no"
+		fi
 	fi
 fi
 if test "x$WDTRACE" != "xno" ; then
@@ -83,13 +96,6 @@ if test "x$WDTRACE" != "xno" ; then
       [Define to 1 if the DTrace Xserver provider probes should be built in.])
 fi
 AM_CONDITIONAL(XSERVER_DTRACE, [test "x$WDTRACE" != "xno"])
-
-# DTrace support uses XErrorDB to get request names
-AC_ARG_WITH(xerrordb,
-            AS_HELP_STRING([--with-xerrordb=PATH], [Path to XErrorDB file (default: ${datadir}/X11/XErrorDB)]),
-	    [ XERRORDB_PATH="$withval" ],
-	    [ XERRORDB_PATH="${datadir}/X11/XErrorDB" ])
-AC_DEFINE_DIR(XERRORDB_PATH, XERRORDB_PATH, [Path to XErrorDB file])
 
 AC_HEADER_DIRENT
 AC_HEADER_STDC
@@ -164,11 +170,27 @@ b = bswap16(a);
 	fi
 fi
 
+dnl Check to see if dlopen is in default libraries (like Solaris, which
+dnl has it in libc), or if libdl is needed to get it.
+AC_CHECK_FUNC([dlopen], [],
+	AC_CHECK_LIB([dl], [dlopen], DLOPEN_LIBS="-ldl"))
+
+case $host_os in
+    linux*)
+	AC_DEFINE(HAVE_URANDOM, 1, [Has /dev/urandom]) ;;
+    solaris*)
+	# Solaris 8 with patches, or Solaris 9 or later have /dev/urandom
+	if test -r /dev/urandom ; then
+	   AC_DEFINE(HAVE_URANDOM, 1, [Has /dev/urandom])
+	fi ;;
+    *) ;;
+esac
+
 dnl Checks for library functions.
 AC_FUNC_VPRINTF
 AC_CHECK_FUNCS([geteuid getuid link memmove memset mkstemp strchr strrchr \
 		strtol getopt getopt_long vsnprintf walkcontext backtrace \
-		getisax])
+		getisax getzoneid shmctl64])
 AC_FUNC_ALLOCA
 dnl Old HAS_* names used in os/*.c.
 AC_CHECK_FUNC([getdtablesize],
@@ -181,6 +203,7 @@ AC_CHECK_FUNC([getpeerucred],
 	AC_DEFINE(HAS_GETPEERUCRED, 1, [Have the 'getpeerucred' function.]))
 AC_CHECK_FUNC([strlcat], HAVE_STRLCAT=yes, HAVE_STRLCAT=no)
 AM_CONDITIONAL(NEED_STRLCAT, [test x$HAVE_STRLCAT = xno])	
+AC_CHECK_FUNC([strlcpy], AC_DEFINE(HAS_STRLCPY, 1, [Have the 'strlcpy' function]))
 
 AM_CONDITIONAL(NEED_VSNPRINTF, [test x$HAVE_VSNPRINTF = xno])
 
@@ -270,7 +293,6 @@ dnl Bus options and CPU capabilities.  Replaces logic in
 dnl hw/xfree86/os-support/bus/Makefile.am, among others.
 dnl ---------------------------------------------------------------------------
 DEFAULT_INT10="x86emu"
-use_x86_asm="no"
 
 dnl Override defaults as needed for specific platforms:
 
@@ -278,17 +300,17 @@ case $host_cpu in
   alpha*)
 	ALPHA_VIDEO=yes
 	case $host_os in
+	        *freebsd*)	SYS_LIBS=-lio ;;
 		*netbsd*)	AC_DEFINE(USE_ALPHA_PIO, 1, [NetBSD PIO alpha IO]) ;;
 	esac
+	GLX_ARCH_DEFINES="-D__GLX_ALIGN64 -mieee"
 	;;
   arm*)
 	ARM_VIDEO=yes
 	;;
   i*86)
-	use_x86_asm="yes"
 	I386_VIDEO=yes
 	case $host_os in
-	        darwin*)	use_x86_asm="no" ;;
 		*linux*)	DEFAULT_INT10=vm86 ;;
 		*freebsd*)	AC_DEFINE(USE_DEV_IO) ;;
 		*netbsd*)	AC_DEFINE(USE_I386_IOPL)
@@ -309,12 +331,11 @@ case $host_cpu in
 	xorg_loader_sparcmuldiv="yes"
 	SPARC64_VIDEO=yes
 	BSD_ARCH_SOURCES="sparc64_video.c ioperm_noop.c"
+	GLX_ARCH_DEFINES="-D__GLX_ALIGN64"
 	;;
   x86_64*|amd64*)
-  	use_x86_asm="yes"
 	I386_VIDEO=yes
 	case $host_os in
-	        darwin*)	use_x86_asm="no" ;;
 		*freebsd*)	AC_DEFINE(USE_DEV_IO, 1, [BSD /dev/io]) ;;
 		*netbsd*)	AC_DEFINE(USE_I386_IOPL, 1, [BSD i386 iopl])
 				SYS_LIBS=-lx86_64
@@ -323,8 +344,16 @@ case $host_cpu in
 				SYS_LIBS=-lamd64
 				;;
 	esac
+	GLX_ARCH_DEFINES="-D__GLX_ALIGN64"
+	;;
+  ia64*)
+  	GLX_ARCH_DEFINES="-D__GLX_ALIGN64"
+	;;
+  s390*)
+  	GLX_ARCH_DEFINES="-D__GLX_ALIGN64"
 	;;
 esac
+AC_SUBST(GLX_ARCH_DEFINES)
 
 dnl BSD *_video.c selection
 AM_CONDITIONAL(ALPHA_VIDEO, [test "x$ALPHA_VIDEO" = xyes])
@@ -334,6 +363,7 @@ AM_CONDITIONAL(PPC_VIDEO, [test "x$PPC_VIDEO" = xyes])
 AM_CONDITIONAL(SPARC64_VIDEO, [test "x$SPARC64_VIDEO" = xyes])
 
 DRI=no
+DRI2=no
 KDRIVE_HW=no
 dnl it would be nice to autodetect these *CONS_SUPPORTs
 case $host_os in
@@ -346,6 +376,7 @@ case $host_os in
 	AC_DEFINE(PCVT_SUPPORT, 1, [System has PCVT console])
 	AC_DEFINE(SYSCONS_SUPPORT, 1, [System has syscons console])
 	DRI=yes
+	DRI2=yes
 	;;
   *netbsd*)
 	AC_DEFINE(CSRG_BASED, 1, [System is BSD-like])
@@ -353,6 +384,7 @@ case $host_os in
 	AC_DEFINE(PCVT_SUPPORT, 1, [System has PCVT console])
 	AC_DEFINE(WSCONS_SUPPORT, 1, [System has wscons console])
 	DRI=yes
+	DRI2=yes
 	;;
   *openbsd*)
 	AC_DEFINE(CSRG_BASED, 1, [System is BSD-like])
@@ -361,6 +393,7 @@ case $host_os in
 	;;
   *linux*)
 	DRI=yes
+	DRI2=yes
 	KDRIVE_HW=yes
 	;;
   *solaris*)
@@ -432,6 +465,9 @@ AC_ARG_WITH(fontdir,         AS_HELP_STRING([--with-fontdir=FONTDIR], [Path to t
                                 [ FONTDIR="$withval" ],
                                 [ FONTDIR="${libdir}/X11/fonts" ])
 DEFAULT_FONT_PATH="${FONTDIR}/misc/,${FONTDIR}/TTF/,${FONTDIR}/OTF,${FONTDIR}/Type1/,${FONTDIR}/100dpi/,${FONTDIR}/75dpi/"
+case $host_os in
+	darwin*)    DEFAULT_FONT_PATH="${DEFAULT_FONT_PATH},/Library/Fonts,/System/Library/Fonts" ;;
+esac
 AC_ARG_WITH(default-font-path, AS_HELP_STRING([--with-default-font-path=PATH], [Comma separated list of font dirs]),
 				[ FONTPATH="$withval" ],
 				[ FONTPATH="${DEFAULT_FONT_PATH}" ])
@@ -441,16 +477,19 @@ AC_ARG_WITH(xkb-path,         AS_HELP_STRING([--with-xkb-path=PATH], [Path to XK
 AC_ARG_WITH(xkb-output,       AS_HELP_STRING([--with-xkb-output=PATH], [Path to XKB output dir (default: ${datadir}/X11/xkb/compiled)]),
 				[ XKBOUTPUT="$withval" ],
 				[ XKBOUTPUT="compiled" ])
-AC_ARG_WITH(rgb-path,         AS_HELP_STRING([--with-rgb-path=PATH], [Path to RGB database (default: ${datadir}/X11/rgb)]),
-				[ RGBPATH="$withval" ],
-				[ RGBPATH="${datadir}/X11/rgb" ])
-AC_ARG_WITH(serverconfig-path, AS_HELP_STRING([--with-serverconfig-path=PATH], [Path to server config (default: ${libdir}/xserver)]),
+AC_ARG_WITH(serverconfig-path, AS_HELP_STRING([--with-serverconfig-path=PATH],
+				   [Directory where ancillary server config files are installed (default: ${libdir}/xorg)]),
 				[ SERVERCONFIG="$withval" ],
-				[ SERVERCONFIG="${libdir}/xserver" ])
-APPLE_APPLICATIONS_DIR="${bindir}/Applications"
-AC_ARG_WITH(apple-applications-dir,AS_HELP_STRING([--with-apple-applications-dir=PATH], [Path to the Applications directory (default: ${bindir}/Applications)]),
-                               [ APPLE_APPLICATIONS_DIR="${withval}" ].
-                               [ APPLE_APPLICATIONS_DIR="${bindir}/Applications" ])
+				[ SERVERCONFIG="${libdir}/xorg" ])
+AC_ARG_WITH(apple-applications-dir,AS_HELP_STRING([--with-apple-applications-dir=PATH], [Path to the Applications directory (default: /Applications/Utilities)]),
+				[ APPLE_APPLICATIONS_DIR="${withval}" ],
+				[ APPLE_APPLICATIONS_DIR="/Applications/Utilities" ])
+AC_SUBST([APPLE_APPLICATIONS_DIR])
+AC_ARG_WITH(launchd,          AS_HELP_STRING([--with-launchd], [Build with support for Apple's launchd (default: auto)]), [LAUNCHD=$withval], [LAUNCHD=auto])
+AC_ARG_WITH(launchagents-dir,AS_HELP_STRING([--with-launchagents-dir=PATH], [Path to launchd's LaunchAgents directory (default: /Library/LaunchAgents)]),
+				[ launchagentsdir="${withval}" ],
+				[ launchagentsdir="/Library/LaunchAgents" ])
+AC_SUBST([launchagentsdir])
 AC_ARG_ENABLE(builddocs,      AS_HELP_STRING([--enable-builddocs], [Build docs (default: disabled)]),
                                 [BUILDDOCS=$enableval],
                                 [BUILDDOCS=no])
@@ -481,13 +520,13 @@ AC_ARG_ENABLE(glx-tls,        AS_HELP_STRING([--enable-glx-tls], [Build GLX with
                                 [GLX_USE_TLS=no])
 
 dnl Extensions.
+AC_ARG_ENABLE(registry,       AS_HELP_STRING([--disable-registry], [Build string registry module (default: enabled)]), [XREGISTRY=$enableval], [XREGISTRY=yes])
 AC_ARG_ENABLE(composite,      AS_HELP_STRING([--disable-composite], [Build Composite extension (default: enabled)]), [COMPOSITE=$enableval], [COMPOSITE=yes])
 AC_ARG_ENABLE(mitshm,         AS_HELP_STRING([--disable-shm], [Build SHM extension (default: enabled)]), [MITSHM=$enableval], [MITSHM=yes])
 AC_ARG_ENABLE(xres,           AS_HELP_STRING([--disable-xres], [Build XRes extension (default: enabled)]), [RES=$enableval], [RES=yes])
 AC_ARG_ENABLE(xtrap,          AS_HELP_STRING([--disable-xtrap], [Build XTrap extension (default: enabled)]), [XTRAP=$enableval], [XTRAP=yes])
-AC_ARG_ENABLE(record,         AS_HELP_STRING([--disable-record], [Build Record extension (default: enabled)]), [RECORD=$enableval], [RECORD=yes])
+AC_ARG_ENABLE(record,         AS_HELP_STRING([--disable-record], [Build Record extension (default: disabled)]), [RECORD=$enableval], [RECORD=no])
 AC_ARG_ENABLE(xv,             AS_HELP_STRING([--disable-xv], [Build Xv extension (default: enabled)]), [XV=$enableval], [XV=yes])
-AC_ARG_ENABLE(quartz,         AS_HELP_STRING([--enable-quartz], [Build with darwin quartz support (default: auto)]), [XQUARTZ=$enableval], [XQUARTZ=auto])
 AC_ARG_ENABLE(xvmc,           AS_HELP_STRING([--disable-xvmc], [Build XvMC extension (default: enabled)]), [XVMC=$enableval], [XVMC=yes])
 AC_ARG_ENABLE(dga,            AS_HELP_STRING([--disable-dga], [Build DGA extension (default: auto)]), [DGA=$enableval], [DGA=auto])
 AC_ARG_ENABLE(screensaver,    AS_HELP_STRING([--disable-screensaver], [Build ScreenSaver extension (default: enabled)]), [SCREENSAVER=$enableval], [SCREENSAVER=yes])
@@ -495,12 +534,14 @@ AC_ARG_ENABLE(xdmcp,          AS_HELP_STRING([--disable-xdmcp], [Build XDMCP ext
 AC_ARG_ENABLE(xdm-auth-1,     AS_HELP_STRING([--disable-xdm-auth-1], [Build XDM-Auth-1 extension (default: auto)]), [XDMAUTH=$enableval], [XDMAUTH=auto])
 AC_ARG_ENABLE(glx,            AS_HELP_STRING([--disable-glx], [Build GLX extension (default: enabled)]), [GLX=$enableval], [GLX=yes])
 AC_ARG_ENABLE(dri,            AS_HELP_STRING([--enable-dri], [Build DRI extension (default: auto)]), [DRI=$enableval])
+AC_ARG_ENABLE(dri2,           AS_HELP_STRING([--enable-dri2], [Build DRI2 extension (default: auto)]), [DRI2=$enableval])
 AC_ARG_ENABLE(xinerama,	      AS_HELP_STRING([--disable-xinerama], [Build Xinerama extension (default: enabled)]), [XINERAMA=$enableval], [XINERAMA=yes])
 AC_ARG_ENABLE(xf86vidmode,    AS_HELP_STRING([--disable-xf86vidmode], [Build XF86VidMode extension (default: auto)]), [XF86VIDMODE=$enableval], [XF86VIDMODE=auto])
 AC_ARG_ENABLE(xf86misc,       AS_HELP_STRING([--disable-xf86misc], [Build XF86Misc extension (default: auto)]), [XF86MISC=$enableval], [XF86MISC=auto])
 AC_ARG_ENABLE(xace,           AS_HELP_STRING([--disable-xace], [Build X-ACE extension (default: enabled)]), [XACE=$enableval], [XACE=yes])
-AC_ARG_ENABLE(xcsecurity,     AS_HELP_STRING([--disable-xcsecurity], [Build Security extension (default: enabled)]), [XCSECURITY=$enableval], [XCSECURITY=$XACE])
-AC_ARG_ENABLE(appgroup,       AS_HELP_STRING([--disable-appgroup], [Build XC-APPGROUP extension (default: enabled)]), [APPGROUP=$enableval], [APPGROUP=$XCSECURITY])
+AC_ARG_ENABLE(xselinux,       AS_HELP_STRING([--disable-xselinux], [Build SELinux extension (default: disabled)]), [XSELINUX=$enableval], [XSELINUX=no])
+AC_ARG_ENABLE(xcsecurity,     AS_HELP_STRING([--disable-xcsecurity], [Build Security extension (default: disabled)]), [XCSECURITY=$enableval], [XCSECURITY=no])
+AC_ARG_ENABLE(appgroup,       AS_HELP_STRING([--disable-appgroup], [Build XC-APPGROUP extension (default: disabled)]), [APPGROUP=$enableval], [APPGROUP=$XCSECURITY])
 AC_ARG_ENABLE(xcalibrate,     AS_HELP_STRING([--enable-xcalibrate], [Build XCalibrate extension (default: disabled)]), [XCALIBRATE=$enableval], [XCALIBRATE=no])
 AC_ARG_ENABLE(tslib,          AS_HELP_STRING([--enable-tslib], [Build kdrive tslib touchscreen support (default: disabled)]), [TSLIB=$enableval], [TSLIB=no])
 AC_ARG_ENABLE(xevie,          AS_HELP_STRING([--disable-xevie], [Build XEvIE extension (default: enabled)]), [XEVIE=$enableval], [XEVIE=yes])
@@ -509,7 +550,7 @@ AC_ARG_ENABLE(evi,            AS_HELP_STRING([--disable-evi], [Build Extended-Vi
 AC_ARG_ENABLE(multibuffer,    AS_HELP_STRING([--enable-multibuffer], [Build Multibuffer extension (default: disabled)]), [MULTIBUFFER=$enableval], [MULTIBUFFER=no])
 AC_ARG_ENABLE(fontcache,      AS_HELP_STRING([--enable-fontcache], [Build FontCache extension (default: disabled)]), [FONTCACHE=$enableval], [FONTCACHE=no])
 AC_ARG_ENABLE(dbe,            AS_HELP_STRING([--disable-dbe], [Build DBE extension (default: enabled)]), [DBE=$enableval], [DBE=yes])
-AC_ARG_ENABLE(xf86bigfont,    AS_HELP_STRING([--disable-xf86bigfont], [Build XF86 Big Font extension (default: enabled)]), [XF86BIGFONT=$enableval], [XF86BIGFONT=yes])
+AC_ARG_ENABLE(xf86bigfont,    AS_HELP_STRING([--disable-xf86bigfont], [Build XF86 Big Font extension (default: enabled)]), [XF86BIGFONT=$enableval], [XF86BIGFONT=auto])
 AC_ARG_ENABLE(dpms,           AS_HELP_STRING([--disable-dpms], [Build DPMS extension (default: enabled)]), [DPMSExtension=$enableval], [DPMSExtension=yes])
 AC_ARG_ENABLE(config-dbus,    AS_HELP_STRING([--enable-config-dbus], [Build D-BUS API support (default: no)]), [CONFIG_DBUS_API=$enableval], [CONFIG_DBUS_API=no])
 AC_ARG_ENABLE(config-hal,     AS_HELP_STRING([--disable-config-hal], [Build HAL support (default: auto)]), [CONFIG_HAL=$enableval], [CONFIG_HAL=auto])
@@ -520,6 +561,10 @@ AC_ARG_ENABLE(xorg,    	      AS_HELP_STRING([--enable-xorg], [Build Xorg server
 AC_ARG_ENABLE(dmx,    	      AS_HELP_STRING([--enable-dmx], [Build DMX server (default: no)]), [DMX=$enableval], [DMX=no])
 AC_ARG_ENABLE(xvfb,    	      AS_HELP_STRING([--enable-xvfb], [Build Xvfb server (default: yes)]), [XVFB=$enableval], [XVFB=yes])
 AC_ARG_ENABLE(xnest,   	      AS_HELP_STRING([--enable-xnest], [Build Xnest server (default: auto)]), [XNEST=$enableval], [XNEST=auto])
+AC_ARG_ENABLE(xquartz,        AS_HELP_STRING([--enable-xquartz], [Build Xquartz server for OS-X (default: auto)]), [XQUARTZ=$enableval], [XQUARTZ=auto])
+AC_ARG_ENABLE(x11app,         AS_HELP_STRING([--enable-x11app], [Build Apple's X11.app for Xquartz (default: auto)]), [X11APP=$enableval], [X11APP=auto])
+AC_ARG_WITH(x11app-archs,     AS_HELP_STRING([--with-x11app-archs=ARCHS], [Architectures to build X11.app for, space delimeted (default: "ppc i386")]), [X11APP_ARCHS=$enableval], [X11APP_ARCHS="ppc i386"])
+AC_SUBST([X11APP_ARCHS])
 AC_ARG_ENABLE(xwin,    	      AS_HELP_STRING([--enable-xwin], [Build XWin server (default: auto)]), [XWIN=$enableval], [XWIN=auto])
 AC_ARG_ENABLE(xprint,         AS_HELP_STRING([--enable-xprint], [Build Xprint extension and server (default: no)]), [XPRINT=$enableval], [XPRINT=no])
 AC_ARG_ENABLE(xgl,            AS_HELP_STRING([--enable-xgl], [Build Xgl server (default: no)]), [XGL=$enableval], [XGL=no])
@@ -607,10 +652,6 @@ XEXT_INC='-I$(top_srcdir)/Xext'
 XEXT_LIB='$(top_builddir)/Xext/libXext.la'
 XEXTXORG_LIB='$(top_builddir)/Xext/libXextbuiltin.la'
 
-PIXMAN="[pixman-1 >= 0.9.5]"
-PKG_CHECK_MODULES(PIXMAN, $PIXMAN)
-AC_SUBST(PIXMAN_CFLAGS)
-
 dnl Core modules for most extensions, et al.
 # Require updated renderproto for ABI sanity if we're 64-bit.
 if test "$ac_cv_sizeof_unsigned_long" = 8; then
@@ -618,8 +659,9 @@ if test "$ac_cv_sizeof_unsigned_long" = 8; then
 else
 	RENDERPROTO="renderproto"
 fi
+
 REQUIRED_MODULES="[randrproto >= 1.2] $RENDERPROTO [fixesproto >= 4.0] [damageproto >= 1.1] xcmiscproto xextproto [xproto >= 7.0.9] xtrans [scrnsaverproto >= 1.1] bigreqsproto resourceproto fontsproto [inputproto >= 1.4.2] [kbproto >= 1.0.3]"
-REQUIRED_LIBS="xfont xau fontenc $PIXMAN"
+REQUIRED_LIBS="xfont xau fontenc [pixman-1 >= 0.9.5]"
 
 dnl HAVE_DBUS is true if we actually have the D-Bus library, whereas
 dnl CONFIG_DBUS_API is true if we want to enable the D-Bus config
@@ -663,6 +705,49 @@ if test "x$NEED_DBUS" = xyes; then
 fi
 CONFIG_LIB='$(top_builddir)/config/libconfig.a'
 
+AC_CHECK_FUNCS([clock_gettime], [have_clock_gettime=yes],
+               [AC_CHECK_LIB([rt], [clock_gettime], [have_clock_gettime=-lrt],
+                             [have_clock_gettime=no])])
+
+AC_MSG_CHECKING([for a useful monotonic clock ...])
+
+if ! test "x$have_clock_gettime" = xno; then
+    if ! test "x$have_clock_gettime" = xyes; then
+        CLOCK_LIBS="$have_clock_gettime"
+    else
+        CLOCK_LIBS=""
+    fi
+
+    LIBS_SAVE="$LIBS"
+    LIBS="$CLOCK_LIBS"
+
+    AC_RUN_IFELSE([
+#define _POSIX_C_SOURCE 199309L
+#include <time.h>
+
+int main(int argc, char *argv[[]]) {
+    struct timespec tp;
+
+    if (clock_gettime(CLOCK_MONOTONIC, &tp) == 0)
+        return 0;
+    else
+        return 1;
+}
+    ], [MONOTONIC_CLOCK=yes], [MONOTONIC_CLOCK=no],
+       [MONOTONIC_CLOCK="cross compiling"])
+
+    LIBS="$LIBS_SAVE"
+else
+    MONOTONIC_CLOCK=no
+fi
+
+AC_MSG_RESULT([$MONOTONIC_CLOCK])
+
+if test "x$MONOTONIC_CLOCK" = xyes; then
+    AC_DEFINE(MONOTONIC_CLOCK, 1, [Have monotonic clock from clock_gettime()])
+    LIBS="$LIBS $CLOCK_LIBS"
+fi
+
 AM_CONDITIONAL(XV, [test "x$XV" = xyes])
 if test "x$XV" = xyes; then
 	AC_DEFINE(XV, 1, [Support Xv extension])
@@ -677,6 +762,10 @@ if test "x$XVMC" = xyes; then
 	AC_DEFINE(XvMCExtension, 1, [Build XvMC extension])
 fi
 
+AM_CONDITIONAL(XREGISTRY, [test "x$XREGISTRY" = xyes])
+if test "x$XREGISTRY" = xyes; then
+	AC_DEFINE(XREGISTRY, 1, [Build registry module])
+fi
 
 AM_CONDITIONAL(COMPOSITE, [test "x$COMPOSITE" = xyes])
 if test "x$COMPOSITE" = xyes; then
@@ -719,7 +808,7 @@ fi
 
 if test "x$GLX" = xyes && ! test "x$MESA_SOURCE" = x; then
 	PKG_CHECK_MODULES([XLIB], [x11])
-	PKG_CHECK_MODULES([GL], [glproto >= 1.4.8])
+	PKG_CHECK_MODULES([GL], [glproto >= 1.4.9])
 	AC_SUBST(XLIB_CFLAGS)
 	AC_DEFINE(GLXEXT, 1, [Build GLX extension])
 	GLX_LIBS='$(top_builddir)/GL/glx/libglx.la $(top_builddir)/GL/mesa/libGLcore.la'
@@ -748,7 +837,7 @@ AM_CONDITIONAL(AIGLX, test "x$AIGLX" = xyes)
 
 if test "x$GLX_USE_TLS" = xyes -a "x$AIGLX" = xyes; then
 	GLX_DEFINES="-DGLX_USE_TLS -DPTHREADS"
-	GLX_LIBS="$GLX_LIBS -lpthread"
+	GLX_SYS_LIBS="$GLX_SYS_LIBS -lpthread"
 fi
 AC_SUBST([GLX_DEFINES])
 
@@ -767,6 +856,14 @@ if test "x$DRI" = xyes; then
 	AC_SUBST(GL_CFLAGS)
 fi
 
+AM_CONDITIONAL(DRI2, test "x$DRI2" = xyes)
+if test "x$DRI2" = xyes; then
+	# FIXME: Bump the versions once we have releases of these.
+	AC_DEFINE(DRI2, 1, [Build DRI2 extension])
+	PKG_CHECK_MODULES([DRIPROTO], [xf86driproto >= 2.0.3])
+	PKG_CHECK_MODULES([LIBDRM], [libdrm >= 2.3.1])
+fi
+
 AM_CONDITIONAL(XINERAMA, [test "x$XINERAMA" = xyes])
 if test "x$XINERAMA" = xyes; then
 	AC_DEFINE(XINERAMA, 1, [Support Xinerama extension])
@@ -777,6 +874,19 @@ fi
 AM_CONDITIONAL(XACE, [test "x$XACE" = xyes])
 if test "x$XACE" = xyes; then
 	AC_DEFINE(XACE, 1, [Build X-ACE extension])
+fi
+
+AM_CONDITIONAL(XSELINUX, [test "x$XSELINUX" = xyes])
+if test "x$XSELINUX" = xyes; then
+	if test "x$XACE" != xyes; then
+		AC_MSG_ERROR([cannot build SELinux extension without X-ACE])
+	fi
+	AC_CHECK_HEADERS([selinux/selinux.h selinux/avc.h], [], AC_MSG_ERROR([SELinux include files not found]))
+	AC_CHECK_LIB(selinux, avc_init, [], AC_MSG_ERROR([SELinux library not found])) 
+	AC_CHECK_HEADERS([libaudit.h], [], AC_MSG_ERROR([SELinux extension requires audit system headers]))
+	AC_CHECK_LIB(audit, audit_open, [], AC_MSG_ERROR([SELinux extension requires audit system library]))
+	AC_DEFINE(XSELINUX, 1, [Build SELinux extension])
+	SELINUX_LIB="-lselinux -laudit"
 fi
 
 AM_CONDITIONAL(XCSECURITY, [test "x$XCSECURITY" = xyes])
@@ -939,14 +1049,9 @@ if test "x$XDMAUTH" = xyes; then
 	fi
 fi
 
-AM_CONDITIONAL(USE_RGB_BUILTIN, [test "x$USE_RGB_BUILTIN" = xyes])
-if test "x$USE_RGB_BUILTIN" = xyes; then
-	AC_DEFINE(USE_RGB_BUILTIN, 1, [Use built-in RGB color database])
-fi
-
 AC_DEFINE_DIR(COMPILEDDEFAULTFONTPATH, FONTPATH, [Default font path])
-AC_DEFINE_DIR(RGB_DB, RGBPATH, [Default RGB path])
-AC_DEFINE_DIR(SERVERCONFIGdir, SERVERCONFIG, [Server config path])
+AC_DEFINE_DIR(PCI_TXT_IDS_PATH, PCI_TXT_IDS_DIR, [Default PCI text file ID path])
+AC_DEFINE_DIR(SERVER_MISC_CONFIG_PATH, SERVERCONFIG, [Server miscellaneous config path])
 AC_DEFINE_DIR(BASE_FONT_PATH, FONTDIR, [Default base font path])
 AC_DEFINE_DIR(DRI_DRIVER_PATH, DRI_DRIVER_PATH, [Default DRI driver path])
 AC_DEFINE_UNQUOTED(XVENDORNAME, ["$VENDOR_NAME"], [Vendor name])
@@ -980,13 +1085,11 @@ else
 fi
 AM_CONDITIONAL(DEBUG, [test "x$DEBUGGING" = xyes])
 
-AC_DEFINE(USE_RGB_TXT, 1, [Use rgb.txt directly])
 AC_DEFINE(MITMISC, 1, [Support MIT Misc extension])
 AC_DEFINE(XTEST, 1, [Support XTest extension])
 AC_DEFINE(XSYNC, 1, [Support XSync extension])
 AC_DEFINE(XCMISC, 1, [Support XCMisc extension])
 AC_DEFINE(BIGREQS, 1, [Support BigRequests extension])
-AC_DEFINE(PIXPRIV, 1, [Support pixmap privates])
 
 if test "x$WDTRACE" != "xno" ; then
   DIX_LIB='$(top_builddir)/dix/dix.O'
@@ -995,7 +1098,6 @@ else
   DIX_LIB='$(top_builddir)/dix/libdix.la'
   OS_LIB='$(top_builddir)/os/libos.la'
 fi
-CWRAP_LIB='$(top_builddir)/os/libcwrapper.la'
 MI_LIB='$(top_builddir)/mi/libmi.la'
 MI_EXT_LIB='$(top_builddir)/mi/libmiext.la'
 MI_INC='-I$(top_srcdir)/mi'
@@ -1009,9 +1111,34 @@ CORE_INCS='-I$(top_srcdir)/include -I$(top_builddir)/include'
 PKG_CHECK_MODULES([XSERVERCFLAGS], [$REQUIRED_MODULES $REQUIRED_LIBS])
 PKG_CHECK_MODULES([XSERVERLIBS], [$REQUIRED_LIBS])
 
-XSERVER_CFLAGS="${XSERVERCFLAGS_CFLAGS}"
-XSERVER_LIBS="${XSERVERLIBS_LIBS} ${SYS_LIBS} ${LIBS}"
-AC_SUBST([SYS_LIBS])
+# OpenSSL used for SHA1 hashing in render/glyph.c, but we don't need all of
+# the OpenSSL libraries, just libcrypto
+PKG_CHECK_MODULES([OPENSSL], [openssl], [OPENSSL_LIB_FLAGS=`$PKG_CONFIG --libs-only-L --libs-only-other openssl`])
+LIBCRYPTO="$OPENSSL_LIB_FLAGS -lcrypto"
+
+# Autotools has some unfortunate issues with library handling.  In order to
+# get a server to rebuild when a dependency in the tree is changed, it must
+# be listed in SERVERNAME_DEPENDENCIES.  However, no system libraries may be
+# listed there, or some versions of autotols will break (especially if a -L
+# is required to find the library).  So, we keep two sets of libraries
+# detected: NAMESPACE_LIBS for in-tree libraries to be linked against, which
+# will go into the _DEPENDENCIES and _LDADD of the server, and
+# NAMESPACE_SYS_LIBS which will go into only the _LDADD.  The
+# NAMESPACEMODULES_LIBS detected from pkgconfig should always go in
+# NAMESPACE_SYS_LIBS.
+#
+# XSERVER_LIBS is the set of in-tree libraries which all servers require.
+# XSERVER_SYS_LIBS is the set of out-of-tree libraries which all servers
+# require.
+#
+XSERVER_CFLAGS="${XSERVERCFLAGS_CFLAGS} ${OPENSSL_CFLAGS}"
+XSERVER_LIBS="$DIX_LIB $CONFIG_LIB $MI_LIB $OS_LIB"
+XSERVER_SYS_LIBS="${XSERVERLIBS_LIBS} ${SYS_LIBS} ${LIBS} ${LIBCRYPTO}"
+AC_SUBST([XSERVER_LIBS])
+AC_SUBST([XSERVER_SYS_LIBS])
+
+UTILS_SYS_LIBS="${SYS_LIBS}"
+AC_SUBST([UTILS_SYS_LIBS])
 
 # The Xorg binary needs to export symbols so that they can be used from modules
 # Some platforms require extra flags to do this.   gcc should set these flags
@@ -1030,58 +1157,11 @@ if test "x$GCC" = "xyes"; then
        LD_EXPORT_SYMBOLS_FLAG="-rdynamic"
 fi
 case $host_os in
-       darwin*)
-       LD_EXPORT_SYMBOLS_FLAG=""
-       ;;
        openbsd*)
        LD_EXPORT_SYMBOLS_FLAG="-Wl,--export-dynamic"
        ;;
 esac
 AC_SUBST([LD_EXPORT_SYMBOLS_FLAG])
-
-AC_CHECK_FUNCS([clock_gettime], [have_clock_gettime=yes],
-               [AC_CHECK_LIB([rt], [clock_gettime], [have_clock_gettime=-lrt],
-                             [have_clock_gettime=no])])
-
-AC_MSG_CHECKING([for a useful monotonic clock ...])
-
-if ! test "x$have_clock_gettime" = xno; then
-    if ! test "x$have_clock_gettime" = xyes; then
-        CLOCK_LIBS="$have_clock_gettime"
-    else
-        CLOCK_LIBS=""
-    fi
-
-    LIBS_SAVE="$LIBS"
-    LIBS="$CLOCK_LIBS"
-
-    AC_RUN_IFELSE([
-#define _POSIX_C_SOURCE 199309L
-#include <time.h>
-
-int main(int argc, char *argv[[]]) {
-    struct timespec tp;
-
-    if (clock_gettime(CLOCK_MONOTONIC, &tp) == 0)
-        return 0;
-    else
-        return 1;
-}
-    ], [MONOTONIC_CLOCK=yes], [MONOTONIC_CLOCK=no],
-       [MONOTONIC_CLOCK="cross compiling"])
-
-    LIBS="$LIBS_SAVE"
-else
-    MONOTONIC_CLOCK=no
-fi
-
-AC_MSG_RESULT([$MONOTONIC_CLOCK])
-
-if test "x$MONOTONIC_CLOCK" = xyes; then
-    AC_DEFINE(MONOTONIC_CLOCK, 1, [Have monotonic clock from clock_gettime()])
-    XSERVER_LIBS="$XSERVER_LIBS $CLOCK_LIBS"
-    LIBS="$LIBS $CLOCK_LIBS"
-fi
 
 dnl Imake defines SVR4 on SVR4 systems, and many files check for it, so
 dnl we need to replicate that here until those can all be fixed
@@ -1109,59 +1189,9 @@ AH_VERBATIM([X_BYTE_ORDER],[
 #endif
 ])
 
-AC_SUBST([XSERVER_LIBS])
-
 dnl ---------------------------------------------------------------------------
 dnl DDX section.
 dnl ---------------------------------------------------------------------------
-
-dnl DMX DDX
-
-AC_MSG_CHECKING([whether to build Xdmx DDX])
-PKG_CHECK_MODULES([DMXMODULES], [xmuu xext x11 xrender xfixes xfont xi dmxproto xau $XDMCP_MODULES $PIXMAN], [have_dmx=yes], [have_dmx=no])
-if test "x$DMX" = xauto; then
-	DMX="$have_dmx"
-fi
-AC_MSG_RESULT([$DMX])
-AM_CONDITIONAL(DMX, [test "x$DMX" = xyes])
-
-if test "x$DMX" = xyes; then
-	if test "x$have_dmx" = xno; then
-		AC_MSG_ERROR([Xdmx build explicitly requested, but required
-		              modules not found.])
-	fi
-	DMX_INCLUDES="$XEXT_INC $RENDER_INC $XTRAP_INC $RECORD_INC"
-	XDMX_LIBS="$FB_LIB $MI_LIB $XEXT_LIB $CONFIG_LIB $RENDER_LIB $XTRAP_LIB $RECORD_LIB $XI_LIB $XKB_LIB $XKB_STUB_LIB $MIEXT_DAMAGE_LIB $MIEXT_SHADOW_LIB $OS_LIB $CWRAP_LIB"
-	AC_SUBST([XDMX_LIBS])
-
-dnl USB sources in DMX require <linux/input.h>
-	AC_CHECK_HEADER([linux/input.h], DMX_BUILD_USB="yes",
-			DMX_BUILD_USB="no")
-dnl Linux sources in DMX require <linux/keyboard.h>
-	AC_CHECK_HEADER([linux/keyboard.h], DMX_BUILD_LNX="yes",
-			DMX_BUILD_LNX="no")
-	if test "x$GLX" = xyes; then
-		PKG_CHECK_MODULES([GL], [glproto])
-	fi
-	PKG_CHECK_MODULES([XDMXCONFIG_DEP], [xaw7 xmu xt xpm x11])
-	AC_SUBST(XDMXCONFIG_DEP_CFLAGS)
-	AC_SUBST(XDMXCONFIG_DEP_LIBS)
-	PKG_CHECK_MODULES([DMXEXAMPLES_DEP], [dmx xext x11])
-	AC_SUBST(DMXEXAMPLES_DEP_LIBS)
-	PKG_CHECK_MODULES([DMXXMUEXAMPLES_DEP], [dmx xmu xext x11])
-	AC_SUBST(DMXXMUEXAMPLES_DEP_LIBS)
-	PKG_CHECK_MODULES([DMXXIEXAMPLES_DEP], [dmx xi xext x11])
-	AC_SUBST(DMXXIEXAMPLES_DEP_LIBS)
-	PKG_CHECK_MODULES([XTSTEXAMPLES_DEP], [xtst xext x11])
-	AC_SUBST(XTSTEXAMPLES_DEP_LIBS)
-	PKG_CHECK_MODULES([XRESEXAMPLES_DEP], [xres xext x11])
-	AC_SUBST(XRESEXAMPLES_DEP_LIBS)
-	PKG_CHECK_MODULES([X11EXAMPLES_DEP], [xext x11])
-	AC_SUBST(X11EXAMPLES_DEP_LIBS)
-fi
-AM_CONDITIONAL([DMX_BUILD_LNX], [test "x$DMX_BUILD_LNX" = xyes])
-AM_CONDITIONAL([DMX_BUILD_USB], [test "x$DMX_BUILD_USB" = xyes])
-
 
 dnl Xvfb DDX
 
@@ -1170,8 +1200,10 @@ AC_MSG_RESULT([$XVFB])
 AM_CONDITIONAL(XVFB, [test "x$XVFB" = xyes])
 
 if test "x$XVFB" = xyes; then
-	XVFB_LIBS="$FB_LIB $MI_LIB $FIXES_LIB $XEXT_LIB $CONFIG_LIB $DBE_LIB $XTRAP_LIB $RECORD_LIB $GLX_LIBS $RENDER_LIB $RANDR_LIB $DAMAGE_LIB $MIEXT_DAMAGE_LIB $MIEXT_SHADOW_LIB $XI_LIB $XKB_LIB $XKB_STUB_LIB $COMPOSITE_LIB $XPSTUBS_LIB $CWRAP_LIB $OS_LIB $LIBS"
+	XVFB_LIBS="$FB_LIB $FIXES_LIB $XEXT_LIB $CONFIG_LIB $DBE_LIB $XTRAP_LIB $RECORD_LIB $GLX_LIBS $RENDER_LIB $RANDR_LIB $DAMAGE_LIB $MIEXT_DAMAGE_LIB $MIEXT_SHADOW_LIB $XI_LIB $XKB_LIB $XKB_STUB_LIB $COMPOSITE_LIB $XPSTUBS_LIB"
+	XVFB_SYS_LIBS="$XVFBMODULES_LIBS"
 	AC_SUBST([XVFB_LIBS])
+	AC_SUBST([XVFB_SYS_LIBS])
 fi
 
 
@@ -1186,8 +1218,10 @@ AC_MSG_RESULT([$XNEST])
 AM_CONDITIONAL(XNEST, [test "x$XNEST" = xyes])
 
 if test "x$XNEST" = xyes; then
-	XNEST_LIBS="$MI_LIB $CONFIG_LIB $XSERVER_LIBS $FB_LIB $FIXES_LIB $XEXT_LIB $DBE_LIB $XTRAP_LIB $RECORD_LIB $GLX_LIBS $RENDER_LIB $RANDR_LIB $DAMAGE_LIB $MIEXT_DAMAGE_LIB $MIEXT_SHADOW_LIB $XI_LIB $XKB_LIB $XKB_STUB_LIB $COMPOSITE_LIB $XPSTUBS_LIB $CWRAP_LIB $OS_LIB $LIBS"
+	XNEST_LIBS="$FB_LIB $FIXES_LIB $MI_LIB $XEXT_LIB $DBE_LIB $XTRAP_LIB $RECORD_LIB $GLX_LIBS $RENDER_LIB $RANDR_LIB $DAMAGE_LIB $MIEXT_DAMAGE_LIB $MIEXT_SHADOW_LIB $XI_LIB $XKB_LIB $XKB_STUB_LIB $COMPOSITE_LIB $XPSTUBS_LIB $DIX_LIB $OS_LIB $CONFIG_LIB"
+	XNEST_SYS_LIBS="$XNESTMODULES_LIBS"
 	AC_SUBST([XNEST_LIBS])
+	AC_SUBST([XNEST_SYS_LIBS])
 fi
 
 
@@ -1198,6 +1232,7 @@ if test "x$XORG" = xauto; then
 	XORG="yes"
 	case $host_os in
 		cygwin*) XORG="no" ;;
+		darwin*) XORG="no" ;;
 	esac
 fi
 AC_MSG_RESULT([$XORG])
@@ -1208,14 +1243,15 @@ AC_MSG_CHECKING([whether to build Xgl DDX])
 if test "x$XGL" != xno; then
   PKG_CHECK_MODULES([XGLMODULES], [glitz-glx >= 0.4.3], [XGL=yes], [XGL=no])
   AC_SUBST(XGLMODULES_CFLAGS)
-  AC_SUBST(XGLMODULES_LIBS)
 fi
 AC_MSG_RESULT([$XGL])
 AM_CONDITIONAL(XGL, [test "x$XGL" = xyes])
 
 if test "x$XGL" = xyes; then
-	XGL_LIBS="$FB_LIB $MI_LIB $COMPOSITE_LIB $FIXES_LIB $XEXT_LIB $CONFIG_LIB $DBE_LIB $XTRAP_LIB $RECORD_LIB $GLX_LIBS $RENDER_LIB $RANDR_LIB $DAMAGE_LIB $MIEXT_DAMAGE_LIB $MIEXT_SHADOW_LIB $MIEXT_LAYER_LIB $XI_LIB $XKB_LIB $XKB_STUB_LIB $XPSTUBS_LIB $CWRAP_LIB $OS_LIB"
+	XGL_LIBS="$FB_LIB $COMPOSITE_LIB $FIXES_LIB $XEXT_LIB $CONFIG_LIB $DBE_LIB $XTRAP_LIB $RECORD_LIB $GLX_LIBS $RENDER_LIB $RANDR_LIB $DAMAGE_LIB $MIEXT_DAMAGE_LIB $MIEXT_SHADOW_LIB $MIEXT_LAYER_LIB $XI_LIB $XKB_LIB $XKB_STUB_LIB $XPSTUBS_LIB"
+	XGL_SYS_LIBS="$XGLMODULES_LIBS $GLX_SYS_LIBS $DLOPEN_LIBS"
 	AC_SUBST([XGL_LIBS])
+	AC_SUBST([XGL_SYS_LIBS])
 	AC_DEFINE(XGL_MODULAR, 1, [Use loadable XGL modules])
 
 	xglmoduledir="$moduledir/xgl"
@@ -1229,14 +1265,15 @@ AC_MSG_CHECKING([whether to build Xegl DDX])
 if test "x$XEGL" != xno; then
   PKG_CHECK_MODULES([XGLMODULES], [glitz-glx >= 0.4.3], [XEGL=yes], [XEGL=no])
   AC_SUBST(XEGLMODULES_CFLAGS)
-  AC_SUBST(XEGLMODULES_LIBS)
 fi
 AC_MSG_RESULT([$XEGL])
 AM_CONDITIONAL(XEGL, [test "x$XEGL" = xyes])
 
 if test "x$XEGL" = xyes; then
-	XEGL_LIBS="$FB_LIB $MI_LIB $COMPOSITE_LIB $FIXES_LIB $XEXT_LIB $CONFIG_LIB $DBE_LIB $XTRAP_LIB $RECORD_LIB $GLX_LIBS $RENDER_LIB $RANDR_LIB $DAMAGE_LIB $MIEXT_DAMAGE_LIB $MIEXT_SHADOW_LIB $MIEXT_LAYER_LIB $XI_LIB $XKB_LIB $XKB_STUB_LIB $XPSTUBS_LIB $CWRAP_LIB $OS_LIB"
+	XEGL_LIBS="$FB_LIB $COMPOSITE_LIB $FIXES_LIB $XEXT_LIB $CONFIG_LIB $DBE_LIB $XTRAP_LIB $RECORD_LIB $GLX_LIBS $RENDER_LIB $RANDR_LIB $DAMAGE_LIB $MIEXT_DAMAGE_LIB $MIEXT_SHADOW_LIB $MIEXT_LAYER_LIB $XI_LIB $XKB_LIB $XKB_STUB_LIB $XPSTUBS_LIB"
+	XEGL_SYS_LIBS = "$XEGL_SYS_LIBS $XEGLMODULES_LIBS $GLX_SYS_LIBS"
 	AC_SUBST([XEGL_LIBS])
+	AC_SUBST([XEGL_SYS_LIBS])
 fi
 
 dnl Xglx DDX
@@ -1245,23 +1282,19 @@ AC_MSG_CHECKING([whether to build Xglx DDX])
 if test "x$XGLX" != xno; then
   PKG_CHECK_MODULES([XGLXMODULES], [glitz-glx >= 0.4.3 xrender], [XGLX=yes], [XGLX=no])
   AC_SUBST(XGLXMODULES_CFLAGS)
-  AC_SUBST(XGLXMODULES_LIBS)
 fi
 AC_MSG_RESULT([$XGLX])
 AM_CONDITIONAL(XGLX, [test "x$XGLX" = xyes])
 
 if test "x$XGLX" = xyes; then
-	XGLX_LIBS="$FB_LIB $MI_LIB $COMPOSITE_LIB $FIXES_LIB $XEXT_LIB $CONFIG_LIB $DBE_LIB $XTRAP_LIB $RECORD_LIB $GLX_LIBS $RENDER_LIB $RANDR_LIB $DAMAGE_LIB $MIEXT_DAMAGE_LIB $MIEXT_SHADOW_LIB $MIEXT_LAYER_LIB $XI_LIB $XKB_LIB $XKB_STUB_LIB $XPSTUBS_LIB $CWRAP_LIB $OS_LIB"
+	XGLX_LIBS="$FB_LIB $COMPOSITE_LIB $FIXES_LIB $XEXT_LIB $CONFIG_LIB $DBE_LIB $XTRAP_LIB $RECORD_LIB $GLX_LIBS $RENDER_LIB $RANDR_LIB $DAMAGE_LIB $MIEXT_DAMAGE_LIB $MIEXT_SHADOW_LIB $MIEXT_LAYER_LIB $XI_LIB $XKB_LIB $XKB_STUB_LIB $XPSTUBS_LIB"
+	XGLX_SYS_LIBS="$XGLX_SYS_LIBS $XGLXMODULES_LIBS $GLX_SYS_LIBS"
 	AC_SUBST([XGLX_LIBS])
+	AC_SUBST([XGLX_SYS_LIBS])
 fi
 
-# XORG_CORE_LIBS is needed even if you're not building the Xorg DDX
-XORG_CORE_LIBS="$DIX_LIB $CONFIG_LIB"
-AC_SUBST([XORG_CORE_LIBS])
-
 xorg_bus_linuxpci=no
-xorg_bus_freebsdpci=no
-xorg_bus_netbsdpci=no
+xorg_bus_bsdpci=no
 xorg_bus_ix86pci=no
 xorg_bus_ppcpci=no
 xorg_bus_sparcpci=no
@@ -1272,72 +1305,13 @@ if test "x$XORG" = xyes -o "x$XGL" = xyes; then
 	XORG_OSINCS='-I$(top_srcdir)/hw/xfree86/os-support -I$(top_srcdir)/hw/xfree86/os-support/bus -I$(top_srcdir)/os'
 	XORG_INCS="$XORG_DDXINCS $XORG_OSINCS"
 	XORG_CFLAGS="$XORGSERVER_CFLAGS -DHAVE_XORG_CONFIG_H"
-	XORG_LIBS="$COMPOSITE_LIB $MI_LIB $FIXES_LIB $XEXTXORG_LIB $GLX_LIBS $RENDER_LIB $RANDR_LIB $DAMAGE_LIB $MIEXT_DAMAGE_LIB $MIEXT_SHADOW_LIB $XI_LIB $XKB_LIB $XPSTUBS_LIB $OS_LIB"
+	XORG_LIBS="$COMPOSITE_LIB $FIXES_LIB $XEXTXORG_LIB $GLX_LIBS $RENDER_LIB $RANDR_LIB $DAMAGE_LIB $MIEXT_DAMAGE_LIB $MIEXT_SHADOW_LIB $XI_LIB $XKB_LIB $XPSTUBS_LIB $SELINUX_LIB"
 
-dnl Check to see if dlopen is in default libraries (like Solaris, which
-dnl has it in libc), or if libdl is needed to get it.
-	AC_CHECK_FUNC([dlopen], [], 
-		AC_CHECK_LIB([dl], [dlopen], XORG_LIBS="$XORG_LIBS -ldl"))
+	PKG_CHECK_MODULES([PCIACCESS], [pciaccess >= 0.8.0])
+	XORG_SYS_LIBS="$XORG_SYS_LIBS $PCIACCESS_LIBS $DLOPEN_LIBS $GLX_SYS_LIBS"
+	XORG_CFLAGS="$XORG_CFLAGS $PCIACCESS_CFLAGS"
 
 	case $host_os in
-         darwin*)
-               XORG_OS="Darwin"
-               build_darwin=yes
-               if test "X$XQUARTZ" = Xauto; then
-                 AC_CACHE_CHECK([for Carbon framework],xorg_cv_Carbon_framework,[
-                 save_LDFLAGS=$LDFLAGS
-                 LDFLAGS="$LDFLAGS -framework Carbon"
-                 AC_LINK_IFELSE([char FSFindFolder();
-int main() {
-FSFindFolder();
-return 0;}
-                 ],[xorg_cv_Carbon_framework=yes],
-                  [xorg_cv_Carbon_framework=no])
-                  LDFLAGS=$save_LDFLAGS])
-                 if test "X$xorg_cv_Carbon_framework" = Xyes; then
-                   AC_DEFINE([DARWIN_WITH_QUARTZ],[1],
-                         [Have Quartz])
-                   XQUARTZ=yes
-                 else
-                   XQUARTZ=no
-                 fi
-               fi
-#	       glxAGL / glxCGL don't work yet
-#               AC_CACHE_CHECK([for AGL framework],xorg_cv_AGL_framework,[
-#               save_LDFLAGS=$LDFLAGS
-#               LDFLAGS="$LDFLAGS -framework AGL"
-#               AC_LINK_IFELSE([char aglEnable();
-#int main() {
-#aglEnable();
-#return 0;}
-#               ],[xorg_cv_AGL_framework=yes],
-#               [xorg_cv_AGL_framework=no])
-#               LDFLAGS=$save_LDFLAGS
-#               ])
-               xorg_cv_AGL_framework=no
-	       DARWIN_LIBS="$FB_LIB $MI_LIB $FIXES_LIB $XEXT_LIB $CONFIG_LIB $DBE_LIB $XTRAP_LIB $RECORD_LIB $GLX_LIBS $RENDER_LIB $RANDR_LIB $DAMAGE_LIB $MIEXT_DAMAGE_LIB $MIEXT_SHADOW_LIB $XI_LIB $XKB_LIB $XKB_STUB_LIB $COMPOSITE_LIB $XPSTUBS_LIB $OS_LIB"
-	       AC_SUBST([DARWIN_LIBS])
-               AC_CHECK_LIB([Xplugin],[xp_init],[:])
-               AC_SUBST([APPLE_APPLICATIONS_DIR])
-               CFLAGS="${CFLAGS} -D__DARWIN__"
-               PLIST_VERSION_STRING=$PACKAGE_VERSION
-               AC_SUBST([PLIST_VERSION_STRING])
-               PLIST_VENDOR_WEB=$VENDOR_WEB
-               AC_SUBST([PLIST_VENDOR_WEB])
-               # Not sure that we should be disabling all these...
-               if test "x$XF86MISC" = xyes || test "x$XF86MISC" = xauto; then
-                       AC_MSG_NOTICE([Disabling XF86Misc extension])
-                       XF86MISC=no
-               fi
-               if test "x$XF86VIDMODE" = xyes || test "x$XF86VIDMODE" = xauto; then
-                       AC_MSG_NOTICE([Disabling XF86VidMode extension])
-                       XF86VIDMODE=no
-               fi
-               if test "x$DGA" = xyes || test "x$DGA" = xauto; then
-                       AC_MSG_NOTICE([Disabling DGA extension])
-                       DGA=no
-               fi
-               ;;
 	  linux*)
 		if test "x$LNXAPM" = xyes; then
 			XORG_CFLAGS="$XORG_CFLAGS -DXF86PM"
@@ -1366,35 +1340,17 @@ return 0;}
 	  freebsd* | kfreebsd*-gnu)
 	  	XORG_OS="freebsd"
 		XORG_OS_SUBDIR="bsd"
-		case $host_cpu in
-		  i*86)
-			;;
-		  *)
-			xorg_bus_freebsdpci="yes"
-			;;
-		esac
+		xorg_bus_bsdpci="yes"
 		;;
 	  netbsd*)
 	  	XORG_OS="netbsd"
 		XORG_OS_SUBDIR="bsd"
-		case $host_cpu in
-		  i*86|amd64*|x86_64*|ia64*)
-			;;
-		  *)
-			xorg_bus_netbsdpci="yes"
-			;;
-		esac
+		xorg_bus_bsdpci="yes"
 		;;
 	  openbsd*)
 	  	XORG_OS="openbsd"
 		XORG_OS_SUBDIR="bsd"
-		case $host_cpu in
-		  i*86|amd64*|x86_64*|ia64*)
-			;;
-		  *)
-			xorg_bus_freebsdpci="yes"
-			;;
-		esac
+		xorg_bus_bsdpci="yes"
 		;;
 	  solaris*)
 	  	XORG_OS="solaris"
@@ -1461,15 +1417,9 @@ return 0;}
 	esac
 
 	case $host_cpu in
-	  i*86)
-               case $host_os in
-                 darwin*) ;;
-                 *) xorg_bus_ix86pci=yes ;;
-               esac
-		;;
 	  powerpc*)
 		case $host_os in
-		  darwin*|linux*|freebsd*|netbsd*|openbsd*|kfreebsd*-gnu)
+		  linux*|freebsd*|netbsd*|openbsd*|kfreebsd*-gnu)
 			;;
 		  *)
 			xorg_bus_ppcpci="yes"
@@ -1480,10 +1430,9 @@ return 0;}
 		xorg_bus_sparcpci="yes"
 		xorg_bus_sparc="yes"
 		;;
-	  x86_64*|amd64*)
+	  i*86|x86_64*|amd64*)
 		case $host_os in
-		  darwin*|freebsd*|kfreebsd*-gnu)
-			# FreeBSD uses the system pci interface
+		  *bsd*|linux*)
 			;;
 		  *)
 			xorg_bus_ix86pci="yes"
@@ -1526,15 +1475,15 @@ return 0;}
 	if test -n "$XORG_MODULES"; then
 	        PKG_CHECK_MODULES(XORG_MODULES, [$XORG_MODULES])
 	        XORG_CFLAGS="$XORG_CFLAGS $XORG_MODULES_CFLAGS"
-	        XORG_LIBS="$XORG_LIBS $XORG_MODULES_LIBS"
+	        XORG_SYS_LIBS="$XORG_SYS_LIBS $XORG_MODULES_LIBS"
 	fi
 
 	AC_SUBST([XORG_LIBS])
+	AC_SUBST([XORG_SYS_LIBS])
 	AC_SUBST([XORG_INCS])
 	AC_SUBST([XORG_OS])
 	AC_SUBST([XORG_OS_SUBDIR])
 
-	dnl only used in hw/xfree86/scanpci, TTBOMK
 	AC_PATH_PROG(PERL, perl, no)
 	dnl unlikely as this may be ...
 	if test "x$PERL" = xno; then
@@ -1557,14 +1506,13 @@ return 0;}
 	AC_DEFINE(NEED_XF86_PROTOTYPES, 1, [Need XFree86 helper functions])
 	AC_DEFINE(__XSERVERNAME__, "Xorg", [Name of X server])
 	AC_DEFINE(WITH_VGAHW, 1, [Building vgahw module])
-	AC_DEFINE(DRIVERS, {}, [Built-in output drivers (none)])
-	AC_DEFINE(IDRIVERS, {}, [Built-in input drivers (none)])
 	AC_DEFINE_DIR(__XCONFIGFILE__, XF86CONFIGFILE, [Name of configuration file])
 	AC_DEFINE_DIR(XF86CONFIGFILE, XF86CONFIGFILE, [Name of configuration file])
 	AC_DEFINE_DIR(DEFAULT_MODULE_PATH, moduledir, [Default module search path])
 	AC_DEFINE_DIR(DEFAULT_LIBRARY_PATH, libdir, [Default library install path])
 	AC_DEFINE_DIR(DEFAULT_LOGPREFIX, LOGPREFIX, [Default log location])
 	AC_DEFINE_UNQUOTED(__VENDORDWEBSUPPORT__, ["$VENDOR_WEB"], [Vendor web address for support])
+	AC_DEFINE(XSERVER_LIBPCIACCESS, 1, [Use libpciaccess for all pci manipulation])
 
 	driverdir="$moduledir/drivers"
 	AC_SUBST([moduledir])
@@ -1574,11 +1522,21 @@ return 0;}
 	AC_SUBST([sdkdir])
 	AC_SUBST([extdir])
 	AC_SUBST([logdir])
+
+	# stuff the ABI versions into the pc file too
+	extract_abi() {
+	    grep ^.define.*${1}_VERSION ${srcdir}/hw/xfree86/common/xf86Module.h | tr '(),' '  .' | awk '{ print $4$5 }'
+	}
+	abi_ansic=`extract_abi ANSIC`
+	abi_videodrv=`extract_abi VIDEODRV`
+	abi_xinput=`extract_abi XINPUT`
+	abi_extension=`extract_abi EXTENSION`
+	abi_font=`extract_abi FONT`
+	AC_SUBST([abi_ansic abi_videodrv abi_xinput abi_extension abi_font])
 fi
 AM_CONDITIONAL([XORG], [test "x$XORG" = xyes])
 AM_CONDITIONAL([XORG_BUS_LINUXPCI], [test "x$xorg_bus_linuxpci" = xyes])
-AM_CONDITIONAL([XORG_BUS_FREEBSDPCI], [test "x$xorg_bus_freebsdpci" = xyes])
-AM_CONDITIONAL([XORG_BUS_NETBSDPCI], [test "x$xorg_bus_netbsdpci" = xyes])
+AM_CONDITIONAL([XORG_BUS_BSDPCI], [test "x$xorg_bus_bsdpci" = xyes])
 AM_CONDITIONAL([XORG_BUS_IX86PCI], [test "x$xorg_bus_ix86pci" = xyes])
 AM_CONDITIONAL([XORG_BUS_PPCPCI], [test "x$xorg_bus_ppcpci" = xyes])
 AM_CONDITIONAL([XORG_BUS_SPARCPCI], [test "x$xorg_bus_sparcpci" = xyes])
@@ -1589,8 +1547,6 @@ AM_CONDITIONAL([LINUX_ALPHA], [test "x$linux_alpha" = xyes])
 AM_CONDITIONAL([LNXACPI], [test "x$linux_acpi" = xyes])
 AM_CONDITIONAL([SOLARIS_USL_CONSOLE], [test "x$solaris_usl_console" = xyes])
 AM_CONDITIONAL([SOLARIS_ASM_INLINE], [test "x$solaris_asm_inline" = xyes])
-AM_CONDITIONAL([BUILD_DARWIN],[test "X$build_darwin" = Xyes])
-AM_CONDITIONAL([XQUARTZ],[test "X$XQUARTZ" = Xyes])
 AM_CONDITIONAL([DGA], [test "x$DGA" = xyes])
 AM_CONDITIONAL([XF86MISC], [test "x$XF86MISC" = xyes])
 AM_CONDITIONAL([XF86VIDMODE], [test "x$XF86VIDMODE" = xyes])
@@ -1616,7 +1572,7 @@ AC_MSG_RESULT([$XPRINT])
 if test "x$XPRINT" = xyes; then
 	PKG_CHECK_MODULES([XPRINTMODULES], [printproto x11 xfont $XDMCP_MODULES xau])
 	XPRINT_CFLAGS="$XPRINTMODULES_CFLAGS"
-	XPRINT_LIBS="$XEXT_LIB $CONFIG_LIB $DBE_LIB $XTRAP_LIB $RECORD_LIB $RENDER_LIB $COMPOSITE_LIB $RANDR_LIB $XI_LIB $FIXES_LIB $DAMAGE_LIB $XI_LIB $GLX_LIBS $MIEXT_DAMAGE_LIB $CWRAP_LIBS $XKB_LIB $XKB_STUB_LIB"
+	XPRINT_LIBS="$XEXT_LIB $CONFIG_LIB $DBE_LIB $XTRAP_LIB $RECORD_LIB $RENDER_LIB $COMPOSITE_LIB $RANDR_LIB $XI_LIB $FIXES_LIB $DAMAGE_LIB $XI_LIB $GLX_LIBS $MIEXT_DAMAGE_LIB $XKB_LIB $XKB_STUB_LIB"
 	XPRINT_SYS_LIBS="$XPRINTMODULES_LIBS"
 
 	xpconfigdir=$libdir/X11/xserver
@@ -1673,30 +1629,31 @@ if test "x$XWIN" = xauto; then
 		mingw*) XWIN="yes" ;;
 		*) XWIN="no" ;;
 	esac
-	XWIN_LIBS="$FB_LIB $MI_LIB $XEXT_LIB $CONFIG_LIB $XI_LIB $XKB_LIB $XKB_STUB_LIB $COMPOSITE_LIB $DAMAGE_LIB $LAYER_LIB $XPSTUBS_LIB $OS_LIB $SHADOW_LIB"
+	XWIN_LIBS="$FB_LIB $XEXT_LIB $CONFIG_LIB $XI_LIB $XKB_LIB $XKB_STUB_LIB $COMPOSITE_LIB $DAMAGE_LIB $LAYER_LIB $XPSTUBS_LIB $SHADOW_LIB"
 	AC_SUBST([XWIN_LIBS])
 fi
 AC_MSG_RESULT([$XWIN])
 
 if test "x$XWIN" = xyes; then
-	XWIN_SERVER_NAME=XWin
 	case $host_os in
 		cygwin*)
+			XWIN_SERVER_NAME=XWin
 			PKG_CHECK_MODULES([XWINMODULES],[x11 xdmcp xau xfont])
 			AC_DEFINE(HAS_DEVWINDOWS,1,[Cygwin has /dev/windows for signaling new win32 messages])
 			AC_DEFINE(ROOTLESS,1,[Build Rootless code])
 			CFLAGS="$CFLAGS -DFD_SETSIZE=256"
 			;;
 		mingw*)
-			PKG_CHECK_MODULES([XWINMODULES],[x11 xdmcp xau xfont])
 			XWIN_SERVER_NAME=Xming
+			PKG_CHECK_MODULES([XWINMODULES],[x11 xdmcp xau xfont])
 			AC_DEFINE(RELOCATE_PROJECTROOT,1,[Make PROJECT_ROOT relative to the xserver location])
 			AC_DEFINE(HAS_WINSOCK,1,[Use Windows sockets])
-			XWIN_SYSTEM_LIBS=-lwinsock2
+			XWIN_SYS_LIBS=-lwinsock2
 			;;
 	esac
+	XWIN_SYS_LIBS="$XWIN_SYS_LIBS $(XWINMODULES_LIBS)"
 	AC_SUBST(XWIN_SERVER_NAME)
-	AC_SUBST(XWIN_SYSTEM_LIBS)
+	AC_SUBST(XWIN_SYS_LIBS)
 
 	if test "x$DEBUGGING" = xyes; then
 		AC_DEFINE(CYGDEBUG, 1, [Simple debug messages])
@@ -1733,10 +1690,60 @@ AM_CONDITIONAL(XWIN_RANDR, [test "x$XWIN" = xyes])
 AM_CONDITIONAL(XWIN_XV, [test "x$XWIN" = xyes && test "x$XV" = xyes])
 
 dnl Darwin / OS X DDX
-AM_CONDITIONAL(HAVE_X_PLUGIN, [test "x$ac_cv_lib_Xplugin_xp_init" = xyes])
-AM_CONDITIONAL(HAVE_AGL_FRAMEWORK, [test "x$xorg_cv_AGL_framework" = xyes])
-# Support for objc in autotools is minimal and not
-# documented.
+if test "X$XQUARTZ" = Xauto; then
+	AC_CACHE_CHECK([whether to build Xquartz],xorg_cv_Carbon_framework,[
+	 	save_LDFLAGS=$LDFLAGS
+		LDFLAGS="$LDFLAGS -framework Carbon"
+		AC_LINK_IFELSE([char FSFindFolder(); int main() { FSFindFolder(); return 0;}],
+			[xorg_cv_Carbon_framework=yes],
+			[xorg_cv_Carbon_framework=no])
+		LDFLAGS=$save_LDFLAGS])
+                
+	if test "X$xorg_cv_Carbon_framework" = Xyes; then
+		XQUARTZ=yes
+	else
+		XQUARTZ=no
+	fi
+fi
+
+if test "x$XQUARTZ" = xyes; then
+	AC_DEFINE([XQUARTZ],[1],[Have Quartz])
+
+#glxAGL / glxCGL don't work yet
+#	AC_CACHE_CHECK([for AGL framework],xorg_cv_AGL_framework,[
+#		save_LDFLAGS=$LDFLAGS
+#		LDFLAGS="$LDFLAGS -framework AGL"
+#		AC_LINK_IFELSE(
+#			[char aglEnable(); int main() { aglEnable(); return 0;}],
+#			[xorg_cv_AGL_framework=yes],
+#			[xorg_cv_AGL_framework=no])
+#		LDFLAGS=$save_LDFLAGS
+#	])
+	xorg_cv_AGL_framework=no
+	DARWIN_GLX_LIBS='$(top_builddir)/GL/apple/indirect.o $(top_builddir)/GL/glx/libglx.la'
+	DARWIN_LIBS="$MI_LIB $OS_LIB $DIX_LIB $FB_LIB $FIXES_LIB $XEXT_LIB $CONFIG_LIB $DBE_LIB $XTRAP_LIB $RECORD_LIB $RENDER_LIB $RANDR_LIB $DAMAGE_LIB $MIEXT_DAMAGE_LIB $MIEXT_SHADOW_LIB $XI_LIB $XKB_LIB $XKB_STUB_LIB $COMPOSITE_LIB $XPSTUBS_LIB"
+	AC_SUBST([DARWIN_LIBS])
+	AC_CHECK_LIB([Xplugin],[xp_init],[:])
+	CFLAGS="${CFLAGS} -DROOTLESS_WORKAROUND -DNO_ALLOCA"
+	if test "x$XF86MISC" = xyes || test "x$XF86MISC" = xauto; then
+		AC_MSG_NOTICE([Disabling XF86Misc extension])
+		XF86MISC=no
+	fi
+	if test "x$XF86VIDMODE" = xyes || test "x$XF86VIDMODE" = xauto; then
+		AC_MSG_NOTICE([Disabling XF86VidMode extension])
+		XF86VIDMODE=no
+	fi
+	if test "x$XF86BIGFONT" = xyes || test "x$XF86BIGFONT" = xauto; then
+		AC_MSG_NOTICE([Disabling XF86BigFont extension])
+		XF86BIGFONT=no
+	fi
+	if test "x$DGA" = xyes || test "x$DGA" = xauto; then
+		AC_MSG_NOTICE([Disabling DGA extension])
+		DGA=no
+	fi
+fi
+
+# Support for objc in autotools is minimal and not documented.
 OBJC='$(CC)'
 OBJCLD='$(CCLD)'
 OBJCLINK='$(LINK)'
@@ -1747,6 +1754,90 @@ AC_SUBST([OBJCLINK])
 AC_SUBST([OBJCFLAGS])
 # internal, undocumented automake func follows :(
 _AM_DEPENDENCIES([OBJC])
+AM_CONDITIONAL(HAVE_XPLUGIN, [test "x$ac_cv_lib_Xplugin_xp_init" = xyes])
+AM_CONDITIONAL(HAVE_AGL_FRAMEWORK, [test "x$xorg_cv_AGL_framework" = xyes])
+AM_CONDITIONAL(XQUARTZ, [test "x$XQUARTZ" = xyes])
+
+if test "x$X11APP" = xauto; then
+	AC_MSG_CHECKING([whether to build X11.app])
+	if test "x$XQUARTZ" = xyes ; then
+		X11APP=yes
+	else
+		X11APP=no
+	fi
+	AC_MSG_RESULT([$X11APP])
+fi
+AM_CONDITIONAL(X11APP,[test "X$X11APP" = Xyes]) 
+
+if test "x$LAUNCHD" = "xauto"; then
+	if test "x$XQUARTZ" = "xyes" ; then
+		LAUNCHD=yes
+	else
+		unset LAUNCHD
+		AC_CHECK_PROG(LAUNCHD, [launchd], [yes], [no])
+	fi
+fi
+
+if test "x$LAUNCHD" = "xyes" ; then
+	AC_DEFINE(HAVE_LAUNCHD, 1, [launchd support available])
+fi
+AM_CONDITIONAL(LAUNCHD, [test "x$LAUNCHD" = "xyes"])
+
+
+dnl DMX DDX
+
+AC_MSG_CHECKING([whether to build Xdmx DDX])
+PKG_CHECK_MODULES([DMXMODULES], [xmuu xext x11 xrender xfixes xfont xi dmxproto xau $XDMCP_MODULES], [have_dmx=yes], [have_dmx=no])
+if test "x$DMX" = xauto; then
+	DMX="$have_dmx"
+	case $host_os in
+		cygwin*) DMX="no" ;;
+		darwin*) DMX="no" ;;
+	esac
+fi
+AC_MSG_RESULT([$DMX])
+AM_CONDITIONAL(DMX, [test "x$DMX" = xyes])
+
+if test "x$DMX" = xyes; then
+	if test "x$have_dmx" = xno; then
+		AC_MSG_ERROR([Xdmx build explicitly requested, but required
+		              modules not found.])
+	fi
+	DMX_INCLUDES="$XEXT_INC $RENDER_INC $XTRAP_INC $RECORD_INC"
+	XDMX_CFLAGS="$DMXMODULES_CFLAGS"
+	XDMX_LIBS="$XEXT_LIB $FB_LIB $CONFIG_LIB $RENDER_LIB $XTRAP_LIB $RECORD_LIB $XI_LIB $XKB_LIB $XKB_STUB_LIB $MIEXT_SHADOW_LIB $MIEXT_DAMAGE_LIB"
+	XDMX_SYS_LIBS="$DMXMODULES_LIBS"
+	AC_SUBST([XDMX_CFLAGS])
+	AC_SUBST([XDMX_LIBS])
+	AC_SUBST([XDMX_SYS_LIBS])
+
+dnl USB sources in DMX require <linux/input.h>
+	AC_CHECK_HEADER([linux/input.h], DMX_BUILD_USB="yes",
+			DMX_BUILD_USB="no")
+dnl Linux sources in DMX require <linux/keyboard.h>
+	AC_CHECK_HEADER([linux/keyboard.h], DMX_BUILD_LNX="yes",
+			DMX_BUILD_LNX="no")
+	if test "x$GLX" = xyes; then
+		PKG_CHECK_MODULES([GL], [glproto])
+	fi
+	PKG_CHECK_MODULES([XDMXCONFIG_DEP], [xaw7 xmu xt xpm x11])
+	AC_SUBST(XDMXCONFIG_DEP_CFLAGS)
+	AC_SUBST(XDMXCONFIG_DEP_LIBS)
+	PKG_CHECK_MODULES([DMXEXAMPLES_DEP], [dmx xext x11])
+	AC_SUBST(DMXEXAMPLES_DEP_LIBS)
+	PKG_CHECK_MODULES([DMXXMUEXAMPLES_DEP], [dmx xmu xext x11])
+	AC_SUBST(DMXXMUEXAMPLES_DEP_LIBS)
+	PKG_CHECK_MODULES([DMXXIEXAMPLES_DEP], [dmx xi xext x11])
+	AC_SUBST(DMXXIEXAMPLES_DEP_LIBS)
+	PKG_CHECK_MODULES([XTSTEXAMPLES_DEP], [xtst xext x11])
+	AC_SUBST(XTSTEXAMPLES_DEP_LIBS)
+	PKG_CHECK_MODULES([XRESEXAMPLES_DEP], [xres xext x11])
+	AC_SUBST(XRESEXAMPLES_DEP_LIBS)
+	PKG_CHECK_MODULES([X11EXAMPLES_DEP], [xext x11])
+	AC_SUBST(X11EXAMPLES_DEP_LIBS)
+fi
+AM_CONDITIONAL([DMX_BUILD_LNX], [test "x$DMX_BUILD_LNX" = xyes])
+AM_CONDITIONAL([DMX_BUILD_USB], [test "x$DMX_BUILD_USB" = xyes])
 
 dnl kdrive DDX
 
@@ -1803,13 +1894,26 @@ if test "$KDRIVE" = yes; then
     if test x"$XSDL" = xyes; then
        # PKG_CHECK_MODULES(XSDL_EXTRA, Xfont xau $XDMCP_MODULES)
        AC_DEFINE(XSDLSERVER,1,[Build Xsdl server])
-       XSDL_LIBS="`sdl-config --libs` $XSERVER_LIBS"
+       XSDL_LIBS="`sdl-config --libs`"
        XSDL_INCS="`sdl-config --cflags` $XSERVER_CFLAGS"
     fi
 
-    PKG_CHECK_MODULES(XEPHYR, x11 xext xfont xau xdmcp, [xephyr="yes"], [xephyr="no"])
+    XEPHYR_REQUIRED_LIBS="x11 xext xfont xau xdmcp"
+    if test "x$XV" = xyes; then
+        XEPHYR_REQUIRED_LIBS="$XEPHYR_REQUIRED_LIBS xv"
+    fi
+    PKG_CHECK_MODULES(XEPHYR, $XEPHYR_REQUIRED_LIBS, [xephyr="yes"], [xephyr="no"])
     if test "x$XEPHYR" = xauto; then
         XEPHYR=$xephyr
+    fi
+    XEPHYR_DRI=no
+    if test x$XEPHYR = xyes -a x$DRI = xyes && test "x$GLX" = xyes; then
+        XEPHYR_DRI=yes
+        XEPHYR_DRI_LIBS=-lGL
+        AC_SUBST(XEPHYR_DRI_LIBS)
+    fi
+    if test x$XEPHYR_DRI = xyes ; then
+        AC_DEFINE(XEPHYR_DRI,1,[enable DRI extension in xephyr])
     fi
 
     # Xephyr needs nanosleep() which is in librt on Solaris
@@ -1841,11 +1945,13 @@ if test "$KDRIVE" = yes; then
 	    ;;
     esac
     KDRIVE_STUB_LIB='$(top_builddir)/hw/kdrive/src/libkdrivestubs.a'
-    KDRIVE_LOCAL_LIBS="$DIX_LIB $CONFIG_LIB $KDRIVE_LIB $TSLIB_LIBS $KDRIVE_OS_LIB $KDRIVE_PURE_LIBS $KDRIVE_STUB_LIB"
-    KDRIVE_LIBS="$XSERVERLIBS_LIBS $KDRIVE_LOCAL_LIBS"
+    KDRIVE_LOCAL_LIBS="$TSLIB_LIBS $DIX_LIB $KDRIVE_LIB $KDRIVE_STUB_LIB $CONFIG_LIB"
+    KDRIVE_LOCAL_LIBS="$KDRIVE_LOCAL_LIBS $FB_LIB $MI_LIB $KDRIVE_PURE_LIBS"
+    KDRIVE_LOCAL_LIBS="$KDRIVE_LOCAL_LIBS $KDRIVE_OS_LIB $OS_LIB"
+    KDRIVE_LIBS="$KDRIVE_LOCAL_LIBS $XSERVER_SYS_LIBS"
 
     # check if we can build Xephyr
-    PKG_CHECK_MODULES(XEPHYR, x11 xext xfont xau xdmcp, [xephyr="yes"], [xephyr="no"])
+    PKG_CHECK_MODULES(XEPHYR, $XEPHYR_REQUIRED_LIBS, [xephyr="yes"], [xephyr="no"])
 
     AC_SUBST([XEPHYR_LIBS])
     AC_SUBST([XEPHYR_INCS])
@@ -1866,6 +1972,7 @@ AM_CONDITIONAL(KDRIVEFBDEV, [test "x$XFBDEV" = xyes])
 AM_CONDITIONAL(XSDLSERVER, [test x"$XSDL" = xyes])
 AM_CONDITIONAL(XEPHYR, [test "x$KDRIVE" = xyes && test "x$XEPHYR" = xyes])
 AM_CONDITIONAL(BUILD_KDRIVEFBDEVLIB, [test "x$KDRIVE" = xyes && test "x$KDRIVEFBDEVLIB" = xyes])
+AM_CONDITIONAL(XEPHYR_HAS_DRI, [test x$XEPHYR_DRI = xyes])
 AM_CONDITIONAL(XFAKESERVER, [test "x$KDRIVE" = xyes && test "x$XFAKE" = xyes])
 
 dnl these only go in xkb-config.h (which is shared by the Xorg and Xnest servers)
@@ -1917,7 +2024,7 @@ AC_ARG_ENABLE(xorgcfg, AS_HELP_STRING([--enable-xorgcfg],
 if test x$XORGCFG = xyes ; then
 	PKG_CHECK_MODULES([XORGCFG_DEP], 
 	    [xkbui >= 1.0.2 xkbfile xxf86misc xxf86vm xaw7 xmu xt xpm xext x11])
-	XORGCFG_DEP_CFLAGS="$XORGCFG_DEP_CFLAGS $PIXMAN_CFLAGS"
+	XORGCFG_DEP_CFLAGS="$XORGCFG_DEP_CFLAGS"
 	AC_CHECK_LIB([curses],[waddstr],
 	    [XORGCFG_DEP_LIBS="$XORGCFG_DEP_LIBS -lcurses"; CURSES=yes],
 	    AC_CHECK_LIB([ncurses],[waddstr],
@@ -2028,6 +2135,7 @@ hw/xfree86/doc/devel/Makefile
 hw/xfree86/doc/man/Makefile
 hw/xfree86/doc/sgml/Makefile
 hw/xfree86/dri/Makefile
+hw/xfree86/dri2/Makefile
 hw/xfree86/dummylib/Makefile
 hw/xfree86/exa/Makefile
 hw/xfree86/fbdevhw/Makefile
@@ -2049,7 +2157,6 @@ hw/xfree86/os-support/usl/Makefile
 hw/xfree86/parser/Makefile
 hw/xfree86/rac/Makefile
 hw/xfree86/ramdac/Makefile
-hw/xfree86/scanpci/Makefile
 hw/xfree86/shadowfb/Makefile
 hw/xfree86/vbe/Makefile
 hw/xfree86/vgahw/Makefile
@@ -2064,8 +2171,6 @@ hw/xfree86/utils/cvt/Makefile
 hw/xfree86/utils/gtf/Makefile
 hw/xfree86/utils/ioport/Makefile
 hw/xfree86/utils/kbd_mode/Makefile
-hw/xfree86/utils/pcitweak/Makefile
-hw/xfree86/utils/scanpci/Makefile
 hw/xfree86/utils/xorgcfg/Makefile
 hw/xfree86/utils/xorgconfig/Makefile
 hw/dmx/config/Makefile
@@ -2084,20 +2189,9 @@ hw/xgl/glxext/Makefile
 hw/xgl/glxext/module/Makefile
 hw/xnest/Makefile
 hw/xwin/Makefile
-hw/darwin/Makefile
-hw/darwin/bundle/Makefile
-hw/darwin/bundle/Dutch.lproj/Makefile
-hw/darwin/bundle/English.lproj/Makefile
-hw/darwin/bundle/French.lproj/Makefile
-hw/darwin/bundle/German.lproj/Makefile
-hw/darwin/bundle/Japanese.lproj/Makefile
-hw/darwin/bundle/Portuguese.lproj/Makefile
-hw/darwin/bundle/Spanish.lproj/Makefile
-hw/darwin/bundle/Swedish.lproj/Makefile
-hw/darwin/bundle/ko.lproj/Makefile
-hw/darwin/iokit/Makefile
-hw/darwin/quartz/Makefile
-hw/darwin/utils/Makefile
+hw/xquartz/Makefile
+hw/xquartz/bundle/Makefile
+hw/xquartz/xpr/Makefile
 hw/kdrive/Makefile
 hw/kdrive/ati/Makefile
 hw/kdrive/chips/Makefile

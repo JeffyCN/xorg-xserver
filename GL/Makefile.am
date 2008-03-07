@@ -1,11 +1,9 @@
-# someone could get really crazy someday and add support for the SI...
-
-# xwin/darwin/xfree86 have their accel support under the DDX
-
-if BUILD_DARWIN
-DARWIN_SUBDIRS = apple
+if XQUARTZ
+XQUARTZ_SUBDIRS = apple
 endif
-SUBDIRS = glx mesa $(DARWIN_SUBDIRS)
+
+SUBDIRS = glx mesa $(XQUARTZ_SUBDIRS)
+DIST_SUBDIRS = glx mesa apple
 
 WINDOWS_EXTRAS = \
 	windows/ChangeLog \

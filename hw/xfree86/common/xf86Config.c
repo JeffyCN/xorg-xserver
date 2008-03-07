@@ -60,6 +60,7 @@
 #include "configProcs.h"
 #include "globals.h"
 #include "extension.h"
+#include "Pci.h"
 
 #ifdef XINPUT
 #include "xf86Xinput.h"
@@ -76,7 +77,7 @@ extern DeviceAssocRec mouse_assoc;
 #include "picture.h"
 #endif
 
-#if (defined(i386) || defined(__i386__)) && \
+#if (defined(__i386__)) && \
     (defined(__FreeBSD__) || defined(__FreeBSD_kernel__) || \
      defined(__NetBSD__) || defined(linux) || \
      (defined(SVR4) && !defined(sun)) || defined(__GNU__))
@@ -92,7 +93,6 @@ extern DeviceAssocRec mouse_assoc;
 			"/etc/X11/%R," "%P/etc/X11/%R," \
 			"%E," "%F," \
 			"/etc/X11/%F," "%P/etc/X11/%F," \
-			"%D/%X," \
 			"/etc/X11/%X-%M," "/etc/X11/%X," "/etc/%X," \
 			"%P/etc/X11/%X.%H," "%P/etc/X11/%X-%M," \
 			"%P/etc/X11/%X," \
@@ -113,6 +113,17 @@ extern DeviceAssocRec mouse_assoc;
 #endif
 
 static char *fontPath = NULL;
+
+static ModuleDefault ModuleDefaults[] = {
+    {.name = "extmod",   .toLoad = TRUE,    .load_opt=NULL},
+    {.name = "dbe",      .toLoad = TRUE,    .load_opt=NULL},
+    {.name = "glx",      .toLoad = TRUE,    .load_opt=NULL},
+    {.name = "freetype", .toLoad = TRUE,    .load_opt=NULL},
+    {.name = "record",   .toLoad = TRUE,    .load_opt=NULL},
+    {.name = "dri",      .toLoad = TRUE,    .load_opt=NULL},
+    {.name = NULL,       .toLoad = FALSE,   .load_opt=NULL}
+};
+
 
 /* Forward declarations */
 static Bool configScreen(confScreenPtr screenp, XF86ConfScreenPtr conf_screen,
@@ -483,7 +494,7 @@ xf86InputDriverlistFromConfig()
 static void
 fixup_video_driver_list(char **drivers)
 {
-    static const char *fallback[5] = { "vga", "vesa", "fbdev", "wsfb", NULL };
+    static const char *fallback[4] = { "vesa", "fbdev", "wsfb", NULL };
     char **end, **drv;
     char *x;
     char **ati, **atimisc;
@@ -526,14 +537,8 @@ fixup_video_driver_list(char **drivers)
     }
 }
 
-
-/*
- * Generate a compiled-in list of driver names.  This is used to produce a
- * consistent probe order.  For the loader server, we also look for vendor-
- * provided modules, pre-pending them to our own list.
- */
 static char **
-GenerateDriverlist(char * dirname, char * drivernames)
+GenerateDriverlist(char * dirname)
 {
     char **ret;
     const char *subdirs[] = { dirname, NULL };
@@ -547,20 +552,13 @@ GenerateDriverlist(char * dirname, char * drivernames)
     return ret;
 }
 
-
 char **
 xf86DriverlistFromCompile(void)
 {
     static char **driverlist = NULL;
-    static Bool generated = FALSE;
 
-    /* This string is modified in-place */
-    static char drivernames[] = DRIVERS;
-
-    if (!generated) {
-        generated = TRUE;
-        driverlist = GenerateDriverlist("drivers", drivernames);
-    }
+    if (!driverlist)
+        driverlist = GenerateDriverlist("drivers");
 
     return driverlist;
 }
@@ -687,21 +685,6 @@ configFiles(XF86ConfFilesPtr fileconf)
   }
 
 
-  /* RgbPath */
-
-  pathFrom = X_DEFAULT;
-
-  if (xf86coFlag)
-    pathFrom = X_CMDLINE;
-  else if (fileconf) {
-    if (fileconf->file_rgbpath) {
-      rgbPath = fileconf->file_rgbpath;
-      pathFrom = X_CONFIG;
-    }
-  }
-
-  xf86Msg(pathFrom, "RgbPath set to \"%s\"\n", rgbPath);
-
   if (fileconf && fileconf->file_inputdevs) {
       xf86InputDeviceList = fileconf->file_inputdevs;
       xf86Msg(X_CONFIG, "Input device list set to \"%s\"\n",
@@ -750,7 +733,6 @@ typedef enum {
     FLAG_DISABLEMODINDEV,
     FLAG_MODINDEVALLOWNONLOCAL,
     FLAG_ALLOWMOUSEOPENFAIL,
-    FLAG_VTINIT,
     FLAG_VTSYSREQ,
     FLAG_XKBDISABLE,
     FLAG_PCIPROBE1,
@@ -780,6 +762,7 @@ typedef enum {
     FLAG_USE_DEFAULT_FONT_PATH,
     FLAG_AUTO_ADD_DEVICES,
     FLAG_AUTO_ENABLE_DEVICES,
+    FLAG_GLX_VISUALS,
 } FlagValues;
    
 static OptionInfoRec FlagOptions[] = {
@@ -800,8 +783,6 @@ static OptionInfoRec FlagOptions[] = {
   { FLAG_MODINDEVALLOWNONLOCAL,	"AllowNonLocalModInDev",	OPTV_BOOLEAN,
 	{0}, FALSE },
   { FLAG_ALLOWMOUSEOPENFAIL,	"AllowMouseOpenFail",		OPTV_BOOLEAN,
-	{0}, FALSE },
-  { FLAG_VTINIT,		"VTInit",			OPTV_STRING,
 	{0}, FALSE },
   { FLAG_VTSYSREQ,		"VTSysReq",			OPTV_BOOLEAN,
 	{0}, FALSE },
@@ -861,11 +842,13 @@ static OptionInfoRec FlagOptions[] = {
         {0}, TRUE },
   { FLAG_AUTO_ENABLE_DEVICES,    "AutoEnableDevices",                   OPTV_BOOLEAN,
         {0}, TRUE },
+  { FLAG_GLX_VISUALS,		"GlxVisuals",			OPTV_STRING,
+        {0}, FALSE },
   { -1,				NULL,				OPTV_NONE,
 	{0}, FALSE },
 };
 
-#if defined(i386) || defined(__i386__)
+#ifdef __i386__
 static Bool
 detectPC98(void)
 {
@@ -892,6 +875,7 @@ configServerFlags(XF86ConfFlagsPtr flagsconf, XF86OptionPtr layoutopts)
     Pix24Flags pix24 = Pix24DontCare;
     Bool value;
     MessageType from;
+    const char *s;
 
     /*
      * Merge the ServerLayout and ServerFlags options.  The former have
@@ -990,8 +974,6 @@ configServerFlags(XF86ConfFlagsPtr flagsconf, XF86OptionPtr layoutopts)
 #endif
     }
 
-    xf86Info.vtinit = xf86GetOptValString(FlagOptions, FLAG_VTINIT);
-
     if (xf86IsOptionSet(FlagOptions, FLAG_PCIPROBE1))
 	xf86Info.pciFlags = PCIProbe1;
     if (xf86IsOptionSet(FlagOptions, FLAG_PCIPROBE2))
@@ -1009,7 +991,6 @@ configServerFlags(XF86ConfFlagsPtr flagsconf, XF86OptionPtr layoutopts)
     if (xf86GetOptValBool(FlagOptions, FLAG_NOPM, &value)) 
 	xf86Info.pmFlag = !value;
     {
-	const char *s;
 	if ((s = xf86GetOptValString(FlagOptions, FLAG_LOG))) {
 	    if (!xf86NameCmp(s,"flush")) {
 		xf86Msg(X_CONFIG, "Flushing logfile enabled\n");
@@ -1028,8 +1009,6 @@ configServerFlags(XF86ConfFlagsPtr flagsconf, XF86OptionPtr layoutopts)
     
 #ifdef RENDER
     {
-	const char *s;
-
 	if ((s = xf86GetOptValString(FlagOptions, FLAG_RENDER_COLORMAP_MODE))){
 	    int policy = PictureParseCmapPolicy (s);
 	    if (policy == PictureCmapPolicyInvalid)
@@ -1043,7 +1022,6 @@ configServerFlags(XF86ConfFlagsPtr flagsconf, XF86OptionPtr layoutopts)
     }
 #endif
     {
-	const char *s;
 	if ((s = xf86GetOptValString(FlagOptions, FLAG_HANDLE_SPECIAL_KEYS))) {
 	    if (!xf86NameCmp(s,"always")) {
 		xf86Msg(X_CONFIG, "Always handling special keys in DDX\n");
@@ -1080,6 +1058,27 @@ configServerFlags(XF86ConfFlagsPtr flagsconf, XF86OptionPtr layoutopts)
 	xf86Info.aiglx = value;
 	xf86Info.aiglxFrom = X_CONFIG;
     }
+
+#ifdef GLXEXT
+    xf86Info.glxVisuals = XF86_GlxVisualsTypical;
+    xf86Info.glxVisualsFrom = X_DEFAULT;
+    if ((s = xf86GetOptValString(FlagOptions, FLAG_GLX_VISUALS))) {
+	if (!xf86NameCmp(s, "minimal")) {
+	    xf86Info.glxVisuals = XF86_GlxVisualsMinimal;
+	} else if (!xf86NameCmp(s, "typical")) {
+	    xf86Info.glxVisuals = XF86_GlxVisualsTypical;
+	} else if (!xf86NameCmp(s, "all")) {
+	    xf86Info.glxVisuals = XF86_GlxVisualsAll;
+	} else {
+	    xf86Msg(X_WARNING,"Unknown HandleSpecialKeys option\n");
+	}
+    }
+
+    if (xf86GetOptValBool(FlagOptions, FLAG_AIGLX, &value)) {
+	xf86Info.aiglx = value;
+	xf86Info.aiglxFrom = X_CONFIG;
+    }
+#endif
 
     xf86Info.allowEmptyInput = FALSE;
     if (xf86GetOptValBool(FlagOptions, FLAG_ALLOW_EMPTY_INPUT, &value))
@@ -1152,7 +1151,7 @@ configServerFlags(XF86ConfFlagsPtr flagsconf, XF86OptionPtr layoutopts)
 	xf86Info.pixmap24 = Pix24DontCare;
 	xf86Info.pix24From = X_DEFAULT;
     }
-#if defined(i386) || defined(__i386__)
+#ifdef __i386__
     if (xf86GetOptValBool(FlagOptions, FLAG_PC98, &value)) {
 	xf86Info.pc98 = value;
 	if (value) {
@@ -1801,11 +1800,6 @@ configImpliedLayout(serverLayoutPtr servlayoutp, XF86ConfScreenPtr conf_screen)
     if (!servlayoutp)
 	return FALSE;
 
-    if (conf_screen == NULL) {
-	xf86ConfigError("No Screen sections present\n");
-	return FALSE;
-    }
-
     /*
      * which screen section is the active one?
      *
@@ -1893,6 +1887,12 @@ configScreen(confScreenPtr screenp, XF86ConfScreenPtr conf_screen, int scrnum,
     XF86ConfAdaptorLinkPtr conf_adaptor;
     Bool defaultMonitor = FALSE;
 
+    if (!conf_screen) {
+        conf_screen = xnfcalloc(1, sizeof(XF86ConfScreenRec));
+        conf_screen->scrn_identifier = "Default Screen Section";
+        xf86Msg(X_DEFAULT, "No screen section available. Using defaults.\n");
+    }
+
     xf86Msg(from, "|-->Screen \"%s\" (%d)\n", conf_screen->scrn_identifier,
 	    scrnum);
     /*
@@ -1927,9 +1927,20 @@ configScreen(confScreenPtr screenp, XF86ConfScreenPtr conf_screen, int scrnum,
 	if (!configMonitor(screenp->monitor,conf_screen->scrn_monitor))
 	    return FALSE;
     }
+    /* Configure the device. If there isn't one configured, attach to the
+     * first inactive one that we can configure. If there's none that work,
+     * set it to NULL so that the section can be autoconfigured later */
     screenp->device     = xnfcalloc(1, sizeof(GDevRec));
-    configDevice(screenp->device,conf_screen->scrn_device, TRUE);
-    screenp->device->myScreenSection = screenp;
+    if ((!conf_screen->scrn_device) && (xf86configptr->conf_device_lst)) {
+        conf_screen->scrn_device = xf86configptr->conf_device_lst;
+	xf86Msg(X_DEFAULT, "No device specified for screen \"%s\".\n"
+		"\tUsing the first device section listed.\n", screenp->id);
+    }
+    if (configDevice(screenp->device,conf_screen->scrn_device, TRUE)) {
+        screenp->device->myScreenSection = screenp;
+    } else {
+        screenp->device = NULL;
+    }
     screenp->options = conf_screen->scrn_option_lst;
     
     /*
@@ -1942,6 +1953,18 @@ configScreen(confScreenPtr screenp, XF86ConfScreenPtr conf_screen, int scrnum,
     }
     screenp->displays   = xnfalloc((count) * sizeof(DispRec));
     screenp->numdisplays = count;
+    
+    /* Fill in the default Virtual size, if any */
+    if (conf_screen->scrn_virtualX && conf_screen->scrn_virtualY) {
+	for (count = 0, dispptr = conf_screen->scrn_display_lst;
+	     dispptr;
+	     dispptr = (XF86ConfDisplayPtr)dispptr->list.next, count++) {
+	    screenp->displays[count].virtualX = conf_screen->scrn_virtualX;
+	    screenp->displays[count].virtualY = conf_screen->scrn_virtualY;
+	}
+    }
+
+    /* Now do the per-Display Virtual sizes */
     count = 0;
     dispptr = conf_screen->scrn_display_lst;
     while(dispptr) {
@@ -2065,8 +2088,7 @@ configMonitor(MonPtr monitorp, XF86ConfMonitorPtr conf_monitor)
      */
     cmodep = conf_monitor->mon_modeline_lst;
     while( cmodep ) {
-        mode = xnfalloc(sizeof(DisplayModeRec));
-        memset(mode,'\0',sizeof(DisplayModeRec));
+        mode = xnfcalloc(1, sizeof(DisplayModeRec));
 	mode->type       = 0;
         mode->Clock      = cmodep->ml_clock;
         mode->HDisplay   = cmodep->ml_hdisplay;
@@ -2218,13 +2240,17 @@ configDevice(GDevPtr devicep, XF86ConfDevicePtr conf_device, Bool active)
 {
     int i;
 
+    if (!conf_device) {
+        return FALSE;
+    }
+
     if (active)
 	xf86Msg(X_CONFIG, "|   |-->Device \"%s\"\n",
 		conf_device->dev_identifier);
     else
 	xf86Msg(X_CONFIG, "|-->Inactive Device \"%s\"\n",
 		conf_device->dev_identifier);
-	
+
     devicep->identifier = conf_device->dev_identifier;
     devicep->vendor = conf_device->dev_vendor;
     devicep->board = conf_device->dev_board;
@@ -2399,10 +2425,7 @@ addDefaultModes(MonPtr monitorp)
 	if ( ! modeIsPresent(xf86DefaultModes[i].name,monitorp) )
 	    do
 	    {
-		mode = xnfalloc(sizeof(DisplayModeRec));
-		memcpy(mode,&xf86DefaultModes[i],sizeof(DisplayModeRec));
-		if (xf86DefaultModes[i].name)
-		    mode->name = xnfstrdup(xf86DefaultModes[i].name);
+		mode = xf86DuplicateMode(&xf86DefaultModes[i]);
 		if( last ) {
 		    mode->prev = last;
 		    last->next = mode;
@@ -2530,8 +2553,9 @@ xf86HandleConfigFile(Bool autoconfig)
            xf86Msg(X_WARNING, "Bus types other than PCI not yet isolable.\n"
                               "\tIgnoring IsolateDevice option.\n");
        } else if (sscanf(scanptr, "PCI:%d:%d:%d", &bus, &device, &func) == 3) {
-           xf86IsolateDevice.bus = bus;
-           xf86IsolateDevice.device = device;
+           xf86IsolateDevice.domain = PCI_DOM_FROM_BUS(bus);
+           xf86IsolateDevice.bus = PCI_BUS_NO_DOMAIN(bus);
+           xf86IsolateDevice.dev = device;
            xf86IsolateDevice.func = func;
            xf86Msg(X_INFO,
                    "Isolating PCI bus \"%d:%d:%d\"\n", bus, device, func);

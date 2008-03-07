@@ -92,14 +92,14 @@ static Bool
 compRepaintBorder (ClientPtr pClient, pointer closure)
 {
     WindowPtr pWindow;
-    int rc = dixLookupWindow(&pWindow, (XID)closure, pClient,DixUnknownAccess);
+    int rc = dixLookupWindow(&pWindow, (XID)closure, pClient, DixWriteAccess);
 
     if (rc == Success) {
 	RegionRec exposed;
 
 	REGION_NULL(pScreen, &exposed);
 	REGION_SUBTRACT(pScreen, &exposed, &pWindow->borderClip, &pWindow->winSize);
-	(*pWindow->drawable.pScreen->PaintWindowBorder)(pWindow, &exposed, PW_BORDER);
+	miPaintWindow(pWindow, &exposed, PW_BORDER);
 	REGION_UNINIT(pScreen, &exposed);
     }
     return TRUE;
@@ -165,6 +165,29 @@ compCheckRedirect (WindowPtr pWin)
     return TRUE;
 }
 
+static int
+updateOverlayWindow(ScreenPtr pScreen)
+{
+	CompScreenPtr cs;
+	WindowPtr pWin; /* overlay window */
+	XID vlist[2];
+
+	cs = GetCompScreen(pScreen);
+	if ((pWin = cs->pOverlayWin) != NULL) {
+		if ((pWin->drawable.width == pScreen->width) &&
+			(pWin->drawable.height == pScreen->height))
+			return Success;
+
+		/* Let's resize the overlay window. */
+		vlist[0] = pScreen->width;
+		vlist[1] = pScreen->height;
+		return ConfigureWindow(pWin, CWWidth | CWHeight, vlist, wClient(pWin));
+	}
+
+	/* Let's be on the safe side and not assume an overlay window is always allocated. */
+	return Success;
+}
+
 Bool
 compPositionWindow (WindowPtr pWin, int x, int y)
 {
@@ -203,6 +226,8 @@ compPositionWindow (WindowPtr pWin, int x, int y)
     cs->PositionWindow = pScreen->PositionWindow;
     pScreen->PositionWindow = compPositionWindow;
     compCheckTree (pWin->drawable.pScreen);
+    if (updateOverlayWindow(pScreen) != Success)
+	ret = FALSE;
     return ret;
 }
 
@@ -238,21 +263,6 @@ compUnrealizeWindow (WindowPtr pWin)
     pScreen->UnrealizeWindow = compUnrealizeWindow;
     compCheckTree (pWin->drawable.pScreen);
     return ret;
-}
-
-void
-compPaintWindowBackground (WindowPtr pWin, RegionPtr pRegion, int what)
-{
-    ScreenPtr		pScreen = pWin->drawable.pScreen;
-    CompSubwindowsPtr	csw = GetCompSubwindows (pWin);
-    CompScreenPtr	cs = GetCompScreen (pScreen);
-    
-    if (csw && csw->update == CompositeRedirectManual)
-	return;
-    pScreen->PaintWindowBackground = cs->PaintWindowBackground;
-    (*pScreen->PaintWindowBackground) (pWin, pRegion, what);
-    cs->PaintWindowBackground = pScreen->PaintWindowBackground;
-    pScreen->PaintWindowBackground = compPaintWindowBackground;
 }
 
 /*

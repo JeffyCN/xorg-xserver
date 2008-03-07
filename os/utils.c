@@ -123,9 +123,6 @@ OR PERFORMANCE OF THIS SOFTWARE.
 #ifdef XKB
 #include <xkbsrv.h>
 #endif
-#ifdef XCSECURITY
-#include "securitysrv.h"
-#endif
 
 #ifdef RENDER
 #include "picture.h"
@@ -160,6 +157,7 @@ _X_EXPORT Bool noFontCacheExtension = FALSE;
 #endif
 #ifdef GLXEXT
 _X_EXPORT Bool noGlxExtension = FALSE;
+_X_EXPORT Bool noGlxVisualInit = FALSE;
 #endif
 #ifdef SCREENSAVER
 _X_EXPORT Bool noScreenSaverExtension = FALSE;
@@ -285,7 +283,8 @@ OsSignal(sig, handler)
 	sigaddset(&act.sa_mask, sig);
     act.sa_flags = 0;
     act.sa_handler = handler;
-    sigaction(sig, &act, &oact);
+    if (sigaction(sig, &act, &oact))
+      perror("sigaction");
     return oact.sa_handler;
 #endif
 }
@@ -575,7 +574,6 @@ void UseMsg(void)
     ErrorF("-c                     turns off key-click\n");
     ErrorF("c #                    key-click volume (0-100)\n");
     ErrorF("-cc int                default color visual class\n");
-    ErrorF("-co file               color database file\n");
 #ifdef COMMANDLINE_CHALLENGED_OPERATING_SYSTEMS
     ErrorF("-config file           read options from file\n");
 #endif
@@ -620,9 +618,6 @@ void UseMsg(void)
     ErrorF("-render [default|mono|gray|color] set render color alloc policy\n");
 #endif
     ErrorF("-s #                   screen-saver timeout (minutes)\n");
-#ifdef XCSECURITY
-    ErrorF("-sp file               security policy file\n");
-#endif
 #ifdef XPRINT
     PrinterUseMsg();
 #endif
@@ -781,13 +776,6 @@ ProcessCommandLine(int argc, char *argv[])
 	    else
 		UseMsg();
 	}
-	else if ( strcmp( argv[i], "-co") == 0)
-	{
-	    if(++i < argc)
-	        rgbPath = argv[i];
-	    else
-		UseMsg();
-	}
 	else if ( strcmp( argv[i], "-core") == 0)
 	{
 	    CoreDump = TRUE;
@@ -939,6 +927,10 @@ ProcessCommandLine(int argc, char *argv[])
 	    else
 		UseMsg();
 	}
+	else if (strcmp(argv[i], "-pogo") == 0)
+	{
+	    dispatchException = DE_TERMINATE;
+	}
 	else if ( strcmp( argv[i], "-pn") == 0)
 	    PartialNetwork = TRUE;
 	else if ( strcmp( argv[i], "-nopn") == 0)
@@ -1042,12 +1034,6 @@ ProcessCommandLine(int argc, char *argv[])
 #endif
 #ifdef XPRINT
 	else if ((skip = PrinterOptions(argc, argv, i)) != i)
-	{
-	    i = skip - 1;
-	}
-#endif
-#ifdef XCSECURITY
-	else if ((skip = XSecurityOptions(argc, argv, i)) != i)
 	{
 	    i = skip - 1;
 	}
@@ -1511,10 +1497,6 @@ XNFstrdup(const char *s)
 
 #ifdef SMART_SCHEDULE
 
-unsigned long	SmartScheduleIdleCount;
-Bool		SmartScheduleIdle;
-Bool		SmartScheduleTimerStopped;
-
 #ifdef SIGVTALRM
 #define SMART_SCHEDULE_POSSIBLE
 #endif
@@ -1524,49 +1506,43 @@ Bool		SmartScheduleTimerStopped;
 #define SMART_SCHEDULE_TIMER		ITIMER_REAL
 #endif
 
-static void
+void
 SmartScheduleStopTimer (void)
 {
 #ifdef SMART_SCHEDULE_POSSIBLE
     struct itimerval	timer;
     
+    if (SmartScheduleDisable)
+	return;
     timer.it_interval.tv_sec = 0;
     timer.it_interval.tv_usec = 0;
     timer.it_value.tv_sec = 0;
     timer.it_value.tv_usec = 0;
     (void) setitimer (ITIMER_REAL, &timer, 0);
-    SmartScheduleTimerStopped = TRUE;
 #endif
 }
 
-Bool
+void
 SmartScheduleStartTimer (void)
 {
 #ifdef SMART_SCHEDULE_POSSIBLE
     struct itimerval	timer;
     
-    SmartScheduleTimerStopped = FALSE;
+    if (SmartScheduleDisable)
+	return;
     timer.it_interval.tv_sec = 0;
     timer.it_interval.tv_usec = SmartScheduleInterval * 1000;
     timer.it_value.tv_sec = 0;
     timer.it_value.tv_usec = SmartScheduleInterval * 1000;
-    return setitimer (ITIMER_REAL, &timer, 0) >= 0;
+    setitimer (ITIMER_REAL, &timer, 0);
 #endif
-    return FALSE;
 }
 
 #ifdef SMART_SCHEDULE_POSSIBLE
 static void
 SmartScheduleTimer (int sig)
 {
-    int olderrno = errno;
-
     SmartScheduleTime += SmartScheduleInterval;
-    if (SmartScheduleIdle)
-    {
-	SmartScheduleStopTimer ();
-    }
-    errno = olderrno;
 }
 #endif
 
@@ -1590,14 +1566,6 @@ SmartScheduleInit (void)
 	perror ("sigaction for smart scheduler");
 	return FALSE;
     }
-    /* Set up the virtual timer */
-    if (!SmartScheduleStartTimer ())
-    {
-	perror ("scheduling timer");
-	return FALSE;
-    }
-    /* stop the timer and wait for WaitForSomething to start it */
-    SmartScheduleStopTimer ();
     return TRUE;
 #else
     return FALSE;
@@ -1684,6 +1652,10 @@ System(char *command)
 
 #ifdef SIGCHLD
     csig = signal(SIGCHLD, SIG_DFL);
+    if (csig == SIG_ERR) {
+      perror("signal");
+      return -1;
+    }
 #endif
 
 #ifdef DEBUG
@@ -1708,7 +1680,10 @@ System(char *command)
     }
 
 #ifdef SIGCHLD
-    signal(SIGCHLD, csig);
+    if (signal(SIGCHLD, csig) == SIG_ERR) {
+      perror("signal");
+      return -1;
+    }
 #endif
 
     return p == -1 ? -1 : status;
@@ -1719,6 +1694,8 @@ static struct pid {
     FILE *fp;
     int pid;
 } *pidlist;
+
+void (*old_alarm)(int) = NULL; /* XXX horrible awful hack */
 
 pointer
 Popen(char *command, char *type)
@@ -1741,11 +1718,20 @@ Popen(char *command, char *type)
 	return NULL;
     }
 
+    /* Ignore the smart scheduler while this is going on */
+    old_alarm = signal(SIGALRM, SIG_IGN);
+    if (old_alarm == SIG_ERR) {
+      perror("signal");
+      return NULL;
+    }
+
     switch (pid = fork()) {
     case -1: 	/* error */
 	close(pdes[0]);
 	close(pdes[1]);
 	xfree(cur);
+	if (signal(SIGALRM, old_alarm) == SIG_ERR)
+	  perror("signal");
 	return NULL;
     case 0:	/* child */
 	if (setgid(getgid()) == -1)
@@ -1921,6 +1907,11 @@ Pclose(pointer iop)
     /* allow EINTR again */
     OsReleaseSignals ();
     
+    if (old_alarm && signal(SIGALRM, old_alarm) == SIG_ERR) {
+      perror("signal");
+      return -1;
+    }
+
     return pid == -1 ? -1 : pstat;
 }
 
@@ -2011,18 +2002,6 @@ enum BadCode {
 #define BUGADDRESS "xorg@freedesktop.org"
 #endif
 
-#define ARGMSG \
-    "\nIf the arguments used are valid, and have been rejected incorrectly\n" \
-      "please send details of the arguments and why they are valid to\n" \
-      "%s.  In the meantime, you can start the Xserver as\n" \
-      "the \"super user\" (root).\n"   
-
-#define ENVMSG \
-    "\nIf the environment is valid, and have been rejected incorrectly\n" \
-      "please send details of the environment and why it is valid to\n" \
-      "%s.  In the meantime, you can start the Xserver as\n" \
-      "the \"super user\" (root).\n"
-
 void
 CheckUserParameters(int argc, char **argv, char **envp)
 {
@@ -2069,10 +2048,6 @@ CheckUserParameters(int argc, char **argv, char **envp)
 		/* Check for bad environment variables and values */
 #if REMOVE_ENV_LD
 		while (envp[i] && (strncmp(envp[i], "LD", 2) == 0)) {
-#ifdef ENVDEBUG
-		    ErrorF("CheckUserParameters: removing %s from the "
-			   "environment\n", strtok(envp[i], "="));
-#endif
 		    for (j = i; envp[j]; j++) {
 			envp[j] = envp[j+1];
 		    }
@@ -2080,10 +2055,6 @@ CheckUserParameters(int argc, char **argv, char **envp)
 #endif   
 		if (envp[i] && (strlen(envp[i]) > MAX_ENV_LENGTH)) {
 #if REMOVE_LONG_ENV
-#ifdef ENVDEBUG
-		    ErrorF("CheckUserParameters: removing %s from the "
-			   "environment\n", strtok(envp[i], "="));
-#endif
 		    for (j = i; envp[j]; j++) {
 			envp[j] = envp[j+1];
 		    }
@@ -2136,20 +2107,16 @@ CheckUserParameters(int argc, char **argv, char **envp)
 	return;
     case UnsafeArg:
 	ErrorF("Command line argument number %d is unsafe\n", i);
-	ErrorF(ARGMSG, BUGADDRESS);
 	break;
     case ArgTooLong:
 	ErrorF("Command line argument number %d is too long\n", i);
-	ErrorF(ARGMSG, BUGADDRESS);
 	break;
     case UnprintableArg:
 	ErrorF("Command line argument number %d contains unprintable"
 		" characters\n", i);
-	ErrorF(ARGMSG, BUGADDRESS);
 	break;
     case EnvTooLong:
 	ErrorF("Environment variable `%s' is too long\n", e);
-	ErrorF(ENVMSG, BUGADDRESS);
 	break;
     case OutputIsPipe:
 	ErrorF("Stdout and/or stderr is a pipe\n");
@@ -2159,8 +2126,6 @@ CheckUserParameters(int argc, char **argv, char **envp)
 	break;
     default:
 	ErrorF("Unknown error\n");
-	ErrorF(ARGMSG, BUGADDRESS);
-	ErrorF(ENVMSG, BUGADDRESS);
 	break;
     }
     FatalError("X server aborted because of unsafe environment\n");
