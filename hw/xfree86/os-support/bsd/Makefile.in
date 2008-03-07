@@ -51,9 +51,8 @@ CONFIG_HEADER = $(top_builddir)/include/do-not-use-config.h \
 CONFIG_CLEAN_FILES =
 LTLIBRARIES = $(noinst_LTLIBRARIES)
 libbsd_la_LIBADD =
-am__libbsd_la_SOURCES_DIST = $(srcdir)/../shared/libc_wrapper.c \
-	$(srcdir)/../shared/posix_tty.c $(srcdir)/../shared/sigio.c \
-	$(srcdir)/../shared/stdPci.c $(srcdir)/../shared/vidmem.c \
+am__libbsd_la_SOURCES_DIST = $(srcdir)/../shared/posix_tty.c \
+	$(srcdir)/../shared/sigio.c $(srcdir)/../shared/vidmem.c \
 	bsd_VTsw.c bsd_init.c bsd_mouse.c bsd_bell.c alpha_video.c \
 	bsd_ev56.c bsd_axp.c $(srcdir)/../shared/xf86Axp.c arm_video.c \
 	i386_video.c ppc_video.c sparc64_video.c \
@@ -74,10 +73,10 @@ am__objects_3 = pm_noop.lo
 @FREEBSD_KLDLOAD_FALSE@am__objects_4 = kmod_noop.lo
 @FREEBSD_KLDLOAD_TRUE@am__objects_4 = bsd_kmod.lo
 am__objects_5 = stdResource.lo
-am_libbsd_la_OBJECTS = libc_wrapper.lo posix_tty.lo sigio.lo stdPci.lo \
-	vidmem.lo bsd_VTsw.lo bsd_init.lo bsd_mouse.lo bsd_bell.lo \
-	$(am__objects_1) $(am__objects_2) $(am__objects_3) \
-	$(am__objects_4) $(am__objects_5)
+am_libbsd_la_OBJECTS = posix_tty.lo sigio.lo vidmem.lo bsd_VTsw.lo \
+	bsd_init.lo bsd_mouse.lo bsd_bell.lo $(am__objects_1) \
+	$(am__objects_2) $(am__objects_3) $(am__objects_4) \
+	$(am__objects_5)
 libbsd_la_OBJECTS = $(am_libbsd_la_OBJECTS)
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)/include
 depcomp = $(SHELL) $(top_srcdir)/depcomp
@@ -185,6 +184,7 @@ KDRIVE_LIBS = @KDRIVE_LIBS@
 KDRIVE_LOCAL_LIBS = @KDRIVE_LOCAL_LIBS@
 KDRIVE_PURE_INCS = @KDRIVE_PURE_INCS@
 KDRIVE_PURE_LIBS = @KDRIVE_PURE_LIBS@
+LAUNCHD = @LAUNCHD@
 LDFLAGS = @LDFLAGS@
 LD_EXPORT_SYMBOLS_FLAG = @LD_EXPORT_SYMBOLS_FLAG@
 LEX = @LEX@
@@ -220,6 +220,8 @@ OBJCFLAGS = @OBJCFLAGS@
 OBJCLINK = @OBJCLINK@
 OBJDUMP = @OBJDUMP@
 OBJEXT = @OBJEXT@
+OPENSSL_CFLAGS = @OPENSSL_CFLAGS@
+OPENSSL_LIBS = @OPENSSL_LIBS@
 PACKAGE = @PACKAGE@
 PACKAGE_BUGREPORT = @PACKAGE_BUGREPORT@
 PACKAGE_NAME = @PACKAGE_NAME@
@@ -227,47 +229,48 @@ PACKAGE_STRING = @PACKAGE_STRING@
 PACKAGE_TARNAME = @PACKAGE_TARNAME@
 PACKAGE_VERSION = @PACKAGE_VERSION@
 PATH_SEPARATOR = @PATH_SEPARATOR@
+PCIACCESS_CFLAGS = @PCIACCESS_CFLAGS@
+PCIACCESS_LIBS = @PCIACCESS_LIBS@
+PCI_TXT_IDS_PATH = @PCI_TXT_IDS_PATH@
 PERL = @PERL@
-PIXMAN_CFLAGS = @PIXMAN_CFLAGS@
-PIXMAN_LIBS = @PIXMAN_LIBS@
 PKG_CONFIG = @PKG_CONFIG@
-PLIST_VENDOR_WEB = @PLIST_VENDOR_WEB@
-PLIST_VERSION_STRING = @PLIST_VERSION_STRING@
 PROJECTROOT = @PROJECTROOT@
 PS2PDF = @PS2PDF@
 RANLIB = @RANLIB@
 RAWCPP = @RAWCPP@
 RAWCPPFLAGS = @RAWCPPFLAGS@
-RGB_DB = @RGB_DB@
 SED = @SED@
-SERVERCONFIGdir = @SERVERCONFIGdir@
+SERVER_MISC_CONFIG_PATH = @SERVER_MISC_CONFIG_PATH@
 SET_MAKE = @SET_MAKE@
 SHELL = @SHELL@
 SOLARIS_ASM_CFLAGS = @SOLARIS_ASM_CFLAGS@
 SOLARIS_INOUT_ARCH = @SOLARIS_INOUT_ARCH@
 STRIP = @STRIP@
-SYS_LIBS = @SYS_LIBS@
 TSLIB_CFLAGS = @TSLIB_CFLAGS@
 TSLIB_LIBS = @TSLIB_LIBS@
+UTILS_SYS_LIBS = @UTILS_SYS_LIBS@
 VENDOR_MAN_VERSION = @VENDOR_MAN_VERSION@
 VENDOR_NAME = @VENDOR_NAME@
 VENDOR_NAME_SHORT = @VENDOR_NAME_SHORT@
 VENDOR_RELEASE = @VENDOR_RELEASE@
 VERSION = @VERSION@
+X11APP_ARCHS = @X11APP_ARCHS@
 X11EXAMPLES_DEP_CFLAGS = @X11EXAMPLES_DEP_CFLAGS@
 X11EXAMPLES_DEP_LIBS = @X11EXAMPLES_DEP_LIBS@
 XDMCP_CFLAGS = @XDMCP_CFLAGS@
 XDMCP_LIBS = @XDMCP_LIBS@
 XDMXCONFIG_DEP_CFLAGS = @XDMXCONFIG_DEP_CFLAGS@
 XDMXCONFIG_DEP_LIBS = @XDMXCONFIG_DEP_LIBS@
+XDMX_CFLAGS = @XDMX_CFLAGS@
 XDMX_LIBS = @XDMX_LIBS@
+XDMX_SYS_LIBS = @XDMX_SYS_LIBS@
 XEGLMODULES_CFLAGS = @XEGLMODULES_CFLAGS@
-XEGLMODULES_LIBS = @XEGLMODULES_LIBS@
 XEGL_LIBS = @XEGL_LIBS@
+XEGL_SYS_LIBS = @XEGL_SYS_LIBS@
 XEPHYR_CFLAGS = @XEPHYR_CFLAGS@
+XEPHYR_DRI_LIBS = @XEPHYR_DRI_LIBS@
 XEPHYR_INCS = @XEPHYR_INCS@
 XEPHYR_LIBS = @XEPHYR_LIBS@
-XERRORDB_PATH = @XERRORDB_PATH@
 XF86CONFIGFILE = @XF86CONFIGFILE@
 XF86MISC_CFLAGS = @XF86MISC_CFLAGS@
 XF86MISC_LIBS = @XF86MISC_LIBS@
@@ -278,8 +281,10 @@ XGLMODULES_LIBS = @XGLMODULES_LIBS@
 XGLXMODULES_CFLAGS = @XGLXMODULES_CFLAGS@
 XGLXMODULES_LIBS = @XGLXMODULES_LIBS@
 XGLX_LIBS = @XGLX_LIBS@
+XGLX_SYS_LIBS = @XGLX_SYS_LIBS@
 XGL_LIBS = @XGL_LIBS@
 XGL_MODULE_PATH = @XGL_MODULE_PATH@
+XGL_SYS_LIBS = @XGL_SYS_LIBS@
 XKB_BASE_DIRECTORY = @XKB_BASE_DIRECTORY@
 XKB_BIN_DIRECTORY = @XKB_BIN_DIRECTORY@
 XKB_COMPILED_DIR = @XKB_COMPILED_DIR@
@@ -289,18 +294,19 @@ XLIB_LIBS = @XLIB_LIBS@
 XNESTMODULES_CFLAGS = @XNESTMODULES_CFLAGS@
 XNESTMODULES_LIBS = @XNESTMODULES_LIBS@
 XNEST_LIBS = @XNEST_LIBS@
+XNEST_SYS_LIBS = @XNEST_SYS_LIBS@
 XORGCFG_DEP_CFLAGS = @XORGCFG_DEP_CFLAGS@
 XORGCFG_DEP_LIBS = @XORGCFG_DEP_LIBS@
 XORGCONFIG_DEP_CFLAGS = @XORGCONFIG_DEP_CFLAGS@
 XORGCONFIG_DEP_LIBS = @XORGCONFIG_DEP_LIBS@
 XORG_CFLAGS = @XORG_CFLAGS@
-XORG_CORE_LIBS = @XORG_CORE_LIBS@
 XORG_INCS = @XORG_INCS@
 XORG_LIBS = @XORG_LIBS@
 XORG_MODULES_CFLAGS = @XORG_MODULES_CFLAGS@
 XORG_MODULES_LIBS = @XORG_MODULES_LIBS@
 XORG_OS = @XORG_OS@
 XORG_OS_SUBDIR = @XORG_OS_SUBDIR@
+XORG_SYS_LIBS = @XORG_SYS_LIBS@
 XPRINTMODULES_CFLAGS = @XPRINTMODULES_CFLAGS@
 XPRINTMODULES_LIBS = @XPRINTMODULES_LIBS@
 XPRINTPROTO_CFLAGS = @XPRINTPROTO_CFLAGS@
@@ -317,14 +323,16 @@ XSERVERCFLAGS_LIBS = @XSERVERCFLAGS_LIBS@
 XSERVERLIBS_CFLAGS = @XSERVERLIBS_CFLAGS@
 XSERVERLIBS_LIBS = @XSERVERLIBS_LIBS@
 XSERVER_LIBS = @XSERVER_LIBS@
+XSERVER_SYS_LIBS = @XSERVER_SYS_LIBS@
 XTSTEXAMPLES_DEP_CFLAGS = @XTSTEXAMPLES_DEP_CFLAGS@
 XTSTEXAMPLES_DEP_LIBS = @XTSTEXAMPLES_DEP_LIBS@
 XVFB_LIBS = @XVFB_LIBS@
+XVFB_SYS_LIBS = @XVFB_SYS_LIBS@
 XWINMODULES_CFLAGS = @XWINMODULES_CFLAGS@
 XWINMODULES_LIBS = @XWINMODULES_LIBS@
 XWIN_LIBS = @XWIN_LIBS@
 XWIN_SERVER_NAME = @XWIN_SERVER_NAME@
-XWIN_SYSTEM_LIBS = @XWIN_SYSTEM_LIBS@
+XWIN_SYS_LIBS = @XWIN_SYS_LIBS@
 YACC = @YACC@
 YFLAGS = @YFLAGS@
 __XCONFIGFILE__ = @__XCONFIGFILE__@
@@ -364,6 +372,7 @@ htmldir = @htmldir@
 includedir = @includedir@
 infodir = @infodir@
 install_sh = @install_sh@
+launchagentsdir = @launchagentsdir@
 libdir = @libdir@
 libexecdir = @libexecdir@
 localedir = @localedir@
@@ -422,10 +431,8 @@ RES_SOURCES = $(srcdir)/../shared/stdResource.c
 AM_CFLAGS = -DUSESTDRES $(XORG_CFLAGS) $(DIX_CFLAGS)
 INCLUDES = $(XORG_INCS)
 libbsd_la_SOURCES = \
-	$(srcdir)/../shared/libc_wrapper.c \
 	$(srcdir)/../shared/posix_tty.c \
 	$(srcdir)/../shared/sigio.c \
-	$(srcdir)/../shared/stdPci.c \
 	$(srcdir)/../shared/vidmem.c \
 	bsd_VTsw.c \
 	bsd_init.c \
@@ -520,14 +527,12 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/i386_video.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ioperm_noop.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/kmod_noop.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libc_wrapper.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/lnx_agp.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pm_noop.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/posix_tty.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ppc_video.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sigio.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sparc64_video.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/stdPci.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/stdResource.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/vidmem.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xf86Axp.Plo@am__quote@
@@ -553,13 +558,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LTCOMPILE) -c -o $@ $<
 
-libc_wrapper.lo: $(srcdir)/../shared/libc_wrapper.c
-@am__fastdepCC_TRUE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT libc_wrapper.lo -MD -MP -MF $(DEPDIR)/libc_wrapper.Tpo -c -o libc_wrapper.lo `test -f '$(srcdir)/../shared/libc_wrapper.c' || echo '$(srcdir)/'`$(srcdir)/../shared/libc_wrapper.c
-@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/libc_wrapper.Tpo $(DEPDIR)/libc_wrapper.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$(srcdir)/../shared/libc_wrapper.c' object='libc_wrapper.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o libc_wrapper.lo `test -f '$(srcdir)/../shared/libc_wrapper.c' || echo '$(srcdir)/'`$(srcdir)/../shared/libc_wrapper.c
-
 posix_tty.lo: $(srcdir)/../shared/posix_tty.c
 @am__fastdepCC_TRUE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT posix_tty.lo -MD -MP -MF $(DEPDIR)/posix_tty.Tpo -c -o posix_tty.lo `test -f '$(srcdir)/../shared/posix_tty.c' || echo '$(srcdir)/'`$(srcdir)/../shared/posix_tty.c
 @am__fastdepCC_TRUE@	mv -f $(DEPDIR)/posix_tty.Tpo $(DEPDIR)/posix_tty.Plo
@@ -573,13 +571,6 @@ sigio.lo: $(srcdir)/../shared/sigio.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$(srcdir)/../shared/sigio.c' object='sigio.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o sigio.lo `test -f '$(srcdir)/../shared/sigio.c' || echo '$(srcdir)/'`$(srcdir)/../shared/sigio.c
-
-stdPci.lo: $(srcdir)/../shared/stdPci.c
-@am__fastdepCC_TRUE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT stdPci.lo -MD -MP -MF $(DEPDIR)/stdPci.Tpo -c -o stdPci.lo `test -f '$(srcdir)/../shared/stdPci.c' || echo '$(srcdir)/'`$(srcdir)/../shared/stdPci.c
-@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/stdPci.Tpo $(DEPDIR)/stdPci.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$(srcdir)/../shared/stdPci.c' object='stdPci.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o stdPci.lo `test -f '$(srcdir)/../shared/stdPci.c' || echo '$(srcdir)/'`$(srcdir)/../shared/stdPci.c
 
 vidmem.lo: $(srcdir)/../shared/vidmem.c
 @am__fastdepCC_TRUE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT vidmem.lo -MD -MP -MF $(DEPDIR)/vidmem.Tpo -c -o vidmem.lo `test -f '$(srcdir)/../shared/vidmem.c' || echo '$(srcdir)/'`$(srcdir)/../shared/vidmem.c
