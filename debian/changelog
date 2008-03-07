@@ -29,6 +29,7 @@ xorg-server (2:1.4.99.901-1) UNRELEASED; urgency=low
   * Drop XS- prefix from Vcs-* debian/control fields.
   * Bump videoabiver and inputabiver to 2.9, serverminver to 2:1.4.99.901.
   * Drop obsolete --with-rgb-path configure option.
+  * /etc/X11/xserver/SecurityPolicy is gone, don't install it.
 
  -- Julien Cristau <jcristau@debian.org>  Fri, 07 Mar 2008 20:46:15 +0100
 
