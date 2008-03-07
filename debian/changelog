@@ -27,7 +27,7 @@ xorg-server (2:1.4.99.901-1) UNRELEASED; urgency=low
     on libpixman-1-dev to >= 0.9.5.
   * Add build-dep on libxv-dev for Xephyr.
   * Drop XS- prefix from Vcs-* debian/control fields.
-  * Bump videoabiver and inputabiver to 2.9, serverminver to 2:1.4.99.901.
+  * Bump videoabiver to 2.9, serverminver to 2:1.4.99.901.
   * Drop obsolete --with-rgb-path configure option.
   * /etc/X11/xserver/SecurityPolicy is gone, don't install it.
 

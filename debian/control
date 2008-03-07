@@ -46,7 +46,7 @@ Suggests: xfonts-100dpi | xfonts-75dpi, xfonts-scalable
 Conflicts: xserver-xorg (<< 6.8.2-38), xserver-xfree86 (<< 1:7.0.0),
  xserver-xorg-video, xserver-common, xserver-xorg-video-1.0, xserver-xorg-input,
  xserver-xorg-video-1.9, xserver-xorg-input-wacom (<< 0.7.8),
- xserver-xorg-video-2, xserver-xorg-input-2
+ xserver-xorg-video-2
 Replaces: xserver-xorg (<< 6.8.2-38), xserver-xfree86 (<< 1:7.0.0),
  xserver-common
 Provides: xserver
