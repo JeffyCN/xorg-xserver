@@ -35,7 +35,7 @@ endif
 	build_xfbdev = --disable-xfbdev
 #endif
 
-BUILD_XPRINT = false
+BUILD_XPRINT = true
 ifeq ($(BUILD_XPRINT), true)
 	confflags += --enable-xprint
 else
