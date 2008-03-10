@@ -54,6 +54,33 @@ CONFIG_HEADER = $(top_builddir)/include/do-not-use-config.h \
 	$(top_builddir)/include/kdrive-config.h
 CONFIG_CLEAN_FILES =
 LTLIBRARIES = $(noinst_LTLIBRARIES)
+libXpdix_la_LIBADD =
+am__libXpdix_la_SOURCES_DIST = atom.c colormap.c cursor.c deprecated.c \
+	devices.c dispatch.c dispatch.h dixfonts.c dixutils.c events.c \
+	extension.c ffs.c gc.c getevents.c globals.c glyphcurs.c \
+	grabs.c initatoms.c main.c pixmap.c privates.c property.c \
+	registry.c resource.c selection.c swaprep.c swapreq.c tables.c \
+	window.c strcasecmp.c
+am__objects_1 = libXpdix_la-atom.lo libXpdix_la-colormap.lo \
+	libXpdix_la-cursor.lo libXpdix_la-deprecated.lo \
+	libXpdix_la-devices.lo libXpdix_la-dispatch.lo \
+	libXpdix_la-dixfonts.lo libXpdix_la-dixutils.lo \
+	libXpdix_la-events.lo libXpdix_la-extension.lo \
+	libXpdix_la-ffs.lo libXpdix_la-gc.lo libXpdix_la-getevents.lo \
+	libXpdix_la-globals.lo libXpdix_la-glyphcurs.lo \
+	libXpdix_la-grabs.lo libXpdix_la-initatoms.lo \
+	libXpdix_la-main.lo libXpdix_la-pixmap.lo \
+	libXpdix_la-privates.lo libXpdix_la-property.lo \
+	libXpdix_la-registry.lo libXpdix_la-resource.lo \
+	libXpdix_la-selection.lo libXpdix_la-swaprep.lo \
+	libXpdix_la-swapreq.lo libXpdix_la-tables.lo \
+	libXpdix_la-window.lo libXpdix_la-strcasecmp.lo
+@XPRINT_TRUE@am_libXpdix_la_OBJECTS = $(am__objects_1)
+libXpdix_la_OBJECTS = $(am_libXpdix_la_OBJECTS)
+libXpdix_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(libXpdix_la_CFLAGS) \
+	$(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
+@XPRINT_TRUE@am_libXpdix_la_rpath =
 libdix_la_LIBADD =
 am_libdix_la_OBJECTS = atom.lo colormap.lo cursor.lo deprecated.lo \
 	devices.lo dispatch.lo dixfonts.lo dixutils.lo events.lo \
@@ -62,9 +89,13 @@ am_libdix_la_OBJECTS = atom.lo colormap.lo cursor.lo deprecated.lo \
 	property.lo registry.lo resource.lo selection.lo swaprep.lo \
 	swapreq.lo tables.lo window.lo strcasecmp.lo
 libdix_la_OBJECTS = $(am_libdix_la_OBJECTS)
+@XPRINT_FALSE@am_libdix_la_rpath =
+@XPRINT_TRUE@am_libdix_la_rpath =
 libxpstubs_la_LIBADD =
 am_libxpstubs_la_OBJECTS = xpstubs.lo
 libxpstubs_la_OBJECTS = $(am_libxpstubs_la_OBJECTS)
+@XPRINT_FALSE@am_libxpstubs_la_rpath =
+@XPRINT_TRUE@am_libxpstubs_la_rpath =
 PROGRAMS = $(noinst_PROGRAMS)
 dix_O_SOURCES = dix.c
 dix_O_OBJECTS = dix.$(OBJEXT)
@@ -81,8 +112,10 @@ CCLD = $(CC)
 LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
 	--mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) \
 	$(LDFLAGS) -o $@
-SOURCES = $(libdix_la_SOURCES) $(libxpstubs_la_SOURCES) dix.c
-DIST_SOURCES = $(libdix_la_SOURCES) $(libxpstubs_la_SOURCES) dix.c
+SOURCES = $(libXpdix_la_SOURCES) $(libdix_la_SOURCES) \
+	$(libxpstubs_la_SOURCES) dix.c
+DIST_SOURCES = $(am__libXpdix_la_SOURCES_DIST) $(libdix_la_SOURCES) \
+	$(libxpstubs_la_SOURCES) dix.c
 am__vpath_adj_setup = srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`;
 am__vpath_adj = case $$p in \
     $(srcdir)/*) f=`echo "$$p" | sed "s|^$$srcdirstrip/||"`;; \
@@ -396,7 +429,9 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 xglmoduledir = @xglmoduledir@
 xpconfigdir = @xpconfigdir@
-noinst_LTLIBRARIES = libdix.la libxpstubs.la
+standard_dix_libs = libdix.la libxpstubs.la
+@XPRINT_FALSE@noinst_LTLIBRARIES = $(standard_dix_libs)
+@XPRINT_TRUE@noinst_LTLIBRARIES = $(standard_dix_libs) libXpdix.la
 AM_CFLAGS = $(DIX_CFLAGS) \
 	-DVENDOR_NAME=\""@VENDOR_NAME@"\" \
 	-DVENDOR_RELEASE="@VENDOR_RELEASE@"
@@ -436,7 +471,9 @@ libdix_la_SOURCES = \
 libxpstubs_la_SOURCES = \
 	xpstubs.c
 
-INCLUDES = -I$(top_srcdir)/Xprint
+@XPRINT_TRUE@libXpdix_la_SOURCES = $(libdix_la_SOURCES)
+@XPRINT_TRUE@libXpdix_la_CPPFLAGS = -I$(top_srcdir)/hw/xprint
+@XPRINT_TRUE@libXpdix_la_CFLAGS = $(AM_CFLAGS) $(XPRINT_CFLAGS)
 EXTRA_DIST = buildatoms BuiltInAtoms CHANGES Xserver.d Xserver-dtrace.h.in
 
 # Install list of protocol names
@@ -489,10 +526,12 @@ clean-noinstLTLIBRARIES:
 	  echo "rm -f \"$${dir}/so_locations\""; \
 	  rm -f "$${dir}/so_locations"; \
 	done
+libXpdix.la: $(libXpdix_la_OBJECTS) $(libXpdix_la_DEPENDENCIES) 
+	$(libXpdix_la_LINK) $(am_libXpdix_la_rpath) $(libXpdix_la_OBJECTS) $(libXpdix_la_LIBADD) $(LIBS)
 libdix.la: $(libdix_la_OBJECTS) $(libdix_la_DEPENDENCIES) 
-	$(LINK)  $(libdix_la_OBJECTS) $(libdix_la_LIBADD) $(LIBS)
+	$(LINK) $(am_libdix_la_rpath) $(libdix_la_OBJECTS) $(libdix_la_LIBADD) $(LIBS)
 libxpstubs.la: $(libxpstubs_la_OBJECTS) $(libxpstubs_la_DEPENDENCIES) 
-	$(LINK)  $(libxpstubs_la_OBJECTS) $(libxpstubs_la_LIBADD) $(LIBS)
+	$(LINK) $(am_libxpstubs_la_rpath) $(libxpstubs_la_OBJECTS) $(libxpstubs_la_LIBADD) $(LIBS)
 
 clean-noinstPROGRAMS:
 	@list='$(noinst_PROGRAMS)'; for p in $$list; do \
@@ -528,6 +567,35 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/glyphcurs.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/grabs.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/initatoms.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libXpdix_la-atom.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libXpdix_la-colormap.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libXpdix_la-cursor.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libXpdix_la-deprecated.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libXpdix_la-devices.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libXpdix_la-dispatch.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libXpdix_la-dixfonts.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libXpdix_la-dixutils.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libXpdix_la-events.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libXpdix_la-extension.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libXpdix_la-ffs.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libXpdix_la-gc.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libXpdix_la-getevents.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libXpdix_la-globals.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libXpdix_la-glyphcurs.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libXpdix_la-grabs.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libXpdix_la-initatoms.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libXpdix_la-main.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libXpdix_la-pixmap.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libXpdix_la-privates.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libXpdix_la-property.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libXpdix_la-registry.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libXpdix_la-resource.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libXpdix_la-selection.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libXpdix_la-strcasecmp.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libXpdix_la-swaprep.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libXpdix_la-swapreq.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libXpdix_la-tables.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libXpdix_la-window.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/main.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pixmap.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/privates.Plo@am__quote@
@@ -562,6 +630,209 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$<' object='$@' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LTCOMPILE) -c -o $@ $<
+
+libXpdix_la-atom.lo: atom.c
+@am__fastdepCC_TRUE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libXpdix_la_CPPFLAGS) $(CPPFLAGS) $(libXpdix_la_CFLAGS) $(CFLAGS) -MT libXpdix_la-atom.lo -MD -MP -MF $(DEPDIR)/libXpdix_la-atom.Tpo -c -o libXpdix_la-atom.lo `test -f 'atom.c' || echo '$(srcdir)/'`atom.c
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/libXpdix_la-atom.Tpo $(DEPDIR)/libXpdix_la-atom.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='atom.c' object='libXpdix_la-atom.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libXpdix_la_CPPFLAGS) $(CPPFLAGS) $(libXpdix_la_CFLAGS) $(CFLAGS) -c -o libXpdix_la-atom.lo `test -f 'atom.c' || echo '$(srcdir)/'`atom.c
+
+libXpdix_la-colormap.lo: colormap.c
+@am__fastdepCC_TRUE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libXpdix_la_CPPFLAGS) $(CPPFLAGS) $(libXpdix_la_CFLAGS) $(CFLAGS) -MT libXpdix_la-colormap.lo -MD -MP -MF $(DEPDIR)/libXpdix_la-colormap.Tpo -c -o libXpdix_la-colormap.lo `test -f 'colormap.c' || echo '$(srcdir)/'`colormap.c
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/libXpdix_la-colormap.Tpo $(DEPDIR)/libXpdix_la-colormap.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='colormap.c' object='libXpdix_la-colormap.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libXpdix_la_CPPFLAGS) $(CPPFLAGS) $(libXpdix_la_CFLAGS) $(CFLAGS) -c -o libXpdix_la-colormap.lo `test -f 'colormap.c' || echo '$(srcdir)/'`colormap.c
+
+libXpdix_la-cursor.lo: cursor.c
+@am__fastdepCC_TRUE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libXpdix_la_CPPFLAGS) $(CPPFLAGS) $(libXpdix_la_CFLAGS) $(CFLAGS) -MT libXpdix_la-cursor.lo -MD -MP -MF $(DEPDIR)/libXpdix_la-cursor.Tpo -c -o libXpdix_la-cursor.lo `test -f 'cursor.c' || echo '$(srcdir)/'`cursor.c
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/libXpdix_la-cursor.Tpo $(DEPDIR)/libXpdix_la-cursor.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='cursor.c' object='libXpdix_la-cursor.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libXpdix_la_CPPFLAGS) $(CPPFLAGS) $(libXpdix_la_CFLAGS) $(CFLAGS) -c -o libXpdix_la-cursor.lo `test -f 'cursor.c' || echo '$(srcdir)/'`cursor.c
+
+libXpdix_la-deprecated.lo: deprecated.c
+@am__fastdepCC_TRUE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libXpdix_la_CPPFLAGS) $(CPPFLAGS) $(libXpdix_la_CFLAGS) $(CFLAGS) -MT libXpdix_la-deprecated.lo -MD -MP -MF $(DEPDIR)/libXpdix_la-deprecated.Tpo -c -o libXpdix_la-deprecated.lo `test -f 'deprecated.c' || echo '$(srcdir)/'`deprecated.c
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/libXpdix_la-deprecated.Tpo $(DEPDIR)/libXpdix_la-deprecated.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='deprecated.c' object='libXpdix_la-deprecated.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libXpdix_la_CPPFLAGS) $(CPPFLAGS) $(libXpdix_la_CFLAGS) $(CFLAGS) -c -o libXpdix_la-deprecated.lo `test -f 'deprecated.c' || echo '$(srcdir)/'`deprecated.c
+
+libXpdix_la-devices.lo: devices.c
+@am__fastdepCC_TRUE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libXpdix_la_CPPFLAGS) $(CPPFLAGS) $(libXpdix_la_CFLAGS) $(CFLAGS) -MT libXpdix_la-devices.lo -MD -MP -MF $(DEPDIR)/libXpdix_la-devices.Tpo -c -o libXpdix_la-devices.lo `test -f 'devices.c' || echo '$(srcdir)/'`devices.c
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/libXpdix_la-devices.Tpo $(DEPDIR)/libXpdix_la-devices.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='devices.c' object='libXpdix_la-devices.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libXpdix_la_CPPFLAGS) $(CPPFLAGS) $(libXpdix_la_CFLAGS) $(CFLAGS) -c -o libXpdix_la-devices.lo `test -f 'devices.c' || echo '$(srcdir)/'`devices.c
+
+libXpdix_la-dispatch.lo: dispatch.c
+@am__fastdepCC_TRUE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libXpdix_la_CPPFLAGS) $(CPPFLAGS) $(libXpdix_la_CFLAGS) $(CFLAGS) -MT libXpdix_la-dispatch.lo -MD -MP -MF $(DEPDIR)/libXpdix_la-dispatch.Tpo -c -o libXpdix_la-dispatch.lo `test -f 'dispatch.c' || echo '$(srcdir)/'`dispatch.c
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/libXpdix_la-dispatch.Tpo $(DEPDIR)/libXpdix_la-dispatch.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='dispatch.c' object='libXpdix_la-dispatch.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libXpdix_la_CPPFLAGS) $(CPPFLAGS) $(libXpdix_la_CFLAGS) $(CFLAGS) -c -o libXpdix_la-dispatch.lo `test -f 'dispatch.c' || echo '$(srcdir)/'`dispatch.c
+
+libXpdix_la-dixfonts.lo: dixfonts.c
+@am__fastdepCC_TRUE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libXpdix_la_CPPFLAGS) $(CPPFLAGS) $(libXpdix_la_CFLAGS) $(CFLAGS) -MT libXpdix_la-dixfonts.lo -MD -MP -MF $(DEPDIR)/libXpdix_la-dixfonts.Tpo -c -o libXpdix_la-dixfonts.lo `test -f 'dixfonts.c' || echo '$(srcdir)/'`dixfonts.c
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/libXpdix_la-dixfonts.Tpo $(DEPDIR)/libXpdix_la-dixfonts.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='dixfonts.c' object='libXpdix_la-dixfonts.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libXpdix_la_CPPFLAGS) $(CPPFLAGS) $(libXpdix_la_CFLAGS) $(CFLAGS) -c -o libXpdix_la-dixfonts.lo `test -f 'dixfonts.c' || echo '$(srcdir)/'`dixfonts.c
+
+libXpdix_la-dixutils.lo: dixutils.c
+@am__fastdepCC_TRUE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libXpdix_la_CPPFLAGS) $(CPPFLAGS) $(libXpdix_la_CFLAGS) $(CFLAGS) -MT libXpdix_la-dixutils.lo -MD -MP -MF $(DEPDIR)/libXpdix_la-dixutils.Tpo -c -o libXpdix_la-dixutils.lo `test -f 'dixutils.c' || echo '$(srcdir)/'`dixutils.c
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/libXpdix_la-dixutils.Tpo $(DEPDIR)/libXpdix_la-dixutils.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='dixutils.c' object='libXpdix_la-dixutils.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libXpdix_la_CPPFLAGS) $(CPPFLAGS) $(libXpdix_la_CFLAGS) $(CFLAGS) -c -o libXpdix_la-dixutils.lo `test -f 'dixutils.c' || echo '$(srcdir)/'`dixutils.c
+
+libXpdix_la-events.lo: events.c
+@am__fastdepCC_TRUE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libXpdix_la_CPPFLAGS) $(CPPFLAGS) $(libXpdix_la_CFLAGS) $(CFLAGS) -MT libXpdix_la-events.lo -MD -MP -MF $(DEPDIR)/libXpdix_la-events.Tpo -c -o libXpdix_la-events.lo `test -f 'events.c' || echo '$(srcdir)/'`events.c
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/libXpdix_la-events.Tpo $(DEPDIR)/libXpdix_la-events.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='events.c' object='libXpdix_la-events.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libXpdix_la_CPPFLAGS) $(CPPFLAGS) $(libXpdix_la_CFLAGS) $(CFLAGS) -c -o libXpdix_la-events.lo `test -f 'events.c' || echo '$(srcdir)/'`events.c
+
+libXpdix_la-extension.lo: extension.c
+@am__fastdepCC_TRUE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libXpdix_la_CPPFLAGS) $(CPPFLAGS) $(libXpdix_la_CFLAGS) $(CFLAGS) -MT libXpdix_la-extension.lo -MD -MP -MF $(DEPDIR)/libXpdix_la-extension.Tpo -c -o libXpdix_la-extension.lo `test -f 'extension.c' || echo '$(srcdir)/'`extension.c
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/libXpdix_la-extension.Tpo $(DEPDIR)/libXpdix_la-extension.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='extension.c' object='libXpdix_la-extension.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libXpdix_la_CPPFLAGS) $(CPPFLAGS) $(libXpdix_la_CFLAGS) $(CFLAGS) -c -o libXpdix_la-extension.lo `test -f 'extension.c' || echo '$(srcdir)/'`extension.c
+
+libXpdix_la-ffs.lo: ffs.c
+@am__fastdepCC_TRUE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libXpdix_la_CPPFLAGS) $(CPPFLAGS) $(libXpdix_la_CFLAGS) $(CFLAGS) -MT libXpdix_la-ffs.lo -MD -MP -MF $(DEPDIR)/libXpdix_la-ffs.Tpo -c -o libXpdix_la-ffs.lo `test -f 'ffs.c' || echo '$(srcdir)/'`ffs.c
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/libXpdix_la-ffs.Tpo $(DEPDIR)/libXpdix_la-ffs.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='ffs.c' object='libXpdix_la-ffs.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libXpdix_la_CPPFLAGS) $(CPPFLAGS) $(libXpdix_la_CFLAGS) $(CFLAGS) -c -o libXpdix_la-ffs.lo `test -f 'ffs.c' || echo '$(srcdir)/'`ffs.c
+
+libXpdix_la-gc.lo: gc.c
+@am__fastdepCC_TRUE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libXpdix_la_CPPFLAGS) $(CPPFLAGS) $(libXpdix_la_CFLAGS) $(CFLAGS) -MT libXpdix_la-gc.lo -MD -MP -MF $(DEPDIR)/libXpdix_la-gc.Tpo -c -o libXpdix_la-gc.lo `test -f 'gc.c' || echo '$(srcdir)/'`gc.c
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/libXpdix_la-gc.Tpo $(DEPDIR)/libXpdix_la-gc.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='gc.c' object='libXpdix_la-gc.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libXpdix_la_CPPFLAGS) $(CPPFLAGS) $(libXpdix_la_CFLAGS) $(CFLAGS) -c -o libXpdix_la-gc.lo `test -f 'gc.c' || echo '$(srcdir)/'`gc.c
+
+libXpdix_la-getevents.lo: getevents.c
+@am__fastdepCC_TRUE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libXpdix_la_CPPFLAGS) $(CPPFLAGS) $(libXpdix_la_CFLAGS) $(CFLAGS) -MT libXpdix_la-getevents.lo -MD -MP -MF $(DEPDIR)/libXpdix_la-getevents.Tpo -c -o libXpdix_la-getevents.lo `test -f 'getevents.c' || echo '$(srcdir)/'`getevents.c
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/libXpdix_la-getevents.Tpo $(DEPDIR)/libXpdix_la-getevents.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='getevents.c' object='libXpdix_la-getevents.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libXpdix_la_CPPFLAGS) $(CPPFLAGS) $(libXpdix_la_CFLAGS) $(CFLAGS) -c -o libXpdix_la-getevents.lo `test -f 'getevents.c' || echo '$(srcdir)/'`getevents.c
+
+libXpdix_la-globals.lo: globals.c
+@am__fastdepCC_TRUE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libXpdix_la_CPPFLAGS) $(CPPFLAGS) $(libXpdix_la_CFLAGS) $(CFLAGS) -MT libXpdix_la-globals.lo -MD -MP -MF $(DEPDIR)/libXpdix_la-globals.Tpo -c -o libXpdix_la-globals.lo `test -f 'globals.c' || echo '$(srcdir)/'`globals.c
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/libXpdix_la-globals.Tpo $(DEPDIR)/libXpdix_la-globals.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='globals.c' object='libXpdix_la-globals.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libXpdix_la_CPPFLAGS) $(CPPFLAGS) $(libXpdix_la_CFLAGS) $(CFLAGS) -c -o libXpdix_la-globals.lo `test -f 'globals.c' || echo '$(srcdir)/'`globals.c
+
+libXpdix_la-glyphcurs.lo: glyphcurs.c
+@am__fastdepCC_TRUE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libXpdix_la_CPPFLAGS) $(CPPFLAGS) $(libXpdix_la_CFLAGS) $(CFLAGS) -MT libXpdix_la-glyphcurs.lo -MD -MP -MF $(DEPDIR)/libXpdix_la-glyphcurs.Tpo -c -o libXpdix_la-glyphcurs.lo `test -f 'glyphcurs.c' || echo '$(srcdir)/'`glyphcurs.c
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/libXpdix_la-glyphcurs.Tpo $(DEPDIR)/libXpdix_la-glyphcurs.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='glyphcurs.c' object='libXpdix_la-glyphcurs.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libXpdix_la_CPPFLAGS) $(CPPFLAGS) $(libXpdix_la_CFLAGS) $(CFLAGS) -c -o libXpdix_la-glyphcurs.lo `test -f 'glyphcurs.c' || echo '$(srcdir)/'`glyphcurs.c
+
+libXpdix_la-grabs.lo: grabs.c
+@am__fastdepCC_TRUE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libXpdix_la_CPPFLAGS) $(CPPFLAGS) $(libXpdix_la_CFLAGS) $(CFLAGS) -MT libXpdix_la-grabs.lo -MD -MP -MF $(DEPDIR)/libXpdix_la-grabs.Tpo -c -o libXpdix_la-grabs.lo `test -f 'grabs.c' || echo '$(srcdir)/'`grabs.c
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/libXpdix_la-grabs.Tpo $(DEPDIR)/libXpdix_la-grabs.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='grabs.c' object='libXpdix_la-grabs.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libXpdix_la_CPPFLAGS) $(CPPFLAGS) $(libXpdix_la_CFLAGS) $(CFLAGS) -c -o libXpdix_la-grabs.lo `test -f 'grabs.c' || echo '$(srcdir)/'`grabs.c
+
+libXpdix_la-initatoms.lo: initatoms.c
+@am__fastdepCC_TRUE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libXpdix_la_CPPFLAGS) $(CPPFLAGS) $(libXpdix_la_CFLAGS) $(CFLAGS) -MT libXpdix_la-initatoms.lo -MD -MP -MF $(DEPDIR)/libXpdix_la-initatoms.Tpo -c -o libXpdix_la-initatoms.lo `test -f 'initatoms.c' || echo '$(srcdir)/'`initatoms.c
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/libXpdix_la-initatoms.Tpo $(DEPDIR)/libXpdix_la-initatoms.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='initatoms.c' object='libXpdix_la-initatoms.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libXpdix_la_CPPFLAGS) $(CPPFLAGS) $(libXpdix_la_CFLAGS) $(CFLAGS) -c -o libXpdix_la-initatoms.lo `test -f 'initatoms.c' || echo '$(srcdir)/'`initatoms.c
+
+libXpdix_la-main.lo: main.c
+@am__fastdepCC_TRUE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libXpdix_la_CPPFLAGS) $(CPPFLAGS) $(libXpdix_la_CFLAGS) $(CFLAGS) -MT libXpdix_la-main.lo -MD -MP -MF $(DEPDIR)/libXpdix_la-main.Tpo -c -o libXpdix_la-main.lo `test -f 'main.c' || echo '$(srcdir)/'`main.c
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/libXpdix_la-main.Tpo $(DEPDIR)/libXpdix_la-main.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='main.c' object='libXpdix_la-main.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libXpdix_la_CPPFLAGS) $(CPPFLAGS) $(libXpdix_la_CFLAGS) $(CFLAGS) -c -o libXpdix_la-main.lo `test -f 'main.c' || echo '$(srcdir)/'`main.c
+
+libXpdix_la-pixmap.lo: pixmap.c
+@am__fastdepCC_TRUE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libXpdix_la_CPPFLAGS) $(CPPFLAGS) $(libXpdix_la_CFLAGS) $(CFLAGS) -MT libXpdix_la-pixmap.lo -MD -MP -MF $(DEPDIR)/libXpdix_la-pixmap.Tpo -c -o libXpdix_la-pixmap.lo `test -f 'pixmap.c' || echo '$(srcdir)/'`pixmap.c
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/libXpdix_la-pixmap.Tpo $(DEPDIR)/libXpdix_la-pixmap.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='pixmap.c' object='libXpdix_la-pixmap.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libXpdix_la_CPPFLAGS) $(CPPFLAGS) $(libXpdix_la_CFLAGS) $(CFLAGS) -c -o libXpdix_la-pixmap.lo `test -f 'pixmap.c' || echo '$(srcdir)/'`pixmap.c
+
+libXpdix_la-privates.lo: privates.c
+@am__fastdepCC_TRUE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libXpdix_la_CPPFLAGS) $(CPPFLAGS) $(libXpdix_la_CFLAGS) $(CFLAGS) -MT libXpdix_la-privates.lo -MD -MP -MF $(DEPDIR)/libXpdix_la-privates.Tpo -c -o libXpdix_la-privates.lo `test -f 'privates.c' || echo '$(srcdir)/'`privates.c
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/libXpdix_la-privates.Tpo $(DEPDIR)/libXpdix_la-privates.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='privates.c' object='libXpdix_la-privates.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libXpdix_la_CPPFLAGS) $(CPPFLAGS) $(libXpdix_la_CFLAGS) $(CFLAGS) -c -o libXpdix_la-privates.lo `test -f 'privates.c' || echo '$(srcdir)/'`privates.c
+
+libXpdix_la-property.lo: property.c
+@am__fastdepCC_TRUE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libXpdix_la_CPPFLAGS) $(CPPFLAGS) $(libXpdix_la_CFLAGS) $(CFLAGS) -MT libXpdix_la-property.lo -MD -MP -MF $(DEPDIR)/libXpdix_la-property.Tpo -c -o libXpdix_la-property.lo `test -f 'property.c' || echo '$(srcdir)/'`property.c
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/libXpdix_la-property.Tpo $(DEPDIR)/libXpdix_la-property.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='property.c' object='libXpdix_la-property.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libXpdix_la_CPPFLAGS) $(CPPFLAGS) $(libXpdix_la_CFLAGS) $(CFLAGS) -c -o libXpdix_la-property.lo `test -f 'property.c' || echo '$(srcdir)/'`property.c
+
+libXpdix_la-registry.lo: registry.c
+@am__fastdepCC_TRUE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libXpdix_la_CPPFLAGS) $(CPPFLAGS) $(libXpdix_la_CFLAGS) $(CFLAGS) -MT libXpdix_la-registry.lo -MD -MP -MF $(DEPDIR)/libXpdix_la-registry.Tpo -c -o libXpdix_la-registry.lo `test -f 'registry.c' || echo '$(srcdir)/'`registry.c
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/libXpdix_la-registry.Tpo $(DEPDIR)/libXpdix_la-registry.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='registry.c' object='libXpdix_la-registry.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libXpdix_la_CPPFLAGS) $(CPPFLAGS) $(libXpdix_la_CFLAGS) $(CFLAGS) -c -o libXpdix_la-registry.lo `test -f 'registry.c' || echo '$(srcdir)/'`registry.c
+
+libXpdix_la-resource.lo: resource.c
+@am__fastdepCC_TRUE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libXpdix_la_CPPFLAGS) $(CPPFLAGS) $(libXpdix_la_CFLAGS) $(CFLAGS) -MT libXpdix_la-resource.lo -MD -MP -MF $(DEPDIR)/libXpdix_la-resource.Tpo -c -o libXpdix_la-resource.lo `test -f 'resource.c' || echo '$(srcdir)/'`resource.c
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/libXpdix_la-resource.Tpo $(DEPDIR)/libXpdix_la-resource.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='resource.c' object='libXpdix_la-resource.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libXpdix_la_CPPFLAGS) $(CPPFLAGS) $(libXpdix_la_CFLAGS) $(CFLAGS) -c -o libXpdix_la-resource.lo `test -f 'resource.c' || echo '$(srcdir)/'`resource.c
+
+libXpdix_la-selection.lo: selection.c
+@am__fastdepCC_TRUE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libXpdix_la_CPPFLAGS) $(CPPFLAGS) $(libXpdix_la_CFLAGS) $(CFLAGS) -MT libXpdix_la-selection.lo -MD -MP -MF $(DEPDIR)/libXpdix_la-selection.Tpo -c -o libXpdix_la-selection.lo `test -f 'selection.c' || echo '$(srcdir)/'`selection.c
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/libXpdix_la-selection.Tpo $(DEPDIR)/libXpdix_la-selection.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='selection.c' object='libXpdix_la-selection.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libXpdix_la_CPPFLAGS) $(CPPFLAGS) $(libXpdix_la_CFLAGS) $(CFLAGS) -c -o libXpdix_la-selection.lo `test -f 'selection.c' || echo '$(srcdir)/'`selection.c
+
+libXpdix_la-swaprep.lo: swaprep.c
+@am__fastdepCC_TRUE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libXpdix_la_CPPFLAGS) $(CPPFLAGS) $(libXpdix_la_CFLAGS) $(CFLAGS) -MT libXpdix_la-swaprep.lo -MD -MP -MF $(DEPDIR)/libXpdix_la-swaprep.Tpo -c -o libXpdix_la-swaprep.lo `test -f 'swaprep.c' || echo '$(srcdir)/'`swaprep.c
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/libXpdix_la-swaprep.Tpo $(DEPDIR)/libXpdix_la-swaprep.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='swaprep.c' object='libXpdix_la-swaprep.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libXpdix_la_CPPFLAGS) $(CPPFLAGS) $(libXpdix_la_CFLAGS) $(CFLAGS) -c -o libXpdix_la-swaprep.lo `test -f 'swaprep.c' || echo '$(srcdir)/'`swaprep.c
+
+libXpdix_la-swapreq.lo: swapreq.c
+@am__fastdepCC_TRUE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libXpdix_la_CPPFLAGS) $(CPPFLAGS) $(libXpdix_la_CFLAGS) $(CFLAGS) -MT libXpdix_la-swapreq.lo -MD -MP -MF $(DEPDIR)/libXpdix_la-swapreq.Tpo -c -o libXpdix_la-swapreq.lo `test -f 'swapreq.c' || echo '$(srcdir)/'`swapreq.c
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/libXpdix_la-swapreq.Tpo $(DEPDIR)/libXpdix_la-swapreq.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='swapreq.c' object='libXpdix_la-swapreq.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libXpdix_la_CPPFLAGS) $(CPPFLAGS) $(libXpdix_la_CFLAGS) $(CFLAGS) -c -o libXpdix_la-swapreq.lo `test -f 'swapreq.c' || echo '$(srcdir)/'`swapreq.c
+
+libXpdix_la-tables.lo: tables.c
+@am__fastdepCC_TRUE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libXpdix_la_CPPFLAGS) $(CPPFLAGS) $(libXpdix_la_CFLAGS) $(CFLAGS) -MT libXpdix_la-tables.lo -MD -MP -MF $(DEPDIR)/libXpdix_la-tables.Tpo -c -o libXpdix_la-tables.lo `test -f 'tables.c' || echo '$(srcdir)/'`tables.c
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/libXpdix_la-tables.Tpo $(DEPDIR)/libXpdix_la-tables.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='tables.c' object='libXpdix_la-tables.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libXpdix_la_CPPFLAGS) $(CPPFLAGS) $(libXpdix_la_CFLAGS) $(CFLAGS) -c -o libXpdix_la-tables.lo `test -f 'tables.c' || echo '$(srcdir)/'`tables.c
+
+libXpdix_la-window.lo: window.c
+@am__fastdepCC_TRUE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libXpdix_la_CPPFLAGS) $(CPPFLAGS) $(libXpdix_la_CFLAGS) $(CFLAGS) -MT libXpdix_la-window.lo -MD -MP -MF $(DEPDIR)/libXpdix_la-window.Tpo -c -o libXpdix_la-window.lo `test -f 'window.c' || echo '$(srcdir)/'`window.c
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/libXpdix_la-window.Tpo $(DEPDIR)/libXpdix_la-window.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='window.c' object='libXpdix_la-window.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libXpdix_la_CPPFLAGS) $(CPPFLAGS) $(libXpdix_la_CFLAGS) $(CFLAGS) -c -o libXpdix_la-window.lo `test -f 'window.c' || echo '$(srcdir)/'`window.c
+
+libXpdix_la-strcasecmp.lo: strcasecmp.c
+@am__fastdepCC_TRUE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libXpdix_la_CPPFLAGS) $(CPPFLAGS) $(libXpdix_la_CFLAGS) $(CFLAGS) -MT libXpdix_la-strcasecmp.lo -MD -MP -MF $(DEPDIR)/libXpdix_la-strcasecmp.Tpo -c -o libXpdix_la-strcasecmp.lo `test -f 'strcasecmp.c' || echo '$(srcdir)/'`strcasecmp.c
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/libXpdix_la-strcasecmp.Tpo $(DEPDIR)/libXpdix_la-strcasecmp.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='strcasecmp.c' object='libXpdix_la-strcasecmp.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libXpdix_la_CPPFLAGS) $(CPPFLAGS) $(libXpdix_la_CFLAGS) $(CFLAGS) -c -o libXpdix_la-strcasecmp.lo `test -f 'strcasecmp.c' || echo '$(srcdir)/'`strcasecmp.c
 
 mostlyclean-libtool:
 	-rm -f *.lo

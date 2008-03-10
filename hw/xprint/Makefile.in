@@ -63,7 +63,8 @@ Xprt_OBJECTS = $(am_Xprt_OBJECTS)
 am__DEPENDENCIES_1 =
 am__DEPENDENCIES_2 = ps/libps.la raster/libraster.la pcl/libpcl.la \
 	pcl-mono/libpcl.la $(top_builddir)/fb/libfb.la \
-	$(top_builddir)/render/librender.la $(am__DEPENDENCIES_1) \
+	$(top_builddir)/render/librender.la \
+	$(top_builddir)/dix/libXpdix.la $(am__DEPENDENCIES_1) \
 	$(top_builddir)/Xext/libXext.la $(top_builddir)/xkb/libxkb.la \
 	$(top_builddir)/xkb/libxkbstubs.la $(top_builddir)/os/libos.la
 Xprt_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
@@ -321,6 +322,7 @@ XPRINT_LIBS = \
 	pcl-mono/libpcl.la \
 	$(top_builddir)/fb/libfb.la \
 	$(top_builddir)/render/librender.la \
+	$(top_builddir)/dix/libXpdix.la \
 	$(XSERVER_LIBS) \
 	$(top_builddir)/Xext/libXext.la \
 	$(top_builddir)/xkb/libxkb.la \
@@ -412,7 +414,7 @@ xglmoduledir = @xglmoduledir@
 xpconfigdir = @xpconfigdir@
 SUBDIRS = doc pcl pcl-mono raster ps etc config
 Xprt_CFLAGS = @DIX_CFLAGS@ @XPRINT_CFLAGS@ \
-	-DXPRINT -DPRINT_ONLY_SERVER -D_XP_PRINT_SERVER_  \
+	-DPRINT_ONLY_SERVER -D_XP_PRINT_SERVER_  \
 	-DXPRINTDIR=\"$(libdir)/X11/xserver\"    \
 	-DXPRASTERDDX -DXPPCLDDX -DXPMONOPCLDDX -DXPPSDDX \
 	-DXFree86Server
