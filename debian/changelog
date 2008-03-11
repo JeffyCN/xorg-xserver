@@ -35,7 +35,11 @@ xorg-server (2:1.4.99.901-1) UNRELEASED; urgency=low
   [ Drew Parsons ]
   * Remove 94_xprint_XSERVER_LIBS (not needed in xserver 1.5).
 
- -- Drew Parsons <dparsons@debian.org>  Tue, 11 Mar 2008 00:32:39 +1100
+  [ Brice Goglin ]
+  * Build the Xfbdev server for real now, in new package xserver-xfbdev,
+    closes: #439764.
+
+ -- Brice Goglin <bgoglin@debian.org>  Tue, 11 Mar 2008 22:44:55 +0100
 
 xorg-server (2:1.4.1~git20080131-2) UNRELEASED; urgency=low
 
