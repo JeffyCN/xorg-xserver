@@ -19,6 +19,9 @@ xorg-server (2:1.4.1~git20080131-2) UNRELEASED; urgency=low
     Popen()/Pclose() to fix a hang when opening menus in OpenOffice.org
     (once again closes: #433131)
   * Refresh all patches to make patch-audit happy.
+  * Pull from upstream server-1.4-branch as of March 14th.
+  * 42_dont_break_grab_and_focus_for_window_when_redirecting.diff removed,
+    applied upstream.
 
   [ David Nusinow ]
   * Add 11_dont_crash_on_bad_dri_mode. See bugzilla #13860

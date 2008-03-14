@@ -13,7 +13,6 @@
 21_glx_align_fixes.patch
 40_default_dpi_96.patch
 41_vbe_filter_less.diff
-42_dont_break_grab_and_focus_for_window_when_redirecting.diff
 43_allow_override_BIOS_EDID_preferred_mode.diff
 44_preferredmode_infinite_loop.diff
 45_only_XF86_APM_CAPABILITY_CHANGED_for_video_change_acpi_events.diff

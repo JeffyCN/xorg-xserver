@@ -1,3 +1,89 @@
+commit a65d4aed06acd839fb21153f74144498abda3e18
+Author: Alan Hourihane <alanh@tungstengraphics.com>
+Date:   Wed Feb 27 16:49:34 2008 +0000
+
+    Fix context sharing between direct/indirect contexts
+
+commit 44f46bfb981ca69515dafc520f62f33654711194
+Author: Matthias Hopf <mhopf@suse.de>
+Date:   Mon Jan 21 16:13:21 2008 +0100
+
+    CVE-2007-6429: Always test for size+offset wrapping.
+
+commit bcbfd619f8da888224afd80ee3a2db7d500523eb
+Author: Kristian Høgsberg <krh@redhat.com>
+Date:   Wed Jan 16 20:24:11 2008 -0500
+
+    Don't break grab and focus state for a window when redirecting it.
+    
+    Composite uses an unmap/map cycle to trigger backing pixmap allocation
+    and cliprect recomputation when a window is redirected or unredirected.
+    To avoid protocol visible side effects, map and unmap events are
+    disabled temporarily.  However, when a window is unmapped it is also
+    removed from grabs and loses focus, but these state changes are not
+    disabled.
+    
+    This change supresses the unmap side effects during the composite
+    unmap/map cycle and fixes this bug:
+    
+      http://bugzilla.gnome.org/show_bug.cgi?id=488264
+    
+    where compiz would cause gnome-screensaver to lose its grab when
+    compiz unredirects the fullscreen lock window.
+
+commit dc30ade6496c7cc24e38c419e229159525fe042f
+Author: Maarten Maathuis <madman2003@gmail.com>
+Date:   Sun Feb 17 18:47:28 2008 +0100
+
+    Fix rotation for multi-monitor situation.
+    
+    - The (x,y)-coordinates of the crtc were not being passed as xFixed values, which made it an obscure bug to find.
+    - Fix bug #13787.
+    (cherry picked from commit a48cc88ea2674c28b69b8d738b168cbafcf4001f)
+
+commit 3db5930c61aeb849de3b21e7ba0d86d3c0cf72bb
+Author: Maarten Maathuis <madman2003@gmail.com>
+Date:   Sun Feb 17 11:21:01 2008 +0100
+
+    Resize composite overlay window when the root window changes.
+    
+    - This allows some compositing managers to work, even after randr12 has changed the root window size.
+    - Thanks to ajax for figuring out the best place to put this.
+    - Example:
+    	- xf86RandR12SetMode() calls EnableDisableFBAccess().
+    	- That calls xf86SetRootClip() which in turn calls ResizeChildrenWinSize().
+    	- The final step is the call to PositionWindow().
+    (cherry picked from commit 70c0592a97c7dc9db0576d32b3bdbe4766520509)
+
+commit 74b40bba327a2e97780e8e3f995f784add2d6231
+Author: Eamon Walsh <ewalsh@tycho.nsa.gov>
+Date:   Thu Feb 14 19:47:44 2008 -0500
+
+    security: Fix for Bug #14480: untrusted access broken in 7.3.
+
+commit bc72ef3a159efd67067322c043bba444869dc356
+Author: Peter Hutterer <peter@cs.unisa.edu.au>
+Date:   Wed Jan 30 10:39:54 2008 +1030
+
+    xkb: don't update LEDs if they don't exist. (Bug #13961)
+    
+    In some weird cases we call this function when there is no SrvLedInfo on the
+    device. And it turns out null-pointer dereferences are bad.
+    
+    X.Org Bug 13961 <http://bugs.freedesktop.org/show_bug.cgi?id=13961>
+    (cherry picked from commit d954f9c80348de294602d931d387e5cd1ef4b9a5)
+
+commit e98027c3ac7195fec665ef393d980b02870ca1b8
+Author: Peter Hutterer <peter@cs.unisa.edu.au>
+Date:   Tue Dec 18 13:57:07 2007 +1030
+
+    dix: set the correct number of valuators in valuator events.
+    
+    (first_valuator + num_valuators) must never be larger than the number of axes,
+    otherwise DIX freaks out. And from looking at libXI, anything larger than 6 is
+    wrong too.
+    (cherry picked from commit 9f6ae61ad12cc2813d04405458e1ca5aed8a539e)
+
 commit b6d4cdf64f43ae805beada6122c8be2ed138742c
 Author: Adam Jackson <ajax@redhat.com>
 Date:   Fri Jan 18 14:41:20 2008 -0500
