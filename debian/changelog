@@ -3,6 +3,8 @@ xorg-server (2:1.4.99.901-1) UNRELEASED; urgency=low
   [ Julien Cristau ]
   * New upstream release candidate
   * Update patches:
+    + 001_ubuntu_add_extra_modelines_from_xorg.patch: remove useless
+      whitespace changes
     + 02_libvgahw_gcc4_volatile_fix.diff: delete, the gcc bug this was working
       around is fixed for a long time
     + 03_auto_load_driver.diff, 04_auto_load_driver_no_conf.diff,
