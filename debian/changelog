@@ -12,7 +12,6 @@ xorg-server (2:1.4.1~git20080131-2) UNRELEASED; urgency=low
     XSERVER_LIBS as expected in configure.ac from master (see commit
     a02db0d500cac20d0f0f107d27c064a175018421). Delete
     94_xprint_XSERVER_LIBS when we upgrade to xserver 1.5.
-    Closes: #448970.
 
   [ Julien Cristau ]
   * Re-enable patch 51_xkb-and-loathing.diff: ignore SIGALRM around calls to
@@ -22,6 +21,7 @@ xorg-server (2:1.4.1~git20080131-2) UNRELEASED; urgency=low
   * Pull from upstream server-1.4-branch as of March 14th.
   * 42_dont_break_grab_and_focus_for_window_when_redirecting.diff removed,
     applied upstream.
+  * Don't build xprint just yet, because it needs NEW processing.
 
   [ David Nusinow ]
   * Add 11_dont_crash_on_bad_dri_mode. See bugzilla #13860
