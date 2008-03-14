@@ -33,6 +33,7 @@ xorg-server (2:1.4.99.901-1) UNRELEASED; urgency=low
   * Bump videoabiver to 2.9, inputabiver to 2.1, serverminver to 2:1.4.99.901.
   * Drop obsolete --with-rgb-path configure option.
   * /etc/X11/xserver/SecurityPolicy is gone, don't install it.
+  * Don't build-dep on "foo (>= bar-1)", to fix lintian warnings.
 
   [ Drew Parsons ]
   * Remove 94_xprint_XSERVER_LIBS (not needed in xserver 1.5).
