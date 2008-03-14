@@ -1,4 +1,4 @@
-xorg-server (2:1.4.1~git20080131-2) UNRELEASED; urgency=low
+xorg-server (2:1.4.1~git20080131-2) unstable; urgency=low
 
   [ Brice Goglin ]
   * Add 46_reduce_wakeups_from_smart_scheduler.patch to reduce
@@ -26,7 +26,7 @@ xorg-server (2:1.4.1~git20080131-2) UNRELEASED; urgency=low
   [ David Nusinow ]
   * Add 11_dont_crash_on_bad_dri_mode. See bugzilla #13860
 
- -- David Nusinow <dnusinow@debian.org>  Sun, 02 Mar 2008 10:02:40 -0500
+ -- Julien Cristau <jcristau@debian.org>  Fri, 14 Mar 2008 15:18:16 +0100
 
 xorg-server (2:1.4.1~git20080131-1) unstable; urgency=low
 
