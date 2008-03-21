@@ -1,6 +1,8 @@
 xorg-server (2:1.4.99.901-2) UNRELEASED; urgency=low
 
   * xserver-xorg-dev needs to depend on libpciaccess-dev.
+  * Pull from upstream server-1.5-branch as of March 21st (commit 98249dfa).
+    + fixes build on ia64 (closes: #471663)
 
  -- Julien Cristau <jcristau@debian.org>  Wed, 19 Mar 2008 19:45:55 +0100
 

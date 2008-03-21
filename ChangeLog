@@ -1,3 +1,171 @@
+commit 98249dfa98b53a238b7d881beb5ec8b85f28ecd0
+Author: Eamon Walsh <ewalsh@tycho.nsa.gov>
+Date:   Thu Mar 20 20:03:02 2008 -0400
+
+    XSELinux: Do a check for whether background "None" is allowed.
+    (cherry picked from commit 3bbd77ff98478153afe3251de9ba11d757218213)
+
+commit d08bb7040cd5ba2d438dec614ff1b4dd0f9b33d5
+Author: Eamon Walsh <ewalsh@tycho.nsa.gov>
+Date:   Thu Mar 20 19:42:09 2008 -0400
+
+    XSELinux: Correctly handle some permission bits that are used more than once.
+    (cherry picked from commit e323bb426ce8a072d119cb2720b773241259c137)
+
+commit c6ac4d4f4dfe3d792c77c48b009abc6e7103fbad
+Author: Eamon Walsh <ewalsh@tycho.nsa.gov>
+Date:   Tue Mar 18 17:51:21 2008 -0400
+
+    Apply __glXDisp_GetVisualConfigs message patch
+    From http://bugs.freedesktop.org/show_bug.cgi?id=13863
+    
+    Problem was that the glxcmds.c __glXDisp_GetVisualConfigs
+    function left garbage in the tail end of the message used for extensions.
+    (cherry picked from commit edad0a9dfebcce5c54b2f9c32bd9d45549e20c51)
+
+commit 4a61cf3b08942895868e18bff11e0e4e12f69a7e
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Fri Mar 14 14:37:42 2008 -0400
+
+    Fix a stray use of ALLOCATE_LOCAL.
+    (cherry picked from commit 57d48d94b8947c571925e6fd4c9bf041fbd1b2ac)
+
+commit 43739b9a32cbe45139935bbeb39aecf7b7dd017c
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Fri Mar 14 14:24:21 2008 -0400
+
+    RANDR 1.2: Fix initial mode aspect ratio match in a corner case.
+    
+    Actually more like in the mainline case, where the ideal mode happens to
+    be the very first aspect match on the first monitor.  But let's not
+    split hairs.
+    (cherry picked from commit 824853772241acf64bc37ac8b85254194741ae13)
+
+commit 92cffb8cc2bf0e6ac79a00477d7d63950d584cd3
+Author: Bart Trojanowski <bart@jukie.net>
+Date:   Thu Mar 13 17:42:16 2008 -0400
+
+    Bug #14332: Fix PCI access cycles from x86emu.
+    
+    The address written to 0xcf8 contains the PCI slot address to send the
+    config cycle to.  However, we would ignore that and always send the
+    cycle to the device whose BIOS we were running.  This breaks some
+    integrated graphics platforms that have explicit knowledge about the
+    system's host bridge, for example.
+
+commit db26f32d0d0e2d6d11129ddfe46931308e536206
+Author: Doug Chapman <doug.chapman@hp.com>
+Date:   Thu Mar 13 17:40:34 2008 -0400
+
+    Bug #14091: Fix build (and runtime) on ia64.
+
+commit 95f6d8822da22518c6e1fb3988f12edd7267d7f8
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Thu Mar 13 17:37:12 2008 -0400
+
+    RANDR 1.2: Fix the RANDR 1.1 screen size estimation to approach reality.
+    
+    While the ScreenRec's notion of size in millimeters would get updates,
+    the RANDR 1.1 notion wouldn't, so your screen would appear to be square
+    and probably at some ludicrous DPI.
+
+commit e4dee1626dd97632a6df053f10ef732de341a2f6
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Thu Mar 13 17:34:54 2008 -0400
+
+    RANDR 1.2: Don't report a square resolution to RANDR 1.1 clients.
+    
+    It can't possibly do anything useful, and older versions of Gnome (and
+    proably others) get very confused by it.  So do the drivers, for that
+    matter.
+
+commit ce70eb1fe333c1a0d4bb259532f547884daa8f26
+Author: Mark Kettenis <mark.kettenis@xs4all.nl>
+Date:   Wed Mar 12 21:45:37 2008 +0100
+
+    OpenBSD support for libpciaccess.
+    
+    xserver and libpciaccess both need to open /dev/xf86, which can only
+    be opened once.  I implemented pci_system_init_dev_mem() like Ian
+    suggested.  This requires some minor changes to the BSD-specific
+    os-support code.  Since pci_system_init_dev_mem() is a no-op on
+    FreeBSD this should be no problem.
+
+commit b02d11e629cceb8f14e1c8854a2a02411ff071c0
+Author: Kristian Høgsberg <krh@redhat.com>
+Date:   Tue Mar 11 00:35:31 2008 -0400
+
+    DRI2: Add DRI2AuthConnection().
+    
+    DRI2 uses the same authentication scheme as XF86DRI, so implement this
+    entry point so DRI2 protocol code can access it.
+
+commit 54c31572d53ffc1844cba3fa2f748717665381f0
+Author: Keith Packard <keithp@keithp.com>
+Date:   Wed Feb 6 16:51:57 2008 -0800
+
+    XkbCopyKeymap was mangling doodads and overlays
+
+commit 02feb14a678e3b8ad9acf0b6db8d159b4fd64147
+Author: Kristian Høgsberg <krh@sasori.boston.redhat.com>
+Date:   Sun Mar 9 21:40:27 2008 -0400
+
+    GLX: Track changes to DRI_TEX_BUFFER extension.
+    
+    We now just pass in the __DRIdrawable.
+    (cherry picked from commit 01c2e01f2aee580438b74bfb9da8f584f3878e6b)
+
+commit 12829f1e9158445dd66d32885ff9e3f902bf8c0e
+Author: Kristian Høgsberg <krh@sasori.boston.redhat.com>
+Date:   Sun Mar 9 21:39:19 2008 -0400
+
+    DRI2: Return event buffer head index in DRI2CreateDrawable.
+    
+    And pass it to the DRI driver in AIGLX.
+    (cherry picked from commit acedc03367e9e69f03b4838f0f0e8d8a8e872b9b)
+
+commit 4aaf048b5a00ee4f91c2a1d026cd313f0207f0bc
+Author: Kristian Høgsberg <krh@redhat.com>
+Date:   Fri Mar 7 14:12:28 2008 -0500
+
+    Fix DRI2 texture target for GLX_EXT_texture_from_pixmap.
+    
+    Thanks to Dennis Kasprzyk for pointing it out and for reminding me to
+    commit it.
+    (cherry picked from commit 9abaad115cb6245b12b2adb3552ace99b634ab4a)
+
+commit 921cbc58036491eab491b4c7b07111f04aa58d40
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Mon Mar 10 13:40:00 2008 -0400
+
+    Add the "amd" driver to magic driver selection.
+
+commit e5bd75e11f1ac6b01d408166e628e9bbdb218b71
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Mon Mar 10 09:14:20 2008 -0400
+
+    Bug #14927: Fix the math for xf86NumDefaultModes.
+    (cherry picked from commit 0f6aaf636b7ac4c98467284ff7baf1b83e0b72e7)
+
+commit ef702d586697c4ae9092ab0a412719c11973ec60
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Fri Mar 7 09:25:06 2008 -0500
+
+    Size xf86DefaultModes explicitly.
+    
+    i.e., don't check for the end of the list by ->name == NULL, since that
+    won't work now.  Fix the consumers of xf86DefaultModes to use the new
+    explicit size as well.
+
+commit b260febcec2e483c094d5c31ed9910a36a65cc53
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Fri Mar 7 08:29:49 2008 -0500
+
+    Fix segfault when a monitor exists but has no modes.
+    
+    Thanks to Zhenyu Wang for finding this.
+    (cherry picked from commit 3fcb6445dc08f42488287162e3b7009d405e9c5b)
+
 commit 375908557fd11e37e8d686f1ff6a372aa2c239de
 Author: Adam Jackson <ajax@redhat.com>
 Date:   Thu Mar 6 00:19:09 2008 -0500
