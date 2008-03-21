@@ -60,12 +60,10 @@ am__liblinux_la_SOURCES_DIST = lnx_init.c lnx_video.c lnx_mouse.c \
 	$(srcdir)/../shared/posix_tty.c $(srcdir)/../shared/vidmem.c \
 	$(srcdir)/../shared/sigio.c $(srcdir)/../shared/stdResource.c \
 	lnx_acpi.c lnx_apm.c $(srcdir)/lnx_axp.c \
-	$(srcdir)/../shared/xf86Axp.c $(srcdir)/lnx_ia64.c \
-	$(srcdir)/../shared/ia64Pci.c
+	$(srcdir)/../shared/xf86Axp.c $(srcdir)/../shared/ia64Pci.c
 @LNXACPI_TRUE@am__objects_1 = lnx_acpi.lo lnx_apm.lo
 @LNXAPM_TRUE@am__objects_2 = lnx_apm.lo
-@LINUX_ALPHA_FALSE@@LINUX_IA64_TRUE@am__objects_3 = lnx_ia64.lo \
-@LINUX_ALPHA_FALSE@@LINUX_IA64_TRUE@	ia64Pci.lo
+@LINUX_ALPHA_FALSE@@LINUX_IA64_TRUE@am__objects_3 = ia64Pci.lo
 @LINUX_ALPHA_TRUE@am__objects_3 = lnx_axp.lo xf86Axp.lo
 am_liblinux_la_OBJECTS = lnx_init.lo lnx_video.lo lnx_mouse.lo \
 	lnx_pci.lo lnx_agp.lo lnx_kmod.lo lnx_bell.lo bios_mmap.lo \
@@ -405,7 +403,7 @@ noinst_LTLIBRARIES = liblinux.la $(am__append_1)
 @LINUX_ALPHA_TRUE@       $(srcdir)/lnx_axp.c \
 @LINUX_ALPHA_TRUE@       $(srcdir)/../shared/xf86Axp.c
 
-@LINUX_IA64_TRUE@PLATFORM_PCI_SUPPORT = $(srcdir)/lnx_ia64.c $(srcdir)/../shared/ia64Pci.c
+@LINUX_IA64_TRUE@PLATFORM_PCI_SUPPORT = $(srcdir)/../shared/ia64Pci.c
 @LINUX_IA64_TRUE@PLATFORM_DEFINES = -DOS_PROBE_PCI_CHIPSET=lnxProbePciChipset
 @LINUX_IA64_TRUE@PLATFORM_INCLUDES = -I$(srcdir)/../shared
 @LINUX_ALPHA_TRUE@liblinuxev56_la_CFLAGS = $(AM_CFLAGS) -mcpu=ev56
@@ -501,7 +499,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/lnx_apm.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/lnx_axp.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/lnx_bell.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/lnx_ia64.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/lnx_init.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/lnx_kmod.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/lnx_mouse.Plo@am__quote@
@@ -589,13 +586,6 @@ xf86Axp.lo: $(srcdir)/../shared/xf86Axp.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$(srcdir)/../shared/xf86Axp.c' object='xf86Axp.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o xf86Axp.lo `test -f '$(srcdir)/../shared/xf86Axp.c' || echo '$(srcdir)/'`$(srcdir)/../shared/xf86Axp.c
-
-lnx_ia64.lo: $(srcdir)/lnx_ia64.c
-@am__fastdepCC_TRUE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT lnx_ia64.lo -MD -MP -MF $(DEPDIR)/lnx_ia64.Tpo -c -o lnx_ia64.lo `test -f '$(srcdir)/lnx_ia64.c' || echo '$(srcdir)/'`$(srcdir)/lnx_ia64.c
-@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/lnx_ia64.Tpo $(DEPDIR)/lnx_ia64.Plo
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='$(srcdir)/lnx_ia64.c' object='lnx_ia64.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -c -o lnx_ia64.lo `test -f '$(srcdir)/lnx_ia64.c' || echo '$(srcdir)/'`$(srcdir)/lnx_ia64.c
 
 ia64Pci.lo: $(srcdir)/../shared/ia64Pci.c
 @am__fastdepCC_TRUE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS) -MT ia64Pci.lo -MD -MP -MF $(DEPDIR)/ia64Pci.Tpo -c -o ia64Pci.lo `test -f '$(srcdir)/../shared/ia64Pci.c' || echo '$(srcdir)/'`$(srcdir)/../shared/ia64Pci.c

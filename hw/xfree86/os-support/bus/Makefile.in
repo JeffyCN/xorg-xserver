@@ -61,9 +61,7 @@ CONFIG_CLEAN_FILES =
 LTLIBRARIES = $(noinst_LTLIBRARIES)
 libbus_la_LIBADD =
 am__libbus_la_SOURCES_DIST = Pci.c Pci.h linuxPci.c bsd_pci.c \
-	ix86Pci.c ppcPci.c sparcPci.c axpPci.c 460gxPCI.c 460gxPCI.h \
-	altixPCI.c altixPCI.h e8870PCI.c e8870PCI.h zx1PCI.c zx1PCI.h \
-	Sbus.c
+	ix86Pci.c ppcPci.c sparcPci.c axpPci.c Sbus.c
 @XORG_BUS_LINUXPCI_TRUE@am__objects_1 = linuxPci.lo
 @XORG_BUS_BSDPCI_TRUE@am__objects_2 = bsd_pci.lo
 @XORG_BUS_IX86PCI_TRUE@am__objects_3 = ix86Pci.lo
@@ -72,11 +70,8 @@ am__libbus_la_SOURCES_DIST = Pci.c Pci.h linuxPci.c bsd_pci.c \
 @LINUX_ALPHA_TRUE@am__objects_6 = axpPci.lo
 am__objects_7 = $(am__objects_1) $(am__objects_2) $(am__objects_3) \
 	$(am__objects_4) $(am__objects_5) $(am__objects_6)
-@LINUX_IA64_TRUE@am__objects_8 = 460gxPCI.lo altixPCI.lo e8870PCI.lo \
-@LINUX_IA64_TRUE@	zx1PCI.lo
-@XORG_BUS_SPARC_TRUE@am__objects_9 = Sbus.lo
-am_libbus_la_OBJECTS = Pci.lo $(am__objects_7) $(am__objects_8) \
-	$(am__objects_9)
+@XORG_BUS_SPARC_TRUE@am__objects_8 = Sbus.lo
+am_libbus_la_OBJECTS = Pci.lo $(am__objects_7) $(am__objects_8)
 libbus_la_OBJECTS = $(am_libbus_la_OBJECTS)
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)/include
 depcomp = $(SHELL) $(top_srcdir)/depcomp
@@ -410,16 +405,6 @@ noinst_LTLIBRARIES = libbus.la
 sdk_HEADERS = xf86Pci.h $(am__append_7)
 PCI_SOURCES = $(am__append_1) $(am__append_2) $(am__append_3) \
 	$(am__append_4) $(am__append_5) $(am__append_6)
-@LINUX_IA64_TRUE@PLATFORM_PCI_SOURCES = \
-@LINUX_IA64_TRUE@	460gxPCI.c \
-@LINUX_IA64_TRUE@	460gxPCI.h \
-@LINUX_IA64_TRUE@	altixPCI.c \
-@LINUX_IA64_TRUE@	altixPCI.h \
-@LINUX_IA64_TRUE@	e8870PCI.c \
-@LINUX_IA64_TRUE@	e8870PCI.h \
-@LINUX_IA64_TRUE@	zx1PCI.c \
-@LINUX_IA64_TRUE@	zx1PCI.h
-
 @XORG_BUS_SPARC_TRUE@PLATFORM_SOURCES = Sbus.c
 libbus_la_SOURCES = Pci.c Pci.h $(PCI_SOURCES) $(PLATFORM_PCI_SOURCES) \
                     $(PLATFORM_SOURCES)
@@ -478,18 +463,14 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/460gxPCI.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Pci.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Sbus.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/altixPCI.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/axpPci.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/bsd_pci.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/e8870PCI.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ix86Pci.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/linuxPci.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ppcPci.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/sparcPci.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/zx1PCI.Plo@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<

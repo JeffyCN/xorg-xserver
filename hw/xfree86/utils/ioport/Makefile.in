@@ -85,7 +85,8 @@ am_ioport_OBJECTS = ioport-ioport.$(OBJEXT)
 ioport_OBJECTS = $(am_ioport_OBJECTS)
 am__DEPENDENCIES_1 =
 ioport_DEPENDENCIES = ../../os-support/libxorgos.la \
-	../../dummylib/libdummy-nonserver.a $(am__DEPENDENCIES_1)
+	../../dummylib/libdummy-nonserver.a $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1)
 ioport_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
 	--mode=link $(CCLD) $(ioport_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) \
 	$(LDFLAGS) -o $@
@@ -414,7 +415,7 @@ ioport_CFLAGS = $(DIX_CFLAGS) $(XORG_CFLAGS)
 ioport_LDADD = \
 	../../os-support/libxorgos.la \
 	../../dummylib/libdummy-nonserver.a \
-	${UTILS_SYS_LIBS}
+	${UTILS_SYS_LIBS} ${PCIACCESS_LIBS}
 
 ioport_SOURCES = \
 	ioport.c

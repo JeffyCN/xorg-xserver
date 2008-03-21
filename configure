@@ -27213,7 +27213,7 @@ cat >>confdefs.h <<_ACEOF
 #define PACKAGE_VERSION_MAJOR `echo $PACKAGE_VERSION | cut -d . -f 1`
 _ACEOF
 
-	PVM=`echo $PACKAGE_VERSION | cut -d . -f 2`
+	PVM=`echo $PACKAGE_VERSION | cut -d . -f 2 | cut -d - -f 1`
 	if test "x$PVM" = "x"; then
 		PVM="0"
 	fi
@@ -27222,7 +27222,7 @@ cat >>confdefs.h <<_ACEOF
 #define PACKAGE_VERSION_MINOR $PVM
 _ACEOF
 
-	PVP=`echo $PACKAGE_VERSION | cut -d . -f 3`
+	PVP=`echo $PACKAGE_VERSION | cut -d . -f 3 | cut -d - -f 1`
 	if test "x$PVP" = "x"; then
 		PVP="0"
 	fi
@@ -28771,7 +28771,10 @@ fi
 XORG_SGML_PATH=$prefix/share/sgml
 HAVE_DEFS_ENT=
 
-as_ac_File=`echo "ac_cv_file_$XORG_SGML_PATH/X11/defs.ent" | $as_tr_sh`
+if test x"$cross_compiling" = x"yes" ; then
+  HAVE_DEFS_ENT=no
+else
+  as_ac_File=`echo "ac_cv_file_$XORG_SGML_PATH/X11/defs.ent" | $as_tr_sh`
 { echo "$as_me:$LINENO: checking for $XORG_SGML_PATH/X11/defs.ent" >&5
 echo $ECHO_N "checking for $XORG_SGML_PATH/X11/defs.ent... $ECHO_C" >&6; }
 if { as_var=$as_ac_File; eval "test \"\${$as_var+set}\" = set"; }; then
@@ -28794,6 +28797,7 @@ if test `eval echo '${'$as_ac_File'}'` = yes; then
   HAVE_DEFS_ENT=yes
 fi
 
+fi
 
 # Extract the first word of "linuxdoc", so it can be a program name with args.
 set dummy linuxdoc; ac_word=$2
