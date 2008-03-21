@@ -58,6 +58,8 @@ Bool DRI2Connect(ScreenPtr pScreen,
 		 const char **driverName,
 		 unsigned int *sareaHandle);
 
+Bool DRI2AuthConnection(ScreenPtr pScreen, drm_magic_t magic);
+
 unsigned int DRI2GetPixmapHandle(PixmapPtr pPixmap,
 				 unsigned int *flags);
 
@@ -66,7 +68,8 @@ void DRI2Unlock(ScreenPtr pScreen);
 
 Bool DRI2CreateDrawable(ScreenPtr	 pScreen,
 			DrawablePtr	 pDraw,
-			drm_drawable_t	*pDrmDrawable);
+			drm_drawable_t	*pDrmDrawable,
+			unsigned int    *head);
 
 void DRI2DestroyDrawable(ScreenPtr	pScreen,
 			 DrawablePtr	pDraw);

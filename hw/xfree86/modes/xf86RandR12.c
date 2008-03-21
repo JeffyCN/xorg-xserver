@@ -135,23 +135,6 @@ xf86RandR12GetInfo (ScreenPtr pScreen, Rotation *rotations)
 	randrp->maxY = maxY;
     }
 
-    if (scrp->currentMode->HDisplay != randrp->virtualX ||
-	scrp->currentMode->VDisplay != randrp->virtualY)
-    {
-	pSize = RRRegisterSize (pScreen,
-				randrp->virtualX, randrp->virtualY,
-				randrp->mmWidth,
-				randrp->mmHeight);
-	if (!pSize)
-	    return FALSE;
-	RRRegisterRate (pScreen, pSize, refresh0);
-	if (scrp->virtualX == randrp->virtualX &&
-	    scrp->virtualY == randrp->virtualY)
-	{
-	    RRSetCurrentConfig (pScreen, randrp->rotation, refresh0, pSize);
-	}
-    }
-
     return TRUE;
 }
 
@@ -358,8 +341,8 @@ xf86RandR12ScreenSetSize (ScreenPtr	pScreen,
 
     pScreen->width = pScrnPix->drawable.width = width;
     pScreen->height = pScrnPix->drawable.height = height;
-    pScreen->mmWidth = mmWidth;
-    pScreen->mmHeight = mmHeight;
+    randrp->mmWidth = pScreen->mmWidth = mmWidth;
+    randrp->mmHeight = pScreen->mmHeight = mmHeight;
 
     xf86SetViewport (pScreen, pScreen->width-1, pScreen->height-1);
     xf86SetViewport (pScreen, 0, 0);

@@ -216,8 +216,6 @@ __glXDRIcontextForceCurrent(__GLXcontext *baseContext)
 
 #ifdef __DRI_TEX_BUFFER
 
-#define isPowerOfTwo(n) (((n) & ((n) - 1 )) == 0)
-
 static int
 __glXDRIbindTexImage(__GLXcontext *baseContext,
 		     int buffer,
@@ -227,27 +225,15 @@ __glXDRIbindTexImage(__GLXcontext *baseContext,
     __GLXDRIscreen * const screen = (__GLXDRIscreen *) glxGetScreen(pScreen);
     PixmapPtr pixmap;
     __GLXDRIcontext *context = (__GLXDRIcontext *) baseContext;
-    unsigned int flags;
-    int w, h, target;
+    __GLXDRIdrawable *drawable = (__GLXDRIdrawable *) glxPixmap;
 
     if (screen->texBuffer == NULL)
         return Success;
 
     pixmap = (PixmapPtr) glxPixmap->pDraw;
-    w = pixmap->drawable.width;
-    h = pixmap->drawable.height;
-
-    if (!isPowerOfTwo(w) || !isPowerOfTwo(h))
-	target = GL_TEXTURE_RECTANGLE_ARB;
-    else
-	target = GL_TEXTURE_2D;
-
     screen->texBuffer->setTexBuffer(&context->driContext,
-				    target,
-				    DRI2GetPixmapHandle(pixmap, &flags),
-				    pixmap->drawable.depth,
-				    pixmap->devKind,
-				    h);
+				    glxPixmap->target,
+				    &drawable->driDrawable);
 
     return Success;
 }
@@ -352,6 +338,7 @@ __glXDRIscreenCreateDrawable(__GLXscreen *screen,
     __GLXDRIdrawable *private;
     GLboolean retval;
     drm_drawable_t hwDrawable;
+    unsigned int head;
 
     private = xalloc(sizeof *private);
     if (private == NULL)
@@ -370,13 +357,14 @@ __glXDRIscreenCreateDrawable(__GLXscreen *screen,
     private->base.swapBuffers   = __glXDRIdrawableSwapBuffers;
     private->base.copySubBuffer = __glXDRIdrawableCopySubBuffer;
 
-    retval = DRI2CreateDrawable(screen->pScreen, pDraw, &hwDrawable);
+    retval = DRI2CreateDrawable(screen->pScreen, pDraw,
+				&hwDrawable, &head);
 
     private->driDrawable.private =
 	(driScreen->driScreen.createNewDrawable)(&driScreen->driScreen,
 						 modes,
 						 &private->driDrawable,
-						 hwDrawable, 0, NULL);
+						 hwDrawable, head, 0, NULL);
 
     return &private->base;
 }

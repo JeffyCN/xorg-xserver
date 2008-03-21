@@ -262,8 +262,8 @@ DRI2CloseScreen(ScreenPtr pScreen)
 }
 
 Bool
-DRI2CreateDrawable(ScreenPtr pScreen,
-		   DrawablePtr pDraw, drm_drawable_t *pDrmDrawable)
+DRI2CreateDrawable(ScreenPtr pScreen, DrawablePtr pDraw,
+		   drm_drawable_t *pDrmDrawable, unsigned int *head)
 {
     DRI2ScreenPtr	ds = DRI2GetScreen(pScreen);
     WindowPtr		pWin;
@@ -293,6 +293,7 @@ DRI2CreateDrawable(ScreenPtr pScreen,
 
     *pDrmDrawable = pPriv->drawable;
 
+    *head = ds->buffer->head;
     DRI2PostDrawableConfig(pDraw);
     DRI2PostBufferAttach(pDraw);
     DRI2ScreenCommitEvents(ds);
@@ -337,6 +338,17 @@ DRI2Connect(ScreenPtr pScreen, int *fd, const char **driverName,
     *fd = ds->fd;
     *driverName = ds->driverName;
     *sareaHandle = ds->sareaBO.handle;
+
+    return TRUE;
+}
+
+Bool
+DRI2AuthConnection(ScreenPtr pScreen, drm_magic_t magic)
+{
+    DRI2ScreenPtr ds = DRI2GetScreen(pScreen);
+
+    if (ds == NULL || drmAuthMagic(ds->fd, magic))
+	return FALSE;
 
     return TRUE;
 }
