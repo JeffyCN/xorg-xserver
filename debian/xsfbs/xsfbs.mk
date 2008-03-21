@@ -297,7 +297,7 @@ PACKAGE=$(shell awk '/^Package:/ { print $$2; exit }' < debian/control)
 endif
 
 .PHONY: serverabi
-serverabi:
+serverabi: install
 ifeq ($(SERVERMINVERS),)
 	@echo error: xserver-xorg-dev needs to be installed
 	@exit 1
