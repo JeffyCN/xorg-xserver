@@ -76,7 +76,7 @@ confflags += --disable-static \
 	     --disable-dri \
 	     --disable-dri2
 
-build: patch build-stamp
+build: prepare patch build-stamp
 build-stamp: 
 	dh_testdir
 	
