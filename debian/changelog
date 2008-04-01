@@ -1,4 +1,4 @@
-xorg-server (2:1.4.1~git20080131-3) UNRELEASED; urgency=low
+xorg-server (2:1.4.1~git20080131-3) unstable; urgency=low
 
   * XKB: Fix processInputProc wrapping (cherry-picked from upstream).
     Thanks to Thomas Jaeger.  This should fix the bug with some keys getting
@@ -21,7 +21,7 @@ xorg-server (2:1.4.1~git20080131-3) UNRELEASED; urgency=low
   * Add 17_x86emu_handle_cpuid.patch to fix X86EMU CPUID handling.
     (closes: #451089).
 
- -- Julien Cristau <jcristau@debian.org>  Tue, 01 Apr 2008 15:56:23 +0200
+ -- Julien Cristau <jcristau@debian.org>  Wed, 02 Apr 2008 00:20:15 +0200
 
 xorg-server (2:1.4.1~git20080131-2) unstable; urgency=low
 
