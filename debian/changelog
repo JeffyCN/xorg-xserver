@@ -1,7 +1,10 @@
 xorg-server (2:1.4.1~git20080131-3) UNRELEASED; urgency=low
 
   * XKB: Fix processInputProc wrapping (cherry-picked from upstream).
-    Thanks to Thomas Jaeger.
+    Thanks to Thomas Jaeger.  This should fix the bug with some keys getting
+    stuck (closes: #473165).
+  * xkb: when copying the keymap, make sure the structs default to 0/NULL
+    (cherry-picked from upstream).  Fixes a crash and closes: #461783.
 
   Following patches by Bart Trojanowski, stolen from the ubuntu package:
   * 15_X86EMU-added-blacklist-for-I-O-port-in-0-0xFF-range.patch
