@@ -8,6 +8,8 @@ xorg-server (2:1.4.1~git20080131-3) UNRELEASED; urgency=low
     - Restrict access to I/O ports in range 0-0xFF from x86emu.
   * 16_X86EMU-pass-the-correct-bus-dev-fn-tag-to-pci-emula.patch
     - Fix improper emulation of PCI access General Software BIOS.
+  * Add 151_x86emu_handle_cpuid.patch to fix X86EMU CPUID handling.
+    (closes: #451089).
 
  -- Julien Cristau <jcristau@debian.org>  Tue, 01 Apr 2008 15:56:23 +0200
 
