@@ -10,6 +10,8 @@
 11_dont_crash_on_bad_dri_mode.diff
 13_debian_add_xkbpath_env_variable.diff
 14_default_screen_section.diff
+15_X86EMU-added-blacklist-for-I-O-port-in-0-0xFF-range.patch
+16_X86EMU-pass-the-correct-bus-dev-fn-tag-to-pci-emula.patch
 21_glx_align_fixes.patch
 40_default_dpi_96.patch
 41_vbe_filter_less.diff
