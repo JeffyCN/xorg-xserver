@@ -307,6 +307,4 @@ else
 	echo "xinpdriver:Provides=$(INPDRIVER_PROVIDES)" >> debian/$(PACKAGE).substvars
 endif
 
-include debian/xsfbs/xsfbs-autoreconf.mk
-
 # vim:set noet ai sts=8 sw=8 tw=0:
