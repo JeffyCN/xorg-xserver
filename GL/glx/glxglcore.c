@@ -390,6 +390,7 @@ __glXMesaScreenProbe(ScreenPtr pScreen)
     screen->base.destroy        = __glXMesaScreenDestroy;
     screen->base.createContext  = __glXMesaScreenCreateContext;
     screen->base.createDrawable = __glXMesaScreenCreateDrawable;
+    screen->base.swapInterval  = NULL;
     screen->base.pScreen       = pScreen;
 
     /*
