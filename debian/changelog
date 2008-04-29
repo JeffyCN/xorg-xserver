@@ -1,3 +1,11 @@
+xorg-server (2:1.4.1~git20080131-4) unstable; urgency=low
+
+  * fix AlwaysCore handling: enabling AlwaysCore in xorg.conf 1) is the
+    default, and 2) shouldn't prevent the device from sending core events
+    (closes: #461760).
+
+ -- Julien Cristau <jcristau@debian.org>  Tue, 29 Apr 2008 20:14:22 +0200
+
 xorg-server (2:1.4.1~git20080131-3) unstable; urgency=low
 
   * XKB: Fix processInputProc wrapping (cherry-picked from upstream).
