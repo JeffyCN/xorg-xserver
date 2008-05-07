@@ -2,6 +2,9 @@ xorg-server (2:1.4.1~git20080507-1) UNRELEASED; urgency=low
 
   * Pull from upstream server-1.4-branch
   * Drop patch 51_xkb-and-loathing.diff, applied upstream
+  * Refresh patches 13_debian_add_xkbpath_env_variable.diff,
+    21_glx_align_fixes.patch, 46_reduce_wakeups_from_smart_scheduler.patch and
+    94_xprint_XSERVER_LIBS.
 
  -- Julien Cristau <jcristau@debian.org>  Wed, 07 May 2008 22:20:17 +0200
 

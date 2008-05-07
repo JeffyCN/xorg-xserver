@@ -1,7 +1,5 @@
-Index: xorg-server/hw/xprint/Makefile.am
-===================================================================
---- xorg-server.orig/hw/xprint/Makefile.am	2008-02-25 05:27:19.000000000 +1100
-+++ xorg-server/hw/xprint/Makefile.am	2008-02-25 05:28:41.000000000 +1100
+--- xorg-server.orig/hw/xprint/Makefile.am
++++ xorg-server/hw/xprint/Makefile.am
 @@ -18,6 +18,7 @@
  	$(top_builddir)/fb/libfb.la \
  	$(top_builddir)/render/librender.la \
@@ -10,11 +8,9 @@ Index: xorg-server/hw/xprint/Makefile.am
  	$(top_builddir)/Xext/libXext.la \
  	$(top_builddir)/xkb/libxkb.la \
  	$(top_builddir)/xkb/libxkbstubs.la \
-Index: xorg-server/configure.ac
-===================================================================
---- xorg-server.orig/configure.ac	2008-02-25 05:27:53.000000000 +1100
-+++ xorg-server/configure.ac	2008-02-25 05:27:53.000000000 +1100
-@@ -1626,7 +1626,7 @@
+--- xorg-server.orig/configure.ac
++++ xorg-server/configure.ac
+@@ -1635,7 +1635,7 @@
  if test "x$XPRINT" = xyes; then
  	PKG_CHECK_MODULES([XPRINTMODULES], [printproto x11 xfont $XDMCP_MODULES xau])
  	XPRINT_CFLAGS="$XPRINTMODULES_CFLAGS"

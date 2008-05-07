@@ -27,11 +27,9 @@ Date:   Wed Nov 7 16:33:10 2007 -0800
 
     Don't frob timers unless SmartSchedule is running
 
-diff --git a/include/dixstruct.h b/include/dixstruct.h
-index dd6347f..bed31dc 100644
---- a/include/dixstruct.h
-+++ b/include/dixstruct.h
-@@ -150,11 +150,9 @@ extern long SmartScheduleTime;
+--- xorg-server.orig/include/dixstruct.h
++++ xorg-server/include/dixstruct.h
+@@ -150,11 +150,9 @@
  extern long SmartScheduleInterval;
  extern long SmartScheduleSlice;
  extern long SmartScheduleMaxSlice;
@@ -45,11 +43,9 @@ index dd6347f..bed31dc 100644
  #define SMART_MAX_PRIORITY  (20)
  #define SMART_MIN_PRIORITY  (-20)
  
-diff --git a/os/WaitFor.c b/os/WaitFor.c
-index ec1592c..7683477 100644
---- a/os/WaitFor.c
-+++ b/os/WaitFor.c
-@@ -217,7 +217,8 @@ WaitForSomething(int *pClientsReady)
+--- xorg-server.orig/os/WaitFor.c
++++ xorg-server/os/WaitFor.c
+@@ -217,7 +217,8 @@
  	XFD_COPYSET(&AllSockets, &LastSelectMask);
  #ifdef SMART_SCHEDULE
  	}
@@ -59,7 +55,7 @@ index ec1592c..7683477 100644
  #endif
  	BlockHandler((pointer)&wt, (pointer)&LastSelectMask);
  	if (NewOutputPending)
-@@ -237,13 +238,7 @@ WaitForSomething(int *pClientsReady)
+@@ -237,13 +238,7 @@
  	selecterr = GetErrno();
  	WakeupHandler(i, (pointer)&LastSelectMask);
  #ifdef SMART_SCHEDULE
@@ -74,11 +70,9 @@ index ec1592c..7683477 100644
  #endif
  	if (i <= 0) /* An error or timeout occurred */
  	{
-diff --git a/os/utils.c b/os/utils.c
-index 31cb0af..6fc1f7d 100644
---- a/os/utils.c
-+++ b/os/utils.c
-@@ -1512,10 +1512,6 @@ XNFstrdup(const char *s)
+--- xorg-server.orig/os/utils.c
++++ xorg-server/os/utils.c
+@@ -1513,10 +1513,6 @@
  
  #ifdef SMART_SCHEDULE
  
@@ -89,7 +83,7 @@ index 31cb0af..6fc1f7d 100644
  #ifdef SIGVTALRM
  #define SMART_SCHEDULE_POSSIBLE
  #endif
-@@ -1525,7 +1521,7 @@ Bool		SmartScheduleTimerStopped;
+@@ -1526,49 +1522,43 @@
  #define SMART_SCHEDULE_TIMER		ITIMER_REAL
  #endif
  
@@ -98,7 +92,12 @@ index 31cb0af..6fc1f7d 100644
  SmartScheduleStopTimer (void)
  {
  #ifdef SMART_SCHEDULE_POSSIBLE
-@@ -1536,38 +1532,28 @@ SmartScheduleStopTimer (void)
+     struct itimerval	timer;
+     
++    if (SmartScheduleDisable)
++	return;
+     timer.it_interval.tv_sec = 0;
+     timer.it_interval.tv_usec = 0;
      timer.it_value.tv_sec = 0;
      timer.it_value.tv_usec = 0;
      (void) setitimer (ITIMER_REAL, &timer, 0);
@@ -114,6 +113,8 @@ index 31cb0af..6fc1f7d 100644
      struct itimerval	timer;
      
 -    SmartScheduleTimerStopped = FALSE;
++    if (SmartScheduleDisable)
++	return;
      timer.it_interval.tv_sec = 0;
      timer.it_interval.tv_usec = SmartScheduleInterval * 1000;
      timer.it_value.tv_sec = 0;
@@ -139,7 +140,7 @@ index 31cb0af..6fc1f7d 100644
  }
  #endif
  
-@@ -1591,14 +1577,6 @@ SmartScheduleInit (void)
+@@ -1592,14 +1582,6 @@
  	perror ("sigaction for smart scheduler");
  	return FALSE;
      }
@@ -154,25 +155,3 @@ index 31cb0af..6fc1f7d 100644
      return TRUE;
  #else
      return FALSE;
-diff --git a/os/utils.c b/os/utils.c
-index 3228146..ae96a41 100644
---- a/os/utils.c
-+++ b/os/utils.c
-@@ -1527,6 +1527,8 @@ SmartScheduleStopTimer (void)
- #ifdef SMART_SCHEDULE_POSSIBLE
-     struct itimerval	timer;
-     
-+    if (SmartScheduleDisable)
-+	return;
-     timer.it_interval.tv_sec = 0;
-     timer.it_interval.tv_usec = 0;
-     timer.it_value.tv_sec = 0;
-@@ -1541,6 +1543,8 @@ SmartScheduleStartTimer (void)
- #ifdef SMART_SCHEDULE_POSSIBLE
-     struct itimerval	timer;
-     
-+    if (SmartScheduleDisable)
-+	return;
-     timer.it_interval.tv_sec = 0;
-     timer.it_interval.tv_usec = SmartScheduleInterval * 1000;
-     timer.it_value.tv_sec = 0;
