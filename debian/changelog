@@ -1,12 +1,17 @@
 xorg-server (2:1.4.1~git20080507-1) UNRELEASED; urgency=low
 
-  * Pull from upstream server-1.4-branch
+  * Pull from upstream server-1.4-branch, highlights:
+    - the server should now scale input events correctly
+    - xkb keymap failures now give an explanation instead of just a 'failed to
+      load' message
   * Drop patch 51_xkb-and-loathing.diff, applied upstream
   * Refresh patches 13_debian_add_xkbpath_env_variable.diff,
     21_glx_align_fixes.patch, 46_reduce_wakeups_from_smart_scheduler.patch and
     94_xprint_XSERVER_LIBS.
   * chmod +x configure in debian/rules clean so we can build a git snapshot
     where configure is not in the tarball.
+  * Cherry-pick fix from upstream's master branch to re-arm the DPMS timer
+    when re-enabling DPMS (closes: #397197).
 
  -- Julien Cristau <jcristau@debian.org>  Wed, 07 May 2008 22:20:17 +0200
 

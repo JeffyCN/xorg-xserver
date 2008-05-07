@@ -1,3 +1,170 @@
+commit 104048501f37b139d4113562ef1711978cc76018
+Author: Daniel Stone <daniel@fooishbar.org>
+Date:   Wed May 7 23:11:31 2008 +0300
+
+    XKB: Actually explain keymap failures
+    
+    When something went wrong building a keymap, try to explain to the user
+    what it actually was, instead of the dreaded 'Failed to load XKB keymap'
+    catch-all.
+    (cherry picked from commit cf20df39cc78203d17b99223908af388ecbf7d0e)
+    
+    Conflicts:
+    	xkb/ddxLoad.c
+
+commit b1145a6b428db2037c79ffb36116e7183f30829f
+Author: Magnus Vigerlöf <Magnus.Vigerlof@ipbo.se>
+Date:   Sat Feb 2 23:04:46 2008 +0100
+
+    dix: Move motion history update until after screen crossing and clipping
+    
+    Cross screen and clip the coordinates before updating the motion history
+    so that it will have the same contents as the events that are reported.
+    (cherry picked from commit a56ef7aaa4b6ac13c8181f68fc7dad3ca89e6973)
+
+commit a68d0ef4a65bcd52c52ba54e6925082a9145fad3
+Author: Magnus Vigerlöf <Magnus.Vigerlof@ipbo.se>
+Date:   Sat Feb 2 23:03:51 2008 +0100
+
+    dix: Skip call to clipAxis for relative core-events
+    
+    Relative events that generates both core and extention
+    events will have its axis cliped and screen changed by
+    miPointerSetPosition when the events are processed. For
+    absolute and non core-generating relative events the
+    axis must be clipped if we shouldn't end up completely
+    outside the defined ranges (if any).
+    (cherry picked from commit a0284d577aabea8406b72dd63773e341430ebe56)
+
+commit b51ca35a7578b64190f663dc825d7fb551b92e73
+Author: Magnus Vigerlöf <Magnus.Vigerlof@ipbo.se>
+Date:   Sat Feb 2 22:57:32 2008 +0100
+
+    Bug # 10324: dix: Add scaling of X and Y on the reported pointer-events
+    
+    Restore the rescaling code for x and y axis when generating
+    motion events.
+    (cherry picked from commit d9e23c4ff1607a62164b34717ef9afd352ce2b94)
+
+commit 1d79ba8193e9584370ffaaa8dffb4db604125dea
+Author: Magnus Vigerlöf <Magnus.Vigerlof@ipbo.se>
+Date:   Sat Feb 2 22:45:31 2008 +0100
+
+    Bug # 10324: dix: Allow arbitrary value ranges in GetPointerEvents
+    
+    Don't use a possitive value as a marker for if a max-value
+    is defined on the valuators. Use the existence of a valid
+    value range instead. This will also make it possible to
+    define arbitrary start and end-values for min and max as
+    long as min < max.
+    (cherry picked from commit f04c0838699f1a733735838e74cfbb1677b15dc4)
+
+commit 7fa7031cfa9145f55881b87bc39f6e2c8a49ff76
+Author: Magnus Vigerlöf <Magnus.Vigerlof@ipbo.se>
+Date:   Sat Feb 2 22:44:31 2008 +0100
+
+    dix: Always add valuator information if present
+    
+    Send valuator information for all event types, not only for
+    MotionEvents and absolute button events.
+    (cherry picked from commit 12e532403210c15a25200ef448bfe9701735ab20)
+
+commit b95befdfd2c9bcb6b0cd896f2b8dfaaeb129dbff
+Author: Alan Coopersmith <alan.coopersmith@sun.com>
+Date:   Fri Dec 7 17:28:37 2007 -0800
+
+    Check for <sys/sdt.h> as well when determining to enable dtrace probes
+    
+    Avoids auto-detecting dtrace is present on systems with the ISDN trace tool
+    named dtrace installed, but not the dynamic tracing facility named dtrace
+
+commit 0fab9843c7b553bb59d57e68d9c3ea2d754bf809
+Author: Ben Byer <bbyer@bbyer.apple.com>
+Date:   Fri Sep 21 17:07:36 2007 -0700
+
+    So, like, checking return codes of system calls (signal, etc) is good.
+    Also, only restore an old signal handler if one was actually set
+    (prevents the server from dying on OS X).
+
+commit a02b989c68864a7388553fb96e4fbaf91f941c4a
+Author: Eric Anholt <eric@anholt.net>
+Date:   Wed Sep 12 13:23:13 2007 +0000
+
+    Fix build on FreeBSD after Popen changes.
+
+commit 6a5066c2e9e872d4ef85ec70745c34d93580177e
+Author: Adam Jackson <ajax@benzedrine.nwnk.net>
+Date:   Tue Sep 11 11:37:06 2007 -0400
+
+    Ignore - not just block - SIGALRM around Popen()/Pclose().
+    
+    Because our "popen" implementation uses stdio, and because nobody's stdio
+    library is capable of surviving signals, we need to make absolutely sure
+    that we hide the SIGALRM from the smart scheduler.  Otherwise, when you
+    open a menu in openoffice, and it recompiles XKB to deal with the
+    accelerators, and you popen xkbcomp because we suck, then the scheduler
+    will tell you you're taking forever doing something stupid, and the
+    wait() code will get confused, and input will hang and your CPU usage
+    slams to 100%.  Down, not across.
+
+commit ff4006bd5a71d39cc5655679447c5c47a99a2751
+Author: Peter Hutterer <peter@cs.unisa.edu.au>
+Date:   Tue Jan 29 10:01:37 2008 +1030
+
+    xfree86: fix AlwaysCore handling. (Bug #14256)
+    
+    Assume AlwaysCore being set by default, just like the other options.
+    
+    X.Org Bug 14256 <http://bugs.freedesktop.org/show_bug.cgi?id=14256>
+    (cherry picked from commit 5b8641a5fdc112c19e78ca2954878712e328d403)
+
+commit fdfb57d342da0ace14eed635804ebc31441240c5
+Author: Thomas Jaeger <thjaeger@gmail.com>
+Date:   Tue Apr 1 15:27:06 2008 +0300
+
+    XKB: Fix processInputProc wrapping
+    
+    If input processing is frozen, only wrap realInputProc: don't smash
+    processInputProc as well.  When input processing is thawed, pIP will be
+    rewrapped correctly.
+    
+    This supersedes the previous workaround in 50e80c9.
+    
+    Signed-off-by: Daniel Stone <daniel@fooishbar.org>
+    (cherry picked from commit 37b1258f0a288a79ce6a3eef3559e17a67c4dd96)
+
+commit 6afcf996cade0c9464d6af9b04b177b1de138cfd
+Author: Pierre Willenbrock <pierre@pirsoft.dnsalias.org>
+Date:   Tue Oct 23 16:45:13 2007 +0200
+
+    EXA: Fix off-by-one in polyline drawing.
+    (cherry picked from commit d502521c3669f3f22b94c39a64ab63bfd92c6a97)
+
+commit 9e9eeca2b094fa9edb9c20002d42aeafb14ad1e4
+Author: Tilman Sauerbeck <tilman@code-monkey.de>
+Date:   Thu Apr 10 21:36:19 2008 +0200
+
+    Fixed configure.ac for autoconf 2.62.
+    (cherry picked from commit 3c337e18b933881e22b0d03312511f1d23a8640b)
+
+commit dd6b0de38d649617600a8357e576955c9b831328
+Author: Hasso Tepper <hasso@estpak.ee>
+Date:   Mon Apr 7 14:09:04 2008 +0300
+
+    configure.ac: DragonFly BSD support
+    
+    Add support for DragonFly BSD, which is just the same as FreeBSD for all
+    of these cases.
+    (cherry picked from commit 0f87b41a432a6472a15ec0c9dee997e3bddbd0f2)
+
+commit 76b950cd6e03f0060afe463871de4570fca90213
+Author: Jeremy C. Reed <reed@glacier.reedmedia.net>
+Date:   Thu Aug 16 11:20:12 2007 -0500
+
+    Add some more support for DragonFly. From Joerg Sonnenberger
+    and pkgsrc.
+    (cherry picked from commit 1d4bea6106d7a1c83e1dfe37fad8268589feaa0b)
+
 commit a65d4aed06acd839fb21153f74144498abda3e18
 Author: Alan Hourihane <alanh@tungstengraphics.com>
 Date:   Wed Feb 27 16:49:34 2008 +0000
