@@ -66,6 +66,8 @@ AC_SYS_LARGEFILE
 XORG_PROG_RAWCPP
 
 dnl Check for dtrace program (needed to build Xserver dtrace probes)
+dnl Also checks for <sys/sdt.h>, since some Linux distros have an 
+dnl ISDN trace program named dtrace
 AC_ARG_WITH(dtrace, AS_HELP_STRING([--with-dtrace=PATH],
 	     [Enable dtrace probes (default: enabled if dtrace found)]),
 	     [WDTRACE=$withval], [WDTRACE=auto])
@@ -76,6 +78,11 @@ if test "x$WDTRACE" = "xyes" -o "x$WDTRACE" = "xauto" ; then
 			AC_MSG_FAILURE([dtrace requested but not found])
 		fi
 		WDTRACE="no"
+	else
+		AC_CHECK_HEADER(sys/sdt.h, [HAS_SDT_H="yes"], [HAS_SDT_H="no"])
+		if test "x$WDTRACE" = "xauto" -a "x$HAS_SDT_H" = "xno" ; then
+			WDTRACE="no"
+		fi
 	fi
 fi
 if test "x$WDTRACE" != "xno" ; then
@@ -291,6 +298,7 @@ case $host_cpu in
 	        darwin*)	use_x86_asm="no" ;;
 		*linux*)	DEFAULT_INT10=vm86 ;;
 		*freebsd*)	AC_DEFINE(USE_DEV_IO) ;;
+		*dragonfly*)	AC_DEFINE(USE_DEV_IO) ;;
 		*netbsd*)	AC_DEFINE(USE_I386_IOPL)
 				SYS_LIBS=-li386
 				;;
@@ -316,6 +324,7 @@ case $host_cpu in
 	case $host_os in
 	        darwin*)	use_x86_asm="no" ;;
 		*freebsd*)	AC_DEFINE(USE_DEV_IO, 1, [BSD /dev/io]) ;;
+		*dragonfly*)	AC_DEFINE(USE_DEV_IO, 1, [BSD /dev/io]) ;;
 		*netbsd*)	AC_DEFINE(USE_I386_IOPL, 1, [BSD i386 iopl])
 				SYS_LIBS=-lx86_64
 				;;
@@ -337,7 +346,7 @@ DRI=no
 KDRIVE_HW=no
 dnl it would be nice to autodetect these *CONS_SUPPORTs
 case $host_os in
-  *freebsd*)
+  *freebsd* | *dragonfly*)
 	case $host_os in
 		kfreebsd*-gnu) ;;
 		*) AC_DEFINE(CSRG_BASED, 1, [System is BSD-like]) ;;
@@ -1363,7 +1372,7 @@ return 0;}
 			;;
 		esac
 		;;
-	  freebsd* | kfreebsd*-gnu)
+	  freebsd* | kfreebsd*-gnu | dragonfly*)
 	  	XORG_OS="freebsd"
 		XORG_OS_SUBDIR="bsd"
 		case $host_cpu in
@@ -1964,7 +1973,9 @@ DIX_CFLAGS="-DHAVE_DIX_CONFIG_H $XSERVER_CFLAGS"
 
 AC_SUBST([DIX_CFLAGS])
 
-AC_SUBST([libdir exec_prefix prefix])
+AC_SUBST([libdir])
+AC_SUBST([exec_prefix])
+AC_SUBST([prefix])
 
 # Man page sections - used in config utils & generating man pages
 XORG_MANPAGE_SECTIONS
