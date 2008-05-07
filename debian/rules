@@ -104,6 +104,8 @@ clean: xsfclean
 	# more generated files
 	rm -f include/dix-config.h include/do-not-use-config.h \
 		include/xorg-config.h include/xorg-server.h
+	# needed for git snapshots
+	chmod +x configure
 	
 	dh_clean
 
