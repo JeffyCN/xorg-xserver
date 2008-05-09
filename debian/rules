@@ -18,6 +18,7 @@ endif
 ifeq (,$(findstring nostrip,$(DEB_BUILD_OPTIONS)))
 	INSTALL_PROGRAM += -s
 endif
+CPPFLAGS += -DPRE_RELEASE=0
 
 DEB_HOST_ARCH      ?= $(shell dpkg-architecture -qDEB_HOST_ARCH)
 DEB_HOST_GNU_TYPE  ?= $(shell dpkg-architecture -qDEB_HOST_GNU_TYPE)
@@ -83,7 +84,8 @@ build-stamp:
 	cd obj-$(DEB_BUILD_GNU_TYPE) && \
 	../configure --prefix=/usr --mandir=\$${prefix}/share/man \
 	             --infodir=\$${prefix}/share/info --sysconfdir=/etc \
-	             --localstatedir=/var $(confflags) CFLAGS="$(CFLAGS)" 
+	             --localstatedir=/var $(confflags) CFLAGS="$(CFLAGS)" \
+	             CPPFLAGS="$(CPPFLAGS)"
 	cd obj-$(DEB_BUILD_GNU_TYPE) && $(MAKE)
 	
 	touch build-stamp

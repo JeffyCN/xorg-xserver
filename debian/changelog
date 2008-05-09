@@ -1,3 +1,10 @@
+xorg-server (2:1.4.1~git20080507-2) UNRELEASED; urgency=low
+
+  * Pass -DPRE_RELEASE=0 in CPPFLAGS, so we don't print the pre-release
+    warning in the Xorg log.
+
+ -- Julien Cristau <jcristau@debian.org>  Fri, 09 May 2008 17:32:45 +0200
+
 xorg-server (2:1.4.1~git20080507-1) unstable; urgency=low
 
   * Pull from upstream server-1.4-branch, highlights:
