@@ -200,50 +200,50 @@ Description: nested X server
 # .
 # This package is built from the X.org xserver module.
 
-#Package: xprint
-#Architecture: any
-#Depends: ${shlibs:Depends}, ${misc:Depends}, xprint-common, libxfont1 (>= 1:1.1)
-#Recommends: xprint-utils
-#Conflicts: xprt (<= 4.3.0.dfsg.1-10)
-#Description: X11 print system (binary)
-# Xprint is an advanced printing system which enables X11 applications
-# to use devices like printers, fax or create documents in formats like
-# PostScript, PDF, PCL, etc.
-# .
-# This package provides Xprt, the Xprint server compiled from
-# xprint.mozdev.org, an X.org subproject. Xprint provides superior support
-# for printing from Mozilla, including non-Latin characters and MathML.
-# TrueType fonts are supported.
-# .
-# Xprint uses ttf2pt1 internally for some font support.
-# .
-# More information about X.Org can be found at:
-# <URL:http://www.X.org>
-# <URL:http://xorg.freedesktop.org>
-# <URL:http://lists.freedesktop.org/mailman/listinfo/xorg>
-# .
-# This package is built from the X.org xserver module.
-#
-#Package: xprint-common
-#Architecture: all
-#Depends: xbase-clients, xfonts-encodings, x11-common (>= 1:7.0.12), ${shlibs:Depends}, ${misc:Depends}
-#Recommends: xprint, xfonts-base
-#Conflicts: xprt-common
-#Replaces: xprt-common
-#Description: Xprint - the X11 print system (configuration files)
-# Xprint is an advanced printing system which enables X11 applications
-# to use devices like printers, FAX or create documents in formats like
-# PostScript, PDF, PCL, etc.
-# .
-# This package provides the configuration and Postscript definition files
-# required to run Xprt, the Xprint server. Xprt is provided by xprint.
-# .
-# More information about X.Org can be found at:
-# <URL:http://www.X.org>
-# <URL:http://xorg.freedesktop.org>
-# <URL:http://lists.freedesktop.org/mailman/listinfo/xorg>
-# .
-# This package is built from the X.org xserver module.
+Package: xprint
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, xprint-common, libxfont1 (>= 1:1.1)
+Recommends: xprint-utils
+Conflicts: xprt (<= 4.3.0.dfsg.1-10)
+Description: X11 print system (binary)
+ Xprint is an advanced printing system which enables X11 applications
+ to use devices like printers, fax or create documents in formats like
+ PostScript, PDF, PCL, etc.
+ .
+ This package provides Xprt, the Xprint server compiled from
+ xprint.mozdev.org, an X.org subproject. Xprint provides superior support
+ for printing from Mozilla, including non-Latin characters and MathML.
+ TrueType fonts are supported.
+ .
+ Xprint uses ttf2pt1 internally for some font support.
+ .
+ More information about X.Org can be found at:
+ <URL:http://www.X.org>
+ <URL:http://xorg.freedesktop.org>
+ <URL:http://lists.freedesktop.org/mailman/listinfo/xorg>
+ .
+ This package is built from the X.org xserver module.
+
+Package: xprint-common
+Architecture: all
+Depends: xbase-clients, xfonts-encodings, x11-common (>= 1:7.0.12), ${shlibs:Depends}, ${misc:Depends}
+Recommends: xprint, xfonts-base
+Conflicts: xprt-common
+Replaces: xprt-common
+Description: Xprint - the X11 print system (configuration files)
+ Xprint is an advanced printing system which enables X11 applications
+ to use devices like printers, FAX or create documents in formats like
+ PostScript, PDF, PCL, etc.
+ .
+ This package provides the configuration and Postscript definition files
+ required to run Xprt, the Xprint server. Xprt is provided by xprint.
+ .
+ More information about X.Org can be found at:
+ <URL:http://www.X.org>
+ <URL:http://xorg.freedesktop.org>
+ <URL:http://lists.freedesktop.org/mailman/listinfo/xorg>
+ .
+ This package is built from the X.org xserver module.
 
 Package: xserver-xorg-core-dbg
 Architecture: any
