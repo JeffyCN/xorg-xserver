@@ -1,9 +1,17 @@
 xorg-server (2:1.4.1~git20080507-2) UNRELEASED; urgency=low
 
+  [ Julien Cristau ]
   * Pass -DPRE_RELEASE=0 in CPPFLAGS, so we don't print the pre-release
     warning in the Xorg log.
 
- -- Julien Cristau <jcristau@debian.org>  Fri, 09 May 2008 17:32:45 +0200
+  [ Drew Parsons ]
+  * Patch 95_xprint_disable_dbus disables dbus in Xprint by providing
+    dummy config functions. Taken from upstream commit
+    2a3d1421e0cc18822ae8f478fcc272e16a9e9340, with removal of
+    CONFIG_LIB from configure.ac shifted to 94_xprint_XSERVER_LIBS.
+    Closes: #472180.
+
+ -- Drew Parsons <dparsons@debian.org>  Sat, 10 May 2008 03:18:04 +1000
 
 xorg-server (2:1.4.1~git20080507-1) unstable; urgency=low
 

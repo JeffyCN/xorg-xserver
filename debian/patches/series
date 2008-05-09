@@ -27,3 +27,4 @@
 93_spooltodir_check_file_exists
 93_xprint_fonts_fix
 94_xprint_XSERVER_LIBS
+95_xprint_disable_dbus
