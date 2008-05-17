@@ -7,6 +7,7 @@ xorg-server (2:1.4.1~git20080517-1) UNRELEASED; urgency=low
     + drop patch 40_default_dpi_96.patch applied upstream
     + refresh patches 03_auto_load_driver.diff and
       04_auto_load_driver_no_conf.diff
+  * Don't build-depend on packages with a -1 debian revision.
 
   [ Drew Parsons ]
   * Patch 95_xprint_disable_dbus disables dbus in Xprint by providing
