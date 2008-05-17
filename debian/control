@@ -33,8 +33,8 @@ Build-Depends: debhelper (>= 4.0.0), lsb-release, pkg-config, bison, flex,
  libxfixes-dev (>= 1:3.0.0), libdbus-1-dev [!hurd-i386], libhal-dev [!hurd-i386]
 Build-Conflicts: xlibs-static-dev
 Standards-Version: 3.7.3
-XS-Vcs-Git: git://git.debian.org/git/pkg-xorg/xserver/xorg-server
-XS-Vcs-Browser: http://git.debian.org/?p=pkg-xorg/xserver/xorg-server.git
+Vcs-Git: git://git.debian.org/git/pkg-xorg/xserver/xorg-server
+Vcs-Browser: http://git.debian.org/?p=pkg-xorg/xserver/xorg-server.git
 
 Package: xserver-xorg-core
 Architecture: any
