@@ -27600,18 +27600,15 @@ fi
 
 
 
+ case $host_os in
+	mingw*)	unixdef="no"   ;;
+	*)	unixdef="yes"  ;;
+ esac
  # Check whether --enable-unix-transport was given.
 if test "${enable_unix_transport+set}" = set; then
   enableval=$enable_unix_transport; UNIXCONN=$enableval
 else
-  UNIXCONN=yes
-fi
-
- # Check whether --enable-tcp-transport was given.
-if test "${enable_tcp_transport+set}" = set; then
-  enableval=$enable_tcp_transport; TCPCONN=$enableval
-else
-  TCPCONN=yes
+  UNIXCONN=$unixdef
 fi
 
  { echo "$as_me:$LINENO: checking if Xtrans should support UNIX socket connections" >&5
@@ -27625,6 +27622,13 @@ _ACEOF
  fi
  { echo "$as_me:$LINENO: result: $UNIXCONN" >&5
 echo "${ECHO_T}$UNIXCONN" >&6; }
+ # Check whether --enable-tcp-transport was given.
+if test "${enable_tcp_transport+set}" = set; then
+  enableval=$enable_tcp_transport; TCPCONN=$enableval
+else
+  TCPCONN=yes
+fi
+
  { echo "$as_me:$LINENO: checking if Xtrans should support TCP socket connections" >&5
 echo $ECHO_N "checking if Xtrans should support TCP socket connections... $ECHO_C" >&6; }
  { echo "$as_me:$LINENO: result: $TCPCONN" >&5
@@ -28021,6 +28025,74 @@ cat >>confdefs.h <<\_ACEOF
 _ACEOF
 
 fi
+
+
+ # POSIX.1g changed the type of pointer passed to getsockname/getpeername/etc.
+ { echo "$as_me:$LINENO: checking for socklen_t" >&5
+echo $ECHO_N "checking for socklen_t... $ECHO_C" >&6; }
+if test "${ac_cv_type_socklen_t+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+  cat >conftest.$ac_ext <<_ACEOF
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+
+$ac_includes_default
+#include <sys/socket.h>
+
+typedef socklen_t ac__type_new_;
+int
+main ()
+{
+if ((ac__type_new_ *) 0)
+  return 0;
+if (sizeof (ac__type_new_))
+  return 0;
+  ;
+  return 0;
+}
+_ACEOF
+rm -f conftest.$ac_objext
+if { (ac_try="$ac_compile"
+case "(($ac_try" in
+  *\"* | *\`* | *\\*) ac_try_echo=\$ac_try;;
+  *) ac_try_echo=$ac_try;;
+esac
+eval "echo \"\$as_me:$LINENO: $ac_try_echo\"") >&5
+  (eval "$ac_compile") 2>conftest.er1
+  ac_status=$?
+  grep -v '^ *+' conftest.er1 >conftest.err
+  rm -f conftest.er1
+  cat conftest.err >&5
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } && {
+	 test -z "$ac_c_werror_flag" ||
+	 test ! -s conftest.err
+       } && test -s conftest.$ac_objext; then
+  ac_cv_type_socklen_t=yes
+else
+  echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+	ac_cv_type_socklen_t=no
+fi
+
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+fi
+{ echo "$as_me:$LINENO: result: $ac_cv_type_socklen_t" >&5
+echo "${ECHO_T}$ac_cv_type_socklen_t" >&6; }
+if test $ac_cv_type_socklen_t = yes; then
+
+cat >>confdefs.h <<_ACEOF
+#define HAVE_SOCKLEN_T 1
+_ACEOF
+
+
+fi
+
 
 
  fi
@@ -36216,12 +36288,12 @@ if test -n "$PKG_CONFIG"; then
         pkg_cv_XEPHYR_CFLAGS="$XEPHYR_CFLAGS"
     else
         if test -n "$PKG_CONFIG" && \
-    { (echo "$as_me:$LINENO: \$PKG_CONFIG --exists --print-errors \"x11 xext xfont xau xdmcp\"") >&5
-  ($PKG_CONFIG --exists --print-errors "x11 xext xfont xau xdmcp") 2>&5
+    { (echo "$as_me:$LINENO: \$PKG_CONFIG --exists --print-errors \"x11 xext xfont xau xdmcp \$PIXMAN\"") >&5
+  ($PKG_CONFIG --exists --print-errors "x11 xext xfont xau xdmcp $PIXMAN") 2>&5
   ac_status=$?
   echo "$as_me:$LINENO: \$? = $ac_status" >&5
   (exit $ac_status); }; then
-  pkg_cv_XEPHYR_CFLAGS=`$PKG_CONFIG --cflags "x11 xext xfont xau xdmcp" 2>/dev/null`
+  pkg_cv_XEPHYR_CFLAGS=`$PKG_CONFIG --cflags "x11 xext xfont xau xdmcp $PIXMAN" 2>/dev/null`
 else
   pkg_failed=yes
 fi
@@ -36234,12 +36306,12 @@ if test -n "$PKG_CONFIG"; then
         pkg_cv_XEPHYR_LIBS="$XEPHYR_LIBS"
     else
         if test -n "$PKG_CONFIG" && \
-    { (echo "$as_me:$LINENO: \$PKG_CONFIG --exists --print-errors \"x11 xext xfont xau xdmcp\"") >&5
-  ($PKG_CONFIG --exists --print-errors "x11 xext xfont xau xdmcp") 2>&5
+    { (echo "$as_me:$LINENO: \$PKG_CONFIG --exists --print-errors \"x11 xext xfont xau xdmcp \$PIXMAN\"") >&5
+  ($PKG_CONFIG --exists --print-errors "x11 xext xfont xau xdmcp $PIXMAN") 2>&5
   ac_status=$?
   echo "$as_me:$LINENO: \$? = $ac_status" >&5
   (exit $ac_status); }; then
-  pkg_cv_XEPHYR_LIBS=`$PKG_CONFIG --libs "x11 xext xfont xau xdmcp" 2>/dev/null`
+  pkg_cv_XEPHYR_LIBS=`$PKG_CONFIG --libs "x11 xext xfont xau xdmcp $PIXMAN" 2>/dev/null`
 else
   pkg_failed=yes
 fi
@@ -36258,9 +36330,9 @@ else
         _pkg_short_errors_supported=no
 fi
         if test $_pkg_short_errors_supported = yes; then
-	        XEPHYR_PKG_ERRORS=`$PKG_CONFIG --short-errors --errors-to-stdout --print-errors "x11 xext xfont xau xdmcp"`
+	        XEPHYR_PKG_ERRORS=`$PKG_CONFIG --short-errors --errors-to-stdout --print-errors "x11 xext xfont xau xdmcp $PIXMAN"`
         else
-	        XEPHYR_PKG_ERRORS=`$PKG_CONFIG --errors-to-stdout --print-errors "x11 xext xfont xau xdmcp"`
+	        XEPHYR_PKG_ERRORS=`$PKG_CONFIG --errors-to-stdout --print-errors "x11 xext xfont xau xdmcp $PIXMAN"`
         fi
 	# Put the nasty error message in config.log where it belongs
 	echo "$XEPHYR_PKG_ERRORS" >&5
