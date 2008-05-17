@@ -88,40 +88,40 @@ Description: Xorg X server - development files
  .
  This package is built from the X.org xserver module.
 
-#Package: xdmx
-#Architecture: any
-#Depends: ${shlibs:Depends}, ${misc:Depends}
-#Description: distributed multihead X server
-# Xdmx is a proxy X server that uses one or more other X servers as its
-# display device(s). It provides multi-head X functionality for displays that
-# might be located on different machines. Xdmx functions as a front-end X server
-# that acts as a proxy to a set of back-end X servers. All of the visible
-# rendering is passed to the back-end X servers. Clients connect to the Xdmx
-# front-end, and everything appears as it would in a regular multi-head
-# configuration. If Xinerama is enabled (e.g., with +xinerama on the command
-# line), the clients see a single large screen.
-# .
-# More information about X.Org can be found at:
-# <URL:http://www.X.org>
-# <URL:http://xorg.freedesktop.org>
-# <URL:http://lists.freedesktop.org/mailman/listinfo/xorg>
-# .
-# This package is built from the X.org xserver module.
-#
-#Package: xdmx-tools
-#Architecture: any
-#Depends: xdmx, ${shlibs:Depends}, ${misc:Depends}
-#Replaces: xdmx (<= 2:1.1.1-10)
-#Description: Distributed Multihead X tools
-# This package provides a collection of tools used for administration of
-# the Xdmx server; see the xdmx package for more information.
-# .
-# More information about X.Org can be found at:
-# <URL:http://www.X.org>
-# <URL:http://xorg.freedesktop.org>
-# <URL:http://lists.freedesktop.org/mailman/listinfo/xorg>
-# .
-# This package is built from the X.org xserver module.
+Package: xdmx
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: distributed multihead X server
+ Xdmx is a proxy X server that uses one or more other X servers as its
+ display device(s). It provides multi-head X functionality for displays that
+ might be located on different machines. Xdmx functions as a front-end X server
+ that acts as a proxy to a set of back-end X servers. All of the visible
+ rendering is passed to the back-end X servers. Clients connect to the Xdmx
+ front-end, and everything appears as it would in a regular multi-head
+ configuration. If Xinerama is enabled (e.g., with +xinerama on the command
+ line), the clients see a single large screen.
+ .
+ More information about X.Org can be found at:
+ <URL:http://www.X.org>
+ <URL:http://xorg.freedesktop.org>
+ <URL:http://lists.freedesktop.org/mailman/listinfo/xorg>
+ .
+ This package is built from the X.org xserver module.
+
+Package: xdmx-tools
+Architecture: any
+Depends: xdmx, ${shlibs:Depends}, ${misc:Depends}
+Replaces: xdmx (<= 2:1.1.1-10)
+Description: Distributed Multihead X tools
+ This package provides a collection of tools used for administration of
+ the Xdmx server; see the xdmx package for more information.
+ .
+ More information about X.Org can be found at:
+ <URL:http://www.X.org>
+ <URL:http://xorg.freedesktop.org>
+ <URL:http://lists.freedesktop.org/mailman/listinfo/xorg>
+ .
+ This package is built from the X.org xserver module.
 
 Package: xnest
 Architecture: any

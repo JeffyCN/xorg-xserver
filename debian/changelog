@@ -11,6 +11,8 @@ xorg-server (2:1.4.1~git20080517-1) UNRELEASED; urgency=low
   * Drop the XS- prefix from Vcs-* control fields.
   * Add x11-common to the Depends field of xnest, xvfb and xserver-xephyr (its
     init script sets up the /tmp/.X11-unix directory).
+  * Re-enable the dmx DDX, and build the xdmx and xdmx-tools packages (the
+    build is now fixed upstream); closes: #449254.
 
   [ Drew Parsons ]
   * Patch 95_xprint_disable_dbus disables dbus in Xprint by providing

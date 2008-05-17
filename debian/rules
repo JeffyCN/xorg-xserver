@@ -56,7 +56,7 @@ confflags += --disable-static \
 	     --with-serverconfig-path=/etc/X11/xserver \
 	     --with-rgb-path=/etc/X11/rgb \
 	     --enable-xtrap \
-	     --disable-dmx \
+	     --enable-dmx \
 	     --enable-vfb \
 	     --enable-kdrive \
 	     --enable-xephyr \
