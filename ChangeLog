@@ -1,3 +1,150 @@
+commit ddcca23a81abf5215f906a7ad097f1ed088ed92b
+Author: Peter Hutterer <peter@cs.unisa.edu.au>
+Date:   Thu Feb 7 15:48:04 2008 +1030
+
+    xkb: when copying the keymap, make sure the structs default to 0/NULL.
+    
+    It actually does help if a pointer is NULL rather than pointing to nirvana
+    when you're trying to free it lateron. Who would have thought?
+    (cherry picked from commit 7a97ca667405a42d008265c3a870210cc1da97dd)
+    (cherry picked from commit 0b0a09797302ac2171db5df20fc5110aafc8efbb)
+
+commit 4e5cf76ecaa6b20f825738b07c257f4929e4652a
+Author: Mart Raudsepp <mart.raudsepp@artecdesign.ee>
+Date:   Fri May 16 20:06:31 2008 +0300
+
+    xf86: Add AutoConfig driver for PCI ID 1022:2081 to 'amd'
+    
+    (cherry picked from commit ab9b0b36ac8ac72fc48c0abd91a83de49a18313c)
+    (cherry picked from commit 4fa89fbe18c929e0d36305ab47e7e17841309ffd)
+    ... and backported to 1.4 (back to no new devprivates and "amd" driver name)
+
+commit 22b1a9dd0f68e3307cdcf3e6f8fcaeda34acd483
+Author: Michel Dänzer <michel@tungstengraphics.com>
+Date:   Thu Oct 18 17:44:48 2007 +0200
+
+    EXA: Skip empty glyphs. (cherry picked from commit ce50bfd3369686cfecee5a138bd84ef1107a249d)
+
+commit 2989f1071648770b5bbbfd80979f04d949f3dc57
+Author: Daniel Stone <daniel@fooishbar.org>
+Date:   Fri May 16 19:49:05 2008 +0300
+
+    Prevent the -wm command line option from causing a SEGV
+    
+    The -wm (when mapped) option for the BackingStore support has been
+    causing the server to dereference a NULL pointer.
+    
+    This has probably been the case since backing store has been
+    implemented on top of Composite.
+    
+    It looks like (some of?) Composite didn’t expect its WIndowPtr
+    argument to be the root window.
+    
+    In Composite’s compCheckRedirect() function we now avoid calling
+    compAllocPixmap() and compFreePixmap() when the pWin pointer’s
+    parent member is NULL, as is it the case with a server’s root window.
+    
+    This addresses:
+    
+    https://bugs.freedesktop.org/show_bug.cgi?id=15878
+    (cherry picked from commit 04211c3532ca078420e3745a5eac3d9de120bc32)
+
+commit 33a9ee9ba0ab44548afafa965bbd0a715cb1509c
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Mon Mar 24 12:22:19 2008 -0400
+
+    Bug #13962: Re-arm the DPMS timer when re-enabling DPMS.
+    (cherry picked from commit 536f2ff5382aaaace3b55481e15366bb15d87801)
+
+commit a08f848d4cd4c8c6e055a1182542d053a0a32c6b
+Author: Adam Jackson <ajax@aspartame.nwnk.net>
+Date:   Sun Nov 18 11:57:01 2007 -0500
+
+    Bump DEFAULT_DPI to 96.
+    
+    75 is just nonsense.
+    (cherry picked from commit db9ae863536fff80b5463d99e71dc47ae587980d)
+
+commit d5a7badd6a0ea4ecbe76f0205aa53b42f7cd90dc
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Mon May 5 14:37:07 2008 -0400
+
+    Fix hal shutdown crash.
+    
+    Removing the device invalidates its ->next pointer.  Copy it aside before
+    destroying the device.
+    (cherry picked from commit f52f6c5c7efc281f9ac204fbaa4f71383df7463d)
+
+commit 458b487723a7beb792857c920e9be22c2ce4625d
+Author: Eric Anholt <eric@anholt.net>
+Date:   Fri Aug 17 12:14:16 2007 -0700
+
+    Fix overly-restrictive integer overflow check in EXA pixmap creation.
+    
+    The result was that at 32bpp, pixmaps of width 8192 or greater couldn't be
+    created, due to treating a pitch value as a width.
+    (cherry picked from commit bc2d516f16d94c805b4dfa8e5b9eef40ff0cbe98)
+
+commit 2621380cf680941a0423d64d827fb3513545ebf5
+Author: Michel Dänzer <michel@tungstengraphics.com>
+Date:   Thu Mar 20 09:18:29 2008 -0400
+
+    Fix RandR 1.2 driver interface conversion of two colour cursors to ARGB
+    
+    This patch (and not setting HARDWARE_CURSOR_BIT_ORDER_MSBFIRST on big endian
+    platforms) fixes it for me with the radeon driver and doesn't break intel.
+    
+    Correct patch this time :)
+    (cherry picked from commit da973e962d09854b571320dee7dd9569060bc39e)
+
+commit 9db5401d69f1fab8db4bdd166536a25e4516e231
+Author: Donnie Berkholz <dberkholz@gentoo.org>
+Date:   Thu May 8 00:08:12 2008 -0700
+
+    xprint: fix linking by including XSERVER_LIBS.
+
+commit 1022c7774b0a92946e87c61aa79b076a6ffe95ff
+Author: Donnie Berkholz <dberkholz@gentoo.org>
+Date:   Thu May 8 00:07:57 2008 -0700
+
+    xprint: fix build by adding {New,Delete}InputDeviceRequest.
+
+commit 9df3886354152250983171825daeb93a6a845369
+Author: Donnie Berkholz <dberkholz@gentoo.org>
+Date:   Thu May 8 00:06:16 2008 -0700
+
+    xephyr: fix linking by adding pixman and using XSERVER_LIBS.
+
+commit 6c5c1c5c9819fe9a5f2e2a6995017e414662d6cf
+Author: Donnie Berkholz <dberkholz@gentoo.org>
+Date:   Thu May 8 00:05:00 2008 -0700
+
+    dmx: link in XSERVER_LIBS.
+
+commit 71f0711f40d825de3f1a7a09de78c6181fb3a521
+Author: Donnie Berkholz <dberkholz@gentoo.org>
+Date:   Thu May 8 00:04:36 2008 -0700
+
+    dmx: fix build by adding {New,Delete}InputDeviceRequest.
+
+commit d0554a57489e272233bcb38cb453f2c0bc0b1729
+Author: Alan Coopersmith <alan.coopersmith@sun.com>
+Date:   Tue May 13 16:39:30 2008 -0700
+
+    When XKB fails to open rules file, log the file name, not the NULL file pointer
+    (cherry picked from commit 7cdc19b29d93bf15cecfd6b69e269fab2501bca0)
+
+commit 3f8ba890762513edc7eddbbbd4bb26f908540c8d
+Author: Julien Cristau <jcristau@debian.org>
+Date:   Sun May 11 23:17:27 2008 +0200
+
+    kdrive: allow disabling Composite
+    
+    KdInitOutput() used to enable Composite when it was disabled by default,
+    but now this hack prevents ``-extension Composite'' from working.
+    Remove it, as Composite is enabled by default anyway.
+    (cherry picked from commit 9dfb525f6c91acab5d1a65765a046bf9ee2aa082)
+
 commit 104048501f37b139d4113562ef1711978cc76018
 Author: Daniel Stone <daniel@fooishbar.org>
 Date:   Wed May 7 23:11:31 2008 +0300

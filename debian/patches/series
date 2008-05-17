@@ -14,7 +14,6 @@
 16_X86EMU-pass-the-correct-bus-dev-fn-tag-to-pci-emula.patch
 17_x86emu_handle_cpuid.patch
 21_glx_align_fixes.patch
-40_default_dpi_96.patch
 41_vbe_filter_less.diff
 43_allow_override_BIOS_EDID_preferred_mode.diff
 44_preferredmode_infinite_loop.diff

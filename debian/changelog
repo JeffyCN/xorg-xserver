@@ -1,8 +1,12 @@
-xorg-server (2:1.4.1~git20080507-2) UNRELEASED; urgency=low
+xorg-server (2:1.4.1~git20080517-1) UNRELEASED; urgency=low
 
   [ Julien Cristau ]
   * Pass -DPRE_RELEASE=0 in CPPFLAGS, so we don't print the pre-release
     warning in the Xorg log.
+  * Pull from upstream server-1.4-branch
+    + drop patch 40_default_dpi_96.patch applied upstream
+    + refresh patches 03_auto_load_driver.diff and
+      04_auto_load_driver_no_conf.diff
 
   [ Drew Parsons ]
   * Patch 95_xprint_disable_dbus disables dbus in Xprint by providing
