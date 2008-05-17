@@ -20,6 +20,7 @@ xorg-server (2:1.4.1~git20080517-1) UNRELEASED; urgency=low
     2a3d1421e0cc18822ae8f478fcc272e16a9e9340, with removal of
     CONFIG_LIB from configure.ac shifted to 94_xprint_XSERVER_LIBS.
     Closes: #472180.
+  * Enable the xprint DDX, and build the xprint and xprint-common packages.
 
  -- Drew Parsons <dparsons@debian.org>  Sat, 10 May 2008 03:18:04 +1000
 
