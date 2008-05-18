@@ -1,4 +1,4 @@
-xorg-server (2:1.4.1~git20080517-1) UNRELEASED; urgency=low
+xorg-server (2:1.4.1~git20080517-1) unstable; urgency=low
 
   [ Julien Cristau ]
   * Pass -DPRE_RELEASE=0 in CPPFLAGS, so we don't print the pre-release
@@ -22,7 +22,7 @@ xorg-server (2:1.4.1~git20080517-1) UNRELEASED; urgency=low
     Closes: #472180.
   * Enable the xprint DDX, and build the xprint and xprint-common packages.
 
- -- Drew Parsons <dparsons@debian.org>  Sat, 10 May 2008 03:18:04 +1000
+ -- Julien Cristau <jcristau@debian.org>  Sun, 18 May 2008 13:36:11 +0200
 
 xorg-server (2:1.4.1~git20080507-1) unstable; urgency=low
 
