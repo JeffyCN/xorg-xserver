@@ -514,6 +514,37 @@ remove_conffile_prepare () {
   fi
 }
 
+remove_conffile_lookup () {
+  # syntax: remove_conffile_lookup package filename
+  #
+  # Lookup the md5sum of a conffile in dpkg's database, and prepare for removal
+  # if it matches the actual file's md5sum.
+  #
+  # Call this function when you would call remove_conffile_prepare but only
+  # want to check against dpkg's status database instead of known checksums.
+
+  local package conffile old_md5sum
+
+  # validate arguments
+  if [ $# -ne 2 ]; then
+    usage_error "remove_conffile_lookup() called with wrong number of" \
+                "arguments; expected 1, got $#"
+    exit $SHELL_LIB_USAGE_ERROR
+  fi
+
+  package="$1"
+  conffile="$2"
+
+  if ! [ -e "$conffile" ]; then
+    return
+  fi
+  old_md5sum="$(dpkg-query -W -f='${Conffiles}' "$package" | \
+    awk '{ if (match($0, "^ '"$conffile"' ")) print $2}')"
+  if [ -n "$old_md5sum" ]; then
+    remove_conffile_prepare "$conffile" "$old_md5sum"
+  fi
+}
+
 remove_conffile_commit () {
   # syntax: remove_conffile_commit filename
   #
