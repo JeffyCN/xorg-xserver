@@ -1,7 +1,3 @@
 001_ubuntu_add_extra_modelines_from_xorg.patch -p1
 #06_use_proc_instead_of_sysfs_for_pci_domains.diff
 13_debian_add_xkbpath_env_variable.diff
-91_ttf2pt1
-91_ttf2pt1_updates
-92_xprint-security-holes-fix.patch
-93_spooltodir_check_file_exists

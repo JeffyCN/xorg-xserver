@@ -1,9 +1,12 @@
-xorg-server (2:1.4.99.901-3) UNRELEASED; urgency=low
+xorg-server (2:1.4.99.902-1) UNRELEASED; urgency=low
 
   * Add postrm script for xserver-xorg-core, to remove
     /var/log/Xorg.*.log{,.old} on purge (closes: #343384).
   * Use dh_* -s instead of -a in binary-arch, to fix FTBFS on s390 (which
     doesn't build xserver-xfbdev).
+  * New upstream release candidate.
+  * Stop building Xprt, and drop related patches; it will be provided as a
+    separate package.
 
  -- Julien Cristau <jcristau@debian.org>  Sun, 23 Mar 2008 15:39:16 +0100
 

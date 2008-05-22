@@ -1,3 +1,758 @@
+commit 9211a10b981008fb96f09d6933345e41a0872f2a
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Wed May 21 17:52:23 2008 -0400
+
+    xserver 1.4.99.902
+
+commit b69c74d14b7a777ae02aee0a8ff81efbff8cca6e
+Author: Aaron Plattner <aplattner@nvidia.com>
+Date:   Tue May 20 12:39:28 2008 -0700
+
+    Short-circuit PanoramiXTranslateVisualID after verifying that the visual actually exists first.
+    
+    This allows using PanoramiXTranslateVisualID to test whether a given visual made
+    it through PanoramiXVisualConsolidate.
+    (cherry picked from commit 8b3d26f5b6caff1766669deb0e2100d2dee3f185)
+
+commit 5efe36f7afde8b5bf4e853dd1dde2a6a027d613b
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Mon May 19 11:22:19 2008 -0400
+
+    Fix reduced-blanking mode filtering in RANDR 1.2.
+    
+    If the monitor isn't reduced-blanking (either through EDID logic, or
+    config file setting), then remove RB modes from the default pool.  Any
+    RB modes from the driver and config file pools will stick around though;
+    you asked for them, you got them.
+    (cherry picked from commit 0178b6a4abed0df3e90ba393709ed566105e7c2c)
+
+commit e644d2e73f72e7a3e1a9525bdde0de2012efec59
+Author: James Cloos <cloos@jhcloos.com>
+Date:   Mon May 12 03:03:13 2008 -0400
+
+    Prevent the -wm command line option from causing a SEGV
+    
+    The -wm (when mapped) option for the BackingStore support has been
+    causing the server to dereference a NULL pointer.
+    
+    This has probably been the case since backing store has been
+    implemented on top of Composite.
+    
+    It looks like (some of?) Composite didn’t expect its WIndowPtr
+    argument to be the root window.
+    
+    In Composite’s compCheckRedirect() function we now avoid calling
+    compAllocPixmap() and compFreePixmap() when the pWin pointer’s
+    parent member is NULL, as is it the case with a server’s root window.
+    
+    This addresses:
+    
+    https://bugs.freedesktop.org/show_bug.cgi?id=15878
+    
+    (cherry picked from commit 04211c3532ca078420e3745a5eac3d9de120bc32)
+
+commit 0230f39fa3b3076b7694b6443a7a3ad8f63f7b55
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Fri May 16 10:52:41 2008 -0400
+
+    RANDR 1.1 compat: remove senseless comparison against the virtual size.
+    (cherry picked from commit aad1c37b0951eae216ac323c5d8bfc6fbcf096bd)
+
+commit 95985256efa7e86cefe4b1541780eda12c0c8f89
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Fri May 16 10:51:32 2008 -0400
+
+    xf86SetDesiredModes(): Skip disabled CRTCs first thing.
+    (cherry picked from commit 14726b776d6cebb7d864b6ffa7554e1ce5637d5c)
+
+commit bedcf985580e7d6684ee9079fe955b6a7e49ad48
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Fri May 16 10:48:00 2008 -0400
+
+    Fix initial mode selection even harder.
+    
+    The first guess used to be "is the preferred mode for one output the
+    preferred mode on all outputs".  Instead, do "find the largest mode that's
+    preferred for at least one output and available on all outputs".
+    (cherry picked from commit 459f34b089aca4f4eee9752600c3a9e4f4e343ab)
+
+commit bd50c41f6f479822ec595e02b3ae7a2f6060ba06
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Fri May 16 10:31:58 2008 -0400
+
+    Redo RANDR compatibility output selection.
+    
+    Old logic was just the first one that happened to have an associated
+    CRTC.  The new logic tries to find one that's definitely connected, has
+    probed modes, and has the largest candidate mode.
+    (cherry picked from commit 96111c154713600dd534dd82104ac18b91466202)
+
+commit 0b031442fe7a04ac8c935ab5858854436f3f3d3c
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Fri May 16 10:25:12 2008 -0400
+
+    Re-add sync range inference from legacy setup to RANDR 1.2.
+    (cherry picked from commit a4bbe1c8bca08f3df5ff7e50444af6aef7ec8b25)
+
+commit b053c9768bca21e8df0df37f45465e2e14bc00fc
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Wed Apr 9 13:55:25 2008 -0400
+
+    Default X-SELinux to off.
+    
+    Applied only to 1.5 branch for purposes of release stability.  Reevaluate
+    this when we do 1.6.
+
+commit cfff55a2bb8618867513bd0f3e66d131ed4edaa8
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Mon May 12 14:53:37 2008 -0400
+
+    Fix fbdevhw initialization for PCI drivers.
+    
+    graphics/fb%d, not graphics:fb%d.  Thanks sysfs.  Thysfs.
+    (cherry picked from commit 86678e7cc2b021851ff508433fa160170f500c51)
+
+commit 1bd229d4ac36eaebf921a9b3526acd947ca0bfaf
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Mon May 5 14:37:07 2008 -0400
+
+    Fix hal shutdown crash.
+    
+    Removing the device invalidates its ->next pointer.  Copy it aside before
+    destroying the device.
+    (cherry picked from commit f52f6c5c7efc281f9ac204fbaa4f71383df7463d)
+
+commit 18a1d643bc82f15ad26059e2a479f5d5dd778343
+Author: Hans de Goede <j.w.r.degoede@hhs.nl>
+Date:   Wed Apr 23 12:28:30 2008 -0400
+
+    Prefer glxvisuals with stencil buffer for default visuals
+    
+    The first fbconfig which has a depthbuffer > 0  and doublebuf is choosen
+    when associating fbconfigs with the visuals, indepenent of stencil bits.
+    This happens to work ok on intel as there all fbconfigs with a
+    depthbuffer > 0 also have stencil bits.
+    
+    This patch fixes this by first trying to get a fbconfig for default X visuals
+    with both stencilbuf, depthbuf and doublebuffering, and if that fails fallback
+    to trying to get one with only a depthbuf and doublebuffering.
+    (cherry picked from commit f6e22d69af6bc8f63c3a46535a09e217696a679f)
+
+commit ce1f6de2e8d5473a8d6995638a7289fdc8f6dc4b
+Author: Alan Coopersmith <alan.coopersmith@sun.com>
+Date:   Tue May 13 16:39:30 2008 -0700
+
+    When XKB fails to open rules file, log the file name, not the NULL file pointer
+    (cherry picked from 7cdc19b29d93bf15cecfd6b69e269fab2501bca0 commit)
+
+commit 8afd1d62f6298d43367ce52f3b5612a197e99ca0
+Author: Aaron Plattner <aplattner@nvidia.com>
+Date:   Sun May 4 13:45:27 2008 -0700
+
+    Bug #14692: Allow drivers to have a say in Xinerama visual consolidation.
+    
+    Create a new exported global variable, XineramaVisualsEqualPtr.  Use this
+    pointer to decide whether two visuals are equal during visual consolidation.
+    This pointer can be wrapped, which allows drivers and extensions to control
+    which visuals are consolidated.  A wrapper can reject the visuals without
+    calling down, but must call down and return that result if it deems the visuals
+    equal.  This ensures that all layers agree that the visuals are equal.
+    
+    Pass the screen of the other visual into the VisualsEqual callchain.
+    
+    Don't free PanoramiXVisuals since we need it for PanoramiXTranslateVisualID.
+    
+    Don't skip the first visual on the other screen in PanoramiXMaybeAddVisual.
+    
+    Skip the loop in PanoramiXTranslateVisualID if screen is 0.
+    (cherry picked from commit c50b5d978981b13cdb22a9ad41c1b64f90cebe51)
+
+commit f2278a882f26a3176110241b65b3bead9b08110f
+Author: Julien Cristau <jcristau@debian.org>
+Date:   Sun May 11 23:17:27 2008 +0200
+
+    kdrive: allow disabling Composite
+    
+    KdInitOutput() used to enable Composite when it was disabled by default,
+    but now this hack prevents ``-extension Composite'' from working.
+    Remove it, as Composite is enabled by default anyway.
+    (cherry picked from commit 9dfb525f6c91acab5d1a65765a046bf9ee2aa082)
+
+commit 64948dc667fb6841147e87dafd5711b544511cf1
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Thu May 8 16:04:24 2008 -0400
+
+    Bug #13104: Remove broken XAA a1 glyph fast path.
+    
+    (cherry picked from commit f17ba5d5849c92603f453195aca384844ca76d74)
+
+commit f2aa0000a2220df4158ded8284d70954670aff36
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Tue May 6 17:52:37 2008 -0400
+
+    Bug #13104: Don't let XAA glyph pixmaps anywhere near video memory.
+    
+    Since glyphs are stored in pixmaps now, they can make their way into VRAM,
+    which invalidates a bunch of fast-path assumptions in the XAA code.  Thus
+    you end up doing color-expands or WriteBitmap from la-la land and your
+    aliased glyphs go all funny.
+    
+    Since XAA isn't ever growing the ability to do sane glyph accel, just force
+    glyph pixmaps into host memory by catching them at CreatePixmap time.
+    (cherry picked from commit 718652eaf9221e0eeec2c971dd7baa97f827451b)
+
+commit f7a9d30f825d5483cb89144a0dc2bfd0d1f47796
+Author: Daniel Stone <daniel@fooishbar.org>
+Date:   Wed May 7 22:24:19 2008 +0300
+
+    XKB: Actually explain keymap failures
+    
+    When something went wrong building a keymap, try to explain to the user
+    what it actually was, instead of the dreaded 'Failed to load XKB keymap'
+    catch-all.
+    (cherry picked from commit cf20df39cc78203d17b99223908af388ecbf7d0e)
+
+commit 3e7152704895223fae9407a3e109af82b2908c9b
+Author: Keith Packard <keithp@keithp.com>
+Date:   Sun May 4 21:51:08 2008 -0700
+
+    Empty the borderClip of manual redirect windows. (bug 15823)
+    
+    Thanks to Owen Taylor for root-causing this one.
+    
+    If a TreatAsTransparent window has any area in the borderClip, that will be
+    added to the totalClip region for use by other windows. That's wrong.
+    Instead, simply empty the borderClip for TreatAsTransparent windows right up
+    front.
+    (cherry picked from commit 6c1accce87c9bd640c1b4bbc49bae7d44b1cc97b)
+
+commit fd0ec73bcb780dbc04478b17ad6c02aa55ca2558
+Author: Jordan Crouse <jordan.crouse@amd.com>
+Date:   Mon Apr 21 12:09:00 2008 -0600
+
+    xf86: Change AutoConfig driver for PCI ID 022:2091 to 'geode'
+    (cherry picked from commit 4fa89fbe18c929e0d36305ab47e7e17841309ffd)
+
+commit 7c05b4c6214a9bbc8968c49a40363f8461f527d5
+Author: Alan Coopersmith <alan.coopersmith@sun.com>
+Date:   Thu Apr 24 19:02:43 2008 -0700
+
+    Bug 14247: If pkg-config can't find openssl.pc, just link with -lcrypto
+    
+    X.Org bugzilla #14247 <http://bugs.freedesktop.org/show_bug.cgi?id=14247>
+    (cherry picked from b1ae7c79db78cc3b789701f81328669f9f8ed80f commit)
+
+commit 947419bce25e6f003c74ba72a33ee6145396d1d8
+Author: Dave Airlie <airlied@redhat.com>
+Date:   Thu Apr 24 16:37:29 2008 +1000
+
+    glx: test for valid read and draw privates before using them
+    
+    this should fix a bug where f-spot exiting blows up the X server
+    (cherry picked from commit ae982a27e4059fecd4048d245e6aa02f8dcc97d0)
+
+commit d7db6dd1a15393e9a30acfe87f7651ca1c9a0d75
+Author: Dave Airlie <airlied@linux.ie>
+Date:   Tue Apr 22 15:13:57 2008 +1000
+
+    GLcore: make googleearth not crash the server on sw-rendering.
+    
+    I don't think this is the 100% correct answer as I get log spam saying
+    (EE) DoSwapInterval: cx = 0x98b8998, GLX screen = 0x96dd780
+    (EE) AIGLX: cx->pGlxScreen->swapInterval == NULL
+    
+    but thats better than X exiting in my book.
+    (cherry picked from commit a368ab757edf36ed7bbda023673d28883ce11231)
+
+commit 5a2b538c1bc020af5bc33027ba0d9698338dca46
+Author: Kristian Høgsberg <krh@redhat.com>
+Date:   Fri Apr 11 11:09:13 2008 -0400
+
+    Make DRI2 a serverlayout/serverflags option.
+    
+    Add xf86DRI2Enabled() to export the value of the setting.
+    (cherry picked from commit 35982bc109d424c464551ab22ec90af69908c884)
+
+commit 46b74e84508b614b125e71fd0f3e0cc4fc3fe5b5
+Author: Tilman Sauerbeck <tilman@code-monkey.de>
+Date:   Mon Apr 14 11:43:51 2008 +0200
+
+    EXA: Update pixmaps' accel_blocked field in ModifyPixmapHeader.
+    (cherry picked from commit f133d85778462134f366389bde7673bff7845fa8)
+
+commit 4161c9781be6afea9647307152f85cf8f1b20a3a
+Author: Tilman Sauerbeck <tilman@code-monkey.de>
+Date:   Mon Apr 14 09:58:49 2008 +0200
+
+    EXA: Teach exaCompositeFallbackPictDesc() about x8r8g8b8.
+    (cherry picked from commit bb8868540f017b121d698da45e552ffb55a57cea)
+
+commit 32604d0f1397c5b5b944a78a47caf1db324312f7
+Author: Dave Airlie <airlied@redhat.com>
+Date:   Mon Apr 14 11:45:12 2008 +1000
+
+    glx: silly nitpick...
+    
+    even though i and j are the same, we use i to derefence visuals everywhere else
+    (cherry picked from commit 3e12c5bb67f3049156475d5cbf4e899aaded76bb)
+
+commit 738aea7a94bf07a986c7b7d83346b86337d65d1e
+Author: Dave Airlie <airlied@redhat.com>
+Date:   Mon Apr 14 11:40:38 2008 +1000
+
+    glcore: make visualRating GLX_NONE - note GLX_NONE is not == 0
+    
+    Finally glxinfo returns the set of 3 visuals and glxgears works again for me on
+    sw rendering
+    (cherry picked from commit 97565c0f394f16d042c614695c8b7b4ac354f2a3)
+
+commit d6916b149d2fac9812d7d43a8a40df0b0836550f
+Author: Dave Airlie <airlied@redhat.com>
+Date:   Mon Apr 14 10:47:28 2008 +1000
+
+    glcore: zero fbconfigs before filling them in.
+    
+    I'm not sure this the complete proper solution, perhaps it should explicitly fill
+    in ever field.
+    
+    This at least makes glxinfo on glcore return sensible information, it doesn't make
+    gears work yet though.
+    (cherry picked from commit c61087c82784633e522bd9392172b43656bdf45e)
+
+commit db00d4a4dc3af66ff8a0613576a3e05cfd5245be
+Author: Matt Turner <mattst88@gmail.com>
+Date:   Sat Apr 12 20:39:18 2008 +0200
+
+    Check for __x86_64__ when we check for __amd64__
+    
+    It seems Intel C Compiler neglects to define __amd64__, __amd64, or
+    amd64, but *does* define __x86_64__.
+    (cherry picked from commit 1fa4de80fcfc697b5e5879cc351fb3e9dbf6acbe)
+
+commit d2f44719336a800a3c9e7ba4c772f74615e91530
+Author: Tilman Sauerbeck <tilman@code-monkey.de>
+Date:   Thu Apr 10 21:36:19 2008 +0200
+
+    Fixed configure.ac for autoconf 2.62.
+
+commit 099d1bef220700c5db6e6f01226690a15eab2ea5
+Author: Peter Hutterer <peter@cs.unisa.edu.au>
+Date:   Fri Feb 22 11:01:51 2008 +1030
+
+    dix: Call DeleteInputDeviceRequest from CloseDownDevices (#14418)
+    
+    The DDX (xfree86 anyway) maintains its own device list in addition to the one
+    in the DIX. CloseDevice will only remove it from the DIX, not the DDX. If the
+    server then restarts (last client disconnects), the DDX devices are still
+    there, will be re-initialised, then the hal devices come in and are added too.
+    This repeats until we run out of device ids.
+    
+    This also requires us to strdup() the default pointer/keyboard in
+    checkCoreInputDevices.
+    
+    X.Org Bug 14418 <http://bugs.freedesktop.org/show_bug.cgi?id=14418>
+    (cherry picked from commit 6d22a9615a0e6ab3d00b0bcb22ff001b6ece02ae)
+
+commit 566037a914742ed3299dc24a18e828920b531293
+Author: Dave Airlie <airlied@linux.ie>
+Date:   Wed Apr 9 14:27:58 2008 +1000
+
+    quirk: add quirk for ACR 640x350 default mode is wrong
+    
+    RH #440186
+    (cherry picked from commit b19027fbaea4c3a146926e862983e0e3411fff3d)
+
+commit 032732270851ec2a12fc36e421f7335a2bd6ec34
+Author: Michel Dänzer <michel@tungstengraphics.com>
+Date:   Wed Apr 9 13:37:59 2008 +0200
+
+    Fix off-by-one error in ProcXResQueryClients().
+    
+    Fixes memory corruption reported at
+    http://bugs.freedesktop.org/show_bug.cgi?id=14004 .
+    (cherry picked from commit 0d1746995d91b55e40f233f0c38b56bafe896d38)
+
+commit 85b855f26f1578d52e9ed1dd0e3a9a1340ef1a2d
+Author: Adam Tkac <atkac@redhat.com>
+Date:   Mon Apr 7 10:20:02 2008 -0400
+
+    Fix Xvfb input when building against current X sources.
+    (cherry picked from commit 726dcd9e4ebfb09c0685450dca6e9fae7e773814)
+
+commit fe87d921da97f498e860270e2eeb73a860f19989
+Author: Julien Cristau <jcristau@debian.org>
+Date:   Fri Apr 4 19:01:40 2008 +0200
+
+    Fix the clock_gettime check for glibc-based non-Linux systems
+    
+    We need to define _POSIX_C_SOURCE on glibc, not just Linux, so add a new
+    test for the __GLIBC__ macro.
+    (cherry picked from commit 6c0cfe3d43b177c4cfaf7e228f32c655f9a98459)
+
+commit 9a908769e62fe56930ad3a2d3375e29119a2fe09
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Fri Apr 4 12:58:12 2008 -0400
+
+    Fix PCI config space cycles from int10 emulator.
+    
+    The top bit of 0xCF8 is an enable bit, not part of the domain.  Sending
+    cycles to domain 128 instead of domain 0 is rarely the right thing to do.
+    (cherry picked from commit cc7c045bae01d90d8f1b750080ba48a96e983c68)
+
+commit bd91565ac8dc66babb011bfc63bcc071b7bf6d32
+Author: Eric Anholt <eric@anholt.net>
+Date:   Mon Mar 17 14:22:39 2008 -0700
+
+    Fix clock_gettime presence detect on FreeBSD.
+    
+    For non-Linux, _POSIX_C_SOURCE and friends restrict symbols defined rather
+    than enabling defines of symbols.  Additionally, CLOCK_MONOTONIC was
+    apparently added to the standard around 2000 anyway, not 1993.
+    (cherry picked from commit d1de3dda8efe501d4192c8a99c34ab4265316c32)
+
+commit b2704de8a7425988ab725bfad949976dba1c0c97
+Author: Dave Airlie <airlied@redhat.com>
+Date:   Fri Apr 4 09:29:51 2008 +1000
+
+    quirk: add quirk for ACER EDID
+    (cherry picked from commit f0915fb3c4a9712200882440a64d11dc595a02bb)
+
+commit 8ccdaa288a63cad64dd5685b5b5bcb060e3793ff
+Author: Hong Liu <hong.liu@intel.com>
+Date:   Wed Apr 2 10:43:19 2008 +0800
+
+    Bug #15160: quirk Proview AY765C
+    
+    prefer first detailed timing
+    (cherry picked from commit ebc56aca8bdfec1918cac3c8380895dfddea48ce)
+
+commit 8059b57f9ba85663ee3ef8dccb46ed915368965d
+Author: Goneri Le Bouder <goneri@rulezlan.org>
+Date:   Tue Apr 1 20:19:40 2008 +0200
+
+    xfree86: don't crash in AutoConfig if the primary device is not pci
+    
+    Only call matchDriverFromFiles() if we found a pci device.
+    Debian bug#472823 (http://bugs.debian.org/472823).
+    (cherry picked from commit 9500033b9ecdfaf5a56a4355ffc94d74cb17ca17)
+
+commit 841aa08ea435e1f1bf11d2f56c6df1e66c2de020
+Author: Fredrik Höglund <fredrik@kde.org>
+Date:   Mon Mar 31 21:24:59 2008 +0200
+
+    EXA: Optimize the eviction scanning loop in exaOffscreenAlloc.
+    
+    Reduce the cost of the inner loop, by keeping a set of pointers to the
+    first and the last areas in the series, subtracting the cost of the first
+    area from the score, and adding the cost of the last area while walking
+    the list.  This commit also moves the scanning loop from exaOffscreenAlloc
+    into a separate function.
+    
+    Idea by Michel Dänzer.
+    (cherry picked from commit 8074676d2df8d577b443e3fa5e22d7c71c944bd1)
+
+commit 2e4b72dd8485df1f89ce4533a5778514ad1fc917
+Author: Fredrik Höglund <fredrik@kde.org>
+Date:   Mon Mar 31 21:15:50 2008 +0200
+
+    EXA: Improve the algorithm used for tracking offscreen pixmap use.
+    
+    Replace the current score keeping algorithm with a rolling counter that's
+    incremented in ExaOffscreenMarkUsed, with the previous value being stored
+    in the area.  exaOffscreenAlloc uses the difference between the counter
+    value and the value in the area when deciding which area to evict.
+    It now also takes the size of the areas into account, and favors evicting
+    smaller areas.
+    
+    The credit for these ideas goes to Michel Dänzer.
+    (cherry picked from commit 93d876891dbba41b920a9a29a5de77f647f43928)
+
+commit 32b5c67145a5386613153592444c7a9b718d425a
+Author: Daniel Stone <daniel@fooishbar.org>
+Date:   Fri Mar 28 10:23:36 2008 +0200
+
+    gitignore: Add two more bits
+    
+    Get slightly better at ignoring vim swap files, and let people keep
+    local changes if they want to.
+    (cherry picked from commit 7034484f0887ea0f8ab956515f2d9301ea5842ce)
+
+commit a2fcdfd5f9b98851f0e7e2b9b692fe4150a2ca0b
+Author: Dave Airlie <airlied@redhat.com>
+Date:   Thu Mar 27 15:18:39 2008 +1000
+
+    quirk: fix LPL monitors properly.
+    
+    no point having a h cm fix when we really want to copy the sizes from the
+    other place.
+    
+    RH BZ 435216
+    (cherry picked from commit c747030a49dd289e873e2b686cd129d840e55468)
+
+commit db62e494ffb087c41dcab21aa075df93ca6ff09e
+Author: Hasso Tepper <hasso@estpak.ee>
+Date:   Mon Apr 7 14:09:04 2008 +0300
+
+    configure.ac: DragonFly BSD support
+    
+    Add support for DragonFly BSD, which is just the same as FreeBSD for all
+    of these cases.
+    (cherry picked from commit 0f87b41a432a6472a15ec0c9dee997e3bddbd0f2)
+
+commit 685a04c2bfa779203bd6101f065b682cc0552514
+Author: Owen W. Taylor <otaylor@fishsoup.net>
+Date:   Thu Apr 3 14:50:05 2008 -0400
+
+    EXA: Fix TS origin computation when implementing RenderComposite with tiling.
+    (cherry picked from commit 6b1a27023e48b661c4bb3b61181ac57608d8e448)
+
+commit ff886a66de637fce7f1669269e583434c419db95
+Author: Kristian Høgsberg <krh@redhat.com>
+Date:   Fri Apr 4 10:46:45 2008 -0400
+
+    Convert __DRIconfigs after we've made sure createNewScreen succeeded.
+    (cherry picked from commit ec17900f52bbd25d07566834756e5c7e832e0463)
+
+commit d1dd7749106798b172a61ff2e4fd818d5b207f51
+Author: Kristian Høgsberg <krh@redhat.com>
+Date:   Thu Apr 3 16:44:32 2008 -0400
+
+    Only autoload RECORD if it was enabled.
+    (cherry picked from commit 16a8ce75585ea360c39e0ffce4f7bb26a359b754)
+
+commit 81af92f5d912869f928967b1b45f8ac0b6bee8d0
+Author: Kristian Høgsberg <krh@redhat.com>
+Date:   Wed Apr 2 19:21:41 2008 -0400
+
+    Pick up dri2proto from the standard proto header include path.
+
+commit 856d9dd61548f3b45c5ea64bbde51c8f96307c38
+Author: Kristian Høgsberg <krh@redhat.com>
+Date:   Wed Apr 2 19:06:40 2008 -0400
+
+    Send the GLX_EXT_texture_from_pixmap attributes to the client.
+
+commit bbd87f85a30916e19155f3e76ad8d8d5a8a5d867
+Author: Kristian Høgsberg <krh@redhat.com>
+Date:   Wed Apr 2 18:00:06 2008 -0400
+
+    Add @XORG_CFLAGS@ to satisfy xf86* includes.
+    
+    Pointed out by Hasso Tepper.
+
+commit 24781227930626b26695d4db603dc1bf621e4cd1
+Author: Kristian Høgsberg <krh@redhat.com>
+Date:   Wed Apr 2 12:38:36 2008 -0400
+
+    dri2: Unbreak glcore visual setup.
+
+commit 7d97c19c2d530c8db16b01de9b168dd910059b4e
+Author: Xiang, Haihao <haihao.xiang@intel.com>
+Date:   Wed Apr 2 16:29:30 2008 +1000
+
+    dri2: fix crasher if DRI2Connect fails
+
+commit 2156bdf3b7b5b7d3ee4d3278eac0f28c7bff830a
+Author: Kristian Høgsberg <krh@redhat.com>
+Date:   Wed Mar 26 19:28:09 2008 -0400
+
+    Implement DRI2 direct rendering and update AIGLX to DRI interface changes.
+    
+    Get rid of glcontextmodes.[ch] from build, rename __GlcontextModes to
+    __GLXcontext.  Drop all #includes of glcontextmodes.h and glcore.h.
+    Drop the DRI context modes extension.
+    
+    Add protocol code to DRI2 module and load DRI2 extension by default.
+    (cherry picked from commit c40e0b51f0d9ef5e1f30f233d7db1e6db9d6681b)
+
+commit a45586da2b2377e6fd80704b3ab454ab868f20eb
+Author: Thomas Jaeger <thjaeger@gmail.com>
+Date:   Tue Apr 1 15:27:06 2008 +0300
+
+    XKB: Fix processInputProc wrapping
+    
+    If input processing is frozen, only wrap realInputProc: don't smash
+    processInputProc as well.  When input processing is thawed, pIP will be
+    rewrapped correctly.
+    
+    This supersedes the previous workaround in 50e80c9.
+    
+    Signed-off-by: Daniel Stone <daniel@fooishbar.org>
+    (cherry picked from commit 37b1258f0a288a79ce6a3eef3559e17a67c4dd96)
+
+commit bde2890148683118eaec4140c206c5f90fb44fa0
+Author: Eamon Walsh <ewalsh@tycho.nsa.gov>
+Date:   Mon Mar 31 17:34:07 2008 -0400
+
+    XSELinux: Add a request to get a client's context from a resource ID.
+    (cherry picked from commit 9f56fc580646a519875b5a1452738d8c6e1fa860)
+
+commit c26bccf4173a037aa403c511dd08fd63cbbed87a
+Author: Eamon Walsh <ewalsh@tycho.nsa.gov>
+Date:   Fri Mar 28 14:01:34 2008 -0400
+
+    XSELinux: Add xorg.conf option for permissive/enforcing/disabled.
+    Patch by Joe Nall.
+    
+    The option goes in the "extmod" subsection.
+    TODO: Make it easier for extension modules to handle their own options.
+    (cherry picked from commit b5f98fcea2024c67e598947782913982072cf4fb)
+
+commit ae8edf3ee78ec1786c71b60ac0a5c9a2efb4e857
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Tue Mar 25 12:48:22 2008 -0400
+
+    Fix that last commit.
+    
+    I can apply patches, really.
+    (cherry picked from commit 333e7123dc484888d79c0f5aa3977bd72f1eb341)
+
+commit ff99a3aa2b6f3918c7692f360a3df30cf5a541ec
+Author: Sascha Hlusiak <saschahlusiak@arcor.de>
+Date:   Tue Mar 25 12:32:33 2008 -0400
+
+    Fix getValuatorEvents to compute number of valuators correctly.
+    (cherry picked from commit e7a364425547103a98acabfc67d16e1ae0c2967f)
+
+commit 2d312eaf4f5f9cb1d8f08691125a0d91243932fa
+Author: David Nusinow <dnusinow@debian.org>
+Date:   Thu Feb 28 19:45:21 2008 -0500
+
+    Bug #10016: Implement WM_CLASS hints in Xephyr.
+    (cherry picked from commit f028e245a7932362656701c08fcfbfa8e8949077)
+
+commit d6ec5eaded2a645f132f84162b5ab0a9f513e38e
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Mon Mar 24 13:37:42 2008 -0400
+
+    Bug #11510: Fix build without RECORD.
+    (cherry picked from commit 862ff9ac92037e13629329eb6ba50ff6bd2c5f71)
+
+commit f250352d2e6676af11d734c109f8edb0231f5164
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Mon Mar 24 13:33:38 2008 -0400
+
+    Bug #11508: Fix build without XV.
+    (cherry picked from commit 87bfd3bd96c714a1c252d42408b5a1a4ff9dab06)
+
+commit fdf927c2cdd1b92f0774f977d3195532294715d7
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Mon Mar 24 12:22:19 2008 -0400
+
+    Bug #13962: Re-arm the DPMS timer when re-enabling DPMS.
+    (cherry picked from commit 536f2ff5382aaaace3b55481e15366bb15d87801)
+
+commit 80968c4a91e16533cfc42c88a3e40af4a84112c5
+Author: Julien Cristau <jcristau@debian.org>
+Date:   Sat Mar 22 17:31:08 2008 +0100
+
+    xaa: use xf86ReturnOptValBool instead of xf86IsOptionSet
+    
+    The latter doesn't return the option's value, just whether it's present
+    in the configuration.
+    (cherry picked from commit 4217ba0cf0c9bbea3774760e836ab372acf3237c)
+
+commit f40bd686e502c4b73b65dcfbc7321704dd663052
+Author: Julien Cristau <jcristau@debian.org>
+Date:   Sat Mar 22 17:28:48 2008 +0100
+
+    exa: use xf86ReturnOptValBool instead of xf86IsOptionSet
+    
+    The latter doesn't give you the option's value, it just tells you if
+    it's present in the configuration.  So using Option "EXANoComposite" "false"
+    disabled composite acceleration.
+    (cherry picked from commit 6b9d2bb1f7f87acbf275027af9c2982e91e5faed)
+
+commit 84a27f7a92b60c345b4f055e41e239d8ebbccc60
+Author: Michel Dänzer <michel@tungstengraphics.com>
+Date:   Thu Mar 20 09:18:29 2008 -0400
+
+    Fix RandR 1.2 driver interface conversion of two colour cursors to ARGB
+    
+    This patch (and not setting HARDWARE_CURSOR_BIT_ORDER_MSBFIRST on big endian
+    platforms) fixes it for me with the radeon driver and doesn't break intel.
+    
+    Correct patch this time :)
+    (cherry picked from commit da973e962d09854b571320dee7dd9569060bc39e)
+
+commit a65e9722c4aaba098dcf49dbcd13a13e0cadbda8
+Author: Alan Coopersmith <alan.coopersmith@sun.com>
+Date:   Wed Mar 19 16:04:16 2008 -0700
+
+    Make Xevie private symbol names less generic
+    
+    Makes it easier to figure out what you're seeing in the stack trace
+    instead of wondering where in the server "ProcSend" is.
+    (cherry picked from commit 060a99444ee25a684b0ab9b4819bf8e855aea2d8)
+
+commit 0aa3b971b4b0cc7b22e4e916ca77c6b673b6bb51
+Author: Alan Coopersmith <alan.coopersmith@sun.com>
+Date:   Wed Mar 19 14:06:53 2008 -0700
+
+    Xevie cleanups, byteswapping fixes & request length check fixes
+    (cherry picked from commit f37046984d7839faefa4d716624e4a85ddde9634)
+
+commit 21dc18624544c87c711b3aba63d96cbbf4637505
+Author: Dodji Seketeli <dodji@seketeli.org>
+Date:   Tue Mar 18 14:00:15 2008 +0100
+
+    [Xephyr/DRI] correctly route motion events targeted at GL drawable
+    (cherry picked from commit cdadd2ff9bade318caac5c1d9bcdc8a001347da9)
+
+commit 4f0755d6d41055be091d3dea477697a2617e1505
+Author: Jesse Barnes <jbarnes@jbarnes-t61.(none)>
+Date:   Mon Mar 17 08:33:01 2008 -0700
+
+    Fail CRTC configuration if !vtSema
+    
+    Unless we check for vtSema before calling into the CRTC and output callbacks,
+    we may end up trying to access video memory that no longer exists, leading to a
+    crash.  So if we don't have vtSema, return FALSE to the caller, indicating that
+    we didn't do anything.
+    
+    Fixes #14444.
+    (cherry picked from commit bee2ddf35f75086cee951142098637f2c756b96b)
+
+commit 727e22c8305a42987841e96b190a23a56259cd8f
+Author: Matthieu Herrb <matthieu.herrb@laas.fr>
+Date:   Sun Mar 16 18:46:11 2008 +0100
+
+    test for the presence of pci_system_init_dev_mem() before calling it.
+    
+    This avoids creating a dependency on -current libpciaccess for
+    BSD systems other than OpenBSD (which don't otherwise need it).
+    (cherry picked from commit db248ffb840a0c113b6eb508a0fa1e74e752474d)
+
+commit a399b77e8f1034c3b92c5b7eb3445d1e5b64a8e9
+Author: Donnie Berkholz <dberkholz@gentoo.org>
+Date:   Fri Mar 14 18:41:25 2008 -0700
+
+    Xephyr: Build fix: Port across XF86dri.c changes from Mesa.
+    (cherry picked from commit aa231f28d56402d7daea6cbd3002fbf760f79497)
+
+commit c81a8c3eac7864febbef9782a35020b61daa1352
+Author: Donnie Berkholz <dberkholz@gentoo.org>
+Date:   Fri Mar 14 18:41:07 2008 -0700
+
+    Xephyr: Distribute ephyrdriext.h in tarballs.
+    (cherry picked from commit a955c3b587b22b8bf20cb6bedbbec4ad5fcb32ac)
+
+commit 6b75b44d9e19c5b94985728d30c1307ba1ba8b8c
+Author: Daniel Stone <daniel@fooishbar.org>
+Date:   Fri Mar 14 21:58:27 2008 +0200
+
+    XkbCopyKeymap: Fix broken indentation
+    
+    An astute observer will note that the entirety of XkbCopyKeymap is indented
+    with spaces, and no tabs whatsoever, and not commit changes which break the
+    otherwise consistent indentation.
+    A non-astute observer will note the breakage when the commit mail comes
+    through with clearly broken indentation.
+    A polite, non-astute, observer will then fix it.
+    
+    C'est la vie.
+    (cherry picked from commit 090b26db767d296e7a3452da83b136d1caa0ed01)
+
 commit 98249dfa98b53a238b7d881beb5ec8b85f28ecd0
 Author: Eamon Walsh <ewalsh@tycho.nsa.gov>
 Date:   Thu Mar 20 20:03:02 2008 -0400
