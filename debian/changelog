@@ -8,6 +8,7 @@ xorg-server (2:1.4.99.902-1) UNRELEASED; urgency=low
     + refresh 13_debian_add_xkbpath_env_variable.diff
     + doesn't crash when there is no pci device (closes: #472823)
     + includes a quirk for LPL monitors with broken EDID (closes: #473260)
+    + XKB is now enabled in Xnest (closes: #164379)
   * Stop building Xprt, and drop related patches; it will be provided as a
     separate package.
 
