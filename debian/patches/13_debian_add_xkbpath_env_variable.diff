@@ -17,7 +17,7 @@
      if (strcmp(argv[i],"-kb")==0) {
 --- xorg-server.orig/os/utils.c
 +++ xorg-server/os/utils.c
-@@ -678,6 +678,7 @@
+@@ -685,6 +685,7 @@
   */
  void InitGlobals(void)
  {

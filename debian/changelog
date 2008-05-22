@@ -5,6 +5,7 @@ xorg-server (2:1.4.99.902-1) UNRELEASED; urgency=low
   * Use dh_* -s instead of -a in binary-arch, to fix FTBFS on s390 (which
     doesn't build xserver-xfbdev).
   * New upstream release candidate.
+    + refresh 13_debian_add_xkbpath_env_variable.diff
   * Stop building Xprt, and drop related patches; it will be provided as a
     separate package.
 
