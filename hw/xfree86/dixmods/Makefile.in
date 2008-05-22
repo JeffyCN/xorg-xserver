@@ -136,6 +136,7 @@ librecord_la_OBJECTS = $(am_librecord_la_OBJECTS)
 librecord_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
 	$(librecord_la_LDFLAGS) $(LDFLAGS) -o $@
+@RECORD_TRUE@am_librecord_la_rpath = -rpath $(extsmoduledir)
 libshadow_la_DEPENDENCIES = $(top_builddir)/miext/shadow/libshadow.la
 am_libshadow_la_OBJECTS = shmodule.lo
 libshadow_la_OBJECTS = $(am_libshadow_la_OBJECTS)
@@ -251,6 +252,8 @@ DMXXIEXAMPLES_DEP_CFLAGS = @DMXXIEXAMPLES_DEP_CFLAGS@
 DMXXIEXAMPLES_DEP_LIBS = @DMXXIEXAMPLES_DEP_LIBS@
 DMXXMUEXAMPLES_DEP_CFLAGS = @DMXXMUEXAMPLES_DEP_CFLAGS@
 DMXXMUEXAMPLES_DEP_LIBS = @DMXXMUEXAMPLES_DEP_LIBS@
+DRI2PROTO_CFLAGS = @DRI2PROTO_CFLAGS@
+DRI2PROTO_LIBS = @DRI2PROTO_LIBS@
 DRIPROTO_CFLAGS = @DRIPROTO_CFLAGS@
 DRIPROTO_LIBS = @DRIPROTO_LIBS@
 DRIVER_MAN_DIR = @DRIVER_MAN_DIR@
@@ -440,6 +443,11 @@ XWIN_SYS_LIBS = @XWIN_SYS_LIBS@
 YACC = @YACC@
 YFLAGS = @YFLAGS@
 __XCONFIGFILE__ = @__XCONFIGFILE__@
+abi_ansic = @abi_ansic@
+abi_extension = @abi_extension@
+abi_font = @abi_font@
+abi_videodrv = @abi_videodrv@
+abi_xinput = @abi_xinput@
 abs_builddir = @abs_builddir@
 abs_srcdir = @abs_srcdir@
 abs_top_builddir = @abs_top_builddir@
@@ -508,6 +516,7 @@ SUBDIRS = extmod
 @AFB_TRUE@AFBMOD = libafb.la
 @CFB_TRUE@CFBMOD = libcfb.la libcfb32.la
 @MFB_TRUE@MFBMOD = libmfb.la
+@RECORD_TRUE@RECORDMOD = librecord.la
 module_LTLIBRARIES = $(AFBMOD) \
                      $(CFBMOD) \
                      libfb.la \
@@ -516,7 +525,7 @@ module_LTLIBRARIES = $(AFBMOD) \
                      libshadow.la
 
 extsmoduledir = $(moduledir)/extensions
-extsmodule_LTLIBRARIES = librecord.la \
+extsmodule_LTLIBRARIES = $(RECORDMOD) \
 			 $(DBEMOD) \
                          $(GLXMODS) \
                          $(XTRAPMOD)
@@ -722,7 +731,7 @@ libglx.la: $(libglx_la_OBJECTS) $(libglx_la_DEPENDENCIES)
 libmfb.la: $(libmfb_la_OBJECTS) $(libmfb_la_DEPENDENCIES) 
 	$(libmfb_la_LINK) $(am_libmfb_la_rpath) $(libmfb_la_OBJECTS) $(libmfb_la_LIBADD) $(LIBS)
 librecord.la: $(librecord_la_OBJECTS) $(librecord_la_DEPENDENCIES) 
-	$(librecord_la_LINK) -rpath $(extsmoduledir) $(librecord_la_OBJECTS) $(librecord_la_LIBADD) $(LIBS)
+	$(librecord_la_LINK) $(am_librecord_la_rpath) $(librecord_la_OBJECTS) $(librecord_la_LIBADD) $(LIBS)
 libshadow.la: $(libshadow_la_OBJECTS) $(libshadow_la_DEPENDENCIES) 
 	$(libshadow_la_LINK) -rpath $(moduledir) $(libshadow_la_OBJECTS) $(libshadow_la_LIBADD) $(LIBS)
 libwfb.la: $(libwfb_la_OBJECTS) $(libwfb_la_DEPENDENCIES) 

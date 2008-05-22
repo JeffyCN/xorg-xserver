@@ -57,9 +57,9 @@ am_libglx_la_OBJECTS = glxcmds.lo glxcmdsswap.lo glxext.lo \
 	render2swap.lo renderpix.lo renderpixswap.lo rensize.lo \
 	single2.lo single2swap.lo singlepix.lo singlepixswap.lo \
 	singlesize.lo swap_interval.lo xfont.lo
-nodist_libglx_la_OBJECTS = glapi.lo glcontextmodes.lo glthread.lo \
-	indirect_dispatch.lo indirect_dispatch_swap.lo \
-	indirect_reqsize.lo indirect_size_get.lo indirect_table.lo
+nodist_libglx_la_OBJECTS = glapi.lo glthread.lo indirect_dispatch.lo \
+	indirect_dispatch_swap.lo indirect_reqsize.lo \
+	indirect_size_get.lo indirect_table.lo
 libglx_la_OBJECTS = $(am_libglx_la_OBJECTS) \
 	$(nodist_libglx_la_OBJECTS)
 libglxdri_la_LIBADD =
@@ -136,6 +136,8 @@ DMXXIEXAMPLES_DEP_CFLAGS = @DMXXIEXAMPLES_DEP_CFLAGS@
 DMXXIEXAMPLES_DEP_LIBS = @DMXXIEXAMPLES_DEP_LIBS@
 DMXXMUEXAMPLES_DEP_CFLAGS = @DMXXMUEXAMPLES_DEP_CFLAGS@
 DMXXMUEXAMPLES_DEP_LIBS = @DMXXMUEXAMPLES_DEP_LIBS@
+DRI2PROTO_CFLAGS = @DRI2PROTO_CFLAGS@
+DRI2PROTO_LIBS = @DRI2PROTO_LIBS@
 DRIPROTO_CFLAGS = @DRIPROTO_CFLAGS@
 DRIPROTO_LIBS = @DRIPROTO_LIBS@
 DRIVER_MAN_DIR = @DRIVER_MAN_DIR@
@@ -325,6 +327,11 @@ XWIN_SYS_LIBS = @XWIN_SYS_LIBS@
 YACC = @YACC@
 YFLAGS = @YFLAGS@
 __XCONFIGFILE__ = @__XCONFIGFILE__@
+abi_ansic = @abi_ansic@
+abi_extension = @abi_extension@
+abi_font = @abi_font@
+abi_videodrv = @abi_videodrv@
+abi_xinput = @abi_xinput@
 abs_builddir = @abs_builddir@
 abs_srcdir = @abs_srcdir@
 abs_top_builddir = @abs_top_builddir@
@@ -413,8 +420,6 @@ INCLUDES = \
 
 nodist_libglx_la_SOURCES = indirect_size.h \
 			   glapi.c \
-			   glcontextmodes.c \
-			   glcontextmode.h \
 			   glthread.c \
 			   indirect_dispatch.c \
 			   indirect_dispatch.h \
@@ -521,7 +526,6 @@ distclean-compile:
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/extension_string.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/glapi.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/glcontextmodes.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/glthread.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/glxcmds.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/glxcmdsswap.Plo@am__quote@

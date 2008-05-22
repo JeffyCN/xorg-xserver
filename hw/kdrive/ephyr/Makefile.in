@@ -55,8 +55,8 @@ LIBRARIES = $(noinst_LIBRARIES)
 ARFLAGS = cru
 libxephyr_hostdri_a_AR = $(AR) $(ARFLAGS)
 libxephyr_hostdri_a_LIBADD =
-am__libxephyr_hostdri_a_SOURCES_DIST = ephyrdriext.c ephyrdri.c \
-	ephyrdri.h XF86dri.c ephyrglxext.c ephyrglxext.h \
+am__libxephyr_hostdri_a_SOURCES_DIST = ephyrdriext.c ephyrdriext.h \
+	ephyrdri.c ephyrdri.h XF86dri.c ephyrglxext.c ephyrglxext.h \
 	ephyrhostglx.c ephyrhostglx.h
 @XEPHYR_HAS_DRI_TRUE@am_libxephyr_hostdri_a_OBJECTS = libxephyr_hostdri_a-ephyrdriext.$(OBJEXT) \
 @XEPHYR_HAS_DRI_TRUE@	libxephyr_hostdri_a-ephyrdri.$(OBJEXT) \
@@ -161,6 +161,8 @@ DMXXIEXAMPLES_DEP_CFLAGS = @DMXXIEXAMPLES_DEP_CFLAGS@
 DMXXIEXAMPLES_DEP_LIBS = @DMXXIEXAMPLES_DEP_LIBS@
 DMXXMUEXAMPLES_DEP_CFLAGS = @DMXXMUEXAMPLES_DEP_CFLAGS@
 DMXXMUEXAMPLES_DEP_LIBS = @DMXXMUEXAMPLES_DEP_LIBS@
+DRI2PROTO_CFLAGS = @DRI2PROTO_CFLAGS@
+DRI2PROTO_LIBS = @DRI2PROTO_LIBS@
 DRIPROTO_CFLAGS = @DRIPROTO_CFLAGS@
 DRIPROTO_LIBS = @DRIPROTO_LIBS@
 DRIVER_MAN_DIR = @DRIVER_MAN_DIR@
@@ -350,6 +352,11 @@ XWIN_SYS_LIBS = @XWIN_SYS_LIBS@
 YACC = @YACC@
 YFLAGS = @YFLAGS@
 __XCONFIGFILE__ = @__XCONFIGFILE__@
+abi_ansic = @abi_ansic@
+abi_extension = @abi_extension@
+abi_font = @abi_font@
+abi_videodrv = @abi_videodrv@
+abi_xinput = @abi_xinput@
 abs_builddir = @abs_builddir@
 abs_srcdir = @abs_srcdir@
 abs_top_builddir = @abs_top_builddir@
@@ -431,6 +438,7 @@ libxephyr_hostxv_a_INCLUDES = @XEPHYR_INCS@
 
 @XEPHYR_HAS_DRI_TRUE@libxephyr_hostdri_a_SOURCES = \
 @XEPHYR_HAS_DRI_TRUE@ephyrdriext.c	\
+@XEPHYR_HAS_DRI_TRUE@ephyrdriext.h	\
 @XEPHYR_HAS_DRI_TRUE@ephyrdri.c	\
 @XEPHYR_HAS_DRI_TRUE@ephyrdri.h	\
 @XEPHYR_HAS_DRI_TRUE@XF86dri.c	\

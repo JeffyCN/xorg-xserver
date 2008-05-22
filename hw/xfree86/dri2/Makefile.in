@@ -61,7 +61,7 @@ am__installdirs = "$(DESTDIR)$(libdri2_ladir)" "$(DESTDIR)$(sdkdir)"
 libdri2_laLTLIBRARIES_INSTALL = $(INSTALL)
 LTLIBRARIES = $(libdri2_la_LTLIBRARIES)
 libdri2_la_LIBADD =
-am_libdri2_la_OBJECTS = libdri2_la-dri2.lo
+am_libdri2_la_OBJECTS = libdri2_la-dri2.lo libdri2_la-dri2ext.lo
 libdri2_la_OBJECTS = $(am_libdri2_la_OBJECTS)
 libdri2_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(libdri2_la_CFLAGS) \
@@ -137,6 +137,8 @@ DMXXIEXAMPLES_DEP_CFLAGS = @DMXXIEXAMPLES_DEP_CFLAGS@
 DMXXIEXAMPLES_DEP_LIBS = @DMXXIEXAMPLES_DEP_LIBS@
 DMXXMUEXAMPLES_DEP_CFLAGS = @DMXXMUEXAMPLES_DEP_CFLAGS@
 DMXXMUEXAMPLES_DEP_LIBS = @DMXXMUEXAMPLES_DEP_LIBS@
+DRI2PROTO_CFLAGS = @DRI2PROTO_CFLAGS@
+DRI2PROTO_LIBS = @DRI2PROTO_LIBS@
 DRIPROTO_CFLAGS = @DRIPROTO_CFLAGS@
 DRIPROTO_LIBS = @DRIPROTO_LIBS@
 DRIVER_MAN_DIR = @DRIVER_MAN_DIR@
@@ -326,6 +328,11 @@ XWIN_SYS_LIBS = @XWIN_SYS_LIBS@
 YACC = @YACC@
 YFLAGS = @YFLAGS@
 __XCONFIGFILE__ = @__XCONFIGFILE__@
+abi_ansic = @abi_ansic@
+abi_extension = @abi_extension@
+abi_font = @abi_font@
+abi_videodrv = @abi_videodrv@
+abi_xinput = @abi_xinput@
 abs_builddir = @abs_builddir@
 abs_srcdir = @abs_srcdir@
 abs_top_builddir = @abs_top_builddir@
@@ -390,7 +397,7 @@ libdri2_la_LTLIBRARIES = libdri2.la
 libdri2_la_CFLAGS = \
 	-DHAVE_XORG_CONFIG_H \
 	-I@MESA_SOURCE@/include \
-	@DIX_CFLAGS@ @DRIPROTO_CFLAGS@ @LIBDRM_CFLAGS@ \
+	@DIX_CFLAGS@ @XORG_CFLAGS@ @DRI2PROTO_CFLAGS@ @LIBDRM_CFLAGS@ \
 	-I$(top_srcdir)/hw/xfree86/common \
 	-I$(top_srcdir)/hw/xfree86/os-support/bus
 
@@ -398,7 +405,8 @@ libdri2_la_LDFLAGS = -module -avoid-version @LIBDRM_LIBS@
 libdri2_ladir = $(moduledir)/extensions
 libdri2_la_SOURCES = \
 	dri2.c \
-	dri2.h
+	dri2.h \
+	dri2ext.c
 
 sdk_HEADERS = dri2.h
 all: all-am
@@ -471,6 +479,7 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libdri2_la-dri2.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libdri2_la-dri2ext.Plo@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
@@ -499,6 +508,13 @@ libdri2_la-dri2.lo: dri2.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='dri2.c' object='libdri2_la-dri2.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libdri2_la_CFLAGS) $(CFLAGS) -c -o libdri2_la-dri2.lo `test -f 'dri2.c' || echo '$(srcdir)/'`dri2.c
+
+libdri2_la-dri2ext.lo: dri2ext.c
+@am__fastdepCC_TRUE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libdri2_la_CFLAGS) $(CFLAGS) -MT libdri2_la-dri2ext.lo -MD -MP -MF $(DEPDIR)/libdri2_la-dri2ext.Tpo -c -o libdri2_la-dri2ext.lo `test -f 'dri2ext.c' || echo '$(srcdir)/'`dri2ext.c
+@am__fastdepCC_TRUE@	mv -f $(DEPDIR)/libdri2_la-dri2ext.Tpo $(DEPDIR)/libdri2_la-dri2ext.Plo
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='dri2ext.c' object='libdri2_la-dri2ext.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libdri2_la_CFLAGS) $(CFLAGS) -c -o libdri2_la-dri2ext.lo `test -f 'dri2ext.c' || echo '$(srcdir)/'`dri2ext.c
 
 mostlyclean-libtool:
 	-rm -f *.lo

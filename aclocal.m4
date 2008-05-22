@@ -21,7 +21,7 @@ To do so, use the procedure documented by the package, typically `autoreconf'.])
 
 # libtool.m4 - Configure libtool for the host system. -*-Autoconf-*-
 
-# serial 52 Debian 1.5.26-1 AC_PROG_LIBTOOL
+# serial 52 Debian 1.5.26-4 AC_PROG_LIBTOOL
 
 
 # AC_PROVIDE_IFELSE(MACRO-NAME, IF-PROVIDED, IF-NOT-PROVIDED)
@@ -7371,6 +7371,12 @@ AC_DEFUN([XTRANS_TCP_FLAGS],[
 #include <sys/socket.h>
 #include <netinet/in.h>
  ])
+
+ # POSIX.1g changed the type of pointer passed to getsockname/getpeername/etc.
+ AC_CHECK_TYPES([socklen_t], [], [], [
+AC_INCLUDES_DEFAULT
+#include <sys/socket.h>])
+ 
 ]) # XTRANS_TCP_FLAGS
 
 # XTRANS_CONNECTION_FLAGS()
@@ -7380,17 +7386,21 @@ AC_DEFUN([XTRANS_TCP_FLAGS],[
 AC_DEFUN([XTRANS_CONNECTION_FLAGS],[
  AC_REQUIRE([AC_CANONICAL_HOST])
  AC_REQUIRE([AC_TYPE_SIGNAL])
+ [case $host_os in
+	mingw*)	unixdef="no"   ;;
+	*)	unixdef="yes"  ;;
+ esac]
  AC_ARG_ENABLE(unix-transport,
 	AC_HELP_STRING([--enable-unix-transport],[Enable UNIX domain socket transport]),
-	[UNIXCONN=$enableval], [UNIXCONN=yes])
- AC_ARG_ENABLE(tcp-transport, 
-	AC_HELP_STRING([--enable-tcp-transport],[Enable TCP socket transport]),
-	[TCPCONN=$enableval], [TCPCONN=yes])
+	[UNIXCONN=$enableval], [UNIXCONN=$unixdef])
  AC_MSG_CHECKING([if Xtrans should support UNIX socket connections])
  if test "$UNIXCONN" = "yes"; then
 	AC_DEFINE(UNIXCONN,1,[Support UNIX socket connections])
  fi
  AC_MSG_RESULT($UNIXCONN)
+ AC_ARG_ENABLE(tcp-transport, 
+	AC_HELP_STRING([--enable-tcp-transport],[Enable TCP socket transport]),
+	[TCPCONN=$enableval], [TCPCONN=yes])
  AC_MSG_CHECKING([if Xtrans should support TCP socket connections])
  AC_MSG_RESULT($TCPCONN)
  if test "$TCPCONN" = "yes"; then
