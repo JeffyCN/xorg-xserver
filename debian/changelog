@@ -1,4 +1,4 @@
-xorg-server (2:1.4.99.902-1) UNRELEASED; urgency=low
+xorg-server (2:1.4.99.902-1) experimental; urgency=low
 
   * Add postrm script for xserver-xorg-core, to remove
     /var/log/Xorg.*.log{,.old} on purge (closes: #343384).
@@ -12,7 +12,7 @@ xorg-server (2:1.4.99.902-1) UNRELEASED; urgency=low
   * Stop building Xprt, and drop related patches; it will be provided as a
     separate package.
 
- -- Julien Cristau <jcristau@debian.org>  Sun, 23 Mar 2008 15:39:16 +0100
+ -- Julien Cristau <jcristau@debian.org>  Fri, 23 May 2008 00:58:45 +0200
 
 xorg-server (2:1.4.99.901-2) experimental; urgency=low
 
