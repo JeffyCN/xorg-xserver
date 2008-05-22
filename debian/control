@@ -128,7 +128,7 @@ Description: Distributed Multihead X tools
 
 Package: xnest
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}
+Depends: x11-common, ${shlibs:Depends}, ${misc:Depends}
 Description: Nested X server
  Xnest is a nested X server that simply relays all its requests to another
  X server, where it runs as a client.  This means that it appears as another
@@ -146,7 +146,7 @@ Description: Nested X server
 
 Package: xvfb
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}
+Depends: x11-common, ${shlibs:Depends}, ${misc:Depends}
 Recommends: xbase-clients, xfonts-base
 Description: Virtual Framebuffer 'fake' X server
  Xvfb provides an X server that can run on machines with no display hardware
@@ -173,7 +173,7 @@ Description: Virtual Framebuffer 'fake' X server
 
 Package: xserver-xephyr
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}
+Depends: x11-common, ${shlibs:Depends}, ${misc:Depends}
 Recommends: xbase-clients, xfonts-base
 Description: nested X server
  Xephyr is an X server that can be run inside another X server,

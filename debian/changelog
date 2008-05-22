@@ -69,7 +69,83 @@ xorg-server (2:1.4.99.901-1) experimental; urgency=low
 
  -- Julien Cristau <jcristau@debian.org>  Fri, 14 Mar 2008 13:46:48 +0100
 
-xorg-server (2:1.4.1~git20080131-2) UNRELEASED; urgency=low
+xorg-server (2:1.4.1~git20080517-1) unstable; urgency=low
+
+  [ Julien Cristau ]
+  * Pass -DPRE_RELEASE=0 in CPPFLAGS, so we don't print the pre-release
+    warning in the Xorg log.
+  * Pull from upstream server-1.4-branch
+    + drop patch 40_default_dpi_96.patch applied upstream
+    + refresh patches 03_auto_load_driver.diff and
+      04_auto_load_driver_no_conf.diff
+  * Don't build-depend on packages with a -1 debian revision.
+  * Drop the XS- prefix from Vcs-* control fields.
+  * Add x11-common to the Depends field of xnest, xvfb and xserver-xephyr (its
+    init script sets up the /tmp/.X11-unix directory).
+  * Re-enable the dmx DDX, and build the xdmx and xdmx-tools packages (the
+    build is now fixed upstream); closes: #449254.
+
+  [ Drew Parsons ]
+  * Patch 95_xprint_disable_dbus disables dbus in Xprint by providing
+    dummy config functions. Taken from upstream commit
+    2a3d1421e0cc18822ae8f478fcc272e16a9e9340, with removal of
+    CONFIG_LIB from configure.ac shifted to 94_xprint_XSERVER_LIBS.
+    Closes: #472180.
+  * Enable the xprint DDX, and build the xprint and xprint-common packages.
+
+ -- Julien Cristau <jcristau@debian.org>  Sun, 18 May 2008 13:36:11 +0200
+
+xorg-server (2:1.4.1~git20080507-1) unstable; urgency=low
+
+  * Pull from upstream server-1.4-branch, highlights:
+    - the server should now scale input events correctly
+    - xkb keymap failures now give an explanation instead of just a 'failed to
+      load' message
+  * Drop patch 51_xkb-and-loathing.diff, applied upstream
+  * Refresh patches 13_debian_add_xkbpath_env_variable.diff,
+    21_glx_align_fixes.patch, 46_reduce_wakeups_from_smart_scheduler.patch and
+    94_xprint_XSERVER_LIBS.
+  * chmod +x configure in debian/rules clean so we can build a git snapshot
+    where configure is not in the tarball.
+  * Cherry-pick fix from upstream's master branch to re-arm the DPMS timer
+    when re-enabling DPMS (closes: #397197).
+
+ -- Julien Cristau <jcristau@debian.org>  Thu, 08 May 2008 15:34:38 +0200
+
+xorg-server (2:1.4.1~git20080131-4) unstable; urgency=low
+
+  * fix AlwaysCore handling: enabling AlwaysCore in xorg.conf 1) is the
+    default, and 2) shouldn't prevent the device from sending core events
+    (closes: #461760).
+
+ -- Julien Cristau <jcristau@debian.org>  Tue, 29 Apr 2008 20:14:22 +0200
+
+xorg-server (2:1.4.1~git20080131-3) unstable; urgency=low
+
+  * XKB: Fix processInputProc wrapping (cherry-picked from upstream).
+    Thanks to Thomas Jaeger.  This should fix the bug with some keys getting
+    stuck (closes: #473165).
+  * xkb: when copying the keymap, make sure the structs default to 0/NULL
+    (cherry-picked from upstream).  Fixes a crash and closes: #461783.
+  * __glXDRIbindTexImage: Fail if no texture bound to pixmap's texture target
+    (cherry-picked from upstream).
+  * EXA: Fix off-by-one in polyline drawing (cherry-picked from upstream).
+  * EXA: Skip empty glyphs (cherry-picked from upstream).
+  * Fix overly-restrictive integer overflow check in EXA pixmap creation
+    (cherry-picked from upstream).  Fixes BadAlloc errors returned by
+    XCreatePixmap for pixmaps of width 8192 or greater (closes: #471782).
+
+  Following patches by Bart Trojanowski, stolen from the ubuntu package:
+  * 15_X86EMU-added-blacklist-for-I-O-port-in-0-0xFF-range.patch
+    - Restrict access to I/O ports in range 0-0xFF from x86emu.
+  * 16_X86EMU-pass-the-correct-bus-dev-fn-tag-to-pci-emula.patch
+    - Fix improper emulation of PCI access General Software BIOS.
+  * Add 17_x86emu_handle_cpuid.patch to fix X86EMU CPUID handling.
+    (closes: #451089).
+
+ -- Julien Cristau <jcristau@debian.org>  Wed, 02 Apr 2008 00:20:15 +0200
+
+xorg-server (2:1.4.1~git20080131-2) unstable; urgency=low
 
   [ Brice Goglin ]
   * Add 46_reduce_wakeups_from_smart_scheduler.patch to reduce
@@ -83,18 +159,21 @@ xorg-server (2:1.4.1~git20080131-2) UNRELEASED; urgency=low
     XSERVER_LIBS as expected in configure.ac from master (see commit
     a02db0d500cac20d0f0f107d27c064a175018421). Delete
     94_xprint_XSERVER_LIBS when we upgrade to xserver 1.5.
-    Closes: #448970.
 
   [ Julien Cristau ]
   * Re-enable patch 51_xkb-and-loathing.diff: ignore SIGALRM around calls to
     Popen()/Pclose() to fix a hang when opening menus in OpenOffice.org
     (once again closes: #433131)
   * Refresh all patches to make patch-audit happy.
+  * Pull from upstream server-1.4-branch as of March 14th.
+  * 42_dont_break_grab_and_focus_for_window_when_redirecting.diff removed,
+    applied upstream.
+  * Don't build xprint just yet, because it needs NEW processing.
 
   [ David Nusinow ]
   * Add 11_dont_crash_on_bad_dri_mode. See bugzilla #13860
 
- -- David Nusinow <dnusinow@debian.org>  Sun, 02 Mar 2008 10:02:40 -0500
+ -- Julien Cristau <jcristau@debian.org>  Fri, 14 Mar 2008 15:18:16 +0100
 
 xorg-server (2:1.4.1~git20080131-1) unstable; urgency=low
 
