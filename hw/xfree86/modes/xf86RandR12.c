@@ -119,9 +119,7 @@ xf86RandR12GetInfo (ScreenPtr pScreen, Rotation *rotations)
 	    return FALSE;
 	RRRegisterRate (pScreen, pSize, refresh);
 
-	if (xf86ModesEqual(mode, scrp->currentMode) &&
-	    mode->HDisplay == scrp->virtualX &&
-	    mode->VDisplay == scrp->virtualY)
+	if (xf86ModesEqual(mode, scrp->currentMode))
 	{
 	    RRSetCurrentConfig (pScreen, randrp->rotation, refresh, pSize);
 	}
@@ -716,6 +714,9 @@ xf86RandR12CrtcSet (ScreenPtr	pScreen,
     int			o, ro;
     xf86CrtcPtr		*save_crtcs;
     Bool		save_enabled = crtc->enabled;
+
+    if (!crtc->scrn->vtSema)
+	return FALSE;
 
     save_crtcs = xalloc(config->num_output * sizeof (xf86CrtcPtr));
     if ((randr_mode != NULL) != crtc->enabled)

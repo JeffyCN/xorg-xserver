@@ -26,7 +26,7 @@ dnl
 dnl Process this file with autoconf to create configure.
 
 AC_PREREQ(2.57)
-AC_INIT([xorg-server], 1.4.99.901, [https://bugs.freedesktop.org/enter_bug.cgi?product=xorg], xorg-server)
+AC_INIT([xorg-server], 1.4.99.902, [https://bugs.freedesktop.org/enter_bug.cgi?product=xorg], xorg-server)
 AC_CONFIG_SRCDIR([Makefile.am])
 AM_INIT_AUTOMAKE([dist-bzip2 foreign])
 AM_MAINTAINER_MODE
@@ -313,6 +313,7 @@ case $host_cpu in
 	case $host_os in
 		*linux*)	DEFAULT_INT10=vm86 ;;
 		*freebsd*)	AC_DEFINE(USE_DEV_IO) ;;
+		*dragonfly*)	AC_DEFINE(USE_DEV_IO) ;;
 		*netbsd*)	AC_DEFINE(USE_I386_IOPL)
 				SYS_LIBS=-li386
 				;;
@@ -337,6 +338,7 @@ case $host_cpu in
 	I386_VIDEO=yes
 	case $host_os in
 		*freebsd*)	AC_DEFINE(USE_DEV_IO, 1, [BSD /dev/io]) ;;
+		*dragonfly*)	AC_DEFINE(USE_DEV_IO, 1, [BSD /dev/io]) ;;
 		*netbsd*)	AC_DEFINE(USE_I386_IOPL, 1, [BSD i386 iopl])
 				SYS_LIBS=-lx86_64
 				;;
@@ -367,7 +369,7 @@ DRI2=no
 KDRIVE_HW=no
 dnl it would be nice to autodetect these *CONS_SUPPORTs
 case $host_os in
-  *freebsd*)
+  *freebsd* | *dragonfly*)
 	case $host_os in
 		kfreebsd*-gnu) ;;
 		*) AC_DEFINE(CSRG_BASED, 1, [System is BSD-like]) ;;
@@ -705,6 +707,15 @@ if test "x$NEED_DBUS" = xyes; then
 fi
 CONFIG_LIB='$(top_builddir)/config/libconfig.a'
 
+AC_MSG_CHECKING([for glibc...])
+AC_PREPROC_IFELSE([
+#include <features.h>
+#ifndef __GLIBC__
+#error
+#endif
+], glibc=yes, glibc=no)
+AC_MSG_RESULT([$glibc])
+
 AC_CHECK_FUNCS([clock_gettime], [have_clock_gettime=yes],
                [AC_CHECK_LIB([rt], [clock_gettime], [have_clock_gettime=-lrt],
                              [have_clock_gettime=no])])
@@ -720,9 +731,13 @@ if ! test "x$have_clock_gettime" = xno; then
 
     LIBS_SAVE="$LIBS"
     LIBS="$CLOCK_LIBS"
+    CPPFLAGS_SAVE="$CPPFLAGS"
+
+    if test x"$glibc" = xyes; then
+        CPPFLAGS="$CPPFLAGS -D_POSIX_C_SOURCE=199309L"
+    fi
 
     AC_RUN_IFELSE([
-#define _POSIX_C_SOURCE 199309L
 #include <time.h>
 
 int main(int argc, char *argv[[]]) {
@@ -737,6 +752,7 @@ int main(int argc, char *argv[[]]) {
        [MONOTONIC_CLOCK="cross compiling"])
 
     LIBS="$LIBS_SAVE"
+    CPPFLAGS="$CPPFLAGS_SAVE"
 else
     MONOTONIC_CLOCK=no
 fi
@@ -860,7 +876,7 @@ AM_CONDITIONAL(DRI2, test "x$DRI2" = xyes)
 if test "x$DRI2" = xyes; then
 	# FIXME: Bump the versions once we have releases of these.
 	AC_DEFINE(DRI2, 1, [Build DRI2 extension])
-	PKG_CHECK_MODULES([DRIPROTO], [xf86driproto >= 2.0.3])
+	PKG_CHECK_MODULES([DRI2PROTO], [dri2proto >= 1.1])
 	PKG_CHECK_MODULES([LIBDRM], [libdrm >= 2.3.1])
 fi
 
@@ -1113,7 +1129,9 @@ PKG_CHECK_MODULES([XSERVERLIBS], [$REQUIRED_LIBS])
 
 # OpenSSL used for SHA1 hashing in render/glyph.c, but we don't need all of
 # the OpenSSL libraries, just libcrypto
-PKG_CHECK_MODULES([OPENSSL], [openssl], [OPENSSL_LIB_FLAGS=`$PKG_CONFIG --libs-only-L --libs-only-other openssl`])
+PKG_CHECK_EXISTS([openssl],
+ [PKG_CHECK_MODULES([OPENSSL], [openssl],
+   [OPENSSL_LIB_FLAGS=`$PKG_CONFIG --libs-only-L --libs-only-other openssl`])])
 LIBCRYPTO="$OPENSSL_LIB_FLAGS -lcrypto"
 
 # Autotools has some unfortunate issues with library handling.  In order to
@@ -1308,6 +1326,13 @@ if test "x$XORG" = xyes -o "x$XGL" = xyes; then
 	XORG_LIBS="$COMPOSITE_LIB $FIXES_LIB $XEXTXORG_LIB $GLX_LIBS $RENDER_LIB $RANDR_LIB $DAMAGE_LIB $MIEXT_DAMAGE_LIB $MIEXT_SHADOW_LIB $XI_LIB $XKB_LIB $XPSTUBS_LIB $SELINUX_LIB"
 
 	PKG_CHECK_MODULES([PCIACCESS], [pciaccess >= 0.8.0])
+	SAVE_LIBS=$LIBS
+	SAVE_CFLAGS=$CFLAGS
+	CFLAGS=$PCIACCESS_CFLAGS
+	LIBS=$PCIACCESS_LIBS
+	AC_CHECK_FUNCS([pci_system_init_dev_mem])
+	LIBS=$SAVE_LIBS
+	CFLAGS=$SAVE_CFLAGS
 	XORG_SYS_LIBS="$XORG_SYS_LIBS $PCIACCESS_LIBS $DLOPEN_LIBS $GLX_SYS_LIBS"
 	XORG_CFLAGS="$XORG_CFLAGS $PCIACCESS_CFLAGS"
 
@@ -1337,7 +1362,7 @@ if test "x$XORG" = xyes -o "x$XGL" = xyes; then
 			;;
 		esac
 		;;
-	  freebsd* | kfreebsd*-gnu)
+	  freebsd* | kfreebsd*-gnu | dragonfly*)
 	  	XORG_OS="freebsd"
 		XORG_OS_SUBDIR="bsd"
 		xorg_bus_bsdpci="yes"
@@ -1532,7 +1557,11 @@ if test "x$XORG" = xyes -o "x$XGL" = xyes; then
 	abi_xinput=`extract_abi XINPUT`
 	abi_extension=`extract_abi EXTENSION`
 	abi_font=`extract_abi FONT`
-	AC_SUBST([abi_ansic abi_videodrv abi_xinput abi_extension abi_font])
+	AC_SUBST([abi_ansic])
+	AC_SUBST([abi_videodrv])
+	AC_SUBST([abi_xinput])
+	AC_SUBST([abi_extension])
+	AC_SUBST([abi_font])
 fi
 AM_CONDITIONAL([XORG], [test "x$XORG" = xyes])
 AM_CONDITIONAL([XORG_BUS_LINUXPCI], [test "x$xorg_bus_linuxpci" = xyes])
@@ -2071,7 +2100,9 @@ DIX_CFLAGS="-DHAVE_DIX_CONFIG_H $XSERVER_CFLAGS"
 
 AC_SUBST([DIX_CFLAGS])
 
-AC_SUBST([libdir exec_prefix prefix])
+AC_SUBST([libdir])
+AC_SUBST([exec_prefix])
+AC_SUBST([prefix])
 
 # Man page sections - used in config utils & generating man pages
 XORG_MANPAGE_SECTIONS

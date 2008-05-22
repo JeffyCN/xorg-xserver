@@ -49,7 +49,6 @@
 #include "glxutil.h"
 #include "GL/internal/glcore.h"
 #include "GL/glxint.h"
-#include "glcontextmodes.h"
 
 /************************************************************************/
 /* Context stuff */
@@ -82,38 +81,40 @@ __glXDeassociateContext(__GLXcontext *glxc)
     __GLXcontext *curr, *prev;
 
     prev = NULL;
-    for ( curr = glxc->drawPriv->drawGlxc
-	  ; curr != NULL
-	  ; prev = curr, curr = curr->nextDrawPriv ) {
-	if (curr == glxc) {
-	    /* found context.  Deassociate. */
-	    if (prev == NULL) {
-		glxc->drawPriv->drawGlxc = curr->nextDrawPriv;
-	    } else {
-		prev->nextDrawPriv = curr->nextDrawPriv;
+    if (glxc->drawPriv) {
+        for ( curr = glxc->drawPriv->drawGlxc; curr != NULL
+	      ; prev = curr, curr = curr->nextDrawPriv ) {
+	    if (curr == glxc) {
+	        /* found context.  Deassociate. */
+	        if (prev == NULL) {
+		    glxc->drawPriv->drawGlxc = curr->nextDrawPriv;
+	        } else {
+		    prev->nextDrawPriv = curr->nextDrawPriv;
+	        }
+	        curr->nextDrawPriv = NULL;
+	        __glXUnrefDrawable(glxc->drawPriv);
+	        break;
 	    }
-	    curr->nextDrawPriv = NULL;
-	    __glXUnrefDrawable(glxc->drawPriv);
-	    break;
-	}
+        }
     }
 
-
     prev = NULL;
-    for ( curr = glxc->readPriv->readGlxc
-	  ; curr != NULL 
-	  ; prev = curr, curr = curr->nextReadPriv ) {
-	if (curr == glxc) {
-	    /* found context.  Deassociate. */
-	    if (prev == NULL) {
-		glxc->readPriv->readGlxc = curr->nextReadPriv;
-	    } else {
-		prev->nextReadPriv = curr->nextReadPriv;
-	    }
-	    curr->nextReadPriv = NULL;
-	    __glXUnrefDrawable(glxc->readPriv);
-	    break;
-	}
+    if (glxc->readPriv) {
+        for ( curr = glxc->readPriv->readGlxc
+	      ; curr != NULL 
+	      ; prev = curr, curr = curr->nextReadPriv ) {
+	    if (curr == glxc) {
+	        /* found context.  Deassociate. */
+	        if (prev == NULL) {
+		    glxc->readPriv->readGlxc = curr->nextReadPriv;
+	        } else {
+		    prev->nextReadPriv = curr->nextReadPriv;
+	        }
+	        curr->nextReadPriv = NULL;
+	        __glXUnrefDrawable(glxc->readPriv);
+	       break;
+	   }
+       }
     }
 }
 
@@ -140,13 +141,13 @@ __glXUnrefDrawable(__GLXdrawable *glxPriv)
 GLboolean
 __glXDrawableInit(__GLXdrawable *drawable,
 		  __GLXscreen *screen, DrawablePtr pDraw, int type,
-		  XID drawId, __GLcontextModes *modes)
+		  XID drawId, __GLXconfig *config)
 {
     drawable->pDraw = pDraw;
     drawable->type = type;
     drawable->drawId = drawId;
     drawable->refCount = 1;
-    drawable->modes = modes;
+    drawable->config = config;
     drawable->eventMask = 0;
 
     return GL_TRUE;
