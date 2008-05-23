@@ -192,7 +192,7 @@ cleanscripts:
 .PHONY: xsfclean
 xsfclean: cleanscripts unpatch
 	dh_testdir
-	rm -f .pc patches
+	rm -rf .pc patches
 	rm -rf $(STAMP_DIR) $(SOURCE_DIR)
 	rm -rf imports
 	dh_clean debian/shlibs.local \
