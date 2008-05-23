@@ -157,10 +157,14 @@ VidModeGetCurrentModeline(int scrnIndex, pointer *mode, int *dotClock)
 	return FALSE;
 
     pScrn = xf86Screens[scrnIndex];
-    *mode = (pointer)(pScrn->currentMode);
-    *dotClock = pScrn->currentMode->Clock;
 
-    return TRUE;
+    if (pScrn->currentMode) {
+	*mode = (pointer)(pScrn->currentMode);
+	*dotClock = pScrn->currentMode->Clock;
+
+	return TRUE;
+    }
+    return FALSE;
 }
 
 _X_EXPORT int
