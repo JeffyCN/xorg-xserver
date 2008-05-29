@@ -1,3 +1,16 @@
+xorg-server (2:1.4.1~git20080517-2) UNRELEASED; urgency=high
+
+  * High urgency upload for security fixes.
+  * New patch from upstream to fix multiple security issues reported by
+    iDefense:
+    CVE-2008-2360 - RENDER Extension heap buffer overflow
+    CVE-2008-2361 - RENDER Extension crash
+    CVE-2008-2362 - RENDER Extension memory corruption
+    CVE-2008-1379 - MIT-SHM arbitrary memory read
+    CVE-2008-1377 - RECORD and Security extensions memory corruption
+
+ -- Julien Cristau <jcristau@debian.org>  Sat, 17 May 2008 18:48:08 +0200
+
 xorg-server (2:1.4.1~git20080517-1) unstable; urgency=low
 
   [ Julien Cristau ]
