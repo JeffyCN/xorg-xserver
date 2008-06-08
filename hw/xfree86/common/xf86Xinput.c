@@ -737,9 +737,9 @@ xf86ScaleAxis(int	Cx,
 	ErrorF ("Divide by Zero in xf86ScaleAxis");
     }
     
-    if (X > Sxlow)
+    if (X > Sxhigh)
 	X = Sxlow;
-    if (X < Sxhigh)
+    if (X < Sxlow)
 	X = Sxhigh;
     
     return (X);
