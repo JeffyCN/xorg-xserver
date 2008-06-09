@@ -21,10 +21,8 @@
 # Pass $(DH_OPTIONS) into the environment for debhelper's benefit.
 export DH_OPTIONS
 
-# force quilt to not use ~/.quiltrc
-QUILT = quilt --quiltrc /dev/null
-# force QUILT_PATCHES to the default in case it is exported in the environment
-QUILT_PATCHES = patches/
+# force quilt to not use ~/.quiltrc and to use debian/patches
+QUILT = QUILT_PATCHES=debian/patches quilt --quiltrc /dev/null
 
 # Set up parameters for the upstream build environment.
 
@@ -121,18 +119,10 @@ $(STAMP_DIR)/stampdir:
 # Set up the package build directory as quilt expects to find it.
 .PHONY: prepare
 stampdir_targets+=prepare
-prepare: $(STAMP_DIR)/genscripts $(STAMP_DIR)/prepare $(STAMP_DIR)/patches $(STAMP_DIR)/log
+prepare: $(STAMP_DIR)/genscripts $(STAMP_DIR)/prepare $(STAMP_DIR)/log
 $(STAMP_DIR)/prepare: $(STAMP_DIR)/stampdir
-	if [ ! -e $(STAMP_DIR)/patches ]; then \
-		mkdir $(STAMP_DIR)/patches; \
-		ln -s $(STAMP_DIR)/patches .pc; \
-		echo 2 >$(STAMP_DIR)/patches/.version; \
-	fi; \
 	if [ ! -e $(STAMP_DIR)/log ]; then \
 		mkdir $(STAMP_DIR)/log; \
-	fi; \
-	if [ -e debian/patches ] && [ ! -e patches ]; then \
-		ln -s debian/patches patches; \
 	fi; \
 	>$@
 
@@ -162,10 +152,10 @@ $(STAMP_DIR)/patch: $(STAMP_DIR)/prepare
 
 # Revert all patches to the upstream source.
 .PHONY: unpatch
-unpatch:
+unpatch: $(STAMP_DIR)/prepare
 	rm -f $(STAMP_DIR)/patch
 	@echo -n "Unapplying patches..."; \
-	if [ -e $(STAMP_DIR)/patches/applied-patches ]; then \
+	if $(QUILT) applied >/dev/null 2>/dev/null; then \
 	  if $(QUILT) pop -a -v >$(STAMP_DIR)/log/unpatch 2>&1; then \
 	    cat $(STAMP_DIR)/log/unpatch; \
 	    echo "successful."; \
@@ -192,7 +182,7 @@ cleanscripts:
 .PHONY: xsfclean
 xsfclean: cleanscripts unpatch
 	dh_testdir
-	rm -f .pc patches
+	rm -rf .pc
 	rm -rf $(STAMP_DIR) $(SOURCE_DIR)
 	rm -rf imports
 	dh_clean debian/shlibs.local \
