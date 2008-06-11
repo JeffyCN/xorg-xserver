@@ -20,7 +20,6 @@
 45_only_XF86_APM_CAPABILITY_CHANGED_for_video_change_acpi_events.diff
 46_reduce_wakeups_from_smart_scheduler.patch
 #47_fbdevhw_magic_numbers.diff
-idef-apr08-v3-xserver-1.4.diff
 91_ttf2pt1
 91_ttf2pt1_updates
 92_xprint-security-holes-fix.patch

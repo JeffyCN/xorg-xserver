@@ -1,3 +1,107 @@
+commit c3a7903f6a6a27e53ba0372408e0c5a68c608e86
+Author: Julien Cristau <jcristau@debian.org>
+Date:   Wed Jun 11 16:27:10 2008 +0200
+
+    Bump to 1.4.2
+    
+    And update release date.
+
+commit 08e6292e7efff518730e3c54f3a082c6139d618d
+Author: Matthieu Herrb <matthieu.herrb@laas.fr>
+Date:   Sun Jun 8 11:16:23 2008 -0600
+
+    CVE-2008-1379 - MIT-SHM arbitrary memory read
+    
+    An integer overflow in the validation of the parameters of the
+    ShmPutImage() request makes it possible to trigger the copy of
+    arbitrary server memory to a pixmap that can subsequently be read by
+    the client, to read arbitrary parts of the X server memory space.
+
+commit 8ffaf613705a915c4b53ae11096dacd786fd1d22
+Author: Matthieu Herrb <matthieu.herrb@laas.fr>
+Date:   Sun Jun 8 11:16:55 2008 -0600
+
+    CVE-2008-1377 - RECORD and Security extensions memory corruption
+    
+    Lack of validation of the parameters of the
+    SProcSecurityGenerateAuthorization SProcRecordCreateContext
+    functions makes it possible for a specially crafted request to trigger
+    the swapping of bytes outside the parameter of these requests, causing
+    memory corruption.
+
+commit 702e709973252d596be736c2f5c0de4837446501
+Author: Matthieu Herrb <matthieu.herrb@laas.fr>
+Date:   Sun Jun 8 11:15:39 2008 -0600
+
+    CVE-2008-2362 - RENDER Extension memory corruption
+    
+    Integer overflows can occur in the code validating the parameters for
+    the SProcRenderCreateLinearGradient, SProcRenderCreateRadialGradient
+    and SProcRenderCreateConicalGradient functions, leading to memory
+    corruption by swapping bytes outside of the intended request
+    parameters.
+
+commit c4937bbb697579ceff0e30b17aca409f56e78566
+Author: Matthieu Herrb <matthieu.herrb@laas.fr>
+Date:   Sun Jun 8 11:14:31 2008 -0600
+
+    CVE-2008-2361 - RENDER Extension crash
+    
+    An integer overflow may occur in the computation of the
+    size of the  glyph to be allocated by the ProcRenderCreateCursor()
+    function  which will cause less memory to be allocated than expected,
+    leading later to dereferencing  un-mapped memory, causing a crash of
+    the X server.
+
+commit b1a4a96885bf191d5f4afcfb2b41a88631b8412b
+Author: Matthieu Herrb <matthieu.herrb@laas.fr>
+Date:   Sun Jun 8 11:13:47 2008 -0600
+
+    CVE-2008-2360 - RENDER Extension heap buffer overflow
+    
+    An integer overflow may occur in the computation of the size of the
+    glyph to be allocated by the AllocateGlyph() function which will cause
+    less memory to be allocated than expected, leading to later heap
+    overflow.
+    
+    On systems where the X  SIGSEGV handler includes a stack trace, more
+    malloc()-type functions are called, which may lead to other
+    exploitable issues.
+
+commit 43285b4f72a0eb47aa0c33e4e41cd10434969991
+Author: Daniel Stone <daniel@fooishbar.org>
+Date:   Tue Jun 10 18:36:38 2008 +0300
+
+    Bump to 1.4.1
+    
+    Whatever.  It doesn't have to be perfect.
+
+commit 4d59afd613cd7e82255fc83e921300f6bd3a7552
+Author: Daniel Stone <daniel@fooishbar.org>
+Date:   Tue Jun 10 18:33:57 2008 +0300
+
+    Xi: event_{x,y} should refer to the extended device (bug #16289)
+    
+    ProcessOtherEvents was unconditionally stomping the root_{x,y}
+    co-ordinates provided by GetPointerEvents with those of the core
+    pointer, meaning that both root_{x,y} and event_{x,y} reported to
+    clients would reflect the sprite's position, not the position reported
+    by the device that generated the DeviceMotionNotify or the
+    DeviceButton{Press,Release} event in the first place.
+    
+    For key events we still take the sprite's co-ords, as we're delivering
+    to the focus, which is the (VCP) sprite.
+    
+    Not cherry-picked from master as MPX fixes this anyway, by taking the
+    co-ords of the sprite the device moves (be it visible or no).
+    (cherry picked from commit 8259d19f7155d82197ecc2aa16b316376c2dcb12)
+
+commit 7982aaa7f071f9a21ad402da872d5328bd7e51ff
+Author: Sascha Hlusiak <saschahlusiak@arcor.de>
+Date:   Fri May 30 19:30:06 2008 +0200
+
+    Fix getValuatorEvents to compute number of valuators correctly.
+
 commit ddcca23a81abf5215f906a7ad097f1ed088ed92b
 Author: Peter Hutterer <peter@cs.unisa.edu.au>
 Date:   Thu Feb 7 15:48:04 2008 +1030
