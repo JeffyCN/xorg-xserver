@@ -4,6 +4,9 @@ xorg-server (2:1.4.2-1) UNRELEASED; urgency=low
   * Security fixes from the previous upload are included upstream.
   * Cherry-pick patches from upstream git to make the LeftOf and Above options
     in xorg.conf actually work (closes: #466526).
+  * 48_xaa_nooffscreenpixmaps.diff: disable XAA offscreen pixmaps by default;
+    they can be enabled with Option "XaaOffscreenPixmaps" (closes: #478277,
+    #433331).
 
  -- Julien Cristau <jcristau@debian.org>  Wed, 11 Jun 2008 18:57:01 +0200
 

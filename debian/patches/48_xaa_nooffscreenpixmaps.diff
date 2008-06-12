@@ -1,0 +1,26 @@
+xaa: disable offscreen pixmaps by default
+
+Can be enabled with Option "XaaOffscreenPixmaps".
+
+Index: xorg-server/hw/xfree86/xaa/xaaInitAccel.c
+===================================================================
+--- xorg-server.orig/hw/xfree86/xaa/xaaInitAccel.c	2008-06-12 05:52:15.000000000 +0200
++++ xorg-server/hw/xfree86/xaa/xaaInitAccel.c	2008-06-12 05:57:07.000000000 +0200
+@@ -87,7 +87,7 @@
+ 				OPTV_BOOLEAN,	{0}, FALSE },
+     {XAAOPT_PIXMAP_CACHE,		"XaaNoPixmapCache",
+ 				OPTV_BOOLEAN,	{0}, FALSE },
+-    {XAAOPT_OFFSCREEN_PIXMAPS,		"XaaNoOffscreenPixmaps",
++    {XAAOPT_OFFSCREEN_PIXMAPS,		"XaaOffscreenPixmaps",
+ 				OPTV_BOOLEAN,	{0}, FALSE },
+     { -1,				NULL,
+ 				OPTV_NONE,	{0}, FALSE }
+@@ -542,7 +542,7 @@
+ #define XAAMSG(s) do { if (serverGeneration == 1) xf86ErrorF(s); } while (0)
+ 
+     if((infoRec->Flags & OFFSCREEN_PIXMAPS) && HaveScreenToScreenCopy &&
+-		!xf86IsOptionSet(options, XAAOPT_OFFSCREEN_PIXMAPS)) {
++		xf86IsOptionSet(options, XAAOPT_OFFSCREEN_PIXMAPS)) {
+ 	XAAMSG("\tOffscreen Pixmaps\n");
+     } else {
+ 	infoRec->Flags &= ~OFFSCREEN_PIXMAPS;
