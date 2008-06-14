@@ -1,3 +1,14 @@
+xorg-server (2:1.4.2-1) UNRELEASED; urgency=low
+
+  * XAA offscreen pixmaps are now disabled by default. It helps compositing
+    manager such as Compiz (see bug #433331) and works around some rendering
+    problems (see bug #478277). Option "XaaNoOffscreenPixmaps" is not needed
+    anymore. To revert to the old behavior, use
+      Option "XaaOffscreenPixmaps"
+    in the Device section of xorg.conf.
+
+ -- Brice Goglin <bgoglin@debian.org>  Sat, 14 Jun 2008 18:29:57 +0200
+
 xorg-server (2:1.3.0.0.dfsg-3) unstable; urgency=low
 
   * The server now includes a patch to always include the font paths
