@@ -1,5 +1,6 @@
 xorg-server (2:1.4.2-1) UNRELEASED; urgency=low
 
+  [ Julien Cristau ]
   * New upstream release.
   * Security fixes from the previous upload are included upstream.
   * Cherry-pick patches from upstream git to make the LeftOf and Above options
@@ -8,7 +9,10 @@ xorg-server (2:1.4.2-1) UNRELEASED; urgency=low
     they can be enabled with Option "XaaOffscreenPixmaps" (closes: #478277,
     #433331).
 
- -- Julien Cristau <jcristau@debian.org>  Wed, 11 Jun 2008 18:57:01 +0200
+  [ Brice Goglin ]
+  * Update patches to not require -p0, closes: #485185.
+
+ -- Brice Goglin <bgoglin@debian.org>  Sat, 14 Jun 2008 18:21:05 +0200
 
 xorg-server (2:1.4.1~git20080517-2) unstable; urgency=high
 

@@ -3,10 +3,10 @@ $Id: 910_debian_Xserver_RTFF.diff 486 2005-08-03 04:51:11Z dnusinow $
 Give the user a far stronger clue as to what to do when their font configuration
 is horribly screwed up; this patch by Branden Robinson.
 
-Index: dix/main.c
+Index: a/dix/main.c
 ===================================================================
---- dix/main.c.orig	2006-11-13 19:59:22.000000000 +0100
-+++ dix/main.c	2006-11-26 01:55:13.000000000 +0100
+--- a/dix/main.c.orig	2006-11-13 19:59:22.000000000 +0100
++++ b/dix/main.c	2006-11-26 01:55:13.000000000 +0100
 @@ -407,10 +407,42 @@
  			defaultFontPath);
  	}
