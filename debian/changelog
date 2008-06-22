@@ -11,9 +11,8 @@ xorg-server (2:1.4.2-1) UNRELEASED; urgency=low
 
   [ Brice Goglin ]
   * Update patches to not require -p0, closes: #485185.
-  * Add a NEWS entry about 48_xaa_nooffscreenpixmaps.diff.
 
- -- Brice Goglin <bgoglin@debian.org>  Sat, 14 Jun 2008 18:32:47 +0200
+ -- Brice Goglin <bgoglin@debian.org>  Sat, 14 Jun 2008 18:21:05 +0200
 
 xorg-server (2:1.4.1~git20080517-2) unstable; urgency=high
 
