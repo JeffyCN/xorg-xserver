@@ -8,6 +8,12 @@ xorg-server (2:1.4.2-1) UNRELEASED; urgency=low
   * 48_xaa_nooffscreenpixmaps.diff: disable XAA offscreen pixmaps by default;
     they can be enabled with Option "XaaOffscreenPixmaps" (closes: #478277,
     #433331).
+  * Cherry-pick various patches from upstream for Xorg's modes code:
+    - add quirks for monitors with broken EDID (closes: #473260)
+    - fix max clock computation
+    - inherit the preferred mode from the global configuration (so if you have
+      Modes "800x600" in the Display subsection the server will honor it
+      instead of ignoring it)
 
   [ Brice Goglin ]
   * Update patches to not require -p0, closes: #485185.
