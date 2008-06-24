@@ -21,6 +21,7 @@
 46_reduce_wakeups_from_smart_scheduler.patch
 #47_fbdevhw_magic_numbers.diff
 48_xaa_nooffscreenpixmaps.diff
+49_x86emu_int1a_fix.diff
 91_ttf2pt1
 91_ttf2pt1_updates
 92_xprint-security-holes-fix.patch

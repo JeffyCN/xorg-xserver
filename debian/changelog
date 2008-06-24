@@ -14,6 +14,8 @@ xorg-server (2:1.4.2-1) UNRELEASED; urgency=low
     - inherit the preferred mode from the global configuration (so if you have
       Modes "800x600" in the Display subsection the server will honor it
       instead of ignoring it)
+  * Backport patch from upstream git to fix emulation of int1A PCI BIOS
+    services (closes: #404885).  Thanks, Robert de Bath!
 
   [ Brice Goglin ]
   * Update patches to not require -p0, closes: #485185.
