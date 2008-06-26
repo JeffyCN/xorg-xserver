@@ -1,3 +1,10 @@
+xorg-server (2:1.4.99.902-2) UNRELEASED; urgency=low
+
+  * 001_ubuntu_add_extra_modelines_from_xorg.patch: remove, replace with
+    001_fedora_extramodes.patch stolen from fedora 9 cvs, rev 1.8.
+
+ -- Julien Cristau <jcristau@debian.org>  Thu, 26 Jun 2008 15:32:28 +0200
+
 xorg-server (2:1.4.99.902-1) experimental; urgency=low
 
   * Add postrm script for xserver-xorg-core, to remove
