@@ -1,3 +1,599 @@
+commit 9029748f894e603bd7a963c4b868349dc1a73f5f
+Author: Alan Coopersmith <alan.coopersmith@sun.com>
+Date:   Wed Jun 25 15:06:49 2008 -0700
+
+    Don't log null device name in XkbDDXLoadKeymapByNames
+    (cherry picked from 7ce6dcef118139d0ccfc136b9a07f5bf0c078d70 commit)
+
+commit 5d66908975c6549f459da5bc70358d65c4de76e9
+Author: Eamon Walsh <ewalsh@tycho.nsa.gov>
+Date:   Tue Jun 24 20:32:24 2008 -0400
+
+    Fix a leak in the code that parses the protocol names.
+    
+    Also added some comments.
+    Reported by Ben Gamari (bug #16492).
+    (cherry picked from commit a3ec22627355fc08730ad7e90022e374763d333f)
+
+commit 7351c07ae89986bde8053afd8cdcc6a390fd93d5
+Author: Roland Bär <roland@verifysoft.de>
+Date:   Tue Jun 24 14:13:02 2008 -0400
+
+    Bug #11857: Avoid running off the end of a MAXCLIENTS-sized array.
+    (cherry picked from commit 249c892784ca5e8c75863dd82097ca2bedec4723)
+
+commit 429b2a97a041a68d96e24d3e924a06a77ba44c96
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Tue Jun 24 14:08:04 2008 -0400
+
+    Bug #11842: Fix emulation of int1A PCI BIOS services.
+    
+    Use only %di to name the PCI register to read/write, rather than %edi.
+    DOS is only expecting the base PCI config space anyway, and the BIOS
+    might be using the high bits of %edi.
+    (cherry picked from commit 9e5b3deafb97ec1f83e6bfe067bc68df7385bc6a)
+
+commit 3dfe90fe6c325a7a40ee6c613be444d4b8e32971
+Author: Owen Taylor <otaylor@fishsoup.net>
+Date:   Tue Jun 24 12:40:47 2008 -0400
+
+    Bug #15369: Don't reduce Over to Src for transform + RepeatNone.
+    
+    Only do no-src-alpha optimizations for a RepeatNone source if we can
+    easily probe that we won't sample outside the edges of the source.
+    (cherry picked from commit 574c62e305e5380bb1b0f4bfec4f7cc3e3f03ada)
+
+commit 3a7657b7131c16682c34dfc739c430b36fb3d4db
+Author: Hasso Tepper <hasso@estpak.ee>
+Date:   Tue Apr 8 13:00:38 2008 +0300
+
+    configure.ac: Fix monotonic test harder
+    
+    This was only introduced in a later version of POSIX, so define that
+    version to get it from more conformant systems.
+    (cherry picked from commit 08073862f8c4e1219b6459708ffd28e2bc35885f)
+
+commit a8a633478301e6d6854a7e75a0d38f63b7746ee6
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Tue Jun 24 10:52:31 2008 -0400
+
+    Bug #15586: (Correctly) refuse to redirect the root window.
+    (cherry picked from commit 100afae578e59e31b65a6264c281ba7deea5ac39)
+
+commit 2334ff9bb2690a775eea676469f6677f8d701cb3
+Author: Paul Bender <pebender@gmail.com>
+Date:   Tue Jun 24 10:44:47 2008 -0400
+
+    Bug #15665: Fix building without Composite.
+    (cherry picked from commit 4c4e06af7950df509fa02099788be66cf37a4d01)
+
+commit 85e598cc62a5b87feec43eb9bf46026e2803ee14
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Tue Jun 24 10:40:36 2008 -0400
+
+    Remove some default modes that really shouldn't be in the default set.
+    (cherry picked from commit 59510a76436c739fd9421f01cc4210607d9e7f57)
+
+commit 2f8ad7f938ee31583b0da0d3dce0980832dd68d3
+Author: Alan Coopersmith <alan.coopersmith@sun.com>
+Date:   Mon May 12 18:49:34 2008 -0700
+
+    Check for strcasestr and workaround it on systems without it
+    (cherry picked from ed65e8b4f02a6da7f1c5d85984a9ccf6a94d0181 commit)
+
+commit dfb326790e4131d0c9700cb879dc812b1e8e7529
+Author: Alan Coopersmith <alan.coopersmith@sun.com>
+Date:   Mon May 19 18:43:29 2008 -0700
+
+    Restore return type on xf86SetScrnInfoModes
+    
+    Seems to have been accidentally lost by commit 	76943fec860315f3c93539e59a59080b8a7b3e75
+    (cherry picked from 925e895b869e461a9e7f135891463c56ee633cd6 commit)
+
+commit 4c8a84acf5b911c7daa2f63ca27cf1f3988c3304
+Author: Jesse Ruffin <jesse@eloquentpeasant.net>
+Date:   Mon Jun 23 14:35:20 2008 -0400
+
+    Bug #16302: Fix GLX drawable refcounting in DMX.
+    (cherry picked from commit 3b587826924c60f6736dc5faf584b964fde1b4da)
+
+commit 89d73d759588da2cb9048c6149a456700ad660e8
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Mon Jun 23 13:59:48 2008 -0400
+
+    Implement bswap in x86emu.
+    
+    Yes, this is a 486+ instruction and thus not strictly legal in vm86
+    mode, but enough BIOSes use it (looking at you VIA) that we might as
+    well implement it.
+    (cherry picked from commit c8d066a15142678041c1d82ccf530dcdb2ea74ca)
+
+commit b0df9a6a421de5ed49a898cb01527bc40baf5814
+Author: Matthieu Herrb <matthieu.herrb@laas.fr>
+Date:   Mon May 19 02:24:17 2008 +0200
+
+    preserve errno around the SIGIO handler
+    (cherry picked from commit 19c7e9da55646f1f6e05c28cd71865cd8d84e1ff)
+
+commit fc37f8fcb20663159d2a8cef6c9bfca039465534
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Fri Jun 20 13:27:32 2008 -0400
+
+    Bug #12414: Create full-fledged pixmaps in fb24_32ReformatTile().
+    
+    ... instead of creating pixmaps that only fb knows about, which will
+    have no devPrivates for any other subsystem and thus cause havoc if
+    (when) they leak out.
+    (cherry picked from commit b55fbca4f0705aeff1c69d3ef851c5ff5af6ed94)
+
+commit 7e3ec36e0e87c8592e6783319dcc1fe0246fbffe
+Merge: d254903... ad10515...
+Author: Matthieu Herrb <matthieu.herrb@laas.fr>
+Date:   Wed Jun 18 09:20:05 2008 +0200
+
+    Merge branch 'server-1.5-branch' of git+ssh://herrb@git.freedesktop.org/git/xorg/xserver into server-1.5-branch
+
+commit ad10515b6c19f224fb6897e9549c5ddee373a557
+Author: Eamon Walsh <ewalsh@tycho.nsa.gov>
+Date:   Tue Jun 17 19:09:44 2008 -0400
+
+    SELinux: Add an extension alias under the OS-agnostic "Flask" name.
+    (cherry picked from commit 79dd600942bbac3c6b531f284b42c7b2c822da90)
+
+commit eed6713d3d6b700ce01a70c3a5a37a6f928d79c7
+Author: Eamon Walsh <ewalsh@tycho.nsa.gov>
+Date:   Tue Jun 17 17:55:11 2008 -0400
+
+    SELinux: Bring server-side name registry up to date.
+    (cherry picked from commit 656d3d7623c6b83024e9cdc60d1257f4d87aa268)
+
+commit 7822a3d05f935cca3bfa47d15d961596652ecfca
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Tue Jun 17 16:10:51 2008 -0400
+
+    XAA: Disable offscreen pixmaps by default.
+    
+    Say Option "XaaOffscreenPixmaps" to turn them back on.
+    
+    Apropos of bugs #13795 and #15098.  Not yet applied to master as this wants
+    a proper solution someday, but then, those bugs aren't closed yet either.
+
+commit d900de5a8f61e1ee000c1a96fa6c6121ac2a92ae
+Author: Michel Dänzer <michel@tungstengraphics.com>
+Date:   Tue Jun 17 13:13:23 2008 -0400
+
+    AIGLX/DRI1: Switch to server context for calling pScreen->GetImage.
+    
+    Fixes http://bugs.freedesktop.org/show_bug.cgi?id=16292 .
+    
+    (cherry picked from commit 23b55a61f89f69454a3b0e3413b1f07d5fdf43aa)
+
+commit fba700f1f6a89761c99fe0b3dce60e1b2bb474f4
+Author: Ian Romanick <idr@us.ibm.com>
+Date:   Tue Jun 17 10:35:24 2008 -0400
+
+    Bug #15169: Make the server build again on Alpha.
+    
+    Still won't work until the kernel makes the resource files actually exist.
+    
+    (cherry picked from commit f3490d3eba94c7d9e760d6d21991ab6677196c2b)
+
+commit d2549034133a92d1f5755edd9c34ee84e601d753
+Author: Matthieu Herrb <matthieu.herrb@laas.fr>
+Date:   Sat Jun 14 14:40:32 2008 -0600
+
+    configure.ac: fix the help string for --with-freetype.
+    
+    Default value was changed to 'no' in e5b1d38e142807b59ce4ec89764c949f707ec541
+    but the help string wasn't updated.
+
+commit c2877c073b4d02850b1f85ba2ba80e68a74e43cd
+Merge: a645b47... 2552026...
+Author: Matthieu Herrb <matthieu.herrb@laas.fr>
+Date:   Sat Jun 14 14:32:42 2008 -0600
+
+    Merge branch 'server-1.5-branch' of git+ssh://herrb@git.freedesktop.org/git/xorg/xserver into server-1.5-branch
+
+commit 255202666411e15ebe2f9cde35b48a333dc9e38c
+Author: Eamon Walsh <ewalsh@tycho.nsa.gov>
+Date:   Fri Jun 13 16:39:40 2008 -0400
+
+    Make devPrivates lookup functions ABI instead of static inlines.
+    
+    This is required to preserve compatibility across changes to the
+    internal representation of the privates list.
+    (cherry picked from commit 2d7ba09dc4b5eff5dba8d7867f285111574b1737)
+
+commit a645b47f047375fb81a87bbbc245369f680a6dab
+Merge: 6de2855... 2124870...
+Author: Matthieu Herrb <matthieu.herrb@laas.fr>
+Date:   Thu Jun 12 14:22:32 2008 -0600
+
+    Merge branch 'server-1.5-branch' of git+ssh://herrb@git.freedesktop.org/git/xorg/xserver into server-1.5-branch
+
+commit 21248705bbd9876ea6d2d78a85bedc4904c63899
+Author: Dave Airlie <airlied@redhat.com>
+Date:   Thu Jun 12 14:54:56 2008 +1000
+
+    modes: make aspect choosing work on single output case.
+    
+    In the single output enabled case we never enter the loop and test
+    never gets set and so we fail to match a good mode.
+    
+    This was causing my 2560x1600 to end up at 2048x1536.
+
+commit 53a84d75c65f75c629c6610a2ec4093507cea3f7
+Author: Julien Cristau <jcristau@debian.org>
+Date:   Fri May 23 23:00:40 2008 +0200
+
+    xfree86: fix build on GNU/kFreeBSD
+    
+    GNU/kFreeBSD defines __FreeBSD_kernel__, but not __FreeBSD__.
+    Unify preprocessor conditionals between variable declaration and use.
+    Debian bug #482550.
+    (cherry picked from commit e6cbb1e11e5da1a8b9001853c25f4e5a052e7110)
+
+commit 336a46c51932b9af7732e575f7ff43e41e47649e
+Author: George Sapountzis <gsap7@yahoo.gr>
+Date:   Fri May 23 22:39:35 2008 +0300
+
+    glx: fix memory corruption with r5g6b5
+    
+    should cherry-pick to xserver-1.5
+    (cherry picked from commit 6c72961d8fa1ab1543f1b3e2cc7d34ff6d254bf8)
+
+commit 38f573566e3218bd385a4940a6f9be700bc4f937
+Author: Dave Airlie <airlied@redhat.com>
+Date:   Thu Jun 12 09:04:24 2008 +1000
+
+    dbe: fix DoS reported by iDefense.
+    
+    This isn't a security problem just a user could DoS themselves for fun or profit.
+    (cherry picked from commit 23e71ef71a178505494d4b410f9314acfff81524)
+
+commit 59a52d8151aeb607f39394ceb36ed69b9c2a15d5
+Author: Peter Hutterer <peter@cs.unisa.edu.au>
+Date:   Thu May 8 16:58:31 2008 +0930
+
+    config: override xkb_{r,m,l,v} with Xkb{r,m,l,v} if the latter is set.
+    
+    The HAL spec says that input.xkb.{rmlv}* can be sent, but if the user
+    specifies a X-specific {rmlv}, then this is overridden through the use of
+    input.x11_options.Xkb{RMLV}.
+    However, the way how the server parses options--by ignoring capitalisation,
+    underscores and spaces--the HAL and the x11_options would override each other.
+    
+    So we simply filter the options, letting Xkb{RMLV} override xkb_{rmlv} and
+    only actually add them to the device after parsing _all_ options.
+    
+    * rmlv ... rules, model, layout, variant
+    
+    See Bug 13037 <http://bugs.freedesktop.org/show_bug.cgi?id=13037>
+    (cherry picked from commit fc35d1e3be201e3821413bb2eeb8d43e1e56ba17)
+    (cherry picked from commit ff013b0da4e6d33b2b69ce1212e9bd62050574e1)
+
+commit 82e7cf12453a4f91324c07581b59887dcc27014e
+Author: Peter Hutterer <peter@cs.unisa.edu.au>
+Date:   Thu May 8 14:05:56 2008 +0930
+
+    config: remove trailing whitespaces.
+    
+    It makes my vim look ugly. Put "let c_space_errors=1" into your .vimrc.
+    (cherry picked from commit 1f54c05cf8a6b82e5fc6362f7f8e8fdc2444b9e8)
+    (cherry picked from commit 901978ebe0f446532255701cd536e246e805a55b)
+
+commit b4c5832c75164ad08bc43c37a214b90353653a38
+Author: Sascha Hlusiak <saschahlusiak@arcor.de>
+Date:   Tue Mar 25 17:37:25 2008 +0100
+
+    Support to pass arbitrary options via HAL hotplugging
+    
+    Parse "input.x11_options" and pass every key/name pair to the driver.
+    Remove check for input.capabilities, because that's part of the fdi files.
+    
+    Thanks to Dustin Spicuzza <dustin@virtualroadside.com> for the patch.
+    (cherry picked from commit 47eb658e802775021e3efec109f95431cca188ca)
+
+commit 626ea1b02dabc218f7f73adead8ee9b287d0648e
+Author: Matthieu Herrb <matthieu.herrb@laas.fr>
+Date:   Tue Jun 10 12:20:00 2008 -0600
+
+    CVE-2008-1377 - RECORD and Security extensions memory corruption
+    
+    Lack of validation of the parameters of the
+    SProcSecurityGenerateAuthorization SProcRecordCreateContext
+    functions makes it possible for a specially crafted request to trigger
+    the swapping of bytes outside the parameter of these requests, causing
+    memory corruption.
+    (cherry picked from commit 95d162c4389857d960da9b0158345c1714e91f31)
+
+commit e83c79701f0abc081f1b127785d5502e2e48f905
+Author: Matthieu Herrb <matthieu.herrb@laas.fr>
+Date:   Tue Jun 10 12:20:43 2008 -0600
+
+    CVE-2008-1379 - MIT-SHM arbitrary memory read
+    
+    An integer overflow in the validation of the parameters of the
+    ShmPutImage() request makes it possible to trigger the copy of
+    arbitrary server memory to a pixmap that can subsequently be read by
+    the client, to read arbitrary parts of the X server memory space.
+    (cherry picked from commit 063f18ef6d7bf834225ddfd3527e58c078628f5f)
+
+commit 69b173c6997954277dbd23eecc2cbf74e74ab228
+Author: Matthieu Herrb <matthieu.herrb@laas.fr>
+Date:   Tue Jun 10 12:21:26 2008 -0600
+
+    CVE-2008-2360 - RENDER Extension heap buffer overflow
+    
+    An integer overflow may occur in the computation of the size of the
+    glyph to be allocated by the AllocateGlyph() function which will cause
+    less memory to be allocated than expected, leading to later heap
+    overflow.
+    (cherry picked from commit c5f69b297b1227cb802394fa90efdbe1de607f3c)
+
+commit b251fdd9d90532871b2a2b2f44a64b0e769fe3fc
+Author: Matthieu Herrb <matthieu.herrb@laas.fr>
+Date:   Tue Jun 10 12:22:30 2008 -0600
+
+    CVE-2008-2361 - RENDER Extension crash
+    
+    An integer overflow may occur in the computation of the size of the
+    glyph to be allocated by the ProcRenderCreateCursor() function which
+    will cause less memory to be allocated than expected, leading later to
+    dereferencing un-mapped memory, causing a crash of the X server.
+    (cherry picked from commit 5257a0f83d5f3d80d0cd44dd76d047bac3869592)
+
+commit edd2cac9fa05fdd0eceee3dd571f753acb9012ba
+Author: Matthieu Herrb <matthieu.herrb@laas.fr>
+Date:   Tue Jun 10 12:23:03 2008 -0600
+
+    CVE-2008-2362 - RENDER Extension memory corruption
+    
+    Integer overflows can occur in the code validating the parameters for
+    the SProcRenderCreateLinearGradient, SProcRenderCreateRadialGradient
+    and SProcRenderCreateConicalGradient functions, leading to memory
+    corruption by swapping bytes outside of the intended request
+    parameters.
+    (cherry picked from commit 9171206db349a0c6fda719746be0b15049d57aaa)
+
+commit 6de2855b888e19c13d03d5e900248c1428724104
+Author: Matthieu Herrb <matthieu.herrb@laas.fr>
+Date:   Tue Jun 10 12:20:43 2008 -0600
+
+    CVE-2008-1379 - MIT-SHM arbitrary memory read
+    
+    An integer overflow in the validation of the parameters of the
+    ShmPutImage() request makes it possible to trigger the copy of
+    arbitrary server memory to a pixmap that can subsequently be read by
+    the client, to read arbitrary parts of the X server memory space.
+
+commit ebd916314de1f4570964312e008b17a9c96800ea
+Author: Matthieu Herrb <matthieu.herrb@laas.fr>
+Date:   Tue Jun 10 12:20:00 2008 -0600
+
+    CVE-2008-1377 - RECORD and Security extensions memory corruption
+    
+    Lack of validation of the parameters of the
+    SProcSecurityGenerateAuthorization SProcRecordCreateContext
+    functions makes it possible for a specially crafted request to trigger
+    the swapping of bytes outside the parameter of these requests, causing
+    memory corruption.
+
+commit a1733327aa71bc1131e758fc80566c3d66627343
+Author: Matthieu Herrb <matthieu.herrb@laas.fr>
+Date:   Tue Jun 10 12:23:03 2008 -0600
+
+    CVE-2008-2362 - RENDER Extension memory corruption
+    
+    Integer overflows can occur in the code validating the parameters for
+    the SProcRenderCreateLinearGradient, SProcRenderCreateRadialGradient
+    and SProcRenderCreateConicalGradient functions, leading to memory
+    corruption by swapping bytes outside of the intended request
+    parameters.
+
+commit 5677751a0480426beaefc990303c7ade963eb137
+Author: Matthieu Herrb <matthieu.herrb@laas.fr>
+Date:   Tue Jun 10 12:22:30 2008 -0600
+
+    CVE-2008-2361 - RENDER Extension crash
+    
+    An integer overflow may occur in the computation of the size of the
+    glyph to be allocated by the ProcRenderCreateCursor() function which
+    will cause less memory to be allocated than expected, leading later to
+    dereferencing un-mapped memory, causing a crash of the X server.
+
+commit f7c40a003d85b8a83d55a33d362f2a364f4ab702
+Author: Matthieu Herrb <matthieu.herrb@laas.fr>
+Date:   Tue Jun 10 12:21:26 2008 -0600
+
+    CVE-2008-2360 - RENDER Extension heap buffer overflow
+    
+    An integer overflow may occur in the computation of the size of the
+    glyph to be allocated by the AllocateGlyph() function which will cause
+    less memory to be allocated than expected, leading to later heap
+    overflow.
+
+commit 8259d19f7155d82197ecc2aa16b316376c2dcb12
+Author: Daniel Stone <daniel@fooishbar.org>
+Date:   Tue Jun 10 18:33:57 2008 +0300
+
+    Xi: event_{x,y} should refer to the extended device (bug #16289)
+    
+    ProcessOtherEvents was unconditionally stomping the root_{x,y}
+    co-ordinates provided by GetPointerEvents with those of the core
+    pointer, meaning that both root_{x,y} and event_{x,y} reported to
+    clients would reflect the sprite's position, not the position reported
+    by the device that generated the DeviceMotionNotify or the
+    DeviceButton{Press,Release} event in the first place.
+    
+    For key events we still take the sprite's co-ords, as we're delivering
+    to the focus, which is the (VCP) sprite.
+    
+    Not cherry-picked from master as MPX fixes this anyway, by taking the
+    co-ords of the sprite the device moves (be it visible or no).
+
+commit 4e3cf7cd893e10fee21bc3c92d1cb3d308be1fe3
+Author: Julien Cristau <jcristau@debian.org>
+Date:   Fri May 23 03:09:04 2008 +0200
+
+    Add xkbstr.h and xkbsrv.h to sdk_HEADERS
+    (cherry picked from commit 150c2f55a508ed24b230f68e30ec140c0901d9ae)
+
+commit c7c43285b139952d03e60db1b95306941ad094ee
+Merge: facf271... 77313bd...
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Mon Jun 9 17:06:41 2008 -0400
+
+    Merge branch 'server-1.5-branch' of git+ssh://git.freedesktop.org/git/xorg/xserver into server-1.5-branch
+
+commit facf271b052eb1ee6b9c577d51991333372fa8c1
+Author: Michel Dänzer <michel@tungstengraphics.com>
+Date:   Fri Jun 6 11:01:03 2008 +0200
+
+    EXA: Fix exaGetPixmapFirstPixel() crash if the driver has a CreatePixmap hook.
+    
+    Fixes http://bugs.freedesktop.org/show_bug.cgi?id=16243
+    (cherry picked from commit 6b96281100f2118fe9d99536c33d48298a5bce7b)
+
+commit 60990c69b43046795bbc2311b3e4f27771b988c1
+Author: Paulo Cesar Pereira de Andrade <pcpa@mandriva.com.br>
+Date:   Fri May 23 13:50:39 2008 -0300
+
+    Correct a NULL pointer deference
+    
+      The problem happens if Monitor/Card combo doesn't provide EDID info,
+    and the XFree86-VidModeExtension extension is used.
+    
+    Signed-off-by: Peter Hutterer <peter@cs.unisa.edu.au>
+    (cherry picked from commit c8af7ce35a900ac9b898f51c1b95dabad3ba1d76)
+
+commit 1667ed6e2474c274d6cf9cdbd83518450dea4d44
+Author: Michel Dänzer <michel@tungstengraphics.com>
+Date:   Sat May 24 20:01:36 2008 +0200
+
+    EXA: Don't migrate twice in exaImageGlyphBlt.
+    
+    exaPrepareAccess already handles migration.
+    (cherry picked from commit f6d61d3d86971d6a202b46ff2fab8c8799a4d057)
+
+commit 6dee3fdf18f618dea034ad3b5cb028da0fb51639
+Author: Michel Dänzer <michel@tungstengraphics.com>
+Date:   Sat May 24 20:01:31 2008 +0200
+
+    EXA: Don't suggest exaCopyDirty be inlined.
+    
+    Leave the decision to the compiler toolchain.
+    (cherry picked from commit d73304398255e0c3b03a497a8d4a2f8d900eef44)
+
+commit 3943a3a567c76aa3aee2ffe577e8d1d8c2c0f26b
+Author: Michel Dänzer <michel@tungstengraphics.com>
+Date:   Sat May 24 20:01:21 2008 +0200
+
+    EXA: Specify region used for source pixmap migration in exaCopyNtoN.
+    
+    Avoids excessive migration overhead in some pathological cases. See
+    http://bugs.freedesktop.org/show_bug.cgi?id=15845 .
+    (cherry picked from commit 3baf3b42e079b4e7b61c1e20df305db0724d21f8)
+
+commit c00ff932f88f497dd638662c151ea63ffbc8bed1
+Author: Drew Parsons <dparsons@debian.org>
+Date:   Fri May 9 23:20:11 2008 +1000
+
+    Disable D-BUS from Xprint.
+    
+    Use dummy config functions to replace those from config/config.c, and
+    therefore do not link Xprt with $CONFIG_LIB.
+    
+    Works around an endlessly spinning loop in dix/dispatch.c::Dispatch()
+    (WaitForSomething() not waiting) when built with dbus, which was
+    causing Xprt to use 95% cpu.
+    (cherry picked from commit 2a3d1421e0cc18822ae8f478fcc272e16a9e9340)
+
+commit 2f994cb00e9b6d0e8362b9d777091dd673960d53
+Author: Drew Parsons <dparsons@debian.org>
+Date:   Mon Mar 10 22:54:49 2008 +1100
+
+    Create dix/libXpdix.la for Xprint-specific build of libdix.la
+    
+    (cherry picked from commit 4e2c6dbabdbbaaca213fd08edd422de15d0900cc)
+    
+    required because of commit 7c0709a736c0f3aa011de67dd2c2962585ab146e,
+    which made requestingClient in dix specific to Xprint only.
+    Add to XPRINT_LIBS in hw/xprint/Makefile.am in front of
+    $(XSERVER_LIBS) to override definitions in libdix.la for standard xservers.
+    
+    Follows 571206832d454771e3c638c7515767958365c19c (providing -DXPRINT
+    to xprint subdirs).
+    
+    Note it may be possible to restructure the code so that
+    requestingClient is stored elsewhere than in dix. See discussions
+    following http://lists.freedesktop.org/archives/xorg/2008-March/033844.html
+    If this is done it may be possible to revert this commit (if not 571206...).
+    (cherry picked from commit 966ae1781f3ca563e15a9a1b8cab6fab94e07fe9)
+
+commit 30774d6b3cde6deda7a21ad25e396449fb791237
+Author: Drew Parsons <dparsons@debian.org>
+Date:   Mon Mar 10 13:48:05 2008 +1100
+
+    Define XPRINT in XPRINT_CFLAGS (configure.ac)
+    
+    -DXPRINT had only been set for Xprt in hw/xprint/Makefile.am
+    After commit 7c0709a736c0f3aa011de67dd2c2962585ab146e it is also
+    required for ps/PsArea.c and PsFonts.c to ensure ‘requestingClient’ is
+    defined, so make it a global Xprint definition in configure.ac.
+    (cherry picked from commit 28a6719fd486d9a9cecad0b057d9ea7c59c66055)
+    (cherry picked from commit 571206832d454771e3c638c7515767958365c19c)
+
+commit 200d676be2de8d83899420655efe870ac0b61d24
+Author: Tilman Sauerbeck <tilman@code-monkey.de>
+Date:   Mon Apr 21 11:22:07 2008 +0200
+
+    EXA: Set pixmap->accel_blocked on the screen pixmap, too.
+    (cherry picked from commit 3f081b4de55e1378728a24d069bf06575ffca2d8)
+
+commit 2df83b491e87b27a3bba2fd874afe74a6af7e2cc
+Author: Tilman Sauerbeck <tilman@code-monkey.de>
+Date:   Mon Apr 21 11:03:27 2008 +0200
+
+    EXA: Update sys_pitch/fb_pitch in exaModifyPixmapHeader.
+    
+    exaModifyPixmapHeader now also only evaluates arguments that have a
+    meaningful value.
+    (cherry picked from commit 26c1801a27b81fdd988d5bd210ba0e76ecc274ae)
+
+commit 0fba91a5324662c10d15bc0e41cc8737c51340bb
+Author: Michel Dänzer <michel@tungstengraphics.com>
+Date:   Mon Apr 21 10:45:11 2008 +0200
+
+    EXA: Offscreen memory eviction improvements.
+    
+    * Make sure available areas are considered to have no eviction cost. This seems
+      to help for https://bugs.freedesktop.org/show_bug.cgi?id=15513 but I'm afraid
+      that may just be coincidence.
+    * Only calculate eviction cost of each area once for each eviction pass.
+      Safeguard against potential (though unlikely) division by zero.
+    * Cosmetic enhancements: Name eviction cost related variables 'cost' instead of
+      'score' to emphasize that smaller values are better, update Doxygen file
+      comment to the way eviction works now.
+    (cherry picked from commit 6c95fae1e9d6b0eb64bc78eced05a6e9f5faf02e)
+
+commit 50e77eb8384b8d9c569ef3726bb7f4abf43b2af8
+Author: Dave Airlie <airlied@redhat.com>
+Date:   Tue May 20 13:59:09 2008 +1000
+
+    int10: add pci_device_enable support on Linux
+    (cherry picked from commit ea4ec9e9983e25d94a3edf8a77ed2ad1db193284)
+
+commit 77313bdc76b2dc4e9992432379e8d54a99d27d1f
+Author: Aaron Plattner <aplattner@nvidia.com>
+Date:   Mon Jun 9 09:52:04 2008 -0700
+
+    CreateColormap returns Success on success, not TRUE.
+    
+    Fixes a problem where enabling color index overlays disables the RENDER
+    extension.
+    (cherry picked from commit 607b0d09ea003f87cfb3331e59e13495a483832a)
+
 commit 9211a10b981008fb96f09d6933345e41a0872f2a
 Author: Adam Jackson <ajax@redhat.com>
 Date:   Wed May 21 17:52:23 2008 -0400
