@@ -6,6 +6,8 @@ xorg-server (2:1.4.99.902-2) UNRELEASED; urgency=low
     - fixes FTBFS on GNU/kFreeBSD (closes: #482550)
   * 001_ubuntu_add_extra_modelines_from_xorg.patch: remove, replace with
     001_fedora_extramodes.patch stolen from fedora 9 cvs, rev 1.8.
+  * xvfb: recommend xauth instead of xbase-clients.
+  * xserver-xfbdev: recommend xfonts-base.
 
  -- Julien Cristau <jcristau@debian.org>  Thu, 26 Jun 2008 15:32:28 +0200
 

@@ -147,7 +147,7 @@ Description: Nested X server
 Package: xvfb
 Architecture: any
 Depends: x11-common, ${shlibs:Depends}, ${misc:Depends}
-Recommends: xbase-clients, xfonts-base
+Recommends: xauth, xfonts-base
 Description: Virtual Framebuffer 'fake' X server
  Xvfb provides an X server that can run on machines with no display hardware
  and no physical input devices. It emulates a dumb framebuffer using virtual
@@ -191,7 +191,7 @@ Description: nested X server
 Package: xserver-xfbdev
 Architecture: alpha amd64 arm armeb armel hppa i386 ia64 lpia m32r m68k mips mipsel powerpc ppc64 sh3 sh3eb sh4 sh4eb sparc
 Depends: ${shlibs:Depends}, ${misc:Depends}
-Recommends: xbase-clients
+Recommends: xbase-clients, xfonts-base
 Description: Linux framebuffer device tiny X server
  xserver-xfbdev is a Linux framebuffer device tiny X server based on the
  kdrive X server.
