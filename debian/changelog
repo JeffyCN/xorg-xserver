@@ -80,6 +80,43 @@ xorg-server (2:1.4.99.901-1) experimental; urgency=low
 
  -- Julien Cristau <jcristau@debian.org>  Fri, 14 Mar 2008 13:46:48 +0100
 
+xorg-server (2:1.4.2-1) unstable; urgency=low
+
+  [ Julien Cristau ]
+  * New upstream release.
+  * Security fixes from the previous upload are included upstream.
+  * Cherry-pick patches from upstream git to make the LeftOf and Above options
+    in xorg.conf actually work (closes: #466526).
+  * 48_xaa_nooffscreenpixmaps.diff: disable XAA offscreen pixmaps by default;
+    they can be enabled with Option "XaaOffscreenPixmaps" (closes: #478277,
+    #433331).
+  * Cherry-pick various patches from upstream for Xorg's modes code:
+    - add quirks for monitors with broken EDID (closes: #473260)
+    - fix max clock computation
+    - inherit the preferred mode from the global configuration (so if you have
+      Modes "800x600" in the Display subsection the server will honor it
+      instead of ignoring it)
+  * Backport patch from upstream git to fix emulation of int1A PCI BIOS
+    services (closes: #404885).  Thanks, Robert de Bath!
+
+  [ Brice Goglin ]
+  * Update patches to not require -p0, closes: #485185.
+
+ -- Julien Cristau <jcristau@debian.org>  Thu, 26 Jun 2008 01:57:18 +0200
+
+xorg-server (2:1.4.1~git20080517-2) unstable; urgency=high
+
+  * High urgency upload for security fixes.
+  * New patch from upstream to fix multiple security issues reported by
+    iDefense:
+    CVE-2008-2360 - RENDER Extension heap buffer overflow
+    CVE-2008-2361 - RENDER Extension crash
+    CVE-2008-2362 - RENDER Extension memory corruption
+    CVE-2008-1379 - MIT-SHM arbitrary memory read
+    CVE-2008-1377 - RECORD and Security extensions memory corruption
+
+ -- Julien Cristau <jcristau@debian.org>  Mon, 09 Jun 2008 14:59:04 +0200
+
 xorg-server (2:1.4.1~git20080517-1) unstable; urgency=low
 
   [ Julien Cristau ]

@@ -238,19 +238,19 @@ analyze_path () {
   # analyze_path /usr/X11R6/bin -> ls -dl /usr /usr/X11R6 /usr/X11R6/bin
   # Thanks to Randolph Chung for this clever hack.
 
-  #local f g
+  local f g
 
   while [ -n "$1" ]; do
     reject_whitespace "$1"
-    _g=
+    g=
     message "Analyzing $1:"
-    for _f in $(echo "$1" | tr / \  ); do
-      if [ -e /$_g$_f ]; then
-        ls -dl /$_g$_f /$_g$_f.dpkg-* 2> /dev/null || true
-        _g=$_g$_f/
+    for f in $(echo "$1" | tr / \  ); do
+      if [ -e /$g$f ]; then
+        ls -dl /$g$f /$g$f.dpkg-* 2> /dev/null || true
+        g=$g$f/
       else
-        message "/$_g$_f: nonexistent; directory contents of /$_g:"
-        ls -l /$_g
+        message "/$g$f: nonexistent; directory contents of /$g:"
+        ls -l /$g
         break
       fi
     done
@@ -259,27 +259,27 @@ analyze_path () {
 }
 
 find_culprits () {
-  #local f p dpkg_info_dir possible_culprits smoking_guns bad_packages package \
-  #  msg
+  local f p dpkg_info_dir possible_culprits smoking_guns bad_packages package \
+    msg
 
   reject_whitespace "$1"
   message "Searching for overlapping packages..."
-  _dpkg_info_dir=/var/lib/dpkg/info
-  if [ -d $_dpkg_info_dir ]; then
-    if [ "$(echo $_dpkg_info_dir/*.list)" != "$_dpkg_info_dir/*.list" ]; then
-      _possible_culprits=$(ls -1 $_dpkg_info_dir/*.list | egrep -v \
+  dpkg_info_dir=/var/lib/dpkg/info
+  if [ -d $dpkg_info_dir ]; then
+    if [ "$(echo $dpkg_info_dir/*.list)" != "$dpkg_info_dir/*.list" ]; then
+      possible_culprits=$(ls -1 $dpkg_info_dir/*.list | egrep -v \
         "(xbase-clients|x11-common|xfs|xlibs)")
-      if [ -n "$_possible_culprits" ]; then
-        _smoking_guns=$(grep -l "$1" $_possible_culprits || true)
-        if [ -n "$_smoking_guns" ]; then
-          _bad_packages=$(printf "\\n")
-          for f in $_smoking_guns; do
+      if [ -n "$possible_culprits" ]; then
+        smoking_guns=$(grep -l "$1" $possible_culprits || true)
+        if [ -n "$smoking_guns" ]; then
+          bad_packages=$(printf "\\n")
+          for f in $smoking_guns; do
             # too bad you can't nest parameter expansion voodoo
             p=${f%*.list}      # strip off the trailing ".list"
-            _package=${p##*/}   # strip off the directories
-            _bad_packages=$(printf "%s\n%s" "$_bad_packages" "$_package")
+            package=${p##*/}   # strip off the directories
+            bad_packages=$(printf "%s\n%s" "$bad_packages" "$package")
           done
-          _msg=$(cat <<EOF
+          msg=$(cat <<EOF
 The following packages appear to have file overlaps with the X.Org packages;
 these packages are either very old, or in violation of Debian Policy.  Try
 upgrading each of these packages to the latest available version if possible:
@@ -291,17 +291,17 @@ Tracking System.  You may want to refer the package maintainer to section 12.8
 of the Debian Policy manual.
 EOF
 )
-          message "$_msg"
-          message "The overlapping packages are: $_bad_packages"
+          message "$msg"
+          message "The overlapping packages are: $bad_packages"
         else
           message "no overlaps found."
         fi
       fi
     else
-      message "cannot search; no matches for $_dpkg_info_dir/*.list."
+      message "cannot search; no matches for $dpkg_info_dir/*.list."
     fi
   else
-    message "cannot search; $_dpkg_info_dir does not exist."
+    message "cannot search; $dpkg_info_dir does not exist."
   fi
 }
 
@@ -323,7 +323,7 @@ check_symlink () {
   #
   # Primarily used by check_symlinks_and_warn() and check_symlinks_and_bomb().
 
-  #local symlink
+  local symlink
 
   # validate arguments
   if [ $# -ne 1 ]; then
@@ -332,9 +332,9 @@ check_symlink () {
     exit $SHELL_LIB_USAGE_ERROR
   fi
 
-  _symlink="$1"
+  symlink="$1"
 
-  if [ "$(maplink "$_symlink")" = "$(readlink "$_symlink")" ]; then
+  if [ "$(maplink "$symlink")" = "$(readlink "$symlink")" ]; then
     return 0
   else
     return 1
@@ -349,7 +349,7 @@ check_symlinks_and_warn () {
   # Call this function from a preinst script in the event $1 is "upgrade" or
   # "install".
 
-  #local errmsg symlink
+  local errmsg symlink
 
   # validate arguments
   if [ $# -lt 1 ]; then
@@ -359,25 +359,25 @@ check_symlinks_and_warn () {
   fi
 
   while [ -n "$1" ]; do
-    _symlink="$1"
-    if [ -L "$_symlink" ]; then
-      if ! check_symlink "$_symlink"; then
-        observe "$_symlink symbolic link points to wrong location" \
-                "$(readlink "$_symlink"); removing"
-        rm "$_symlink"
+    symlink="$1"
+    if [ -L "$symlink" ]; then
+      if ! check_symlink "$symlink"; then
+        observe "$symlink symbolic link points to wrong location" \
+                "$(readlink "$symlink"); removing"
+        rm "$symlink"
       fi
-    elif [ -e "$_symlink" ]; then
-      _errmsg="$_symlink exists and is not a symbolic link; this package cannot"
-      _errmsg="$_errmsg be installed until this"
-      if [ -f "$_symlink" ]; then
-        _errmsg="$_errmsg file"
-      elif [ -d "$_symlink" ]; then
-        _errmsg="$_errmsg directory"
+    elif [ -e "$symlink" ]; then
+      errmsg="$symlink exists and is not a symbolic link; this package cannot"
+      errmsg="$errmsg be installed until this"
+      if [ -f "$symlink" ]; then
+        errmsg="$errmsg file"
+      elif [ -d "$symlink" ]; then
+        errmsg="$errmsg directory"
       else
-        _errmsg="$_errmsg thing"
+        errmsg="$errmsg thing"
       fi
-      _errmsg="$_errmsg is removed"
-      die "$_errmsg"
+      errmsg="$errmsg is removed"
+      die "$errmsg"
     fi
     shift
   done
@@ -390,7 +390,7 @@ check_symlinks_and_bomb () {
   #
   # Call this function from a postinst script.
 
-  #local problem symlink
+  local problem symlink
 
   # validate arguments
   if [ $# -lt 1 ]; then
@@ -400,24 +400,24 @@ check_symlinks_and_bomb () {
   fi
 
   while [ -n "$1" ]; do
-    _problem=
-    _symlink="$1"
-    if [ -L "$_symlink" ]; then
-      if ! check_symlink "$_symlink"; then
-        _problem=yes
-        warn "$_symlink symbolic link points to wrong location" \
-             "$(readlink "$_symlink")"
+    problem=
+    symlink="$1"
+    if [ -L "$symlink" ]; then
+      if ! check_symlink "$symlink"; then
+        problem=yes
+        warn "$symlink symbolic link points to wrong location" \
+             "$(readlink "$symlink")"
       fi
-    elif [ -e "$_symlink" ]; then
-      _problem=yes
-      warn "$_symlink is not a symbolic link"
+    elif [ -e "$symlink" ]; then
+      problem=yes
+      warn "$symlink is not a symbolic link"
     else
-      _problem=yes
-      warn "$_symlink symbolic link does not exist"
+      problem=yes
+      warn "$symlink symbolic link does not exist"
     fi
-    if [ -n "$_problem" ]; then
-      analyze_path "$_symlink" "$(readlink "$_symlink")"
-      find_culprits "$_symlink"
+    if [ -n "$problem" ]; then
+      analyze_path "$symlink" "$(readlink "$symlink")"
+      find_culprits "$symlink"
       die "bad symbolic links on system"
     fi
     shift
@@ -427,9 +427,9 @@ check_symlinks_and_bomb () {
 font_update () {
   # run $UPDATECMDS in $FONTDIRS
 
-  #local dir cmd shortcmd x_font_dir_prefix
+  local dir cmd shortcmd x_font_dir_prefix
 
-  _x_font_dir_prefix="/usr/share/fonts/X11"
+  x_font_dir_prefix="/usr/share/fonts/X11"
 
   if [ -z "$UPDATECMDS" ]; then
     usage_error "font_update() called but \$UPDATECMDS not set"
@@ -441,32 +441,32 @@ font_update () {
   reject_unlikely_path_chars "$UPDATECMDS"
   reject_unlikely_path_chars "$FONTDIRS"
 
-  for _dir in $FONTDIRS; do
-    if [ -d "$_x_font_dir_prefix/$_dir" ]; then
-      for _cmd in $UPDATECMDS; do
-        if which "$_cmd" > /dev/null 2>&1; then
-          _shortcmd=${_cmd##*/}
-          observe "running $_shortcmd in $_dir font directory"
-	  _cmd_opts=
-          if [ "$_shortcmd" = "update-fonts-alias" ]; then
-            _cmd_opts=--x11r7-layout
+  for dir in $FONTDIRS; do
+    if [ -d "$x_font_dir_prefix/$dir" ]; then
+      for cmd in $UPDATECMDS; do
+        if which "$cmd" > /dev/null 2>&1; then
+          shortcmd=${cmd##*/}
+          observe "running $shortcmd in $dir font directory"
+	  cmd_opts=
+          if [ "$shortcmd" = "update-fonts-alias" ]; then
+            cmd_opts=--x11r7-layout
           fi
-          if [ "$_shortcmd" = "update-fonts-dir" ]; then
-            _cmd_opts=--x11r7-layout
+          if [ "$shortcmd" = "update-fonts-dir" ]; then
+            cmd_opts=--x11r7-layout
           fi
-          if [ "$_shortcmd" = "update-fonts-scale" ]; then
-            _cmd_opts=--x11r7-layout
+          if [ "$shortcmd" = "update-fonts-scale" ]; then
+            cmd_opts=--x11r7-layout
           fi
-          $_cmd $_cmd_opts $_dir || warn "$_cmd $_cmd_opts $_dir" \
+          $cmd $cmd_opts $dir || warn "$cmd $cmd_opts $dir" \
                               "failed; font directory data may not" \
                               "be up to date"
         else
-          warn "$_cmd not found; not updating corresponding $_dir font" \
+          warn "$cmd not found; not updating corresponding $dir font" \
                "directory data"
         fi
       done
     else
-      warn "$_dir is not a directory; not updating font directory data"
+      warn "$dir is not a directory; not updating font directory data"
     fi
   done
 }
@@ -485,7 +485,7 @@ remove_conffile_prepare () {
   # version (or installed over a version removed-but-not-purged) prior to the
   # one in which the conffile was obsoleted.
 
-  #local conffile current_checksum
+  local conffile current_checksum
 
   # validate arguments
   if [ $# -lt 2 ]; then
@@ -494,23 +494,54 @@ remove_conffile_prepare () {
     exit $SHELL_LIB_USAGE_ERROR
   fi
 
-  _conffile="$1"
+  conffile="$1"
   shift
 
-  # does the _conffile even exist?
-  if [ -e "$_conffile" ]; then
+  # does the conffile even exist?
+  if [ -e "$conffile" ]; then
     # calculate its checksum
-    _current_checksum=$(md5sum < "$_conffile" | sed 's/[[:space:]].*//')
+    current_checksum=$(md5sum < "$conffile" | sed 's/[[:space:]].*//')
     # compare it to each supplied checksum
     while [ -n "$1" ]; do
-      if [ "$_current_checksum" = "$1" ]; then
+      if [ "$current_checksum" = "$1" ]; then
         # we found a match; move the confffile and stop looking
-        observe "preparing obsolete conffile $_conffile for removal"
-        mv "$_conffile" "$_conffile.$THIS_PACKAGE-tmp"
+        observe "preparing obsolete conffile $conffile for removal"
+        mv "$conffile" "$conffile.$THIS_PACKAGE-tmp"
         break
       fi
       shift
     done
+  fi
+}
+
+remove_conffile_lookup () {
+  # syntax: remove_conffile_lookup package filename
+  #
+  # Lookup the md5sum of a conffile in dpkg's database, and prepare for removal
+  # if it matches the actual file's md5sum.
+  #
+  # Call this function when you would call remove_conffile_prepare but only
+  # want to check against dpkg's status database instead of known checksums.
+
+  local package conffile old_md5sum
+
+  # validate arguments
+  if [ $# -ne 2 ]; then
+    usage_error "remove_conffile_lookup() called with wrong number of" \
+                "arguments; expected 1, got $#"
+    exit $SHELL_LIB_USAGE_ERROR
+  fi
+
+  package="$1"
+  conffile="$2"
+
+  if ! [ -e "$conffile" ]; then
+    return
+  fi
+  old_md5sum="$(dpkg-query -W -f='${Conffiles}' "$package" | \
+    awk '{ if (match($0, "^ '"$conffile"' ")) print $2}')"
+  if [ -n "$old_md5sum" ]; then
+    remove_conffile_prepare "$conffile" "$old_md5sum"
   fi
 }
 
@@ -522,7 +553,7 @@ remove_conffile_commit () {
   # Call this function from a postinst script after having used
   # remove_conffile_prepare() in the preinst.
 
-  #local conffile
+  local conffile
 
   # validate arguments
   if [ $# -ne 1 ]; then
@@ -531,12 +562,12 @@ remove_conffile_commit () {
     exit $SHELL_LIB_USAGE_ERROR
   fi
 
-  _conffile="$1"
+  conffile="$1"
 
   # if the temporary file created by remove_conffile_prepare() exists, remove it
-  if [ -e "$_conffile.$THIS_PACKAGE-tmp" ]; then
-    observe "committing removal of obsolete conffile $_conffile"
-    rm "$_conffile.$THIS_PACKAGE-tmp"
+  if [ -e "$conffile.$THIS_PACKAGE-tmp" ]; then
+    observe "committing removal of obsolete conffile $conffile"
+    rm "$conffile.$THIS_PACKAGE-tmp"
   fi
 }
 
@@ -549,7 +580,7 @@ remove_conffile_rollback () {
   # or "abort-install" is  after having used remove_conffile_prepare() in the
   # preinst.
 
-  #local conffile
+  local conffile
 
   # validate arguments
   if [ $# -ne 1 ]; then
@@ -558,13 +589,13 @@ remove_conffile_rollback () {
     exit $SHELL_LIB_USAGE_ERROR
   fi
 
-  _conffile="$1"
+  conffile="$1"
 
   # if the temporary file created by remove_conffile_prepare() exists, move it
   # back
-  if [ -e "$_conffile.$THIS_PACKAGE-tmp" ]; then
-    observe "rolling back removal of obsolete conffile $_conffile"
-    mv "$_conffile.$THIS_PACKAGE-tmp" "$_conffile"
+  if [ -e "$conffile.$THIS_PACKAGE-tmp" ]; then
+    observe "rolling back removal of obsolete conffile $conffile"
+    mv "$conffile.$THIS_PACKAGE-tmp" "$conffile"
   fi
 }
 
@@ -584,7 +615,7 @@ replace_conffile_with_symlink_prepare () {
   # version (or installed over a version removed-but-not-purged) prior to the
   # one in which the conffile was obsoleted.
 
-  #local conffile current_checksum
+  local conffile current_checksum
 
   # validate arguments
   if [ $# -lt 3 ]; then
@@ -593,16 +624,16 @@ replace_conffile_with_symlink_prepare () {
     exit $SHELL_LIB_USAGE_ERROR
   fi
 
-  _oldconffile="$1"
+  oldconffile="$1"
   shift
-  _newconffile="$1"
+  newconffile="$1"
   shift
 
   remove_conffile_prepare "$_oldconffile" "$@"
-  # If $_oldconffile still exists, then md5sums didn't match.
+  # If $oldconffile still exists, then md5sums didn't match.
   # Copy it to new one.
-  if [ -f "$_oldconffile" ]; then
-    cp "$_oldconffile" "$_newconffile"
+  if [ -f "$oldconffile" ]; then
+    cp "$oldconffile" "$newconffile"
   fi
 
 }
@@ -616,7 +647,7 @@ replace_conffile_with_symlink_commit () {
   # Call this function from a postinst script after having used
   # replace_conffile_with_symlink_prepare() in the preinst.
 
-  #local conffile
+  local conffile
 
   # validate arguments
   if [ $# -ne 1 ]; then
@@ -625,9 +656,9 @@ replace_conffile_with_symlink_commit () {
     exit $SHELL_LIB_USAGE_ERROR
   fi
 
-  _conffile="$1"
+  conffile="$1"
 
-  remove_conffile_commit "$_conffile"
+  remove_conffile_commit "$conffile"
 }
 
 replace_conffile_with_symlink_rollback () {
@@ -643,7 +674,7 @@ replace_conffile_with_symlink_rollback () {
   # You should have  used replace_conffile_with_symlink_prepare() in the
   # preinst.
 
-  #local conffile
+  local conffile
 
   # validate arguments
   if [ $# -ne 2 ]; then
@@ -652,12 +683,12 @@ replace_conffile_with_symlink_rollback () {
     exit $SHELL_LIB_USAGE_ERROR
   fi
 
-  _oldconffile="$1"
-  _newconffile="$2"
+  oldconffile="$1"
+  newconffile="$2"
 
   remove_conffile_rollback "$_oldconffile"
-  if [ -f "$_newconffile" ]; then
-    rm "$_newconffile"
+  if [ -f "$newconffile" ]; then
+    rm "$newconffile"
   fi
 }
 
@@ -672,7 +703,7 @@ run () {
   # those cases the return value of the debconf command *must* be checked
   # before the string returned by debconf is used for anything.
 
-  #local retval
+  local retval
 
   # validate arguments
   if [ $# -lt 1 ]; then
@@ -681,10 +712,10 @@ run () {
     exit $SHELL_LIB_USAGE_ERROR
   fi
 
-  "$@" || _retval=$?
+  "$@" || retval=$?
 
-  if [ ${_retval:-0} -ne 0 ]; then
-    observe "command \"$*\" exited with status $_retval"
+  if [ ${retval:-0} -ne 0 ]; then
+    observe "command \"$*\" exited with status $retval"
   fi
 }
 
@@ -697,15 +728,15 @@ register_x_lib_dir_with_ld_so () {
   # Call this function from the postinst script of a package that places a
   # shared library in /usr/X11R6/lib, before invoking ldconfig.
 
-  #local dir ldsoconf
+  local dir ldsoconf
 
-  _dir="/usr/X11R6/lib"
-  _ldsoconf="/etc/ld.so.conf"
+  dir="/usr/X11R6/lib"
+  ldsoconf="/etc/ld.so.conf"
 
   # is the line not already present?
-  if ! fgrep -qsx "$_dir" "$_ldsoconf"; then
-    observe "adding $_dir directory to $_ldsoconf"
-    echo "$_dir" >> "$_ldsoconf"
+  if ! fgrep -qsx "$dir" "$ldsoconf"; then
+    observe "adding $dir directory to $ldsoconf"
+    echo "$dir" >> "$ldsoconf"
   fi
 }
 
@@ -719,36 +750,36 @@ deregister_x_lib_dir_with_ld_so () {
   # library in /usr/X11R6/lib, in the event "$1" is "remove", and before
   # invoking ldconfig.
 
-  #local dir ldsoconf fgrep_status cmp_status
+  local dir ldsoconf fgrep_status cmp_status
 
-  _dir="/usr/X11R6/lib"
-  _ldsoconf="/etc/ld.so.conf"
+  dir="/usr/X11R6/lib"
+  ldsoconf="/etc/ld.so.conf"
 
   # is the line present?
-  if fgrep -qsx "$_dir" "$_ldsoconf"; then
+  if fgrep -qsx "$dir" "$ldsoconf"; then
     # are there any shared objects in the directory?
-    if [ "$(echo "$_dir"/lib*.so.*.*)" = "$_dir/lib*.so.*.*" ]; then
+    if [ "$(echo "$dir"/lib*.so.*.*)" = "$dir/lib*.so.*.*" ]; then
       # glob expansion produced nothing, so no shared libraries are present
-      observe "removing $_dir directory from $_ldsoconf"
+      observe "removing $dir directory from $ldsoconf"
       # rewrite the file (very carefully)
       set +e
-      fgrep -svx "$_dir" "$_ldsoconf" > "$_ldsoconf.dpkg-tmp"
-      _fgrep_status=$?
+      fgrep -svx "$dir" "$ldsoconf" > "$ldsoconf.dpkg-tmp"
+      fgrep_status=$?
       set -e
-      case $_fgrep_status in
+      case $fgrep_status in
         0|1) ;; # we don't actually care if any lines matched or not
-        *) die "error reading \"$_ldsoconf\"; fgrep exited with status" \
-          "$_fgrep_status" ;;
+        *) die "error reading \"$ldsoconf\"; fgrep exited with status" \
+          "$fgrep_status" ;;
       esac
       set +e
-      cmp -s "$_ldsoconf.dpkg-tmp" "$_ldsoconf"
-      _cmp_status=$?
+      cmp -s "$ldsoconf.dpkg-tmp" "$ldsoconf"
+      cmp_status=$?
       set -e
-      case $_cmp_status in
-        0) rm "$_ldsoconf.dpkg-tmp" ;; # files are identical
-        1) mv "$_ldsoconf.dpkg-tmp" "$_ldsoconf" ;; # files differ
-        *) die "error comparing \"$_ldsoconf.dpkg-tmp\" to \"$_ldsoconf\";" \
-          "cmp exited with status $_cmp_status" ;;
+      case $cmp_status in
+        0) rm "$ldsoconf.dpkg-tmp" ;; # files are identical
+        1) mv "$ldsoconf.dpkg-tmp" "$ldsoconf" ;; # files differ
+        *) die "error comparing \"$ldsoconf.dpkg-tmp\" to \"$ldsoconf\";" \
+          "cmp exited with status $cmp_status" ;;
       esac
     fi
   fi
@@ -780,17 +811,17 @@ make_symlink_sane () {
 
   # We could just use the positional parameters as-is, but that makes things
   # harder to follow.
-  #local symlink target
+  local symlink target
 
-  _symlink="$1"
-  _target="$2"
+  symlink="$1"
+  target="$2"
 
-  if [ -L "$_symlink" ] && [ "$(readlink "$_symlink")" = "$_target" ]; then
-      observe "link from $_symlink to $_target already exists"
+  if [ -L "$symlink" ] && [ "$(readlink "$symlink")" = "$target" ]; then
+      observe "link from $symlink to $target already exists"
   else
-    observe "creating symbolic link from $_symlink to $_target"
-    mkdir -p "${_target%/*}" "${_symlink%/*}"
-    ln -s -b -S ".dpkg-old" "$_target" "$_symlink"
+    observe "creating symbolic link from $symlink to $target"
+    mkdir -p "${target%/*}" "${symlink%/*}"
+    ln -s -b -S ".dpkg-old" "$target" "$symlink"
   fi
 }
 
@@ -826,73 +857,73 @@ migrate_dir_to_symlink () {
 
   # We could just use the positional parameters as-is, but that makes things
   # harder to follow.
-  local _new _old
+  local new old
 
-  _old="$1"
-  _new="$2"
+  old="$1"
+  new="$2"
 
   # Is old location a symlink?
-  if [ -L "$_old" ]; then
+  if [ -L "$old" ]; then
     # Does it already point to new location?
-    if [ "$(readlink "$_old")" = "$_new" ]; then
+    if [ "$(readlink "$old")" = "$new" ]; then
       # Nothing to do; migration has already been done.
-      observe "migration of $_old to $_new already done"
+      observe "migration of $old to $new already done"
       return 0
     else
       # Back it up.
-      warn "backing up symbolic link $_old as $_old.dpkg-old"
-      mv -b "$_old" "$_old.dpkg-old"
+      warn "backing up symbolic link $old as $old.dpkg-old"
+      mv -b "$old" "$old.dpkg-old"
     fi
   fi
 
   # Does old location exist, but is not a directory?
-  if [ -e "$_old" ] && ! [ -d "$_old" ]; then
+  if [ -e "$old" ] && ! [ -d "$old" ]; then
       # Back it up.
-      warn "backing up non-directory $_old as $_old.dpkg-old"
-      mv -b "$_old" "$_old.dpkg-old"
+      warn "backing up non-directory $old as $old.dpkg-old"
+      mv -b "$old" "$old.dpkg-old"
   fi
 
-  observe "migrating $_old to $_new"
+  observe "migrating $old to $new"
 
   # Is new location a symlink?
-  if [ -L "$_new" ]; then
+  if [ -L "$new" ]; then
     # Does it point the wrong way, i.e., back to where we're migrating from?
-    if [ "$(readlink "$_new")" = "$_old" ]; then
+    if [ "$(readlink "$new")" = "$old" ]; then
       # Get rid of it.
-      observe "removing symbolic link $_new which points to $_old"
-      rm "$_new"
+      observe "removing symbolic link $new which points to $old"
+      rm "$new"
     else
       # Back it up.
-      warn "backing up symbolic link $_new as $_new.dpkg-old"
-      mv -b "$_new" "$_new.dpkg-old"
+      warn "backing up symbolic link $new as $new.dpkg-old"
+      mv -b "$new" "$new.dpkg-old"
     fi
   fi
 
   # Does new location exist, but is not a directory?
-  if [ -e "$_new" ] && ! [ -d "$_new" ]; then
-    warn "backing up non-directory $_new as $_new.dpkg-old"
-    mv -b "$_new" "$_new.dpkg-old"
+  if [ -e "$new" ] && ! [ -d "$new" ]; then
+    warn "backing up non-directory $new as $new.dpkg-old"
+    mv -b "$new" "$new.dpkg-old"
   fi
 
   # Create new directory if it does not yet exist.
-  if ! [ -e "$_new" ]; then
-    observe "creating $_new"
-    mkdir -p "$_new"
+  if ! [ -e "$new" ]; then
+    observe "creating $new"
+    mkdir -p "$new"
   fi
 
   # Copy files in old location to new location.  Back up any filenames that
   # already exist in the new location with the extension ".dpkg-old".
-  observe "copying files from $_old to $_new"
-  if ! (cd "$_old" && cp -a -b -S ".dpkg-old" . "$_new"); then
-    die "error(s) encountered while copying files from $_old to $_new"
+  observe "copying files from $old to $new"
+  if ! (cd "$old" && cp -a -b -S ".dpkg-old" . "$new"); then
+    die "error(s) encountered while copying files from $old to $new"
   fi
 
   # Remove files at old location.
-  observe "removing $_old"
-  rm -r "$_old"
+  observe "removing $old"
+  rm -r "$old"
 
   # Create symlink from old location to new location.
-  make_symlink_sane "$_old" "$_new"
+  make_symlink_sane "$old" "$new"
 }
 
 # vim:set ai et sw=2 ts=2 tw=80:
