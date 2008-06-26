@@ -60,7 +60,8 @@ am__sdk_HEADERS_DIST = XIstubs.h bstore.h bstorestr.h closestr.h \
 	pixmapstr.h privates.h property.h propertyst.h region.h \
 	regionstr.h registry.h resource.h rgb.h screenint.h \
 	scrnintstr.h selection.h servermd.h site.h swaprep.h swapreq.h \
-	validate.h window.h windowstr.h xorg-server.h
+	validate.h window.h windowstr.h xkbsrv.h xkbstr.h \
+	xorg-server.h
 am__vpath_adj_setup = srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`;
 am__vpath_adj = case $$p in \
     $(srcdir)/*) f=`echo "$$p" | sed "s|^$$srcdirstrip/||"`;; \
@@ -432,11 +433,13 @@ xpconfigdir = @xpconfigdir@
 @XORG_TRUE@	validate.h	\
 @XORG_TRUE@	window.h	\
 @XORG_TRUE@	windowstr.h	\
+@XORG_TRUE@	xkbsrv.h	\
+@XORG_TRUE@	xkbstr.h	\
 @XORG_TRUE@	xorg-server.h
 
 AM_CFLAGS = $(DIX_CFLAGS)
 EXTRA_DIST = $(sdk_HEADERS) do-not-use-config.h dix-config.h xorg-config.h \
-	xkb-config.h xkbfile.h xkbsrv.h xkbstr.h
+	xkb-config.h xkbfile.h
 
 all: do-not-use-config.h xorg-server.h dix-config.h xgl-config.h xorg-config.h xkb-config.h xwin-config.h kdrive-config.h
 	$(MAKE) $(AM_MAKEFLAGS) all-am

@@ -38,8 +38,7 @@ host_triplet = @host@
 @XORG_BUS_IX86PCI_TRUE@am__append_3 = ix86Pci.c
 @XORG_BUS_PPCPCI_TRUE@am__append_4 = ppcPci.c
 @XORG_BUS_SPARCPCI_TRUE@am__append_5 = sparcPci.c
-@LINUX_ALPHA_TRUE@am__append_6 = axpPci.c
-@XORG_BUS_SPARC_TRUE@am__append_7 = xf86Sbus.h
+@XORG_BUS_SPARC_TRUE@am__append_6 = xf86Sbus.h
 subdir = hw/xfree86/os-support/bus
 DIST_COMMON = $(am__sdk_HEADERS_DIST) $(srcdir)/Makefile.am \
 	$(srcdir)/Makefile.in
@@ -61,17 +60,16 @@ CONFIG_CLEAN_FILES =
 LTLIBRARIES = $(noinst_LTLIBRARIES)
 libbus_la_LIBADD =
 am__libbus_la_SOURCES_DIST = Pci.c Pci.h linuxPci.c bsd_pci.c \
-	ix86Pci.c ppcPci.c sparcPci.c axpPci.c Sbus.c
+	ix86Pci.c ppcPci.c sparcPci.c Sbus.c
 @XORG_BUS_LINUXPCI_TRUE@am__objects_1 = linuxPci.lo
 @XORG_BUS_BSDPCI_TRUE@am__objects_2 = bsd_pci.lo
 @XORG_BUS_IX86PCI_TRUE@am__objects_3 = ix86Pci.lo
 @XORG_BUS_PPCPCI_TRUE@am__objects_4 = ppcPci.lo
 @XORG_BUS_SPARCPCI_TRUE@am__objects_5 = sparcPci.lo
-@LINUX_ALPHA_TRUE@am__objects_6 = axpPci.lo
-am__objects_7 = $(am__objects_1) $(am__objects_2) $(am__objects_3) \
-	$(am__objects_4) $(am__objects_5) $(am__objects_6)
-@XORG_BUS_SPARC_TRUE@am__objects_8 = Sbus.lo
-am_libbus_la_OBJECTS = Pci.lo $(am__objects_7) $(am__objects_8)
+am__objects_6 = $(am__objects_1) $(am__objects_2) $(am__objects_3) \
+	$(am__objects_4) $(am__objects_5)
+@XORG_BUS_SPARC_TRUE@am__objects_7 = Sbus.lo
+am_libbus_la_OBJECTS = Pci.lo $(am__objects_6) $(am__objects_7)
 libbus_la_OBJECTS = $(am_libbus_la_OBJECTS)
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)/include
 depcomp = $(SHELL) $(top_srcdir)/depcomp
@@ -409,9 +407,9 @@ top_srcdir = @top_srcdir@
 xglmoduledir = @xglmoduledir@
 xpconfigdir = @xpconfigdir@
 noinst_LTLIBRARIES = libbus.la
-sdk_HEADERS = xf86Pci.h $(am__append_7)
+sdk_HEADERS = xf86Pci.h $(am__append_6)
 PCI_SOURCES = $(am__append_1) $(am__append_2) $(am__append_3) \
-	$(am__append_4) $(am__append_5) $(am__append_6)
+	$(am__append_4) $(am__append_5)
 @XORG_BUS_SPARC_TRUE@PLATFORM_SOURCES = Sbus.c
 libbus_la_SOURCES = Pci.c Pci.h $(PCI_SOURCES) $(PLATFORM_PCI_SOURCES) \
                     $(PLATFORM_SOURCES)
@@ -472,7 +470,6 @@ distclean-compile:
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Pci.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Sbus.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/axpPci.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/bsd_pci.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ix86Pci.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/linuxPci.Plo@am__quote@

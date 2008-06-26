@@ -268,6 +268,9 @@
 /* Define to 1 if you have the <ndir.h> header file, and it defines `DIR'. */
 #undef HAVE_NDIR_H
 
+/* Define to 1 if you have the `pci_device_enable' function. */
+#undef HAVE_PCI_DEVICE_ENABLE
+
 /* Define to 1 if you have the `pci_system_init_dev_mem' function. */
 #undef HAVE_PCI_SYSTEM_INIT_DEV_MEM
 
@@ -294,6 +297,9 @@
 
 /* Define to 1 if you have the <stdlib.h> header file. */
 #undef HAVE_STDLIB_H
+
+/* Define to 1 if you have the `strcasestr' function. */
+#undef HAVE_STRCASESTR
 
 /* Define to 1 if you have the `strchr' function. */
 #undef HAVE_STRCHR
@@ -392,6 +398,9 @@
 
 /* Do not have 'strcasecmp'. */
 #undef NEED_STRCASECMP
+
+/* Do not have 'strncasecmp'. */
+#undef NEED_STRNCASECMP
 
 /* Need XFree86 helper functions */
 #undef NEED_XF86_PROTOTYPES
