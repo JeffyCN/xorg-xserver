@@ -190,7 +190,7 @@ dnl Checks for library functions.
 AC_FUNC_VPRINTF
 AC_CHECK_FUNCS([geteuid getuid link memmove memset mkstemp strchr strrchr \
 		strtol getopt getopt_long vsnprintf walkcontext backtrace \
-		getisax getzoneid shmctl64])
+		getisax getzoneid shmctl64 strcasestr])
 AC_FUNC_ALLOCA
 dnl Old HAS_* names used in os/*.c.
 AC_CHECK_FUNC([getdtablesize],
@@ -584,7 +584,7 @@ AC_ARG_ENABLE(xfake,          AS_HELP_STRING([--enable-xfake], [Build the kdrive
 AC_ARG_ENABLE(xfbdev,         AS_HELP_STRING([--enable-xfbdev], [Build the kdrive framebuffer device server (default: auto)]), [XFBDEV=$enableval], [XFBDEV=auto])
 AC_ARG_ENABLE(kdrive-vesa,    AS_HELP_STRING([--enable-kdrive-vesa], [Build the kdrive VESA-based servers (default: auto)]), [KDRIVEVESA=$enableval], [KDRIVEVESA=auto])
 dnl xprint
-AC_ARG_ENABLE(freetype,       AS_HELP_STRING([ --enable-freetype], [Build Xprint FreeType backend (default: yes)]), [XP_USE_FREETYPE=$enableval],[XP_USE_FREETYPE=no])
+AC_ARG_ENABLE(freetype,       AS_HELP_STRING([ --enable-freetype], [Build Xprint FreeType backend (default: no)]), [XP_USE_FREETYPE=$enableval],[XP_USE_FREETYPE=no])
 AC_ARG_WITH(freetype-config,  AS_HELP_STRING([ --with-freetype-config=PROG], [Use FreeType configuration program PROG (default: auto)]), freetype_config=$withval, freetype_config=auto)
 
 
@@ -734,7 +734,7 @@ if ! test "x$have_clock_gettime" = xno; then
     CPPFLAGS_SAVE="$CPPFLAGS"
 
     if test x"$glibc" = xyes; then
-        CPPFLAGS="$CPPFLAGS -D_POSIX_C_SOURCE=199309L"
+        CPPFLAGS="$CPPFLAGS -D_POSIX_C_SOURCE=200112L"
     fi
 
     AC_RUN_IFELSE([
@@ -1025,6 +1025,8 @@ XKB_STUB_LIB='$(top_builddir)/xkb/libxkbstubs.la'
 
 AC_CHECK_FUNC(strcasecmp, [], AC_DEFINE([NEED_STRCASECMP], 1,
                                         [Do not have 'strcasecmp'.]))
+AC_CHECK_FUNC(strncasecmp, [], AC_DEFINE([NEED_STRNCASECMP], 1,
+                                        [Do not have 'strncasecmp'.]))
 
 if test "x$NULL_ROOT_CURSOR" = xyes; then
         AC_DEFINE(NULL_ROOT_CURSOR, 1, [Use an empty root cursor])
@@ -1331,6 +1333,7 @@ if test "x$XORG" = xyes -o "x$XGL" = xyes; then
 	CFLAGS=$PCIACCESS_CFLAGS
 	LIBS=$PCIACCESS_LIBS
 	AC_CHECK_FUNCS([pci_system_init_dev_mem])
+	AC_CHECK_FUNCS([pci_device_enable])
 	LIBS=$SAVE_LIBS
 	CFLAGS=$SAVE_CFLAGS
 	XORG_SYS_LIBS="$XORG_SYS_LIBS $PCIACCESS_LIBS $DLOPEN_LIBS $GLX_SYS_LIBS"
@@ -1352,8 +1355,6 @@ if test "x$XORG" = xyes -o "x$XGL" = xyes; then
 			;;
 		  alpha*)
 		  	linux_alpha=yes
-			XORG_OS_PCI="axp"
-			xorg_bus_linuxpci="no"
 			;;
 		  i*86|amd64*|x86_64*)
 			linux_acpi="yes"
@@ -1601,7 +1602,7 @@ AC_MSG_RESULT([$XPRINT])
 if test "x$XPRINT" = xyes; then
 	PKG_CHECK_MODULES([XPRINTMODULES], [printproto x11 xfont $XDMCP_MODULES xau])
 	XPRINT_CFLAGS="$XPRINTMODULES_CFLAGS -DXPRINT"
-	XPRINT_LIBS="$XEXT_LIB $CONFIG_LIB $DBE_LIB $XTRAP_LIB $RECORD_LIB $RENDER_LIB $COMPOSITE_LIB $RANDR_LIB $XI_LIB $FIXES_LIB $DAMAGE_LIB $XI_LIB $GLX_LIBS $MIEXT_DAMAGE_LIB $XKB_LIB $XKB_STUB_LIB"
+	XPRINT_LIBS="$XEXT_LIB $DBE_LIB $XTRAP_LIB $RECORD_LIB $RENDER_LIB $COMPOSITE_LIB $RANDR_LIB $XI_LIB $FIXES_LIB $DAMAGE_LIB $XI_LIB $GLX_LIBS $MIEXT_DAMAGE_LIB $XKB_LIB $XKB_STUB_LIB"
 	XPRINT_SYS_LIBS="$XPRINTMODULES_LIBS"
 
 	xpconfigdir=$libdir/X11/xserver
