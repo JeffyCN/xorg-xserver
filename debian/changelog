@@ -1,6 +1,6 @@
-xorg-server (2:1.4.99.902-2) UNRELEASED; urgency=low
+xorg-server (2:1.4.99.905-1) UNRELEASED; urgency=low
 
-  * Update from upstream server-1.5-branch
+  * New upstream release candidate
     - fixes FTBFS on alpha (closes: #472205); won't work, though, because
       of #485528
     - fixes FTBFS on GNU/kFreeBSD (closes: #482550)
@@ -11,6 +11,7 @@ xorg-server (2:1.4.99.902-2) UNRELEASED; urgency=low
   * debian/rules: drop our special handling for stripping modules, which I
     think dates back to the days of the custom module loader.
   * debian/rules: drop some remaining xprintisms.
+  * bump serverminver to 2:1.4.99.905.
 
  -- Julien Cristau <jcristau@debian.org>  Thu, 26 Jun 2008 15:32:28 +0200
 

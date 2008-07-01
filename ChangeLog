@@ -1,3 +1,250 @@
+commit 0617653277d2e2802c6223fc2a221adfa6b93fc4
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Mon Jun 30 16:11:32 2008 -0400
+
+    xserver 1.5RC5
+
+commit bee463bd8a991ef7ba619241237cd06d2fc92558
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Mon Jun 30 16:10:37 2008 -0400
+
+    XInput ABI is 2.1, not 3.1.
+    (cherry picked from commit 76576c87b0de106e006d1cfa59d42d3a483e966c)
+
+commit 795d293d769aa93dddd457e8e200d62044a3921a
+Author: Keith Packard <keithp@keithp.com>
+Date:   Fri Apr 4 12:11:14 2008 -0700
+
+    Wrap AddTraps in exa and damage.
+    
+    This fine (and unused) function wasn't ever wrapped which made it not work
+    under exa.
+    (cherry picked from commit 06e7e1d0486e8c516a9b3219a2c86026f88825fc)
+
+commit 32cd2c510939498e94ae2aaec40fe48b2850a321
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Mon Jun 30 11:18:27 2008 -0400
+
+    xserver 1.5RC4.
+    
+    Remember kids, distcheck before you tag.
+
+commit 6ec12077ef0fd712ef97682deab751aac5c39d6d
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Mon Jun 30 10:47:34 2008 -0400
+
+    Distcheck fixes.
+
+commit 6a2ee7e0bb416e82004510edd97bebe94596a858
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Mon Jun 30 10:40:50 2008 -0400
+
+    xserver 1.5RC3.
+
+commit 6e8ed1398dd68426d45c20c05a10640c22f7d104
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Mon Jun 30 10:29:17 2008 -0400
+
+    Bump ABI minor numbers for the devPrivate ABI functions.
+    (cherry picked from commit 211e2bdcc677122145998829a7f26610c7c567e6)
+
+commit 39cc11b005b2f462bca9004c8e0fa290377687ce
+Author: Eamon Walsh <ewalsh@tycho.nsa.gov>
+Date:   Thu Jun 26 21:23:31 2008 -0400
+
+    Fix a leak of window devPrivates in window.c/CrushTree().
+    (cherry picked from commit 7ddfb2f1587da3ec1cd27ae270e42700adf4f560)
+
+commit 8017c999013b79fd30cb74eaf8ca0970e9b1bd4a
+Author: Dan Nicholson <dbn.lists@gmail.com>
+Date:   Wed May 21 16:14:55 2008 -0700
+
+    Actually enable building GLX without Mesa source
+    (cherry picked from commit e837244947fbb18192e9056c070ce439ef24d1a3)
+
+commit 90f2a82ba5aa6480d2299f99816a2ba351e24bee
+Author: George Sapountzis <gsap7@yahoo.gr>
+Date:   Fri May 23 22:39:09 2008 +0300
+
+    glx: fix forgotten swrast -> SWRast
+    (cherry picked from commit 21a8052fdca2115668dfc747b0b58db437b4eb6d)
+
+commit 6e278e3944cc32d165829f6ef64cbafbf9b513b7
+Author: George Sapountzis <gsap7@yahoo.gr>
+Date:   Fri May 23 22:38:36 2008 +0300
+
+    glx: missing swrast is fatal
+    (cherry picked from commit 877e6c35ff1f0f110627590ac0f12fddf47de506)
+
+commit 0845476521f5b9e9b477197d96d7ffe64be7ae3a
+Author: George Sapountzis <gsap7@yahoo.gr>
+Date:   Fri May 23 22:38:11 2008 +0300
+
+    glx: drop stray glcore.h include
+    (cherry picked from commit 1345c93ad4be875951256dae87bc4fd9a1b5e08a)
+
+commit 6f18c5d7039be3c03185aee61fb74ac4cf593532
+Author: George Sapountzis <gsap7@yahoo.gr>
+Date:   Fri May 23 22:40:03 2008 +0300
+
+    kdrive: need not export symbols for glx anymore
+    (cherry picked from commit ae0504d34d245f15b2f098a63ad1a9e1c4daef35)
+
+commit a194718e9d83b488f21226332b8b5b250f48e274
+Author: Kristian Høgsberg <krh@redhat.com>
+Date:   Wed May 21 13:33:36 2008 -0400
+
+    Move GL/glx on level up now that it's the only thing left under GL.
+    (cherry picked from commit c3eb5b80d8cc7ca6a425ccf359718d1ef3d5af55)
+
+commit cb402b4112dc9e4cb21c9fc9327da301a70b6a8d
+Author: Kristian Høgsberg <krh@redhat.com>
+Date:   Wed May 21 12:34:07 2008 -0400
+
+    Move the windows GL files to the xwin DDX.
+    (cherry picked from commit a8a9b40e554dd0c184866978889a39519afc466a)
+
+commit 0234d3d48f462fcac9c526919812d829375f0a0c
+Author: Kristian Høgsberg <krh@redhat.com>
+Date:   Wed May 21 11:44:12 2008 -0400
+
+    Get out of the mesa symlinking business.
+    
+    This copies over the files generated from mesa/src/mesa/glapi.  There's
+    a corresponding mesa commit that makes it easy to generate the glapi files
+    straight into the xserver tree when the XML definitions change.
+    
+    The only few files that are copied from mesa but aren't generated are
+    glapi.[ch] and glthread.[ch].  Everything in there is technically DRI
+    driver API and the whole setup is still a bit fragile, but it's not a new
+    problem.
+    
+    The --with-mesa-source configure option is still around since other
+    parts of the server (XGL and DMX - grep for MESA_SOURCE) need that,
+    but for common case of building with GLX and AIGLX support, that
+    option is no longer needed.
+    (cherry picked from commit e5aad4bc087036489e2af576628aa9b612054a6e)
+
+commit d3a2e060bfc322fbf7c55dd7d07472a0eeec18ef
+Author: Dan Nicholson <dbn.lists@gmail.com>
+Date:   Wed May 21 10:51:15 2008 -0700
+
+    Fix up paths for GL/glx -> glx renaming
+    (cherry picked from commit c76fddeea28b4f88db97a2a3487d7a57cd9d578c)
+
+commit d325a207c83884ba1306af38a4d1c60b9bad18bb
+Author: Kristian Høgsberg <krh@redhat.com>
+Date:   Wed May 21 10:18:16 2008 -0400
+
+    Use LD_EXPORT_SYMBOLS_FLAG when linking Xnest.
+    (cherry picked from commit f558c7d4d1d87affe1ce4aec2e62ff64545f2bc8)
+
+commit bd81faff8c4d9cae5f6a4b424230a11706a508c5
+Author: Kristian Høgsberg <krh@redhat.com>
+Date:   Wed May 21 10:17:53 2008 -0400
+
+    Drop glcore GLX provider.
+    
+    Obsoleted by the DRI swrast driver.
+    (cherry picked from commit 77ff8fd5072fa57158463bfd84656389eeb7b503)
+
+commit d88da6638eb133f93833933924711d9874c480a6
+Author: Jeremy Huddleston <jeremyhu@freedesktop.org>
+Date:   Wed Apr 23 10:22:34 2008 -0700
+
+    Moved Apple GL bits into our DDX subtree
+    (cherry picked from commit c9356f32892978faecb30f7b7af7488820ce37ff)
+    (cherry picked from commit d09c520b322ba5c5f4d6b630a7c0c62e56732f82)
+
+commit 500463f728927a3ca8d8167bc7c1b266142c93fe
+Author: Kristian Høgsberg <krh@redhat.com>
+Date:   Tue May 20 16:56:27 2008 -0400
+
+    Stop symlinking glcontextmodes.[ch] from mesa.
+    (cherry picked from commit 61eaef22359ae2abcee7dcd73ee8610a83776fc7)
+
+commit a569beba4cdad4af6e52c5a966475b4041365eda
+Author: Jeremy Huddleston <jeremyhu@freedesktop.org>
+Date:   Thu Apr 24 18:21:42 2008 -0700
+
+    XQuartz: Compile in missing glx source that we still need
+    (cherry picked from commit c611335dee267e41dcd1733a6bb5206b102f804e)
+    (cherry picked from commit 63853e4ad211945ed25541223207a78f83766ced)
+
+commit 46e0bb6211cf711ef4dacf134404d79a530b5549
+Author: Ben Byer <bbyer@apple.com>
+Date:   Tue Apr 22 23:53:23 2008 -0700
+
+    xquartz: remove vestigial aglGlx.c
+    (cherry picked from commit 40bd041e4255f26fcbdf0831e68619ae0f46ab39)
+    (cherry picked from commit 3685b171da51f853bfdb312d36622dfa03ee75be)
+
+commit e8a1eda65d36af022ac8c245640a0d5f2ac1989a
+Author: Ben Byer <bbyer@apple.com>
+Date:   Mon Apr 21 22:06:38 2008 -0700
+
+    add missing DARWIN_GLX_LIBS in configure.ac
+    (cherry picked from commit a033c0b3dbb3b963261faa39f0236457cb00ff44)
+    (cherry picked from commit 744d0cfda74f8283801cc2d6c5eda48402455bc3)
+
+commit 17ac93b23bcb3e2a1117c76b63b23c7439a96ef5
+Author: George Sapountzis <gsap7@yahoo.gr>
+Date:   Wed May 21 18:13:47 2008 +0300
+
+    glx: drop drm.h, sareaHandle from swrast loader
+    (cherry picked from commit 88f43e5d06fb5543bc40ca060b2c5d8e2673afad)
+
+commit 988b1b8df319903d308d8ee232e991dab42e1c0b
+Author: George Sapountzis <gsap7@yahoo.gr>
+Date:   Tue May 20 16:36:22 2008 -0400
+
+    Add loader for the swrast dri driver.
+    (cherry picked from commit 6ff6465931c397f72db27a4fd0ca0dcac0609537)
+
+commit 1efc0329b147eb6e25671ad3bcb5f12095d9f844
+Author: George Sapountzis <gsap7@yahoo.gr>
+Date:   Fri Apr 18 17:47:16 2008 +0300
+
+    glcore: drop GLcore (files)
+    (cherry picked from commit a88c6b66465c039bf92a54a496516fee4d900784)
+
+commit 9b4d5b6521a8d6e02ab9cb534fbff3faa9f3a388
+Author: George Sapountzis <gsap7@yahoo.gr>
+Date:   Fri Apr 18 17:47:01 2008 +0300
+
+    glcore: drop GLcore (build system)
+    (cherry picked from commit dd7a53f8f21e41e1ab43f7e684ba586abc97ef7e)
+
+commit 1ea2e69cfcdf66f6b7834e503526d9d89fd69c09
+Author: George Sapountzis <gsap7@yahoo.gr>
+Date:   Fri Apr 18 17:46:18 2008 +0300
+
+    glcore: build from mesa, dlopen from xorg
+    
+    * The GLcore interface is disposable
+    * GLcore is installed in DRI_DRIVER_INSTALL_DIR which is overloaded for
+      GLX_PROVIDER_INSTALL_DIR
+    (cherry picked from commit 567d389d47dee233a973b101e04ce41c47a68f34)
+
+commit f2c30a57e3c6169fbecdbb60ac24ad2a5e9aa8a4
+Author: Donnie Berkholz <dberkholz@gentoo.org>
+Date:   Mon Jun 9 16:01:53 2008 -0700
+
+    glcore: prepare for dynamic loading
+    
+    glcore gets linked with -ldl, -lpthread for s3tc and glapi
+    xserver needs
+            DLOPEN_LIBS - to dlopen the glcore dso
+            LD_EXPORT_SYMBOLS_FLAG - to export symbols for glcore to use
+    
+    the ld flag is added to kdrive only when GLX is enabled, the net overhead for
+    Xephyr is ~155KB, could be reduced with --dynamic-list.
+    (cherry picked from commit efb723e166e5fa89e90c7b400fb4c7979b1f50c0)
+    
+    Conflicts:
+    
+    	configure.ac
+
 commit 9029748f894e603bd7a963c4b868349dc1a73f5f
 Author: Alan Coopersmith <alan.coopersmith@sun.com>
 Date:   Wed Jun 25 15:06:49 2008 -0700
