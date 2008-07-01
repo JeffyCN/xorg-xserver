@@ -64,6 +64,9 @@ am_Xr128_OBJECTS = r128stub.$(OBJEXT)
 Xr128_OBJECTS = $(am_Xr128_OBJECTS)
 am__DEPENDENCIES_1 = libr128.a \
 	$(top_builddir)/hw/kdrive/vesa/libvesa.a
+Xr128_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
+	--mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(Xr128_LDFLAGS) \
+	$(LDFLAGS) -o $@
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)/include
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
@@ -408,6 +411,7 @@ R128_LIBS = \
 	$(top_builddir)/hw/kdrive/vesa/libvesa.a \
 	@KDRIVE_LIBS@
 
+@GLX_TRUE@Xr128_LDFLAGS = $(LD_EXPORT_SYMBOLS_FLAG)
 Xr128_LDADD = \
 	$(R128_LIBS)				\
 	@KDRIVE_LIBS@
@@ -486,7 +490,7 @@ clean-binPROGRAMS:
 	done
 Xr128$(EXEEXT): $(Xr128_OBJECTS) $(Xr128_DEPENDENCIES) 
 	@rm -f Xr128$(EXEEXT)
-	$(LINK) $(Xr128_OBJECTS) $(Xr128_LDADD) $(LIBS)
+	$(Xr128_LINK) $(Xr128_OBJECTS) $(Xr128_LDADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)

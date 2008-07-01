@@ -62,6 +62,9 @@ binPROGRAMS_INSTALL = $(INSTALL_PROGRAM)
 PROGRAMS = $(bin_PROGRAMS)
 am_Xvia_OBJECTS = viastub.$(OBJEXT)
 Xvia_OBJECTS = $(am_Xvia_OBJECTS)
+Xvia_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
+	--mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(Xvia_LDFLAGS) \
+	$(LDFLAGS) -o $@
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)/include
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
@@ -407,6 +410,7 @@ VIA_LIBS = \
 	libvia.a	\
 	$(top_builddir)/hw/kdrive/vesa/libvesa.a
 
+@GLX_TRUE@Xvia_LDFLAGS = $(LD_EXPORT_SYMBOLS_FLAG)
 Xvia_LDADD = \
 	$(VIA_LIBS)					\
 	@KDRIVE_LIBS@
@@ -485,7 +489,7 @@ clean-binPROGRAMS:
 	done
 Xvia$(EXEEXT): $(Xvia_OBJECTS) $(Xvia_DEPENDENCIES) 
 	@rm -f Xvia$(EXEEXT)
-	$(LINK) $(Xvia_OBJECTS) $(Xvia_LDADD) $(LIBS)
+	$(Xvia_LINK) $(Xvia_OBJECTS) $(Xvia_LDADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)

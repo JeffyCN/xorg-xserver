@@ -64,6 +64,9 @@ PROGRAMS = $(bin_PROGRAMS)
 am_Xmga_OBJECTS = mgastub.$(OBJEXT)
 Xmga_OBJECTS = $(am_Xmga_OBJECTS)
 am__DEPENDENCIES_1 = libmga.a $(top_builddir)/hw/kdrive/vesa/libvesa.a
+Xmga_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
+	--mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(Xmga_LDFLAGS) \
+	$(LDFLAGS) -o $@
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)/include
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
@@ -410,6 +413,7 @@ MGA_LIBS = \
 	$(top_builddir)/hw/kdrive/vesa/libvesa.a	\
 	@KDRIVE_LIBS@
 
+@GLX_TRUE@Xmga_LDFLAGS = $(LD_EXPORT_SYMBOLS_FLAG)
 Xmga_LDADD = \
 	$(MGA_LIBS)					\
 	@KDRIVE_LIBS@
@@ -488,7 +492,7 @@ clean-binPROGRAMS:
 	done
 Xmga$(EXEEXT): $(Xmga_OBJECTS) $(Xmga_DEPENDENCIES) 
 	@rm -f Xmga$(EXEEXT)
-	$(LINK) $(Xmga_OBJECTS) $(Xmga_LDADD) $(LIBS)
+	$(Xmga_LINK) $(Xmga_OBJECTS) $(Xmga_LDADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)

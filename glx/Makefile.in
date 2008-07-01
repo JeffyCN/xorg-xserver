@@ -32,7 +32,7 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-subdir = GL/mesa/shader/grammar
+subdir = glx
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/acinclude.m4 \
@@ -50,9 +50,22 @@ CONFIG_HEADER = $(top_builddir)/include/do-not-use-config.h \
 	$(top_builddir)/include/kdrive-config.h
 CONFIG_CLEAN_FILES =
 LTLIBRARIES = $(noinst_LTLIBRARIES)
-libgrammar_la_LIBADD =
-nodist_libgrammar_la_OBJECTS = grammar_mesa.lo
-libgrammar_la_OBJECTS = $(nodist_libgrammar_la_OBJECTS)
+libglx_la_LIBADD =
+am__objects_1 = indirect_dispatch.lo indirect_dispatch_swap.lo \
+	indirect_reqsize.lo indirect_size_get.lo indirect_table.lo \
+	glapi.lo glthread.lo
+am_libglx_la_OBJECTS = $(am__objects_1) indirect_util.lo \
+	indirect_program.lo indirect_texture_compression.lo glxcmds.lo \
+	glxcmdsswap.lo glxext.lo glxdriswrast.lo glxdricommon.lo \
+	glxscreens.lo glxutil.lo render2.lo render2swap.lo \
+	renderpix.lo renderpixswap.lo rensize.lo single2.lo \
+	single2swap.lo singlepix.lo singlepixswap.lo singlesize.lo \
+	swap_interval.lo xfont.lo
+libglx_la_OBJECTS = $(am_libglx_la_OBJECTS)
+libglxdri_la_LIBADD =
+am_libglxdri_la_OBJECTS = glxdri.lo glxdri2.lo extension_string.lo
+libglxdri_la_OBJECTS = $(am_libglxdri_la_OBJECTS)
+@AIGLX_TRUE@am_libglxdri_la_rpath =
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)/include
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
@@ -65,8 +78,8 @@ CCLD = $(CC)
 LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
 	--mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) \
 	$(LDFLAGS) -o $@
-SOURCES = $(nodist_libgrammar_la_SOURCES)
-DIST_SOURCES =
+SOURCES = $(libglx_la_SOURCES) $(libglxdri_la_SOURCES)
+DIST_SOURCES = $(libglx_la_SOURCES) $(libglxdri_la_SOURCES)
 ETAGS = etags
 CTAGS = ctags
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
@@ -378,25 +391,94 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 xglmoduledir = @xglmoduledir@
 xpconfigdir = @xpconfigdir@
-noinst_LTLIBRARIES = libgrammar.la
+@AIGLX_TRUE@GLXDRI_LIBRARY = libglxdri.la
+noinst_LTLIBRARIES = libglx.la $(GLXDRI_LIBRARY)
 AM_CFLAGS = \
-	$(DIX_CFLAGS) \
+	@DIX_CFLAGS@ \
+	@GL_CFLAGS@ \
+	@XLIB_CFLAGS@ \
+	@LIBDRM_CFLAGS@ \
+	@DRIPROTO_CFLAGS@ \
 	-DXFree86Server \
-	@GLX_DEFINES@
+	@GLX_DEFINES@ \
+	@GLX_ARCH_DEFINES@
 
-INCLUDES = -I@MESA_SOURCE@/include \
-           -I../../X \
-           -I../../glapi \
-           -I../../main \
-           -I../../math \
-           -I../../shader \
-           -I../../swrast \
-           -I../../swrast_setup \
-           -I../../tnl \
-           -I../.. \
-           -I$(top_srcdir)/hw/xfree86/os-support
 
-nodist_libgrammar_la_SOURCES = grammar_mesa.c
+# none yet
+#sdk_HEADERS =
+INCLUDES = \
+	-I$(top_srcdir)/hw/xfree86/os-support \
+	-I$(top_srcdir)/hw/xfree86/os-support/bus \
+	-I$(top_srcdir)/hw/xfree86/common \
+	-I$(top_srcdir)/hw/xfree86/dri \
+	-I$(top_srcdir)/hw/xfree86/dri2 \
+	-I$(top_srcdir)/mi
+
+glapi_sources = \
+	indirect_dispatch.c			\
+	indirect_dispatch.h			\
+	indirect_dispatch_swap.c		\
+	indirect_reqsize.c			\
+	indirect_reqsize.h			\
+	indirect_size.h				\
+	indirect_size_get.c			\
+	indirect_size_get.h			\
+	indirect_table.c			\
+	dispatch.h				\
+	glapitable.h				\
+	glapitemp.h				\
+	glapi.c					\
+	glapi.h					\
+	glapioffsets.h				\
+	glthread.c				\
+	glthread.h				\
+	glprocs.h
+
+libglxdri_la_SOURCES = \
+        glxdri.c \
+        glxdri2.c \
+	glxdricommon.h \
+        extension_string.c \
+        extension_string.h
+
+libglx_la_SOURCES = \
+	$(indirect_sources) \
+	$(glapi_sources) \
+	indirect_util.c \
+	indirect_util.h \
+	indirect_program.c \
+	indirect_table.h \
+	indirect_texture_compression.c \
+        g_disptab.h \
+        glxbyteorder.h \
+        glxcmds.c \
+        glxcmdsswap.c \
+        glxcontext.h \
+        glxdrawable.h \
+        glxext.c \
+        glxext.h \
+	glxdriswrast.c \
+	glxdricommon.c \
+        glxscreens.c \
+        glxscreens.h \
+        glxserver.h \
+        glxutil.c \
+        glxutil.h \
+        render2.c \
+        render2swap.c \
+        renderpix.c \
+        renderpixswap.c \
+        rensize.c \
+        single2.c \
+        single2swap.c \
+        singlepix.c \
+        singlepixswap.c \
+        singlesize.c \
+        singlesize.h \
+        swap_interval.c \
+        unpack.h \
+        xfont.c
+
 all: all-am
 
 .SUFFIXES:
@@ -410,9 +492,9 @@ $(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am  $(am__confi
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign  GL/mesa/shader/grammar/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign  glx/Makefile'; \
 	cd $(top_srcdir) && \
-	  $(AUTOMAKE) --foreign  GL/mesa/shader/grammar/Makefile
+	  $(AUTOMAKE) --foreign  glx/Makefile
 .PRECIOUS: Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \
@@ -439,8 +521,10 @@ clean-noinstLTLIBRARIES:
 	  echo "rm -f \"$${dir}/so_locations\""; \
 	  rm -f "$${dir}/so_locations"; \
 	done
-libgrammar.la: $(libgrammar_la_OBJECTS) $(libgrammar_la_DEPENDENCIES) 
-	$(LINK)  $(libgrammar_la_OBJECTS) $(libgrammar_la_LIBADD) $(LIBS)
+libglx.la: $(libglx_la_OBJECTS) $(libglx_la_DEPENDENCIES) 
+	$(LINK)  $(libglx_la_OBJECTS) $(libglx_la_LIBADD) $(LIBS)
+libglxdri.la: $(libglxdri_la_OBJECTS) $(libglxdri_la_DEPENDENCIES) 
+	$(LINK) $(am_libglxdri_la_rpath) $(libglxdri_la_OBJECTS) $(libglxdri_la_LIBADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -448,7 +532,38 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/grammar_mesa.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/extension_string.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/glapi.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/glthread.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/glxcmds.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/glxcmdsswap.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/glxdri.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/glxdri2.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/glxdricommon.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/glxdriswrast.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/glxext.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/glxscreens.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/glxutil.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/indirect_dispatch.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/indirect_dispatch_swap.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/indirect_program.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/indirect_reqsize.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/indirect_size_get.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/indirect_table.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/indirect_texture_compression.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/indirect_util.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/render2.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/render2swap.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/renderpix.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/renderpixswap.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/rensize.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/single2.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/single2swap.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/singlepix.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/singlepixswap.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/singlesize.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/swap_interval.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/xfont.Plo@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	$(COMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<

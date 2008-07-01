@@ -65,6 +65,9 @@ Xsmi_OBJECTS = $(am_Xsmi_OBJECTS)
 am__DEPENDENCIES_1 = libsmi.a \
 	$(top_builddir)/hw/kdrive/fbdev/libfbdev.a \
 	$(top_builddir)/hw/kdrive/vesa/libvesa.a
+Xsmi_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
+	--mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(Xsmi_LDFLAGS) \
+	$(LDFLAGS) -o $@
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)/include
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
@@ -414,6 +417,7 @@ SMI_LIBS = \
 	$(top_builddir)/hw/kdrive/vesa/libvesa.a \
 	@KDRIVE_LIBS@
 
+@GLX_TRUE@Xsmi_LDFLAGS = $(LD_EXPORT_SYMBOLS_FLAG)
 Xsmi_LDADD = \
 	$(SMI_LIBS)				\
 	@KDRIVE_LIBS@
@@ -492,7 +496,7 @@ clean-binPROGRAMS:
 	done
 Xsmi$(EXEEXT): $(Xsmi_OBJECTS) $(Xsmi_DEPENDENCIES) 
 	@rm -f Xsmi$(EXEEXT)
-	$(LINK) $(Xsmi_OBJECTS) $(Xsmi_LDADD) $(LIBS)
+	$(Xsmi_LINK) $(Xsmi_OBJECTS) $(Xsmi_LDADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)

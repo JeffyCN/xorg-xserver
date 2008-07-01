@@ -64,7 +64,7 @@ libglcore_la_OBJECTS = $(am_libglcore_la_OBJECTS)
 libglcore_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
 	$(libglcore_la_LDFLAGS) $(LDFLAGS) -o $@
-libglx_la_DEPENDENCIES = $(top_builddir)/GL/glx/libglx.la
+libglx_la_DEPENDENCIES = $(top_builddir)/glx/libglx.la
 am_libglx_la_OBJECTS = glxmodule.lo
 libglx_la_OBJECTS = $(am_libglx_la_OBJECTS)
 libglx_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
@@ -404,7 +404,7 @@ AM_CFLAGS = \
 
 libglx_la_LDFLAGS = -avoid-version
 libglx_la_SOURCES = glxmodule.c
-libglx_la_LIBADD = $(top_builddir)/GL/glx/libglx.la
+libglx_la_LIBADD = $(top_builddir)/glx/libglx.la
 libglx_modules = libglx.la
 libglcore_la_LDFLAGS = -avoid-version
 libglcore_la_SOURCES = glcoremodule.c

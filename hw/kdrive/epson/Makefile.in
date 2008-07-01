@@ -63,6 +63,9 @@ PROGRAMS = $(bin_PROGRAMS)
 am_Xepson_OBJECTS = epson13806stub.$(OBJEXT)
 Xepson_OBJECTS = $(am_Xepson_OBJECTS)
 am__DEPENDENCIES_1 = libepson.a
+Xepson_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
+	--mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(Xepson_LDFLAGS) \
+	$(LDFLAGS) -o $@
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)/include
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
@@ -407,6 +410,7 @@ EPSON_LIBS = \
 	libepson.a 				\
 	@KDRIVE_LIBS@
 
+@GLX_TRUE@Xepson_LDFLAGS = $(LD_EXPORT_SYMBOLS_FLAG)
 Xepson_LDADD = \
 	$(EPSON_LIBS)			       \
 	@KDRIVE_LIBS@
@@ -485,7 +489,7 @@ clean-binPROGRAMS:
 	done
 Xepson$(EXEEXT): $(Xepson_OBJECTS) $(Xepson_DEPENDENCIES) 
 	@rm -f Xepson$(EXEEXT)
-	$(LINK) $(Xepson_OBJECTS) $(Xepson_LDADD) $(LIBS)
+	$(Xepson_LINK) $(Xepson_OBJECTS) $(Xepson_LDADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)

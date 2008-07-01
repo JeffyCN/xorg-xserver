@@ -405,7 +405,7 @@ DISTCHECK_CONFIGURE_FLAGS = --disable-xorgcfg
 @CFB_TRUE@CFB32_DIR = cfb32
 @AFB_TRUE@AFB_DIR = afb
 @MFB_TRUE@MFB_DIR = mfb
-@GLX_TRUE@GLX_DIR = GL
+@GLX_TRUE@GLX_DIR = glx
 @DBE_TRUE@DBE_DIR = dbe
 @RECORD_TRUE@RECORD_DIR = record
 SUBDIRS = \
@@ -465,7 +465,7 @@ DIST_SUBDIRS = \
 	damageext \
 	XTrap \
 	composite \
-	GL \
+	glx \
 	exa \
 	config \
 	hw

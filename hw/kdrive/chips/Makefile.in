@@ -64,6 +64,9 @@ am_Xchips_OBJECTS = chipsstub.$(OBJEXT)
 Xchips_OBJECTS = $(am_Xchips_OBJECTS)
 am__DEPENDENCIES_1 = libchips.a \
 	$(top_builddir)/hw/kdrive/vesa/libvesa.a
+Xchips_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
+	--mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(Xchips_LDFLAGS) \
+	$(LDFLAGS) -o $@
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)/include
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
@@ -408,6 +411,7 @@ CHIPS_LIBS = \
 	$(top_builddir)/hw/kdrive/vesa/libvesa.a \
 	@KDRIVE_LIBS@
 
+@GLX_TRUE@Xchips_LDFLAGS = $(LD_EXPORT_SYMBOLS_FLAG)
 Xchips_LDADD = \
 	$(CHIPS_LIBS)				\
 	@KDRIVE_LIBS@
@@ -486,7 +490,7 @@ clean-binPROGRAMS:
 	done
 Xchips$(EXEEXT): $(Xchips_OBJECTS) $(Xchips_DEPENDENCIES) 
 	@rm -f Xchips$(EXEEXT)
-	$(LINK) $(Xchips_OBJECTS) $(Xchips_LDADD) $(LIBS)
+	$(Xchips_LINK) $(Xchips_OBJECTS) $(Xchips_LDADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)

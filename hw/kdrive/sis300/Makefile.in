@@ -63,6 +63,9 @@ PROGRAMS = $(bin_PROGRAMS)
 am_Xsis_OBJECTS = sis_stub.$(OBJEXT)
 Xsis_OBJECTS = $(am_Xsis_OBJECTS)
 am__DEPENDENCIES_1 = libsis.a $(FBDEV_LIBS) $(VESA_LIBS)
+Xsis_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
+	--mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(Xsis_LDFLAGS) \
+	$(LDFLAGS) -o $@
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)/include
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
@@ -415,6 +418,7 @@ SIS_LIBS = \
 	$(VESA_LIBS)			\
 	@KDRIVE_LIBS@
 
+@GLX_TRUE@Xsis_LDFLAGS = $(LD_EXPORT_SYMBOLS_FLAG)
 Xsis_LDADD = \
 	$(SIS_LIBS)				\
 	@KDRIVE_LIBS@                          \
@@ -494,7 +498,7 @@ clean-binPROGRAMS:
 	done
 Xsis$(EXEEXT): $(Xsis_OBJECTS) $(Xsis_DEPENDENCIES) 
 	@rm -f Xsis$(EXEEXT)
-	$(LINK) $(Xsis_OBJECTS) $(Xsis_LDADD) $(LIBS)
+	$(Xsis_LINK) $(Xsis_OBJECTS) $(Xsis_LDADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)

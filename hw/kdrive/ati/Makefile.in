@@ -80,6 +80,9 @@ PROGRAMS = $(bin_PROGRAMS)
 am_Xati_OBJECTS = ati_stub.$(OBJEXT)
 Xati_OBJECTS = $(am_Xati_OBJECTS)
 am__DEPENDENCIES_1 = libati.a $(FBDEV_LIBS) $(VESA_LIBS)
+Xati_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
+	--mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(Xati_LDFLAGS) \
+	$(LDFLAGS) -o $@
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)/include
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
@@ -442,6 +445,7 @@ ATI_LIBS = \
 	$(DRI_LIBS)			\
 	@KDRIVE_LIBS@
 
+@GLX_TRUE@Xati_LDFLAGS = $(LD_EXPORT_SYMBOLS_FLAG)
 Xati_LDADD = \
 	$(ATI_LIBS)			\
 	@KDRIVE_LIBS@
@@ -520,7 +524,7 @@ clean-binPROGRAMS:
 	done
 Xati$(EXEEXT): $(Xati_OBJECTS) $(Xati_DEPENDENCIES) 
 	@rm -f Xati$(EXEEXT)
-	$(LINK) $(Xati_OBJECTS) $(Xati_LDADD) $(LIBS)
+	$(Xati_LINK) $(Xati_OBJECTS) $(Xati_LDADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)

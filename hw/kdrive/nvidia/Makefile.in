@@ -64,6 +64,9 @@ am_Xnvidia_OBJECTS = nvidiastub.$(OBJEXT)
 Xnvidia_OBJECTS = $(am_Xnvidia_OBJECTS)
 am__DEPENDENCIES_1 = libnvidia.a \
 	$(top_builddir)/hw/kdrive/vesa/libvesa.a
+Xnvidia_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
+	--mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(Xnvidia_LDFLAGS) \
+	$(LDFLAGS) -o $@
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)/include
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
@@ -411,6 +414,7 @@ NVIDIA_LIBS = \
 	$(top_builddir)/hw/kdrive/vesa/libvesa.a \
 	@KDRIVE_LIBS@
 
+@GLX_TRUE@Xnvidia_LDFLAGS = $(LD_EXPORT_SYMBOLS_FLAG)
 Xnvidia_LDADD = \
 	$(NVIDIA_LIBS)				\
 	@KDRIVE_LIBS@
@@ -489,7 +493,7 @@ clean-binPROGRAMS:
 	done
 Xnvidia$(EXEEXT): $(Xnvidia_OBJECTS) $(Xnvidia_DEPENDENCIES) 
 	@rm -f Xnvidia$(EXEEXT)
-	$(LINK) $(Xnvidia_OBJECTS) $(Xnvidia_LDADD) $(LIBS)
+	$(Xnvidia_LINK) $(Xnvidia_OBJECTS) $(Xnvidia_LDADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)

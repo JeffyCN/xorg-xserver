@@ -62,13 +62,6 @@ fontsmoduleLTLIBRARIES_INSTALL = $(INSTALL)
 moduleLTLIBRARIES_INSTALL = $(INSTALL)
 LTLIBRARIES = $(extsmodule_LTLIBRARIES) $(fontsmodule_LTLIBRARIES) \
 	$(module_LTLIBRARIES) $(noinst_LTLIBRARIES)
-libGLcore_la_DEPENDENCIES = $(top_builddir)/GL/mesa/libGLcore.la
-am_libGLcore_la_OBJECTS = GLcoremodule.lo
-libGLcore_la_OBJECTS = $(am_libGLcore_la_OBJECTS)
-libGLcore_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
-	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
-	$(libGLcore_la_LDFLAGS) $(LDFLAGS) -o $@
-@GLX_TRUE@am_libGLcore_la_rpath = -rpath $(extsmoduledir)
 libafb_la_DEPENDENCIES = $(top_builddir)/afb/libafb.la
 am_libafb_la_OBJECTS = afbmodule.lo
 libafb_la_OBJECTS = $(am_libafb_la_OBJECTS)
@@ -115,7 +108,7 @@ libfreetype_la_OBJECTS = $(am_libfreetype_la_OBJECTS)
 libfreetype_la_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
 	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
 	$(libfreetype_la_LDFLAGS) $(LDFLAGS) -o $@
-libglx_la_DEPENDENCIES = $(top_builddir)/GL/glx/libglx.la \
+libglx_la_DEPENDENCIES = $(top_builddir)/glx/libglx.la \
 	$(GLXDRI_LIBRARY)
 am_libglx_la_OBJECTS = glxmodule.lo
 libglx_la_OBJECTS = $(am_libglx_la_OBJECTS)
@@ -171,22 +164,20 @@ CCLD = $(CC)
 LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
 	--mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) \
 	$(LDFLAGS) -o $@
-SOURCES = $(libGLcore_la_SOURCES) $(libafb_la_SOURCES) \
-	$(libcfb_la_SOURCES) $(libcfb32_la_SOURCES) \
-	$(libdbe_la_SOURCES) $(libdixmods_la_SOURCES) \
-	$(libfb_la_SOURCES) $(libfreetype_la_SOURCES) \
-	$(libglx_la_SOURCES) $(libmfb_la_SOURCES) \
-	$(librecord_la_SOURCES) $(libshadow_la_SOURCES) \
-	$(libwfb_la_SOURCES) $(libxorgxkb_la_SOURCES) \
-	$(libxtrap_la_SOURCES)
-DIST_SOURCES = $(libGLcore_la_SOURCES) $(libafb_la_SOURCES) \
-	$(libcfb_la_SOURCES) $(libcfb32_la_SOURCES) \
-	$(libdbe_la_SOURCES) $(libdixmods_la_SOURCES) \
-	$(libfb_la_SOURCES) $(libfreetype_la_SOURCES) \
-	$(libglx_la_SOURCES) $(libmfb_la_SOURCES) \
-	$(librecord_la_SOURCES) $(libshadow_la_SOURCES) \
-	$(libwfb_la_SOURCES) $(libxorgxkb_la_SOURCES) \
-	$(libxtrap_la_SOURCES)
+SOURCES = $(libafb_la_SOURCES) $(libcfb_la_SOURCES) \
+	$(libcfb32_la_SOURCES) $(libdbe_la_SOURCES) \
+	$(libdixmods_la_SOURCES) $(libfb_la_SOURCES) \
+	$(libfreetype_la_SOURCES) $(libglx_la_SOURCES) \
+	$(libmfb_la_SOURCES) $(librecord_la_SOURCES) \
+	$(libshadow_la_SOURCES) $(libwfb_la_SOURCES) \
+	$(libxorgxkb_la_SOURCES) $(libxtrap_la_SOURCES)
+DIST_SOURCES = $(libafb_la_SOURCES) $(libcfb_la_SOURCES) \
+	$(libcfb32_la_SOURCES) $(libdbe_la_SOURCES) \
+	$(libdixmods_la_SOURCES) $(libfb_la_SOURCES) \
+	$(libfreetype_la_SOURCES) $(libglx_la_SOURCES) \
+	$(libmfb_la_SOURCES) $(librecord_la_SOURCES) \
+	$(libshadow_la_SOURCES) $(libwfb_la_SOURCES) \
+	$(libxorgxkb_la_SOURCES) $(libxtrap_la_SOURCES)
 RECURSIVE_TARGETS = all-recursive check-recursive dvi-recursive \
 	html-recursive info-recursive install-data-recursive \
 	install-dvi-recursive install-exec-recursive \
@@ -510,7 +501,7 @@ xglmoduledir = @xglmoduledir@
 xpconfigdir = @xpconfigdir@
 noinst_LTLIBRARIES = libdixmods.la libxorgxkb.la
 SUBDIRS = extmod
-@GLX_TRUE@GLXMODS = libglx.la libGLcore.la
+@GLX_TRUE@GLXMODS = libglx.la
 @XTRAP_TRUE@XTRAPMOD = libxtrap.la
 @DBE_TRUE@DBEMOD = libdbe.la
 @AFB_TRUE@AFBMOD = libafb.la
@@ -537,11 +528,8 @@ INCLUDES = @XORG_INCS@ \
            -I$(top_srcdir)/dbe \
            -I$(top_srcdir)/hw/xfree86/loader \
            -I$(top_srcdir)/miext/shadow \
-           -I$(top_srcdir)/GL/glx
+           -I$(top_srcdir)/glx
 
-libGLcore_la_LDFLAGS = -avoid-version
-libGLcore_la_LIBADD = $(top_builddir)/GL/mesa/libGLcore.la
-libGLcore_la_SOURCES = GLcoremodule.c
 libafb_la_LDFLAGS = -avoid-version
 libafb_la_LIBADD = $(top_builddir)/afb/libafb.la
 libafb_la_SOURCES = afbmodule.c
@@ -563,9 +551,9 @@ libwfb_la_LIBADD = $(top_builddir)/fb/libwfb.la
 libwfb_la_SOURCES = $(top_builddir)/fb/fbcmap_mi.c fbmodule.c
 libwfb_la_CFLAGS = $(AM_CFLAGS) -DFB_ACCESS_WRAPPER
 libglx_la_LDFLAGS = -avoid-version
-@AIGLX_TRUE@GLXDRI_LIBRARY = $(top_builddir)/GL/glx/libglxdri.la
+@AIGLX_TRUE@GLXDRI_LIBRARY = $(top_builddir)/glx/libglxdri.la
 libglx_la_LIBADD = \
-	$(top_builddir)/GL/glx/libglx.la \
+	$(top_builddir)/glx/libglx.la \
 	$(GLXDRI_LIBRARY)
 
 libglx_la_SOURCES = glxmodule.c
@@ -710,8 +698,6 @@ clean-noinstLTLIBRARIES:
 	  echo "rm -f \"$${dir}/so_locations\""; \
 	  rm -f "$${dir}/so_locations"; \
 	done
-libGLcore.la: $(libGLcore_la_OBJECTS) $(libGLcore_la_DEPENDENCIES) 
-	$(libGLcore_la_LINK) $(am_libGLcore_la_rpath) $(libGLcore_la_OBJECTS) $(libGLcore_la_LIBADD) $(LIBS)
 libafb.la: $(libafb_la_OBJECTS) $(libafb_la_DEPENDENCIES) 
 	$(libafb_la_LINK) $(am_libafb_la_rpath) $(libafb_la_OBJECTS) $(libafb_la_LIBADD) $(LIBS)
 libcfb.la: $(libcfb_la_OBJECTS) $(libcfb_la_DEPENDENCIES) 
@@ -747,7 +733,6 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/GLcoremodule.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/afbmodule.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/cfb32module.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/cfbmodule.Plo@am__quote@

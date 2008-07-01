@@ -63,6 +63,9 @@ binPROGRAMS_INSTALL = $(INSTALL_PROGRAM)
 PROGRAMS = $(bin_PROGRAMS)
 am_Xmach64_OBJECTS = mach64stub.$(OBJEXT)
 Xmach64_OBJECTS = $(am_Xmach64_OBJECTS)
+Xmach64_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
+	--mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(Xmach64_LDFLAGS) \
+	$(LDFLAGS) -o $@
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)/include
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
@@ -409,6 +412,7 @@ MACH64_LIBS = \
 	libmach64.a 					\
 	$(top_builddir)/hw/kdrive/vesa/libvesa.a        
 
+@GLX_TRUE@Xmach64_LDFLAGS = $(LD_EXPORT_SYMBOLS_FLAG)
 Xmach64_LDADD = \
 	$(MACH64_LIBS)					\
 	@KDRIVE_LIBS@
@@ -487,7 +491,7 @@ clean-binPROGRAMS:
 	done
 Xmach64$(EXEEXT): $(Xmach64_OBJECTS) $(Xmach64_DEPENDENCIES) 
 	@rm -f Xmach64$(EXEEXT)
-	$(LINK) $(Xmach64_OBJECTS) $(Xmach64_LDADD) $(LIBS)
+	$(Xmach64_LINK) $(Xmach64_OBJECTS) $(Xmach64_LDADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)

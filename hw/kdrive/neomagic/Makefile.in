@@ -63,6 +63,9 @@ PROGRAMS = $(bin_PROGRAMS)
 am_Xneomagic_OBJECTS = neomagicstub.$(OBJEXT)
 Xneomagic_OBJECTS = $(am_Xneomagic_OBJECTS)
 am__DEPENDENCIES_1 = libneomagic.a $(FBDEV_LIBS) $(VESA_LIBS)
+Xneomagic_LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) \
+	$(LIBTOOLFLAGS) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
+	$(Xneomagic_LDFLAGS) $(LDFLAGS) -o $@
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)/include
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
@@ -413,6 +416,7 @@ NEOMAGIC_LIBS = \
 	${VESA_LIBS}                \
 	@KDRIVE_LIBS@
 
+@GLX_TRUE@Xneomagic_LDFLAGS = $(LD_EXPORT_SYMBOLS_FLAG)
 Xneomagic_LDADD = \
 	$(NEOMAGIC_LIBS)            \
 	@KDRIVE_LIBS@               \
@@ -492,7 +496,7 @@ clean-binPROGRAMS:
 	done
 Xneomagic$(EXEEXT): $(Xneomagic_OBJECTS) $(Xneomagic_DEPENDENCIES) 
 	@rm -f Xneomagic$(EXEEXT)
-	$(LINK) $(Xneomagic_OBJECTS) $(Xneomagic_LDADD) $(LIBS)
+	$(Xneomagic_LINK) $(Xneomagic_OBJECTS) $(Xneomagic_LDADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
