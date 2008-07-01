@@ -26,7 +26,7 @@ dnl
 dnl Process this file with autoconf to create configure.
 
 AC_PREREQ(2.57)
-AC_INIT([xorg-server], 1.4.99.902, [https://bugs.freedesktop.org/enter_bug.cgi?product=xorg], xorg-server)
+AC_INIT([xorg-server], 1.4.99.905, [https://bugs.freedesktop.org/enter_bug.cgi?product=xorg], xorg-server)
 AC_CONFIG_SRCDIR([Makefile.am])
 AM_INIT_AUTOMAKE([dist-bzip2 foreign])
 AM_MAINTAINER_MODE
@@ -822,22 +822,13 @@ if test "x$RES" = xyes; then
 	REQUIRED_MODULES="$REQUIRED_MODULES resourceproto"
 fi
 
-if test "x$GLX" = xyes && ! test "x$MESA_SOURCE" = x; then
+if test "x$GLX" = xyes; then
 	PKG_CHECK_MODULES([XLIB], [x11])
-	PKG_CHECK_MODULES([GL], [glproto >= 1.4.9])
+	PKG_CHECK_MODULES([GL], [glproto >= 1.4.9 gl >= 7.1.0])
 	AC_SUBST(XLIB_CFLAGS)
 	AC_DEFINE(GLXEXT, 1, [Build GLX extension])
-	GLX_LIBS='$(top_builddir)/GL/glx/libglx.la $(top_builddir)/GL/mesa/libGLcore.la'
-	test -d GL || mkdir GL
-	case $host_os in
-	  solaris*) 	
-		SYMLINK_MESA="/usr/bin/bash $srcdir/GL/symlink-mesa.sh"	;;
-	  *)	SYMLINK_MESA=$srcdir/GL/symlink-mesa.sh ;;
-	esac
-	$SYMLINK_MESA $MESA_SOURCE GL/
-	if test $? -ne 0; then
-		AC_MSG_ERROR([Failed to link Mesa source tree.  Please specify a proper path to Mesa sources, or disable GLX.])
-	fi
+	GLX_LIBS='$(top_builddir)/glx/libglx.la'
+	GLX_SYS_LIBS="$GLX_SYS_LIBS $DLOPEN_LIBS"
 else
         GLX=no
 fi
@@ -862,7 +853,7 @@ if test "x$DRI" = xyes; then
 	AC_DEFINE(XF86DRI, 1, [Build DRI extension])
 	PKG_CHECK_MODULES([DRIPROTO], [xf86driproto])
 	PKG_CHECK_MODULES([LIBDRM], [libdrm >= 2.3.0])
-	PKG_CHECK_MODULES([GL], [glproto >= 1.4.1])
+	PKG_CHECK_MODULES([GL], [glproto >= 1.4.1 gl >= 7.1.0])
 	PKG_CHECK_EXISTS(libdrm >= 2.2.0,
 			 [AC_DEFINE([HAVE_LIBDRM_2_2], 1,
 			 [Has version 2.2 (or newer) of the drm library])])
@@ -1739,22 +1730,14 @@ fi
 if test "x$XQUARTZ" = xyes; then
 	AC_DEFINE([XQUARTZ],[1],[Have Quartz])
 
-#glxAGL / glxCGL don't work yet
-#	AC_CACHE_CHECK([for AGL framework],xorg_cv_AGL_framework,[
-#		save_LDFLAGS=$LDFLAGS
-#		LDFLAGS="$LDFLAGS -framework AGL"
-#		AC_LINK_IFELSE(
-#			[char aglEnable(); int main() { aglEnable(); return 0;}],
-#			[xorg_cv_AGL_framework=yes],
-#			[xorg_cv_AGL_framework=no])
-#		LDFLAGS=$save_LDFLAGS
-#	])
-	xorg_cv_AGL_framework=no
-	DARWIN_GLX_LIBS='$(top_builddir)/GL/apple/indirect.o $(top_builddir)/GL/glx/libglx.la'
-	DARWIN_LIBS="$MI_LIB $OS_LIB $DIX_LIB $FB_LIB $FIXES_LIB $XEXT_LIB $CONFIG_LIB $DBE_LIB $XTRAP_LIB $RECORD_LIB $RENDER_LIB $RANDR_LIB $DAMAGE_LIB $MIEXT_DAMAGE_LIB $MIEXT_SHADOW_LIB $XI_LIB $XKB_LIB $XKB_STUB_LIB $COMPOSITE_LIB $XPSTUBS_LIB"
+	DARWIN_GLX_LIBS='$(top_builddir)/hw/xquartz/GL/libCGLCore.la $(top_builddir)/glx/libglx.la'
+	DARWIN_LIBS="$MI_LIB $OS_LIB $DIX_LIB $FB_LIB $FIXES_LIB $XEXT_LIB $CONFIG_LIB $DBE_LIB $XTRAP_LIB $RECORD_LIB $RENDER_LIB $RANDR_LIB $DAMAGE_LIB $MIEXT_DAMAGE_LIB $MIEXT_SHADOW_LIB $XI_LIB $XKB_LIB $XKB_STUB_LIB $XPSTUBS_LIB $DARWIN_GLX_LIBS"
 	AC_SUBST([DARWIN_LIBS])
+
 	AC_CHECK_LIB([Xplugin],[xp_init],[:])
+
 	CFLAGS="${CFLAGS} -DROOTLESS_WORKAROUND -DNO_ALLOCA"
+
 	if test "x$XF86MISC" = xyes || test "x$XF86MISC" = xauto; then
 		AC_MSG_NOTICE([Disabling XF86Misc extension])
 		XF86MISC=no
@@ -2110,21 +2093,7 @@ XORG_MANPAGE_SECTIONS
 
 AC_OUTPUT([
 Makefile
-GL/Makefile
-GL/apple/Makefile
-GL/glx/Makefile
-GL/mesa/Makefile
-GL/mesa/glapi/Makefile
-GL/mesa/main/Makefile
-GL/mesa/math/Makefile
-GL/mesa/shader/Makefile
-GL/mesa/shader/grammar/Makefile
-GL/mesa/shader/slang/Makefile
-GL/mesa/swrast/Makefile
-GL/mesa/swrast_setup/Makefile
-GL/mesa/tnl/Makefile
-GL/mesa/vbo/Makefile
-GL/mesa/X/Makefile
+glx/Makefile
 include/Makefile
 afb/Makefile
 composite/Makefile
@@ -2222,6 +2191,7 @@ hw/xgl/glxext/module/Makefile
 hw/xnest/Makefile
 hw/xwin/Makefile
 hw/xquartz/Makefile
+hw/xquartz/GL/Makefile
 hw/xquartz/bundle/Makefile
 hw/xquartz/xpr/Makefile
 hw/kdrive/Makefile
