@@ -65,8 +65,6 @@ confflags += --disable-static \
 	     --with-os-name="$(shell uname)" \
 	     --with-os-vendor="$(VENDOR) ($(SOURCE_NAME) $(SOURCE_VERSION))" \
 	     --with-int10=x86emu \
-	     --disable-glx \
-	     --disable-dri \
 	     --disable-dri2
 
 build: prepare patch build-stamp

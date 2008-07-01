@@ -1,5 +1,6 @@
 xorg-server (2:1.4.99.905-1) UNRELEASED; urgency=low
 
+  [ Julien Cristau ]
   * New upstream release candidate
     - fixes FTBFS on alpha (closes: #472205); won't work, though, because
       of #485528
@@ -15,7 +16,10 @@ xorg-server (2:1.4.99.905-1) UNRELEASED; urgency=low
   * Stop build-depending on mesa-swx11-source (mesa 7.1 will build the
     software driver itself), and don't pass --with-mesa-source to configure.
 
- -- Julien Cristau <jcristau@debian.org>  Thu, 26 Jun 2008 15:32:28 +0200
+  [ Timo Aaltonen ]
+  * Re-enable dri & glx.
+
+ -- Timo Aaltonen <tepsipakki@ubuntu.com>  Tue, 01 Jul 2008 19:34:39 +0300
 
 xorg-server (2:1.4.99.902-1) experimental; urgency=low
 
