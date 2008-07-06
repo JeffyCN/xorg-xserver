@@ -15,6 +15,8 @@ xorg-server (2:1.4.99.905-1) UNRELEASED; urgency=low
   * bump serverminver to 2:1.4.99.905.
   * Stop build-depending on mesa-swx11-source (mesa 7.1 will build the
     software driver itself), and don't pass --with-mesa-source to configure.
+  * Build with --enable-glx-tls, we build mesa with TLS support (otherwise
+    swrast_dri.so might fail to load due to unresolved symbols).
 
   [ Timo Aaltonen ]
   * Re-enable dri & glx.
