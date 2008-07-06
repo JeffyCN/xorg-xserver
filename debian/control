@@ -40,7 +40,7 @@ Vcs-Browser: http://git.debian.org/?p=pkg-xorg/xserver/xorg-server.git
 Package: xserver-xorg-core
 Architecture: any
 Depends: x11-common (>= 1:7.0.0), ${shlibs:Depends}, ${misc:Depends}, xserver-xorg
-Recommends: xkb-data, xfonts-base
+Recommends: xkb-data, xfonts-base, libgl1-mesa-dri (>= 7.1~rc1)
 Suggests: xfonts-100dpi | xfonts-75dpi, xfonts-scalable
 Conflicts: xserver-xorg (<< 6.8.2-38), xserver-xfree86 (<< 1:7.0.0),
  xserver-xorg-video, xserver-common, xserver-xorg-video-1.0, xserver-xorg-input,
@@ -128,6 +128,7 @@ Description: Distributed Multihead X tools
 Package: xnest
 Architecture: any
 Depends: x11-common, ${shlibs:Depends}, ${misc:Depends}
+Recommends: libgl1-mesa-dri (>= 7.1~rc1)
 Description: Nested X server
  Xnest is a nested X server that simply relays all its requests to another
  X server, where it runs as a client.  This means that it appears as another
@@ -173,7 +174,7 @@ Description: Virtual Framebuffer 'fake' X server
 Package: xserver-xephyr
 Architecture: any
 Depends: x11-common, ${shlibs:Depends}, ${misc:Depends}
-Recommends: xbase-clients, xfonts-base
+Recommends: xbase-clients, xfonts-base, libgl1-mesa-dri (>= 7.1~rc1)
 Description: nested X server
  Xephyr is an X server that can be run inside another X server,
  much like Xnest. It is based on the kdrive X server, and as a

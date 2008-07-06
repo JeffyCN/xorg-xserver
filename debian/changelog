@@ -17,6 +17,9 @@ xorg-server (2:1.4.99.905-1) UNRELEASED; urgency=low
     software driver itself), and don't pass --with-mesa-source to configure.
   * Build with --enable-glx-tls, we build mesa with TLS support (otherwise
     swrast_dri.so might fail to load due to unresolved symbols).
+  * Make the servers recommend libgl1-mesa-dri (>= 7.1~rc1).  Without this
+    package, the GLX extension fails to initialise (and takes the server down)
+    due to missing swrast_dri.so.
 
   [ Timo Aaltonen ]
   * Re-enable dri & glx.
