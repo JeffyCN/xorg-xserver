@@ -44,9 +44,9 @@ NO_EPOCH_VER:=$(shell echo $(UPSTREAM_VERSION) | sed 's/^.://')
 BUILDER:=$(shell echo $${DEBEMAIL:-$${EMAIL:-$$(echo $$LOGNAME@$$(cat /etc/mailname 2>/dev/null))}})
 
 # Find out if this is an official build; an official build has nothing but
-# digits, dots, and/or the strings "woody" or "sarge" in the Debian part of the
+# digits, dots, and/or the codename of a release in the Debian part of the
 # version number.  Anything else indicates an unofficial build.
-OFFICIAL_BUILD:=$(shell VERSION=$(SOURCE_VERSION); if ! expr "$$(echo $${VERSION\#\#*-} | sed 's/\(woody\|sarge\)//g')" : ".*[^0-9.].*" >/dev/null 2>&1; then echo yes; fi)
+OFFICIAL_BUILD:=$(shell VERSION=$(SOURCE_VERSION); if ! expr "$$(echo $${VERSION\#\#*-} | sed 's/\(woody\|sarge\|etch\|lenny\)//g')" : ".*[^0-9.].*" >/dev/null 2>&1; then echo yes; fi)
 
 # Set up parameters for the Debian build environment.
 
@@ -68,16 +68,6 @@ endif
 
 # $(STAMP_DIR) houses stamp files for complex targets.
 STAMP_DIR:=stampdir
-
-# $(SOURCE_DIR) houses one or more source trees.
-SOURCE_DIR:=build-tree
-
-# $(SOURCE_TREE) is the location of the source tree to be compiled.  If there
-# is more than one, others are found using this name plus a suffix to indicate
-# the purpose of the additional tree (e.g., $(SOURCE_TREE)-custom).  The
-# "setup" target is responsible for creating such trees.
-#SOURCE_TREE:=$(SOURCE_DIR)/xc
-#FIXME We need to define this in our debian/rules file
 
 # $(DEBTREEDIR) is where all install rules are told (via $(DESTDIR)) to place
 # their files.
