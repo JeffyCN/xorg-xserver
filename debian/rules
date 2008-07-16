@@ -15,9 +15,11 @@ ifneq (,$(findstring noopt,$(DEB_BUILD_OPTIONS)))
 else
 	CFLAGS += -O2
 endif
-ifeq (,$(findstring nostrip,$(DEB_BUILD_OPTIONS)))
-	INSTALL_PROGRAM += -s
+ifneq (,$(filter parallel=%,$(DEB_BUILD_OPTIONS)))
+	NUMJOBS = $(patsubst parallel=%,%,$(filter parallel=%,$(DEB_BUILD_OPTIONS)))
+	MAKEFLAGS += -j$(NUMJOBS)
 endif
+
 #CPPFLAGS += -DPRE_RELEASE=0
 
 DEB_HOST_ARCH      ?= $(shell dpkg-architecture -qDEB_HOST_ARCH)
@@ -68,8 +70,8 @@ confflags += --disable-static \
 	     --with-int10=x86emu \
 	     --disable-dri2
 
-build: prepare patch build-stamp
-build-stamp: 
+build: build-stamp
+build-stamp: $(STAMP_DIR)/patch
 	dh_testdir
 	
 	mkdir -p obj-$(DEB_BUILD_GNU_TYPE)/GL
