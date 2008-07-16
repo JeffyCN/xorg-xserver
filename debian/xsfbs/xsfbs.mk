@@ -119,8 +119,8 @@ $(STAMP_DIR)/stampdir:
 # Set up the package build directory as quilt expects to find it.
 .PHONY: prepare
 stampdir_targets+=prepare
-prepare: $(STAMP_DIR)/genscripts $(STAMP_DIR)/prepare
-$(STAMP_DIR)/prepare: $(STAMP_DIR)/stampdir
+prepare: $(STAMP_DIR)/prepare
+$(STAMP_DIR)/prepare: $(STAMP_DIR)/stampdir $(STAMP_DIR)/genscripts
 	mkdir -p $(STAMP_DIR)/log
 	>$@
 
