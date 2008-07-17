@@ -110,9 +110,14 @@ $(STAMP_DIR)/stampdir:
 .PHONY: prepare
 stampdir_targets+=prepare
 prepare: $(STAMP_DIR)/prepare
-$(STAMP_DIR)/prepare: $(STAMP_DIR)/stampdir $(STAMP_DIR)/genscripts
-	mkdir -p $(STAMP_DIR)/log
+$(STAMP_DIR)/prepare: $(STAMP_DIR)/log $(STAMP_DIR)/genscripts
 	>$@
+
+.PHONY: log
+stampdir_targets+=log
+log: $(STAMP_DIR)/log
+$(STAMP_DIR)/log: $(STAMP_DIR)/stampdir
+	mkdir -p $(STAMP_DIR)/log
 
 # Apply all patches to the upstream source.
 .PHONY: patch
@@ -140,7 +145,7 @@ $(STAMP_DIR)/patch: $(STAMP_DIR)/prepare
 
 # Revert all patches to the upstream source.
 .PHONY: unpatch
-unpatch: $(STAMP_DIR)/prepare
+unpatch: $(STAMP_DIR)/log
 	rm -f $(STAMP_DIR)/patch
 	@echo -n "Unapplying patches..."; \
 	if $(QUILT) applied >/dev/null 2>/dev/null; then \
