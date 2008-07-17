@@ -8,6 +8,8 @@ It should cause the config file to override the EDID/BIOS detected preferred mod
 #	modified:   hw/xfree86/modes/xf86Crtc.c
 #	modified:   hw/xfree86/modes/xf86Crtc.h
 #
+Index: xorg-server/hw/xfree86/common/xf86str.h
+===================================================================
 --- xorg-server.orig/hw/xfree86/common/xf86str.h
 +++ xorg-server/hw/xfree86/common/xf86str.h
 @@ -132,6 +132,7 @@
@@ -18,6 +20,8 @@ It should cause the config file to override the EDID/BIOS detected preferred mod
  
  /* Video mode */
  typedef struct _DisplayModeRec {
+Index: xorg-server/hw/xfree86/modes/xf86Crtc.c
+===================================================================
 --- xorg-server.orig/hw/xfree86/modes/xf86Crtc.c
 +++ xorg-server/hw/xfree86/modes/xf86Crtc.c
 @@ -711,7 +711,8 @@
@@ -30,7 +34,7 @@ It should cause the config file to override the EDID/BIOS detected preferred mod
  	int	    diff;
  
  	if (xf86ModeWidth (mode, output->initial_rotation) > width ||
-@@ -1415,7 +1416,7 @@
+@@ -1431,7 +1432,7 @@
  			mode->prev = NULL;
  			output->probed_modes = mode;
  		    }
@@ -39,7 +43,7 @@ It should cause the config file to override the EDID/BIOS detected preferred mod
  		}
  		else
  		    mode->type &= ~M_T_PREFERRED;
-@@ -1532,6 +1533,7 @@
+@@ -1548,6 +1549,7 @@
      xf86CrtcConfigPtr	config = XF86_CRTC_CONFIG_PTR(scrn);
      int			o, c;
      DisplayModePtr	target_mode = NULL;
@@ -47,7 +51,7 @@ It should cause the config file to override the EDID/BIOS detected preferred mod
      Rotation		target_rotation = RR_Rotate_0;
      xf86CrtcPtr		*crtcs;
      DisplayModePtr	*modes;
-@@ -1572,43 +1574,34 @@
+@@ -1588,43 +1590,34 @@
      }
      
      /*
@@ -111,6 +115,8 @@ It should cause the config file to override the EDID/BIOS detected preferred mod
      for (o = 0; o < config->num_output; o++)
      {
  	xf86OutputPtr output = config->output[o];
+Index: xorg-server/hw/xfree86/modes/xf86Crtc.h
+===================================================================
 --- xorg-server.orig/hw/xfree86/modes/xf86Crtc.h
 +++ xorg-server/hw/xfree86/modes/xf86Crtc.h
 @@ -39,6 +39,9 @@

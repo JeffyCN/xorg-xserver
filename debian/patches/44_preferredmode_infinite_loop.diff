@@ -11,11 +11,11 @@ to be selected by the initial mode selection code.
  hw/xfree86/modes/xf86Crtc.c |    3 +--
  1 files changed, 1 insertions(+), 2 deletions(-)
 
-diff --git a/hw/xfree86/modes/xf86Crtc.c b/hw/xfree86/modes/xf86Crtc.c
-index 0a48d5b..bb416fd 100644
---- a/hw/xfree86/modes/xf86Crtc.c
-+++ b/hw/xfree86/modes/xf86Crtc.c
-@@ -1417,9 +1417,8 @@ xf86ProbeOutputModes (ScrnInfoPtr scrn, int maxX, int maxY)
+Index: xorg-server/hw/xfree86/modes/xf86Crtc.c
+===================================================================
+--- xorg-server.orig/hw/xfree86/modes/xf86Crtc.c
++++ xorg-server/hw/xfree86/modes/xf86Crtc.c
+@@ -1433,9 +1433,8 @@
  			output->probed_modes = mode;
  		    }
  		    mode->type |= (M_T_PREFERRED|M_T_USERPREF);
@@ -26,6 +26,3 @@ index 0a48d5b..bb416fd 100644
  	    }
  	}
  	
--- 
-1.5.3.6
-
