@@ -4,6 +4,9 @@ xorg-server (2:1.4.99.905-2) UNRELEASED; urgency=low
     is taken care of by dh_strip); make the rules files and xsfbs.mk
     parallel-safe, and enable parallel=n using example code from Debian
     Policy.
+  * debian/rules: put the source package name and version in builderstring
+    instead of osvendor, add builder email as well; don't explicitly set
+    osname, configure sets it to $(uname -srm) by default.
 
  -- Julien Cristau <jcristau@debian.org>  Wed, 16 Jul 2008 19:08:26 +0200
 

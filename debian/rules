@@ -65,8 +65,8 @@ confflags += --disable-static \
 	     --with-xkb-path=/usr/share/X11/xkb \
 	     --with-xkb-output=/var/lib/xkb \
 	     --enable-xfree86-utils \
-	     --with-os-name="$(shell uname)" \
-	     --with-os-vendor="$(VENDOR) ($(SOURCE_NAME) $(SOURCE_VERSION))" \
+	     --with-os-vendor="$(VENDOR)" \
+	     --with-builderstring="$(SOURCE_NAME) $(SOURCE_VERSION) ($(BUILDER))" \
 	     --with-int10=x86emu \
 	     --disable-dri2
 
