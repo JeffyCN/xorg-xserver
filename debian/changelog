@@ -2,6 +2,8 @@ xorg-server (2:1.4.2-3) UNRELEASED; urgency=low
 
   * Add Romanian debconf translation (closes: #489069).  Thanks, Eddy
     Petrișor!
+  * Update Dutch debconf translation (closes: #491663).  Thanks, Thĳs
+    Kinkhorst!
 
  -- Julien Cristau <jcristau@debian.org>  Fri, 18 Jul 2008 17:00:16 +0200
 
