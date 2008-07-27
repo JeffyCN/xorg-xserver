@@ -15,6 +15,8 @@ xorg-server (2:1.4.99.906-1) UNRELEASED; urgency=low
       #490258)
   * Switch to running autoreconf at build time, and build-depend on automake,
     libtool and xutils-dev.
+  * Reformat the SGI Free Software License B, to shut up over 1000 lintian
+    warnings.
 
  -- Julien Cristau <jcristau@debian.org>  Wed, 16 Jul 2008 19:08:26 +0200
 
