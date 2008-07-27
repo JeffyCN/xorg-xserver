@@ -122,6 +122,19 @@ xorg-server (2:1.4.99.901-1) experimental; urgency=low
 
  -- Julien Cristau <jcristau@debian.org>  Fri, 14 Mar 2008 13:46:48 +0100
 
+xorg-server (2:1.4.2-2) unstable; urgency=low
+
+  [ Julien Cristau ]
+  * GLX: zero the buffer used in __glXDisp_GetVisualConfigs (backport from
+    upstream).
+
+  [ Brice Goglin ]
+  * Cherry-pick various patches from upstream:
+    - Fix incorrect test regarding keyboard map.
+    - xfree86: append, not prepend, new input devices to xf86InputDevs.
+
+ -- Julien Cristau <jcristau@debian.org>  Fri, 18 Jul 2008 10:53:26 +0200
+
 xorg-server (2:1.4.2-1) unstable; urgency=low
 
   [ Julien Cristau ]
