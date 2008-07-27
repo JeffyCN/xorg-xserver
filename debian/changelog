@@ -13,6 +13,8 @@ xorg-server (2:1.4.99.906-1) UNRELEASED; urgency=low
       drivers, in particular nvidia (closes: #488987)
     - make sure RANDR reports refresh as 0 if pixel clock is 0 (closes:
       #490258)
+  * Switch to running autoreconf at build time, and build-depend on automake,
+    libtool and xutils-dev.
 
  -- Julien Cristau <jcristau@debian.org>  Wed, 16 Jul 2008 19:08:26 +0200
 
