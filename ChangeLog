@@ -1,3 +1,294 @@
+commit c0c73e9236cffece7c8049515b03facb41f12f0e
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Wed Jul 23 14:16:47 2008 -0400
+
+    xserver 1.4.99.906
+    
+    You know, Mesa 7.1 could release any day now and that'd be just fine.
+
+commit e909a396194e64119d04fc6ecb68ddc4265a3e49
+Author: Pierre-Loup A. Griffais <pgriffais@nvidia.com>
+Date:   Tue Jul 22 17:34:37 2008 -0700
+
+    Don't return BadAlloc when trying to set a PictureFilter with no parameters when a filter with parameters was previously set.
+    
+    Signed-off-by: Aaron Plattner <aplattner@nvidia.com>
+    (cherry picked from commit bc3c03a3f3c091026310f0e8d55321cec570a0c5)
+
+commit c217cb96dccb39ffd689086b6d833a1963dfb661
+Author: Dodji Seketeli <dodji@seketeli.org>
+Date:   Wed Jul 23 01:00:26 2008 +0200
+
+    [Xephyr] Fix #15839
+    
+    Make sure the _XSERVER64 macro is not defined in Xlib client code.
+    That macro is meant to be define only on pure server code, when necessary.
+    (cherry picked from commit 5de1867fbb0a336ff3fdc92cbf734849f6111b1b)
+
+commit 14a033f0321b3869f0cbedd344bc0f71738fd052
+Author: Roland Scheidegger <sroland@tungstengraphics.com>
+Date:   Tue Jun 10 15:40:48 2008 +0200
+
+    glx: copy msaa visual capabilities
+    (cherry picked from commit 49751fee3b82ebc4917bfb168ec78aad7874f1f1)
+
+commit ff1a9b7fea2cfe00bc02a99b919fa1178d4f0b12
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Wed Jul 23 16:53:59 2008 +0930
+
+    xkb: don't send core events for extension devices on SlowKey timeout.
+    
+    RedHat Bug 448604 <https://bugzilla.redhat.com/show_bug.cgi?id=448604>
+
+commit 2d6022bd4001190df97b5320dccb306a78d7ca21
+Author: Kristian Høgsberg <krh@redhat.com>
+Date:   Mon Jul 21 16:05:53 2008 -0400
+
+    Need to unref pixmaps backing pbuffers too.
+    (cherry picked from commit facb255fa9267e343cbc91f841f1b64e5dc99e98)
+
+commit e4cfdc07f4ef2e42762f0296936bbe776b4b7fbe
+Author: Kristian Høgsberg <krh@redhat.com>
+Date:   Mon Jul 21 15:28:50 2008 -0400
+
+    Fix embarrasing GLXPixmap leak.
+    (cherry picked from commit d5ae85b5b722821499d5796cf0973ecb6ec125f1)
+
+commit ceffece78b828c30a144affa437cd5ae2021a342
+Author: Eamon Walsh <ewalsh@tycho.nsa.gov>
+Date:   Fri Jun 20 23:49:32 2008 -0400
+
+    Fix "warning: passing argument 1 of `modeIsPresent' from incompatible pointer type".
+    (cherry picked from commit 95d4ede538fbb68049ba3efa0acb0e9712e5cb01)
+
+commit 7f542ab37fe0795fa04ea647b0ff3b9b886758f6
+Author: Dave Airlie <airlied@redhat.com>
+Date:   Fri Jul 4 07:29:32 2008 +1000
+
+    modes: fix initial xorg.conf mode selection.
+    
+    This was all kinds of broken, we ignored user preferred modes for multiple
+    monitors and also for side-by-side configurations.
+    (cherry picked from commit 0b9ef835a0fe900c121b84e43989591e58ab1126)
+
+commit 0baf677da6a724c2d8de46530622e1a186fa749e
+Author: Peter Hutterer <peter@cs.unisa.edu.au>
+Date:   Mon Jun 2 11:04:41 2008 +0930
+
+    kdrive: don't post motion event if there was no motion. #16179
+    
+    Based on the patch by Tomas Janousek. Backported version.
+    
+    X.Org Bug 16179 <http://bugs.freedesktop.org/show_bug.cgi?id=16179>
+    (cherry picked from commit 26e7e69ab893d1f2b35213250ada40ec90944f62)
+
+commit a75cbabc25d67b6e03a0f8e5be82ae5ac3887096
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Thu Jul 17 08:40:54 2008 +0930
+
+    Revert "kdrive: don't post motion event if there was no motion. #16179"
+    
+    Just because it compiles on my machine doesn't make it right. Needs backported
+    patch from http://bugs.freedesktop.org/show_bug.cgi?id=16179.
+    
+    This reverts commit a08ea64ded83f3781df769eec074d563b03a718f.
+
+commit a08ea64ded83f3781df769eec074d563b03a718f
+Author: Peter Hutterer <peter@cs.unisa.edu.au>
+Date:   Mon Jun 2 11:04:41 2008 +0930
+
+    kdrive: don't post motion event if there was no motion. #16179
+    
+    Based on the patch by Tomas Janousek.
+    
+    X.Org Bug 16179 <http://bugs.freedesktop.org/show_bug.cgi?id=16179>
+    (cherry picked from commit 26e7e69ab893d1f2b35213250ada40ec90944f62)
+
+commit 45f274415d8f7dfc18f395783cd7c5dbd4a43c4f
+Author: Peter Hutterer <peter@cs.unisa.edu.au>
+Date:   Thu Apr 24 13:30:28 2008 +0930
+
+    Xi: don't attempt to send to a NULL window.
+    
+    Only applicable when the server comes down/restarts. In this case,
+    WindowTable[i] may be NULL. Let's not try to send an event then.
+    (cherry picked from commit f377141912594f87144d6d7f7fdd279a101d8e6c)
+
+commit 476de585bee851ea592af043652aa7525bc8d3ce
+Author: Peter Hutterer <peter@cs.unisa.edu.au>
+Date:   Thu Apr 24 13:29:46 2008 +0930
+
+    dix: NULL out WindowTable after freeing all the windows.
+    
+    CloseDownDevices() tries to send PresenceNotify events. If the windows are
+    already freed, then we are accessing dangling pointers.
+    (cherry picked from commit aec485f2dcc87b340759d67b60e7dee7931aaec5)
+
+commit 5cb38a3fcabb1b46fc24584f5e42d28a9a2dc703
+Author: Peter Hutterer <peter@cs.unisa.edu.au>
+Date:   Wed Apr 23 11:38:08 2008 +0930
+
+    xfree86: don't free the config-file related information in DIDR. #15645
+    
+    In DeleteInputDeviceRequest, leave the conf_idev (which is shared with
+    xf86ConfigLayout.input) alone for devices that were specified in the
+    ServerLayout section of the config file. This way, in the next server
+    generation we are left with what was the original config and can thus re-init
+    the devices.
+    
+    This is an addon to 6d22a9615a0e6ab3d00b0bcb22ff001b6ece02ae, an attempt to
+    fix Bug 14418.
+    
+    X.Org Bug 15645 <https://bugs.freedesktop.org/show_bug.cgi?id=15645>
+    X.Org Bug 14418 <https://bugs.freedesktop.org/show_bug.cgi?id=15645>
+    (cherry picked from commit 9ab4e2fd8eaa87dbd16835affb1aa54dcb1a619e)
+
+commit 2b3faf2a75a1acc3b799a2868c55736c94a8183f
+Author: Julien Cristau <jcristau@debian.org>
+Date:   Tue Jul 15 10:36:38 2008 -0400
+
+    Bug #16674: Make sure RANDR reports refresh as 0 if pixel clock is 0.
+    (cherry picked from commit 9111944b292355f7478b4ae75bead8dc25edbbcb)
+
+commit 5b546f1c493785c1f24a4f6c69174b70caa64eb1
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Mon Jul 14 10:20:11 2008 +0930
+
+    xfree86: append, not prepent, new input devices to xf86InputDevs.
+    
+    If devices are prepended to the list, their wake-up order on resume is not the
+    same as the original initialisation order. Hot-plugged devices, originally
+    inited last, are re-enabled before the xorg.conf devices and in some cases may
+    steal the device files. Result: we have different devices before and after
+    suspend/resume.
+    
+    RedHat Bug 439386 <https://bugzilla.redhat.com/show_bug.cgi?id=439386>
+    (cherry picked from commit 11ee0ae9390a608a232ff94abcc0cbcf9ed7b70a)
+
+commit 5659f6d31bc4dd2e79d13f4856cbfa3f120958ff
+Author: Julien Cristau <jcristau@debian.org>
+Date:   Mon Jul 7 13:14:49 2008 +0200
+
+    Export xkbfile.h in the SDK
+    
+    It's needed by xkbsrv.h
+    (cherry picked from commit d8af9d9ab1cd98c07fdf42490dcc0cab3c655b89)
+
+commit e135a77b8bad15fb135cd080c1725064f938b790
+Author: Ander Conselvan de Oliveira <ander@mandriva.com.br>
+Date:   Wed Jul 9 10:44:19 2008 -0300
+
+    Fix incorrect test regarding keyboard map.
+    
+    In the map stored in each keyboard device, the first line refers to minimum
+    keycode, i.e., the 0th line refers to keycode 8. When not using XKB the wrong
+    test caused some keys to be interpreted as locks ('m' for instance). The had
+    to be pressed twice to generate both KeyPress and KeyRelease events.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit c30f36c8c1dfd85deaf1c109823a1f15dd218ac7
+Author: Sascha Hlusiak <saschahlusiak@arcor.de>
+Date:   Thu Jul 3 21:42:10 2008 +0200
+
+    xfree86: AllowEmptyInput is now enabled by default if hotplugging is enabled.
+    
+    Remove AEI check from configImpliedLayout as the setting isn't actually parsed
+    at this point anyway.
+    
+    Set AllowEmptyInput to enabled by default if hotplugging is enabled.
+
+commit 5144158ced1c03fcd0df080e42436523c6ac5e8f
+Author: Dave Airlie <airlied@linux.ie>
+Date:   Thu Jul 3 20:00:22 2008 +1000
+
+    dri2: bump libdrm numbers as 2.3.1 is released without ttm interface
+
+commit 793ff6754e9ff16714a2dd9fa5ae83d7189d316e
+Author: Dave Airlie <airlied@redhat.com>
+Date:   Thu Jul 3 18:57:09 2008 +1000
+
+    modes: check the crtc is valid before using its desired modes.
+    
+    this fixes a crash I was getting on radeon rotate when gnome is running.
+    I'm sure g-s-d was doing something bad, but really not crashing ftw.
+    (cherry picked from commit 1771edcb44b564f83f509748b4e4cd5b7586e2a8)
+
+commit e9f83740e3269a7e73c417b5b6c67668f1cac6e0
+Author: Dave Airlie <airlied@redhat.com>
+Date:   Mon May 19 11:16:08 2008 +1000
+
+    cursor: don't dereference NULL pointer is devPrivates not yet set.
+    
+    This fixes a bug on server recycle with ati zaphod.
+
+commit 8081eda6965e5213e7feca13cbd26aa34e0e0bd8
+Author: Alan Hourihane <alanh@tungstengraphics.com>
+Date:   Wed Jun 18 22:34:02 2008 +0100
+
+    Set driverPriv immediately on CreatePixmap.
+    
+    If it's NULL anyway, we bail, if not, it lets
+    ModifyPixmapHeader know about the private.
+    (cherry picked from commit 528b4e36ade482df99747081688ae52cfaeb28eb)
+
+commit a18551cad1bf88b30d8466859509fb1fcfd1f2d6
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Wed Jul 2 11:25:50 2008 -0400
+
+    Fix GLX in Xvfb and kdrive.
+    (cherry picked from commit 689292e58cc5242cbfeaa29fcf65b6dcd9dfabb9)
+
+commit 81e6ab485163c1ff0a7218313beeb55ee6ea7af9
+Author: Julien Cristau <jcristau@debian.org>
+Date:   Tue Apr 22 23:50:11 2008 +0200
+
+    autoconfig: don't call closedir() when opendir() failed
+    
+    If opendir() fails, return from matchDriverFromFiles() immediately.
+    Ubuntu bug 217647.
+    (cherry picked from commit fbad87f2ae9f97fcb43546b0fa35f1100415dfec)
+
+commit 75b5e999f045524e2b362e848a0104e1a4217061
+Author: Aaron Plattner <aplattner@nvidia.com>
+Date:   Mon Jun 30 17:29:35 2008 -0700
+
+    Work around the DIX losing mmWidth/mmHeight for RandR 1.1 DDXen.
+    
+    RandR 1.1 has a physical size for each mode.  It used to be that the DIX would
+    remember these modes and pass them back up to the DDX when changing the screen
+    configuration.  The DDX uses RR_GET_MODE_MM to query the driver for the physical
+    dimensions of the screen, allowing it to preserve the DPI.
+    
+    With RandR 1.2, the physical dimensions are stored as part of the output, rather
+    than per mode.  The DIX only uses the sizes passed in from the DDX to select the
+    mode pool for the "default" output, and forgets the physical sizes.  Then, when
+    reconfiguring the screen, it makes up a new RRScreenSizeRec using the dimensions
+    from the output, screwing up the DPI.
+    
+    This change works around this problem by ignoring the DIX and querying the real
+    size from the driver.
+    (cherry picked from commit 2e8daee05343b2853b677acf4554def0ceeada00)
+
+commit 9ab88bb9b196fdf534f458cce45eb5f301e545e6
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Tue Jul 1 12:01:56 2008 -0400
+
+    Don't try to load DRI2 if built without it.
+    (cherry picked from commit e2bbf2d248a2d2a2db4adfe9d1bda94cf184d8bd)
+
+commit ccb373f2fb910db57a3dfcef8a03779f1023470c
+Author: Simon Thum <simon.thum@gmx.de>
+Date:   Mon May 26 17:56:08 2008 +0930
+
+    input: change dxremaind, dyremaind to floats for better acceleration #9156
+    
+    X.Org Bug 9156 <http://bugs.freedesktop.org/show_bug.cgi?id=9156>
+    
+    Signed-off-by: Peter Hutterer <peter@cs.unisa.edu.au>
+    
+    (cherry picked from commit 0050165a67bb462e0bf644a11644ad9d587c62bb)
+
 commit 0617653277d2e2802c6223fc2a221adfa6b93fc4
 Author: Adam Jackson <ajax@redhat.com>
 Date:   Mon Jun 30 16:11:32 2008 -0400

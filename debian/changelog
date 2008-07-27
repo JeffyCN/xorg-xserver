@@ -1,4 +1,4 @@
-xorg-server (2:1.4.99.905-2) UNRELEASED; urgency=low
+xorg-server (2:1.4.99.906-1) UNRELEASED; urgency=low
 
   * debian/rules: drop useless handling of nostrip in DEB_BUILD_OPTIONS (this
     is taken care of by dh_strip); make the rules files and xsfbs.mk
@@ -7,6 +7,12 @@ xorg-server (2:1.4.99.905-2) UNRELEASED; urgency=low
   * debian/rules: put the source package name and version in builderstring
     instead of osvendor, add builder email as well; don't explicitly set
     osname, configure sets it to $(uname -srm) by default.
+  * New upstream release candidate.
+    - fixes 64-bit Xephyr (closes: #491569)
+    - work around the DIX losing physical monitor dimensions for randr 1.1
+      drivers, in particular nvidia (closes: #488987)
+    - make sure RANDR reports refresh as 0 if pixel clock is 0 (closes:
+      #490258)
 
  -- Julien Cristau <jcristau@debian.org>  Wed, 16 Jul 2008 19:08:26 +0200
 
