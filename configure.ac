@@ -26,7 +26,8 @@ dnl
 dnl Process this file with autoconf to create configure.
 
 AC_PREREQ(2.57)
-AC_INIT([xorg-server], 1.4.99.905, [https://bugs.freedesktop.org/enter_bug.cgi?product=xorg], xorg-server)
+RELEASE_DATE="23 July 2008"
+AC_INIT([xorg-server], 1.4.99.906, [https://bugs.freedesktop.org/enter_bug.cgi?product=xorg], xorg-server)
 AC_CONFIG_SRCDIR([Makefile.am])
 AM_INIT_AUTOMAKE([dist-bzip2 foreign])
 AM_MAINTAINER_MODE
@@ -418,7 +419,6 @@ VENDOR_MAN_VERSION="Version ${PACKAGE_VERSION}"
 
 VENDOR_NAME="The X.Org Foundation"
 VENDOR_NAME_SHORT="X.Org"
-RELEASE_DATE="5 September 2007"
 VENDOR_WEB="http://wiki.x.org"
 
 m4_ifdef([AS_HELP_STRING], , [m4_define([AS_HELP_STRING], m4_defn([AC_HELP_STRING]))])
@@ -868,7 +868,7 @@ if test "x$DRI2" = xyes; then
 	# FIXME: Bump the versions once we have releases of these.
 	AC_DEFINE(DRI2, 1, [Build DRI2 extension])
 	PKG_CHECK_MODULES([DRI2PROTO], [dri2proto >= 1.1])
-	PKG_CHECK_MODULES([LIBDRM], [libdrm >= 2.3.1])
+	PKG_CHECK_MODULES([LIBDRM], [libdrm >= 2.3.2])
 fi
 
 AM_CONDITIONAL(XINERAMA, [test "x$XINERAMA" = xyes])
