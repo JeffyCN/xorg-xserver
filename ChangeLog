@@ -1,3 +1,128 @@
+commit ff49f5944d06b17fb904c4f64b8660aab60d8d0d
+Author: Alex Deucher <alex@samba.(none)>
+Date:   Thu Jan 3 22:53:36 2008 -0500
+
+    Fix potential crasher in xf86CrtcRotate()
+    
+    xf86CrtcRotate() is called by randr 1.2 drivers via xf86CrtcSetMode() or xf86SetDesiredModes()
+    during ScreenInit() at which point pScrn->pScreen is not set. If a user specifies a rotation
+    in their config file pScrn->pScreen is dereferenced and boom.
+
+commit 969f1db96b03afa51dacce466320d311e5c9ce72
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Tue Jul 29 13:17:27 2008 +0930
+
+    Revert "kdrive: don't post motion event if there was no motion. #16179"
+    
+    This reverts commit 5903b4c749c1136d0f3e91d5e6321b08c31da4bf.
+    
+    And this one wasn't supposed to be pushed too.
+
+commit a49d811065701c5f3abb25b9e4945ce7547d0b53
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Tue Jul 29 13:15:50 2008 +0930
+
+    Revert "xkb: delete default rules when devices are closed."
+    
+    This reverts commit 7cdef0d6fc3ec6705a61014b741a4c24dc60973b.
+    
+    Nor was this one.
+
+commit f0f3a11acd48dd233e8808101dcc8a22591fd00c
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Tue Jul 29 13:15:34 2008 +0930
+
+    Revert "xkb: reset xkb_cached_map on CloseDownDevices."
+    
+    This reverts commit 9b62355847ce7df1ca144b4ebc9ff5c7286b573d.
+    
+    This wasn't supposed to be pushed either.
+
+commit b50932d998f9fe81d01a8cd22d9613aaf9136985
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Tue Jul 29 13:14:02 2008 +0930
+
+    Revert "xfree86: AllowEmptyInput is now enabled by default if hotplugging is enabled."
+    
+    This reverts commit 153c6d48c655b3eca9a33b7487b238b42a4a3f8e.
+    
+    How did this one end up on the branch? Sure as hell wasn't supposed to be
+    pushed.
+
+commit 48a9996192613ab259549cdb7c8735d2fb31ed78
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Tue Jul 29 10:00:01 2008 +0930
+
+    Xi: ChangeDeviceControl presence events should set the appropriate devchange.
+    
+    Requires inputproto 1.4.4 or higher.
+    (cherry picked from commit 591ef3c047ab3597fef9d687205e99c254ff2040)
+    
+    Modified to use the numeric value of DeviceControlChanged instead of the
+    define, just so we don't bork out if someone rebuilds without updating
+    inputproto. This is a released server, after all.
+
+commit 153c6d48c655b3eca9a33b7487b238b42a4a3f8e
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Thu Jul 3 15:05:14 2008 +0930
+
+    xfree86: AllowEmptyInput is now enabled by default if hotplugging is enabled.
+    
+    Remove AEI check from configImpliedLayout as the setting isn't actually parsed
+    at this point anyway (written by Sasha Hlusiak).
+    
+    Resurrect checkInput() and check for devices there if AEI is false (this also
+    creates the default devices if required).
+    
+    Set AllowEmptyInput to enabled by default if hotplugging is enabled.
+    (cherry picked from commit bea743f3d629bafdc301f40e9c0bc11382dfe8bc)
+    
+    Conflicts:
+    
+    	hw/xfree86/common/xf86Config.c
+    	hw/xfree86/doc/man/xorg.conf.man.pre
+
+commit 9b62355847ce7df1ca144b4ebc9ff5c7286b573d
+Author: Peter Hutterer <peter@cs.unisa.edu.au>
+Date:   Wed Jun 4 11:10:11 2008 +0930
+
+    xkb: reset xkb_cached_map on CloseDownDevices.
+    
+    Could lead to some invalid pointers in the second server generation.
+    (cherry picked from commit ff3adf3e564d94fea18e48f966de40a7ded1279e)
+
+commit 7cdef0d6fc3ec6705a61014b741a4c24dc60973b
+Author: Peter Hutterer <peter@cs.unisa.edu.au>
+Date:   Sun Jun 1 15:20:42 2008 +0930
+
+    xkb: delete default rules when devices are closed.
+    
+    We only have one set of default rules options in xkb. When the second keyboard
+    is brought up with Xkb options specified, these new options overwrite the old.
+    In future server generations, the rules used for the VCK are a mixture of the
+    default ones and ones previously specified for other keyboards. Simply
+    resetting the xkb default rules to NULL avoids this issue.
+    
+    Reproducable by setting XkbLayout "de" and XkbVariant "nodeadkeys". In the
+    second server generation, the VCK has "us(nodeadkeys)". This again produces a
+    SIGABRT when the first key is hit.
+    
+    I could not figure out why the SIGABRT happens. This patch is avoiding the
+    issue rather than fixing it.
+    (cherry picked from commit 5a3d06b8f42473cea3741dc722a775deaa2b73f6)
+
+commit 5903b4c749c1136d0f3e91d5e6321b08c31da4bf
+Author: Peter Hutterer <peter@cs.unisa.edu.au>
+Date:   Mon Jun 2 11:04:41 2008 +0930
+
+    kdrive: don't post motion event if there was no motion. #16179
+    
+    Based on the patch by Tomas Janousek.
+    Backported from master to server-1.4.
+    
+    X.Org Bug 16179 <http://bugs.freedesktop.org/show_bug.cgi?id=16179>
+    (cherry picked from commit 26e7e69ab893d1f2b35213250ada40ec90944f62)
+
 commit c3a7903f6a6a27e53ba0372408e0c5a68c608e86
 Author: Julien Cristau <jcristau@debian.org>
 Date:   Wed Jun 11 16:27:10 2008 +0200

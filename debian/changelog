@@ -4,6 +4,10 @@ xorg-server (2:1.4.2-3) UNRELEASED; urgency=low
     Petrișor!
   * Update Dutch debconf translation (closes: #491663).  Thanks, Thĳs
     Kinkhorst!
+  * Pull from server-1.4-branch:
+    - Xi: ChangeDeviceControl presence events should set the appropriate
+      devchange
+    - Fix potential crasher in xf86CrtcRotate()
 
  -- Julien Cristau <jcristau@debian.org>  Fri, 18 Jul 2008 17:00:16 +0200
 
