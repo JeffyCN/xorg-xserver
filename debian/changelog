@@ -1,4 +1,4 @@
-xorg-server (2:1.4.2-3) UNRELEASED; urgency=low
+xorg-server (2:1.4.2-3) unstable; urgency=low
 
   * Add Romanian debconf translation (closes: #489069).  Thanks, Eddy
     Petrișor!
@@ -12,7 +12,7 @@ xorg-server (2:1.4.2-3) UNRELEASED; urgency=low
     - Work around the DIX losing mmWidth/mmHeight for RandR 1.1 DDXen
       (closes: #491526).
 
- -- Julien Cristau <jcristau@debian.org>  Fri, 18 Jul 2008 17:00:16 +0200
+ -- Julien Cristau <jcristau@debian.org>  Sat, 02 Aug 2008 23:22:32 +0200
 
 xorg-server (2:1.4.2-2) unstable; urgency=low
 
