@@ -8,6 +8,9 @@ xorg-server (2:1.4.2-3) UNRELEASED; urgency=low
     - Xi: ChangeDeviceControl presence events should set the appropriate
       devchange
     - Fix potential crasher in xf86CrtcRotate()
+  * Cherry-picked from 1.5:
+    - Work around the DIX losing mmWidth/mmHeight for RandR 1.1 DDXen
+      (closes: #491526).
 
  -- Julien Cristau <jcristau@debian.org>  Fri, 18 Jul 2008 17:00:16 +0200
 
