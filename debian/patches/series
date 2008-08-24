@@ -23,6 +23,7 @@
 47_fbdevhw_magic_numbers.diff
 48_xaa_nooffscreenpixmaps.diff
 49_x86emu_int1a_fix.diff
+50_Make-RandRQueryVersion-return-1.1-for-swapped-client.patch
 91_ttf2pt1
 91_ttf2pt1_updates
 92_xprint-security-holes-fix.patch
