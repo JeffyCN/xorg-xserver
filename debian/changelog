@@ -1,4 +1,4 @@
-xorg-server (2:1.4.2-5) UNRELEASED; urgency=low
+xorg-server (2:1.4.2-5) unstable; urgency=low
 
   * Don't pretend we support randr 1.2 when queried by swapped clients.  The
     dispatch code for RandR 1.2 requests would return BadImplementation anyway
@@ -6,7 +6,7 @@ xorg-server (2:1.4.2-5) UNRELEASED; urgency=low
   * Cherry-picked from upstream:
     + exa: fix assert logic thinko.
 
- -- Julien Cristau <jcristau@debian.org>  Sat, 23 Aug 2008 14:58:14 +0200
+ -- Julien Cristau <jcristau@debian.org>  Tue, 26 Aug 2008 19:27:34 +0200
 
 xorg-server (2:1.4.2-4) unstable; urgency=low
 
