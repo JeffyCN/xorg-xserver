@@ -1,4 +1,4 @@
-xorg-server (2:1.4.99.906-2) UNRELEASED; urgency=low
+xorg-server (2:1.4.99.906-2) experimental; urgency=low
 
   * Pull from server-1.5-branch as of Aug 27th
     + input devices from xorg.conf aren't ignored if there is no ServerLayout
@@ -6,7 +6,7 @@ xorg-server (2:1.4.99.906-2) UNRELEASED; urgency=low
   * Bump build-dep on inputproto to >= 1.4.4 for DeviceControlChanged.
   * Merge in changes from 2:1.4.2-3 to 2:1.4.2-5.
 
- -- Julien Cristau <jcristau@debian.org>  Wed, 27 Aug 2008 23:16:47 +0200
+ -- Julien Cristau <jcristau@debian.org>  Thu, 28 Aug 2008 00:33:02 +0200
 
 xorg-server (2:1.4.99.906-1) experimental; urgency=low
 
