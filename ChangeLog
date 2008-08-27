@@ -1,3 +1,276 @@
+commit 78f50cd5758d778a5b01aa607c04919b69a5a47f
+Author: Kristian Høgsberg <krh@redhat.com>
+Date:   Tue Aug 26 10:58:35 2008 -0400
+
+    Fix driGetConfigAttribIndex unaligned access to GLboolean.
+    
+    We don't actually send the float mode so just drop it.  Drop a couple of
+    other unused or redundant fields from GLXconfig.
+
+commit c662381a14d2c69cc8b4aa1c66763cbaf6addc5d
+Author: Maarten Maathuis <madman2003@gmail.com>
+Date:   Sun Aug 17 19:57:02 2008 +0200
+
+    exa: fix assert logic thinko from 361a9eb953aaa38f8ebc057185de29e50f9eef26
+    
+    - I guess failing PrepareAccess is rare, since this a 3 year old bug.
+
+commit 582f1381ae07a35c345f940181a8847dc67eb927
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Fri Aug 1 16:42:15 2008 +0930
+
+    xkb: ProcXkbSetDeviceInfo should work on all attached SDs.
+    
+    If called with XkbUseCoreKbd, run through all attached SDs and replicate the
+    call. This way, we keep the SDs in sync with the MD as long as core clients
+    control the MDs.
+    (cherry picked from commit c06e27b2f6fd9f7b9f827623a48876a225264132)
+
+commit 07e922a257dbe9fa9bd78915fd9d5f7a02d9df62
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Fri Aug 1 16:41:40 2008 +0930
+
+    xkb: ProcXkbSetGeometry should work on all attached SDs.
+    
+    If called with XkbUseCoreKbd, run through all attached SDs and replicate the
+    call. This way, we keep the SDs in sync with the MD as long as core clients
+    control the MDs.
+    (cherry picked from commit d9ca9819e975e0f6832a320f8be5958e5d942f85)
+
+commit 245fecf7cda8bf72da68882f367bf5211ab809c9
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Fri Aug 1 16:41:08 2008 +0930
+
+    xkb: ProcXkbSetNames should work on all attached SDs.
+    
+    If called with XkbUseCoreKbd, run through all attached SDs and replicate the
+    call. This way, we keep the SDs in sync with the MD as long as core clients
+    control the MDs.
+    (cherry picked from commit 5ba87c3327786dd7c6e8e265a19c858e8faae8fd)
+
+commit a5c4b9db1279f90d13461667637a1395ad2c7491
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Fri Aug 1 16:40:25 2008 +0930
+
+    xkb: ProcXkbSetNamedIndicator should work on all attached SDs.
+    
+    If called with XkbUseCoreKbd, run through all attached SDs and replicate the
+    call. This way, we keep the SDs in sync with the MD as long as core clients
+    control the MDs.
+    (cherry picked from commit 7e45c80204e06562d4475741caea65bc8758f3c7)
+    
+    Includes follow-up fix d684f5760f40b682a8b879641300abe689a263c5.
+
+commit 8d4004b092844fbbcfae5562bb4d007de2e70b4b
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Fri Aug 1 16:38:59 2008 +0930
+
+    xkb: ProcXkbSetIndicatorMap should work on all attached SDs.
+    
+    If called with XkbUseCoreKbd, run through all attached SDs and replicate the
+    call. This way, we keep the SDs in sync with the MD as long as core clients
+    control the MDs.
+    (cherry picked from commit a609dbed7cf854a6ee9d33c7cf45615db9da1fb9)
+
+commit 8a18475848e83527060bca1ae7e44c36d18600fa
+Author: Peter Hutterer <peter.hutterer@redhat.com>
+Date:   Wed Aug 13 16:50:55 2008 +0930
+
+    xkb: ProcXkbSetCompatMap should work on all attached SDs.
+    
+    If called with XkbUseCoreKbd, run through all attached SDs and replicate the
+    call. This way, we keep the SDs in sync with the MD as long as core clients
+    control the MDs.
+    (cherry picked from commit e8c2a3d7c996cb41c4c44ba67acae5ff9438fc06)
+    
+    Conflicts:
+    
+    	xkb/xkb.c
+
+commit 5b3eb0a3af9dcaf44230b828332b75e774ab1a46
+Author: Peter Hutterer <peter.hutterer@redhat.com>
+Date:   Wed Aug 13 16:49:33 2008 +0930
+
+    xkb: ProcXkbSetMap should work on all attached SDs.
+    
+    If called with XkbUseCoreKbd, run through all attached SDs and replicate the
+    call. This way, we keep the SDs in sync with the MD as long as core clients
+    control the MDs.
+    (cherry picked from commit 3c7740aa8f21c1fda4190a1bf5d6ce089db5e35b)
+    
+    Conflicts:
+    
+    	xkb/xkb.c
+
+commit 2fa7edd30d5d48bf6fa83dc179bbf37e55e3b72c
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Fri Aug 1 16:32:37 2008 +0930
+
+    xkb: ProcXkbBell should work on all attached SDs.
+    
+    If called with XkbUseCoreKbd, run through all attached SDs and replicate the
+    call. This way, we keep the SDs in sync with the MD as long as core clients
+    control the MDs.
+    (cherry picked from commit 31afd51dd49c0d0db2465fbc987044fab8b89f22)
+
+commit 50382652afc13021f041c42ae6e8893643ea2bfa
+Author: Alan Coopersmith <alan.coopersmith@sun.com>
+Date:   Tue Aug 12 14:53:14 2008 -0700
+
+    Fix --disable/--enable-kbd_mode configure flag
+
+commit 5930aeb45e3849df6fc9abf7373599936d515ffa
+Author: Dave Miller <davem@davemloft.net>
+Date:   Sat Aug 9 16:45:59 2008 +1000
+
+    glx: fix crash in driGetConfigAttribIndex
+    
+    Don't access GLboolean via int pointers
+
+commit b61ee18b72d8b2c2d21ca68dc8566a09a76683fb
+Author: Alan Coopersmith <alan.coopersmith@sun.com>
+Date:   Thu Jul 17 18:16:59 2008 -0700
+
+    Make xstrcasestr prototype return value match the implementation
+    (cherry picked from 3b687ffe1649449b3d182f5e7690274c6c96916a commit)
+
+commit b5932f176c1abffbe75d03b706a2f04a7ef1e5a0
+Author: Daniel Stone <daniel@fooishbar.org>
+Date:   Wed Jul 16 02:59:51 2008 +0300
+
+    DIX: Add strcasestr from FreeBSD
+    
+    Add strcasestr for use on systems which don't have it.
+    (cherry picked from ad87c72edcc0d1f56658e0c4e73af335c8d5a516 commit)
+
+commit ce10b41f1b3f8c9be705823b0c0f0379f2bcb516
+Author: Daniel Stone <daniel@fooishbar.org>
+Date:   Wed Jul 16 02:03:36 2008 +0300
+
+    dix: Actually build str(n)casecmp if we don't have it
+    
+    Remember to add stuff to dix-config.h when you add new AC_DEFINES,
+    people ...
+    (cherry picked from 69b57dc651e12a0d9a5a4295b185c62d5c0df63f commit)
+
+commit 8a319335fa960be04f85a119ed557e62101021ec
+Author: Daniel Stone <daniel@fooishbar.org>
+Date:   Wed Jul 16 01:57:00 2008 +0300
+
+    strcasecmp: Actually use the right license
+    
+    Forgot to update the license when I committed the FreeBSD version, so it
+    still had an old SGI license.  Sorry.  Sorry.
+    (cherry picked from dcf6293030126509d7d6c61d131222037d5ed7db commit)
+
+commit 5a5030af9b8c7a801f07c82feaf3d2eaf4784db3
+Author: Daniel Stone <daniel@fooishbar.org>
+Date:   Wed Jun 11 15:09:46 2008 +0300
+
+    DIX: Add strncasecmp from FreeBSD, make strcasecmp args const
+    
+    Add strncasecmp (as we're now using it) in case someone doesn't have it,
+    and also change strncasecmp args to be const, in accordance with
+    everything else.
+    (cherry picked from 11f9e3520249a603b95e64503ee759998ff17feb commit)
+
+commit f7ee776de29b1cc23a3fd894a559c7d27ddd62af
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Fri Aug 1 15:52:07 2008 +0930
+
+    config: protect against potential out-of-bounds indexing.
+    (cherry picked from commit 3c6a9c531f673b7a0cb9ca01860b4dbe79686363)
+
+commit 7d508f783c715d633df4f7f924523bd4e1724e08
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Fri Aug 1 14:24:54 2008 +0930
+
+    config: support type strlist for XkbOptions property.
+    
+    For backwards compatibility with server 1.4.
+    (cherry picked from commit 92c51b183c2ff06361dad7f918daed6577ba4935)
+
+commit 2f6b270e48ec7b9eb9ff8f98281308f50c081b63
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Tue Jul 29 12:59:57 2008 +0930
+
+    config: add parsing for input.x11_options.XkbOptions. #16874
+    
+    X.Org Bug 16874 <http://bugs.freedesktop.org/show_bug.cgi?id=16784>
+    (cherry picked from commit 35b14519b4a3158592a089170ec039bbc219603e)
+
+commit 0788adb9a68af83614ee9d0758f30fa471feded8
+Author: Daniel Stone <daniel@fooishbar.org>
+Date:   Wed Jul 16 03:00:25 2008 +0300
+
+    HAL: Remove grotesque open-coded strcasestr
+    
+    Not only was this pretty ugly, but it didn't even work on systems
+    without strcasestr anyway, due to the define not being in dix-config.h.
+    Lack of strcasestr is handled transparently with the version from
+    FreeBSD now anyway, so, huzzah.
+    (cherry picked from commit b8dd07f855c555af56cbf0f69df799f424da2cca)
+
+commit db918ea2b0d6d03688cef9d6b8d318774b9efec2
+Author: Julien Cristau <jcristau@debian.org>
+Date:   Sat Jul 26 15:35:42 2008 +0200
+
+    xfree86: use xorg.conf input devices if there is no ServerLayout
+    
+    If xorg.conf has no ServerLayout section, use the first mouse and
+    keyboard sections as core devices, even with AllowEmptyInput.
+    (cherry picked from commit 2eaed4a10fe5bf727579bca4ab8d4a47c8763a7d)
+
+commit b6024da70404fe1879f1de079e69611fea45a40e
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Tue Jul 29 10:00:01 2008 +0930
+
+    Xi: ChangeDeviceControl presence events should set the appropriate devchange.
+    
+    Requires inputproto 1.4.4 or higher.
+    (cherry picked from commit 591ef3c047ab3597fef9d687205e99c254ff2040)
+
+commit da29a25315b5dc0df4f6e221cf81587efffce4c6
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Tue Jul 29 10:04:24 2008 +0930
+
+    Require inputproto 1.4.4
+    
+    for DeviceControlChanged define.
+
+commit d199d800a41f8a6ba044c3f8a3777dec7881e89a
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Thu Jul 24 12:12:45 2008 +0930
+
+    xfree86: warn some more about potential missing input devices.
+    
+    Put out a warning if xorg.conf has InputDevice sections, but these aren't
+    referenced in the used ServerLayout. This is only performed if AllowEmptyInput
+    is enabled.
+    The reason behind this is that the server used to auto-add the first
+    mouse/keyboard sections if none where referenced. Now, with HAL and AEI
+    enabled by default, setups that relied on this auto-adding break and are left
+    without input devices. The least we can do is warn them.
+    (cherry picked from commit 47160edec7f0d9129576d83f1593a5549879a893)
+
+commit 538942cc65b5a112739fb94e57b3be963cf50873
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Thu Jul 24 09:56:00 2008 +0930
+
+    xfree86: if AllowEmptyInput is on, warn the user that we rely on HAL now.
+    (cherry picked from commit f30b0823dbfc5902e54b337b5b6b570ebf216584)
+
+commit 37927b8bfa78670b263311ae1f06d2aae973601d
+Author: Daniel Stone <daniel@fooishbar.org>
+Date:   Tue Jul 29 02:51:57 2008 +0300
+
+    Revert "Xi: event_{x,y} should refer to the extended device (bug #16289)"
+    
+    After discussion with Peter, realised that diverging from 1.3 and 1.4's
+    behaviour was daft and insane.  Sorry.
+    
+    This reverts commit 8259d19f7155d82197ecc2aa16b316376c2dcb12.
+
 commit c0c73e9236cffece7c8049515b03facb41f12f0e
 Author: Adam Jackson <ajax@redhat.com>
 Date:   Wed Jul 23 14:16:47 2008 -0400
