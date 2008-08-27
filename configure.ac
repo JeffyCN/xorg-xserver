@@ -662,7 +662,7 @@ else
 	RENDERPROTO="renderproto"
 fi
 
-REQUIRED_MODULES="[randrproto >= 1.2] $RENDERPROTO [fixesproto >= 4.0] [damageproto >= 1.1] xcmiscproto xextproto [xproto >= 7.0.9] xtrans [scrnsaverproto >= 1.1] bigreqsproto resourceproto fontsproto [inputproto >= 1.4.2] [kbproto >= 1.0.3]"
+REQUIRED_MODULES="[randrproto >= 1.2] $RENDERPROTO [fixesproto >= 4.0] [damageproto >= 1.1] xcmiscproto xextproto [xproto >= 7.0.9] xtrans [scrnsaverproto >= 1.1] bigreqsproto resourceproto fontsproto [inputproto >= 1.4.4] [kbproto >= 1.0.3]"
 REQUIRED_LIBS="xfont xau fontenc [pixman-1 >= 0.9.5]"
 
 dnl HAVE_DBUS is true if we actually have the D-Bus library, whereas
@@ -1018,6 +1018,8 @@ AC_CHECK_FUNC(strcasecmp, [], AC_DEFINE([NEED_STRCASECMP], 1,
                                         [Do not have 'strcasecmp'.]))
 AC_CHECK_FUNC(strncasecmp, [], AC_DEFINE([NEED_STRNCASECMP], 1,
                                         [Do not have 'strncasecmp'.]))
+AC_CHECK_FUNC(strcasestr, [], AC_DEFINE([NEED_STRCASESTR], 1,
+                                       [Do not have 'strcasestr'.]))
 
 if test "x$NULL_ROOT_CURSOR" = xyes; then
         AC_DEFINE(NULL_ROOT_CURSOR, 1, [Use an empty root cursor])
@@ -2054,7 +2056,7 @@ AM_CONDITIONAL(USE_CURSES, [test x$CURSES = xyes])
 
 AC_ARG_ENABLE(kbd_mode, AS_HELP_STRING([--enable-kbd_mode],
 	[Build kbd_mode utility (default: auto)]),
-	[BUILD_KBD_MODE=$enable_val], [BUILD_KBD_MODE="auto"])
+	[BUILD_KBD_MODE=$enableval], [BUILD_KBD_MODE="auto"])
 if test x$BUILD_KBD_MODE != xno ; then
 	case $host_os in
 	  *bsd*)
