@@ -1,3 +1,10 @@
+xorg-server (2:1.4.2-6) UNRELEASED; urgency=low
+
+  * Xevie: always set rep.length to 0 (closes: #497337).  Thanks, Thorvald
+    Natvig!
+
+ -- Julien Cristau <jcristau@debian.org>  Mon, 01 Sep 2008 19:21:18 +0200
+
 xorg-server (2:1.4.2-5) unstable; urgency=low
 
   * Don't pretend we support randr 1.2 when queried by swapped clients.  The
