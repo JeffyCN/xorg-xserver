@@ -1,3 +1,137 @@
+commit 05fb2f9e1249d0b91bf4318cec4fb309217adff4
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Wed Sep 3 19:14:22 2008 -0400
+
+    xserver 1.5.0
+    
+    Drinkin' island is inside each of us, my son.
+
+commit f385303cd0242e3a7fded15f8b5c3d610c13ee41
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Tue Sep 2 15:43:15 2008 -0400
+
+    Fix strict-aliasing silliness in XAA.
+    (cherry picked from commit 613ce0955032fb032de0a3940752828d314f057a)
+
+commit 6cb7f595b97e9442a79660bc639b2fc91842e19a
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Wed Sep 3 14:59:24 2008 -0400
+
+    Disable DRI2 by default.
+
+commit ed2248f673ed8993e678818c388203346a3614e0
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Wed Sep 3 14:58:43 2008 -0400
+
+    Disable XTrap build by default.
+
+commit 9bb4990c917cc512d39b5889e7bcecb5cfcbeb56
+Author: Julien Cristau <jcristau@debian.org>
+Date:   Mon Sep 1 19:45:30 2008 +0200
+
+    Xevie: swap replies as necessary
+    (cherry picked from commit b5cdcfa55c399e83d51242e93d4f25d8bc4fec1f)
+
+commit bcea1095da2d29f5812bd1adabac334cfca60355
+Author: Thorvald Natvig <slicer@users.sourceforge.net>
+Date:   Mon Sep 1 19:36:56 2008 +0200
+
+    Xevie: always initialize rep.length (bug#17394)
+    
+    The XEvIE extension doesn't clear the rep.length field for any reply but
+    the version check. Hence, if there is junk data in it and that is sent
+    to the client, it hangs.
+    
+    X.Org bug#17394 (http://bugs.freedesktop.org/show_bug.cgi?id=17394)
+    (cherry picked from commit d3ae193f4ac87530f2745f8cb5e7b70dd516881e)
+
+commit 67ed1f23fe29affe14587fbb809d0e95197db78b
+Author: Julien Cristau <jcristau@debian.org>
+Date:   Thu Aug 21 01:32:03 2008 +0200
+
+    Add swapped dispatch for randr 1.2 requests
+    (cherry picked from commit 01264f17925005969c3b71ca945fc1014bcd8c8e)
+
+commit 62524d9d7648cfd9e2d7d6a3312ff20722d7f6a5
+Author: Thomas Bodzar <Thomas.Bodzar@quest.com>
+Date:   Sat Aug 30 15:34:29 2008 +0200
+
+    Xorg.man: typo (the the).
+    (cherry picked from commit 229e60db8f95232afc8cdcb7cd0572d117c84b90)
+
+commit 57fa9fd4a59be14f4c77c3dac501ef40ff656752
+Author: Matthieu Herrb <matthieu.herrb@laas.fr>
+Date:   Sat Aug 30 15:35:32 2008 +0200
+
+    Xserver.man: Typo (the the).
+    (cherry picked from commit d01c5ca7935a8340a3cd68c325da6dfec005c952)
+
+commit 7f42ed6ca938d0dee66bdfd6237b6632a4f7ab0d
+Author: Daniel Drake <dsd@laptop.org>
+Date:   Tue Sep 2 16:20:40 2008 -0400
+
+    Don't try to destroy a NULL pixmap.
+    (cherry picked from commit 4e1f9f51a9eea115ce2a073824e9c5cef4e2f364)
+
+commit 48744d20b1d23b731604db10dda85a10f62664dc
+Author: Maarten Maathuis <madman2003@gmail.com>
+Date:   Sun Aug 31 18:07:22 2008 +0200
+
+    xf86Crtc: Set mode to NULL, so nothing bad happens if crtc == NULL.
+    
+    - Fix is courtesy of math_b.
+
+commit 580e96d6d4355acae6314105a3a8e4c7a4d6e3ea
+Author: Xavier Bestel <xavier.bestel@free.fr>
+Date:   Tue Jul 29 13:06:10 2008 -0400
+
+    Cosmetic fix to EDID decoding.
+    (cherry picked from commit bb2cacd33eb85f39b9e7fa554545611957df677d)
+
+commit d0ef93430505d110e0d3c0552dad3361db33b369
+Author: Fredrik Höglund <fredrik@kde.org>
+Date:   Mon Aug 18 19:27:34 2008 +0200
+
+    Fix the tile offset in miPaintWindow for ParentRelative windows.
+    (cherry picked from commit 244a635fcdc9e0a7212d51b26d74f49d8e1b071f)
+
+commit 05472534cfefe6057b908cc7d698967eecb5dde4
+Author: Daniel Drake <dsd@laptop.org>
+Date:   Thu Jul 24 21:06:34 2008 -0500
+
+    Don't abort if swrast library is not present
+    
+    GLX is enabled by default, but the current swrast behaviour causes X
+    to abort with fatal error if the swrast dri library dlopen fails.
+    
+    Handle the case where the swrast library is not present, and do not
+    register the GLX extension unless at least one screen has a usable
+    GL provider.
+    (cherry picked from commit eff25430b4a391409e39337962ff7697165d23c7)
+
+commit 4652c51e92ab21df020f83be3dc1ca1c897f6cf9
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Wed Aug 27 16:05:47 2008 -0400
+
+    Reimplement ShmPutImage.
+    
+    There's no reason to not just dispatch this straight into the GC.  As a
+    bonus, if you do so, damage wraps correctly, and thus swcursor works.
+    The side effect is it's no longer possible to override ShmPutImage with
+    ShmRegisterFuncs().
+    
+    Also remove the (broken) damage tracking for same from EXA, since it didn't
+    work right, and is now superfluous.
+    
+    (cherry picked from commit ee7c684f21d220d5e046bab31ae617a7d64d60f6)
+
+commit ef0780b7384b1d8257698b07091dd5214d64c4c1
+Author: Eamon Walsh <ewalsh@tycho.nsa.gov>
+Date:   Thu Aug 28 23:45:17 2008 -0400
+
+    Attempt getpeercon() on remote sockets as well as local ones.
+    (cherry picked from commit 60ad8d5d05485339e89d7f1f9f1ded75de7c7ea1)
+
 commit 78f50cd5758d778a5b01aa607c04919b69a5a47f
 Author: Kristian Høgsberg <krh@redhat.com>
 Date:   Tue Aug 26 10:58:35 2008 -0400
