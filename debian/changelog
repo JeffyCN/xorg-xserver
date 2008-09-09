@@ -4,6 +4,8 @@ xorg-server (2:1.4.2-6) UNRELEASED; urgency=low
     Natvig!
   * Xevie: swap replies if necessary, to not confuse clients with a different
     endianness.
+  * Cherry-picked from upstream git:
+    XF86VidMode: Correct a NULL pointer deference (closes: #498289)
 
  -- Julien Cristau <jcristau@debian.org>  Mon, 01 Sep 2008 19:21:18 +0200
 
