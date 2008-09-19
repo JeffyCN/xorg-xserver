@@ -1,3 +1,14 @@
+xorg-server (2:1.4.2-7) UNRELEASED; urgency=low
+
+  * Update debian/copyright to the SGI Free Software License B, version 2.0.
+    It now mirrors the free X11 license used by X.Org.
+    http://www.sgi.com/company_info/newsroom/press_releases/2008/september/opengl.html
+    Not closing bug#211765 for now, because GL/glx/glxext.c and
+    hw/dmx/glxProxy/glxext.c are covered by the GLX Public License, which is
+    still not free.
+
+ -- Julien Cristau <jcristau@debian.org>  Fri, 19 Sep 2008 17:38:00 +0200
+
 xorg-server (2:1.4.2-6) unstable; urgency=low
 
   * Xevie: always set rep.length to 0 (closes: #497337).  Thanks, Thorvald
