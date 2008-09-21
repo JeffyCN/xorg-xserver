@@ -1,3 +1,10 @@
+xorg-server (2:1.5.0-2) UNRELEASED; urgency=low
+
+  * 02_Disable-DRI-in-Xephyr.patch: don't use DRI in Xephyr, as it doesn't
+    work correctly.
+
+ -- Julien Cristau <jcristau@debian.org>  Sun, 21 Sep 2008 20:37:12 +0200
+
 xorg-server (2:1.5.0-1) experimental; urgency=low
 
   * New upstream release.
