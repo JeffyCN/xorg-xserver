@@ -1,11 +1,11 @@
-xorg-server (2:1.5.1-1) UNRELEASED; urgency=low
+xorg-server (2:1.5.1-1) experimental; urgency=low
 
   * New upstream bugfix release.
   * 02_Disable-DRI-in-Xephyr.patch: don't use DRI in Xephyr, as it doesn't
     work correctly.
   * Merge changelog from 2:1.4.2-6 (all changes are upstream now).
 
- -- Julien Cristau <jcristau@debian.org>  Sun, 21 Sep 2008 20:37:12 +0200
+ -- Julien Cristau <jcristau@debian.org>  Wed, 24 Sep 2008 17:49:18 +0200
 
 xorg-server (2:1.5.0-1) experimental; urgency=low
 
