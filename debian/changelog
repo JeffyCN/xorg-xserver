@@ -3,6 +3,7 @@ xorg-server (2:1.5.1-1) UNRELEASED; urgency=low
   * New upstream bugfix release.
   * 02_Disable-DRI-in-Xephyr.patch: don't use DRI in Xephyr, as it doesn't
     work correctly.
+  * Merge changelog from 2:1.4.2-6 (all changes are upstream now).
 
  -- Julien Cristau <jcristau@debian.org>  Sun, 21 Sep 2008 20:37:12 +0200
 
@@ -150,6 +151,17 @@ xorg-server (2:1.4.99.901-1) experimental; urgency=low
     closes: #439764.
 
  -- Julien Cristau <jcristau@debian.org>  Fri, 14 Mar 2008 13:46:48 +0100
+
+xorg-server (2:1.4.2-6) unstable; urgency=low
+
+  * Xevie: always set rep.length to 0 (closes: #497337).  Thanks, Thorvald
+    Natvig!
+  * Xevie: swap replies if necessary, to not confuse clients with a different
+    endianness.
+  * Cherry-picked from upstream git:
+    XF86VidMode: Correct a NULL pointer dereference (closes: #498289)
+
+ -- Julien Cristau <jcristau@debian.org>  Mon, 15 Sep 2008 01:21:13 +0200
 
 xorg-server (2:1.4.2-5) unstable; urgency=low
 
