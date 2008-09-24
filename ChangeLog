@@ -1,3 +1,45 @@
+commit 97f688f2b4b8ebfba77be00db68c4e6a555a5d62
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Tue Sep 23 14:51:33 2008 -0400
+
+    xserver 1.5.1
+
+commit 68c575cb73fd6ff6c9c0ce29a3d8105da44abfcc
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Tue Sep 23 11:05:44 2008 -0400
+
+    Move RELEASE_DATE below AC_INIT.
+    
+    Doing it the other way around clobbers the setting, which means you get
+    a null release date string in the log.  Thanks autoconf!
+
+commit dba26368e5dbdd35df97d38ed517d1248503ab51
+Author: Peter Harris <peter.harris@hummingbird.com>
+Date:   Thu Dec 20 15:58:01 2007 -0500
+
+    Fix panoramiX request and reply swapping
+    
+     Fix panoramiX request and reply swapping
+     Set window and screen values in panoramix replies
+     Prevent buffer overrun in ProcPanoramiXGetScreenSize
+    (cherry picked from commit 2b266eda6e23d16116f8a8e258192df353970279)
+
+commit ce6424853c2df2486ad99c0369974afc91a92993
+Author: Julien Cristau <jcristau@debian.org>
+Date:   Tue Sep 16 17:13:42 2008 +0200
+
+    exa: disable shared pixmaps
+    
+    They got re-enabled in ee7c684f21d220d5e046bab31ae617a7d64d60f6
+    ("Reimplement ShmPutImage.")
+    (cherry picked from commit b4762c0245ed2966606171cf27f40aa745fdc76e)
+
+commit 37876602957924c7cff759a800eddd574ee2385a
+Author: Aaron Plattner <aplattner@nvidia.com>
+Date:   Wed Sep 17 15:48:56 2008 -0700
+
+    Conditionalize Composite-based backing store on pScreen->backingStoreSupport.
+
 commit 05fb2f9e1249d0b91bf4318cec4fb309217adff4
 Author: Adam Jackson <ajax@redhat.com>
 Date:   Wed Sep 3 19:14:22 2008 -0400
