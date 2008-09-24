@@ -4,15 +4,12 @@ Date: Sun, 21 Sep 2008 20:28:16 +0200
 Subject: [PATCH] Disable DRI in Xephyr
 
 Doesn't work right, see fdo#16955
----
- configure.ac |   10 +++++-----
- 1 files changed, 5 insertions(+), 5 deletions(-)
 
 diff --git a/configure.ac b/configure.ac
 index 0262274..3ca285a 100644
 --- a/configure.ac
 +++ b/configure.ac
-@@ -1922,11 +1922,11 @@ if test "$KDRIVE" = yes; then
+@@ -1922,11 +1922,12 @@ if test "$KDRIVE" = yes; then
          XEPHYR=$xephyr
      fi
      XEPHYR_DRI=no
@@ -26,6 +23,7 @@ index 0262274..3ca285a 100644
 +#        XEPHYR_DRI_LIBS=-lGL
 +#        AC_SUBST(XEPHYR_DRI_LIBS)
 +#    fi
++    AC_SUBST(XEPHYR_DRI_LIBS)
      if test x$XEPHYR_DRI = xyes ; then
          AC_DEFINE(XEPHYR_DRI,1,[enable DRI extension in xephyr])
      fi
