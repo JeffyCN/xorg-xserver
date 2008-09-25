@@ -78,10 +78,16 @@ obj-$(DEB_BUILD_GNU_TYPE)/config.status: configure
 	dh_testdir
 	mkdir -p obj-$(DEB_BUILD_GNU_TYPE)
 	cd obj-$(DEB_BUILD_GNU_TYPE) && \
-	../configure --prefix=/usr --mandir=\$${prefix}/share/man \
-	             --infodir=\$${prefix}/share/info --sysconfdir=/etc \
-	             --localstatedir=/var $(confflags) CFLAGS="$(CFLAGS)" \
-	             CPPFLAGS="$(CPPFLAGS)"
+	../configure \
+	  --prefix=/usr \
+	  --mandir=\$${prefix}/share/man \
+	  --infodir=\$${prefix}/share/info \
+	  --sysconfdir=/etc \
+	  --localstatedir=/var \
+	  $(confflags) \
+	  CFLAGS="$(CFLAGS)" \
+	  CPPFLAGS="$(CPPFLAGS)" \
+	  PCI_TXT_IDS_DIR="/usr/share/xserver-xorg/pci"
 
 
 build: build-stamp

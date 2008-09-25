@@ -1,3 +1,10 @@
+xorg-server (2:1.5.1-2) UNRELEASED; urgency=low
+
+  * debian/rules: define PCI_TXT_IDS_DIR to unbreak the pci id matching using
+    plain text files provided by drivers.
+
+ -- Julien Cristau <jcristau@debian.org>  Thu, 25 Sep 2008 18:50:19 +0200
+
 xorg-server (2:1.5.1-1) experimental; urgency=low
 
   * New upstream bugfix release.
