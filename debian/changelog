@@ -3,9 +3,11 @@ xorg-server (2:1.4.2-7) UNRELEASED; urgency=low
   * Update debian/copyright to the SGI Free Software License B, version 2.0.
     It now mirrors the free X11 license used by X.Org.
     http://www.sgi.com/company_info/newsroom/press_releases/2008/september/opengl.html
-    Not closing bug#211765 for now, because GL/glx/glxext.c and
+  * Not closing bug#211765 for now, because GL/glx/glxext.c and
     hw/dmx/glxProxy/glxext.c are covered by the GLX Public License, which is
-    still not free.
+    still not free.  SGI has since released their code under FreeB, but that
+    doesn't necessarily apply to contributions from other people.  Hopefully
+    this can be cleared up soon, though.
 
  -- Julien Cristau <jcristau@debian.org>  Fri, 19 Sep 2008 17:38:00 +0200
 
