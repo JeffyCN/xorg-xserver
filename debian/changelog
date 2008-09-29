@@ -8,6 +8,8 @@ xorg-server (2:1.4.2-7) UNRELEASED; urgency=low
     still not free.  SGI has since released their code under FreeB, but that
     doesn't necessarily apply to contributions from other people.  Hopefully
     this can be cleared up soon, though.
+  * xvfb-run: append to $ERRORFILE instead of truncating it, so the error
+    output from Xvfb is not deleted when we run 'xauth remove'.
 
  -- Julien Cristau <jcristau@debian.org>  Fri, 19 Sep 2008 17:38:00 +0200
 
