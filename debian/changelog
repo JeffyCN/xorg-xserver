@@ -1,4 +1,4 @@
-xorg-server (2:1.4.2-7) UNRELEASED; urgency=low
+xorg-server (2:1.4.2-7) unstable; urgency=low
 
   * Update debian/copyright to the SGI Free Software License B, version 2.0.
     It now mirrors the free X11 license used by X.Org.
@@ -11,7 +11,7 @@ xorg-server (2:1.4.2-7) UNRELEASED; urgency=low
   * xvfb-run: append to $ERRORFILE instead of truncating it, so the error
     output from Xvfb is not deleted when we run 'xauth remove'.
 
- -- Julien Cristau <jcristau@debian.org>  Fri, 19 Sep 2008 17:38:00 +0200
+ -- Julien Cristau <jcristau@debian.org>  Tue, 30 Sep 2008 00:39:58 +0200
 
 xorg-server (2:1.4.2-6) unstable; urgency=low
 
