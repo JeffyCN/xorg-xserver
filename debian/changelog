@@ -1,3 +1,10 @@
+xorg-server (2:1.4.2-8) UNRELEASED; urgency=low
+
+  * Add patch from Petr Salinger to fix PCI domain support on kfreebsd
+    (closes: #499501).
+
+ -- Julien Cristau <jcristau@debian.org>  Mon, 06 Oct 2008 18:37:08 +0200
+
 xorg-server (2:1.4.2-7) unstable; urgency=low
 
   * Update debian/copyright to the SGI Free Software License B, version 2.0.
