@@ -1,3 +1,155 @@
+commit 6dcfa994b0777bf0cabeb71672f13e650b340817
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Fri Oct 10 15:26:32 2008 -0400
+
+    xserver 1.5.2
+
+commit 75504517a30f1bdd593c2a32af81084b59b398a5
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Fri Oct 10 13:41:50 2008 -0400
+
+    EDID: Catch monitors that encode aspect ratio for physical size.
+    
+    This is not legal in either EDID 1.3 or 1.4, but hey, when did a little
+    thing like legality stop anyone.
+    (cherry picked from commit 0660dd9d7009147c395b9ea904539f76f55b9a7f)
+
+commit b595b65e54b1e15fbce872fe3719da14cfae5b92
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Thu Oct 9 14:53:29 2008 -0400
+
+    Revert "Array-index based devPrivates implementation."
+    
+    This reverts commit 8ef37c194fa08d3911095299413a42a01162b078.
+
+commit ca659813a81074cae55ffec51f923c658480b618
+Author: Julien Cristau <jcristau@debian.org>
+Date:   Wed Oct 8 19:46:50 2008 +0200
+
+    Fix GKVE with key_code > 255
+    
+    Move the keycode validation checks before use.
+
+commit 8337c9aa3d2009eea801a84b3a65272e03e65e1a
+Author: Luc Verhaegen <libv@skynet.be>
+Date:   Wed Oct 8 14:55:29 2008 +0200
+
+    DGA: Fix ProcXF86DGASetViewPort for missing support in driver.
+    
+    Fixes a segfault when trying to activate a DGA mode without checking
+    whether DGA modesetting is at all possible.
+    (cherry picked from commit 1feb69eb63e6739ff5db255ad529e84adf941a10)
+
+commit 4e6cbd323854709ae00c44108c93ab6596151de2
+Author: Zhenyu Wang <zhenyu.z.wang@intel.com>
+Date:   Wed Oct 8 13:33:55 2008 +0800
+
+    Check nextEnabledOutput()'s return in bestModeForAspect()
+    
+    In case no enabled outputs, we will reference wrong index of
+    output array.
+    (cherry picked from commit 56c615368c5a8e7acb0398434c2c68578626aa38)
+
+commit 43e3af9cac2e9fd613a61a870bfe00f4782a368d
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Tue Oct 7 13:41:25 2008 -0400
+
+    int10: Fix a nasty memory leak.
+    (cherry picked from commit 94919480d8bb66e1807b4fe87b8f326ef6e012c6)
+
+commit 00ac80a0c408106158bf258b6da8350611fbfe84
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Tue Oct 7 13:39:10 2008 -0400
+
+    int10: Don't warn when scanning for devices we don't have.
+    
+    Some BIOSes (hi XGI!) will attempt to enumerate the PCI bus by asking
+    for the config space of every possible device number.  This despite
+    perfectly functional BIOS methods to enumerate the bus exactly.
+    (cherry picked from commit a57b2f172c1291f22f7ba2780c1b2f55e353c3e9)
+
+commit c6ce2f6b3fe12e65b0e8a75cc1bc0a21875e14e3
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Tue Oct 7 13:38:12 2008 -0400
+
+    int10: Remove useless check.
+    
+    If you have more than one PCI device with the same d/b/d/f, you're
+    already in trouble.
+    (cherry picked from commit a65e36a873cd1ba9896cd0f9a3e94dd933666005)
+
+commit 8ef37c194fa08d3911095299413a42a01162b078
+Author: Eamon Walsh <ewalsh@tycho.nsa.gov>
+Date:   Fri Sep 12 19:11:53 2008 -0400
+
+    Array-index based devPrivates implementation.
+    
+    Note: DevPrivateKey is now pointer-to-int, which means
+    each key now needs to point to some global storage of
+    size at least sizeof(int).
+    
+    (cherry picked from commit b6ab114212c0e4c3346ceb5b207f14c526ab81e7)
+
+commit e88df87851232d6b6c8da5fff802b33f5275b050
+Author: Peter Hutterer <peter.hutterer@redhat.com>
+Date:   Mon Sep 22 11:10:46 2008 +0930
+
+    xkb: squash canonical types into explicit ones on core reconstruction.
+    
+    If we update key types from core, and groups 2 - n have a canonical type but
+    the same symbols as the explicit type of group 1, assume that it was a core
+    sym duplication according to Section 12.4 of the XKB Protocol Spec.
+    Ignore the canonical types and pretend there's only one group for the key -
+    with the explicit key type.
+    
+    The protocol spec does not cover this case, so we have to guess here.
+    (cherry picked from commit 30c3c13f1030268aaa6a3598d538fafd0592d77a)
+
+commit be3b3cb970d040f0db4bead018c338012547334f
+Author: Peter Hutterer <peter.hutterer@redhat.com>
+Date:   Fri Sep 19 18:27:24 2008 +0930
+
+    xkb: fix core keyboard map generation. #14373
+    
+    According to Section 12.4 of the XKB Protocol Spec, if a key only has a single
+    group but the keyboard has multiple groups defined, the core description of
+    the key is a duplication of the single group across all symbols. i.e.
+    G1L1 G1L2 G1L1 G1L2 G1L3 G1L4 G1L3 G1L4
+    
+    The previous code generated G1L1 G1L2 G1L3 G1L4 G1L3 G1L4, leading to
+    "invented" groups when the process is reversed.
+    
+    Note that this creates wrong key types on reconstruction from core to xkb,
+    i.e. any single-group key with a key type that is not one of the canonical
+    four (Sec 12.2.3), will get the assigned type on group 1, and a canonical type
+    for the other gruops.
+    
+    X.Org Bug 14373 <http://bugs.freedesktop.org/show_bug.cgi?id=14373>
+    (cherry picked from commit ae986d1c73d2f720bd0309d8c33328d14e8eed25)
+
+commit 3bf826f59013ec14fbcf19b85a03e2967a821661
+Author: Kim Woelders <kim@woelders.dk>
+Date:   Mon Sep 22 08:37:29 2008 +0930
+
+    xkb: fix use of uninitialized variable.
+    
+    And some cosmetic changes to use stuff->change consistently.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@redhat.com>
+    (cherry picked from commit 8c46505d7d91e0644b19cccc4b342fceb6f86cab)
+
+commit 88ebde608daaca4793e1b637302899ba65d165ec
+Author: Alan Coopersmith <alan.coopersmith@sun.com>
+Date:   Mon Oct 6 20:10:25 2008 -0700
+
+    Remove usage of mfbChangeWindowAttributes missed in e4d11e58c...
+
+commit af8cef461c4d107f7a03645568a635d0458da9b8
+Author: Alan Hourihane <alanh@tungstengraphics.com>
+Date:   Wed Sep 24 14:24:36 2008 +0100
+
+    only build dri2 when DRI2 is enabled
+
 commit 97f688f2b4b8ebfba77be00db68c4e6a555a5d62
 Author: Adam Jackson <ajax@redhat.com>
 Date:   Tue Sep 23 14:51:33 2008 -0400
