@@ -84,7 +84,7 @@ find_free_servernum() {
 # Clean up files
 clean_up() {
     if [ -e "$AUTHFILE" ]; then
-        XAUTHORITY=$AUTHFILE xauth remove ":$SERVERNUM" >"$ERRORFILE" 2>&1
+        XAUTHORITY=$AUTHFILE xauth remove ":$SERVERNUM" >>"$ERRORFILE" 2>&1
     fi
     if [ -n "$XVFB_RUN_TMPDIR" ]; then
         if ! rm -r "$XVFB_RUN_TMPDIR"; then
@@ -158,8 +158,8 @@ fi
 # Start Xvfb.
 MCOOKIE=$(mcookie)
 XAUTHORITY=$AUTHFILE xauth add ":$SERVERNUM" "$XAUTHPROTO" "$MCOOKIE" \
-  >"$ERRORFILE" 2>&1
-XAUTHORITY=$AUTHFILE Xvfb ":$SERVERNUM" $XVFBARGS $LISTENTCP >"$ERRORFILE" \
+  >>"$ERRORFILE" 2>&1
+XAUTHORITY=$AUTHFILE Xvfb ":$SERVERNUM" $XVFBARGS $LISTENTCP >>"$ERRORFILE" \
   2>&1 &
 XVFBPID=$!
 sleep "$STARTWAIT"
