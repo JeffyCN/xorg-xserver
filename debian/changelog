@@ -4,6 +4,8 @@ xorg-server (2:1.5.1-2) UNRELEASED; urgency=low
     plain text files provided by drivers.
   * Don't pass --with-serverconfig-path to configure, we only used to override
     it for Xprint.
+  * Re-introduce the xserver-common package, containing
+    /usr/lib/xorg/protocol.txt and the Xserver(1) manpage for now.
 
  -- Julien Cristau <jcristau@debian.org>  Thu, 25 Sep 2008 18:50:19 +0200
 

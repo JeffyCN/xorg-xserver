@@ -174,7 +174,13 @@ binary-arch: build install
 
 
 # Build architecture-independent files here
-binary-indep:
+binary-indep: build install
+	$(MAKE) -f debian/rules DH_OPTIONS=-i binary-initial
+	dh_install -i --sourcedir=debian/tmp
+	dh_installdocs -i
+	dh_installchangelogs -i
+
+	$(MAKE) -f debian/rules DH_OPTIONS=-i binary-deb
 
 binary: binary-indep binary-arch
 .PHONY: build clean binary-indep binary-arch binary install
