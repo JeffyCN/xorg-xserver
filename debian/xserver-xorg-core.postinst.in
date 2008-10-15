@@ -11,7 +11,7 @@ case "$1" in
   configure)
   if dpkg --compare-versions "$2" lt-nl 2:1.5.2-1; then
     remove_conffile_commit /etc/X11/xserver/SecurityPolicy
-    rmdir /etc/X11/xserver || true
+    rmdir /etc/X11/xserver 2>/dev/null || true
   fi
 esac
 

@@ -1,3 +1,10 @@
+xorg-server (2:1.5.2-2) UNRELEASED; urgency=low
+
+  * Shut up rmdir error when trying to remove dirs; this might confuse
+    debconf.
+
+ -- Loic Minier <lool@dooz.org>  Wed, 15 Oct 2008 21:50:15 +0200
+
 xorg-server (2:1.5.2-1) experimental; urgency=low
 
   * New upstream bugfix release.
