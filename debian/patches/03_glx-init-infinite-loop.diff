@@ -1,0 +1,27 @@
+From 913b9e9b16c02577f7180e020e0a0b6aa7e65352 Mon Sep 17 00:00:00 2001
+From: Julien Cristau <jcristau@debian.org>
+Date: Mon, 3 Nov 2008 18:07:39 +0100
+Subject: [PATCH] Fix infinite loop on regen when swrast_dri.so is missing.
+
+The swrast DRI provider gets pushed on the glx provider stack at every
+server generation, so the stack turns into a circular list on regen.
+---
+ mi/miinitext.c |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+diff --git a/mi/miinitext.c b/mi/miinitext.c
+index 55faec3..750c425 100644
+--- a/mi/miinitext.c
++++ b/mi/miinitext.c
+@@ -661,7 +661,7 @@ InitExtensions(argc, argv)
+ #endif
+ 
+ #ifdef GLXEXT
+-    GlxPushProvider(&__glXDRISWRastProvider);
++    if (serverGeneration == 1) GlxPushProvider(&__glXDRISWRastProvider);
+     if (!noGlxExtension) GlxExtensionInit();
+ #endif
+ }
+-- 
+1.5.6.5
+

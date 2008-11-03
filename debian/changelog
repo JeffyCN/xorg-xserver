@@ -1,7 +1,13 @@
 xorg-server (2:1.5.2-2) UNRELEASED; urgency=low
 
+  [ Loic Minier ]
   * Shut up rmdir error when trying to remove dirs; this might confuse
     debconf.
+
+  [ Julien Cristau ]
+  * Fix infinite loop on server reset when swrast_dri.so is missing.  Only
+    push swrast on the glx provider stack on first generation, so we don't
+    turn the stack into a circular list (closes: #500287).
 
  -- Loic Minier <lool@dooz.org>  Wed, 15 Oct 2008 21:50:15 +0200
 
