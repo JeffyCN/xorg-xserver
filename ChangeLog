@@ -1,3 +1,241 @@
+commit 4c6a89ee783d62fb75a738339351830c35b19a38
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Wed Nov 5 15:39:01 2008 -0500
+
+    xserver 1.5.3
+
+commit b0c2d009852972f1b085ab5ce2271692dface27f
+Author: Julien Cristau <jcristau@debian.org>
+Date:   Sun Oct 26 13:13:21 2008 +0100
+
+    xfree86: fix compiler warnings in DoModalias()
+    
+    The precedence of == is higher than that of &, so that code was
+    probably buggy.
+    
+    xf86Init.c: In function 'DoModalias':
+    xf86Init.c:300: warning: suggest parentheses around comparison in operand of &
+    xf86Init.c:304: warning: suggest parentheses around comparison in operand of &
+    xf86Init.c:308: warning: suggest parentheses around comparison in operand of &
+    (cherry picked from commit ffaaa1a198a77eb6800c08d4613ee1cc0b068ba0)
+
+commit a311fdc04013c678eb506458d6a5d3376f107bf7
+Author: Nathaniel McCallum <nathaniel@natemccallum.com>
+Date:   Tue Oct 14 09:50:29 2008 -0400
+
+    Xorg: add -modalias option
+    
+    This scans the installed video drivers and prints a Linux-style modalias
+    listing of the devices each driver claims to support.
+
+commit b8fd8da1ad985988426d0269982751a70535e8d0
+Author: Michel Dänzer <michel@tungstengraphics.com>
+Date:   Tue Nov 4 11:27:53 2008 +0100
+
+    AIGLX: Reinstate call to driver texOffsetFinish hook.
+    
+    It was accidentally lost when factoring out __glXDRIdoReleaseTexImage, so this
+    is a regression fix and should probably be backported to server-1.5-branch.
+    (cherry picked from commit a4d62bbf215894bad8e19d99f7330c637d3d49e3)
+
+commit 377712dbfce73348ad7f2610df51a1a805536392
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Wed Nov 5 11:51:06 2008 -0500
+
+    linux: Drain the console fd of data when using evdev for keyboards
+    
+    Works around a silly bug in the kernel that causes wakeup storms after
+    too many keypresses.  Should fix the kernel bug too, but this at least
+    keeps the idle wakeup count below 1000/sec.
+    (cherry picked from commit 446d9443cea31e493d05c939d0128a8116788468)
+
+commit 3245bf113619500b7b6cae3a3f31ddd2984cbc05
+Author: Peter Hutterer <peter.hutterer@redhat.com>
+Date:   Thu Oct 16 11:22:29 2008 +1030
+
+    xfree86: If AEI is on, disable "kbd" and "mouse" devices.
+    
+    This consists of two parts:
+    In the implicit server layout, ignore those drivers when looking for a core
+    device.
+    
+    And after finishing the server layout, run through the list of devices and
+    remove any that use mouse or kbd.
+    
+    AEI is mutually exclusive with the kbd and mouse drivers, so pick either - or.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@redhat.com>
+    (cherry picked from commit c264826da96ad1859dd112b17eb8aa9e5278478f)
+
+commit 58e6d6afe04189f3c88b9e1998247ff797607ccb
+Author: Peter Hutterer <peter.hutterer@redhat.com>
+Date:   Sun Oct 12 21:58:30 2008 +1030
+
+    xfree86: if AllowEmptyInput is true, enable RAW mode on the console.
+    
+    Usually, the console is set to RAW in the kbd driver. If we hotplug all input
+    devices (i.e. the evdev driver for keyboards) and the console is left as-is.
+    As a result, the evdev driver must put an EVIOCGRAB on the device to avoid
+    characters leaking onto the console. This again breaks many things, amongst
+    them lirc, in-kernel mouse button emulation and HAL.
+    
+    This patch sets the console to RAW if AllowEmptyInput is on.
+    
+    Use-cases:
+    1. AEI is off
+      1.1. Only kbd driver is used - behaviour as-is.
+      1.2. kbd and evdev driver is used: if evdev does not grab the device,
+           duplicate events are generated.
+    2. AEI is on
+      2.1. Only evdev driver is used - behaviour as-is, but evdev does not need
+           to grab the device anymore.
+      2.2. evdev and kbd are used: duplicate key events are generated if evdev
+           does not grab the device.
+    
+    1.2 is a marginal use-case that can be fixed by adding a "grab" option to the
+    evdev driver (update of xorg.conf is needed).
+    
+    2.2 is an issue. If we have no ServerLayout section, AEI is on, but devices
+    specified in the xorg.conf are still added [1], resulting in duplicate events.
+    This is a common configuration and needs sorting out.
+    
+    [1] 2eaed4a10fe5bf727579bca4ab8d4a47c8763a7d
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@redhat.com>
+    Signed-off-by: Adam Jackson <ajax@redhat.com>
+    (cherry picked from commit d936a4235c9625bd41569cef3452dd086284e0d7)
+
+commit bc199fdf79a72275592d325dc034adccc6dd93af
+Author: Peter Hutterer <peter.hutterer@redhat.com>
+Date:   Mon Oct 20 12:19:55 2008 +1030
+
+    config: don't add duplicate devices through HAL.
+    
+    If HAL is restarted, the device list is sent to the server again, leading
+    first to duplicate devices (and thus duplicate events), and later to a
+    FatalError "Too many input devices."
+    
+    dev->config_info contains the UDI for the device. If the UDI of a new devices
+    is equal to one we already have in the device list, just ignore it.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@redhat.com>
+    (cherry picked from commit 6c451859552e1fc78f6589617482f9ff96d7ed8a)
+
+commit e63ef549bb7a2591d99987c85f414c08dbbf9a6b
+Author: Matthieu Herrb <matthieu.herrb@laas.fr>
+Date:   Tue Oct 21 22:32:57 2008 +0200
+
+    Close well known connections in ServerAbort()
+    (cherry picked from commit d72cd753b99fae147ef4c189700fc697f1ea7fb0)
+
+commit 5d14e345411dfe4b4fd334e4e54fbf24dcfa65bd
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Tue Oct 21 13:10:44 2008 -0400
+
+    exa: Add exaDrawableIsOffscreen() to the driver API.
+    
+    (cherry picked from commit 3891dd892449fcdb7a514e3c5e7e763ba7e74003)
+
+commit f4c33e2e64ce83c29c3bc79853e421247acfea11
+Author: Michel Dänzer <michel@tungstengraphics.com>
+Date:   Mon Oct 20 09:55:24 2008 -0400
+
+    EXA: Avoid excessive syncing in PutImage
+    (cherry picked from commit 2188582e5ea90edb432a2f421d0a267439ba08f9)
+
+commit df22857b34edb9f29ace3800ba99f14c7be8058e
+Author: Pierre Willenbrock <pierre@pirsoft.de>
+Date:   Thu Oct 16 14:28:14 2008 -0400
+
+    RANDR: Fix output property event delivery.
+    (cherry picked from commit 8de26770a41ec87c46eed2eddfde6f867d71fe1f)
+
+commit 42429aa3269d68bc7909616ce8b0d0b5ca5624d2
+Author: Keith Packard <keithp@keithp.com>
+Date:   Mon Oct 6 12:21:20 2008 -0400
+
+    RANDR: Delivery output property events.
+    (cherry picked from commit 9187f6ad9ec7ba9569a93d92561aac17eaa83491)
+
+commit b28c25b5aeecea22aba997e2b0d24e77a22b6e02
+Author: Rémi Cardona <remi@gentoo.org>
+Date:   Tue Oct 21 10:07:24 2008 -0400
+
+    Force LC_ALL=C when building xf86DefModeSet.c
+    
+    Fixes build in not-quite-latin locales.
+
+commit 992a7168f0db5733fe4a6cbd2f40c6b1f2a150e0
+Author: Martin von Gagern <Martin.vGagern@gmx.net>
+Date:   Wed Nov 5 11:44:03 2008 -0500
+
+    Bug #17858: Fix Xvesa build on newer kernels.
+    
+    Not cherry picked from master, Xvesa is gone there.
+
+commit ec5046ca7565e2364f42606b26159520a73dd207
+Author: Maarten Maathuis <madman2003@gmail.com>
+Date:   Fri Oct 10 23:23:02 2008 +0200
+
+    dri: don't set the dixPrivate key to NULL, as this is a staticly set variable.
+    
+    - This breaks on the 2nd server generation.
+    - No other subsystem seems to NULL their key.
+    - This should fix bug 17982.
+    (cherry picked from commit 5b336585a4cdf11d20831a9536ad581e959ea7f1)
+
+commit f75163e5f6fc6dd63ac4eb97e403086031230250
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Tue Oct 21 16:00:32 2008 -0400
+
+    Bug #18159: Spell "anisotropic" correctly
+    (cherry picked from commit 81e197b2a5457bb9f7ed72f82c2d33fd8dbfc202)
+
+commit b468eacf511de3c3f8b6a1abd9e38680947b464e
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Tue Oct 14 09:45:19 2008 -0400
+
+    kdrive: Hardcode a different wrong value for number of mouse buttons
+    
+    This should really come from the input driver directly, but, kdrive.
+    (cherry picked from commit 3eb52de7f28b0050582f9ac4c28bc894d3f06f4b)
+
+commit 19776ede8f10e0f59dbc50d93e51facbc4071877
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Tue Oct 14 13:00:50 2008 -0400
+
+    Add backtrace definitions to dix-config.h.in
+    (cherry picked from commit ad677238bc96a8578113bbe76d605d7a87aca44c)
+
+commit 483fb847b4363d09ff3347f61ad51bba1dd00602
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Fri Oct 10 16:33:24 2008 -0400
+
+    mieq: Backtrace when the queue overflows.
+    
+    Since we're probably stuck down in a driver somewhere, let's at least
+    try to point out where.  This will need to be rethought when the input
+    thread work lands though.
+    (cherry picked from commit b736f477f5324f79af30fc0f941ba0714a34ccda)
+
+commit 7df5e93cf52aad35509be9e6d8c25e399fba0c60
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Fri Oct 10 15:53:48 2008 -0400
+
+    Move xorg_backtrace() up to the OS level so we can call it from DIX.
+    (cherry picked from commit 94ed0ba1b5043ad9fc33b42756af447d5ab15bbd)
+
+commit aa548b0a9b4999f21630273261a8f5880dd24a7f
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Tue Oct 14 14:04:01 2008 -0400
+
+    EDID: Catch even more cases of encoding aspect as size.
+    
+    Very cute, Samsung, not only do you claim to be 16cm by 9cm in the
+    global size record, you also claim to be 160mm by 90mm in the detailed
+    timings.  Grrr.
+    (cherry picked from commit bd9c6b3a4d726a3f83ac6d8cf7211eddbc28f25a)
+
 commit 6dcfa994b0777bf0cabeb71672f13e650b340817
 Author: Adam Jackson <ajax@redhat.com>
 Date:   Fri Oct 10 15:26:32 2008 -0400
