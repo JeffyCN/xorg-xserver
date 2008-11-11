@@ -1,4 +1,4 @@
-xorg-server (2:1.5.3-1) UNRELEASED; urgency=low
+xorg-server (2:1.5.3-1) experimental; urgency=low
 
   [ Loic Minier ]
   * Shut up rmdir error when trying to remove dirs; this might confuse
@@ -12,7 +12,7 @@ xorg-server (2:1.5.3-1) UNRELEASED; urgency=low
   * Enable the record extension (closes: #504303).
   * Merge changes from 2:1.4.2-8.
 
- -- Loic Minier <lool@dooz.org>  Wed, 15 Oct 2008 21:50:15 +0200
+ -- Julien Cristau <jcristau@debian.org>  Tue, 11 Nov 2008 23:17:14 +0100
 
 xorg-server (2:1.5.2-1) experimental; urgency=low
 
