@@ -27,6 +27,7 @@
 51_xevie-length.diff
 52_xevie-swap-replies.diff
 53_Properly-initialize-io.pi_sel.pc_domain-on-kfreebsd.patch
+54_more-sanity-checks.diff
 91_ttf2pt1
 91_ttf2pt1_updates
 92_xprint-security-holes-fix.patch
