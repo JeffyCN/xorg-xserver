@@ -1,10 +1,10 @@
-xorg-server (2:1.4.2-9) UNRELEASED; urgency=low
+xorg-server (2:1.4.2-9) unstable; urgency=low
 
   * Cherry-pick patches from upstream to make xf86ScaleAxis() work correctly.
   * Steal patch from Fedora: more sanity checks to stop vmmouse from
     segfaulting the server (closes: #503459).
 
- -- Julien Cristau <jcristau@debian.org>  Thu, 13 Nov 2008 22:48:41 +0100
+ -- Julien Cristau <jcristau@debian.org>  Thu, 13 Nov 2008 23:32:47 +0100
 
 xorg-server (2:1.4.2-8) unstable; urgency=low
 
