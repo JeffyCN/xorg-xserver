@@ -1,3 +1,9 @@
+xorg-server (2:1.4.2-9) UNRELEASED; urgency=low
+
+  * Cherry-pick patches from upstream to make xf86ScaleAxis() work correctly.
+
+ -- Julien Cristau <jcristau@debian.org>  Thu, 13 Nov 2008 22:48:41 +0100
+
 xorg-server (2:1.4.2-8) unstable; urgency=low
 
   * Add patch from Petr Salinger to fix PCI domain support on kfreebsd
