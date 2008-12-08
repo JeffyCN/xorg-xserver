@@ -1,0 +1,24 @@
+#!/bin/sh
+
+set -e
+
+THIS_PACKAGE=xserver-xorg-core
+THIS_SCRIPT=postrm
+
+#INCLUDE_SHELL_LIB#
+
+case "$1" in
+abort-install|abort-upgrade)
+  if dpkg --compare-versions "$2" lt-nl "2:1.5.2-1"; then
+    remove_conffile_rollback /etc/X11/xserver/SecurityPolicy
+  fi
+  ;;
+purge)
+  rm /var/log/Xorg.*.log || true
+  rm /var/log/Xorg.*.log.old || true
+  ;;
+esac
+
+#DEBHELPER#
+
+# vim:set ai et sts=2 sw=2 tw=0:

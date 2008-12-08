@@ -1,0 +1,187 @@
+#!/usr/bin/make -f
+# debian/rules for the Debian xorg-server package.
+# Copyright © 2004 Scott James Remnant <scott@netsplit.com>
+# Copyright © 2005 Daniel Stone <daniel@fooishbar.org>
+# Copyright © 2005 David Nusinow <dnusinow@debian.org>
+
+# Uncomment this to turn on verbose mode.
+#export DH_VERBOSE=1
+
+include debian/xsfbs/xsfbs.mk
+
+CFLAGS = -Wall -g
+ifneq (,$(filter noopt,$(DEB_BUILD_OPTIONS)))
+	CFLAGS += -O0
+else
+	CFLAGS += -O2
+endif
+ifneq (,$(filter parallel=%,$(DEB_BUILD_OPTIONS)))
+	NUMJOBS = $(patsubst parallel=%,%,$(filter parallel=%,$(DEB_BUILD_OPTIONS)))
+	MAKEFLAGS += -j$(NUMJOBS)
+endif
+
+#CPPFLAGS += -DPRE_RELEASE=0
+
+DEB_HOST_ARCH      ?= $(shell dpkg-architecture -qDEB_HOST_ARCH)
+DEB_HOST_GNU_TYPE  ?= $(shell dpkg-architecture -qDEB_HOST_GNU_TYPE)
+DEB_BUILD_GNU_TYPE ?= $(shell dpkg-architecture -qDEB_BUILD_GNU_TYPE)
+DEB_HOST_ARCH_OS   ?= $(shell dpkg-architecture -qDEB_HOST_ARCH_OS)
+ifeq ($(DEB_BUILD_GNU_TYPE), $(DEB_HOST_GNU_TYPE))
+	confflags += --build=$(DEB_HOST_GNU_TYPE)
+else
+	confflags += --build=$(DEB_BUILD_GNU_TYPE) --host=$(DEB_HOST_GNU_TYPE)
+endif
+
+ifeq ($(DEB_HOST_ARCH_OS), linux)
+	build_xfbdev = --enable-xfbdev
+else
+	build_xfbdev = --disable-xfbdev
+endif
+
+INSTALL=/usr/bin/install
+
+VENDOR = $(shell lsb_release -i -s)
+
+# disable-static is so we don't get libfoo.a for modules.  now if only we could
+# kill the .las.
+confflags += --disable-static \
+	     --enable-xorg \
+	     --with-default-font-path="/usr/share/fonts/X11/misc,/usr/share/fonts/X11/cyrillic,/usr/share/fonts/X11/100dpi/:unscaled,/usr/share/fonts/X11/75dpi/:unscaled,/usr/share/fonts/X11/Type1,/usr/share/fonts/X11/100dpi,/usr/share/fonts/X11/75dpi,/var/lib/defoma/x-ttcidfont-conf.d/dirs/TrueType" \
+	     --enable-xtrap \
+	     --enable-record \
+	     --enable-glx-tls \
+	     --enable-dmx \
+	     --enable-vfb \
+	     --enable-kdrive \
+	     --enable-xephyr \
+	     --disable-xsdl \
+	     --disable-xfake \
+	     $(build_xfbdev) \
+	     --disable-kdrive-vesa \
+	     --disable-lbx \
+	     --disable-xprint \
+	     --disable-xorgconfig \
+	     --disable-xorgcfg \
+	     --with-xkb-path=/usr/share/X11/xkb \
+	     --with-xkb-output=/var/lib/xkb \
+	     --enable-xfree86-utils \
+	     --with-os-vendor="$(VENDOR)" \
+	     --with-builderstring="$(SOURCE_NAME) $(SOURCE_VERSION) ($(BUILDER))" \
+	     --with-int10=x86emu \
+	     --disable-dri2
+
+configure: $(STAMP_DIR)/patch
+	dh_testdir
+	autoreconf -vfi
+
+obj-$(DEB_BUILD_GNU_TYPE)/config.status: configure
+	dh_testdir
+	mkdir -p obj-$(DEB_BUILD_GNU_TYPE)
+	cd obj-$(DEB_BUILD_GNU_TYPE) && \
+	../configure \
+	  --prefix=/usr \
+	  --mandir=\$${prefix}/share/man \
+	  --infodir=\$${prefix}/share/info \
+	  --sysconfdir=/etc \
+	  --localstatedir=/var \
+	  $(confflags) \
+	  CFLAGS="$(CFLAGS)" \
+	  CPPFLAGS="$(CPPFLAGS)" \
+	  PCI_TXT_IDS_DIR="/usr/share/xserver-xorg/pci"
+
+
+build: build-stamp
+build-stamp: obj-$(DEB_BUILD_GNU_TYPE)/config.status
+	dh_testdir
+	cd obj-$(DEB_BUILD_GNU_TYPE) && $(MAKE)
+	>$@
+
+clean: xsfclean
+	dh_testdir
+	dh_testroot
+	rm -f build-stamp
+	
+	rm -f config.cache config.log config.status
+	rm -f */config.cache */config.log */config.status
+	rm -f conftest* */conftest*
+	rm -rf autom4te.cache */autom4te.cache
+	rm -rf obj-*
+	# generated file, left over in the upstream tarball
+	# see https://bugs.freedesktop.org/show_bug.cgi?id=9277
+	rm -f hw/xfree86/common/xf86Build.h
+	# more generated files
+	rm -f include/dix-config.h include/do-not-use-config.h \
+		include/xorg-config.h include/xorg-server.h
+	rm -f $$(find -name Makefile.in)
+	rm -f compile config.guess config.sub configure depcomp install-sh
+	rm -f ltmain.sh missing INSTALL aclocal.m4 ylwrap
+	rm -f include/do-not-use-config.h.in
+	
+	dh_clean
+
+install: build
+	dh_testdir
+	dh_testroot
+	dh_clean -k
+	dh_installdirs
+	
+	cd obj-$(DEB_BUILD_GNU_TYPE) && $(MAKE) DESTDIR=$(CURDIR)/debian/tmp install
+	
+	# oh, yuck.
+	find $(CURDIR)/debian/tmp/usr/lib/xorg -type f -name '*.la' | \
+	  xargs rm -f
+	
+	install -m 755 debian/local/xvfb-run debian/tmp/usr/bin
+	install debian/local/xvfb-run.1 debian/tmp/usr/share/man/man1
+
+
+# stub to start building deb files, used by binary-indep and binary-arch
+binary-initial:
+	dh_testdir
+	dh_testroot
+
+# stub to build deb files, used by binary-indep and binary-arch
+# (cf. /usr/share/debhelper/dh_make/debianm/rules)
+binary-deb:
+	dh_compress
+	dh_fixperms
+	dh_installdeb
+	dh_shlibdeps
+	dh_gencontrol
+	dh_md5sums
+	dh_builddeb
+
+# Build architecture-dependent files here.
+binary-arch: build install
+	$(MAKE) -f debian/rules DH_OPTIONS=-s binary-initial
+	
+	dh_installdocs -s
+	dh_installchangelogs -s ChangeLog
+	dh_install -s --sourcedir=debian/tmp --list-missing
+	$(INSTALL) -d $(CURDIR)/debian/xserver-xorg-dev/usr/share/xserver-xorg
+	$(INSTALL) -m644 $(CURDIR)/debian/videoabiver \
+	           $(CURDIR)/debian/xserver-xorg-dev/usr/share/xserver-xorg/videoabiver
+	$(INSTALL) -m644 $(CURDIR)/debian/inputabiver \
+	           $(CURDIR)/debian/xserver-xorg-dev/usr/share/xserver-xorg/inputabiver
+	$(INSTALL) -m644 $(CURDIR)/debian/serverminver \
+	           $(CURDIR)/debian/xserver-xorg-dev/usr/share/xserver-xorg/serverminver
+	$(INSTALL) -m 755 -d debian/xserver-xorg-core/usr/share/bug/xserver-xorg-core
+	$(INSTALL) -m 755 debian/xserver-xorg-core.bug.script debian/xserver-xorg-core/usr/share/bug/xserver-xorg-core/script
+	dh_installdebconf -s
+	dh_installman -s
+	dh_link -s
+	dh_strip -s --dbg-package=xserver-xorg-core
+	$(MAKE) -f debian/rules DH_OPTIONS=-s binary-deb
+
+
+# Build architecture-independent files here
+binary-indep: build install
+	$(MAKE) -f debian/rules DH_OPTIONS=-i binary-initial
+	dh_install -i --sourcedir=debian/tmp
+	dh_installdocs -i
+	dh_installchangelogs -i
+
+	$(MAKE) -f debian/rules DH_OPTIONS=-i binary-deb
+
+binary: binary-indep binary-arch
+.PHONY: build clean binary-indep binary-arch binary install
