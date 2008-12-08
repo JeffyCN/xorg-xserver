@@ -1,3 +1,13 @@
+xorg-server (2:1.5.99.2-1) UNRELEASED; urgency=low
+
+  * New upstream beta version.
+  * debian/control:
+    - Add x11proto-dri2-dev to build-depends.
+  * debian/rules:
+    - Enable dri2 again.
+
+ -- Timo Aaltonen <tjaalton@ubuntu.com>  Mon, 08 Dec 2008 08:39:38 +0200
+
 xorg-server (2:1.5.3-1) experimental; urgency=low
 
   [ Loic Minier ]

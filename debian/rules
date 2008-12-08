@@ -68,7 +68,7 @@ confflags += --disable-static \
 	     --with-os-vendor="$(VENDOR)" \
 	     --with-builderstring="$(SOURCE_NAME) $(SOURCE_VERSION) ($(BUILDER))" \
 	     --with-int10=x86emu \
-	     --disable-dri2
+	     --enable-dri2
 
 configure: $(STAMP_DIR)/patch
 	dh_testdir
