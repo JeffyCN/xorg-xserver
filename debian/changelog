@@ -6,6 +6,12 @@ xorg-server (2:1.5.99.2-1) UNRELEASED; urgency=low
     - Bump the x11proto-randr-dev build-dep version to 1.2.99.2. 
   * debian/rules:
     - Enable dri2 again.
+  * debian/patches:
+    02_Disable-DRI-in-Xephyr.patch
+    03_glx-init-infinite-loop.diff
+    - Dropped, implemented upstream.
+    13_debian_add_xkbpath_env_variable.diff
+    - Disabled for now, needs to be reimplemented or dropped.
 
  -- Timo Aaltonen <tjaalton@ubuntu.com>  Mon, 08 Dec 2008 08:39:38 +0200
 

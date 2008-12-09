@@ -1,5 +1,3 @@
 001_fedora_extramodes.patch
-02_Disable-DRI-in-Xephyr.patch
-03_glx-init-infinite-loop.diff
 #06_use_proc_instead_of_sysfs_for_pci_domains.diff
-13_debian_add_xkbpath_env_variable.diff
+#13_debian_add_xkbpath_env_variable.diff
