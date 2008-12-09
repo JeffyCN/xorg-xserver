@@ -5,6 +5,8 @@ xorg-server (2:1.5.99.2-1) UNRELEASED; urgency=low
     - Add x11proto-dri2-dev to build-depends.
     - Bump the x11proto-randr-dev build-dep version to 1.2.99.2. 
     - Bump the libpixman-1-dev build-dep version to 0.13.2.
+    - Bump the xtrans-dev build-dep version to 1.2.2.
+    - Bump the x11proto-xext-dev build-dep version to 7.0.3.
   * debian/rules:
     - Enable dri2 again.
   * debian/patches:
