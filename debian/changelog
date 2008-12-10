@@ -7,6 +7,10 @@ xorg-server (2:1.5.99.2-1) UNRELEASED; urgency=low
     - Bump the libpixman-1-dev build-dep version to 0.13.2.
     - Bump the xtrans-dev build-dep version to 1.2.2.
     - Bump the x11proto-xext-dev build-dep version to 7.0.3.
+    - Bump the x11proto-input-dev build-dep version to 1.5.
+    - Bump the libgl1-mesa-dev and mesa-common-dev build-dep to
+      7.2+git20081209.a0d5c3cf.
+    - Add a build-dep on libxinerama-dev.
   * debian/rules:
     - Enable dri2 again.
   * debian/patches:
