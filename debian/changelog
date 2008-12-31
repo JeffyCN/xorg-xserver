@@ -10,6 +10,7 @@ xorg-server (2:1.5.99.3-1) UNRELEASED; urgency=low
     - Bump the x11proto-input-dev build-dep version to 1.5.
     - Bump the libgl1-mesa-dev and mesa-common-dev build-dep to
       7.2+git20081209.a0d5c3cf.
+    - Bump the x11proto-core build-dep to 7.0.13.
     - Add a build-dep on libxinerama-dev.
     - Conflict xserver-xorg-video-4, xserver-xorg-input-2.1.
   * debian/rules:
