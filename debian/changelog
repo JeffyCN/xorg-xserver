@@ -1,13 +1,14 @@
-xorg-server (2:1.5.99.3-1) UNRELEASED; urgency=low
+xorg-server (2:1.5.99.901-1) UNRELEASED; urgency=low
 
-  [ Timo Aaltonen ]
-  * New upstream beta version.
+  * New upstream release candidate.
     + adds autodetection of sbus devices (closes: #483942).
       Thanks, Bernhard R. Link!
     + RandR version 1.3 adds panning (closes: #509699).
     + fixes a crash with XAA and fb24_32ReformatTile (closes: #443480).
     + correctly sets RAW mode on the console when xorg.conf is absent
       (closes: #505746).
+
+  [ Timo Aaltonen ]
   * debian/control:
     - Add x11proto-dri2-dev to build-depends.
     - Bump the x11proto-randr-dev build-dep version to 1.2.99.2. 

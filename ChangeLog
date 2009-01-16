@@ -1,3 +1,913 @@
+commit 251d0d8090322b2c9dc0c8b7bef001f338d19433
+Author: Keith Packard <keithp@keithp.com>
+Date:   Mon Jan 12 13:03:30 2009 -0800
+
+    Update version to 1.5.99.901 (1.6 RC1)
+
+commit 71628cabc9dddf5c9fe12d555ae0c47d5902b2f7
+Author: Keith Packard <keithp@keithp.com>
+Date:   Mon Jan 12 11:51:28 2009 -0800
+
+    Merge include/dix-config-post-verbatim.h into include/dix-config.h.in
+    
+    No sense having an extra include file here; it makes building stuff harder.
+    
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit cbd977cc15cf22a3e42b10942d5657cb8b9ac335
+Author: Alban Browaeys <prahal@yahoo.com>
+Date:   Mon Jan 12 10:57:11 2009 -0800
+
+    Fix dmx compile on 1.6 branch.
+    
+    http://www.mail-archive.com/pld-cvs-commit@lists.pld-linux.org/msg166742.html
+    contains a patch from "arekm" which I build upon to make up this one.
+    
+    Mostly fixes for Xcalloc which I previously tried to fix the same way but
+    without finding the right spot.
+    
+    I cannot tell if dmx works though. Only that it at least compile.
+    
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit 6be355b8e8cabeb5832ce9970a83782ea46fd4d1
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Fri Jan 9 13:46:20 2009 +1000
+
+    dix: drop x/y back into last.valuators before updating the history (#19285)
+    
+    positionSprite needs to scale to screen coordinates and in the process of
+    doing so alters dev->last.valuators[0:1]. Drop the real coordinates back after
+    finishing and before updating the motion history. This way, we don't push the
+    screen coordinates into the motion history.
+    
+    X.Org Bug 19285 <http://bugs.freedesktop.org/show_bug.cgi?id=19285>
+    (cherry picked from commit 56efbc0986e782da45addb05ece9f456d41d7a90)
+
+commit ca21fd7ddf50e6a363c6ad027d46388596872d3b
+Author: Jeremy Huddleston <jeremyhu@freedesktop.org>
+Date:   Sun Jan 11 01:52:42 2009 -0800
+
+    XQuartz: Add locking to make mieq thread safe on OSX
+    (cherry picked from commit 7a8d2266861e74176b5310b83652a9c10a170494)
+
+commit 671b71a6cba1c9da7797524f21ef1b27ff04adfd
+Author: Jeremy Huddleston <jeremyhu@freedesktop.org>
+Date:   Sun Jan 11 01:42:24 2009 -0800
+
+    XQuartz: misc 1.6 updates (still --disable-glx)
+      rlAccel is not longer compatable, and it's not worth fixing
+      Don't override DeviceCursorInitialize with a noop
+      Don't do a SwitchCoreKeyboard (which wasn't even needed in the first place)
+    (cherry picked from commit c137f681680e1d04b1513a8be68aeda4d1c56fd5)
+
+commit 69ddac23281534a06c0acb3005a09e4448594925
+Author: Jeremy Huddleston <jeremyhu@freedesktop.org>
+Date:   Sat Jan 10 01:39:08 2009 -0800
+
+    Apple: Don't use DRI2
+    (cherry picked from commit a1d35cee5907a76977ee43c49cb55c8f411c9794)
+
+commit 681cc0f38b0b96c5e41c93d6944e4fa58c950eda
+Author: Jeremy Huddleston <jeremyhu@freedesktop.org>
+Date:   Tue Dec 23 12:39:38 2008 -0800
+
+    XQuartz: Use depth=24 instead of FatalError if we can't figure out our depth
+    (cherry picked from commit 80b65c5b78d125c4ad3620b87b121c9e666299c3)
+    (cherry picked from commit 932ed6e949757926a17f7efe6b0255e38efa1152)
+
+commit 7872669105d6d81ded5128eb4d4f1acce34c3b02
+Author: Jeremy Huddleston <jeremyhu@freedesktop.org>
+Date:   Tue Dec 9 23:48:18 2008 -0800
+
+    XQuartz: Make debugging output for invalid depths a bit more detailed
+    (cherry picked from commit 609fb166b7062c76f0561df12ffe893811f6ac8f)
+    (cherry picked from commit 1962af7ee3bdf54cfa674187dea67b9ad36cd5a1)
+
+commit fdfc70ea0a183daaabb9bb436f2b0cbf95f47e88
+Merge: 8cfb353... 82f4273...
+Author: Keith Packard <keithp@keithp.com>
+Date:   Mon Jan 12 10:40:04 2009 -0800
+
+    Merge commit 'whot/server-1.6-branch' into server-1.6-branch
+
+commit 82f42730fa268e85dc95c43a6450c35f9e57acdf
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Mon Dec 15 10:46:07 2008 +1000
+
+    mi: force CopyKeyClass for key events. (#19048)
+    
+    While we don't want to copy all other device classes into the VCK, we need to
+    copy the key class to transfer the layout from the SDs into the VCK.
+    This resembles the functionality of SwitchCoreKeyboard in server 1.5.
+    
+    Thanks to Colin Guthrie for providing the follow-up patch (#19222)
+    
+    X.Org Bug 19048 <http://bugs.freedesktop.org/show_bug.cgi?id=19048>
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit 8cfb353078d9b5d03a9633304038141a60adc970
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Mon Jan 12 11:07:08 2009 +1000
+
+    dix: Fix handling of do_not_propagate_mask window attribute.
+    
+    This was broken in 32aa252e988be8cbfd4f7e373fb7b7736ef1f5f2.
+    
+    Signed-off-by: Kim Woelders <kim@woelders.dk>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    (cherry picked from commit 30d2cfcd3851870178d62e5067211aa36f87fbd2)
+    
+    Conflicts:
+    
+    	dix/events.c
+    
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit 10c0287232eab1b93d078774f52e65efa0c03607
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Mon Jan 12 11:07:08 2009 +1000
+
+    dix: Fix handling of do_not_propagate_mask window attribute.
+    
+    This was broken in 32aa252e988be8cbfd4f7e373fb7b7736ef1f5f2.
+    
+    Signed-off-by: Kim Woelders <kim@woelders.dk>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    (cherry picked from commit 30d2cfcd3851870178d62e5067211aa36f87fbd2)
+    
+    Conflicts:
+    
+    	dix/events.c
+
+commit 93e510d3abaee97f5b7812abc3a2693dabf94478
+Author: Peter Hutterer <peter.hutterer@redhat.com>
+Date:   Thu Dec 4 10:30:02 2008 +1000
+
+    xfree86: Only use the evdev ruleset on linux.
+    
+    As suggested by Julien Cristau
+    
+    This is an follow-up to
+    commit 9c5dd7337fa93fb1650cc017e523b939dcbf482a
+    Author: Peter Hutterer <peter.hutterer@redhat.com>
+    Date:   Wed Dec 3 14:24:25 2008 +1000
+    
+        Let the DDX decide on the XkbRulesDefaults.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@redhat.com>
+    Acked-by: Julien Cristau <jcristau@debian.org>
+    Signed-off-by: Daniel Stone <daniel@fooishbar.org>
+    (cherry picked from commit 13de7511b17b57a28668e1a60b196ccfe61dbcbe)
+    
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit cc78f04b22daabc06d9fb82f550e3f4dbbe76f28
+Author: Peter Hutterer <peter.hutterer@redhat.com>
+Date:   Wed Dec 3 14:24:25 2008 +1000
+
+    Let the DDX decide on the XkbRulesDefaults.
+    
+    Rather than assuming rules in the CoreKeyboardProc, init the default rules in
+    InitCoreDevices, then re-use them later.
+    
+    In the xfree86 DDX, set the rules to "base" or "evdev", depending on whether
+    we'll load kbd or evdev.
+    
+    If we create a new MD, use pc105,us as default and re-use the rules file used
+    previously.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@redhat.com>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit 02c059ea99a791b9e3643b4fb131af01306b1c23
+Author: Keith Packard <keithp@keithp.com>
+Date:   Sun Jan 11 15:56:28 2009 -0800
+
+    dix: move focus handling into enterleave.c.
+    
+    This commit moves the focus handling from events.c into enterleave.c and
+    implements a model similar to the core enter/leave model.
+    For a full description of the model, see:
+    http://lists.freedesktop.org/archives/xorg/2008-December/041740.html
+    
+    This commit also gets rid of the focusinout array in the WindowRec, ditching
+    it in favour of a local array that keeps the current focus window for each
+    device.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    (cherry picked from commit eb2d7b3d700952ba88c77deacf687b251300e660)
+    
+    Conflicts:
+    
+    	dix/events.c
+    	include/input.h
+    
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit c75445754e283dc2a306ef1cf2bbd94b40423640
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Fri Dec 19 21:05:09 2008 +1000
+
+    dix: add a few auxiliary functions for the updated focus model.
+    
+    SetFocusIn and SetFocusOut, including the static array to keep all focus
+    windows.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    (cherry picked from commit 673eb23aac578dcdc04e2a99d1fa5c2987eb58b8)
+
+commit ceeb62f892a1a4df9ef1054d2c9ba12e26d55ef2
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Thu Dec 18 15:55:11 2008 +1000
+
+    dix: reduce FirstPointerChild complexity
+    
+    Instead of keeping a flag on each window for the devices that are in this
+    window, keep a local array that holds the current pointer window for each
+    device. Benefit: searching for the first descendant of a pointer is a simple
+    run through the array.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    (cherry picked from commit 38b28dcadd0990cb43f50db4300eebb8f044db96)
+
+commit ed90245461f33f1e0eac01c0dea4d0132364f60a
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Thu Dec 18 15:43:18 2008 +1000
+
+    dix: remove now unused "exclude" parameter from FirstPointerChild
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    (cherry picked from commit 72ad4a85cc0ffe60a90011d65ef718d5852beae4)
+
+commit f0025f59e85f48da5e77cd6b759a693d40b2f9ea
+Author: Keith Packard <keithp@keithp.com>
+Date:   Fri Jan 9 11:20:31 2009 -0800
+
+    dix: re-implement enter/leave model.
+    
+    The old model was implemented based on a misunderstanding of NotifyVirtual and
+    NotifyNonlinearVirtual events. It became complicated and was broken in some
+    places [1]. This patch wipes this model completely.
+    
+    A much simplified implementation is provided instead. Rather than a top-down
+    approach ("we have a tree of windows, which ones need to get which event")
+    this one uses a step-by-step approach. For each window W between A and B
+    determine the pointer window P as perceived by this window and determine the
+    event type based on this information. This is in-line with the model described
+    by Owen Taylor [2].
+    
+    [1] http://lists.freedesktop.org/archives/xorg/2008-December/041559.html
+    [2] http://lists.freedesktop.org/archives/xorg/2008-August/037606.html
+    (cherry picked from commit 0aa4460c3b4f9bb17d5412d76fa8c4c501132429)
+    
+    Conflicts:
+    
+    	dix/enterleave.c
+
+commit 1ffd9ec7606606570980490b91b780e02bc29d7d
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Tue Dec 16 17:10:03 2008 +1000
+
+    xfree86: don't restore the TTY mode if we didn't initialize it ourselves
+    
+    Restoring it unconditionally means we restore to whatever tty_mode has as
+    default value (i.e. 0). K_RAW happens to be 0x00, so we always restore to raw
+    mode if allowEmptyInput is off.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Signed-off-by: Adam Jackson <ajax@redhat.com>
+    Signed-off-by: Julien Cristau <jcristau@debian.org>
+    (cherry picked from commit aea6f19f25e13768b1d09fac4991d6a5e6c2cdac)
+
+commit 3c11efd7dc09aa92039f851c2bbf2ca6b5a5ac8c
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Tue Dec 23 09:59:28 2008 +1000
+
+    xfree86: If an input device failed to activate, return immediately.
+    
+    Devices are only activated once - right after they've been added to the
+    server. If a device failes activation, it's dead. There's no reason to
+    continue. Return the error code from ActivateDevice() without setting up
+    sprite information or even sending a event to the client.
+    
+    Then - in the DDX - just remove the device again.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    (cherry picked from commit 27011254c4de4e573a0851bf46892fb488db6522)
+
+commit 2ce48363b862db134624797bc071f8c45323a075
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Tue Dec 23 10:00:34 2008 +1000
+
+    xfree86: don't call CheckMotion if a device hasn't been enabled. #19176
+    
+    X.Org Bug <http://bugs.freedesktop.org/show_bug.cgi?id=19176>
+    (cherry picked from commit e1a3a1a0d85c9971aea65c2228b5fd4dbf3bf57a)
+
+commit 3225e1378e3929e538941bbfc9ec495638bd407a
+Author: Maarten Maathuis <madman2003@gmail.com>
+Date:   Fri Dec 26 15:51:55 2008 +0100
+
+    exa: preparing as source and finishing access as mask is a bad idea
+    (cherry picked from commit 027b440d4f9f0cdd46addff46fd2d5c44cd5c847)
+
+commit 2056c10d12f6b4facf628b861230f9b0a13f3a73
+Author: Maarten Maathuis <madman2003@gmail.com>
+Date:   Fri Dec 26 16:38:27 2008 +0100
+
+    exa: Allow drivers to set non-NULL devPrivate.ptr for !offscreen pixmaps.
+    (cherry picked from commit 3534a5e5d9c5af85149c799f324257f89507fa23)
+
+commit 4130761f151ff5414694472e1dc29d8f2893f10e
+Author: Jeremy Huddleston <jeremyhu@freedesktop.org>
+Date:   Wed Jan 7 10:56:26 2009 -0800
+
+    XQuartz: Fat binary buildfixes
+    
+    Let Xarch.h set X_BYTE_ORDER for us.
+    Determine _XSERVER64 at build time.
+    (cherry picked from commit f54736c2b0b537c8322ecb2db8e9cee5eea68165)
+    (cherry picked from commit cc677cb4f458f371a4012ce0dc1121a52a2cb699)
+
+commit 2eb09af56179d570a6d52b65c2029a2b62dcdff3
+Author: Jeremy Huddleston <jeremyhu@freedesktop.org>
+Date:   Sun Nov 16 15:35:17 2008 -0800
+
+    XQuartz: Use AvailabilityMacros.h instead of availability.h for Tiger
+    (cherry picked from commit 91f3c3435716195e6d606c8e2f6b0de52eb5972d)
+    (cherry picked from commit 65ab2f44ea7fc4d87e021bed548eda81fc3cbae7)
+
+commit fecc82ee1147cb314725ac774525a18a861ed719
+Author: Jeremy Huddleston <jeremyhu@freedesktop.org>
+Date:   Fri Jan 2 11:06:12 2009 -0800
+
+    XQuartz: Copyright Update... happy new year
+    (cherry picked from commit 9f1c26ae8d9ccf81cba0ab946326968a701f8c36)
+    (cherry picked from commit df6ca888b0c04fdf4ff2d7fb4a414275b983ed34)
+
+commit d80e35a9ae507ad742f97ca7254314ff28371688
+Author: Jeremy Huddleston <jeremyhu@freedesktop.org>
+Date:   Fri Jan 2 10:58:40 2009 -0800
+
+    XQuartz: pbproxy: Push dpy init and CFRunLoop hook setup into the pbproxy thread to avoid possible deadlock
+    (cherry picked from commit 49e59d32b88e4fad070f230b5efaa261b47f78db)
+    (cherry picked from commit adbfd49da2453b58a9e13b09c62e0611ea1c3f77)
+
+commit c32a680f2670f05902ee323c68f772f52d3a8320
+Author: Jeremy Huddleston <jeremyhu@freedesktop.org>
+Date:   Wed Dec 31 12:40:02 2008 -0800
+
+    XQuartz: Don't use NX_SECONDARYFNMASK, NX_NUMERICPADMASK, NX_HELPMASK
+    
+    We don't have keycodes for them, so don't try to use them
+    (cherry picked from commit cb912aca3a2834c4ad8e386c8a0d05c1bb31b0e7)
+    (cherry picked from commit 0676a580fcc05d54049269028a34358935a4101c)
+
+commit e08ce79152b0887b8d67c4b03b33634f5ef499bc
+Author: Jeremy Huddleston <jeremyhu@freedesktop.org>
+Date:   Wed Dec 31 11:57:49 2008 -0800
+
+    XQuartz: Make sure to reset the saved key state when deactivating X11.app
+    (cherry picked from commit 3eef78eb321f4f7dbca5a10c80666c621e28a1e0)
+    (cherry picked from commit 0d2621b6d4684ec62e67156a5a9dbdd3297f9cb0)
+
+commit bdf776b4579921dd49316c2ff32ff12cc702720a
+Author: Jeremy Huddleston <jeremyhu@freedesktop.org>
+Date:   Wed Dec 31 12:44:50 2008 -0800
+
+    XQuartz: Honor system key repeat rate
+    (cherry picked from commit 4303c9be39a86f5a21de108f72b90a989435905e)
+    (cherry picked from commit 9faf3de7e5610af340b92acb1b86bf03b6f2241a)
+
+commit 16560db0c041b24346e186169f6e3bd315ca13ae
+Author: Jeremy Huddleston <jeremyhu@freedesktop.org>
+Date:   Mon Dec 29 19:54:12 2008 -0800
+
+    XQuartz: Better avoid stuck keys on context switches
+    (cherry picked from commit e9963f1a4f4f12f253eae9d4f01694b6cabe35ad)
+    (cherry picked from commit 4be8d7346b9fdc014b72dd6c404ceecc0ef0d245)
+
+commit 66f801f5a06925c303027f856c5ecea4926d80f2
+Author: Jeremy Huddleston <jeremyhu@freedesktop.org>
+Date:   Mon Dec 29 19:38:31 2008 -0800
+
+    XQuartz: Workaround OSX VNC server bug for modifier key state
+    
+    A better approach which ensures we have a L modifier key down if we are told neither are down and atleast one is down... =/
+    (cherry picked from commit bc13dda345f716bf4de9bfe4e1d85969263b60c2)
+    (cherry picked from commit c67a3e2972c75c02f1aeed94bc0a3c5272422267)
+
+commit a05dbce40248159099c7a7ec7e94bff9ffb700fc
+Author: Jeremy Huddleston <jeremyhu@freedesktop.org>
+Date:   Mon Dec 29 00:30:31 2008 -0800
+
+    XQuartz: Updated man page fullscreen_hotkeys fullscreen_menu
+    (cherry picked from commit 00f3a2e33c8e91da5f855821313a04ea97445656)
+    (cherry picked from commit d790c9dd041a2c8e3513d14a556333219d0f8d5e)
+
+commit b8877bb9e4c113a400e47a65a7d25d21f0a43116
+Author: Jeremy Huddleston <jeremyhu@freedesktop.org>
+Date:   Sun Dec 28 15:57:59 2008 -0800
+
+    XQuartz: pbproxy: We explicitly need libX11 for pbproxy
+    (cherry picked from commit 32824120da0749b8369c2592f851bb1030dea9f1)
+    (cherry picked from commit 8c6e8fa811c782c85e7fefbe75fe5480098739ae)
+
+commit de78ac43782d7f4ad4b98622e3c419c893d3eeff
+Author: Jeremy Huddleston <jeremyhu@freedesktop.org>
+Date:   Sun Dec 28 01:53:38 2008 -0800
+
+    XQuartz: Try harder to get the user's login environment
+    (cherry picked from commit 6bedaddd78aa04bd303df434a4c49bb87bd7deaa)
+    (cherry picked from commit 338f096861136fb6c4f604e93ff21277252676b7)
+
+commit c391114df95109d306e172bea75781d0e9523f62
+Author: Jeremy Huddleston <jeremyhu@freedesktop.org>
+Date:   Wed Dec 24 00:39:06 2008 -0800
+
+    XQuartz: Reposition windows when we enter fullscreen to ensure our root window
+    (cherry picked from commit 7617d3659b5481ef85aecc1f936e7dd2662bdfbd)
+    (cherry picked from commit 61ae56f97326c57dda05632ca9f4873238ee18e1)
+
+commit beafebef82687d777d88152c62a351954df7c864
+Author: Jeremy Huddleston <jeremyhu@freedesktop.org>
+Date:   Tue Dec 23 20:33:27 2008 -0800
+
+    XQuartz: Re-enable rlAccel
+    
+    It was incorrectly blamed for some crashes a few months ago, and it should be
+    safe to use until we get an EXA driver to replace it.
+    (cherry picked from commit 8121f30bd29591fc74fbc680fbbf20210271fa58)
+    (cherry picked from commit 85347902d97f2d4937f63ae1fac62ee46a61c82f)
+
+commit 86ba5eff623336592091b990209eb07b3f74f8b9
+Author: Jeremy Huddleston <jeremyhu@freedesktop.org>
+Date:   Sun Dec 21 21:03:59 2008 -0800
+
+    XQuartz: Don't use keycode 0 to determine !swallow since our most common key to swallow is actual keycode 0 (a)
+    (cherry picked from commit 33f43a7f03023bfbab25a957cb81fc25b4afa4ca)
+    (cherry picked from commit 84f0c03418bf74188596635dcac128fc05f204ad)
+
+commit 2a42a059ce7b259622b36fb3ef909f289d5388d7
+Author: Jeremy Huddleston <jeremyhu@freedesktop.org>
+Date:   Sun Dec 21 20:40:36 2008 -0800
+
+    XQuartz: Update our "screens" when we toggle rootless rather than when we toggle fullscreen
+    
+    This old behavior was used as a workaround for the menubar behavior in the older server,
+    but we handle it better now and need to update our screens when we toggle the rootless
+    state instead.
+    (cherry picked from commit 508aa95bc2cd3fdc3dff448ec090919bf807d153)
+    (cherry picked from commit 7e7758e1780326ad867be74dbd583a154bad017b)
+
+commit 51319550c9bb079c3af1b98c96c5174bc74e0dbd
+Author: Jeremy Huddleston <jeremyhu@freedesktop.org>
+Date:   Sun Dec 21 14:54:11 2008 -0800
+
+    XQuartz: Run applications via '/bin/sh -c ...' to support users who expect shell parsing
+    (cherry picked from commit 67455e716e3ecffd528930479192785958d37988)
+    (cherry picked from commit 7dc0dafef1d241d396f215c506ec2d4f7d8e3a24)
+
+commit b0503b69f998bcf5398ed0382a38346a3f18a77c
+Author: Jeremy Huddleston <jeremyhu@freedesktop.org>
+Date:   Sun Dec 21 14:43:12 2008 -0800
+
+    XQuartz: pbproxy: Release display notification lock when not needed to avoid deadlock
+    (cherry picked from commit 22f664ab95a0cae981e9cefad6f075d051583ca5)
+    (cherry picked from commit 4c256c0e9c4fe61990343c8bcf2e352c83d76e69)
+
+commit 6c635faa6ff0474199f4f7375022efe1e8ffa8f1
+Author: Jeremy Huddleston <jeremyhu@freedesktop.org>
+Date:   Sun Dec 21 14:42:26 2008 -0800
+
+    XQuartz: update quoting in case X11.app is moved to a directory with a space.
+    (cherry picked from commit cc805dc799efa37c8dcefa3db04d87e9b835ffbd)
+    (cherry picked from commit ecc3a7b6090552c309fe8e264d527ddd666a5761)
+
+commit 14d9ccf0ce4c5b4820e692cb58077c4c5918f12a
+Author: Jeremy Huddleston <jeremyhu@freedesktop.org>
+Date:   Thu Dec 18 09:14:16 2008 -0800
+
+    XQuartz: Changed X11.sh to allow use of a ~/.x11run as requested by users of alternate shells
+    (cherry picked from commit b62ed1f8eaf041a946bb591165bb18ee481dedbf)
+    (cherry picked from commit c3812aec973b7341a600e5d2d07d5a7f15abd609)
+
+commit 87df8e681988e546ed943b0f3e7df2851ada4712
+Author: Jeremy Huddleston <jeremyhu@freedesktop.org>
+Date:   Wed Dec 17 15:09:35 2008 -0800
+
+    XQuartz: Get rid of white rectangle bug
+    (cherry picked from commit 3269959033ed0c675a3a906666454df34086896a)
+    (cherry picked from commit fd6fb6a2771df152b57f9dfb159fa42a3b1d37cd)
+
+commit 5ff6b1e7ed11a37b2878f2f9a37b2afce00baeb0
+Author: Jeremy Huddleston <jeremyhu@freedesktop.org>
+Date:   Wed Dec 17 13:54:53 2008 -0800
+
+    XQuartz: Name the startup shell script X11 for better compatability
+    (cherry picked from commit f84613d6fcbbb5f769ee34cff0900353a13693cf)
+    (cherry picked from commit 102abeda37d6b62971a9952efa0453e38504ae0b)
+
+commit ffdf0139051c51f94d6a7a9a5fc2ccc68959d14b
+Author: Maarten Maathuis <madman2003@gmail.com>
+Date:   Fri Dec 19 19:10:23 2008 +0100
+
+    randr/xfree86: Fix a one off error in the panning calculations.
+    
+    - Example: mode 1280x1024, panned area 1281x1024
+               panned_area.x2 = 1281
+               mode.width = 1280
+      If you substract 1280 from 1281, then that leaves you with one.
+      Which is the one pixel that you need to move to actually see the last pixel collumn.
+      Substracting 1 from this will consistently prevent you from seeing the right and bottom edge.
+    (cherry picked from commit aedd2f566df585db7a1614f302cc8d3feda54275)
+
+commit 2a822c231145afd2b99498d5d4bf96be7dff92c5
+Author: Jeremy Huddleston <jeremyhu@freedesktop.org>
+Date:   Mon Dec 15 03:18:13 2008 -0800
+
+    mi: Reuse memory in mieqProcessInputEvents rather than making excessive calls to calloc()
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@redhat.com>
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+    (cherry picked from commit a939368ab8140d48c1da4ba0bb229d13b221189c)
+
+commit a067bd907e9d3e55edd6ca61279968b6cb96236c
+Author: Peter Hutterer <peter.hutterer@redhat.com>
+Date:   Mon Dec 1 21:20:48 2008 +1000
+
+    mi: Clean up CopyGetMasterEvent, re-use the memory.
+    
+    Alloc an EventList once and then re-use instead of allocing a new event each
+    time we need a master event.
+    There's a trick included: because all the event processing handlers only take
+    an xEvent, init a size 1 EventList and squash the events into this one.
+    
+    Events that have count > 1 must be squished into an xEvent array anyway before
+    passing into the event handlers, so we don't lose anything here.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Acked-by: Daniel Stone <daniel@fooishbar.org>
+    (cherry picked from commit d281866b74f7067f2704c278fe9720eafc0ee5ef)
+
+commit 3519f83f509dd0363f574d3a68b21df98d5f2732
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Wed Dec 10 11:35:09 2008 +1000
+
+    dix: move MAX_VALUATOR_EVENTS into include/input.h
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    (cherry picked from commit 0b4fef6337d88ae8ef05b8b73941350a9007565c)
+
+commit 3ec3b502e3c6f0b74f8d96f7dda4f872156589a1
+Author: Francis Giraldeau <francis.giraldeau@revolutionlinux.com>
+Date:   Wed Dec 17 09:49:39 2008 +0200
+
+    Don't log audit messages when -audit 0 specified
+    
+    make the auditTrailLevel check more general and don't log when not
+    using DTRACE and -audit 0 is set.
+    (cherry picked from commit d61e902aab92c262e6c8ee9cd70aec4493cf6cae)
+
+commit 053f32d92864870cd5714befb419810976729df3
+Author: Colin Guthrie <cguthrie@mandriva.org>
+Date:   Tue Dec 16 17:44:27 2008 -0500
+
+    Fix compilation with -Werror=format-security
+    (cherry picked from commit 6d8ea5104cf97dbf64612f58fc06f94f869ed5ec)
+
+commit 8ed4ca2801ece271a4ad7c73a7c0e1329f69ade8
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Tue Jun 17 16:10:51 2008 -0400
+
+    XAA: Disable offscreen pixmaps by default.
+    
+    Say Option "XaaOffscreenPixmaps" to turn them back on.
+    
+    Apropos of bugs #13795 and #15098.  But this still isn't correct.
+    (cherry picked from commit 0c6987df3b9b3a37d201d740d8248c326449835e)
+
+commit 32e81074b967716865aef08b66ec29caf0fec2c5
+Author: Robert Noland <rnoland@2hip.net>
+Date:   Tue Dec 16 00:07:42 2008 -0500
+
+    Support -sharevts on FreeBSD
+    
+    Bugzilla #11179
+    
+    Submitted-by: Nathan Whitehorn
+    
+    Signed-off-by: Robert Noland <rnoland@2hip.net>
+    (cherry picked from commit 7aa29b9d66c3cd0f8af4fafbe92efd0c0556d225)
+
+commit 4c68079c2ae8a2f04363623c44d17bc8c255c3bf
+Author: Ian Romanick <ian.d.romanick@intel.com>
+Date:   Sun Dec 14 18:58:33 2008 -0800
+
+    GLX: Changes resulting from changes to Mesa generator scripts / data
+    
+    Several recent Mesa commits (listed below) make modifications to the
+    protocol generator data and scripts.  This commit represents the
+    changes to the generated files resulting from the previous changes.
+    
+        - 0f73302d24f4201813da2939742c5bcb6964b3b1
+          GLX: Fix protocol for glTexSubImage#D
+    
+        - 1709ab01ef24279c782e420568e9257b4b92b224
+          Return 0 as the request size when the pixels parameter is NULL
+    
+        - 63cca2ba10ce7dcc8481cfa4be3872dfc269dded
+          GLX: Include glapi.h before glapitable.h
+    
+    This is the server-side part of the fix for bugzilla #11003.
+    (cherry picked from commit f1c9b5ab230cbb4124d8d476ae4886d05022adcb)
+
+commit 75bad86992338f5ce0ade6986b758cd6af2a5b9a
+Author: Cooper Yuan <Cooper.Yuan@amd.com>
+Date:   Mon Dec 15 10:29:34 2008 -0500
+
+    Fix typo in xf86PickCrtcs()
+    (cherry picked from commit 2a61397d17339113b9e37995b06ca543589814ce)
+
+commit f427d3aaa7ca58822033ac5486b46671a937b68a
+Author: Jeremy Huddleston <jeremyhu@freedesktop.org>
+Date:   Sat Dec 13 00:45:27 2008 -0800
+
+    XQuartz: Updated menu item ordering for better HIG compliance
+    (cherry picked from commit 4c9bb241ce5fb856fab20ae96fa89bd2b71ef242)
+    (cherry picked from commit 73987010b2ef9c67b6614e226c6fae65d834d8f3)
+
+commit d0eb4337e3468a5854e4801fcb1d2bc7d5c4d81f
+Author: Jeremy Huddleston <jeremyhu@freedesktop.org>
+Date:   Wed Dec 10 23:04:30 2008 -0800
+
+    XQuartz: Tiger fix, don't call Xplugin code in the Appkit thread if Xplugin isn't threadsafe.
+    (cherry picked from commit 748d9e5bd756513d42c4046f3b31e1fdc55bccb6)
+    (cherry picked from commit fd31984e0c0f9a37087cd1cffaa3ba116b12c2e5)
+
+commit d9e1fdcd40bf12378c9fa05a8adbe3aefca65676
+Author: Jeremy Huddleston <jeremyhu@freedesktop.org>
+Date:   Wed Dec 10 01:56:01 2008 -0800
+
+    XQuartz: Fix path to executable
+    (cherry picked from commit 7e9d3698e070a0c63dd2556651373c3aca58e2fe)
+    (cherry picked from commit 5926b213b39a90601c73f026dc0699723f5ed10d)
+
+commit e93daf4e7140115f9485c8c0cdc358d50c9575be
+Author: Jeremy Huddleston <jeremyhu@freedesktop.org>
+Date:   Wed Dec 10 00:00:29 2008 -0800
+
+    XQuartz: fixed make dist
+    (cherry picked from commit 2d52367ab92429e58596d1a1ed3ef52a0a38a7aa)
+    (cherry picked from commit 13eff12902be1b25d0ccc2089e08305f88949f32)
+
+commit 1cf76f23c7d210d75a401568c5ad788a2fd268d1
+Author: Jeremy Huddleston <jeremyhu@freedesktop.org>
+Date:   Tue Dec 9 23:47:32 2008 -0800
+
+    XQuartz: Avoid using login /bin/sh blech.  Just use a bash script to start the app, so it will inherit the right environment
+    (cherry picked from commit f4b7ad9cc6b0c99fc7ee8516c4bf858ece938148)
+    (cherry picked from commit fdf64256127b2661bd6aa81ac694350028d36c43)
+
+commit 22d3ecda18ba799966d08237d8041ad80b20d0f2
+Author: Jeremy Huddleston <jeremyhu@freedesktop.org>
+Date:   Mon Dec 8 21:59:49 2008 -0800
+
+    XQuartz: unset DISPLAY if we didn't get a launchd socket handoff
+    (cherry picked from commit b959727f38733009c6381cc8ca06b5984257bdac)
+    (cherry picked from commit 9cbed0a325175e7ddb751db54fe6c0f5a5cedd16)
+
+commit 9eb5f3092984206ac7cab9a9fdb4b19448db3a24
+Author: Jeremy Huddleston <jeremyhu@freedesktop.org>
+Date:   Mon Dec 8 21:00:11 2008 -0800
+
+    XQuartz: unsetenv(DISPLAY) if we're not org.x.X11
+    Also some prefix related fixes.
+    (cherry picked from commit fd459e96581a883e30323c840b71004aa0747169)
+    (cherry picked from commit 99b2cbf061a9d074e66e6220dc08f8b4624ea6bb)
+
+commit 19e6f73710776aee0b76dcbd62596a448029611e
+Author: Jeremy Huddleston <jeremyhu@freedesktop.org>
+Date:   Sat Dec 6 12:01:28 2008 -0800
+
+    XQuartz: Removed some debug spew
+    (cherry picked from commit 370dcf11b360b87aa24cace35eb615419057fda0)
+    (cherry picked from commit 8065953ea8c3b7d10c775f6b7fec629bb5a2c83c)
+
+commit ced368287bad65c126cd6a5304969d0a0f9dc4eb
+Author: Jeremy Huddleston <jeremyhu@freedesktop.org>
+Date:   Sat Dec 6 14:11:25 2008 -0800
+
+    XQuartz: darwinPointer reports the actual pixel position now rather than a relative position
+    (cherry picked from commit a41e7f75decd340d064fdc0d2c4fe6c88d7dbc82)
+    (cherry picked from commit 70930f6d31cc2ca16b40c17e101b106506a8337a)
+
+commit b5687a9d129f6eea7ebe590120f9d90f9d7ed48b
+Author: Jeremy Huddleston <jeremyhu@freedesktop.org>
+Date:   Fri Dec 5 12:42:31 2008 -0800
+
+    XQuartz: Corrected name/command labels in the customization widget
+    (cherry picked from commit a689c23f17eb445c36b97eb617ef4b8bd157985f)
+    (cherry picked from commit 9ac2e68d86ed1eb6e3f6c900c60908813eca140e)
+
+commit 53d93d0d29f0bef6b2b7e312fb09e498b68636f9
+Author: Jeremy Huddleston <jeremyhu@freedesktop.org>
+Date:   Tue Dec 2 14:54:10 2008 -0800
+
+    Removed unised option from configure.ac for launchd
+    (cherry picked from commit 87e4de0a9a8af6e5e0cbba74e585761f1160a6ab)
+    (cherry picked from commit 451050b1e2dc0f2f6356d74ddb6f52183a794e8f)
+
+commit df3f23fe8d13be74e58c894c44683024a190b0f6
+Author: Jeremy Huddleston <jeremyhu@freedesktop.org>
+Date:   Tue Dec 2 14:53:21 2008 -0800
+
+    XQuartz: pbproxy: Simplify linking
+    (cherry picked from commit 909cc5c4dca0f63e90505575bbd454b46a4670cc)
+    (cherry picked from commit cbb9ee57f8f29d2a1c39946381471fcd3b8e495e)
+
+commit 6e8626f2eb31a3699bf49597974e01ea4757f31e
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Mon Dec 8 15:58:15 2008 +1000
+
+    Xi: silence compiler warning
+    
+    Don't mix declarations and statements.
+    (cherry picked from commit fb2a8d0e59a3d187255538f6add22ec67551507a)
+
+commit e56059dfa5f2835625b9f74a2af1f128d6eaf265
+Author: Peter Hutterer <peter.hutterer@redhat.com>
+Date:   Thu Dec 4 09:47:25 2008 +1000
+
+    xfree86: fix compiler warning (use of uninitialized variable)
+    
+    drv and idev are only set for SDs, but are only dereferenced for SDs too, so
+    initializing them to NULL is safe.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@redhat.com>
+    (cherry picked from commit 8e3279134987a45f2a89c963ef2d33bc3d3c8179)
+
+commit 0d12c44d832b98da10dccc3b8bac7676d8ea2c96
+Author: Peter Hutterer <peter.hutterer@redhat.com>
+Date:   Mon Dec 1 16:57:06 2008 +1000
+
+    xfree86: don't render SW cursors for devices attached to VCP (#16805)
+    
+    When leaving 3D games such as quake3 or sauerbraten, a cursor may stay on the
+    screen. This is caused by one run of SW rendering for the SD, even though the
+    SD was attached to the VCP and thus has HW rendering capabilities.
+    
+    Check for the SD's attachment (like in all other functions) before deciding on
+    SW or HW rendering.
+    
+    X.Org Bug 16805 <http://bugs.freedesktop.org/show_bug.cgi?id=16805>
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@redhat.com>
+    (cherry picked from commit bb072019fa8dd292a50ef433d05caeefd1304a73)
+
+commit 63b3bf85ed4e11ace433e6aa21b311cce7144007
+Author: Peter Hutterer <peter.hutterer@redhat.com>
+Date:   Wed Dec 3 15:06:37 2008 +1000
+
+    xkb: Allow NULL as rulesFile in XkbSetRulesDflts.
+    
+    If no rules file is given, simply re-use the previous one. If no RF is given
+    the first time this function is called, use the built-in default.
+    This includes fixing the built-in default to something that actually exists.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@redhat.com>
+    (cherry picked from commit 463e02e7de5da3e582a3a049110a476713c7210e)
+
+commit 9a44cc619f3296b0faca97b0959e19c208f143bb
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Mon Dec 8 14:16:00 2008 +1000
+
+    Xi: don't update VCP's valuators from DeviceValuator events #18882
+    
+    The VCP doesn't need to update the valuators anyway since it cannot send XI
+    events. Just skip that bit.
+    
+    X.Org Bug 18882 <http://bugs.freedesktop.org/show_bug.cgi?id=18882>
+    
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit c7fffe9e1354f816b6e2adedff045999fba9f1be
+Author: Stuart Bennett <sb476@cam.ac.uk>
+Date:   Fri Dec 12 00:08:44 2008 +0000
+
+    dolt: allow older versions of bash to compile the xserver (#19031)
+    
+    Signed-off-by: James Cloos <cloos@jhcloos.com>
+    (cherry picked from commit 7be6520d94df874c6bbd46d06a1830a12d0967f2)
+
+commit ca56d764d2be28c64fe15c9e37d534ef00117ad2
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Wed Dec 10 16:13:20 2008 -0500
+
+    xsync: Fix wakeup storm in idletime counter.
+    
+    Wakeup scheduling only considered the threshold values, and not whether
+    the trigger was edge or level.
+    
+    See also:
+    https://bugzilla.redhat.com/show_bug.cgi?id=474586
+    http://svn.gnome.org/viewvc/gnome-screensaver/trunk/src/test-idle-ext.c?view=markup
+    (cherry picked from commit 1f4fb0225b278d1cf4145aebeb0bdd23dc8f62d5)
+
+commit a82f10c5dd9fa74ff18759ab288bbd9c8b7ac4de
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Mon Dec 8 17:42:47 2008 -0500
+
+    randr: clear primaryOutput when the output is deleted
+    (cherry picked from commit 86c64ddf21763972aa7fc8c5770259123c9907b3)
+
+commit 2bc53ce66828b6c177e3298fa2f326c77c93e136
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Mon Dec 8 17:40:07 2008 -0500
+
+    randr: use primary output for RRFirstOutput()
+    (cherry picked from commit fe65f400ed16cb39db8c9518b9446f590c34db1a)
+
+commit f0234a9eb88ed103bca7db73a833c472ab95b48f
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Mon Dec 8 17:37:17 2008 -0500
+
+    randr: Mangle GetScreenResources sort order based on primary output
+    (cherry picked from commit cdcb516e561e2f65eb2fa523ca001c57674d5caf)
+
+commit 2ef02833d614c42693e019a444560e84f501b5dc
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Mon Dec 8 17:28:55 2008 -0500
+
+    randr: Mangle compat Xinerama reply based on primary output
+    (cherry picked from commit d7b316e82bc7051f8829b4f4a640f50ae91c2db9)
+
+commit 0bdfdaa7df8105c7ffc3248a4fdd5f64da67103c
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Tue Dec 9 10:51:37 2008 -0500
+
+    randr: Add [GS]etOutputPrimary
+    (cherry picked from commit 9d58d2a319059989ccdfa758f586149ccdc16df6)
+
+commit 09039fb89f3fd047f10b575e019bba6762448456
+Author: Keith Packard <keithp@keithp.com>
+Date:   Mon Dec 15 19:53:45 2008 -0800
+
+    Patch brown-bag fix for bug 19017 (scrn->virtualX/virtualY 0 before PreInit)
+    
+    When a driver uses a crtc during device detection, the scrn has not yet been
+    configured and virtualX/virtualY are still zero. This caused the X server
+    to try and allocate a shadow frame buffer, which couldn't work.
+    
+    Detect this by checking for zero virtualX/virtualY values.
+    
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+    (cherry picked from commit 063eb6743cd0d98dd52d1a9559b804381ee5144d)
+
+commit ae2cbbff9fa0f458e133bf1894d8a7f9fb3fbb72
+Author: Keith Packard <keithp@keithp.com>
+Date:   Mon Dec 15 11:39:24 2008 -0800
+
+    Use scrn->virtualX/virtualY in xf86CrtcFitsScreen. Fix bug 19017.
+    
+    pScreen->width/height are not initialized when doing initial mode setting,
+    which makes this function incorrectly fail. Using scrn->virtualX should work
+    in all cases though.
+    
+    Bug 19017 reports a crash in xf86CrtcSetModeTransform when doing a modeset
+    for output probing, long before the screen array is initialized; that was
+    caused by a work-around to set pScreen->width/height so that xf86CrtcFitsScreen
+    could find the right values.
+    
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+    (cherry picked from commit fde2f961035609cfff8761ef1e0f23e6a9761be2)
+
+commit 6d671b2dee7d2e5481399f0bdb3323a0250a075d
+Author: Keith Packard <keithp@keithp.com>
+Date:   Mon Dec 15 11:38:00 2008 -0800
+
+    When disabling SIGIO tracking, use SIG_IGN instead of SIG_DFL.
+    
+    This avoids a race condition for drivers which mis-order the fd close and
+    signal disable.
+    
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+    (cherry picked from commit 29a5b0596b396d3e4a8a014cacd3e3ef77467ab7)
+
+commit 8f17a31aa721e42925cd6b4616ccad90497818f3
+Author: Keith Packard <keithp@keithp.com>
+Date:   Mon Dec 15 11:36:43 2008 -0800
+
+    Clean up rotation data when crtc is turned off
+    
+    The shadow frame buffer and other data used for rotation need to be freed
+    when the crtc is disabled, not just when rotation is disabled.
+    
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+    (cherry picked from commit 1ba4cbb15919759aadd71960c5c057af9ba94fe3)
+
 commit 523aae1fa6d8002e55e85aee49f113b7eb9a6df3
 Author: Keith Packard <keithp@keithp.com>
 Date:   Tue Dec 9 22:10:56 2008 -0800
