@@ -1,5 +1,6 @@
 xorg-server (2:1.5.99.3-1) UNRELEASED; urgency=low
 
+  [ Timo Aaltonen ]
   * New upstream beta version.
     + adds autodetection of sbus devices (closes: #483942).
       Thanks, Bernhard R. Link!
@@ -29,6 +30,12 @@ xorg-server (2:1.5.99.3-1) UNRELEASED; urgency=low
     - Disabled for now, needs to be reimplemented or dropped.
   * debian/{input,video}abiver: Bump the input (4) and videoabiver (5).
   * debian/serverminver: Bump to 2:1.5.99.3.
+
+  [ Julien Cristau ]
+  * Ditch the GLX Public License and the CID Font Code Public License from
+    debian/copyright.  The CID code has been removed a while ago, and all code
+    under the GLXPL has been relicensed to the SGI Free Software License B 2.0.
+    This finally closes: #211765.
 
  -- Timo Aaltonen <tjaalton@ubuntu.com>  Mon, 08 Dec 2008 08:39:38 +0200
 
