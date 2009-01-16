@@ -38,6 +38,15 @@ xorg-server (2:1.5.99.901-1) UNRELEASED; urgency=low
     under the GLXPL has been relicensed to the SGI Free Software License B 2.0.
     This finally closes: #211765.
 
+  [ Yves-Alexis Perez ]
+  * debian/control: update deps for xserver-xorg-dev:
+    - libpixman-1-dev (>= 0.13.2-1)
+    - x11proto-core-dev (>= 7.0.14)
+    - x11proto-input-dev (>= 1.5.0)
+    - x11proto-xext-dev (>= 7.0.4)
+    - x11proto-randr-dev (>= 1.2.99.3)
+    - add x11proto-dri2-dev
+
  -- Timo Aaltonen <tjaalton@ubuntu.com>  Mon, 08 Dec 2008 08:39:38 +0200
 
 xorg-server (2:1.5.3-1) experimental; urgency=low

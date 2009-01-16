@@ -77,13 +77,14 @@ Description: Xorg X server - core server
 Package: xserver-xorg-dev
 Architecture: any
 Depends: ${misc:Depends},
- libpixman-1-dev,
- x11proto-core-dev,
- x11proto-input-dev (>= 1.4),
- x11proto-xext-dev,
+ libpixman-1-dev (>= 0.13.2-1),
+ x11proto-core-dev (>= 7.0.14),
+ x11proto-input-dev (>= 1.5.0),
+ x11proto-xext-dev (>= 7.0.4),
  x11proto-video-dev,
- x11proto-randr-dev (>= 1.2),
+ x11proto-randr-dev (>= 1.2.99.3),
  x11proto-render-dev (>= 2:0.9.3),
+ x11proto-dri2-dev,
  x11proto-fonts-dev,
  libpciaccess-dev
 Description: Xorg X server - development files
