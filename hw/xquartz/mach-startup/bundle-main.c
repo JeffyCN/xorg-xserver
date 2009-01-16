@@ -59,8 +59,8 @@ extern int noPanoramiXExtension;
 
 extern int xquartz_resetenv_display;
 
-#define DEFAULT_CLIENT "/usr/X11/bin/xterm"
-#define DEFAULT_STARTX "/usr/X11/bin/startx"
+#define DEFAULT_CLIENT X11BINDIR "/xterm"
+#define DEFAULT_STARTX X11BINDIR "/startx"
 #define DEFAULT_SHELL  "/bin/sh"
 
 #ifndef BUILD_DATE
@@ -278,8 +278,12 @@ static int create_socket(char *filename_out) {
     return 0;
 }
 
+static int launchd_socket_handed_off = 0;
+
 kern_return_t do_request_fd_handoff_socket(mach_port_t port, string_t filename) {
     socket_handoff_t *handoff_data;
+    
+    launchd_socket_handed_off = 1;
 
     handoff_data = (socket_handoff_t *)calloc(1,sizeof(socket_handoff_t));
     if(!handoff_data) {
@@ -317,6 +321,12 @@ kern_return_t do_start_x11_server(mach_port_t port, string_array_t argv,
     char **_argv = alloca((argvCnt + 1) * sizeof(char *));
     char **_envp = alloca((envpCnt + 1) * sizeof(char *));
     size_t i;
+    
+    /* If we didn't get handed a launchd DISPLAY socket, we shoul
+     * unset DISPLAY or we can run into problems with pbproxy
+     */
+    if(!launchd_socket_handed_off)
+        unsetenv("DISPLAY");
     
     if(!_argv || !_envp) {
         return KERN_FAILURE;
@@ -420,20 +430,48 @@ int startup_trigger(int argc, char **argv, char **envp) {
 }
 
 /** Setup the environment we want our child processes to inherit */
-static void setup_env() {
+static void ensure_path(const char *dir) {
     char buf[1024], *temp;
-
+    
     /* Make sure /usr/X11/bin is in the $PATH */
     temp = getenv("PATH");
     if(temp == NULL || temp[0] == 0) {
-        snprintf(buf, sizeof(buf), "/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:%s", X11BINDIR);
+        snprintf(buf, sizeof(buf), "/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:%s", dir);
         setenv("PATH", buf, TRUE);
     } else if(strnstr(temp, X11BINDIR, sizeof(temp)) == NULL) {
-        snprintf(buf, sizeof(buf), "%s:%s", temp, X11BINDIR);
+        snprintf(buf, sizeof(buf), "%s:%s", temp, dir);
         setenv("PATH", buf, TRUE);
     }
+}
 
-    fprintf(stderr, "PATH: %s\n", getenv("PATH"));
+static void setup_env() {
+    char *temp;
+    const char *pds = NULL;
+
+    /* Pass on our prefs domain to startx and its inheritors (mainly for
+     * quartz-wm and the Xquartz stub's MachIPC)
+     */
+    CFBundleRef bundle = CFBundleGetMainBundle();
+    if(bundle) {
+        CFStringRef pd = CFBundleGetIdentifier(bundle);
+        if(pd) {
+            pds = CFStringGetCStringPtr(pd, 0);
+            if(pds) {
+                server_bootstrap_name = malloc(sizeof(char) * (strlen(pds) + 1));
+                strcpy(server_bootstrap_name, pds);
+                setenv("X11_PREFS_DOMAIN", pds, 1);
+            }
+        }
+    }
+
+    /* If we're not org.x.X11, we want to unset DISPLAY, so we don't
+     * use the launchd DISPLAY socket.
+     */
+    if(pds == NULL || strcmp(pds, "org.x.X11") != 0)
+        unsetenv("DISPLAY");
+
+    /* Make sure PATH is right */
+    ensure_path(X11BINDIR);
     
     /* cd $HOME */
     temp = getenv("HOME");
@@ -457,22 +495,6 @@ int main(int argc, char **argv, char **envp) {
 
     /* Setup the initial crasherporter info */
     strlcpy(__crashreporter_info__, __crashreporter_info__base, __crashreporter_info__len);
-
-    /* Pass on our prefs domain to startx and its inheritors (mainly for
-     * quartz-wm and the Xquartz stub's MachIPC)
-     */
-    CFBundleRef bundle = CFBundleGetMainBundle();
-    if(bundle) {
-        CFStringRef pd = CFBundleGetIdentifier(bundle);
-        if(pd) {
-            const char *pds = CFStringGetCStringPtr(pd, 0);
-            if(pds) {
-                server_bootstrap_name = malloc(sizeof(char) * (strlen(pds) + 1));
-                strcpy(server_bootstrap_name, pds);
-                setenv("X11_PREFS_DOMAIN", pds, 1);
-            }
-        }
-    }
     
     fprintf(stderr, "X11.app: main(): argc=%d\n", argc);
     for(i=0; i < argc; i++) {
@@ -507,22 +529,19 @@ int main(int argc, char **argv, char **envp) {
     
     return EXIT_SUCCESS;
 }
-    
-static int execute(const char *command) {
-    const char *newargv[7];
-    const char **s;
 
-    newargv[0] = "/usr/bin/login";
-    newargv[1] = "-fp";
-    newargv[2] = getlogin();
-    newargv[3] = command_from_prefs("login_shell", DEFAULT_SHELL);
-    newargv[4] = "-c";
-    newargv[5] = command;
-    newargv[6] = NULL;
+static int execute(const char *command) {
+    const char *newargv[4];
+    const char **p;
+    
+    newargv[0] = command_from_prefs("login_shell", DEFAULT_SHELL);
+    newargv[1] = "-c";
+    newargv[2] = command;
+    newargv[3] = NULL;
     
     fprintf(stderr, "X11.app: Launching %s:\n", command);
-    for(s=newargv; *s; s++) {
-        fprintf(stderr, "\targv[%ld] = %s\n", (long int)(s - newargv), *s);
+    for(p=newargv; *p; p++) {
+        fprintf(stderr, "\targv[%ld] = %s\n", (long int)(p - newargv), *p);
     }
 
     execvp (newargv[0], (char * const *) newargv);

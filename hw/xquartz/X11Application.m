@@ -47,14 +47,14 @@
 
 #include <mach/mach.h>
 #include <unistd.h>
-#include <available.h>
+#include <AvailabilityMacros.h>
 
 #include <Xplugin.h>
 
 // pbproxy/pbproxy.h
 extern BOOL xpbproxy_init (void);
 
-#define DEFAULTS_FILE "/usr/X11/lib/X11/xserver/Xquartz.plist"
+#define DEFAULTS_FILE X11LIBDIR"/X11/xserver/Xquartz.plist"
 
 #ifndef XSERVER_VERSION
 #define XSERVER_VERSION "?"
@@ -62,6 +62,9 @@ extern BOOL xpbproxy_init (void);
 
 #define ProximityIn    0
 #define ProximityOut   1
+
+/* Stuck modifier / button state... force release when we context switch */
+static NSEventType keyState[NUM_KEYCODES];
 
 int X11EnableKeyEquivalents = TRUE, quartzFullscreenMenu = FALSE;
 int quartzHasRoot = FALSE, quartzEnableRootless = TRUE;
@@ -179,29 +182,39 @@ static void message_kit_thread (SEL selector, NSObject *arg) {
 
 - (void) activateX:(OSX_BOOL)state {
     /* Create a TSM document that supports full Unicode input, and
-	 have it activated while X is active */
+     have it activated while X is active */
     static TSMDocumentID x11_document;
-	DEBUG_LOG("state=%d, _x_active=%d, \n", state, _x_active)
+    size_t i;
+    DEBUG_LOG("state=%d, _x_active=%d, \n", state, _x_active)
     if (state) {
-		DarwinSendDDXEvent(kXquartzActivate, 0);
+        DarwinSendDDXEvent(kXquartzActivate, 0);
 
-		if (!_x_active) {
-			if (x11_document == 0) {
-				OSType types[1];
-				types[0] = kUnicodeDocument;
-				NewTSMDocument (1, types, &x11_document, 0);
-			}
+        if (!_x_active) {
+            if (x11_document == 0) {
+                OSType types[1];
+                types[0] = kUnicodeDocument;
+                NewTSMDocument (1, types, &x11_document, 0);
+            }
 
-			if (x11_document != 0)	ActivateTSMDocument (x11_document);
-		}
+            if (x11_document != 0)	ActivateTSMDocument (x11_document);
+        }
     } else {
-		DarwinSendDDXEvent(kXquartzDeactivate, 0);
 
-		if (_x_active && x11_document != 0)
-			DeactivateTSMDocument (x11_document);
-	}
+        DarwinUpdateModKeys(0);
+        for(i=0; i < NUM_KEYCODES; i++) {
+            if(keyState[i] == NSKeyDown) {
+                DarwinSendKeyboardEvents(KeyRelease, i);
+                keyState[i] = NSKeyUp;
+            }
+        }
+        
+        DarwinSendDDXEvent(kXquartzDeactivate, 0);
 
-	_x_active = state;
+        if (_x_active && x11_document != 0)
+            DeactivateTSMDocument (x11_document);
+    }
+
+    _x_active = state;
 }
 
 - (void) became_key:(NSWindow *)win {
@@ -266,7 +279,8 @@ static void message_kit_thread (SEL selector, NSObject *arg) {
         case NSKeyDown: case NSKeyUp:
             
             if(_x_active) {
-                static int swallow_up;
+                static BOOL do_swallow = NO;
+                static int swallow_keycode;
                 
                 if([e type] == NSKeyDown) {
                     /* Before that though, see if there are any global
@@ -274,17 +288,20 @@ static void message_kit_thread (SEL selector, NSObject *arg) {
 
                     if(darwinAppKitModMask & [e modifierFlags]) {
                         /* Override to force sending to Appkit */
-                        swallow_up = [e keyCode];
+                        swallow_keycode = [e keyCode];
+                        do_swallow = YES;
                         for_x = NO;
 #if XPLUGIN_VERSION >= 1
                     } else if(X11EnableKeyEquivalents &&
-                              xp_is_symbolic_hotkey_event([e eventRef])) {
-                        swallow_up = [e keyCode];
+                             xp_is_symbolic_hotkey_event([e eventRef])) {
+                        swallow_keycode = [e keyCode];
+                        do_swallow = YES;
                         for_x = NO;
 #endif
                     } else if(X11EnableKeyEquivalents &&
                               [[self mainMenu] performKeyEquivalent:e]) {
-                        swallow_up = [e keyCode];
+                        swallow_keycode = [e keyCode];
+                        do_swallow = YES;
                         for_appkit = NO;
                         for_x = NO;
                     } else if(!quartzEnableRootless
@@ -292,7 +309,8 @@ static void message_kit_thread (SEL selector, NSObject *arg) {
                               && ([e keyCode] == 0 /*a*/ || [e keyCode] == 53 /*Esc*/)) {
                         /* We have this here to force processing fullscreen 
                          * toggle even if X11EnableKeyEquivalents is disabled */
-                        swallow_up = [e keyCode];
+                        swallow_keycode = [e keyCode];
+                        do_swallow = YES;
                         for_x = NO;
                         for_appkit = NO;
                         DarwinSendDDXEvent(kXquartzToggleFullscreen, 0);
@@ -303,9 +321,8 @@ static void message_kit_thread (SEL selector, NSObject *arg) {
                 } else { /* KeyUp */
                     /* If we saw a key equivalent on the down, don't pass
                      * the up through to X. */
-                    
-                    if (swallow_up != 0 && [e keyCode] == swallow_up) {
-                        swallow_up = 0;
+                    if (do_swallow && [e keyCode] == swallow_keycode) {
+                        do_swallow = NO;
                         for_x = NO;
                     }
                 }
@@ -917,6 +934,18 @@ void X11ApplicationMain (int argc, char **argv, char **envp) {
 @implementation X11Application (Private)
 extern int darwin_modifier_flags; // darwinEvents.c
 
+#ifdef NX_DEVICELCMDKEYMASK
+/* This is to workaround a bug in the VNC server where we sometimes see the L
+ * modifier and sometimes see no "side"
+ */
+static inline int ensure_flag(int flags, int device_independent, int device_dependents, int device_dependent_default) {
+    if( (flags & device_independent) &&
+       !(flags & device_dependents))
+        flags |= device_dependent_default;
+    return flags;
+}
+#endif
+
 - (void) sendX11NSEvent:(NSEvent *)e {
     NSRect screen;
     NSPoint location;
@@ -924,6 +953,7 @@ extern int darwin_modifier_flags; // darwinEvents.c
     int ev_button, ev_type;
     float pointer_x, pointer_y, pressure, tilt_x, tilt_y;
     DeviceIntPtr pDev;
+    int modifierFlags;
 
     /* convert location to be relative to top-left of primary display */
     location = [e locationInWindow];
@@ -945,12 +975,25 @@ extern int darwin_modifier_flags; // darwinEvents.c
     tilt_x = 0;
     tilt_y = 0;
     
+    modifierFlags = [e modifierFlags];
+    
+#ifdef NX_DEVICELCMDKEYMASK
+    /* This is to workaround a bug in the VNC server where we sometimes see the L
+     * modifier and sometimes see no "side"
+     */
+    modifierFlags = ensure_flag(modifierFlags, NX_CONTROLMASK,   NX_DEVICELCTLKEYMASK   | NX_DEVICERCTLKEYMASK,     NX_DEVICELCTLKEYMASK);
+    modifierFlags = ensure_flag(modifierFlags, NX_SHIFTMASK,     NX_DEVICELSHIFTKEYMASK | NX_DEVICERSHIFTKEYMASK,   NX_DEVICELSHIFTKEYMASK);
+    modifierFlags = ensure_flag(modifierFlags, NX_COMMANDMASK,   NX_DEVICELCMDKEYMASK   | NX_DEVICERCMDKEYMASK,     NX_DEVICELCMDKEYMASK);
+    modifierFlags = ensure_flag(modifierFlags, NX_ALTERNATEMASK, NX_DEVICELALTKEYMASK   | NX_DEVICERALTKEYMASK,     NX_DEVICELALTKEYMASK);
+#endif
+
     /* We don't receive modifier key events while out of focus, and 3button
      * emulation mucks this up, so we need to check our modifier flag state
      * on every event... ugg
      */
-    if(darwin_modifier_flags != [e modifierFlags])
-        DarwinUpdateModKeys([e modifierFlags]);
+    
+    if(darwin_modifier_flags != modifierFlags)
+        DarwinUpdateModKeys(modifierFlags);
     
 	switch ([e type]) {
 		case NSLeftMouseDown:     ev_button=1; ev_type=ButtonPress;   goto handle_mouse;
@@ -1008,6 +1051,9 @@ extern int darwin_modifier_flags; // darwinEvents.c
                 pDev = darwinTabletCurrent;
             }
 
+/* Older libXplugin (Tiger/"Stock" Leopard) aren't thread safe, so we can't call xp_find_window from the Appkit thread */
+#ifdef XPLUGIN_VERSION
+#if XPLUGIN_VERSION > 0
             if(!quartzServerVisible) {
                 xp_window_id wid;
 
@@ -1023,6 +1069,8 @@ extern int darwin_modifier_flags; // darwinEvents.c
                     wid == 0)
                     return;        
             }
+#endif
+#endif
             
             DarwinSendPointerEvents(pDev, ev_type, ev_button, pointer_x, pointer_y,
                                     pressure, tilt_x, tilt_y);
@@ -1084,7 +1132,12 @@ extern int darwin_modifier_flags; // darwinEvents.c
                     DarwinSendDDXEvent(kXquartzReloadKeymap, 0);
                 }
             }
-            
+
+            /* Avoid stuck keys on context switch */
+            if(keyState[[e keyCode]] == [e type])
+                return;
+            keyState[[e keyCode]] = [e type];
+
             DarwinSendKeyboardEvents(([e type] == NSKeyDown) ? KeyPress : KeyRelease, [e keyCode]);
             break;
             

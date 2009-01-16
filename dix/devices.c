@@ -446,6 +446,8 @@ ActivateDevice(DeviceIntPtr dev)
 
     ret = (*dev->deviceProc) (dev, DEVICE_INIT);
     dev->inited = (ret == Success);
+    if (!dev->inited)
+        return ret;
 
     /* Initialize memory for sprites. */
     if (dev->isMaster && dev->spriteInfo->spriteOwner)
@@ -526,7 +528,6 @@ CoreKeyboardProc(DeviceIntPtr pDev, int what)
 #ifdef XKB
         if (!noXkbExtension) {
             bzero(&names, sizeof(names));
-            XkbSetRulesDflts("base", "pc105", "us", NULL, NULL);
             XkbInitKeyboardDeviceStruct(pDev, &names, &keySyms, modMap,
                                         CoreKeyboardBell, CoreKeyboardCtl);
         }

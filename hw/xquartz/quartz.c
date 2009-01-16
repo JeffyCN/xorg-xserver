@@ -324,16 +324,13 @@ void QuartzSetFullscreen(Bool state) {
     if (quartzHasRoot && !quartzEnableRootless)
         RootlessShowAllWindows ();
     
-    /* Only update screen info when something is visible. Avoids the wm
-     * moving the windows out from under the menubar when it shouldn't
-     */
-    if (quartzHasRoot || quartzEnableRootless)
-        QuartzUpdateScreens();
-    
+    if (quartzHasRoot || quartzEnableRootless) {
+        RootlessRepositionWindows(screenInfo.screens[0]);
+    }
+
     /* Somehow the menubar manages to interfere with our event stream
      * in fullscreen mode, even though it's not visible. 
      */
-    
     X11ApplicationShowHideMenubar(!quartzHasRoot);
     
     xp_reenable_update ();
@@ -347,17 +344,19 @@ void QuartzSetRootless(Bool state) {
         return;
     
     quartzEnableRootless = state;
-    
+
+    xp_disable_update();
+
+    /* When in rootless, the menubar is not part of the screen, so we need to update our screens on toggle */    
+    QuartzUpdateScreens();
+
     if (!quartzEnableRootless && !quartzHasRoot) {
-        xp_disable_update();
         RootlessHideAllWindows();
-        xp_reenable_update();
     } else if (quartzEnableRootless && !quartzHasRoot) {
-        xp_disable_update();
         RootlessShowAllWindows();
-        QuartzUpdateScreens();
-        xp_reenable_update();
     }
+
+    xp_reenable_update();
 }
 
 /*

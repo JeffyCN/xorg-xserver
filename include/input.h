@@ -69,7 +69,10 @@ SOFTWARE.
 #define PtrAccelLightweight     2
 #define PtrAccelDefault         PtrAccelPredictable
 
-#define MAX_VALUATORS 36 /* XXX from comment in dix/getevents.c */
+#define MAX_VALUATORS 36
+/* Maximum number of valuators, divided by six, rounded up, to get number
+ * of events. */
+#define MAX_VALUATOR_EVENTS 6
 
 #define NO_AXIS_LIMITS -1
 
@@ -505,8 +508,6 @@ extern int AllocMasterDevice(ClientPtr client,
                              DeviceIntPtr* keybd);
 extern void DeepCopyDeviceClasses(DeviceIntPtr from,
                                   DeviceIntPtr to);
-
-extern int FocusSemaphoresIsset(WindowPtr win);
 
 /* Implemented by the DDX. */
 extern int NewInputDeviceRequest(

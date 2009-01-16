@@ -7,15 +7,15 @@
 	<key>CFBundleExecutable</key>
 		<string>X11</string>
 	<key>CFBundleGetInfoString</key>
-		<string>X11</string>
+		<string>APPLE_APPLICATION_NAME</string>
 	<key>CFBundleIconFile</key>
 		<string>X11.icns</string>
 	<key>CFBundleIdentifier</key>
-		<string>org.x.X11</string>
+		<string>APPLE_APPLICATION_ID</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 		<string>6.0</string>
 	<key>CFBundleName</key>
-		<string>X11</string>
+		<string>APPLE_APPLICATION_NAME</string>
 	<key>CFBundlePackageType</key>
 		<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
@@ -27,9 +27,9 @@
 	<key>CSResourcesFileMapped</key>
 		<true/>
 	<key>NSHumanReadableCopyright</key>
-		<string>Copyright © 2003-2008, Apple Inc.
+		<string>Copyright © 2003-2009, Apple Inc.
 Copyright © 2003, XFree86 Project, Inc.
-Copyright © 2003-2008, X.org Foundation, Inc.
+Copyright © 2003-2009, X.org Foundation, Inc.
 </string>
 	<key>NSMainNibFile</key>
 		<string>main</string>
