@@ -1,4 +1,4 @@
-xorg-server (2:1.5.99.901-1) UNRELEASED; urgency=low
+xorg-server (2:1.5.99.901-1) experimental; urgency=low
 
   * New upstream release candidate.
     + adds autodetection of sbus devices (closes: #483942).
@@ -47,7 +47,7 @@ xorg-server (2:1.5.99.901-1) UNRELEASED; urgency=low
     - x11proto-randr-dev (>= 1.2.99.3)
     - add x11proto-dri2-dev
 
- -- Timo Aaltonen <tjaalton@ubuntu.com>  Mon, 08 Dec 2008 08:39:38 +0200
+ -- Julien Cristau <jcristau@debian.org>  Wed, 21 Jan 2009 20:59:34 +0100
 
 xorg-server (2:1.5.3-1) experimental; urgency=low
 
