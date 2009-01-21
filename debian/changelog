@@ -30,7 +30,7 @@ xorg-server (2:1.5.99.901-1) UNRELEASED; urgency=low
     13_debian_add_xkbpath_env_variable.diff
     - Disabled for now, needs to be reimplemented or dropped.
   * debian/{input,video}abiver: Bump the input (4) and videoabiver (5).
-  * debian/serverminver: Bump to 2:1.5.99.3.
+  * debian/serverminver: Bump to 2:1.5.99.901.
 
   [ Julien Cristau ]
   * Ditch the GLX Public License and the CID Font Code Public License from
