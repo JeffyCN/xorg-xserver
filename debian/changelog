@@ -1,4 +1,4 @@
-xorg-server (2:1.5.99.901-2) UNRELEASED; urgency=low
+xorg-server (2:1.5.99.901-2) experimental; urgency=low
 
   [ Julien Cristau ]
   * Bump libdrm-dev build-dep to help out sbuild.
@@ -6,7 +6,7 @@ xorg-server (2:1.5.99.901-2) UNRELEASED; urgency=low
   [ Timo Aaltonen ]
   * debian/rules: Disable builtin fonts (LP: #308649, closes: #512706)
 
- -- Julien Cristau <jcristau@debian.org>  Fri, 23 Jan 2009 20:25:35 +0100
+ -- Julien Cristau <jcristau@debian.org>  Fri, 23 Jan 2009 21:16:14 +0100
 
 xorg-server (2:1.5.99.901-1) experimental; urgency=low
 
