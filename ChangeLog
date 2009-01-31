@@ -1,3 +1,339 @@
+commit 1f729b42d567ae9533ac0e467afc9fbc83390776
+Author: Keith Packard <keithp@keithp.com>
+Date:   Fri Jan 30 21:12:17 2009 -0800
+
+    Version to 1.5.99.902
+
+commit 56f6fb8c8652c85e522e42557f8969987069076b
+Author: Eric Anholt <eric@anholt.net>
+Date:   Fri Jan 30 19:06:17 2009 -0800
+
+    randr: Avoid re-querying the configuration on everything but GetScreenResources.
+    
+    The new path should only re-query on the other requests when we haven't
+    gathered the information from the DDX yet (such as with a non-RandR 1.2 DDX).
+    
+    Bug #19037.
+    (cherry picked from commit 317f2b4a9fe4b606975711bc332166a82db5087d)
+
+commit 6d928aa227b12832dd358619722a5f4dc71b5d19
+Author: Keith Packard <keithp@keithp.com>
+Date:   Fri Jan 30 20:17:10 2009 -0800
+
+    RandR crtcs not fetched correctly when primary output is set.
+    
+    Primary outputs may not have a CRTC.
+    Loops fetching CRTCs respecting primary output were broken.
+    
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+    (cherry picked from commit 4de5705545792d77c9990bbec3e263a517757a2a)
+
+commit 759ed0679a030f502b74a6ff44c15d1c97d9a937
+Author: Keith Packard <keithp@keithp.com>
+Date:   Fri Jan 30 19:14:36 2009 -0800
+
+    RandR SetOutputPrimary should work with or without a crtc connected
+    
+    The test was inverted from the protocol spec, and besides, the test is bogus
+    anyways.
+    
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+    (cherry picked from commit c1f2be1f3fd0c80cb4c85b98140b98aa9311242b)
+
+commit b893dc59da9f5a7afb59ea0b2cd794872fc5727f
+Author: Thomas Jaeger <ThJaeger@gmail.com>
+Date:   Sat Dec 20 16:17:02 2008 +0100
+
+    Don't release grabs unless all buttons are up
+    
+    Previously, only buttons <= 5 would count here, but the core protocol
+    allows for 255 buttons.
+    
+    http://lists.freedesktop.org/archives/xorg/2009-January/042092.html
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    (cherry picked from commit 717a961528ec69a6e630d536e15568670e0b398a)
+    
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit 191161a24a80dc553b11f829c12cfffb76ec7185
+Author: Thomas Jaeger <ThJaeger@gmail.com>
+Date:   Mon Dec 22 00:55:09 2008 +0100
+
+    Count the number of logically down buttons in buttonsDown
+    
+    This fixes the following bug.  Assuming your window manager grabs
+    Alt+Button1 to move windows, map Button3 to 0 via XSetPointerMapping,
+    then press the physical button 3 (this shouldn't have any effect), press
+    Alt and then button 1.  The press event is delivered to the application
+    instead of firing the grab.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    (cherry picked from commit f7f85f696570541e2dd43462675de9e6ee46f545)
+
+commit fe0abdceb483ec0bb2977016b00aef57033aa449
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Thu Jan 8 11:53:30 2009 +1000
+
+    mi: ensure chained button mappings from SD -> MD (#19282)
+    
+    After copying the master event, flip the detail field to the mapped button of
+    the SD, not the physical button. This way if the SD has a mapping 1:3 and the
+    MD has a mapping of 3:4, a press on button 1 on the SD results in a core event
+    on button 4.
+    
+    X.Org Bug 19282 <http://bugs.freedesktop.org/show_bug.cgi?id=19282>
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit 3441917008021fb13cf86fa619970859d927e17a
+Author: Thomas Jaeger <thjaeger@gmail.com>
+Date:   Mon Jan 5 01:26:42 2009 -0500
+
+    Don't alter device button maps in DoSetPointerMapping
+    
+    Currently, if a device map differs from the core pointer map, then the
+    request may return MappingBusy, even though all the affected core
+    buttons are in the up state.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    (cherry picked from commit 3d549438c29004d78032ecc50ab45ca0e3f49623)
+
+commit 364bcbea48d5e49bef8d36f6724e2702cbb4b1af
+Author: Thomas Jaeger <ThJaeger@gmail.com>
+Date:   Fri Jan 9 02:02:38 2009 -0500
+
+    Xext: Send out correct events in ProcXTestFakeInput
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    (cherry picked from commit b2756a71a432f7cf7c870a48676c98625512558d)
+
+commit e789789196db8271a83c751fdf990ceb70164cb1
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Mon Jan 5 15:48:45 2009 +1000
+
+    xkb: fix typo - missing negation when checking button state.
+    
+    Introduced with a85f0d6b98237d8a196de624207acf1983a1859a.
+    
+    Reported by Thomas Jaeger.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    (cherry picked from commit 515ce3e4ba42605a1ee9979e8bb5acd3cf6470a3)
+
+commit ebb3872925315d705e47e1ccd7f193ac90ac33dc
+Author: Peter Hutterer <peter.hutterer@redhat.com>
+Date:   Wed Nov 26 11:15:05 2008 +1000
+
+    Xi: fix use of button->down - bitflags instead of int arrays.
+    
+    The device's button down state array was changed to use DOWN_LENGTH and thus
+    bitflags for each button in cfcb3da7.
+    
+    Update the DBSN events to copy this bit-wise state.
+    Update xkb and Xi to check for the bit flag instead of the array value.
+    
+    Reported by ajax.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@redhat.com>
+    (cherry picked from commit a85f0d6b98237d8a196de624207acf1983a1859a)
+
+commit 50d80c25525a691472e3fc5859fb303a3ffe1ef2
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Mon Jan 12 15:29:36 2009 +1000
+
+    dix: fix WarpPointer calls for devices with custom valuator ranges (#19297)
+    
+    If the MD's lastSlave was a devices with custom axes ranges, then a
+    WarpPointer would position the cursor at the wrong location. A WarpPointer
+    request provides screen coordinates and these coordinates were scaled to the
+    device range before warping.
+    
+    This patch consists of two parts:
+    1) in the WarpPointer handling, get the lastSlave and post the event through
+       this device.
+    2) assume that WarpPointer coordinates are always in screen coordinates and
+       scale them to device coordinates in GPE before continuing. Note that this
+       breaks device-coordinate based XWarpDevicePointer calls (for which the spec
+       isn't nailed down yet anyway) until a better solution is found.
+    
+    X.Org Bug 19297 <http://bugs.freedesktop.org/show_bug.cgi?id=19297>
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    (cherry picked from commit d36adf52a2b2711d22b11105f7bd907d4493fb9b)
+
+commit b19f12712a0762f20065282fd055fe9bc3ca975f
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Mon Jan 12 16:16:24 2009 +1000
+
+    dix: EnqueueEvent and PlayReleasedEvent need to handle DeviceMotionNotifies
+    
+    No MotionNotify events in the processing anymore, so let's have them treat DMN
+    instead.
+    
+    Reported by Thomas Jaeger.
+    (cherry picked from commit 488d45295105daf10ccd17ca93ae6a6f4d0104f1)
+
+commit ef796a95dd7ddf4ad5761a6ee2de1cdb56190ba2
+Author: Xiang, Haihao <haihao.xiang@intel.com>
+Date:   Tue Jan 6 10:03:19 2009 +0800
+
+    avoid a potential endless loop.
+    
+    Previously it is possible that creating rotation data, then cleaning
+    up and creating again so that pScreen->BlockHandler and
+    xf86_config->BlockHandler all point to xf86RotateBlockHandler.
+    See bug #19343.
+    (cherry picked from commit 5f3188228eb988bd8f08b62c84f98a8ff66ee283)
+
+commit 840b4da5f29e43ccadc720f075e00237d12ef01b
+Author: George Staplin <gstaplin@apple.com>
+Date:   Mon Jan 26 03:02:38 2009 -0700
+
+    XQuartz: GL: indirect.c changes to fix the build with newer OpenGL frameworks.
+    (cherry picked from commit 143224405ba74929c702a95de52b56df140b0d1b)
+
+commit 97a6f55f221e3d470add18db80e3769713480103
+Author: Jeremy Huddleston <jeremyhu@freedesktop.org>
+Date:   Fri Jan 16 19:26:07 2009 -0800
+
+    XQuartz: SnowLeopard: Help system book name changed in 10.6
+    (cherry picked from commit b57cb05c69acbedb00a97234099ea104309aa2cb)
+
+commit e81b4d495ba02d4fc0b05c26a53fd2a816a61eaa
+Author: Jeremy Huddleston <jeremyhu@freedesktop.org>
+Date:   Fri Jan 16 13:54:08 2009 -0800
+
+    XQuartz: mieq: Wait for the server to finish initializing before letting other threads mieqEnqueue
+    
+    Avoid possible race condition whereby one thread might call mieqEnqueue before InitAndStartDevices finishes
+    (cherry picked from commit 94e417ac87a98cd5c6bf2d7c495d702748398931)
+
+commit d6498ea62117cce6a00ac045ddeefb7268a70f5b
+Author: Eric Anholt <eric@anholt.net>
+Date:   Fri Jan 30 16:17:58 2009 -0800
+
+    Move the apple fat binary hacks back to a header file, and make it apple-only.
+    (cherry picked from commit dd098501d800571e71d06ffc936635a6c9d44e05)
+
+commit b530a0e97b5737375ca1f4eced26d587a16f843f
+Author: Jeremy Huddleston <jeremyhu@freedesktop.org>
+Date:   Thu Jan 15 20:57:42 2009 -0800
+
+    XQuartz: Fix builddir != srcdir issues and undef _XSERVER64 where appropriate on fat binary compilation
+    (cherry picked from commit f020900641b44a1142e5c2198e9678de2744454e)
+
+commit 82fd4d170824068dddf3b4e6581a12d48e1a069a
+Author: George Staplin <gstaplin@apple.com>
+Date:   Mon Jan 12 19:30:43 2009 -0700
+
+    XQuartz: xpr: Cleanup some of the code and possibly fix part of the GLX Pixmap problem.
+    
+    Split DRICreateSurface into 3 functions.
+    
+    Make CreateSurfaceForPixmap use xp_configure_surface.  I suspect this is partly why
+    GLXPixmaps never worked.
+    
+    It will require some more work and thoughts for pbuffers, unless we fake those with
+    pixmaps and surfaces.
+    (cherry picked from commit 9cf264e67744262b9f45079e6cd752eb3e3b0e08)
+
+commit 9cbdcf1fa4bdcc115def9f134a57ac96a56c69dd
+Author: Jeremy Huddleston <jeremyhu@freedesktop.org>
+Date:   Sun Jan 11 14:49:39 2009 -0800
+
+    XQuartz: Only call DarwinUpdateModKeys when needed
+    
+    Previously, we were calling it on almost every itteration through sendX11Event
+    (cherry picked from commit 6461729647ff4441d80811e73f0c0d2f108f2700)
+
+commit 037e52fd7353410397dfd877b3e9af99f791fce1
+Author: George Staplin <gstaplin@apple.com>
+Date:   Mon Jan 12 14:14:44 2009 -0700
+
+    XQuartz: GL: Make indirect.c build and work in the 1.6 branch.
+    
+    Reorder some header files and provide some types earlier on.
+    
+    Remove the static __GLXextensionInfo __glDDXExtensionInfo; that isn't
+    used in 1.4 or 1.5, and seems to have been removed from 1.6.  Remove
+    the data structures associated with that too.
+    
+    Remove __glXAquaDrawableResize.  The GLX structure doesn't use
+    it anymore, and the Apple version did nothing useful before.
+    
+    __glXAquaDrawableSwapBuffers(): base no longer contains a drawGlxc
+    member.  Now provide the the Apple/Aqua context in the __GLXAquaDrawable
+    struct.  Add the context member to the __GLXAquaDrawable struct.
+    
+    Remove the fallback configs.  They aren't used in 1.4 or 1.5 either.
+    
+    Remove init_visuals().  It's not used in 1.4 or 1.5 either.
+    
+    In the drawable constructor initialize the state properly, including
+    the new context member.
+    
+    Remove glAquaResetExtension() -- it's not used anymore.
+    
+    This has been tested remotely and proven to work with glxgears,
+    fire, various texture programs I wrote, and various Mesa demos.
+    (cherry picked from commit d514152195452ae11ec7769c76489651620ad380)
+
+commit ee9736b26b1021fac2cf259e6b2142ea780b2af8
+Author: George Staplin <gstaplin@apple.com>
+Date:   Fri Jan 9 16:08:26 2009 -0700
+
+    XQuartz: GL: Set the __GLXconfig renderType to GLX_RGBA_BIT.
+    (cherry picked from commit 3c14546f58f8a138fe67c9cacc3bd0b7fa90c29a)
+    (cherry picked from commit a665ed16f736cf1901b89448dc5d37f4d16dfaf4)
+
+commit b646513861aac9538ba3ebd8e2c7ef530392ff5d
+Author: George Staplin <gstaplin@apple.com>
+Date:   Fri Jan 9 15:53:39 2009 -0700
+
+    XQuartz: GL: Make many more fbconfigs and visuals available for the 1.5 branch.
+    
+    Use a __GLXconfig linked list struct to store the configurations for the
+    fbconfigs and visuals in a pGlxScreen.
+    
+    Also, remove the __GLXvisualConfig/GlxSetVisualConfigs code that isn't used
+    anymore.  There is more code we can remove later, but I want to do that in
+    separate commits.
+    (cherry picked from commit 94162b0f8a25267aca280d25e216cc6bde47da6e)
+    (cherry picked from commit 15bb6abd59fdefe7037237faaea1a39711a972ed)
+
+commit 9e03178ae2da6beb939141f662d875c4c1d40354
+Author: Michel Dänzer <daenzer@vmware.com>
+Date:   Tue Jan 13 13:05:32 2009 +0100
+
+    EXA: Declare glyph cache picture as component-alpha when necessary.
+    
+    Without this, rendering component-alpha glyphs may break without a mask.
+    
+    Fixes http://bugs.freedesktop.org/show_bug.cgi?id=19233 .
+    (cherry picked from commit 639f289dcdbe00a516820f573c01a8339e120ed4)
+
+commit 648807adb059b6cfc413d41e3a37670ce850aee6
+Author: Keith Packard <keithp@keithp.com>
+Date:   Fri Jan 30 15:43:04 2009 -0800
+
+    Make RandR CRTC info report panning area instead of just crtc area
+    
+    This makes the RandR info consistent with the Xinerama info.
+    
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+    (cherry picked from commit 6e49fdd2c839b6244c23ce95c3ae76a1a265b986)
+
+commit 9b2958b3a2fb4b65d67916ba7e98dfd21ad434f3
+Author: Maarten Maathuis <madman2003@gmail.com>
+Date:   Fri Dec 19 18:59:27 2008 +0100
+
+    randr: Consider panned crtc's when calculating xinerama screen sizes.
+    
+    - This will allow window managers and applications to actually use the panned area.
+    (cherry picked from commit 332d65ec7a6e94d75efe95d53742f137835274de)
+
 commit 251d0d8090322b2c9dc0c8b7bef001f338d19433
 Author: Keith Packard <keithp@keithp.com>
 Date:   Mon Jan 12 13:03:30 2009 -0800
