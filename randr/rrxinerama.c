@@ -267,12 +267,26 @@ RRXineramaWriteCrtc(ClientPtr client, RRCrtcPtr crtc)
 
     if (RRXineramaCrtcActive (crtc))
     {
-	int width, height;
-	RRCrtcGetScanoutSize (crtc, &width, &height);
-	scratch.x_org  = crtc->x;
-	scratch.y_org  = crtc->y;
-	scratch.width  = width;
-	scratch.height = height;
+	ScreenPtr pScreen = crtc->pScreen;
+	rrScrPrivPtr pScrPriv = rrGetScrPriv(pScreen);
+	BoxRec panned_area;
+
+	/* Check to see if crtc is panned and return the full area when applicable. */
+	if (pScrPriv && pScrPriv->rrGetPanning &&
+	    pScrPriv->rrGetPanning (pScreen, crtc, &panned_area, NULL, NULL) &&
+	    (panned_area.x2 > panned_area.x1) && (panned_area.y2 > panned_area.y1)) {
+	    scratch.x_org  = panned_area.x1;
+	    scratch.y_org  = panned_area.y1;
+	    scratch.width  = panned_area.x2  - panned_area.x1;
+	    scratch.height = panned_area.y2  - panned_area.y1;
+	} else {
+	    int width, height;
+	    RRCrtcGetScanoutSize (crtc, &width, &height);
+	    scratch.x_org  = crtc->x;
+	    scratch.y_org  = crtc->y;
+	    scratch.width  = width;
+	    scratch.height = height;
+	}
 	if(client->swapped) {
 	    register int n;
 	    swaps(&scratch.x_org, n);
@@ -293,12 +307,8 @@ ProcRRXineramaQueryScreens(ClientPtr client)
     REQUEST_SIZE_MATCH(xXineramaQueryScreensReq);
 
     if (RRXineramaScreenActive (pScreen))
-    {
-	rrScrPriv(pScreen);
-	if (pScrPriv->numCrtcs == 0 || pScrPriv->numOutputs == 0)
-	    RRGetInfo (pScreen);
-    }
-    
+	RRGetInfo (pScreen, FALSE);
+
     rep.type = X_Reply;
     rep.sequenceNumber = client->sequence;
     rep.number = RRXineramaScreenCount (pScreen);
@@ -313,18 +323,22 @@ ProcRRXineramaQueryScreens(ClientPtr client)
 
     if(rep.number) {
 	rrScrPriv(pScreen);
-	xXineramaScreenInfo scratch;
 	int i;
-	int has_primary = (pScrPriv->primaryOutput != NULL);
+	int has_primary = 0;
 
-	if (has_primary) {
+	if (pScrPriv->primaryOutput && pScrPriv->primaryOutput->crtc) {
+	    has_primary = 1;
 	    RRXineramaWriteCrtc(client, pScrPriv->primaryOutput->crtc);
 	}
 
 	for(i = 0; i < pScrPriv->numCrtcs; i++) {
-	    RRCrtcPtr	crtc = pScrPriv->crtcs[i];
-	    if (!has_primary || (crtc != pScrPriv->primaryOutput->crtc))
-		RRXineramaWriteCrtc(client, crtc);
+	    if (has_primary &&
+		pScrPriv->primaryOutput->crtc == pScrPriv->crtcs[i])
+	    {
+		has_primary = 0;
+		continue;
+	    }
+	    RRXineramaWriteCrtc(client, pScrPriv->crtcs[i]);
 	}
     }
 

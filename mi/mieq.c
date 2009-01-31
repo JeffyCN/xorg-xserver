@@ -36,11 +36,6 @@ in this Software without prior written authorization from The Open Group.
 #include <dix-config.h>
 #endif
 
-#ifdef XQUARTZ
-#include  <pthread.h>
-static pthread_mutex_t miEventQueueMutex = PTHREAD_MUTEX_INITIALIZER;
-#endif
-
 # define NEED_EVENTS
 # include   <X11/X.h>
 # include   <X11/Xmd.h>
@@ -86,6 +81,25 @@ typedef struct _EventQueue {
 
 static EventQueueRec miEventQueue;
 static EventListPtr masterEvents; /* for use in mieqProcessInputEvents */
+
+#ifdef XQUARTZ
+#include  <pthread.h>
+static pthread_mutex_t miEventQueueMutex = PTHREAD_MUTEX_INITIALIZER;
+
+extern BOOL serverInitComplete;
+extern pthread_mutex_t serverInitCompleteMutex;
+extern pthread_cond_t serverInitCompleteCond;
+
+static inline void wait_for_server_init(void) {
+    /* If the server hasn't finished initializing, wait for it... */
+    if(!serverInitComplete) {
+        pthread_mutex_lock(&serverInitCompleteMutex);
+        while(!serverInitComplete)
+            pthread_cond_wait(&serverInitCompleteCond, &serverInitCompleteMutex);
+        pthread_mutex_unlock(&serverInitCompleteMutex);
+    }
+}
+#endif
 
 Bool
 mieqInit(void)
@@ -145,6 +159,7 @@ mieqEnqueue(DeviceIntPtr pDev, xEvent *e)
     int                    evlen;
 
 #ifdef XQUARTZ
+    wait_for_server_init();
     pthread_mutex_lock(&miEventQueueMutex);
 #endif
 
@@ -312,15 +327,32 @@ ChangeDeviceID(DeviceIntPtr dev, xEvent* event)
         DebugF("[mi] Unknown event type (%d), cannot change id.\n", type);
 }
 
+static void
+FixUpEventForMaster(DeviceIntPtr mdev, DeviceIntPtr sdev, xEvent* original,
+                    EventListPtr master, int count)
+{
+    /* Ensure chained button mappings, i.e. that the detail field is the
+     * value of the mapped button on the SD, not the physical button */
+    if (original->u.u.type == DeviceButtonPress || original->u.u.type == DeviceButtonRelease)
+    {
+        int btn = original->u.u.detail;
+        if (!sdev->button)
+            return; /* Should never happen */
+
+        master->event->u.u.detail = sdev->button->map[btn];
+    }
+}
+
 /**
  * Copy the given event into master.
  * @param mdev The master device
+ * @param sdev The slave device the original event comes from
  * @param original The event as it came from the EQ
  * @param master The event after being copied
  * @param count Number of events in original.
  */
 void
-CopyGetMasterEvent(DeviceIntPtr mdev, xEvent* original,
+CopyGetMasterEvent(DeviceIntPtr mdev, DeviceIntPtr sdev, xEvent* original,
                    EventListPtr master, int count)
 {
     int len = count * sizeof(xEvent);
@@ -335,10 +367,15 @@ CopyGetMasterEvent(DeviceIntPtr mdev, xEvent* original,
 
     memcpy(master->event, original, len);
     while (count--)
+    {
         ChangeDeviceID(mdev, &master->event[count]);
+        FixUpEventForMaster(mdev, sdev, original, master, count);
+    }
 }
 extern void
 CopyKeyClass(DeviceIntPtr device, DeviceIntPtr master);
+
+
 
 /* Call this from ProcessInputEvents(). */
 void
@@ -416,7 +453,7 @@ mieqProcessInputEvents(void)
                     event->u.u.type == DeviceKeyRelease)
 		    CopyKeyClass(dev, master);
 
-                CopyGetMasterEvent(master, event, masterEvents, nevents);
+                CopyGetMasterEvent(master, dev, event, masterEvents, nevents);
             }
 
             /* If someone's registered a custom event handler, let them
