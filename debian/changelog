@@ -1,3 +1,10 @@
+xorg-server (2:1.4.2-11) unstable; urgency=low
+
+  * Bump x11proto-input-dev build-dep to >= 1.5.0 to fix keyboard layout
+    breakage with new libxi built against the same. Closes: #515976
+
+ -- David Nusinow <dnusinow@debian.org>  Thu, 19 Feb 2009 21:52:24 -0500
+
 xorg-server (2:1.4.2-10) unstable; urgency=medium
 
   * Cherry-pick from upstream: GLcore: make googleearth not crash the server
