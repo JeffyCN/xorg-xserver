@@ -1,4 +1,3 @@
-0001-mi-force-the-paired-kbd-device-before-CopyKeyClass.patch
 001_fedora_extramodes.patch
 #06_use_proc_instead_of_sysfs_for_pci_domains.diff
 #13_debian_add_xkbpath_env_variable.diff
