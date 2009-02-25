@@ -723,8 +723,6 @@ static __GLXscreen * __glXAquaScreenProbe(ScreenPtr pScreen) {
     screen->base.fbconfigs = CreateConfigs(&screen->base.numFBConfigs, 
 					   pScreen->myNum);
     
-    GlxSetVisualConfig(GLX_ALL_VISUALS);
-
     __glXScreenInit(&screen->base, pScreen);
 
     /* __glXScreenInit initializes these, so the order here is important, if we need these... */
@@ -855,7 +853,9 @@ static void setup_dispatch_table(void) {
   SET_BlendEquationSeparateEXT(disp, glBlendEquationSeparateEXT);
   SET_BlendFunc(disp, glBlendFunc);
   SET_BlendFuncSeparateEXT(disp, glBlendFuncSeparateEXT);
+#if MAC_OS_X_VERSION_MIN_REQUIRED >= 1050
   SET_BlitFramebufferEXT(disp, glBlitFramebufferEXT);
+#endif
   SET_BufferDataARB(disp, glBufferDataARB);
   SET_BufferSubDataARB(disp, glBufferSubDataARB);
   SET_CallList(disp, glCallList);
