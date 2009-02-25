@@ -1,3 +1,526 @@
+commit 60c161545af80eb78eb790a05bde79409dfdf16e
+Author: Keith Packard <keithp@keithp.com>
+Date:   Wed Feb 25 12:05:44 2009 -0800
+
+    X server version 1.6.0
+    
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit e9a9f807971b8fb62b957c9d54b4aea7fb0f96ca
+Author: Maarten Maathuis <madman2003@gmail.com>
+Date:   Fri Jan 30 19:32:33 2009 +0100
+
+    exa: kill of exaImageGlyphBlt
+    
+    - It serves no obvious purpose, yet it directly accesses many fb
+    symbols.
+    (cherry picked from commit 5cc67ae94c066dcac78072ad8a819c3b602d8bab)
+
+commit 10e0603fb989d1e6b2675ef5ca8223777b4921e6
+Author: Jeremy Huddleston <jeremy@yuffie.local>
+Date:   Tue Feb 24 23:12:57 2009 -0800
+
+    XQuartz: Re-enable support for capslock
+    (cherry picked from commit 4901b8147e593d26d7a31a9b73a201254b948916)
+
+commit e96921ca954ff0d3de8a69cea085aac2d43b0a2e
+Author: Michel Dänzer <daenzer@vmware.com>
+Date:   Mon Feb 23 16:49:51 2009 +0100
+
+    DRI1: Make DRICreateDrawable return TRUE for pixmaps.
+    
+    GLX_EXT_texture_from_pixmap was broken since commit
+    a26c77ff432d2e85a2665fc36fca25143460c476 ('glx: fix retval checks when failures
+    occur for drawable creation.')
+    
+    Signed-off-by: Michel Dänzer <daenzer@vmware.com>
+    (cherry picked from commit ef320bdd5ec3419abba77041d3a4d96a3ff87563)
+
+commit 584f46b81c6ed126014e963cb4ea40f83014f1c7
+Author: Alan Coopersmith <alan.coopersmith@sun.com>
+Date:   Thu Feb 19 13:57:28 2009 -0800
+
+    Add Extensions section to xorg.conf man page
+    
+    Extensions section was added in X11R6.8.0 and documented in the release notes:
+       http://www.x.org/archive/X11R6.8.0/doc/RELNOTES2.html#3
+    but never made it into the man page.
+    
+    Also fix a bonus typo.
+    
+    Signed-off-by: Alan Coopersmith <alan.coopersmith@sun.com>
+    (cherry picked from commit ab61033700b5383a7a15370dd054eaa80e72e811)
+
+commit ae7991b16d7fefb4335b05f951a3228cef102683
+Author: Keith Packard <keithp@keithp.com>
+Date:   Wed Feb 25 10:14:36 2009 -0800
+
+    Pre-clip panning coordinates to keep crtc within panning region
+    
+    There is a separate panning region check, but that doesn't work under
+    transformation, so just pre-clip the mouse coordinates when computing the
+    panning offsets. This leaves the case where panning constants are changing
+    unresolved.
+    
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+    (cherry pick from commit c090f5514d28e1602a6ebbe7c909e98a0e3374d7)
+
+commit e59aa804df8a39541aa3224a5e688b819196070c
+Author: Keith Packard <keithp@keithp.com>
+Date:   Wed Feb 25 10:12:23 2009 -0800
+
+    RandR rotations and reflections offset by one pixel
+    
+    The matrix computation for rotation and reflection resulted in dropping a
+    row or column of pixels as the offsets used in the matrix computations used
+    width and height rather than width-1 and height-1.
+    
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+    (cherry picked from commit 77c7a64e8885696665556c9fbcb3cffb552e367a)
+
+commit 9a59e7f304ab19c91738311bb9f1ec7709fc8847
+Author: Keith Packard <keithp@keithp.com>
+Date:   Sun Feb 8 15:08:15 2009 +0100
+
+    xf86CrtcShadowClear is unused.
+    
+    Remove this now that clearing is done by repainting with appropriate extend
+    modes.
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+    (cherry picked from commit 60a4f1368785d26a49a3ef6df829723ca154c154)
+    
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit 369d7b22a9009e7054bd121484fa128c7a6d21f6
+Author: Keith Packard <keithp@keithp.com>
+Date:   Thu Feb 5 11:36:54 2009 -0800
+
+    Make panning+transform be correctly driven by mouse
+    
+    Figuring out how to adjust the crtc origin to keep the mouse pointer within
+    the crtc is a bit of a trick
+    
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+    (cherry picked from commit 63810aca31b962c93be4796883bde6ccb653e3a9)
+    
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit c0a36197002c7de98f14dc98969409778d29dc50
+Author: Alan Coopersmith <alan.coopersmith@sun.com>
+Date:   Tue Feb 17 18:48:52 2009 -0800
+
+    Make RgbPath keyword in xorg.conf a non-fatal error
+    
+    Xorg shouldn't refuse to run just because the user has an xorg.conf that
+    had the previously-used RgbPath keyword in it.
+    
+    Signed-off-by: Alan Coopersmith <alan.coopersmith@sun.com>
+    Acked-by: Peter Hutterer <peter.hutterer@who-t.net>
+    (cherry picked from commit d2cf562bbad553d7f09b70202134f5b6ada0114e)
+    
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit 6b8bbbd21b39181e9dd3175fa73c05008c361ba2
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Wed Feb 4 11:50:18 2009 +1000
+
+    config: if we can't connect to HAL, listen for a startup notification.
+    
+    If HAL isn't available when we try to connect, the registered NameOwnerChanged
+    signal handler waits until HAL is available. Once we connected to HAL, we
+    unregister the signal handler again.
+    This allows HAL to be started in parallel or after the server has started.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    (cherry picked from commit 4844bff58f296b2851be4e6b955c3a68d02437a9)
+    
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit 4557b3f6c4273cd83b701beaf7a150c806fed298
+Author: Keith Packard <keithp@keithp.com>
+Date:   Wed Feb 18 16:43:23 2009 -0800
+
+    X11/fonts/fontmod.h doesn't exist anymore.
+    
+    libXfont 1.4.0 no longer includes this file, nor do we need it, so just stop
+    attempting to reference it.
+    
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit 3575cb86a18d9e80e239acefdab18694e4ca2098
+Author: Ian Romanick <ian.d.romanick@intel.com>
+Date:   Tue Feb 17 08:27:32 2009 -0800
+
+    glx: Inialize best_score before calculating visual scores
+    
+    This bug was pointed out by Peter Åstrand.
+    
+    Signed-off-by: Ian Romanick <ian.d.romanick@intel.com>
+    (cherry picked from commit 4039603413f9f46d7f725463a70b4a51838e0049)
+    
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit d050a61747bd5e5f9c96f5df5a191598c3f01e5c
+Author: Jeremy Huddleston <jeremy@yuffie.local>
+Date:   Tue Feb 17 23:25:14 2009 -0800
+
+    configure.ac: Support version strings like W.X.Y.Z-XXXXXX
+    (cherry picked from commit 43967514cd57ad836d7fb85c8c9e58ada07e0232)
+    
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit 8e16e64f55deb8e94007915333ba356c0f7e4f73
+Author: Jeremy Huddleston <jeremy@yuffie.local>
+Date:   Tue Feb 17 23:24:25 2009 -0800
+
+    XQuartz: Don't need GlxSetVisualConfig any more
+    
+    Fixes build failure resulting from 516f8e2cad1311a09764e2633644188d1e3c31bb
+    (cherry picked from commit 066b17028a35956a089815716e38571f305469c5)
+    
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit eca523e7e7e267728a1f5ec346e012ada3debba0
+Author: Keith Packard <keithp@keithp.com>
+Date:   Tue Feb 17 22:17:41 2009 -0800
+
+    Bump to 1.5.99.903
+
+commit a86dd529e9deaba61aee220d79ac607abbcb5dc6
+Author: Keith Packard <keithp@keithp.com>
+Date:   Fri Feb 6 06:34:35 2009 +0100
+
+    Eliminate the shadow clear on transform change
+    
+    When the crtc transformation changes, the entire crtc must be repainted.
+    This was being done by clearing the shadow and then painting the rectangle
+    containing the screen image; the clear being required as the screen image
+    may not fill the crtc. When changing the transform rapidly, this leads to
+    flashing. Eliminate the clear by painting the entire crtc instead of just
+    the screen rectangle.
+    
+    (cherry picked fom commit 5394b7e66224d20888dd4020f5cb8ca930720fb4)
+    
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit 5946d603e76206105bea41a8beeb116daf209964
+Author: Keith Packard <keithp@keithp.com>
+Date:   Mon Feb 9 13:09:11 2009 +0100
+
+    Add XkbDir to Files config file section
+    
+    The XKB base directory was not configuable through the config file.
+    
+    (cherry picked from commit 76f18b94bd2719a8199334742d021c4d0806187d)
+    
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit 39eb1bee84b520cfa45981c445c4c976d63ab03d
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Tue Feb 17 12:59:16 2009 -0500
+
+    RANDR: Fail softly on GetPanning if the screen can't do it.
+    
+    Just return a zeroed-out reply in that case.  This is unambiguous, and
+    distinguishes "you didn't name a CRTC" from "you named a CRTC that can't
+    do panning".
+    (cherry picked from commit 123093996507c4d3b6dc457240ce00f8ac42f410)
+    
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit 69a2728891e92da6a674d7313f3bb47c629b38dc
+Author: Paulo Cesar Pereira de Andrade <pcpa@mandriva.com.br>
+Date:   Wed Jan 7 19:37:03 2009 -0200
+
+    Default to use standard bitmap fonts, with builtins as fallback
+    
+      The builtin-fonts configure option was removed, as it at best should
+    have been a runtime option. Instead, now it always register all "font
+    path element" backends, and adds built-ins fonts at the end of the
+    default font path.
+      This should be a more reasonable solution, to "correct" the most
+    common Xorg FAQ (could not open default font 'fixed'), and also don't
+    break by default applications that use only the standard/historical
+    X Font rendering.
+    (cherry picked from commit 49b93df8a3002db7196aa3fc1fd8dca1c12a55d6)
+    
+        Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit 444127f9f408d2f517fdfab0092bd67b29073373
+Author: Alan Hourihane <alanh@vmware.com>
+Date:   Fri Feb 13 13:45:08 2009 +0000
+
+    glx: fix retval checks when failures occur for drawable creation.
+    (cherry picked from commit a26c77ff432d2e85a2665fc36fca25143460c476)
+    
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit 4302a32391711ea86051c7e6d90cb018c79beec2
+Author: Keith Packard <keithp@keithp.com>
+Date:   Fri Jan 30 14:19:41 2009 -0800
+
+    Make crtc_notify wrap/unwrap code do nothing unless mode code is inuse
+    
+    Drivers not using the new hw/xfree86/modes code would crash in DRI due to
+    that code trying to monitor CRTC changes.
+    
+    (cherry picked from commit ea309e47457156b60aadbf113f04e5b6851029c8)
+    
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit 09cde70a6b3a05c28014862db19b36650412c2f3
+Author: Jeremy Huddleston <jeremyhu@freedesktop.org>
+Date:   Mon Feb 2 12:30:57 2009 -0800
+
+    XQuartz: GLX: Fix accidental exclusion of glBlitFramebufferEXT on Leopard
+    (cherry picked from commit 8620579483789ae9ac1b68dbefe32b70011386de)
+    (cherry picked from commit 0dbc356795bbab3889b5f1684f55bd193757d0c9)
+    
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit 6bbe98f01d1fc66b6b853bdcdd62edf87a91627d
+Author: Jeremy Huddleston <jeremyhu@freedesktop.org>
+Date:   Sun Feb 1 15:08:02 2009 -0800
+
+    XQuartz: GLX: OpenGL.framework on Tiger doesn't have glBlitFramebufferEXT
+    (cherry picked from commit e01662cadcaa4052e3a5aa82cbaed00a2d0220e0)
+    (cherry picked from commit fd08be749e0b3c5de02a6ae8b3d21f92c5986157)
+    
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit 519ae3a0dfc61fc55370abec75551aa2615643fb
+Author: Jeremy Huddleston <jeremyhu@freedesktop.org>
+Date:   Sun Jan 11 16:34:36 2009 -0800
+
+    XQuartz: Don't need explicit Activate/EnableDevice in InitInput
+    (cherry picked from commit b1d29784410b3b93037e5636f336ba608d8ad6e3)
+    
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit ada58b69ca0a5e674cda7ae59a53061645621888
+Author: Alan Coopersmith <alan.coopersmith@sun.com>
+Date:   Fri Jan 30 21:44:08 2009 -0800
+
+    x11-input.fdi: Add options needed to handle adding USB devices on Solaris
+    (cherry picked from commit 60bcdd687040db76490851d4b459284ce37020e0)
+    
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit 516f8e2cad1311a09764e2633644188d1e3c31bb
+Author: Eric Anholt <eric@anholt.net>
+Date:   Sun Feb 8 13:00:15 2009 +0100
+
+    glx: Replace broken GLX visual setup with a fixed "all" mode.
+    
+    With trying to match depths so that you didn't end up with a depth 24
+    fbconfig for the 32-bit composite visual, I broke the alpha bits on the depth
+    24 X visual, which angered other applications.  But in fixing that, the
+    pickFBconfigs code for "minimal" also could end up breaking GLX visuals if
+    the same FBconfig was chosen for more than one X visual.
+    We have no reason to not expose as many visuals as possible, but the old
+    "all" mode didn't match any existing X visuals to GLX visuals, so normal
+    GL apps didn't work at all.
+    
+    Instead, replace it with a simple combination of the two modes: Create GLX
+    visuals by picking unique FBconfigs with as many features as possible for
+    each X visual in order.  Then, for all remaining FBconfigs that are
+    appropriate for display, add a corresponding X and GLX visual.
+    
+    This gets all applications (even ones that aren't smart enough to do FBconfigs)
+    get all the options to get the visual configuration they want.  The only
+    potential downside is that the composite ARGB visual is unique and gets a
+    nearly full-featured GLX visual (except that the root visual might have taken
+    the tastiest FBconfig), which means that a dumb compositing manager could
+    waste resources. Write compositing managers using FBconfigs instead, please.
+    (cherry picked from commit c40bad88475debf7a1774e22dce835577ad32154)
+    
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit 8b967b24690cb072fc37c463eceb2b886cef80c4
+Author: Eric Anholt <eric@anholt.net>
+Date:   Mon Feb 2 10:13:46 2009 -0800
+
+    glx: Don't match fbconfigs to visuals with mismatched channel masks.
+    
+    This fixes at least one known bug, where the depth 32 visual would end up
+    with a depth 24 fbconfig attached, angering compiz.
+    (cherry picked from commit 5100d829a4d71ce4a9fbc2b81694a1fb90066ccf)
+    
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit 7fdaca64463951ab9199dc12910379c90dba3fac
+Author: Keith Packard <keithp@keithp.com>
+Date:   Tue Feb 17 18:57:13 2009 -0800
+
+    mi: force the paired kbd device before CopyKeyClass. (#19574)
+    
+    Some multi-media keyboards send the key events for multimedia keys through
+    the device file used by the mouse. Sending a key event through the VCP
+    however will fail. The VCP doesn't have a key class so the server crashes or
+    (with an appropriate fix) the event is simply swallowed.
+    
+    Thus, for key events if the master does not have a key class, get the device
+    paired with the master (i.e. the VCK) before processing the event any
+    further.
+    
+    X.Org Bug 19574 <http://bugs.freedesktop.org/show_bug.cgi?id=19574>
+    
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit a9dd41de7eecc1dcede4ccc8d5cf25f10343bb1a
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Mon Feb 2 10:20:13 2009 +1000
+
+    mi: don't call UpdateSpriteForScreen if we have Xinerama enabled. #18668
+    
+    In Xinerama all windows hang off the first root window. Crossing the screens
+    must not reset the spriteTrace, otherwise picking fails and events are sent to
+    the root window.
+    
+    X.Org Bug 18668 <http://bugs.freedesktop.org/show_bug.cgi?id=18668>
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    (cherry picked from commit 9fe9b6e4ef669b192ee349e3290db5d2aeea273c)
+    
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit 536748aa88f82e4157b86ed1a02b798b1510bdb8
+Merge: 8c6ddbf... be21199...
+Author: Keith Packard <keithp@keithp.com>
+Date:   Tue Feb 17 18:52:04 2009 -0800
+
+    Merge branch 'panning-for-server-1.6' into server-1.6-branch
+
+commit 8c6ddbf754ff6c2eb99105f93aaa30749dced619
+Author: Paulo Cesar Pereira de Andrade <pcpa@mandriva.com.br>
+Date:   Sun Nov 30 02:59:34 2008 -0200
+
+    Correct static symbol XkmReadTOC and first pass on compile warning fixes.
+    
+      The warnings corrected were only the ones that should correct
+    real problems. The most common one is 64 bit integers as
+    "printf %l" arguments.
+      Note that there is a patch related to this at:
+    http://bugs.freedesktop.org/show_bug.cgi?id=18204
+    
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+    (cherry picked from commit 16b11cd03d8c5def07f0e598f237f71a37883a46)
+
+commit 0c9db0ea10d9fd2a311bca47bba3c60e74ec6eec
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Fri Jan 9 14:32:14 2009 +1000
+
+    xfree86: always force RAW mode under linux.
+    
+    The previous check for AEI on left us with the possibility that AEI is forced
+    off in the config, but devices are added through evdev nonetheless. A keyboard
+    added this way can CTRL+C the server. Even when we use kbd, we can set the
+    mode to RAW, so it's safer alround to to so.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    (cherry picked from commit b33905234025f005819c7e2acd653a3a0ecfeb82)
+    
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit 3284b03dca180ba2312904b1e20fe83df56f5f3c
+Author: Alan Coopersmith <alan.coopersmith@sun.com>
+Date:   Thu Feb 12 18:34:22 2009 -0800
+
+    Check for and report errors writing xorg.conf.new from Xorg -configure
+    
+    Signed-off-by: Alan Coopersmith <alan.coopersmith@sun.com>
+    (cherry picked from commit ac470dfb4fadaa0b28b6f8b57f4f13a20842b897)
+    
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit caf503aef15865a969b881355d5e663490a6e194
+Author: Alan Coopersmith <alan.coopersmith@sun.com>
+Date:   Thu Feb 12 18:23:59 2009 -0800
+
+    Correct error message if specified config file is not found
+    
+    By making the "Unable to open config file" header a warning, it was
+    not appearing with the filename when a config file was specified and
+    not found.   Now we make it an error message again, but only issue
+    the error if a filename was specified - if none was specified, then
+    we don't even issue a warning, just the "Using autoconfig" info message.
+    
+    Signed-off-by: Alan Coopersmith <alan.coopersmith@sun.com>
+    (cherry picked from commit bd713794ceaa1b2890522554562103c0a2d50f04)
+    
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit 791c6ecceec94369f6035b8845a2cb293d194eef
+Author: Keith Packard <keithp@keithp.com>
+Date:   Tue Feb 3 20:18:37 2009 -0800
+
+    Handle the combination of panning and crtc transforms
+    
+    This patch gets the shadow scanout buffer repainted on panning area changes.
+    It does not, however, track the mouse correctly.
+    
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+    (cherry picked from commit 7968823cbc02615e1080c0d3f34dcebe14ea1771)
+    
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit 099d74a12752808dd1972c28bdb228fc447d3774
+Author: Keith Packard <keithp@keithp.com>
+Date:   Tue Feb 3 20:15:41 2009 -0800
+
+    Damage re-used shadow scanout buffer using new transforms.
+    
+    When the shadow scanout buffer can be re-used, the underlying framebuffer
+    area must be damaged so that the scanout will be repainted. This patch
+    delays the addition of that damaged area until after the transform in the
+    crtc has been updated, otherwise the old transform would have been used and
+    the wrong area repainted.
+    
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+    (cherry picked from commit 763df9eec79a867978efc5138d8635a46c1a0d17)
+    
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit 4992c31e6c09a9140d4482d762b5dfff0a4efedb
+Author: Keith Packard <keithp@keithp.com>
+Date:   Tue Feb 3 20:12:42 2009 -0800
+
+    Handle matrix computation overflow in RRTransformCompute
+    
+    If the computation of the composite fixed-point transform for RandR
+    overflows at any point, take the resulting floating point transform and
+    scale that back to fit in a fixed point matrix. This ensures that a matrix
+    will always be available, although perhaps at reduced precision. Someday we
+    should add floating point matrices to Render.
+    
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+    (cherry picked from commit 62fc98cb88e4e8b636f343453fc1168a87c58972)
+    
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit 660c2a7d4c6cb52fd0992e9d2008a24805dc8c02
+Author: Aaron Plattner <aplattner@nvidia.com>
+Date:   Thu Feb 12 18:27:48 2009 -0800
+
+    Query the DDX in ProcRRGetScreenInfo.
+    
+    This is the RandR 1.1 version of GetScreenResources and needs to re-query the
+    DDX to see if the mode pool changed.
+    
+    Fixes Launchpad bug #325115.
+    Signed-off-by: Adam Jackson <ajax@redhat.com>
+
+commit 34724f45512e311377b972da480d35304fd687cc
+Author: Paulo Cesar Pereira de Andrade <pcpa@mandriva.com.br>
+Date:   Fri Jan 30 03:56:39 2009 -0200
+
+    Work around inclusion of <X11/extensions/panoramiXext.h>
+    
+      The X Server build only needs the macros PANORAMIX_MAJOR_VERSION
+    and PANORAMIX_MINOR_VERSION from that header.
+      Addition of extra prototypes to <X11/extensions/panoramiXext.h>
+    caused a X Server build failure.
+
 commit 1f729b42d567ae9533ac0e467afc9fbc83390776
 Author: Keith Packard <keithp@keithp.com>
 Date:   Fri Jan 30 21:12:17 2009 -0800
@@ -1243,6 +1766,38 @@ Date:   Mon Dec 15 11:36:43 2008 -0800
     
     Signed-off-by: Keith Packard <keithp@keithp.com>
     (cherry picked from commit 1ba4cbb15919759aadd71960c5c057af9ba94fe3)
+
+commit be21199f550d9a19c10df16ed23c6f9ed94e55da
+Author: Matthias Hopf <mhopf@suse.de>
+Date:   Thu Dec 11 18:48:02 2008 +0100
+
+    randr: Fix initial panning border copy
+    
+    Thanks to Julien Cristau for finding this.
+
+commit 19a978359d7358501cccb79965b78a3f8ec18743
+Author: Matthias Hopf <mhopf@suse.de>
+Date:   Thu Dec 11 17:51:20 2008 +0100
+
+    randr: Oops, miscalculated panning rectangle's coordinates
+
+commit ab56607a0855e88de2ad2d7eb43e1d806db0c47b
+Author: Matthias Hopf <mhopf@suse.de>
+Date:   Thu Dec 11 16:48:40 2008 +0100
+
+    randr: Update initial screen size if panning information is present
+
+commit 657d963a663a189d3c8068a39528b2d73af5fe70
+Author: Matthias Hopf <mhopf@suse.de>
+Date:   Thu Dec 11 16:48:11 2008 +0100
+
+    randr: Fix error message for bad panning config
+
+commit 44b89dc0a5aa23df69539754fb76c67c310530db
+Author: Matthias Hopf <mhopf@suse.de>
+Date:   Thu Dec 11 14:56:51 2008 +0100
+
+    randr: Add monitor option "Panning" for initial panning configuration
 
 commit 523aae1fa6d8002e55e85aee49f113b7eb9a6df3
 Author: Keith Packard <keithp@keithp.com>

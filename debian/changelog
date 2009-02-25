@@ -1,8 +1,12 @@
-xorg-server (2:1.5.99.902-2) UNRELEASED; urgency=low
+xorg-server (2:1.6.0-1) UNRELEASED; urgency=low
 
+  [ David Nusinow ]
   * Add 0001-xorg.conf-5-refer-to-mousedrv-4-.-Debian-394058.patch to
     refer to correct (semi-obsolete) mouse driver manpage.
     closes: #394058
+
+  [ Julien Cristau ]
+  * New upstream release.
 
  -- David Nusinow <dnusinow@debian.org>  Sun, 15 Feb 2009 18:49:51 -0500
 
