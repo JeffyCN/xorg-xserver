@@ -9,6 +9,7 @@ xorg-server (2:1.6.0-1) UNRELEASED; urgency=low
   * New upstream release.
   * 0001-mi-force-the-paired-kbd-device-before-CopyKeyClass.patch: remove,
     included upstream.
+  * Turn on ModeDebug by default.
 
  -- David Nusinow <dnusinow@debian.org>  Sun, 15 Feb 2009 18:49:51 -0500
 

@@ -1,0 +1,25 @@
+From cbaf21a87c207300ab5a1e7de234e03baa0edf80 Mon Sep 17 00:00:00 2001
+From: Julien Cristau <jcristau@debian.org>
+Date: Sun, 8 Mar 2009 22:19:10 +0100
+Subject: [PATCH] Turn on ModeDebug by default
+
+---
+ hw/xfree86/modes/xf86Crtc.c |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+diff --git a/hw/xfree86/modes/xf86Crtc.c b/hw/xfree86/modes/xf86Crtc.c
+index f09b9b8..effb665 100644
+--- a/hw/xfree86/modes/xf86Crtc.c
++++ b/hw/xfree86/modes/xf86Crtc.c
+@@ -2225,7 +2225,7 @@ xf86InitialConfiguration (ScrnInfoPtr scrn, Bool canGrow)
+ 			scrn->options,
+ 			config->options);
+     config->debug_modes = xf86ReturnOptValBool (config->options,
+-						OPTION_MODEDEBUG, FALSE);
++						OPTION_MODEDEBUG, TRUE);
+ 
+     if (scrn->display->virtualX)
+ 	width = scrn->display->virtualX;
+-- 
+1.6.1.3
+
