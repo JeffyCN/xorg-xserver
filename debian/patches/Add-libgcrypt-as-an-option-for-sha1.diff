@@ -1,0 +1,75 @@
+From 6c6bbefdcf8a41dc71f9cbeca7ce972e2661fade Mon Sep 17 00:00:00 2001
+From: Julien Cristau <jcristau@debian.org>
+Date: Thu, 2 Apr 2009 02:34:49 +0200
+Subject: [PATCH] Add libgcrypt as an option for sha1
+
+---
+ configure.ac            |    6 ++++++
+ include/dix-config.h.in |    3 +++
+ render/glyph.c          |   12 ++++++++++++
+ 3 files changed, 21 insertions(+), 0 deletions(-)
+
+diff --git a/configure.ac b/configure.ac
+index f4e1dbb..29e3afc 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -1163,6 +1163,12 @@ if test "x$SHA1_LIB" = "x" ; then
+             [Use libmd SHA1 functions instead of OpenSSL libcrypto])])
+ fi
+ 
++if test "x$SHA1_LIB" = "x"; then
++  AC_CHECK_LIB([gcrypt], [gcry_md_open], [SHA1_LIB="-lgcrypt"
++            AC_DEFINE([HAVE_SHA1_IN_LIBGCRYPT], [1],
++            [Use libgcrypt SHA1 functions instead of OpenSSL libcrypto])])
++fi
++
+ if test "x$SHA1_LIB" = "x" ; then
+   PKG_CHECK_EXISTS([OPENSSL], [openssl], [HAVE_OPENSSL_PKC=yes],
+                     [HAVE_OPENSSL_PKC=no])
+diff --git a/include/dix-config.h.in b/include/dix-config.h.in
+index 26ac223..53ce798 100644
+--- a/include/dix-config.h.in
++++ b/include/dix-config.h.in
+@@ -157,6 +157,9 @@
+ /* Define to use libmd SHA1 functions instead of OpenSSL libcrypto */
+ #undef HAVE_SHA1_IN_LIBMD
+ 
++/* Define to use libgcrypt SHA1 functions instead of OpenSSL libcrypto */
++#undef HAVE_SHA1_IN_LIBGCRYPT
++
+ /* Define to 1 if you have the `shmctl64' function. */
+ #undef HAVE_SHMCTL64
+ 
+diff --git a/render/glyph.c b/render/glyph.c
+index 7c044aa..007d472 100644
+--- a/render/glyph.c
++++ b/render/glyph.c
+@@ -28,6 +28,8 @@
+ 
+ #ifdef HAVE_SHA1_IN_LIBMD /* Use libmd for SHA1 */
+ # include <sha1.h>
++#elif defined(HAVE_SHA1_IN_LIBGCRYPT)
++# include <gcrypt.h>
+ #else /* Use OpenSSL's libcrypto */
+ # include <stddef.h>  /* buggy openssl/sha.h wants size_t */
+ # include <openssl/sha.h>
+@@ -205,6 +207,16 @@ HashGlyph (xGlyphInfo    *gi,
+     SHA1Update (&ctx, gi, sizeof (xGlyphInfo));
+     SHA1Update (&ctx, bits, size);
+     SHA1Final (sha1, &ctx);
++#elif defined(HAVE_SHA1_IN_LIBGCRYPT) /* Use libgcrypt for SHA1 */
++    gcry_md_hd_t h;
++    gcry_error_t err;
++
++    err = gcry_md_open(&h, GCRY_MD_SHA1, 0);
++    if (err)
++	    return BadAlloc;
++    gcry_md_write(h, gi, sizeof (xGlyphInfo));
++    gcry_md_write(h, bits, size);
++    memcpy(sha1, gcry_md_read(h, GCRY_MD_SHA1), 20);
+ #else /* Use OpenSSL's libcrypto */
+     SHA_CTX ctx;
+     int success;
+-- 
+1.6.2.1
+
