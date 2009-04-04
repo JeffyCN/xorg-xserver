@@ -53,7 +53,7 @@ index 7c044aa..007d472 100644
  #else /* Use OpenSSL's libcrypto */
  # include <stddef.h>  /* buggy openssl/sha.h wants size_t */
  # include <openssl/sha.h>
-@@ -205,6 +207,16 @@ HashGlyph (xGlyphInfo    *gi,
+@@ -205,6 +207,17 @@ HashGlyph (xGlyphInfo    *gi,
      SHA1Update (&ctx, gi, sizeof (xGlyphInfo));
      SHA1Update (&ctx, bits, size);
      SHA1Final (sha1, &ctx);
@@ -67,6 +67,7 @@ index 7c044aa..007d472 100644
 +    gcry_md_write(h, gi, sizeof (xGlyphInfo));
 +    gcry_md_write(h, bits, size);
 +    memcpy(sha1, gcry_md_read(h, GCRY_MD_SHA1), 20);
++    gcry_md_close(h);
  #else /* Use OpenSSL's libcrypto */
      SHA_CTX ctx;
      int success;
