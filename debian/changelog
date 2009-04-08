@@ -12,6 +12,10 @@ xorg-server (2:1.6.0-1) UNRELEASED; urgency=low
   * Turn on ModeDebug by default.
   * Use libgcrypt for SHA1 instead of OpenSSL's libcrypto.
   * Build the xselinux extension on Linux architectures.
+  * Remove build-dependencies on x11proto-evie-dev, x11proto-trap-dev,
+    x11proto-xf86misc-dev; the corresponding extensions are removed.
+  * Remove build-dependencies on x11proto-print-dev, libfreetype6-dev and
+    xfonts-utils since we don't build Xprt anymore.
 
  -- David Nusinow <dnusinow@debian.org>  Sun, 15 Feb 2009 18:49:51 -0500
 
