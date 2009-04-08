@@ -34,8 +34,10 @@ endif
 
 ifeq ($(DEB_HOST_ARCH_OS), linux)
 	build_xfbdev = --enable-xfbdev
+	selinux = --enable-xselinux
 else
 	build_xfbdev = --disable-xfbdev
+	selinux = --disable-xselinux
 endif
 
 INSTALL=/usr/bin/install
@@ -50,6 +52,7 @@ confflags += --disable-static \
 	     --disable-builtin-fonts \
 	     --enable-xtrap \
 	     --enable-record \
+	     $(selinux) \
 	     --enable-glx-tls \
 	     --enable-dmx \
 	     --enable-vfb \
