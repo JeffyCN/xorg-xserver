@@ -17,6 +17,7 @@ xorg-server (2:1.6.0-1) UNRELEASED; urgency=low
   * Remove build-dependencies on x11proto-print-dev, libfreetype6-dev and
     xfonts-utils since we don't build Xprt anymore.
   * Fix lintian warnings about xserver-xorg-core.NEWS formatting.
+  * Move -dbg package to new section debug, add ${misc:Depends} where missing.
 
  -- David Nusinow <dnusinow@debian.org>  Sun, 15 Feb 2009 18:49:51 -0500
 
