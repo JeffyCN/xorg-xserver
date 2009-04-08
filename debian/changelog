@@ -18,6 +18,8 @@ xorg-server (2:1.6.0-1) UNRELEASED; urgency=low
     xfonts-utils since we don't build Xprt anymore.
   * Fix lintian warnings about xserver-xorg-core.NEWS formatting.
   * Move -dbg package to new section debug, add ${misc:Depends} where missing.
+  * Remove unused 06_use_proc_instead_of_sysfs_for_pci_domains.diff, obsoleted
+    by pci-rework.
 
  -- David Nusinow <dnusinow@debian.org>  Sun, 15 Feb 2009 18:49:51 -0500
 

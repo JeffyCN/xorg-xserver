@@ -1,5 +1,4 @@
 001_fedora_extramodes.patch
-#06_use_proc_instead_of_sysfs_for_pci_domains.diff
 #13_debian_add_xkbpath_env_variable.diff
 0001-xorg.conf-5-refer-to-mousedrv-4-.-Debian-394058.patch
 Turn-on-ModeDebug-by-default.patch
