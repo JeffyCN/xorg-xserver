@@ -10,6 +10,7 @@ Uploaders: David Nusinow <dnusinow@debian.org>, Steve Langasek <vorlon@debian.or
 # everything on is for the DMX and Xnest servers.
 Build-Depends:
  debhelper (>= 4.0.0),
+ quilt,
  lsb-release,
  pkg-config,
  bison,
@@ -62,7 +63,6 @@ Build-Depends:
  libxrender-dev (>= 1:0.9.0),
  libxi-dev (>= 1:0.99.1),
  x11proto-dmx-dev,
- quilt,
  libdmx-dev (>= 1:1.0.1),
  libxpm-dev (>= 1:3.5.3),
  libxaw7-dev (>= 1:0.99.1),
