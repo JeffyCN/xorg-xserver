@@ -1,4 +1,4 @@
-xorg-server (2:1.6.0-1) UNRELEASED; urgency=low
+xorg-server (2:1.6.0-1) unstable; urgency=low
 
   [ David Nusinow ]
   * Add 0001-xorg.conf-5-refer-to-mousedrv-4-.-Debian-394058.patch to
@@ -21,8 +21,9 @@ xorg-server (2:1.6.0-1) UNRELEASED; urgency=low
   * Remove unused 06_use_proc_instead_of_sysfs_for_pci_domains.diff, obsoleted
     by pci-rework.
   * Merge changelog entries 2:1.4.2-9 to 2:1.4.2-11.
+  * Upload to unstable.
 
- -- David Nusinow <dnusinow@debian.org>  Sun, 15 Feb 2009 18:49:51 -0500
+ -- Julien Cristau <jcristau@debian.org>  Thu, 09 Apr 2009 00:36:40 +0100
 
 xorg-server (2:1.5.99.902-1) experimental; urgency=low
 
