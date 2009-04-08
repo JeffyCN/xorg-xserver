@@ -1,3 +1,285 @@
+xorg-server (2:1.6.0-1) UNRELEASED; urgency=low
+
+  [ David Nusinow ]
+  * Add 0001-xorg.conf-5-refer-to-mousedrv-4-.-Debian-394058.patch to
+    refer to correct (semi-obsolete) mouse driver manpage.
+    closes: #394058
+
+  [ Julien Cristau ]
+  * New upstream release.
+  * 0001-mi-force-the-paired-kbd-device-before-CopyKeyClass.patch: remove,
+    included upstream.
+  * Turn on ModeDebug by default.
+  * Use libgcrypt for SHA1 instead of OpenSSL's libcrypto.
+  * Build the xselinux extension on Linux architectures.
+  * Remove build-dependencies on x11proto-evie-dev, x11proto-trap-dev,
+    x11proto-xf86misc-dev; the corresponding extensions are removed.
+  * Remove build-dependencies on x11proto-print-dev, libfreetype6-dev and
+    xfonts-utils since we don't build Xprt anymore.
+  * Fix lintian warnings about xserver-xorg-core.NEWS formatting.
+  * Move -dbg package to new section debug, add ${misc:Depends} where missing.
+  * Remove unused 06_use_proc_instead_of_sysfs_for_pci_domains.diff, obsoleted
+    by pci-rework.
+  * Merge changelog entries 2:1.4.2-9 to 2:1.4.2-11.
+
+ -- David Nusinow <dnusinow@debian.org>  Sun, 15 Feb 2009 18:49:51 -0500
+
+xorg-server (2:1.5.99.902-1) experimental; urgency=low
+
+  * New upstream release candidate.
+  * xserver-xorg-core.install: there are no more font modules.
+  * 0001-mi-force-the-paired-kbd-device-before-CopyKeyClass.patch: new patch,
+    fixes a crash with some multimedia keyboards (closes: #513384).
+
+ -- Julien Cristau <jcristau@debian.org>  Sat, 31 Jan 2009 19:32:31 +0100
+
+xorg-server (2:1.5.99.901-2) experimental; urgency=low
+
+  [ Julien Cristau ]
+  * Bump libdrm-dev build-dep to help out sbuild.
+
+  [ Timo Aaltonen ]
+  * debian/rules: Disable builtin fonts (LP: #308649, closes: #512706)
+
+ -- Julien Cristau <jcristau@debian.org>  Fri, 23 Jan 2009 21:16:14 +0100
+
+xorg-server (2:1.5.99.901-1) experimental; urgency=low
+
+  * New upstream release candidate.
+    + adds autodetection of sbus devices (closes: #483942).
+      Thanks, Bernhard R. Link!
+    + RandR version 1.3 adds panning (closes: #509699).
+    + fixes a crash with XAA and fb24_32ReformatTile (closes: #443480).
+    + correctly sets RAW mode on the console when xorg.conf is absent
+      (closes: #505746).
+
+  [ Timo Aaltonen ]
+  * debian/control:
+    - Add x11proto-dri2-dev to build-depends.
+    - Bump the x11proto-randr-dev build-dep version to 1.2.99.3. 
+    - Bump the libpixman-1-dev build-dep version to 0.13.2.
+    - Bump the xtrans-dev build-dep version to 1.2.2.
+    - Bump the x11proto-xext-dev build-dep version to 7.0.3.
+    - Bump the x11proto-input-dev build-dep version to 1.5.
+    - Bump the libgl1-mesa-dev and mesa-common-dev build-dep to
+      7.2+git20081209.a0d5c3cf.
+    - Bump the x11proto-core build-dep to 7.0.13.
+    - Add a build-dep on libxinerama-dev.
+    - Conflict xserver-xorg-video-4, xserver-xorg-input-2.1.
+  * debian/rules:
+    - Enable dri2 again.
+  * debian/patches:
+    02_Disable-DRI-in-Xephyr.patch
+    03_glx-init-infinite-loop.diff
+    - Dropped, implemented upstream.
+    13_debian_add_xkbpath_env_variable.diff
+    - Disabled for now, needs to be reimplemented or dropped.
+  * debian/{input,video}abiver: Bump the input (4) and videoabiver (5).
+  * debian/serverminver: Bump to 2:1.5.99.901.
+
+  [ Julien Cristau ]
+  * Ditch the GLX Public License and the CID Font Code Public License from
+    debian/copyright.  The CID code has been removed a while ago, and all code
+    under the GLXPL has been relicensed to the SGI Free Software License B 2.0.
+    This finally closes: #211765.
+
+  [ Yves-Alexis Perez ]
+  * debian/control: update deps for xserver-xorg-dev:
+    - libpixman-1-dev (>= 0.13.2-1)
+    - x11proto-core-dev (>= 7.0.14)
+    - x11proto-input-dev (>= 1.5.0)
+    - x11proto-xext-dev (>= 7.0.4)
+    - x11proto-randr-dev (>= 1.2.99.3)
+    - add x11proto-dri2-dev
+
+ -- Julien Cristau <jcristau@debian.org>  Wed, 21 Jan 2009 20:59:34 +0100
+
+xorg-server (2:1.5.3-1) experimental; urgency=low
+
+  [ Loic Minier ]
+  * Shut up rmdir error when trying to remove dirs; this might confuse
+    debconf.
+
+  [ Julien Cristau ]
+  * New upstream release.
+  * Fix infinite loop on server reset when swrast_dri.so is missing.  Only
+    push swrast on the glx provider stack on first generation, so we don't
+    turn the stack into a circular list (closes: #500287).
+  * Enable the record extension (closes: #504303).
+  * Merge changes from 2:1.4.2-8.
+
+ -- Julien Cristau <jcristau@debian.org>  Tue, 11 Nov 2008 23:17:14 +0100
+
+xorg-server (2:1.5.2-1) experimental; urgency=low
+
+  * New upstream bugfix release.
+  * debian/rules: define PCI_TXT_IDS_DIR to unbreak the pci id matching using
+    plain text files provided by drivers.
+  * Don't pass --with-serverconfig-path to configure, we only used to override
+    it for Xprint.
+  * Re-introduce the xserver-common package, containing
+    /usr/lib/xorg/protocol.txt and the Xserver(1) manpage for now.
+  * debian/rules: Use filter instead of findstring for noopt in
+    DEB_BUILD_OPTIONS.
+  * Remove obsolete conffile /etc/X11/xserver/SecurityPolicy on upgrades.
+  * Merge changes from 2:1.4.2-7.
+
+ -- Julien Cristau <jcristau@debian.org>  Sat, 11 Oct 2008 20:20:28 +0200
+
+xorg-server (2:1.5.1-1) experimental; urgency=low
+
+  * New upstream bugfix release.
+  * 02_Disable-DRI-in-Xephyr.patch: don't use DRI in Xephyr, as it doesn't
+    work correctly.
+  * Merge changelog from 2:1.4.2-6 (all changes are upstream now).
+
+ -- Julien Cristau <jcristau@debian.org>  Wed, 24 Sep 2008 17:49:18 +0200
+
+xorg-server (2:1.5.0-1) experimental; urgency=low
+
+  * New upstream release.
+  * Kill patch 50_Make-RandRQueryVersion-return-1.1-for-swapped-client.patch,
+    1.2 requests are properly swapped now.
+  * Bump videoabiver to 4 to match ABI_VIDEODRV_VERSION.  Yes, that means
+    rebuilding video drivers; sorry about that.
+
+ -- Julien Cristau <jcristau@debian.org>  Thu, 04 Sep 2008 02:05:47 +0200
+
+xorg-server (2:1.4.99.906-2) experimental; urgency=low
+
+  * Pull from server-1.5-branch as of Aug 27th
+    + input devices from xorg.conf aren't ignored if there is no ServerLayout
+      option (closes: #492140)
+  * Bump build-dep on inputproto to >= 1.4.4 for DeviceControlChanged.
+  * Merge in changes from 2:1.4.2-3 to 2:1.4.2-5.
+
+ -- Julien Cristau <jcristau@debian.org>  Thu, 28 Aug 2008 00:33:02 +0200
+
+xorg-server (2:1.4.99.906-1) experimental; urgency=low
+
+  * debian/rules: drop useless handling of nostrip in DEB_BUILD_OPTIONS (this
+    is taken care of by dh_strip); make the rules files and xsfbs.mk
+    parallel-safe, and enable parallel=n using example code from Debian
+    Policy.
+  * debian/rules: put the source package name and version in builderstring
+    instead of osvendor, add builder email as well; don't explicitly set
+    osname, configure sets it to $(uname -srm) by default.
+  * New upstream release candidate.
+    - fixes 64-bit Xephyr (closes: #491569)
+    - work around the DIX losing physical monitor dimensions for randr 1.1
+      drivers, in particular nvidia (closes: #488987)
+    - make sure RANDR reports refresh as 0 if pixel clock is 0 (closes:
+      #490258)
+    - doesn't try to load dri2 when it's not built (closes: #491651)
+  * Switch to running autoreconf at build time, and build-depend on automake,
+    libtool and xutils-dev.
+  * Reformat the SGI Free Software License B, to shut up over 1000 lintian
+    warnings.
+
+ -- Julien Cristau <jcristau@debian.org>  Sun, 27 Jul 2008 18:30:45 +0200
+
+xorg-server (2:1.4.99.905-1) experimental; urgency=low
+
+  [ Julien Cristau ]
+  * New upstream release candidate
+    - fixes FTBFS on alpha (closes: #472205); won't work, though, because
+      of #485528
+    - fixes FTBFS on GNU/kFreeBSD (closes: #482550)
+  * 001_ubuntu_add_extra_modelines_from_xorg.patch: remove, replace with
+    001_fedora_extramodes.patch stolen from fedora 9 cvs, rev 1.8.
+  * xvfb: recommend xauth instead of xbase-clients.
+  * xserver-xfbdev: recommend xfonts-base.
+  * debian/rules: drop our special handling for stripping modules, which I
+    think dates back to the days of the custom module loader.
+  * debian/rules: drop some remaining xprintisms.
+  * bump serverminver to 2:1.4.99.905.
+  * Stop build-depending on mesa-swx11-source (mesa 7.1 will build the
+    software driver itself), and don't pass --with-mesa-source to configure.
+  * Build with --enable-glx-tls, we build mesa with TLS support (otherwise
+    swrast_dri.so might fail to load due to unresolved symbols).
+  * Make the servers recommend libgl1-mesa-dri (>= 7.1~rc1).  Without this
+    package, the GLX extension fails to initialise (and takes the server down)
+    due to missing swrast_dri.so.
+
+  [ Timo Aaltonen ]
+  * Re-enable dri & glx.
+  * Add a build-dep on mesa-common-dev (>= 7.1~rc1) and bump the desired 
+    version of libgl1-mesa-dev respectively.
+  * Bump the libdrm-dev build-dep version to 2.3.1.
+
+ -- Julien Cristau <jcristau@debian.org>  Sun, 13 Jul 2008 23:33:05 +0200
+
+xorg-server (2:1.4.99.902-1) experimental; urgency=low
+
+  * Add postrm script for xserver-xorg-core, to remove
+    /var/log/Xorg.*.log{,.old} on purge (closes: #343384).
+  * Use dh_* -s instead of -a in binary-arch, to fix FTBFS on s390 (which
+    doesn't build xserver-xfbdev).
+  * New upstream release candidate.
+    + refresh 13_debian_add_xkbpath_env_variable.diff
+    + doesn't crash when there is no pci device (closes: #472823)
+    + includes a quirk for LPL monitors with broken EDID (closes: #473260)
+    + XKB is now enabled in Xnest (closes: #164379)
+  * Stop building Xprt, and drop related patches; it will be provided as a
+    separate package.
+
+ -- Julien Cristau <jcristau@debian.org>  Fri, 23 May 2008 00:58:45 +0200
+
+xorg-server (2:1.4.99.901-2) experimental; urgency=low
+
+  * xserver-xorg-dev needs to depend on libpciaccess-dev.
+  * Pull from upstream server-1.5-branch as of March 21st (commit 98249dfa).
+    + fixes build on ia64 (closes: #471663)
+  * Add missing conflicts on xserver-xorg-input-2.
+
+ -- Julien Cristau <jcristau@debian.org>  Fri, 21 Mar 2008 22:40:36 +0100
+
+xorg-server (2:1.4.99.901-1) experimental; urgency=low
+
+  [ Julien Cristau ]
+  * New upstream release candidate
+  * Update patches:
+    + 001_ubuntu_add_extra_modelines_from_xorg.patch: remove useless
+      whitespace changes
+    + 02_libvgahw_gcc4_volatile_fix.diff: delete, the gcc bug this was working
+      around is fixed for a long time
+    + 03_auto_load_driver.diff, 04_auto_load_driver_no_conf.diff,
+      05_kill_type1.diff, 07_autoconfig_screen_with_device_section.diff,
+      08_better_dpms_logging.diff, 10_dont_look_in_home_for_config.diff,
+      11_dont_crash_on_bad_dri_mode.diff, 14_default_screen_section.diff,
+      21_glx_align_fixes.patch, 40_default_dpi_96.patch,
+      41_vbe_filter_less.diff,
+      42_dont_break_grab_and_focus_for_window_when_redirecting.diff,
+      43_allow_override_BIOS_EDID_preferred_mode.diff,
+      44_preferredmode_infinite_loop.diff,
+      45_only_XF86_APM_CAPABILITY_CHANGED_for_video_change_acpi_events.diff,
+      46_reduce_wakeups_from_smart_scheduler.patch,
+      47_fbdevhw_magic_numbers.diff, 51_xkb-and-loathing.diff,
+      93_xprint_fonts_fix: remove, applied upstream
+    + 06_use_proc_instead_of_sysfs_for_pci_domains.diff: disable for now,
+      shouldn't be needed with pciaccess
+    + 13_debian_add_xkbpath_env_variable.diff: refresh
+    + 94_xprint_XSERVER_LIBS: disable, should be fixed upstream
+  * Disable glx, dri and dri2 for now.
+  * Re-enable dmx, build the xdmx and xdmx-tools packages.
+  * Add build-deps on libpciaccess-dev and libssl-dev for Xorg, bump build-dep
+    on libpixman-1-dev to >= 0.9.5.
+  * Add build-dep on libxv-dev for Xephyr.
+  * Drop XS- prefix from Vcs-* debian/control fields.
+  * Bump videoabiver to 2.9, inputabiver to 2.1, serverminver to 2:1.4.99.901.
+  * Drop obsolete --with-rgb-path configure option.
+  * /etc/X11/xserver/SecurityPolicy is gone, don't install it.
+  * Don't build-dep on "foo (>= bar-1)", to fix lintian warnings.
+
+  [ Drew Parsons ]
+  * Remove 94_xprint_XSERVER_LIBS (not needed in xserver 1.5).
+
+  [ Brice Goglin ]
+  * Build the Xfbdev server for real now, in new package xserver-xfbdev,
+    closes: #439764.
+
+ -- Julien Cristau <jcristau@debian.org>  Fri, 14 Mar 2008 13:46:48 +0100
+
 xorg-server (2:1.4.2-11) unstable; urgency=low
 
   * Bump x11proto-input-dev build-dep to >= 1.5.0 to fix keyboard layout

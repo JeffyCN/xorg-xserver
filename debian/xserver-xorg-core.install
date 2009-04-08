@@ -1,12 +1,9 @@
-etc/X11/xserver/SecurityPolicy
 usr/lib/xorg/modules/*.so
 usr/lib/xorg/modules/extensions/*.so
-usr/lib/xorg/modules/fonts/*
 usr/lib/xorg/modules/linux/*.so
 usr/lib/xorg/modules/freebsd/*.so
 usr/lib/xorg/modules/multimedia/*.so
 usr/bin/Xorg
-usr/share/man/man1/Xserver.1
 usr/share/man/man1/Xorg.1
 usr/share/man/man4/exa.4
 usr/share/man/man4/fbdevhw.4

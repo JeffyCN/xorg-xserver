@@ -1,6 +1,6 @@
 --- xorg-server.orig/xkb/xkbInit.c
 +++ xorg-server/xkb/xkbInit.c
-@@ -835,6 +835,14 @@
+@@ -805,6 +805,14 @@
  extern unsigned char	XkbDfltAccessXOptions;
  
  int
@@ -17,7 +17,7 @@
      if (strcmp(argv[i],"-kb")==0) {
 --- xorg-server.orig/os/utils.c
 +++ xorg-server/os/utils.c
-@@ -684,6 +684,7 @@
+@@ -685,6 +685,7 @@
   */
  void InitGlobals(void)
  {

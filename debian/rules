@@ -10,15 +10,17 @@
 include debian/xsfbs/xsfbs.mk
 
 CFLAGS = -Wall -g
-ifneq (,$(findstring noopt,$(DEB_BUILD_OPTIONS)))
+ifneq (,$(filter noopt,$(DEB_BUILD_OPTIONS)))
 	CFLAGS += -O0
 else
 	CFLAGS += -O2
 endif
-ifeq (,$(findstring nostrip,$(DEB_BUILD_OPTIONS)))
-	INSTALL_PROGRAM += -s
+ifneq (,$(filter parallel=%,$(DEB_BUILD_OPTIONS)))
+	NUMJOBS = $(patsubst parallel=%,%,$(filter parallel=%,$(DEB_BUILD_OPTIONS)))
+	MAKEFLAGS += -j$(NUMJOBS)
 endif
-CPPFLAGS += -DPRE_RELEASE=0
+
+#CPPFLAGS += -DPRE_RELEASE=0
 
 DEB_HOST_ARCH      ?= $(shell dpkg-architecture -qDEB_HOST_ARCH)
 DEB_HOST_GNU_TYPE  ?= $(shell dpkg-architecture -qDEB_HOST_GNU_TYPE)
@@ -30,17 +32,12 @@ else
 	confflags += --build=$(DEB_BUILD_GNU_TYPE) --host=$(DEB_HOST_GNU_TYPE)
 endif
 
-#ifeq ($(DEB_HOST_ARCH_OS), linux)
-#	build_xfbdev = --enable-xfbdev
-#else
-	build_xfbdev = --disable-xfbdev
-#endif
-
-BUILD_XPRINT = true
-ifeq ($(BUILD_XPRINT), true)
-	confflags += --enable-xprint
+ifeq ($(DEB_HOST_ARCH_OS), linux)
+	build_xfbdev = --enable-xfbdev
+	selinux = --enable-xselinux
 else
-	confflags += --disable-xprint
+	build_xfbdev = --disable-xfbdev
+	selinux = --disable-xselinux
 endif
 
 INSTALL=/usr/bin/install
@@ -51,11 +48,12 @@ VENDOR = $(shell lsb_release -i -s)
 # kill the .las.
 confflags += --disable-static \
 	     --enable-xorg \
-	     --with-mesa-source=/usr/share/mesa-source \
 	     --with-default-font-path="/usr/share/fonts/X11/misc,/usr/share/fonts/X11/cyrillic,/usr/share/fonts/X11/100dpi/:unscaled,/usr/share/fonts/X11/75dpi/:unscaled,/usr/share/fonts/X11/Type1,/usr/share/fonts/X11/100dpi,/usr/share/fonts/X11/75dpi,/var/lib/defoma/x-ttcidfont-conf.d/dirs/TrueType" \
-	     --with-serverconfig-path=/etc/X11/xserver \
-	     --with-rgb-path=/etc/X11/rgb \
+	     --disable-builtin-fonts \
 	     --enable-xtrap \
+	     --enable-record \
+	     $(selinux) \
+	     --enable-glx-tls \
 	     --enable-dmx \
 	     --enable-vfb \
 	     --enable-kdrive \
@@ -65,30 +63,42 @@ confflags += --disable-static \
 	     $(build_xfbdev) \
 	     --disable-kdrive-vesa \
 	     --disable-lbx \
-	     --enable-freetype \
+	     --disable-xprint \
 	     --disable-xorgconfig \
 	     --disable-xorgcfg \
 	     --with-xkb-path=/usr/share/X11/xkb \
 	     --with-xkb-output=/var/lib/xkb \
 	     --enable-xfree86-utils \
-	     --with-os-name="$(shell uname)" \
-	     --with-os-vendor="$(VENDOR) ($(SOURCE_NAME) $(SOURCE_VERSION))" \
+	     --with-os-vendor="$(VENDOR)" \
+	     --with-builderstring="$(SOURCE_NAME) $(SOURCE_VERSION) ($(BUILDER))" \
 	     --with-int10=x86emu \
-	     --disable-type1
+	     --enable-dri2
 
-build: patch build-stamp
-build-stamp: 
+configure: $(STAMP_DIR)/patch
 	dh_testdir
-	
-	mkdir -p obj-$(DEB_BUILD_GNU_TYPE)/GL
+	autoreconf -vfi
+
+obj-$(DEB_BUILD_GNU_TYPE)/config.status: configure
+	dh_testdir
+	mkdir -p obj-$(DEB_BUILD_GNU_TYPE)
 	cd obj-$(DEB_BUILD_GNU_TYPE) && \
-	../configure --prefix=/usr --mandir=\$${prefix}/share/man \
-	             --infodir=\$${prefix}/share/info --sysconfdir=/etc \
-	             --localstatedir=/var $(confflags) CFLAGS="$(CFLAGS)" \
-	             CPPFLAGS="$(CPPFLAGS)"
+	../configure \
+	  --prefix=/usr \
+	  --mandir=\$${prefix}/share/man \
+	  --infodir=\$${prefix}/share/info \
+	  --sysconfdir=/etc \
+	  --localstatedir=/var \
+	  $(confflags) \
+	  CFLAGS="$(CFLAGS)" \
+	  CPPFLAGS="$(CPPFLAGS)" \
+	  PCI_TXT_IDS_DIR="/usr/share/xserver-xorg/pci"
+
+
+build: build-stamp
+build-stamp: obj-$(DEB_BUILD_GNU_TYPE)/config.status
+	dh_testdir
 	cd obj-$(DEB_BUILD_GNU_TYPE) && $(MAKE)
-	
-	touch build-stamp
+	>$@
 
 clean: xsfclean
 	dh_testdir
@@ -106,8 +116,10 @@ clean: xsfclean
 	# more generated files
 	rm -f include/dix-config.h include/do-not-use-config.h \
 		include/xorg-config.h include/xorg-server.h
-	# needed for git snapshots
-	chmod +x configure
+	rm -f $$(find -name Makefile.in)
+	rm -f compile config.guess config.sub configure depcomp install-sh
+	rm -f ltmain.sh missing INSTALL aclocal.m4 ylwrap
+	rm -f include/do-not-use-config.h.in
 	
 	dh_clean
 
@@ -125,9 +137,6 @@ install: build
 	
 	install -m 755 debian/local/xvfb-run debian/tmp/usr/bin
 	install debian/local/xvfb-run.1 debian/tmp/usr/share/man/man1
-	
-#	# something funny going on with Xprinters, will have to sort it out upstream
-#	mv debian/tmp/usr/lib/X11/xserver/C/print/Xprinters.ghostscript debian/tmp/usr/lib/X11/xserver/C/print/Xprinters
 
 
 # stub to start building deb files, used by binary-indep and binary-arch
@@ -148,11 +157,11 @@ binary-deb:
 
 # Build architecture-dependent files here.
 binary-arch: build install
-	$(MAKE) -f debian/rules DH_OPTIONS=-a binary-initial
+	$(MAKE) -f debian/rules DH_OPTIONS=-s binary-initial
 	
-	dh_installdocs -a
-	dh_installchangelogs -a ChangeLog
-	dh_install -a --sourcedir=debian/tmp --list-missing -Xusr/share/man/man1/Xprt -Xusr/lib/X11/xserver -Xetc/X11/Xsession.d/92xprint-xpserverlist
+	dh_installdocs -s
+	dh_installchangelogs -s ChangeLog
+	dh_install -s --sourcedir=debian/tmp --list-missing
 	$(INSTALL) -d $(CURDIR)/debian/xserver-xorg-dev/usr/share/xserver-xorg
 	$(INSTALL) -m644 $(CURDIR)/debian/videoabiver \
 	           $(CURDIR)/debian/xserver-xorg-dev/usr/share/xserver-xorg/videoabiver
@@ -162,55 +171,21 @@ binary-arch: build install
 	           $(CURDIR)/debian/xserver-xorg-dev/usr/share/xserver-xorg/serverminver
 	$(INSTALL) -m 755 -d debian/xserver-xorg-core/usr/share/bug/xserver-xorg-core
 	$(INSTALL) -m 755 debian/xserver-xorg-core.bug.script debian/xserver-xorg-core/usr/share/bug/xserver-xorg-core/script
-	dh_installdebconf -a
-	dh_installman -a
-ifeq ($(BUILD_XPRINT), true)
-	$(INSTALL) -m 644 $(CURDIR)/debian/xprint-overrides $(CURDIR)/debian/xprint/usr/share/lintian/overrides/xprint
-	# xprint docs are linked to xprint-common
-	rm -rf debian/xprint/usr/share/doc/xprint
-endif
-	
-	dh_link -a
-	dh_strip -a --exclude=usr/lib/xorg/modules \
-		--dbg-package=xserver-xorg-core
-	for i in $$(find debian/xserver-xorg-core/usr/lib/xorg/modules -name "lib*.so"); do \
-	  mkdir -p $$(dirname debian/xserver-xorg-core-dbg/usr/lib/debug/$${i#*debian/xserver-xorg-core/}) && \
-	  objcopy --only-keep-debug $$i debian/xserver-xorg-core-dbg/usr/lib/debug/$${i#*debian/xserver-xorg-core/} && \
-	  objcopy --add-gnu-debuglink=debian/xserver-xorg-core-dbg/usr/lib/debug/$${i#*debian/xserver-xorg-core/} $$i; \
-	done
-ifeq (,$(findstring nostrip,$(DEB_BUILD_OPTIONS)))
-	find debian/xserver-xorg-core/usr/lib/xorg/modules -name "lib*.so" | \
-	  xargs --no-run-if-empty \
-	  strip --strip-debug --remove-section=.note --remove-section=.comment
-endif
-	$(MAKE) -f debian/rules DH_OPTIONS=-a binary-deb
+	dh_installdebconf -s
+	dh_installman -s
+	dh_link -s
+	dh_strip -s --dbg-package=xserver-xorg-core
+	$(MAKE) -f debian/rules DH_OPTIONS=-s binary-deb
 
 
-# Build architecture-independent files here (xprint-common)
+# Build architecture-independent files here
 binary-indep: build install
 	$(MAKE) -f debian/rules DH_OPTIONS=-i binary-initial
-	dh_install -i --sourcedir=debian/tmp --list-missing -Xusr/share/man -Xusr/include/xorg -Xusr/share/aclocal -Xusr/lib/xorg/modules -Xusr/lib/pkgconfig/xorg-server.pc -Xusr/bin -XSecurityPolicy -Xvar/lib/xkb -Xusr/lib/X11/Cards -Xusr/lib/X11/Options
-	
-ifeq ($(BUILD_XPRINT), true)
-	$(INSTALL) -m 644 $(CURDIR)/debian/xprint-common-overrides $(CURDIR)/debian/xprint-common/usr/share/lintian/overrides/xprint-common
-	# split Xprint config files so font files do not land in /etc
-	# (for xprint-common only)
-	mv debian/xprint-common/usr/share/Xprint/xserver/C/print/attributes debian/xprint-common/etc/Xprint/C/print/attributes
-	mv debian/xprint-common/usr/share/Xprint/xserver/C/print/Xprinters debian/xprint-common/etc/Xprint/C/print/Xprinters
-	mv debian/xprint-common/usr/share/Xprint/xserver/C/print/ddx-config debian/xprint-common/etc/Xprint/C/print/ddx-config
-	mv debian/xprint-common/usr/share/Xprint/xserver/en_US/print/attributes debian/xprint-common/etc/Xprint/en_US/print/attributes
-	# dh_install cannot rename files, sigh
-	$(INSTALL) -m 644 $(CURDIR)/debian/xprint-common.default $(CURDIR)/debian/xprint-common/etc/default/xprint
-	dh_installinit -p xprint-common --name=xprint
-endif
-	
+	dh_install -i --sourcedir=debian/tmp
 	dh_installdocs -i
-	dh_installchangelogs -i ChangeLog
-	dh_installdebconf -i
-	dh_link -i
-	
-	$(MAKE) -f debian/rules DH_OPTIONS=-i binary-deb
+	dh_installchangelogs -i
 
+	$(MAKE) -f debian/rules DH_OPTIONS=-i binary-deb
 
 binary: binary-indep binary-arch
 .PHONY: build clean binary-indep binary-arch binary install
