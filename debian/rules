@@ -40,6 +40,12 @@ else
 	selinux = --disable-xselinux
 endif
 
+ifeq ($(DEB_HOST_ARCH), hurd-i386)
+	dri2 = --disable-dri2
+else
+	dri2 = --enable-dri2
+endif
+
 INSTALL=/usr/bin/install
 
 VENDOR = $(shell lsb_release -i -s)
@@ -72,7 +78,7 @@ confflags += --disable-static \
 	     --with-os-vendor="$(VENDOR)" \
 	     --with-builderstring="$(SOURCE_NAME) $(SOURCE_VERSION) ($(BUILDER))" \
 	     --with-int10=x86emu \
-	     --enable-dri2
+	     $(dri2)
 
 configure: $(STAMP_DIR)/patch
 	dh_testdir
