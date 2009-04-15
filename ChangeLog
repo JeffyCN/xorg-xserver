@@ -1,3 +1,175 @@
+commit cd321badf0c185854b3e0c038f3851a3ac7864ea
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Tue Apr 14 16:08:11 2009 -0400
+
+    xserver 1.6.1
+
+commit fcffa3a178683ede0d15656c432fccf23ebca5ef
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Wed Mar 25 15:51:43 2009 +1000
+
+    Xext: set POINTER_SCREEN flag in XTestFakeInput if necessary. (RH #490984)
+    
+    The POINTER_SCREEN flag must be set explicitly for XTest core events to avoid
+    out-of-range events when the lastSlave was an SD with an explicit axis range.
+    Device events sent through XTest don't need this flag, they are expected to be
+    in the valuator range of the device anyway.
+    
+    Red Hat Bug 490984 <https://bugzilla.redhat.com/show_bug.cgi?id=490984>
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    (cherry picked from commit 603db34337a61754e0c5f71525011d10eab78411)
+
+commit 6ff60c626141771b365d557fe64bc93f200d1c9c
+Author: Kristian Høgsberg <krh@redhat.com>
+Date:   Thu Apr 9 13:16:37 2009 -0400
+
+    glx: Fix drawable private leak on destroy
+    
+    When a drawable goes away, we don't destroy the GLX drawable in full,
+    since it may be current for a context.  This means that when the drawable
+    is destroyed in full later, the backend doesn't get a chance to
+    destroy resources associated with the drawable (the DRI2Drawable).
+    
+    With this patch, we destroy the GLX drawable in full when it goes away
+    and then track down all contexts that reference it and NULL their
+    pointers.
+    
+    (cherry picked from commit 7b6400a1b8d2f228fcbedf17c30a7e3924e4dd2a)
+
+commit 50894e13545538ed93f20823f7ba81d1ab8906bb
+Author: Eamon Walsh <ewalsh@tycho.nsa.gov>
+Date:   Thu Apr 9 02:48:04 2009 -0400
+
+    xselinux: Don't BadAlloc in List* requests if there are no items to list.
+    (cherry picked from commit 682d7b55699cacbb2dbcd84a5e816bf6e2d2f02a)
+
+commit feb01d7d6e98fa77f9069b08aaa9727368ef3aaf
+Author: Eamon Walsh <ewalsh@tycho.nsa.gov>
+Date:   Wed Apr 8 15:10:16 2009 -0400
+
+    xselinux: Don't require incoming context strings to be null-terminated.
+    (cherry picked from commit e8b324102f6e21ae2b8292a6f50d016dd6254dd6)
+
+commit b7dc7374bbcb708eee6eec26ff141619f914d8eb
+Author: Eamon Walsh <ewalsh@tycho.nsa.gov>
+Date:   Mon Mar 9 17:28:40 2009 -0400
+
+    Correct access mode in call to dixLookupWindow() within RRSelectInput.
+    
+    Reported by Alan Coopersmith.
+    (cherry picked from commit 6544490700051b3b5e88ac1890d71b35634c9100)
+
+commit 38b0f9edca80e43b4c8c364cfebc25c835d24cbd
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Fri Mar 27 16:49:45 2009 -0400
+
+    Fix distcheck with dolt
+
+commit 509986d6f0255588f37446173ea76640895c9886
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Fri Mar 27 16:28:26 2009 -0400
+
+    Fix Changelog generation
+
+commit 0f9fd02dacf4363c0efd69825bc804bfb55599bf
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Mon Mar 16 13:24:48 2009 -0400
+
+    selinux: Add support for avc_acquire_netlink_fd()
+    
+    Requires libselinux 2.0.79 or newer.  Without this, libselinux will
+    check for policy updates on the netlink socket on basically every policy
+    lookup.  Statistically speaking, they never happen, and the check
+    translates to at least one more syscall on basically every operation.
+    
+    Instead, take control of the fd from the library, and check it in
+    WakeupHandler if it polls readable.
+    (cherry picked from commit 3992dd38caf33b343affd8d732c94880d1099dcf)
+
+commit b3484c848040ae29b8ca1327d3b142db30c38387
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Sat Feb 21 19:56:20 2009 -0500
+
+    selinux: Don't bother relabeling resources that are being destroyed
+    
+    Makes window destroy about 40x faster in Xvfb.
+    (cherry picked from commit b030f858f2f1ce1fd27a73ebf7f9ec5db541a668)
+
+commit 08ac9140f6042ce3faa618613fc8443c92924a21
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Fri Feb 13 09:56:22 2009 +1000
+
+    xkb: Fix wrong colour reference in XKB geometry copying. #20081
+    
+    base_color and label_color need to reference the color in the destination, not
+    in the source.
+    
+    X.Org Bug 20081 <http://bugs.freedesktop.org/show_bug.cgi?id=20081>
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Signed-off-by: Daniel Stone <daniel@fooishbar.org>
+    (cherry picked from commit f5bf1fdaf36163d5c2f1b9b51df96326ebbb0e9c)
+
+commit 124da1da5cd3ac85edd7f0e30f61ee842d49a6a4
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Mon Mar 9 08:59:01 2009 +1000
+
+    Xi: don't crash on a NULL property name, just return None.
+    
+    strcmp doesn't like NULL-pointers.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    (cherry picked from commit 0d9a42dc0380d1583889b6b6521bd5a2451735d4)
+
+commit ea9f51fd42ae0285aed707b7efa44c558dad4e4b
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Fri Dec 5 16:24:57 2008 +1000
+
+    Xi: add XATOM_FLOAT to server-defined properties.
+    
+    This property is used to denote type float for input properties. Such
+    properties can be accessed easily through the XIPropToFloat() function.
+    
+    Code originally written by Simon Thum.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@redhat.com>
+    (cherry picked from commit a48c81dcdf569a3f634ac23e08d2491354de6a36)
+
+commit 6ad6b6f900e9c3a55e4ee509bdc9ff0ddec9a59a
+Author: Peter Hutterer <peter.hutterer@redhat.com>
+Date:   Wed Nov 19 15:50:57 2008 +1000
+
+    Xi: add XIPropToInt() auxiliary function.
+    
+    Converts an XIPropertyValuePtr to an integer, provided that type and format is
+    right.
+    
+    Code originally written by Simon Thum.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@redhat.com>
+    (cherry picked from commit 669f6810af9a89187d6149841925fe765f3988ff)
+
+commit 667865b9eb98ed73461028b3d38be19619712533
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Mon Mar 2 14:26:23 2009 -0500
+
+    randr: Fix thinko in xf86TargetPreferred
+    
+    The only-one-output case would only work right if that also happened to
+    be the zeroth output.  Oops.
+    (cherry picked from commit 8a6ed44a8b2fc5f14729dc54fec17607ced03859)
+
+commit f469726fec502ce29999eda6919c3c3d26c127d8
+Author: Eric Paris <eparis@redhat.com>
+Date:   Tue Mar 3 13:15:39 2009 -0500
+
+    This patch changes all places in the X code to use _raw functions.  The
+    X server should never see, translate, or deal with a munged context.
+    Display managers which show contexts to the user should take care of
+    translating these to human readable form.
+    (cherry picked from commit c7cf926d25523d5d0d8e5c83671c901660070d71)
+
 commit 60c161545af80eb78eb790a05bde79409dfdf16e
 Author: Keith Packard <keithp@keithp.com>
 Date:   Wed Feb 25 12:05:44 2009 -0800
@@ -385,7 +557,7 @@ Date:   Mon Feb 2 10:20:13 2009 +1000
     Signed-off-by: Keith Packard <keithp@keithp.com>
 
 commit 536748aa88f82e4157b86ed1a02b798b1510bdb8
-Merge: 8c6ddbf... be21199...
+Merge: 8c6ddbf be21199
 Author: Keith Packard <keithp@keithp.com>
 Date:   Tue Feb 17 18:52:04 2009 -0800
 
@@ -944,7 +1116,7 @@ Date:   Tue Dec 9 23:48:18 2008 -0800
     (cherry picked from commit 1962af7ee3bdf54cfa674187dea67b9ad36cd5a1)
 
 commit fdfc70ea0a183daaabb9bb436f2b0cbf95f47e88
-Merge: 8cfb353... 82f4273...
+Merge: 8cfb353 82f4273
 Author: Keith Packard <keithp@keithp.com>
 Date:   Mon Jan 12 10:40:04 2009 -0800
 
@@ -2365,7 +2537,7 @@ Date:   Tue Nov 25 23:15:35 2008 -0800
     New version of dolt
 
 commit 4715f079b9c61362755c95c1ebf89c97cc6fff2b
-Merge: 9ffc671... ed597f1...
+Merge: 9ffc671 ed597f1
 Author: Keith Packard <keithp@keithp.com>
 Date:   Tue Nov 25 22:19:08 2008 -0800
 
@@ -3246,7 +3418,7 @@ Date:   Fri Nov 21 12:21:45 2008 +1000
     Signed-off-by: Peter Hutterer <peter.hutterer@redhat.com>
 
 commit 387563b77743d92be83420d982eaf57f5459a883
-Merge: 85f650c... f6e01fa...
+Merge: 85f650c f6e01fa
 Author: Matthieu Herrb <matthieu.herrb@laas.fr>
 Date:   Sun Nov 23 13:15:46 2008 +0100
 
@@ -3648,7 +3820,7 @@ Date:   Fri Nov 14 12:36:20 2008 -0500
     Signed-off-by: James Cloos <cloos@jhcloos.com>
 
 commit ba4e08244ed3923eecf26842dfc1df17c696e053
-Merge: 81fd17f... 5bad5d2...
+Merge: 81fd17f 5bad5d2
 Author: Alex Deucher <alexdeucher@gmail.com>
 Date:   Thu Nov 13 15:04:18 2008 -0500
 
@@ -10646,7 +10818,7 @@ Date:   Mon May 26 17:56:08 2008 +0930
     Signed-off-by: Peter Hutterer <peter@cs.unisa.edu.au>
 
 commit 26c1958c322be3ac4dfec9ba2c41c5202bd03709
-Merge: 5fe5778... 2958610...
+Merge: 5fe5778 2958610
 Author: Peter Hutterer <peter@cs.unisa.edu.au>
 Date:   Mon May 26 17:37:31 2008 +0930
 
@@ -11125,7 +11297,7 @@ Date:   Wed May 21 21:51:27 2008 +0930
     Big boss says UniSA isn't unique enough. Who am I to argue?
 
 commit 7509fb498c02fe1cebe4139612b8871ec877c130
-Merge: 2ae3bed... dfb7de6...
+Merge: 2ae3bed dfb7de6
 Author: Peter Hutterer <peter@cs.unisa.edu.au>
 Date:   Wed May 21 16:25:35 2008 +0930
 
@@ -11185,7 +11357,7 @@ Date:   Tue May 20 10:54:32 2008 +0930
     fb: shut up two compiler warnings.
 
 commit 99d28c3ef37aeffe7d8ec41e45a650ba248c6958
-Merge: fc7e256... 0178b6a...
+Merge: fc7e256 0178b6a
 Author: Peter Hutterer <peter@cs.unisa.edu.au>
 Date:   Tue May 20 10:20:14 2008 +0930
 
@@ -11785,7 +11957,7 @@ Date:   Fri May 9 15:38:44 2008 -0700
     <http://bugs.opensolaris.org/bugdatabase/view_bug.do?bug_id=4258475>
 
 commit 7b3066d9b9099135d9c49e0682161d5568fc535b
-Merge: 2a3d142... 315f089...
+Merge: 2a3d142 315f089
 Author: Drew Parsons <drew@emerall.com>
 Date:   Sat May 10 00:01:15 2008 +1000
 
@@ -11885,7 +12057,7 @@ Date:   Thu May 8 16:04:24 2008 -0400
     Bug #13104: Remove broken XAA a1 glyph fast path.
 
 commit ddaecfa13cefee7c66b39b606c8640c6544d4943
-Merge: 9c2e087... cf20df3...
+Merge: 9c2e087 cf20df3
 Author: Adam Jackson <ajax@redhat.com>
 Date:   Thu May 8 14:33:58 2008 -0400
 
@@ -12143,7 +12315,7 @@ Date:   Fri May 2 14:56:58 2008 +0930
     xfree86: don't try to repaint the cursor before cursors exist.
 
 commit 334456952930cb3e55c02fcdada2d0c074cd0520
-Merge: 8e56fd9... 3b8d534...
+Merge: 8e56fd9 3b8d534
 Author: Peter Hutterer <peter@cs.unisa.edu.au>
 Date:   Fri May 2 11:00:14 2008 +0930
 
@@ -13052,7 +13224,7 @@ Date:   Mon Apr 21 22:06:38 2008 -0700
     (cherry picked from commit a033c0b3dbb3b963261faa39f0236457cb00ff44)
 
 commit 8190ef87547b704848231bde10b1cdffc6442790
-Merge: 179a082... 2ddbfd3...
+Merge: 179a082 2ddbfd3
 Author: Peter Hutterer <peter@cs.unisa.edu.au>
 Date:   Tue Apr 22 18:04:05 2008 +0930
 
@@ -13690,7 +13862,7 @@ Date:   Mon Apr 14 09:58:49 2008 +0200
     EXA: Teach exaCompositeFallbackPictDesc() about x8r8g8b8.
 
 commit 1a9d7205cd5640eb65f019336097d86301942ea7
-Merge: 90f491c... 6866e84...
+Merge: 90f491c 6866e84
 Author: Peter Hutterer <peter@cs.unisa.edu.au>
 Date:   Mon Apr 14 16:25:58 2008 +0930
 
@@ -13875,7 +14047,7 @@ Date:   Fri Feb 22 11:01:51 2008 +1030
     X.Org Bug 14418 <http://bugs.freedesktop.org/show_bug.cgi?id=14418>
 
 commit 90f491cf8eb869f27c4278b26c1bb84432b12d63
-Merge: cbe01b3... b4380d8...
+Merge: cbe01b3 b4380d8
 Author: Peter Hutterer <peter@cs.unisa.edu.au>
 Date:   Fri Apr 11 08:29:52 2008 +0930
 
@@ -14068,7 +14240,7 @@ Date:   Tue Apr 8 20:37:25 2008 -0700
     (cherry picked from commit 126e9bc8c480b403dedc44c1e8c4fe1476340ed9)
 
 commit cbe01b3083eb65c9d4259b1071683febebf11600
-Merge: 5ffbcfe... 389dae7...
+Merge: 5ffbcfe 389dae7
 Author: Peter Hutterer <peter@cs.unisa.edu.au>
 Date:   Wed Apr 9 10:46:46 2008 +0930
 
@@ -14168,7 +14340,7 @@ Date:   Thu Apr 3 14:50:05 2008 -0400
     EXA: Fix TS origin computation when implementing RenderComposite with tiling.
 
 commit fd06e8f8c1d82a9d91931e8532bee0fd9c9ca9ab
-Merge: b46a009... 6c0cfe3...
+Merge: b46a009 6c0cfe3
 Author: Peter Hutterer <whot@potoroo.wearablelab.ml.unisa.edu.au>
 Date:   Mon Apr 7 07:56:41 2008 +0930
 
@@ -14180,7 +14352,7 @@ Date:   Mon Apr 7 07:56:41 2008 +0930
     	dix/dispatch.c
 
 commit 539bf3c2836727e7560c64144071b086f8ea32fe
-Merge: 3ab33e7... 6c0cfe3...
+Merge: 3ab33e7 6c0cfe3
 Author: Sascha Hlusiak <saschahlusiak@arcor.de>
 Date:   Mon Apr 7 00:10:16 2008 +0200
 
@@ -14641,7 +14813,7 @@ Date:   Thu Mar 27 15:18:39 2008 +1000
     RH BZ 435216
 
 commit 9df915b84d45d39aed7557c98883b20a66da2e96
-Merge: 47eb658... 333e712...
+Merge: 47eb658 333e712
 Author: Sascha Hlusiak <saschahlusiak@arcor.de>
 Date:   Tue Mar 25 17:50:50 2008 +0100
 
@@ -15183,7 +15355,7 @@ Date:   Tue Mar 4 02:44:48 2008 -0500
     XACE: Check the return value of the selection create hook call.
 
 commit 4f2cd0ed96d3b10c78774c721c2ffbfb0556dddd
-Merge: 23ae68a... 453661a...
+Merge: 23ae68a 453661a
 Author: Peter Hutterer <peter@cs.unisa.edu.au>
 Date:   Tue Mar 4 18:11:10 2008 +1030
 
@@ -16642,7 +16814,7 @@ Date:   Fri Feb 1 14:13:29 2008 +1030
     Reviewed-by: Peter Hutterer <peter@cs.unisa.edu.au>
 
 commit e5e531ce96264518f278f572a4d0bfcd345aa618
-Merge: 6c38682... 1692dcf...
+Merge: 6c38682 1692dcf
 Author: Peter Hutterer <peter@cs.unisa.edu.au>
 Date:   Thu Jan 31 16:36:17 2008 +1030
 
@@ -16759,14 +16931,14 @@ Date:   Mon Jan 28 12:18:43 2008 -0800
     (cherry picked from commit 116800279d2ec783c63f43d3902627edde6a4cff)
 
 commit 16b0614c8c441eb1692bde9e58fadf54a9c6f00f
-Merge: 1a88aed... e915a26...
+Merge: 1a88aed e915a26
 Author: David Nusinow <dnusinow@debian.org>
 Date:   Sat Jan 26 16:13:25 2008 -0500
 
     Merge commit 'upstream/master'
 
 commit 0ac175597712edfeae676f536746a4d26d625e30
-Merge: 210eeef... e915a26...
+Merge: 210eeef e915a26
 Author: Peter Hutterer <peter@cs.unisa.edu.au>
 Date:   Sat Jan 26 13:55:07 2008 +1030
 
@@ -17220,7 +17392,7 @@ Date:   Wed Jan 9 19:52:00 2008 -0800
     More Xv extension byte swapping fixes
 
 commit 38bf01bd1c925614a6e67a38aa3cefc7b8fe3bca
-Merge: 4e85c7c... 0883e83...
+Merge: 4e85c7c 0883e83
 Author: Peter Hutterer <peter@cs.unisa.edu.au>
 Date:   Thu Jan 10 13:38:46 2008 +1030
 
@@ -17456,7 +17628,7 @@ Date:   Thu Jan 3 18:09:56 2008 +1030
     dix: free ClassesRec when a BadAlloc occurs during CoreKeyboardProc.
 
 commit 8da83836b60f7cdb75d08482f4311fa0e2ab4e1d
-Merge: eace889... ae869fc...
+Merge: eace889 ae869fc
 Author: Peter Hutterer <peter@cs.unisa.edu.au>
 Date:   Thu Jan 3 17:04:54 2008 +1030
 
@@ -18095,7 +18267,7 @@ Date:   Fri Dec 14 00:53:54 2007 -0500
     Bump video driver ABI and extension ABI for devPrivates rework.
 
 commit 86b2e59bfb79bd042a13c35fbb4ccecec576f629
-Merge: 1c1a4bc... cb0d7e2...
+Merge: 1c1a4bc cb0d7e2
 Author: Eamon Walsh <ewalsh@tycho.nsa.gov>
 Date:   Fri Dec 14 00:32:24 2007 -0500
 
@@ -18143,7 +18315,7 @@ Date:   Thu Dec 13 15:55:28 2007 -0800
     (cherry picked from commit fc04c9759b30d062111d4a7f3f411ed0f18cbde4)
 
 commit c8feb73f5841e7812d8dfdb91f1064e2033d028c
-Merge: 9a7ce57... a125ce4...
+Merge: 9a7ce57 a125ce4
 Author: Eamon Walsh <ewalsh@tycho.nsa.gov>
 Date:   Thu Dec 13 18:38:25 2007 -0500
 
@@ -19610,7 +19782,7 @@ Date:   Mon Nov 19 21:01:22 2007 -0500
     	during merge conflict resolution.
 
 commit 2d17f47cc7d6b174857617d31ad1b437d8e97d94
-Merge: 60be452... ea9c63e...
+Merge: 60be452 ea9c63e
 Author: Eamon Walsh <ewalsh@tycho.nsa.gov>
 Date:   Mon Nov 19 18:10:46 2007 -0500
 
@@ -19938,7 +20110,7 @@ Date:   Thu Nov 8 17:25:36 2007 -0500
     Don't sleep(1) at server exit.
 
 commit 1603130236c55ddabc3854d4ba62d544debcf1f5
-Merge: f207e69... f7dd0c7...
+Merge: f207e69 f7dd0c7
 Author: Eamon Walsh <ewalsh@tycho.nsa.gov>
 Date:   Wed Nov 14 13:35:50 2007 -0500
 
@@ -20315,7 +20487,7 @@ Date:   Thu Nov 8 10:00:35 2007 +1030
     Also clean up to return error codes instead of sending the error manually.
 
 commit 184a7b8917a15bb2c719153b9b016c03aab42101
-Merge: a8808ac... 0b72905...
+Merge: a8808ac 0b72905
 Author: Peter Hutterer <peter@cs.unisa.edu.au>
 Date:   Thu Nov 8 09:34:35 2007 +1030
 
@@ -20326,7 +20498,7 @@ Date:   Thu Nov 8 09:34:35 2007 +1030
     	Xi/opendev.c
 
 commit e94ab0b502160376d1956345196f7e1c7e2e886f
-Merge: 26e1fc7... 9bee1c6...
+Merge: 26e1fc7 9bee1c6
 Author: Dodji Seketeli <dodji@openedhand.com>
 Date:   Wed Nov 7 19:04:24 2007 +0100
 
@@ -20365,7 +20537,7 @@ Date:   Wed Nov 7 18:43:16 2007 +0100
               XNEST_LIBS contains the right thing.
 
 commit 0b729051c04da7068f1e6dd319190bd0a362b2c0
-Merge: b7ee005... d7c5e8b...
+Merge: b7ee005 d7c5e8b
 Author: Peter Hutterer <peter@cs.unisa.edu.au>
 Date:   Wed Nov 7 15:37:23 2007 +1030
 
@@ -20464,7 +20636,7 @@ Date:   Tue Nov 6 16:26:09 2007 -0500
     on the x11perf benchmark.
 
 commit aaa50b64113b122aaebd46e3b78e3fb7a8d70500
-Merge: 868e303... ddce48e...
+Merge: 868e303 ddce48e
 Author: Dodji Seketeli <dodji@openedhand.com>
 Date:   Tue Nov 6 16:25:40 2007 +0100
 
@@ -20491,7 +20663,7 @@ Date:   Tue Nov 6 09:40:14 2007 +0000
     to subsequent assertion failure in libdbus.
 
 commit a52c9b2a59f27266557ff9d5d2c08492e04135a6
-Merge: c7e18be... 5833289...
+Merge: c7e18be 5833289
 Author: Eamon Walsh <ewalsh@tycho.nsa.gov>
 Date:   Mon Nov 5 19:08:36 2007 -0500
 
@@ -20519,7 +20691,7 @@ Date:   Mon Nov 5 15:01:13 2007 -0500
     xselinux: Register SELinux extension protocol names.
 
 commit 632c33c5c18b3e091c4fce98280af4d583e99640
-Merge: 4113f04... dda10c9...
+Merge: 4113f04 dda10c9
 Author: Dodji Seketeli <dodji@openedhand.com>
 Date:   Mon Nov 5 17:52:33 2007 +0100
 
@@ -21189,7 +21361,7 @@ Date:   Thu Oct 25 12:35:01 2007 -0400
     xselinux: Label the default device directly with the process context.
 
 commit b633d54b94d746d26e13014634d9f63bbb7e8f7d
-Merge: 4b05f19... 48ca596...
+Merge: 4b05f19 48ca596
 Author: Eamon Walsh <ewalsh@tycho.nsa.gov>
 Date:   Thu Oct 25 12:19:30 2007 -0400
 
@@ -21391,7 +21563,7 @@ Date:   Fri Oct 19 16:34:54 2007 -0700
     they should be.
 
 commit a3a95d3475dc91ed2e8a55bf484a6b3f2b5ac32a
-Merge: a358b87... 7e1cada...
+Merge: a358b87 7e1cada
 Author: Eric Anholt <eric@anholt.net>
 Date:   Fri Oct 19 15:44:17 2007 -0700
 
@@ -21597,7 +21769,7 @@ Date:   Wed Oct 17 16:09:40 2007 -0400
     Need to merge so this type of thing stops happening.
 
 commit c3f7b862550fa8f46633162f83db8c27e46fc672
-Merge: af4dde0... feac075...
+Merge: af4dde0 feac075
 Author: Eamon Walsh <ewalsh@tycho.nsa.gov>
 Date:   Wed Oct 17 15:00:54 2007 -0400
 
@@ -22177,7 +22349,7 @@ Date:   Sun Oct 14 14:59:12 2007 -0400
     Fix GLX byteswapping.
 
 commit 927757e1028f45f7fd94b9a2ab35567e0f34b2a8
-Merge: ccda4b6... 17ffc34...
+Merge: ccda4b6 17ffc34
 Author: Kristian Høgsberg <krh@redhat.com>
 Date:   Fri Oct 12 19:28:39 2007 -0400
 
@@ -22457,7 +22629,7 @@ Date:   Fri Oct 5 12:19:03 2007 +0930
     regardless of who is the pairing client.
 
 commit 4611f9568cdadf9c00f4b7ca4c77c8c6f07e94f8
-Merge: ab11bad... 3549a12...
+Merge: ab11bad 3549a12
 Author: Dodji Seketeli <dodji@openedhand.com>
 Date:   Thu Oct 4 13:07:50 2007 +0200
 
@@ -22530,7 +22702,7 @@ Date:   Thu Oct 4 11:38:01 2007 +0200
     it for them completely.
 
 commit 604ebb5a6de372e6a8a96e0ee997db7929126860
-Merge: 1365aef... 4ba76a7...
+Merge: 1365aef 4ba76a7
 Author: Dodji Seketeli <dodji@openedhand.com>
 Date:   Wed Oct 3 16:13:16 2007 +0200
 
@@ -22668,7 +22840,7 @@ Date:   Tue Oct 2 13:13:51 2007 -0700
     Also fix incorrect library inclusion by kdrive which broke the build.
 
 commit 439edc768eea17667846ce573c843b8377e0dfb4
-Merge: c8ccf46... 93ae6fe...
+Merge: c8ccf46 93ae6fe
 Author: Eric Anholt <eric@anholt.net>
 Date:   Tue Oct 2 12:14:04 2007 -0700
 
@@ -23601,7 +23773,7 @@ Date:   Thu Sep 27 11:44:03 2007 +0930
     This is hopefully better than hardcodey calling CoreProcessPointerEvent.
 
 commit 27612748e0ec20f3a23839f0a12e39f598dd722c
-Merge: b614614... 3b114f2...
+Merge: b614614 3b114f2
 Author: Eamon Walsh <ewalsh@tycho.nsa.gov>
 Date:   Wed Sep 26 07:47:29 2007 -0400
 
@@ -24022,7 +24194,7 @@ Date:   Wed Sep 19 04:46:10 2007 -0700
     hey -- you have to start somewhere. ;)
 
 commit 97c150b61bbe436453b05d3c07cd2173870aac40
-Merge: 57907e0... 547ad21...
+Merge: 57907e0 547ad21
 Author: Eamon Walsh <ewalsh@tycho.nsa.gov>
 Date:   Wed Sep 19 07:25:55 2007 -0400
 
@@ -24147,7 +24319,7 @@ Date:   Sat Sep 15 14:01:57 2007 +0200
     Initialize output->pendingProperties.
 
 commit b9f7aeb20015290a8acf938a11bf9272bf3527cf
-Merge: e4d11e5... 06d27f8...
+Merge: e4d11e5 06d27f8
 Author: Eric Anholt <eric@anholt.net>
 Date:   Thu Sep 13 00:15:45 2007 +0000
 
@@ -24561,7 +24733,7 @@ Date:   Wed Sep 5 17:46:23 2007 -0700
     broken uses.
 
 commit e332335241af28ef0ab66b102d0cbc4e5c73ac68
-Merge: 7381e91... accd71b...
+Merge: 7381e91 accd71b
 Author: Ben Byer <bbyer@bbyer.apple.com>
 Date:   Wed Sep 5 15:51:23 2007 -0700
 
@@ -24606,7 +24778,7 @@ Date:   Wed Sep 5 14:31:01 2007 -0700
     so it doesn't make sense to require it when building on OSX/Darwin.
 
 commit ff01e44e33fd072958fb0157dae072f1b1c88944
-Merge: 8ba8c16... 47300ed...
+Merge: 8ba8c16 47300ed
 Author: Ben Byer <bbyer@bbyer.apple.com>
 Date:   Wed Sep 5 13:56:08 2007 -0700
 
@@ -24756,7 +24928,7 @@ Date:   Tue Sep 4 14:49:49 2007 -0700
     Revert part of 529acb175440969af9d7fa38aab8d7dea0dc2661 because libtool is smart.
 
 commit bf5948518763b5e21eff806a0a9abc5f7757fa10
-Merge: 4062db4... 735da3d...
+Merge: 4062db4 735da3d
 Author: Matthieu Herrb <matthieu@bluenote.herrb.com>
 Date:   Tue Sep 4 22:40:31 2007 +0200
 
@@ -25072,7 +25244,7 @@ Date:   Tue Aug 28 09:28:25 2007 -0400
     FontRec privates.
 
 commit 85547073265ae9bc4ae3af920a6d3214fd1ca0c5
-Merge: 860a09c... 7d54399...
+Merge: 860a09c 7d54399
 Author: Eamon Walsh <ewalsh@tycho.nsa.gov>
 Date:   Tue Aug 28 07:25:21 2007 -0400
 
@@ -25172,7 +25344,7 @@ Date:   Fri Aug 24 16:00:31 2007 -0700
     Bump video driver ABI for pci-rework.
 
 commit 91f358336f77c0e4f577be65cca977d17298e36c
-Merge: b9a806f... 8b6b40b...
+Merge: b9a806f 8b6b40b
 Author: Ian Romanick <idr@us.ibm.com>
 Date:   Fri Aug 24 15:04:21 2007 -0700
 
@@ -25226,7 +25398,7 @@ Date:   Fri Aug 24 13:04:48 2007 +0200
     case.
 
 commit 8b6b40b7271acd81a9548f502c18f46f3b640640
-Merge: ab7a6d8... 3305d17...
+Merge: ab7a6d8 3305d17
 Author: Ian Romanick <idr@us.ibm.com>
 Date:   Thu Aug 23 18:19:17 2007 -0700
 
@@ -25363,7 +25535,7 @@ Date:   Wed Aug 22 16:54:29 2007 +0100
     Fix <pixman.h> include to <pixman/pixman.h>
 
 commit b6a7c0112c42a3287e53647c38b2c0c5bf8fefa0
-Merge: 53941c8... 6ef4ecd...
+Merge: 53941c8 6ef4ecd
 Author: Søren Sandmann Pedersen <sandmann@redhat.com>
 Date:   Tue Aug 21 14:26:34 2007 -0400
 
@@ -25675,7 +25847,7 @@ Date:   Mon Aug 13 10:43:48 2007 -0400
     current interface.
 
 commit f367285fd5825e0adc271982a529c9904ad65c89
-Merge: b1272ee... ff4bd3a...
+Merge: b1272ee ff4bd3a
 Author: Peter Hutterer <peter@cs.unisa.edu.au>
 Date:   Sun Aug 12 15:31:10 2007 +0930
 
@@ -26050,7 +26222,7 @@ Date:   Wed Jul 25 14:57:13 2007 -0700
     ProcRenderAddGlyphs: Convert while loops to for loops where more natural
 
 commit e34fcd2bf42dbd72ab6ce2df80f2dcaa13416e74
-Merge: 32c0dcc... f3955c0...
+Merge: 32c0dcc f3955c0
 Author: Eamon Walsh <ewalsh@tycho.nsa.gov>
 Date:   Thu Aug 2 14:27:03 2007 -0400
 
@@ -27358,7 +27530,7 @@ Date:   Wed Jun 20 18:42:00 2007 +0200
     can't actually occur when swapped out.
 
 commit 1f97a7647606226cde61d6ad7a94f2b0b571a06c
-Merge: 5dee64f... 2e7fef7...
+Merge: 5dee64f 2e7fef7
 Author: Peter Hutterer <peter@cs.unisa.edu.au>
 Date:   Tue Jun 19 17:20:52 2007 +0930
 
@@ -27400,7 +27572,7 @@ Date:   Tue Jun 19 11:28:07 2007 +0930
     device to interact, so this seems like a reasonable solution.
 
 commit ab7a6d860d4a275a810a64b1ba7b13726ed10575
-Merge: e9130b8... 2e7fef7...
+Merge: e9130b8 2e7fef7
 Author: Ian Romanick <idr@us.ibm.com>
 Date:   Mon Jun 18 16:51:13 2007 -0700
 
@@ -27482,7 +27654,7 @@ Date:   Mon Jun 11 21:25:42 2007 -0400
     Delete fbBltmmx().
 
 commit e2a720c9a17dc860ee0a858c2b21fd71e86cdcd0
-Merge: 878cac7... 3f9adb1...
+Merge: 878cac7 3f9adb1
 Author: Eamon Walsh <ewalsh@tycho.nsa.gov>
 Date:   Mon Jun 11 15:29:11 2007 -0400
 
@@ -27806,7 +27978,7 @@ Date:   Tue May 29 14:54:27 2007 -0600
     Remove wscons keyboard handling stuff that doesn't belong there anymore.
 
 commit 60de6c7ef9bdcee043f63e8e0d493e6feba6a9d0
-Merge: 3a6549a... 2f13b7c...
+Merge: 3a6549a 2f13b7c
 Author: Matthieu Herrb <matthieu@deville.herrb.com>
 Date:   Tue May 29 12:14:49 2007 -0600
 
@@ -27979,7 +28151,7 @@ Date:   Wed May 23 12:56:04 2007 -0400
     Add missing offsets for window coordinates - reported by Colin Harrison
 
 commit 2a4aa63a23ddd816b647b851a01865861827a7eb
-Merge: 9cee4ec... cc648e6...
+Merge: 9cee4ec cc648e6
 Author: Eamon Walsh <ewalsh@tycho.nsa.gov>
 Date:   Tue May 22 14:50:26 2007 -0400
 
@@ -28530,7 +28702,7 @@ Date:   Mon Apr 30 10:33:12 2007 -0600
     fix __glXErrorCallBack() proto
 
 commit 6b33459bf5aac23c3ecc7002d091c02f327d907a
-Merge: 18252a5... 3c91a99...
+Merge: 18252a5 3c91a99
 Author: Brian <brian@yutani.localnet.net>
 Date:   Mon Apr 30 10:26:19 2007 -0600
 
@@ -28718,7 +28890,7 @@ Date:   Fri Apr 27 08:13:08 2007 -0400
     are both 0.
 
 commit f28eea0647f007c2e2415ecc6fceef46201faad4
-Merge: 339b73e... ae04f2c...
+Merge: 339b73e ae04f2c
 Author: Peter Hutterer <peter@cs.unisa.edu.au>
 Date:   Fri Apr 27 16:34:36 2007 +0930
 
@@ -29249,7 +29421,7 @@ Date:   Tue Apr 17 13:46:55 2007 -0400
     security: remove debugging code.
 
 commit 1f06d32ef58749d0f0c062193d237ee98f60e90f
-Merge: cf962a8... fc162c6...
+Merge: cf962a8 fc162c6
 Author: Eamon Walsh <ewalsh@tycho.nsa.gov>
 Date:   Tue Apr 17 12:10:22 2007 -0400
 
@@ -29420,7 +29592,7 @@ Date:   Thu Apr 12 11:16:19 2007 +0930
     This workaround is obsolete with 33a5d9605e3e282f6aa1921d7321a2a12ef02c42
 
 commit d4dad6f84f82a4ade5005c3aa93511c1295875b8
-Merge: f1f8b56... 33a5d96...
+Merge: f1f8b56 33a5d96
 Author: Peter Hutterer <peter@cs.unisa.edu.au>
 Date:   Thu Apr 12 11:11:03 2007 +0930
 
@@ -29674,7 +29846,7 @@ Date:   Fri Apr 6 13:38:12 2007 +0300
     GLcore: fix after moving xf86glx_util.[hc] to Mesa.
 
 commit cf962a849db2b259ca558c6265ea7e3328a4d312
-Merge: 5ad5625... 5a804f2...
+Merge: 5ad5625 5a804f2
 Author: Eamon Walsh <ewalsh@tycho.nsa.gov>
 Date:   Thu Apr 5 14:41:39 2007 -0400
 
@@ -29820,7 +29992,7 @@ Date:   Tue Apr 3 09:27:57 2007 -0600
     about setting the XFree86Server symbol.
 
 commit 1cc8db72816cd079f30255046e10043c350bf683
-Merge: 645d87c... a39f297...
+Merge: 645d87c a39f297
 Author: Matthieu Herrb <matthieu@roadrock.(none)>
 Date:   Tue Apr 3 16:04:45 2007 +0200
 
@@ -29839,7 +30011,7 @@ Date:   Tue Apr 3 19:02:14 2007 +0930
     Delete all grabs from all devices when deleting a window.
 
 commit 5f382c9c7fbda6eccf8e76c28a90b55ff2f0aef3
-Merge: 9b0b340... f09ee16...
+Merge: 9b0b340 f09ee16
 Author: Peter Hutterer <peter@cs.unisa.edu.au>
 Date:   Tue Apr 3 15:07:18 2007 +0930
 
@@ -29959,7 +30131,7 @@ Date:   Mon Apr 2 12:26:27 2007 -0600
     formatting fixes
 
 commit e8777a91f37d828b9df839bf3d9cf2f954bdddb0
-Merge: a120547... 96ce17a...
+Merge: a120547 96ce17a
 Author: Peter Hutterer <peter@cs.unisa.edu.au>
 Date:   Mon Apr 2 15:36:26 2007 +0930
 
@@ -30024,7 +30196,7 @@ Date:   Fri Mar 30 16:05:46 2007 -0600
     values of 1280 (my screen width).
 
 commit e9130b8bac73a0843d5ff6b2216eccfb3e094a48
-Merge: 2c6d471... 92e8cdb...
+Merge: 2c6d471 92e8cdb
 Author: Ian Romanick <idr@us.ibm.com>
 Date:   Fri Mar 30 13:39:15 2007 -0700
 
@@ -30161,7 +30333,7 @@ Date:   Wed Mar 28 12:57:11 2007 -0400
     xace: provide creation-time resource hook call in CreateWindow().
 
 commit 99b220969f2f8ba829bc8294b27ca90fd9311be4
-Merge: 728ad64... 82a8b99...
+Merge: 728ad64 82a8b99
 Author: Eamon Walsh <ewalsh@tycho.nsa.gov>
 Date:   Wed Mar 28 12:54:04 2007 -0400
 
@@ -30174,7 +30346,7 @@ Date:   Wed Mar 28 12:03:19 2007 -0400
     Refuse to create tiny modes from EDID detailed timing.
 
 commit 2c6d47108880584f1221ff86c6c8947627f9f607
-Merge: c4fe1bc... 8522044...
+Merge: c4fe1bc 8522044
 Author: Ian Romanick <idr@us.ibm.com>
 Date:   Wed Mar 28 08:08:04 2007 -0700
 
@@ -30244,7 +30416,7 @@ Date:   Mon Mar 26 16:04:50 2007 -0700
     Fix indentation of fakexa help text.
 
 commit 728ad64d979fd9e5cca28e8c15118c18d707c431
-Merge: 0331c6a... 6a0bed1...
+Merge: 0331c6a 6a0bed1
 Author: Eamon Walsh <ewalsh@tycho.nsa.gov>
 Date:   Tue Mar 27 13:16:40 2007 -0400
 
@@ -30281,7 +30453,7 @@ Date:   Mon Mar 26 12:44:58 2007 -0700
     Update xorg.conf manpage for new RandR 1.2 monitor options.
 
 commit 0331c6a8fcba1dc27ef45aaf5f694799d0085413
-Merge: 84a066c... f7c5aa0...
+Merge: 84a066c f7c5aa0
 Author: Eamon Walsh <ewalsh@tycho.nsa.gov>
 Date:   Mon Mar 26 10:28:05 2007 -0400
 
@@ -30646,7 +30818,7 @@ Date:   Mon Mar 19 16:11:01 2007 +1030
             by the evdev driver).
 
 commit 015d728bcde5b16a72a976579755421e3023626b
-Merge: 65b0eb6... b167583...
+Merge: 65b0eb6 b167583
 Author: Peter Hutterer <peter@cs.unisa.edu.au>
 Date:   Mon Mar 19 09:42:56 2007 +1030
 
@@ -30953,7 +31125,7 @@ Date:   Wed Mar 7 09:57:02 2007 -0500
     devPrivates rework: move reset functions into a single call.
 
 commit bb111291d854b4329e47367ce3c67e8a2785e6e9
-Merge: 74175e0... e9bfb2b...
+Merge: 74175e0 e9bfb2b
 Author: Eamon Walsh <ewalsh@tycho.nsa.gov>
 Date:   Wed Mar 7 09:03:46 2007 -0500
 
@@ -31025,7 +31197,7 @@ Date:   Tue Mar 6 11:09:30 2007 -0800
     updated todo list
 
 commit 81d581e655fc989da3be4256b83849a63b8607b7
-Merge: a05ffca... d5aba03...
+Merge: a05ffca d5aba03
 Author: Ben Byer <bbyer@bbyer.(none)>
 Date:   Tue Mar 6 10:37:29 2007 -0800
 
@@ -31056,7 +31228,7 @@ Date:   Tue Mar 6 02:31:59 2007 -0800
     moved new event-handling code from X11Application.m to darwinEvents.c in preparation for making all Darwin servers use it
 
 commit 0ccd1443fd6db397b42e5b99ce733ce1316c785e
-Merge: ec1ef8a... 9b6bb06...
+Merge: ec1ef8a 9b6bb06
 Author: Ben Byer <bbyer@bbyer.(none)>
 Date:   Tue Mar 6 01:04:50 2007 -0800
 
@@ -31131,7 +31303,7 @@ Date:   Mon Mar 5 12:34:37 2007 -0500
     devPrivates rework: remove some debugging code from dixFreePrivates.
 
 commit 23fc429aad5b2721911862617772c314e1036bb0
-Merge: e684824... fe7b8f4...
+Merge: e684824 fe7b8f4
 Author: Eamon Walsh <ewalsh@tycho.nsa.gov>
 Date:   Mon Mar 5 12:18:54 2007 -0500
 
@@ -31177,7 +31349,7 @@ Date:   Mon Feb 26 09:40:00 2007 +1100
     modes: add commit/prepare hooks
 
 commit 1f0075786fedde538a95e2f39681052e25021d88
-Merge: 57aa5e9... 12175b6...
+Merge: 57aa5e9 12175b6
 Author: Peter Hutterer <peter@cs.unisa.edu.au>
 Date:   Mon Mar 5 12:37:17 2007 +1030
 
@@ -31378,7 +31550,7 @@ Date:   Wed Feb 28 15:43:06 2007 +1030
     between coordinates stored in device and coordinates sent by the event.
 
 commit d9bcb22d199e8444b9762a35754e04d327dd5915
-Merge: 272d934... c16343a...
+Merge: 272d934 c16343a
 Author: Ben Byer <bbyer@bbyer.apple.com>
 Date:   Tue Feb 27 16:28:20 2007 -0800
 
@@ -31803,14 +31975,14 @@ Date:   Thu Feb 15 17:07:42 2007 +0200
     http://xorg.freedesktop.org/wiki/XDC2007Notes#head-2719037a1905516c45cf74f0e155c8703221e446
 
 commit f452507ca9209598401d15da0039aaa4e1fed1a3
-Merge: 0463283... 8116757...
+Merge: 0463283 8116757
 Author: Eamon Walsh <ewalsh@tycho.nsa.gov>
 Date:   Thu Feb 15 09:47:20 2007 -0500
 
     Merge branch 'master' into my-XACE-SELINUX
 
 commit 04632835b7402456fdcf6c8fa01970cd2804e27c
-Merge: 88f89b9... 9ecf79c...
+Merge: 88f89b9 9ecf79c
 Author: Eamon Walsh <ewalsh@tycho.nsa.gov>
 Date:   Thu Feb 15 09:27:05 2007 -0500
 
@@ -31858,7 +32030,7 @@ Date:   Wed Feb 14 17:09:33 2007 +1030
     fix: WarpCursor needs to send MotionNotify.
 
 commit c4fe1bcce1c1e4822e688959b331b47a051d6e0a
-Merge: e540d57... d570ff7...
+Merge: e540d57 d570ff7
 Author: Ian Romanick <idr@us.ibm.com>
 Date:   Wed Feb 14 15:39:52 2007 -0800
 
@@ -31922,7 +32094,7 @@ Date:   Mon Feb 12 17:18:29 2007 -0500
     Remove spurious LIBADD from xf4bpp
 
 commit 16eb7254f861465f988ae3861ac3449c2c966062
-Merge: 3814862... c4b7e9d...
+Merge: 3814862 c4b7e9d
 Author: Ian Romanick <idr@us.ibm.com>
 Date:   Fri Feb 9 12:38:49 2007 -0800
 
@@ -32101,7 +32273,7 @@ Date:   Mon Jan 29 17:30:59 2007 -0800
     Typical results were failure to sync, and a black screen.
 
 commit 3814862a869ee83d307eb01225d5949039f435d8
-Merge: a216de9... 31f2d4a...
+Merge: a216de9 31f2d4a
 Author: Ian Romanick <idr@us.ibm.com>
 Date:   Mon Jan 29 15:14:31 2007 -0800
 
@@ -32142,7 +32314,7 @@ Date:   Mon Jan 29 16:10:03 2007 +1030
     mi:     Fix cursor rendering issues.
 
 commit 15a81b6325d359990017b8e9f17ce18a7eff1354
-Merge: 3759254... cc3d66d...
+Merge: 3759254 cc3d66d
 Author: Peter Hutterer <peter@cs.unisa.edu.au>
 Date:   Sun Jan 28 17:18:57 2007 +1030
 
@@ -32155,7 +32327,7 @@ Date:   Wed Nov 15 17:50:02 2006 +1030
     o fix minor error in comment for GetPointerEvents()
 
 commit 3759254c0967ae83bdcbf097d9e8a58733c8e6f9
-Merge: ba547d4... ca5ebe3...
+Merge: ba547d4 ca5ebe3
 Author: Peter Hutterer <peter@cs.unisa.edu.au>
 Date:   Sun Jan 28 17:05:55 2007 +1030
 
@@ -32174,7 +32346,7 @@ Date:   Fri Jan 26 13:00:45 2007 +0100
     Xorg #9692
 
 commit a216de9b7ff55e2b73c487d037f248f00bd2e63b
-Merge: 24506ea... cf7ca9d...
+Merge: 24506ea cf7ca9d
 Author: Ian Romanick <idr@us.ibm.com>
 Date:   Thu Jan 25 10:17:32 2007 -0800
 
@@ -32209,7 +32381,7 @@ Date:   Wed Jan 24 15:33:49 2007 -0800
     read_legcay_BIOS, and delete all remnants of it from all other places.
 
 commit fdb3a0798f0d17e72ec7293d59a7a81b5ffdf95b
-Merge: 39b51e1... a53586e...
+Merge: 39b51e1 a53586e
 Author: Ian Romanick <idr@us.ibm.com>
 Date:   Wed Jan 24 14:49:39 2007 -0800
 
@@ -32237,7 +32409,7 @@ Date:   Thu Jan 25 00:29:20 2007 +0800
     Make Xinearama screen information reflect CRTC rotation.
 
 commit 39b51e1bfc4924fc3bda4342ef9c6c0125d9f4fa
-Merge: 637b19b... 788cfce...
+Merge: 637b19b 788cfce
 Author: Ian Romanick <idr@us.ibm.com>
 Date:   Tue Jan 23 13:25:56 2007 -0800
 
@@ -32279,7 +32451,7 @@ Date:   Mon Jan 22 09:13:59 2007 -0800
     ARCH_PCI_OS_INIT mechanism useless.  Remove it.
 
 commit 7dfb3cea913b02a6b36c308d1330bd40abe6b41f
-Merge: c279d5f... 2dc8662...
+Merge: c279d5f 2dc8662
 Author: Ian Romanick <idr@us.ibm.com>
 Date:   Mon Jan 22 08:44:36 2007 -0800
 
@@ -32317,7 +32489,7 @@ Date:   Fri Jan 19 14:52:23 2007 -0800
         -ardelay and -arinterval, respectively.
 
 commit c279d5fdc53612a90f33fafe9e9c59ced008dd51
-Merge: 88f248e... 14d6a9b...
+Merge: 88f248e 14d6a9b
 Author: Ian Romanick <idr@us.ibm.com>
 Date:   Fri Jan 19 12:59:54 2007 -0800
 
@@ -32610,7 +32782,7 @@ Date:   Tue Jan 9 16:34:40 2007 -0800
     Track rename of DamagePost -> DamageAdd.
 
 commit da09964a931cc64d05ab571bf545fdad35a6d395
-Merge: e1f73d2... e3aa6ad...
+Merge: e1f73d2 e3aa6ad
 Author: Ian Romanick <idr@us.ibm.com>
 Date:   Tue Jan 9 15:27:34 2007 -0800
 
@@ -32695,7 +32867,7 @@ Date:   Thu Jan 4 15:37:33 2007 -0800
     Incorporate new byte-order related configure changes.
 
 commit 8dd5771a1b91c331860b667fb18e484452000aad
-Merge: 45aa26c... 7d2ec92...
+Merge: 45aa26c 7d2ec92
 Author: Ian Romanick <idr@us.ibm.com>
 Date:   Thu Jan 4 15:01:38 2007 -0800
 
@@ -32861,7 +33033,7 @@ Date:   Thu Dec 28 13:15:11 2006 -0800
     Export exaMove{In,Out}Pixmap().
 
 commit 683ca3f7afaf15fd3ca7918f6175b5a9e4a6f05b
-Merge: 05f9150... 9563b2e...
+Merge: 05f9150 9563b2e
 Author: Eric Anholt <eric@anholt.net>
 Date:   Wed Dec 27 16:11:31 2006 -0800
 
@@ -32902,7 +33074,7 @@ Date:   Sat Dec 9 22:51:59 2006 +0200
     Make sure we're not copying sym_interpret across from an empty source.
 
 commit 43a4376bd72ef1b6486cddb60ad57b2d6169292a
-Merge: 4b1c9ac... d9e079d...
+Merge: 4b1c9ac d9e079d
 Author: Eamon Walsh <ewalsh@tycho.nsa.gov>
 Date:   Fri Dec 22 13:53:55 2006 -0500
 
@@ -32964,7 +33136,7 @@ Date:   Tue Dec 19 16:38:34 2006 -0800
     xorg.conf man page should say "XFree86-DGA", not "Xorg-DGA"
 
 commit a81dbaae0597492f0245080c6f5af7158e05e2d0
-Merge: fb6d676... d442998...
+Merge: fb6d676 d442998
 Author: Eamon Walsh <ewalsh@tycho.nsa.gov>
 Date:   Tue Dec 19 16:11:19 2006 -0500
 
@@ -33004,7 +33176,7 @@ Date:   Tue Dec 19 18:45:25 2006 +0100
     This affects drivers with no UploadToScreen or UploadToScreen failures.
 
 commit 4334860e69e7d5b156082bd05c7a86708e5bad4c
-Merge: 7e47176... fdcc22c...
+Merge: 7e47176 fdcc22c
 Author: Michel Dänzer <michel@tungstengraphics.com>
 Date:   Tue Dec 19 16:29:26 2006 +0100
 
@@ -33039,14 +33211,14 @@ Date:   Tue Dec 19 15:24:19 2006 +0100
     See https://bugs.freedesktop.org/show_bug.cgi?id=6772 .
 
 commit ca5ebe3971d8ebcfed00c5ebcd026cdd0ce0c6ba
-Merge: 4d07b50... 1b029fd...
+Merge: 4d07b50 1b029fd
 Author: Peter Hutterer <peter@cs.unisa.edu.au>
 Date:   Tue Dec 19 10:51:01 2006 +1030
 
     Merge branch 'master' of git://anongit.freedesktop.org/git/xorg/xserver
 
 commit 2d0a63126b3d3a17005b7e122617ee0c5f44a55b
-Merge: d8b5394... 1b029fd...
+Merge: d8b5394 1b029fd
 Author: Peter Hutterer <peter@cs.unisa.edu.au>
 Date:   Tue Dec 19 10:31:40 2006 +1030
 
@@ -33273,7 +33445,7 @@ Date:   Tue Dec 12 15:59:08 2006 -0500
     Split AssignClientState() into two routines, new routine is server-specific.
 
 commit 62e7722ebd8d341a23eb56cb330eeb00e6a975a6
-Merge: e124806... f3c6090...
+Merge: e124806 f3c6090
 Author: Eamon Walsh <ewalsh@tycho.nsa.gov>
 Date:   Tue Dec 12 13:54:33 2006 -0500
 
@@ -33377,7 +33549,7 @@ Date:   Sun Dec 10 11:24:05 2006 -0500
     Accept EDID > 1.3 but < 2.0 if we find it, assume it's compatible.
 
 commit e1f73d220873fa091695e46b7fcd008663a95a6f
-Merge: 27d682f... d56249a...
+Merge: 27d682f d56249a
 Author: Ian Romanick <idr@us.ibm.com>
 Date:   Fri Dec 8 17:24:15 2006 -0800
 
@@ -33397,7 +33569,7 @@ Date:   Fri Dec 8 17:24:15 2006 -0800
     	hw/xfree86/utils/scanpci/Makefile.am
 
 commit d56249a15ead51ad4d2117d5538ada24af05b693
-Merge: f1f8df1... ec84f72...
+Merge: f1f8df1 ec84f72
 Author: Jeremy C. Reed <reed@glacier.reedmedia.net>
 Date:   Fri Dec 8 15:52:37 2006 -0600
 
@@ -33559,7 +33731,7 @@ Date:   Tue Dec 5 18:50:19 2006 +1030
     Ironing some glitches caused by the merge
 
 commit 3c8f166022a2d19af14eb670fa382503ba1451cd
-Merge: 2a51149... f9f7d7f...
+Merge: 2a51149 f9f7d7f
 Author: Peter Hutterer <peter@cs.unisa.edu.au>
 Date:   Tue Dec 5 18:28:33 2006 +1030
 
@@ -33640,7 +33812,7 @@ Date:   Fri Dec 1 15:56:52 2006 +1030
     	DeliverDeviceEvents() caters for MPX devices.
 
 commit ccd804c6c01cdfffe938fa5336be9b5668a6f0c0
-Merge: 9423ac1... 82912ad...
+Merge: 9423ac1 82912ad
 Author: Drew Parsons <drew@pug.localdomain>
 Date:   Fri Dec 1 15:21:57 2006 +1100
 
@@ -33679,7 +33851,7 @@ Date:   Wed Nov 29 22:19:57 2006 -0500
     Add required root window context to config file.
 
 commit 143558500a89a5c887c75c03798bae68c953cac9
-Merge: e3d3d29... ee9bdd3...
+Merge: e3d3d29 ee9bdd3
 Author: Eamon Walsh <ewalsh@tycho.nsa.gov>
 Date:   Wed Nov 29 20:41:41 2006 -0500
 
@@ -33813,7 +33985,7 @@ Date:   Mon Nov 27 16:21:31 2006 -0800
     Move mode handling helpers from ddcProperty.c to xf86Mode.c.
 
 commit b4b0d901d98371a8aa7b17d195e18e83e2a6a618
-Merge: 64de3ba... d6cd031...
+Merge: 64de3ba d6cd031
 Author: Eric Anholt <eric@anholt.net>
 Date:   Mon Nov 27 15:43:15 2006 -0800
 
@@ -34032,7 +34204,7 @@ Date:   Mon Nov 20 13:10:07 2006 +1030
             bugfix in mipointer, semicolon after preprocessor statement
 
 commit ca2874b273232d9f51881b1cd754ed6847bfaf47
-Merge: c9a5f9d... e2f6dac...
+Merge: c9a5f9d e2f6dac
 Author: Alan Hourihane <alanh@fairlite.demon.co.uk>
 Date:   Sat Nov 18 19:56:32 2006 +0000
 
@@ -34205,7 +34377,7 @@ Date:   Tue Nov 14 15:33:07 2006 +0100
     Bug #9023: Only check mice for "mouse" or "void" if identifier is != NULL.
 
 commit a724b7f1302ba7a59f140b521f13d2ddf0fcf9bf
-Merge: 6facd95... f80a8ae...
+Merge: 6facd95 f80a8ae
 Author: Jeremy C. Reed <reed@glacier.reedmedia.net>
 Date:   Mon Nov 13 20:32:26 2006 -0600
 
@@ -34529,7 +34701,7 @@ Date:   Tue Nov 7 15:48:05 2006 -0800
     A couple more cases of error message before freeing strings.
 
 commit 05f1c302460a14c8fa9a943a12d69adcd3c30d58
-Merge: 3e7e0e3... 46af6d1...
+Merge: 3e7e0e3 46af6d1
 Author: Adam Jackson <ajax@benzedrine.nwnk.net>
 Date:   Tue Nov 7 18:42:54 2006 -0500
 
@@ -34575,7 +34747,7 @@ Date:   Tue Nov 7 01:29:51 2006 -0800
     getevents.c
 
 commit c20d3bf7533da0bf26beaf7d8c359d18edbd70e8
-Merge: 028bbdc... 3d39c02...
+Merge: 028bbdc 3d39c02
 Author: Keith Packard <keithp@neko.keithp.com>
 Date:   Tue Nov 7 01:21:28 2006 -0800
 
@@ -34614,14 +34786,14 @@ Date:   Mon Nov 6 00:30:09 2006 +0100
     Fix typo in Xvesa: incorrect reporting of DAC capabilities.
 
 commit 028bbdc0417173803695808ba9f48498519273a3
-Merge: 50504c6... 8deaaa3...
+Merge: 50504c6 8deaaa3
 Author: Keith Packard <keithp@neko.keithp.com>
 Date:   Sat Nov 4 17:46:26 2006 -0800
 
     Merge master back to randr-1.2
 
 commit 50504c68e1d407232cf83465981b235e542ef31f
-Merge: 8b87ce1... cde8806...
+Merge: 8b87ce1 cde8806
 Author: Keith Packard <keithp@neko.keithp.com>
 Date:   Sat Nov 4 17:43:19 2006 -0800
 
@@ -34701,7 +34873,7 @@ Date:   Fri Oct 27 12:36:56 2006 -0700
     and 1024x768@75 modes.
 
 commit 22ee2e4e1f1d9fd9ca9f25c9bf25370034b771d4
-Merge: 49a2668... bd0c829...
+Merge: 49a2668 bd0c829
 Author: Alan Coopersmith <alan.coopersmith@sun.com>
 Date:   Fri Nov 3 12:54:56 2006 -0800
 
@@ -34814,7 +34986,7 @@ Date:   Thu Nov 2 12:25:03 2006 +0100
     Build with -D_PC on ix86 only.
 
 commit 543b397277d1f03b8091e44812010abcd5d80102
-Merge: 4056e6e... 645d057...
+Merge: 4056e6e 645d057
 Author: Keith Packard <keithp@neko.keithp.com>
 Date:   Thu Nov 2 19:00:35 2006 -0800
 
@@ -34885,14 +35057,14 @@ Date:   Thu Nov 2 03:22:09 2006 +0200
     bump to 1.2.99.0
 
 commit 18c246a13b887b865de6a17e6cd1c259b9bc383d
-Merge: 794f2e7... 4843d82...
+Merge: 794f2e7 4843d82
 Author: Daniel Stone <daniel@fooishbar.org>
 Date:   Thu Nov 2 03:21:37 2006 +0200
 
     Merge branch 'input-hotplug'
 
 commit 4843d823f4d38d8bd468ce3a8feddbff229ed416
-Merge: ba9f513... a7b944f...
+Merge: ba9f513 a7b944f
 Author: Daniel Stone <daniel@fooishbar.org>
 Date:   Thu Nov 2 03:18:13 2006 +0200
 
@@ -34908,7 +35080,7 @@ Date:   Thu Nov 2 03:16:10 2006 +0200
     config file.
 
 commit be291a6d9764cf29a7d9a8114d47d9f41ce856e9
-Merge: a2d6242... 6fdfd9d...
+Merge: a2d6242 6fdfd9d
 Author: Daniel Stone <daniel@fooishbar.org>
 Date:   Thu Nov 2 03:15:25 2006 +0200
 
@@ -35025,7 +35197,7 @@ Date:   Sun Oct 29 17:49:46 2006 +0100
     kill GNU-make'ism.
 
 commit 0107320fac0913aae2cb169992e31c670b4bd2f7
-Merge: 06b6b97... a34446f...
+Merge: 06b6b97 a34446f
 Author: Thomas Hellstrom <thomas-at-tungstengraphics-dot-com>
 Date:   Sun Oct 29 15:23:35 2006 +0100
 
@@ -35096,7 +35268,7 @@ Date:   Fri Oct 27 18:26:30 2006 +0200
     Import libdrm functions for the drm memory manager.
 
 commit e3d3d29db5eef057b4e8294377c9c3147436bc2f
-Merge: 92387e9... 004d00e...
+Merge: 92387e9 004d00e
 Author: Eamon Walsh <ewalsh@tycho.nsa.gov>
 Date:   Thu Oct 26 20:21:16 2006 -0400
 
@@ -35147,7 +35319,7 @@ Date:   Thu Oct 26 20:38:58 2006 +0300
     lnx_ia64.c.
 
 commit 8c0556e7cb1de8c387ddd886a03a8f8afff1fd0e
-Merge: cdc8a4b... 004d00e...
+Merge: cdc8a4b 004d00e
 Author: Daniel Stone <daniel@fooishbar.org>
 Date:   Thu Oct 26 15:21:22 2006 +0300
 
@@ -35165,7 +35337,7 @@ Date:   Thu Oct 26 01:10:08 2006 +0300
     The fallthrough to gettimeofday() is preserved.
 
 commit cdc8a4b7b2f099b8860a54c5c9f488e6f7c4913a
-Merge: 3da918a... d285833...
+Merge: 3da918a d285833
 Author: Daniel Stone <daniel@fooishbar.org>
 Date:   Thu Oct 26 00:28:30 2006 +0300
 
@@ -35206,14 +35378,14 @@ Date:   Wed Oct 25 11:39:27 2006 +0200
     without pretending it's always on.
 
 commit 59511974db843fa7e11133894cfc10c20fdaf60f
-Merge: 054f8cd... 598ac7a...
+Merge: 054f8cd 598ac7a
 Author: Keith Packard <keithp@neko.keithp.com>
 Date:   Tue Oct 24 17:26:20 2006 -0700
 
     Merge branch 'master' into randr-1.2
 
 commit 598ac7a83698327b607084abaebcbd22f8d25fbb
-Merge: 828c34e... 948a97b...
+Merge: 828c34e 948a97b
 Author: Keith Packard <keithp@neko.keithp.com>
 Date:   Tue Oct 24 17:23:12 2006 -0700
 
@@ -35312,7 +35484,7 @@ Date:   Tue Oct 24 09:04:14 2006 -0700
     Fix from HEAD accidentally reverted during merge.
 
 commit 8b909135664abb69ada522e8e39495d9eca717ac
-Merge: 21291d6... 948a97b...
+Merge: 21291d6 948a97b
 Author: Ian Romanick <idr@us.ibm.com>
 Date:   Tue Oct 24 08:57:59 2006 -0700
 
@@ -35369,7 +35541,7 @@ Date:   Mon Oct 23 05:12:15 2006 +0300
     Remove unused xf86CheckButton.
 
 commit c5b5b046e86b159a9d32451308f38246cc4587f7
-Merge: fab1d37... 948a97b...
+Merge: fab1d37 948a97b
 Author: Daniel Stone <daniel@fooishbar.org>
 Date:   Mon Oct 23 02:58:30 2006 +0300
 
@@ -35555,7 +35727,7 @@ Date:   Sat Oct 21 22:06:43 2006 +1000
     Minor typos in Xserver man page.
 
 commit e26a494f417c3c700636ee68892c3015b2e0f27a
-Merge: 736b0d5... aeba855...
+Merge: 736b0d5 aeba855
 Author: Zephaniah E. Hull <warp@agamemnon.b5>
 Date:   Sat Oct 21 04:26:14 2006 -0400
 
@@ -35869,7 +36041,7 @@ Date:   Fri Oct 13 17:34:53 2006 -0700
     Separate configuration from layout changes to send correct events.
 
 commit 335b503c5e7041bb0c44611e496d1c46f554e630
-Merge: bd3d93b... cf948b7...
+Merge: bd3d93b cf948b7
 Author: Daniel Stone <daniel@fooishbar.org>
 Date:   Fri Oct 13 18:10:45 2006 +0300
 
@@ -35883,7 +36055,7 @@ Date:   Fri Oct 13 14:48:10 2006 +0100
     to avoid cursor movements signalling io.
 
 commit 4b53a5e4b147ab748b28dffc1d330b7148d8efa6
-Merge: 23f6f08... 042d4a4...
+Merge: 23f6f08 042d4a4
 Author: Eamon Walsh <ewalsh@tycho.nsa.gov>
 Date:   Wed Oct 11 20:50:31 2006 -0400
 
@@ -36097,7 +36269,7 @@ Date:   Sat Oct 7 14:16:51 2006 +0300
     layer.
 
 commit 4c342246300e06bdf5c9c62cc1d2f6aa57a524db
-Merge: 8382234... 49a70c8...
+Merge: 8382234 49a70c8
 Author: Alan Coopersmith <alan.coopersmith@sun.com>
 Date:   Fri Oct 6 18:01:13 2006 -0700
 
@@ -36150,14 +36322,14 @@ Date:   Thu Oct 5 16:07:26 2006 -0400
     Improve error handling, messages during initialization.
 
 commit de63a469dcd0a8ae98554bca540ac0106cccf2a5
-Merge: 9c7440b... 8382234...
+Merge: 9c7440b 8382234
 Author: Daniel Stone <daniel@fooishbar.org>
 Date:   Thu Oct 5 20:29:19 2006 +0300
 
     Merge branch 'master' of git+ssh://git.freedesktop.org/git/xorg/xserver into input-hotplug
 
 commit b4659faf9b455b44ac8e691cc7a8fc00a967c80b
-Merge: c4f30c6... 8382234...
+Merge: c4f30c6 8382234
 Author: Keith Packard <keithp@neko.keithp.com>
 Date:   Wed Oct 4 14:46:04 2006 -0700
 
@@ -36193,7 +36365,7 @@ Date:   Tue Oct 3 17:48:50 2006 -0700
     Don't insert RCS tag into generated pci id header files
 
 commit 75e0cc41b201b9ceb2615e7cec0dd5b4c136b343
-Merge: 6926776... 20c0cee...
+Merge: 6926776 20c0cee
 Author: Eamon Walsh <ewalsh@tycho.nsa.gov>
 Date:   Tue Oct 3 13:58:03 2006 -0400
 
@@ -36227,7 +36399,7 @@ Date:   Mon Oct 2 02:17:14 2006 +0300
     Use XkbCharToInt as that's what we're doing.
 
 commit 3c98cebb6e954855528794fec46830f456cbdec1
-Merge: fa1ac94... 2cf1098...
+Merge: fa1ac94 2cf1098
 Author: Daniel Stone <daniel@fooishbar.org>
 Date:   Mon Oct 2 02:18:17 2006 +0300
 
@@ -36255,21 +36427,21 @@ Date:   Sat Sep 30 17:05:46 2006 +0300
     if built with --enable-debug.
 
 commit 20c0ceedfbce9ae5c70703900b52973917ac4cd0
-Merge: 49a70c8... 84eb2c0...
+Merge: 49a70c8 84eb2c0
 Author: Eamon Walsh <ewalsh@tycho.nsa.gov>
 Date:   Fri Sep 29 15:37:00 2006 -0400
 
     Merge branch 'master' into my-XACE-modular
 
 commit 518db35ca3f569e7cb95dbddeddb93f3691de498
-Merge: 5d99e05... 84eb2c0...
+Merge: 5d99e05 84eb2c0
 Author: Daniel Stone <daniel@fooishbar.org>
 Date:   Fri Sep 29 00:35:21 2006 +0300
 
     Merge branch 'master' of git+ssh://git.freedesktop.org/git/xorg/xserver into input-hotplug
 
 commit 5d99e05f05a42a82a9f02844df9bfebaa673759d
-Merge: ad631af... 5893375...
+Merge: ad631af 5893375
 Author: Daniel Stone <daniel@fooishbar.org>
 Date:   Fri Sep 29 00:35:07 2006 +0300
 
@@ -36293,7 +36465,7 @@ Date:   Thu Sep 28 15:09:40 2006 -0600
     Patch by Dan Nicholson.
 
 commit 4bc5dc2854e33bf343cdea44a3c3b4c41f6f4145
-Merge: cf6e968... f9542e7...
+Merge: cf6e968 f9542e7
 Author: Aaron Plattner <aplattner@nvidia.com>
 Date:   Thu Sep 28 13:27:13 2006 -0700
 
@@ -36333,7 +36505,7 @@ Date:   Wed Aug 30 19:12:17 2006 +0200
     Add wrapper for new ioctl to update drawable information in the DRM.
 
 commit ad321fad4b9ab3a2c70cfff37ca6c8faaa5cce9c
-Merge: 5e9d33f... f7c1d94...
+Merge: 5e9d33f f7c1d94
 Author: Daniel Stone <daniel@fooishbar.org>
 Date:   Sun Sep 24 17:56:43 2006 +0300
 
@@ -36537,14 +36709,14 @@ Date:   Sat Sep 16 03:49:11 2006 -0400
     Thanks, automake.
 
 commit 6926776f0ecd1e8e81c5c40ccd3a97227bc44dcb
-Merge: 6950267... 49a70c8...
+Merge: 6950267 49a70c8
 Author: Eamon Walsh <ewalsh@tycho.nsa.gov>
 Date:   Fri Sep 15 15:28:13 2006 -0400
 
     Merge branch 'my-XACE-modular' into my-XACE-SELINUX
 
 commit 49a70c8570b03aff8239324a2474918a6fbc52a0
-Merge: d1110c5... 05231e3...
+Merge: d1110c5 05231e3
 Author: Eamon Walsh <ewalsh@tycho.nsa.gov>
 Date:   Fri Sep 15 15:26:57 2006 -0400
 
@@ -36772,7 +36944,7 @@ Date:   Sun Sep 10 11:13:18 2006 -0700
     so I think we can tolerate the extra #ifdef for the next release.
 
 commit 60db190ecfce52cbfa888c0af3210634f9186bed
-Merge: 5e9d33f... 6525610...
+Merge: 5e9d33f 6525610
 Author: Zephaniah E. Hull <warp@agamemnon.b5>
 Date:   Sun Sep 10 03:49:17 2006 -0400
 
@@ -36797,7 +36969,7 @@ Date:   Fri Sep 8 15:31:18 2006 -0400
     Add SELinux extension configure-time support.
 
 commit fb34c02861ab3629c1c85c156e73b158518db7c7
-Merge: 9c503f0... d1110c5...
+Merge: 9c503f0 d1110c5
 Author: Eamon Walsh <ewalsh@tycho.nsa.gov>
 Date:   Fri Sep 8 15:30:12 2006 -0400
 
@@ -36865,7 +37037,7 @@ Date:   Thu Sep 7 15:35:16 2006 -0400
     DRI locking between 2D and 3D drivers around VT switch.
 
 commit 5e9d33fe87f9d24e55c468d4b2bb761c9efdb26a
-Merge: 629798c... 64479ff...
+Merge: 629798c 64479ff
 Author: Daniel Stone <daniel@fooishbar.org>
 Date:   Thu Sep 7 15:43:31 2006 +0300
 
@@ -36917,7 +37089,7 @@ Date:   Tue Sep 5 15:23:54 2006 -0700
     (unsigned long)(1 << 31) = bad news on x86_64.
 
 commit 0b81fccd2ee4e054e5cffb739de07460ff2c13f7
-Merge: 20c4ac6... c281351...
+Merge: 20c4ac6 c281351
 Author: Eamon Walsh <ewalsh@tycho.nsa.gov>
 Date:   Tue Sep 5 18:03:25 2006 -0400
 
@@ -36983,7 +37155,7 @@ Date:   Tue Aug 29 16:35:32 2006 -0700
     appear in the server's string.
 
 commit 1c8851ad491dd02d1c79e620b46384956838ed42
-Merge: d59b52f... 5ddbf4b...
+Merge: d59b52f 5ddbf4b
 Author: Ian Romanick <idr@us.ibm.com>
 Date:   Tue Aug 29 16:34:04 2006 -0700
 
@@ -37019,7 +37191,7 @@ Date:   Tue Aug 29 23:49:26 2006 +0300
     Yeah.  That was dumb.
 
 commit 942b4369990a255257f66835caf8671432c405a3
-Merge: 77d315b... 393dc0a...
+Merge: 77d315b 393dc0a
 Author: Ian Romanick <idr@us.ibm.com>
 Date:   Tue Aug 29 13:30:37 2006 -0700
 
@@ -37079,7 +37251,7 @@ Date:   Tue Aug 29 13:19:12 2006 +0300
     couple of range-related thinkos in level name copying.
 
 commit 7fa3383e3c8eea7d1eb0e556393f2431cf8e6ed2
-Merge: 8d77d44... ebbdc13...
+Merge: 8d77d44 ebbdc13
 Author: Daniel Stone <daniel@fooishbar.org>
 Date:   Tue Aug 29 15:16:01 2006 +0300
 
@@ -37092,14 +37264,14 @@ Date:   Mon Aug 28 18:17:32 2006 -0400
     Remove calls to LoaderCheckUnresolved(), since it's now a stub.
 
 commit 8d77d44fda3aacbae62864a3620e09095b79e92d
-Merge: d6f36bd... 2fde560...
+Merge: d6f36bd 2fde560
 Author: Daniel Stone <daniel@fooishbar.org>
 Date:   Sun Aug 27 23:08:49 2006 +0300
 
     Merge branch 'origin' into input-hotplug
 
 commit 20c4ac6e038607ebbf6c04639670514c016d8597
-Merge: 13c6713... 8d4f21a...
+Merge: 13c6713 8d4f21a
 Author: Eamon Walsh <ewalsh@tycho.nsa.gov>
 Date:   Fri Aug 25 18:49:46 2006 -0400
 
@@ -37132,7 +37304,7 @@ Date:   Fri Aug 25 12:05:16 2006 -0700
     GL_NV_{vertex,fragment}_program, and related extensions can be enabled.
 
 commit 21291d6ca7188e5733ed0c93215ee0f1f0f90cc9
-Merge: 1a5561c... cd2da4e...
+Merge: 1a5561c cd2da4e
 Author: Ian Romanick <idr@umwelt.(none)>
 Date:   Fri Aug 25 09:34:21 2006 -0700
 
@@ -37147,7 +37319,7 @@ Date:   Fri Aug 25 12:43:17 2006 +0300
     best-effort attempt to keep configs working.
 
 commit 7c4167f0d6b33c9c602b04fcfd246fd3aeddd709
-Merge: 393f834... cd2da4e...
+Merge: 393f834 cd2da4e
 Author: Daniel Stone <daniel@fooishbar.org>
 Date:   Fri Aug 25 11:15:33 2006 +0300
 
@@ -37189,7 +37361,7 @@ Date:   Thu Aug 24 17:58:52 2006 -0700
     Add some missing bits of GL_SGI_color_table.
 
 commit ae608b2071d882966e9c7ede71f846b1ecec0b23
-Merge: 2c86527... b879356...
+Merge: 2c86527 b879356
 Author: Ian Romanick <idr@umwelt.(none)>
 Date:   Thu Aug 24 14:56:33 2006 -0700
 
@@ -37212,7 +37384,7 @@ Date:   Thu Aug 24 14:49:46 2006 -0700
     Regenerate from gl_API.xml 1.62.  Functions move, no real changes.
 
 commit 3a36b0a24aa9e9e238faa7f00100f59800f5142b
-Merge: db1ab1b... b879356...
+Merge: db1ab1b b879356
 Author: Daniel Stone <daniel@fooishbar.org>
 Date:   Thu Aug 24 23:35:28 2006 +0300
 
@@ -37250,7 +37422,7 @@ Date:   Thu Aug 24 15:50:15 2006 -0400
     More #ifdef USE_DEPRECATED_KEYBOARD_DRIVER.
 
 commit 4ed311cf1c29090c53e474a3001c5702ff8409df
-Merge: 73e58ad... b29b236...
+Merge: 73e58ad b29b236
 Author: Matthias Hopf <mhopf@suse.de>
 Date:   Thu Aug 24 20:17:10 2006 +0200
 
@@ -37283,7 +37455,7 @@ Date:   Thu Aug 24 14:51:26 2006 +0300
     Fix horrendous thinko.  Indicators now work perfectly.
 
 commit 4adf9af313c9f63b6ad734e174efe1d36ddb5813
-Merge: 33af05d... 67bd672...
+Merge: 33af05d 67bd672
 Author: Daniel Stone <daniel@fooishbar.org>
 Date:   Thu Aug 24 10:59:33 2006 +0300
 
@@ -37302,7 +37474,7 @@ Date:   Wed Aug 23 22:39:42 2006 +0000
     Add xorg.conf IgnoreABI option which does the same thing as -ignoreABI
 
 commit b983773d446cef6a0948ca264ed48126e404ae9a
-Merge: 0623d36... d9a8656...
+Merge: 0623d36 d9a8656
 Author: Ian Romanick <idr@umwelt.(none)>
 Date:   Wed Aug 23 17:16:50 2006 -0700
 
@@ -37424,14 +37596,14 @@ Date:   Wed Aug 23 14:33:41 2006 +0300
     the moment), and use that instead of nasty pointer assignments.
 
 commit 52ba722e4c89c052609b4fc62e965d92778aa2dd
-Merge: 9138d5a... 0554125...
+Merge: 9138d5a 0554125
 Author: Eamon Walsh <ewalsh@tycho.nsa.gov>
 Date:   Mon Aug 21 18:49:31 2006 -0400
 
     Merge branch 'XACE-modular' into my-XACE-modular
 
 commit 05541259bdb0dfaab015a01caa3722b7a1b782e2
-Merge: c2535f6... a1ac044...
+Merge: c2535f6 a1ac044
 Author: Alan Coopersmith <alan.coopersmith@sun.com>
 Date:   Mon Aug 21 13:07:41 2006 -0700
 
@@ -37447,7 +37619,7 @@ Date:   Fri Aug 18 18:03:41 2006 +0300
     configure time.
 
 commit 0704bb298cc826cd117815898c6bc015a693c2c9
-Merge: c140369... a1ac044...
+Merge: c140369 a1ac044
 Author: Daniel Stone <daniel@fooishbar.org>
 Date:   Fri Aug 18 17:30:14 2006 +0300
 
@@ -37467,14 +37639,14 @@ Date:   Fri Aug 18 17:24:34 2006 +0300
     input.h: add InitCoreDevices prototype
 
 commit 1c2cb30cd88ba4453f9da339025f8ff39f7f5412
-Merge: 633b6a6... 70ddd0f...
+Merge: 633b6a6 70ddd0f
 Author: Daniel Stone <daniel@fooishbar.org>
 Date:   Fri Aug 18 17:05:50 2006 +0300
 
     Merge branch 'origin' into input-hotplug
 
 commit 19f673b7788d32c220e7e06734f1074b0e4a999c
-Merge: cb0a565... 70ddd0f...
+Merge: cb0a565 70ddd0f
 Author: Daniel Stone <daniel@fooishbar.org>
 Date:   Fri Aug 18 17:05:41 2006 +0300
 
@@ -37497,7 +37669,7 @@ Date:   Fri Aug 18 14:43:10 2006 +0100
     (Brett Stahlman & Colin Harrison)
 
 commit 708b225689b5a4ba9ffe3372b584b715ef9eacdc
-Merge: e1f4565... ee5e2cb...
+Merge: e1f4565 ee5e2cb
 Author: Alan Hourihane <alanh@fairlite.demon.co.uk>
 Date:   Fri Aug 18 09:13:52 2006 +0100
 
@@ -37542,7 +37714,7 @@ Date:   Thu Aug 17 16:22:07 2006 -0400
     It would be really nice if we only did this in one place instead of 40.
 
 commit 633b6a69f560c0a77dcff78fdef5fcf0041e2e04
-Merge: 95dbfcf... 7da5144...
+Merge: 95dbfcf 7da5144
 Author: Daniel Stone <daniel@fooishbar.org>
 Date:   Thu Aug 17 21:25:14 2006 +0300
 
@@ -37650,21 +37822,21 @@ Date:   Tue Aug 15 15:23:53 2006 +0300
     Fix debug_events prototype.
 
 commit d003bada3352ec7d734498c4c732904876a9d1e2
-Merge: d6433be... a815b9b...
+Merge: d6433be a815b9b
 Author: Daniel Stone <daniel@fooishbar.org>
 Date:   Sat Aug 12 22:48:55 2006 +0300
 
     Merge branch 'master' of git+ssh://git.freedesktop.org/git/xorg/xserver into input-hotplug
 
 commit a815b9b990e068f02d9cbba2b17f2cc3a30a9310
-Merge: 37943e2... 984babe...
+Merge: 37943e2 984babe
 Author: George Sapountzis <gsap7@yahoo.gr>
 Date:   Sat Aug 12 21:58:33 2006 +0300
 
     Merge branch 'master' of git+ssh://gsap7@git.freedesktop.org/git/xorg/xserver
 
 commit d6433be3cca807dd78fbb1f45d9ba0212283083d
-Merge: 2bf9e3d... 984babe...
+Merge: 2bf9e3d 984babe
 Author: Daniel Stone <daniel@fooishbar.org>
 Date:   Sat Aug 12 21:50:52 2006 +0300
 
@@ -37723,7 +37895,7 @@ Date:   Sat Aug 12 19:25:06 2006 +0300
     Define HAVE_EXECINFO_H as well as HAVE_BACKTRACE, when we find execinfo.h.
 
 commit 26c3cd1c9e3f52548389817a6d89a377e20c4269
-Merge: 008aa7e... c4951e0...
+Merge: 008aa7e c4951e0
 Author: Daniel Stone <daniel@fooishbar.org>
 Date:   Sat Aug 12 18:58:18 2006 +0300
 
@@ -37752,7 +37924,7 @@ Date:   Thu Aug 10 20:43:15 2006 -0400
     mode.  Also add M_T_PREFERRED bit, to select a 'best' mode out of a set.
 
 commit c2535f67923bde0bfb0e72363467110806e2f40f
-Merge: c0cb8d1... db82e12...
+Merge: c0cb8d1 db82e12
 Author: Alan Coopersmith <alan.coopersmith@sun.com>
 Date:   Thu Aug 10 10:37:59 2006 -0700
 
@@ -37774,7 +37946,7 @@ Date:   Thu Aug 10 20:28:06 2006 +0300
     auto.
 
 commit 1a5561c4ecccaf32b03c41373adf376100d457aa
-Merge: 190f229... db82e12...
+Merge: 190f229 db82e12
 Author: Ian Romanick <idr@umwelt.(none)>
 Date:   Thu Aug 10 10:20:37 2006 -0700
 
@@ -37795,7 +37967,7 @@ Date:   Thu Aug 10 18:02:47 2006 +0300
     XKB (and thus don't need to count the extra repeat events).
 
 commit 172d45b9b75f95c997d1e9358040eead496e2a06
-Merge: 3832a3d... db82e12...
+Merge: 3832a3d db82e12
 Author: Daniel Stone <daniel@fooishbar.org>
 Date:   Thu Aug 10 14:14:54 2006 +0300
 
@@ -37840,7 +38012,7 @@ Date:   Wed Aug 9 14:48:51 2006 -0400
     Remove the bc flag from the -help text, since it's gone.
 
 commit 767f372dd02232469f9fd804b811a17eaf762e1e
-Merge: c4f5de6... 462bb61...
+Merge: c4f5de6 462bb61
 Author: Tilman Sauerbeck <tilman@code-monkey.de>
 Date:   Wed Aug 9 20:23:30 2006 +0200
 
@@ -37858,7 +38030,7 @@ Date:   Wed Aug 9 20:21:52 2006 +0200
     hooks.
 
 commit 5506b4ad200745236f997c121e8200179c47b749
-Merge: 4be9abb... 462bb61...
+Merge: 4be9abb 462bb61
 Author: Daniel Stone <daniel@fooishbar.org>
 Date:   Wed Aug 9 07:21:01 2006 +0300
 
@@ -37919,7 +38091,7 @@ Date:   Tue Aug 8 14:54:10 2006 +0300
     Sending MapNotify is more correct in this case than NKN, so do that.
 
 commit 31089816317f27c668b12a15c74fdd226a8df9f7
-Merge: ab3ebfe... 12dbd8a...
+Merge: ab3ebfe 12dbd8a
 Author: Daniel Stone <daniel@fooishbar.org>
 Date:   Tue Aug 8 12:01:12 2006 +0300
 
@@ -38043,7 +38215,7 @@ Date:   Mon Aug 7 16:51:09 2006 +0300
     memcpy events into our event structure instead of doing pointer assignment.
 
 commit c85e64cba1d2d88f676ca7cf23b52a6f8219e90e
-Merge: a406f6b... f54b71b...
+Merge: a406f6b f54b71b
 Author: Daniel Stone <daniel@fooishbar.org>
 Date:   Mon Aug 7 15:54:55 2006 +0300
 
@@ -38130,7 +38302,7 @@ Date:   Wed Aug 2 09:55:32 2006 -0700
     Remove pciConfigPtr and all of the associated cruft.
 
 commit 966ebd3d2d84b440e89504d055a0e937303ed11d
-Merge: a941766... 39169fd...
+Merge: a941766 39169fd
 Author: Ian Romanick <idr@umwelt.(none)>
 Date:   Wed Aug 2 08:14:58 2006 -0700
 
@@ -38185,14 +38357,14 @@ Date:   Mon Jul 31 13:54:36 2006 -0700
     Build fixes for last pull from HEAD.
 
 commit 65dc25d8f86b962f2adc765a9ff327419f98092b
-Merge: 69533fc... b74c845...
+Merge: 69533fc b74c845
 Author: Ian Romanick <idr@umwelt.(none)>
 Date:   Mon Jul 31 12:30:30 2006 -0700
 
     Merge branch 'master' of git+ssh://git.freedesktop.org/git/xorg/xserver into pci-rework
 
 commit b74c845a1233f78b841ff8840272c50873300c20
-Merge: 3112a6c... 02daa6b...
+Merge: 3112a6c 02daa6b
 Author: Ian Romanick <idr@umwelt.(none)>
 Date:   Mon Jul 31 10:26:06 2006 -0700
 
@@ -38216,7 +38388,7 @@ Date:   Mon Jul 31 17:32:05 2006 +0100
        and GC stripple and tile pixmaps.
 
 commit 69533fc04f38c67fd424776c5191a4ba57ba8c8f
-Merge: ef1aeca... 24051ef...
+Merge: ef1aeca 24051ef
 Author: Ian Romanick <idr@umwelt.(none)>
 Date:   Mon Jul 31 09:26:04 2006 -0700
 
@@ -38264,7 +38436,7 @@ Date:   Sun Jul 30 11:08:47 2006 +0300
     remove README (which doesn't exist) from EXTRA_DIST
 
 commit 87fe85f38b6f781bf0e2eb555526e3d77779f9fa
-Merge: 3518e2d... 654619d...
+Merge: 3518e2d 654619d
 Author: Daniel Stone <daniel@fooishbar.org>
 Date:   Sun Jul 30 10:51:34 2006 +0300
 
@@ -38362,7 +38534,7 @@ Date:   Wed Jul 26 13:25:13 2006 -0700
     Pass correct pointer to xf86MapLegacyIO.
 
 commit 3518e2d0debc97e2bacdefe604b280e7fdfdd216
-Merge: eb7733a... 3821f6a...
+Merge: eb7733a 3821f6a
 Author: Daniel Stone <daniel@fooishbar.org>
 Date:   Wed Jul 26 11:29:21 2006 +0300
 
@@ -38389,7 +38561,7 @@ Date:   Tue Jul 25 15:38:09 2006 -0700
     pci_device_get_bridge_buses can be used.
 
 commit 380b51d605a82c98082a2cebd70a0d1d0735eaa7
-Merge: 82f6b7e... 8977b07...
+Merge: 82f6b7e 8977b07
 Author: Ian Romanick <idr@umwelt.(none)>
 Date:   Tue Jul 25 11:30:04 2006 -0700
 
@@ -38487,7 +38659,7 @@ Date:   Sun Jul 23 19:02:12 2006 -0400
     Allow XOpenDevice on closed devices.
 
 commit e73e5e2a4d8f22889d840a7719479f9af686cb9c
-Merge: a73cef1... 8977b07...
+Merge: a73cef1 8977b07
 Author: Daniel Stone <daniel@fooishbar.org>
 Date:   Sat Jul 22 13:56:30 2006 -0400
 
@@ -38500,7 +38672,7 @@ Date:   Sun Jul 23 03:36:47 2006 +1000
     glx: fix typo from tag removal
 
 commit a73cef1f005ca66db18e952e676ee5a21b829700
-Merge: 672ca15... 70869fc...
+Merge: 672ca15 70869fc
 Author: Daniel Stone <daniel@fooishbar.org>
 Date:   Sat Jul 22 12:07:22 2006 -0400
 
@@ -38543,7 +38715,7 @@ Date:   Fri Jul 21 19:16:38 2006 -0700
     Fix stupid typos.
 
 commit 672ca156bfb11440e6e234650bfba9d38e1edb52
-Merge: d14d91f... 6cf844a...
+Merge: d14d91f 6cf844a
 Author: Daniel Stone <daniel@fooishbar.org>
 Date:   Fri Jul 21 19:58:42 2006 -0400
 
@@ -38576,7 +38748,7 @@ Date:   Fri Jul 21 16:47:45 2006 -0700
     which in turn allows the elimination of hw/xfree86/int10/pci.c.
 
 commit 87a6346bf7f086b5f98b2b2ecd52f27efe864e56
-Merge: b73fb2a... 0486d39...
+Merge: b73fb2a 0486d39
 Author: Daniel Stone <daniel@fooishbar.org>
 Date:   Fri Jul 21 19:36:25 2006 -0400
 
@@ -38591,7 +38763,7 @@ Date:   Fri Jul 21 19:35:04 2006 -0400
     XkbSA_XFree86Private.
 
 commit b73fb2ae35a82e0bdd48f01132e971fb84946ff1
-Merge: e7ac27a... aff404f...
+Merge: e7ac27a aff404f
 Author: Daniel Stone <daniel@fooishbar.org>
 Date:   Fri Jul 21 19:30:26 2006 -0400
 
@@ -38613,7 +38785,7 @@ Date:   Fri Jul 21 19:10:26 2006 -0400
     Ugh.
 
 commit 7465010d59ec435bd00b738f0cef766b352dc7eb
-Merge: 1d31ed7... 0aaac95...
+Merge: 1d31ed7 0aaac95
 Author: Daniel Stone <daniel@fooishbar.org>
 Date:   Fri Jul 21 19:05:41 2006 -0400
 
@@ -38639,7 +38811,7 @@ Date:   Fri Jul 21 18:41:46 2006 -0400
     Remove the loader's required and referenced symbol lists, dead code.
 
 commit 07ad92d2c4cb07db8487d76efc822fd7b88137cb
-Merge: 18624a9... 22db3fd...
+Merge: 18624a9 22db3fd
 Author: Ian Romanick <idr@umwelt.(none)>
 Date:   Fri Jul 21 15:25:35 2006 -0700
 
@@ -38670,7 +38842,7 @@ Date:   Thu Jul 20 18:19:07 2006 -0700
     Fix the RandR failure path for rotated screens.
 
 commit 22db3fdb54d2f7f6b72638b46c186af6db04e214
-Merge: 2f98841... 93cd538...
+Merge: 2f98841 93cd538
 Author: Ian Romanick <idr@umwelt.(none)>
 Date:   Fri Jul 21 13:55:37 2006 -0700
 
@@ -38913,7 +39085,7 @@ Date:   Thu Jul 20 17:33:13 2006 -0400
     Remove the DDXTIME conditional, for being unused.
 
 commit c69c00d6523a35232a32e54a533811fc2b37815a
-Merge: 4636935... 84683f1...
+Merge: 4636935 84683f1
 Author: Ian Romanick <idr@umwelt.(none)>
 Date:   Thu Jul 20 12:08:38 2006 -0700
 
@@ -38987,7 +39159,7 @@ Date:   Thu Jul 13 21:10:48 2006 -0700
     Modify linuxGetSizesStruct to use pci_device instead of pciConfigPtr.
 
 commit 12595a77d6c2f037f48dfe751bdc10505b3317df
-Merge: 37838de... 4c225a3...
+Merge: 37838de 4c225a3
 Author: Ian Romanick <idr@umwelt.(none)>
 Date:   Thu Jul 13 12:48:03 2006 -0700
 
@@ -39028,7 +39200,7 @@ Date:   Sat Jul 8 21:57:07 2006 +0100
     Fix crash in Xephyr when running on host X with keymap width < 4 ( i.e xvnc )
 
 commit 21e3e3ca298dce22e5fad6ef38aa6fe9736a1d3b
-Merge: e805621... 39b2f7b...
+Merge: e805621 39b2f7b
 Author: Matthew Allum <mallum@polystyrene.(none)>
 Date:   Sat Jul 8 21:13:52 2006 +0100
 
@@ -39115,7 +39287,7 @@ Date:   Thu Jul 6 17:39:14 2006 -0400
     Switch the default mouse device on Linux to /dev/input/mice.
 
 commit 37838de62edc474f44c0a48bd56470a6c23f8956
-Merge: fd49a0d... 8d07ee0...
+Merge: fd49a0d 8d07ee0
 Author: Ian Romanick <idr@umwelt.(none)>
 Date:   Thu Jul 6 13:01:57 2006 -0700
 
@@ -39141,7 +39313,7 @@ Date:   Thu Jul 6 14:22:33 2006 -0400
     Spotted by Aaron Plattner.
 
 commit fd49a0dcc13280cf195bd6c7ee0f23d0840cb665
-Merge: e66e7b4... 28b95fd...
+Merge: e66e7b4 28b95fd
 Author: Ian Romanick <idr@umwelt.(none)>
 Date:   Thu Jul 6 09:52:15 2006 -0700
 
@@ -39199,7 +39371,7 @@ Date:   Wed Jun 28 15:59:01 2006 -0400
     DoGetDrawableAttributes and __glXQueryContextInfoEXT.
 
 commit e66e7b48e15543f3753951a19376f0446759963a
-Merge: a9d4842... eb35f81...
+Merge: a9d4842 eb35f81
 Author: Ian Romanick <idr@umwelt.(none)>
 Date:   Wed Jul 5 15:21:36 2006 -0700
 
@@ -39313,7 +39485,7 @@ Date:   Sat Jul 1 12:34:36 2006 -0700
     Missing close parenthesis in one of the setuid() fixes.
 
 commit 124a81eb389dfa510ac07ca93ee17c4c9d6e56ea
-Merge: d3d6c5f... 179737d...
+Merge: d3d6c5f 179737d
 Author: Keith Packard <keithp@neko.keithp.com>
 Date:   Sat Jul 1 11:12:50 2006 -0700
 
@@ -39341,7 +39513,7 @@ Date:   Wed Jun 7 01:46:00 2006 -0700
     Move variable declarations to start of blocks as required by c89
 
 commit a9d4842893b65232d61fe4c63f074d30e81021d2
-Merge: 66cac9b... 6bd4c25...
+Merge: 66cac9b 6bd4c25
 Author: Ian Romanick <idr@umwelt.(none)>
 Date:   Fri Jun 30 11:49:29 2006 -0700
 
@@ -39355,7 +39527,7 @@ Date:   Mon Jun 26 01:52:24 2006 +0200
     Updated for Solaris 10 changes to DDI
 
 commit 66cac9b17498497d939bfb7a4075bcee5a485e5f
-Merge: 7c4e540... 54d9acd...
+Merge: 7c4e540 54d9acd
 Author: Ian Romanick <idr@umwelt.(none)>
 Date:   Wed Jun 28 14:11:49 2006 -0700
 
@@ -39392,14 +39564,14 @@ Date:   Tue Jun 27 04:11:47 2006 +0200
     cairo's clip-operator test.
 
 commit 7c4e54025345455f420cd2abaa7a40679689d3cb
-Merge: 9d0a15d... ff6b59a...
+Merge: 9d0a15d ff6b59a
 Author: Ian Romanick <idr@umwelt.(none)>
 Date:   Mon Jun 26 14:39:44 2006 -0700
 
     Merge branch 'master' of git+ssh://git.freedesktop.org/git/xorg/xserver into pci-rework
 
 commit ff6b59a0dbadbe61a53e48c23965d3073d95791b
-Merge: b3c8693... 48c8715...
+Merge: b3c8693 48c8715
 Author: Alan Coopersmith <alan.coopersmith@sun.com>
 Date:   Mon Jun 26 13:02:33 2006 -0700
 
@@ -39482,7 +39654,7 @@ Date:   Wed Jun 21 09:30:59 2006 -0700
     Add a manpage for EXA.
 
 commit 9d0a15dca56b14821cad474f9db9c332acb3b1e6
-Merge: 6c514ca... d67fd10...
+Merge: 6c514ca d67fd10
 Author: Ian Romanick <idr@umwelt.(none)>
 Date:   Thu Jun 22 16:21:10 2006 -0700
 
@@ -39518,7 +39690,7 @@ Date:   Wed Jun 21 18:12:41 2006 -0700
     Use XACE, not XCSECURITY to decide if SecurityLookup* are exported
 
 commit 3177dc498a955cd58cd6054a7c7e69724db4a59b
-Merge: 3f19803... 91dcac5...
+Merge: 3f19803 91dcac5
 Author: Alan Coopersmith <alan.coopersmith@sun.com>
 Date:   Wed Jun 21 18:06:06 2006 -0700
 
@@ -39531,7 +39703,7 @@ Date:   Wed Jun 21 18:05:51 2006 -0700
     APPGROUP requires both X-ACE & XC-SECURITY now
 
 commit 91dcac5295486cc55a34ad91704bfa483bd31eeb
-Merge: d8135eb... 77c947b...
+Merge: d8135eb 77c947b
 Author: Adam Jackson <ajax@benzedrine.nwnk.net>
 Date:   Wed Jun 21 20:49:30 2006 -0400
 
@@ -39558,7 +39730,7 @@ Date:   Wed Jun 21 16:24:20 2006 -0700
     Correct ifdef - should be XACE, not XSECURITY
 
 commit 90af38fa0c46c2081d2becac262a614c26ba6ef1
-Merge: 3e098ef... 77c947b...
+Merge: 3e098ef 77c947b
 Author: Alan Coopersmith <alan.coopersmith@sun.com>
 Date:   Wed Jun 21 16:23:31 2006 -0700
 
@@ -39585,7 +39757,7 @@ Date:   Wed Jun 21 16:18:41 2006 -0700
      of updates.)
 
 commit aa131c51e06e735d7b54cadf51205f703a3de4ef
-Merge: 1708b0c... 77aa701...
+Merge: 1708b0c 77aa701
 Author: Ian Romanick <idr@umwelt.(none)>
 Date:   Wed Jun 21 14:39:52 2006 -0700
 
@@ -39653,7 +39825,7 @@ Date:   Tue Jun 20 19:01:34 2006 -0700
      - Added X-ACE sources to Xext/Makefile.am
 
 commit a46c06dab8392cf8012c7cc0b916de9a9e569671
-Merge: 49b368c... d44b2a0...
+Merge: 49b368c d44b2a0
 Author: Alan Coopersmith <alan.coopersmith@sun.com>
 Date:   Tue Jun 20 18:40:18 2006 -0700
 
@@ -39685,7 +39857,7 @@ Date:   Tue Jun 20 18:14:27 2006 -0700
     Move Xserver API for security extension to securitysrv.h
 
 commit 49b368c0bb04816c4a3579071c596b2398cae3ec
-Merge: 63f6e6b... 481d401...
+Merge: 63f6e6b 481d401
 Author: Alan Coopersmith <alanc@alf.(none)>
 Date:   Tue Jun 20 16:22:39 2006 -0700
 
@@ -39698,7 +39870,7 @@ Date:   Tue Jun 20 16:16:19 2006 -0700
     Don't add -ldl to XORG_LIBS if it's not needed for dlopen
 
 commit 63f6e6bbfd0d3677e29621af982c9392ead98dd7
-Merge: 88ede2c... 6df52fb...
+Merge: 88ede2c 6df52fb
 Author: Alan Coopersmith <alanc@alf.(none)>
 Date:   Tue Jun 20 16:03:34 2006 -0700
 
@@ -39711,7 +39883,7 @@ Date:   Tue Jun 20 16:02:55 2006 -0700
     Delete code that's been inside #if 0 since X11R6.7.
 
 commit 75398cff82b56c0a8fc301e84e2087f59a61a360
-Merge: 1f91b57... 2b58685...
+Merge: 1f91b57 2b58685
 Author: Ian Romanick <idr@umwelt.(none)>
 Date:   Tue Jun 20 15:49:47 2006 -0700
 
@@ -39723,7 +39895,7 @@ Date:   Tue Jun 20 15:49:47 2006 -0700
     	hw/xfree86/loader/xf86sym.c
 
 commit 88ede2cec79281a43cecb43ee6dec65770f82530
-Merge: 227a319... 2b58685...
+Merge: 227a319 2b58685
 Author: Alan Coopersmith <alanc@alf.(none)>
 Date:   Tue Jun 20 15:29:55 2006 -0700
 
@@ -39773,7 +39945,7 @@ Date:   Wed May 5 20:07:37 2004 +0000
     (cherry picked from 0106715000196c7b349a0b4494b61545f0f5e138 commit)
 
 commit 0707eb33d6826e1300a905edea28c12134600b12
-Merge: 37f0ae0... 98d17bb...
+Merge: 37f0ae0 98d17bb
 Author: Alan Coopersmith <alanc@alf.(none)>
 Date:   Mon Jun 19 17:09:51 2006 -0700
 
@@ -39938,7 +40110,7 @@ Date:   Fri Jun 16 10:14:30 2006 -0700
     hadn't been bumped.
 
 commit 72ac20c0e878ad48ff61f7e846cbf1005a4eb435
-Merge: fc3e814... b900883...
+Merge: fc3e814 b900883
 Author: Ian Romanick <idr@localhost.localdomain>
 Date:   Tue Jun 13 21:13:02 2006 -0700
 
@@ -39965,7 +40137,7 @@ Date:   Mon Jun 12 20:12:31 2006 +0200
     Provide option to report damage after operation is complete.
 
 commit fc3e81473a98d3b932faa73c0c01c21366a48a9e
-Merge: 4bedaad... 041ef23...
+Merge: 4bedaad 041ef23
 Author: Ian Romanick <idr@localhost.localdomain>
 Date:   Mon Jun 12 09:41:06 2006 -0700
 
@@ -40002,7 +40174,7 @@ Date:   Fri Jun 9 16:08:06 2006 -0700
     another function that was already in that file.
 
 commit 7810d87cd6ae9316d88f6a2e7696deb8837cec27
-Merge: dcfaa9f... caad8b7...
+Merge: dcfaa9f caad8b7
 Author: Ian Romanick <idr@localhost.localdomain>
 Date:   Fri Jun 9 15:16:50 2006 -0700
 
@@ -40074,7 +40246,7 @@ Date:   Fri Jun 9 09:51:28 2006 -0700
     based on FIXME in mi/miinitext.c
 
 commit dcfaa9f4f8fb10b75be50c9a49ccd88caf6d0f6a
-Merge: af9afe4... 576e6fb...
+Merge: af9afe4 576e6fb
 Author: Ian Romanick <idr@localhost.localdomain>
 Date:   Thu Jun 8 15:03:00 2006 -0700
 
@@ -40094,7 +40266,7 @@ Date:   Thu Jun 8 17:46:53 2006 -0400
     Bug #7121: fix clipboard handling in Xming (Colin Harrison)
 
 commit af9afe4cc50df973bea2293a803f7dfdefaa6411
-Merge: caffac3... 3930da3...
+Merge: caffac3 3930da3
 Author: Ian Romanick <idr@localhost.localdomain>
 Date:   Thu Jun 8 11:37:09 2006 -0700
 
@@ -40171,7 +40343,7 @@ Date:   Thu Jun 8 10:40:24 2006 -0700
     if anyone really cares about this code.
 
 commit caffac38432009e8dc01e7d3e72a7fa6fba2f078
-Merge: c5b3aa1... 9fa7372...
+Merge: c5b3aa1 9fa7372
 Author: Ian Romanick <idr@localhost.localdomain>
 Date:   Thu Jun 8 10:38:43 2006 -0700
 
@@ -40282,7 +40454,7 @@ Date:   Wed Jun 7 17:44:06 2006 -0700
     when the symbol PCI_DOM_FROM_TAG couldn't be resolved at run-time.
 
 commit 23182315f34e3a0065739b43b15d4560e75b41a1
-Merge: bc05158... 757f40f...
+Merge: bc05158 757f40f
 Author: Ian Romanick <idr@localhost.localdomain>
 Date:   Wed Jun 7 17:03:48 2006 -0700
 
@@ -40319,7 +40491,7 @@ Date:   Wed Jun 7 14:09:13 2006 -0700
     updated the .gitignore file with more auto-generated files
 
 commit bc05158a5ab00c548e4b04b5638afe07bc702260
-Merge: 46f55f5... cc46580...
+Merge: 46f55f5 cc46580
 Author: Ian Romanick <idr@localhost.localdomain>
 Date:   Wed Jun 7 14:09:12 2006 -0700
 
@@ -40339,7 +40511,7 @@ Date:   Wed Jun 7 14:03:35 2006 -0700
     Fix compiler warnings about SetVendorRelease and SetVendorString
 
 commit 785c9789704ed142fe98cd17b5995e4a95b7141f
-Merge: 21ebcfd... 36d786e...
+Merge: 21ebcfd 36d786e
 Author: Greg Kroah-Hartman <gregkh@suse.de>
 Date:   Wed Jun 7 13:20:21 2006 -0700
 
