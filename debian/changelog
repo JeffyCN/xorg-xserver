@@ -1,4 +1,4 @@
-xorg-server (2:1.6.1-1) UNRELEASED; urgency=low
+xorg-server (2:1.6.1-1) unstable; urgency=low
 
   [ Julien Cristau ]
   * Disable dri2 on hurd-i386.  Thanks, Samuel Thibault!
@@ -6,7 +6,7 @@ xorg-server (2:1.6.1-1) UNRELEASED; urgency=low
   [ Brice Goglin ]
   * New upstream release.
 
- -- Brice Goglin <bgoglin@debian.org>  Wed, 15 Apr 2009 13:20:46 +0200
+ -- Brice Goglin <bgoglin@debian.org>  Wed, 15 Apr 2009 13:30:51 +0200
 
 xorg-server (2:1.6.0-1) unstable; urgency=low
 
