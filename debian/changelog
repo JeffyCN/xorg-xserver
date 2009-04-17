@@ -1,9 +1,14 @@
 xorg-server (2:1.6.1-2) UNRELEASED; urgency=low
 
+  [ Brice Goglin ]
   * Add 20_hurd-i386.diff to fix FTBFS on hurd-i386,
     thanks Samuel Thibault! (closes: #523970)
 
- -- Brice Goglin <bgoglin@debian.org>  Wed, 15 Apr 2009 15:32:04 +0200
+  [ David Nusinow ]
+  * Have the reportbug script append lshal and drm info.
+    The drm info comes from grepping dmesg output.
+
+ -- David Nusinow <dnusinow@debian.org>  Thu, 16 Apr 2009 22:44:29 -0400
 
 xorg-server (2:1.6.1-1) unstable; urgency=low
 

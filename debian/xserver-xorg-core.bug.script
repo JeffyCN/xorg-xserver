@@ -117,6 +117,16 @@ else
     printf "No Xorg X server log files found.\n"
 fi
 
+if [ -x /usr/bin/lshal ]; then
+    printf "HAL Information (lshal):\n"
+    lshal
+fi
+
+if [ -x /bin/dmesg ]; then
+    printf "DRM Information from dmesg:\n"
+    dmesg | grep 'drm'
+fi
+
 printf "\n"
 
 # vim:set ai et sts=4 sw=4 tw=0:
