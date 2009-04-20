@@ -9,11 +9,11 @@ Subject: [PATCH] Add libgcrypt as an option for sha1
  render/glyph.c          |   12 ++++++++++++
  3 files changed, 21 insertions(+), 0 deletions(-)
 
-diff --git a/configure.ac b/configure.ac
-index f4e1dbb..29e3afc 100644
---- a/configure.ac
-+++ b/configure.ac
-@@ -1163,6 +1163,12 @@ if test "x$SHA1_LIB" = "x" ; then
+Index: xorg-server/configure.ac
+===================================================================
+--- xorg-server.orig/configure.ac
++++ xorg-server/configure.ac
+@@ -1108,6 +1108,12 @@
              [Use libmd SHA1 functions instead of OpenSSL libcrypto])])
  fi
  
@@ -26,10 +26,10 @@ index f4e1dbb..29e3afc 100644
  if test "x$SHA1_LIB" = "x" ; then
    PKG_CHECK_EXISTS([OPENSSL], [openssl], [HAVE_OPENSSL_PKC=yes],
                      [HAVE_OPENSSL_PKC=no])
-diff --git a/include/dix-config.h.in b/include/dix-config.h.in
-index 26ac223..53ce798 100644
---- a/include/dix-config.h.in
-+++ b/include/dix-config.h.in
+Index: xorg-server/include/dix-config.h.in
+===================================================================
+--- xorg-server.orig/include/dix-config.h.in
++++ xorg-server/include/dix-config.h.in
 @@ -157,6 +157,9 @@
  /* Define to use libmd SHA1 functions instead of OpenSSL libcrypto */
  #undef HAVE_SHA1_IN_LIBMD
@@ -40,10 +40,10 @@ index 26ac223..53ce798 100644
  /* Define to 1 if you have the `shmctl64' function. */
  #undef HAVE_SHMCTL64
  
-diff --git a/render/glyph.c b/render/glyph.c
-index 7c044aa..007d472 100644
---- a/render/glyph.c
-+++ b/render/glyph.c
+Index: xorg-server/render/glyph.c
+===================================================================
+--- xorg-server.orig/render/glyph.c
++++ xorg-server/render/glyph.c
 @@ -28,6 +28,8 @@
  
  #ifdef HAVE_SHA1_IN_LIBMD /* Use libmd for SHA1 */
@@ -53,17 +53,26 @@ index 7c044aa..007d472 100644
  #else /* Use OpenSSL's libcrypto */
  # include <stddef.h>  /* buggy openssl/sha.h wants size_t */
  # include <openssl/sha.h>
-@@ -205,6 +207,17 @@ HashGlyph (xGlyphInfo    *gi,
+@@ -205,6 +207,26 @@
      SHA1Update (&ctx, gi, sizeof (xGlyphInfo));
      SHA1Update (&ctx, bits, size);
      SHA1Final (sha1, &ctx);
 +#elif defined(HAVE_SHA1_IN_LIBGCRYPT) /* Use libgcrypt for SHA1 */
++    static int init;
 +    gcry_md_hd_t h;
 +    gcry_error_t err;
 +
++    if (!init) {
++	if (!gcry_check_version(NULL))
++	    return BadAlloc;
++	gcry_control(GCRYCTL_DISABLE_SECMEM, 0);
++	gcry_control(GCRYCTL_INITIALIZATION_FINISHED, 0);
++	init = 1;
++    }
++
 +    err = gcry_md_open(&h, GCRY_MD_SHA1, 0);
 +    if (err)
-+	    return BadAlloc;
++	return BadAlloc;
 +    gcry_md_write(h, gi, sizeof (xGlyphInfo));
 +    gcry_md_write(h, bits, size);
 +    memcpy(sha1, gcry_md_read(h, GCRY_MD_SHA1), 20);
@@ -71,6 +80,3 @@ index 7c044aa..007d472 100644
  #else /* Use OpenSSL's libcrypto */
      SHA_CTX ctx;
      int success;
--- 
-1.6.2.1
-

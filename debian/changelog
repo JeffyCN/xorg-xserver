@@ -8,6 +8,10 @@ xorg-server (2:1.6.1-2) UNRELEASED; urgency=low
   * Have the reportbug script append lshal and drm info.
     The drm info comes from grepping dmesg output.
 
+  [ Julien Cristau ]
+  * Properly initialize libgcrypt in the libgcrypt patch (closes: #524822).
+    Thanks, Sven Joachim!
+
  -- David Nusinow <dnusinow@debian.org>  Thu, 16 Apr 2009 22:44:29 -0400
 
 xorg-server (2:1.6.1-1) unstable; urgency=low
