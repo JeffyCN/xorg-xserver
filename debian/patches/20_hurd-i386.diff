@@ -2,8 +2,10 @@ From: Samuel Thibault <samuel.thibault@ens-lyon.org>
 
 Bug#523970: xorg-server: FTBFS on hurd-i386
 
---- a/hw/xfree86/os-support/bus/Pci.h.orig	2009-04-13 21:21:10.000000000 +0000
-+++ b/hw/xfree86/os-support/bus/Pci.h	2009-04-13 21:22:38.000000000 +0000
+Index: xorg-server/hw/xfree86/os-support/bus/Pci.h
+===================================================================
+--- xorg-server.orig/hw/xfree86/os-support/bus/Pci.h	2009-04-11 15:23:16.000000000 -0400
++++ xorg-server/hw/xfree86/os-support/bus/Pci.h	2009-05-11 21:50:11.000000000 -0400
 @@ -169,7 +169,7 @@
  #endif /* !defined(DEBUGPCI) */
  
@@ -13,9 +15,11 @@ Bug#523970: xorg-server: FTBFS on hurd-i386
  #define ARCH_PCI_INIT bsdPciInit
  #endif
  
---- a/configure.ac.orig	2009-04-13 21:38:24.000000000 +0000
-+++ b/configure.ac	2009-04-13 21:38:27.000000000 +0000
-@@ -1356,6 +1356,9 @@
+Index: xorg-server/configure.ac
+===================================================================
+--- xorg-server.orig/configure.ac	2009-05-11 21:49:28.000000000 -0400
++++ xorg-server/configure.ac	2009-05-11 21:50:11.000000000 -0400
+@@ -1354,6 +1354,9 @@
  	  gnu*)
  	  	XORG_OS="gnu"
  		XORG_OS_SUBDIR="hurd"
@@ -25,8 +29,10 @@ Bug#523970: xorg-server: FTBFS on hurd-i386
  		;;
  	  *)
  	  	XORG_OS="unknown"
---- a/hw/xfree86/os-support/hurd/Makefile.am.orig	2009-04-13 23:05:45.000000000 +0000
-+++ b/hw/xfree86/os-support/hurd/Makefile.am	2009-04-13 23:07:12.000000000 +0000
+Index: xorg-server/hw/xfree86/os-support/hurd/Makefile.am
+===================================================================
+--- xorg-server.orig/hw/xfree86/os-support/hurd/Makefile.am	2009-04-11 15:23:16.000000000 -0400
++++ xorg-server/hw/xfree86/os-support/hurd/Makefile.am	2009-05-11 21:50:11.000000000 -0400
 @@ -5,6 +5,7 @@
  		$(srcdir)/../shared/VTsw_noop.c \
  		$(srcdir)/../shared/posix_tty.c \
@@ -35,8 +41,10 @@ Bug#523970: xorg-server: FTBFS on hurd-i386
  		$(srcdir)/../shared/sigiostubs.c \
  		$(srcdir)/../shared/pm_noop.c \
  		$(srcdir)/../shared/kmod_noop.c \
---- a/hw/xfree86/os-support/shared/stdResource.c.orig	2009-04-13 23:15:07.000000000 +0000
-+++ b/hw/xfree86/os-support/shared/stdResource.c	2009-04-13 23:15:33.000000000 +0000
+Index: xorg-server/hw/xfree86/os-support/shared/stdResource.c
+===================================================================
+--- xorg-server.orig/hw/xfree86/os-support/shared/stdResource.c	2009-04-11 15:23:16.000000000 -0400
++++ xorg-server/hw/xfree86/os-support/shared/stdResource.c	2009-05-11 21:50:11.000000000 -0400
 @@ -44,7 +44,7 @@
  #include "bus/Pci.h"
  
@@ -46,8 +54,10 @@ Bug#523970: xorg-server: FTBFS on hurd-i386
  #define xf86StdAccResFromOS xf86AccResFromOS
  #endif
  
---- a/hw/xfree86/os-support/hurd/hurd_video.c.orig	2009-02-25 19:12:12.000000000 +0000
-+++ b/hw/xfree86/os-support/hurd/hurd_video.c	2009-04-13 23:55:16.000000000 +0000
+Index: xorg-server/hw/xfree86/os-support/hurd/hurd_video.c
+===================================================================
+--- xorg-server.orig/hw/xfree86/os-support/hurd/hurd_video.c	2009-04-11 15:23:16.000000000 -0400
++++ xorg-server/hw/xfree86/os-support/hurd/hurd_video.c	2009-05-11 21:50:11.000000000 -0400
 @@ -41,8 +41,8 @@
  /**************************************************************************
   * Video Memory Mapping section                                            

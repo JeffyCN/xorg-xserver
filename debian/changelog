@@ -1,3 +1,10 @@
+xorg-server (2:1.6.1.901-1) experimental; urgency=low
+
+  * New upstream development release
+    + Refresh 20_hurd-i386.diff
+
+ -- David Nusinow <dnusinow@debian.org>  Mon, 11 May 2009 21:50:37 -0400
+
 xorg-server (2:1.6.1-2) UNRELEASED; urgency=low
 
   [ Brice Goglin ]
