@@ -1,6 +1,7 @@
 xorg-server (2:1.6.1.901-2) UNRELEASED; urgency=low
 
   * Merge from upstream server-1.6-branch (commit a9f85dce).
+  * Fix FTBFS on kfreebsd (closes: #525475).  Thanks, Petr Salinger!
 
  -- Julien Cristau <jcristau@debian.org>  Thu, 14 May 2009 17:08:00 +0200
 
