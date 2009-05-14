@@ -147,12 +147,8 @@ trap clean_up EXIT
 # If the user did not specify an X authorization file to use, set up a temporary
 # directory to house one.
 if [ -z "$AUTHFILE" ]; then
-    XVFB_RUN_TMPDIR="${TMPDIR:-/tmp}/$PROGNAME.$$"
-    if ! mkdir -p -m 700 "$XVFB_RUN_TMPDIR"; then
-        error "temporary directory $XVFB_RUN_TMPDIR already exists"
-        exit 4
-    fi
-    AUTHFILE=$(tempfile -n "$XVFB_RUN_TMPDIR/Xauthority")
+    XVFB_RUN_TMPDIR="$(mktemp -d -t $PROGNAME.XXXXXX)"
+    AUTHFILE="$XVFB_RUN_TMPDIR/Xauthority"
 fi
 
 # Start Xvfb.
