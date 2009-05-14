@@ -1,3 +1,345 @@
+commit a9f85dcefbadfe44d8c58ad08430aaadb8c59d34
+Author: Eamon Walsh <ewalsh@tycho.nsa.gov>
+Date:   Mon May 11 15:27:46 2009 -0400
+
+    xselinux: Relax ownership restriction on SetSelectionUseContext.
+    
+    Instead, clients should keep track of the selection instances they use.
+    (cherry picked from commit 0952d12717031e9dda9e48123bb922d0f4e81834)
+    
+    Signed-off-by: Eamon Walsh <ewalsh@tycho.nsa.gov>
+
+commit 0fbf6f30f771e60714fb3003a9bb1a6b79e50c6e
+Author: Alan Coopersmith <alan.coopersmith@sun.com>
+Date:   Thu Mar 26 22:22:32 2009 -0700
+
+    Don't leak default font path when appending built-ins
+    
+    Signed-off-by: Alan Coopersmith <alan.coopersmith@sun.com>
+    (cherry picked from commit 66539cc05d0b017b9feb4a038499907810140623)
+    
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit 773e4890b385a229b0919b4a249714d0bb7171a2
+Author: Alan Coopersmith <alan.coopersmith@sun.com>
+Date:   Thu Mar 26 22:25:08 2009 -0700
+
+    Don't leak canonical module name and patterns if module is built-in
+    
+    Signed-off-by: Alan Coopersmith <alan.coopersmith@sun.com>
+    Acked-by: Peter Hutterer <peter.hutterer@who-t.net>
+    (cherry picked from commit 1c101d75d4855b2698e3fc8d2dd662f20585812f)
+    
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit 21f58a2b0d0d96492d2d7c7de1bd654ed0114279
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Wed May 6 16:55:32 2009 +1000
+
+    Xi: don't double-swap the XListDeviceProperties reply.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    (cherry picked from commit 50cc8adafca4ba3838d468278d6eb8a4692d2488)
+    
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit b575af88d0e547a03b164f6f3b2d4b268b9ffc34
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Wed May 6 22:25:28 2009 +1000
+
+    Xi: fix copy/paste error causing sizeof against wrong struct.
+    
+    This wrong check may cause BadLength to be returned to the client even if the
+    length is correct.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    (cherry picked from commit 8b583ca2b21155359c6255f406c96599b277c762)
+    
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit 9c643b1e3ddc4ec9f1a924bd25f24df8536c7ea6
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Thu Apr 16 16:17:07 2009 +1000
+
+    os: don't malloc memory in LogVMessageVerb.
+    
+    LogVWrite is limited to a buffer size of 1024, so we don't loose anything here
+    by truncating. This way we can use LogVMessageVerb (and xf86Msg and friends)
+    during signal handlers with the normal message types.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Acked-by: Alan Coopersmith <alan.coopersmith@sun.com>
+    (cherry picked from commit 0e0642ee9466d3268476d0084a83a9d93a4aa555)
+    
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit 7cd596e0dd6b9c195d7e395c26bfb00ef544c525
+Author: Dave Airlie <airlied@linux.ie>
+Date:   Wed Apr 15 18:26:06 2009 +1000
+
+    randr12: looking up these bits if randr isn't initialised is bad.
+    
+    When xinerama is enabled we don't get randr protocol, but the
+    driver might still want randr internals
+    (cherry picked from commit faf7dfa099f5b42a703313fbd1bf8afdad07a179)
+    
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit bc95f29441b3daa7b9d91bd3c2b3e502a3a8cc81
+Author: Alan Coopersmith <alan.coopersmith@sun.com>
+Date:   Thu Apr 23 08:42:38 2009 -0700
+
+    Fix byte swapping of XF86VidMode{Get,Set}GammaRamp
+    
+    Fixes OpenSolaris Bug 8315:
+    Xorg segfaults when screensaver fades in cross-endian xdmcp session
+    <http://defect.opensolaris.org/bz/show_bug.cgi?id=8315>
+    
+    Signed-off-by: Alan Coopersmith <alan.coopersmith@sun.com>
+    (cherry picked from commit 7d0f7518c2235a9dc783029971259ddaada2db20)
+    
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit 3f0c73694b9ddc85b82a7a82a5d98fa8b18a01a8
+Author: Jon TURNEY <jon.turney@dronecode.org.uk>
+Date:   Thu Feb 12 16:03:16 2009 +0000
+
+    Remove references to rgb.txt from files section of Xserver and Xorg man pages
+    
+    The references to this file in the server code were removed in commit dda10c9066a660b647384179f82e1da8e063264f
+    
+    Signed-off-by: Jon TURNEY <jon.turney@dronecode.org.uk>
+    (cherry picked from commit d0dd649035fc3698c5b436f9d9d248116aa106a3)
+    
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit 78eb366c65a953bbc059a989a92dfe28fbe1ae29
+Author: Jon TURNEY <jon.turney@dronecode.org.uk>
+Date:   Thu Feb 12 16:02:17 2009 +0000
+
+    Remove long-gone '-co' option from Xserver man page
+    
+    The '-co' option was removed in commit dda10c9066a660b647384179f82e1da8e063264f
+    
+    Signed-off-by: Jon TURNEY <jon.turney@dronecode.org.uk>
+    (cherry picked from commit b0ad9e1ced9619f37acf77764c395c57b86cf463)
+    
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit 31536307703fcffa14a027ec777310c9962f816c
+Author: Alan Coopersmith <alan.coopersmith@sun.com>
+Date:   Sat May 2 00:26:18 2009 -0700
+
+    XkbSetNamedIndicator should ignore SD's without LED's
+    
+    When ProcXkbSetNamedIndicator is called on a core device, and we
+    walk the slaves to set the LED's on each of them, ignore any slaves
+    that do not have either a KbdFeedbackCtrl or LedCtrl structure.
+    
+    (This is much more critical in xserver-1.5-branch, where we walk
+     *all* devices, not just the slaves of the specified master, and
+     thus return failure when setting an LED on the Core Keyboard and
+     hit a xf86-input-mouse device with no LED's to set.)
+    
+    Signed-off-by: Alan Coopersmith <alan.coopersmith@sun.com>
+    Acked-by: Peter Hutterer <peter.hutterer@who-t.net>
+    (cherry picked from commit 557dbadf3be273255e8fdb12d9321f4e88bf2b65)
+    
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit 01f0210b2ba34f724aa221bbe6b567a5751781a6
+Author: Keith Packard <keithp@keithp.com>
+Date:   Fri May 8 22:29:15 2009 -0700
+
+    xserver 1.6.1.901
+    
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit e21c9949ac456ba9b162b6244a17e68c5b8112a9
+Author: Pierre Ossman <pierre@ossman.eu>
+Date:   Tue Apr 28 09:34:55 2009 +0200
+
+    dix: fix calculation of number of fake KeyRelease events
+    
+    Signed-off-by: Pierre Ossman <pierre@ossman.eu>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit 3b1ff33587458bad45777b8eb74b81c3e55987ad
+Author: Pierre Ossman <pierre@ossman.eu>
+Date:   Tue Apr 28 12:29:07 2009 +0200
+
+    Xi: don't send XKB mapping notifications when XKB is disabled
+    
+    Signed-off-by: Pierre Ossman <pierre@ossman.eu>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit 4b702526dec35f5cfe5c6baec6a77c02c95c2867
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Wed Mar 25 13:08:27 2009 +1000
+
+    dix: ignore non-pointer events in XineramaCheckMotion (#20557)
+    
+    Note that deviceKeyButtonPointer and keyButtonPointer have the same wire
+    layout, so we only need to check for event types.
+    
+    X.Org Bug 20557 <http://bugs.freedesktop.org/show_bug.cgi?id=20557>
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit fdbb6fd3d3c0ce7078f8faaf089af51cc36cbcb3
+Author: Jesse Barnes <jbarnes@virtuousgeek.org>
+Date:   Mon May 4 15:38:22 2009 -0700
+
+    Don't prepare outputs & crtcs if set_mode_major is present
+    
+    A driver with this hook will take care of preparing the outputs & crtcs,
+    so calling the prepare functions will just cause unnecessary flicker.
+    
+    Fixes bug #21077
+    (cherry picked from commit 94648bb797d94b025746c60679c584e5be2fae28)
+    
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit eac2b3658aacc8a64dc3c0fd7cc8fd77abcc59af
+Author: Julien Cristau <jcristau@debian.org>
+Date:   Wed Apr 22 20:01:49 2009 +0200
+
+    Bug#21324: Add quirk for Iiyama Vision Master 450
+    
+    Reported-by: Jeremy Henty <onepoint@starurchin.org>
+    Signed-off-by: Julien Cristau <jcristau@debian.org>
+    (cherry picked from commit 0dfb97f15f591f85e079f5829c77d0c328d00464)
+    
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit b3c42e6450b0af97ead4f410983c803a959e1d04
+Author: Tormod Volden <debian.tormod@gmail.com>
+Date:   Wed Apr 1 19:32:21 2009 +0200
+
+    xfree86: edid quirk for Philips LCD LP154W01-TLAJ
+    
+    This panel reports its vertical size in cm.
+    
+    X.Org bug#21000 <http://bugs.freedesktop.org/show_bug.cgi?id=21000>
+    
+    Signed-off-by: Tormod Volden <debian.tormod@gmail.com>
+    Signed-off-by: Julien Cristau <jcristau@debian.org>
+    (cherry picked from commit b1dab580bdfb4acfe3feddeda6e760098ec4922a)
+    
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit 96eede556ac9f95204fa54287f74794acdbf3a2b
+Author: Julien Cristau <jcristau@debian.org>
+Date:   Wed Dec 24 14:17:27 2008 +0100
+
+    Add RandR 1.3 requests to protocol.txt
+    (cherry picked from commit 4f86ee61a4abf7a29e565d095aa08abd0ca9dc66)
+    
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit b7b520e3a93fde5579c48eabb9b8c694a7dfbcb1
+Author: Julien Cristau <jcristau@debian.org>
+Date:   Wed Dec 24 14:23:37 2008 +0100
+
+    Add XI 1.5 event and requests to protocol.txt
+    (cherry picked from commit 063833f3a6d9f8f657e3de309c8d6d5c3d606513)
+    
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit 0df12a3f01c953c0908b4b53a93fd3a5c704f69b
+Author: Ander Conselvan de Oliveira <ander@mandriva.com.br>
+Date:   Mon Apr 6 16:01:20 2009 -0300
+
+    xfree86: Remove device from inputInfo.devices if ActivateDevice failed.
+    
+    After the call to xf86ActivateDevice, the new device will be added to
+    inputInfo.devices. However, if the subsequent call to ActivateDevice
+    fails, the correponding InputInfoRec for the device is deleted but an
+    entry still remains in inputInfo.devices. This might lead to a server
+    crash later on (on InitAndStartDevices for instance) when the device
+    control proc would be called for an invalid device.
+    (cherry picked from commit efa31092d6703397121a0ada4f7205a8ecad3d3d)
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit 24dc7694a2ba72d45cda7720aeaec8350930edc3
+Author: Michel Dänzer <daenzer@vmware.com>
+Date:   Fri Feb 6 11:37:53 2009 +0100
+
+    EXA: Guard empty pending region warning by DEBUG_MIGRATE.
+    
+    It isn't very useful yet while the damage layer calls us for empty operations,
+    mostly confuses users.
+    (cherry picked from commit 3948b523893d3d44b6a088340c4252e969613769)
+    
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit 5198ff6f86e4796819c0d1f742de57a69228c93b
+Author: Michel Dänzer <daenzer@vmware.com>
+Date:   Fri Feb 27 16:37:28 2009 +0100
+
+    EXA: Handle separate alpha maps properly in Composite fallback, take two.
+    
+    Preserve the EXA ABI by introducing a new driver flag EXA_SUPPORTS_PREPARE_AUX.
+    If the driver doesn't set this flag, we have to assume any Prepare/FinishAccess
+    driver hooks can't handle the EXA_PREPARE_AUX* indices, so we move out such
+    pixmaps at PrepareAccess time.
+    
+    Fixes https://bugs.freedesktop.org/show_bug.cgi?id=18710 .
+    
+    Signed-off-by: Michel Dänzer <daenzer@vmware.com>
+    (cherry picked from commit 4cfb36f6ad2df01215028fec48d99239a0e4496b)
+    
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit 199bb367152d68e784dfbec79ab9b70540d83fc2
+Author: Ian Romanick <ian.d.romanick@intel.com>
+Date:   Mon Apr 20 18:20:52 2009 -0700
+
+    DRI2: Send the version the code actually supports
+    
+    This prevents building an older server with a new dri2proto.h from
+    resulting in a DRI2 extension module that lies about the version it
+    supports.
+    
+    Signed-off-by: Ian Romanick <ian.d.romanick@intel.com>
+    (cherry picked from commit 44227ef1b77467c76147b9bf79bdd0e6305a522a)
+    
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit 11db545a86c8933c638a0bc1fcd4f2c65279f617
+Author: Eamon Walsh <ewalsh@tycho.nsa.gov>
+Date:   Thu Apr 16 22:48:11 2009 -0400
+
+    security: Grant untrusted windows remove access on all windows.
+    
+    This allows untrusted clients to destroy their own windows when they
+    have been reparented by a trusted window manager.
+    (cherry picked from commit 4559d2ace6ac55fe361f572ded0769cdd1f3b545)
+
+commit 5d48f288eccb57dfe1751946c9d60dbd3ac0129a
+Author: Eamon Walsh <ewalsh@tycho.nsa.gov>
+Date:   Thu Apr 16 22:39:54 2009 -0400
+
+    security: Fix a crash caused by wrong ordering of format arguments.
+    (cherry picked from commit 3481b32ab971c41cb972f6819ae049f3e9f7033b)
+
+commit 93e0a648138e569087fc6e07c1a28abfa92a4dde
+Author: Eamon Walsh <ewalsh@tycho.nsa.gov>
+Date:   Thu Apr 16 22:33:12 2009 -0400
+
+    security: Revert behavior of extension access for compatibility.
+    
+    Previously, three extensions were defined as "trusted" by the extension:
+    BIG-REQUESTS, XC-MISC, and XPrint.  No other extensions were permitted
+    to be used by untrusted clients.
+    
+    In commit 8b5d21cc1d1f4e9d20e5d5eca44cb1e60a419763 this was changed for
+    some reason.  Return to the old, compatible behavior.
+    (cherry picked from commit 6045506be0cebca4ebbe943ae77f020aafa703d4)
+
 commit cd321badf0c185854b3e0c038f3851a3ac7864ea
 Author: Adam Jackson <ajax@redhat.com>
 Date:   Tue Apr 14 16:08:11 2009 -0400

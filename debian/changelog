@@ -1,3 +1,9 @@
+xorg-server (2:1.6.1.901-2) UNRELEASED; urgency=low
+
+  * Merge from upstream server-1.6-branch (commit a9f85dce).
+
+ -- Julien Cristau <jcristau@debian.org>  Thu, 14 May 2009 17:08:00 +0200
+
 xorg-server (2:1.6.1.901-1) experimental; urgency=low
 
   * New upstream development release
