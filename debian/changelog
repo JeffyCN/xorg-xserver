@@ -8,6 +8,7 @@ xorg-server (2:1.6.1.901-2) UNRELEASED; urgency=low
 xorg-server (2:1.6.1.901-1) experimental; urgency=low
 
   * New upstream development release
+    + fixes crash in CheckMotion with xinerama (closes: #524853)
     + Refresh 20_hurd-i386.diff
 
   [ Brice Goglin ]
