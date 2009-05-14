@@ -1,3 +1,10 @@
+xorg-server (2:1.6.1.901-3) UNRELEASED; urgency=low
+
+  * xvfb-run: don't pass the magic cookie to xauth on the command line
+    (CVE-2009-1573).  Thanks, Loïc Minier!
+
+ -- Julien Cristau <jcristau@debian.org>  Thu, 14 May 2009 21:05:26 +0200
+
 xorg-server (2:1.6.1.901-2) unstable; urgency=low
 
   * Merge from upstream server-1.6-branch (commit a9f85dce).
