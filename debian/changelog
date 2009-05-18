@@ -3,6 +3,8 @@ xorg-server (2:1.6.1.901-3) UNRELEASED; urgency=low
   * xvfb-run: don't pass the magic cookie to xauth on the command line
     (CVE-2009-1573; closes: #526678).  Thanks, Loïc Minier!
   * xvfb-run: use mktemp to create the temporary directory.
+  * Change default for ExaOptimizeMigration to false.  This option still
+    causes visual corruption in some cases.  Thanks, Michel Dänzer!
 
  -- Julien Cristau <jcristau@debian.org>  Thu, 14 May 2009 21:05:26 +0200
 

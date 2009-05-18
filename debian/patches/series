@@ -4,4 +4,5 @@
 kfreebsd-ftbfs.diff
 0001-xorg.conf-5-refer-to-mousedrv-4-.-Debian-394058.patch
 Turn-on-ModeDebug-by-default.patch
+Change-default-for-ExaOptimizeMigration-to-false.diff
 Add-libgcrypt-as-an-option-for-sha1.diff
