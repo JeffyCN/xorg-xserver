@@ -131,7 +131,7 @@ fi
 
 if [ -x /bin/dmesg ]; then
     printf "DRM Information from dmesg:\n"
-    dmesg | grep 'drm'
+    dmesg | egrep -i 'drm|agp'
 fi
 
 printf "\n"
