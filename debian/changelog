@@ -5,6 +5,8 @@ xorg-server (2:1.6.1.901-3) UNRELEASED; urgency=low
   * xvfb-run: use mktemp to create the temporary directory.
   * Change default for ExaOptimizeMigration to false.  This option still
     causes visual corruption in some cases.  Thanks, Michel Dänzer!
+  * Only include hal info for keyboards, mice, touchpads and tablets in the
+    bug script.
 
  -- Julien Cristau <jcristau@debian.org>  Thu, 14 May 2009 21:05:26 +0200
 
