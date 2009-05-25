@@ -8,6 +8,9 @@ xorg-server (2:1.6.1.901-3) UNRELEASED; urgency=low
   * Only include hal info for keyboards, mice, touchpads and tablets in the
     bug script.
   * In the bug script, grep dmesg for agp in addition to drm.
+  * Add patch stolen from Fedora to disable the fbdev driver when it's loaded
+    together with a PCI or SBUS driver, instead of calling FatalError (closes:
+    #508476).
 
  -- Julien Cristau <jcristau@debian.org>  Thu, 14 May 2009 21:05:26 +0200
 
