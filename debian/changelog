@@ -11,6 +11,11 @@ xorg-server (2:1.6.1.901-3) UNRELEASED; urgency=low
   * Add patch stolen from Fedora to disable the fbdev driver when it's loaded
     together with a PCI or SBUS driver, instead of calling FatalError (closes:
     #508476).
+  * Add patch stolen from Fedora to try and detect the primary PCI device by
+    mapping the legacy VGA bios and comparing the vendor and device ids.
+    Previously if there was more than one VGA device and the config didn't
+    specify BusIDs, the server would just fail to start, so this hack should
+    improve things.
 
  -- Julien Cristau <jcristau@debian.org>  Thu, 14 May 2009 21:05:26 +0200
 
