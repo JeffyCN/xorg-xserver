@@ -1,5 +1,6 @@
 xorg-server (2:1.6.1.901-3) UNRELEASED; urgency=low
 
+  [ Julien Cristau ]
   * xvfb-run: don't pass the magic cookie to xauth on the command line
     (CVE-2009-1573; closes: #526678).  Thanks, Loïc Minier!
   * xvfb-run: use mktemp to create the temporary directory.
@@ -17,7 +18,10 @@ xorg-server (2:1.6.1.901-3) UNRELEASED; urgency=low
     specify BusIDs, the server would just fail to start, so this hack should
     improve things.
 
- -- Julien Cristau <jcristau@debian.org>  Thu, 14 May 2009 21:05:26 +0200
+  [ David Nusinow ]
+  * Add README.source
+
+ -- David Nusinow <dnusinow@debian.org>  Mon, 25 May 2009 21:21:55 -0400
 
 xorg-server (2:1.6.1.901-2) unstable; urgency=low
 
