@@ -57,8 +57,6 @@ EOF
   exit $SHELL_LIB_USAGE_ERROR
 fi
 
-ARCHITECTURE="$(dpkg --print-installation-architecture)"
-
 if [ "$1" = "reconfigure" ] || [ -n "$DEBCONF_RECONFIGURE" ]; then
   RECONFIGURE="true"
 else
