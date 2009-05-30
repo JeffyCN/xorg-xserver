@@ -17,6 +17,14 @@ xorg-server (2:1.6.1.901-3) UNRELEASED; urgency=low
     Previously if there was more than one VGA device and the config didn't
     specify BusIDs, the server would just fail to start, so this hack should
     improve things.
+  * Update configure options:
+    + use --enable-xvfb instead of --enable-vfb
+    + drop --disable-builtin-fonts, --enable-xtrap, --disable-kdrive-vesa,
+      --disable-lbx, --disable-xprint, --disable-xorgconfig, --disable-xorgcfg
+      which don't exist anymore
+    + use --disable-config-hal and --disable-dri on hurd-i386
+    + reorder options to match configure.ac, and use explicit
+      --enable/--disable instead of using the defaults / autodetection
 
   [ David Nusinow ]
   * Add README.source

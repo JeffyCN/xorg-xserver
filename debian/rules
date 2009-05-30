@@ -41,9 +41,11 @@ else
 endif
 
 ifeq ($(DEB_HOST_ARCH), hurd-i386)
-	dri2 = --disable-dri2
+	dri = --disable-dri --disable-dri2
+	config_hal = --disable-config-hal
 else
-	dri2 = --enable-dri2
+	dri = --enable-dri --enable-dri2
+	config_hal = --enable-config-hal
 endif
 
 INSTALL=/usr/bin/install
@@ -52,33 +54,61 @@ VENDOR = $(shell lsb_release -i -s)
 
 # disable-static is so we don't get libfoo.a for modules.  now if only we could
 # kill the .las.
-confflags += --disable-static \
-	     --enable-xorg \
+confflags += \
+	     --disable-static \
+	     --without-dtrace \
+	     --disable-werror \
+	     --disable-debug \
+	     --with-int10=x86emu \
+	     --with-os-vendor="$(VENDOR)" \
+	     --with-builderstring="$(SOURCE_NAME) $(SOURCE_VERSION) ($(BUILDER))" \
 	     --with-default-font-path="/usr/share/fonts/X11/misc,/usr/share/fonts/X11/cyrillic,/usr/share/fonts/X11/100dpi/:unscaled,/usr/share/fonts/X11/75dpi/:unscaled,/usr/share/fonts/X11/Type1,/usr/share/fonts/X11/100dpi,/usr/share/fonts/X11/75dpi,/var/lib/defoma/x-ttcidfont-conf.d/dirs/TrueType" \
-	     --disable-builtin-fonts \
-	     --enable-xtrap \
-	     --enable-record \
-	     $(selinux) \
+	     --with-xkb-path=/usr/share/X11/xkb \
+	     --with-xkb-output=/var/lib/xkb \
+	     --disable-builddocs \
+	     --disable-install-libxf86config \
+	     --disable-null-root-cursor \
+	     --enable-aiglx \
 	     --enable-glx-tls \
+	     --enable-registry \
+	     --enable-composite \
+	     --enable-mitshm \
+	     --enable-xres \
+	     --enable-record \
+	     --enable-xv \
+	     --enable-xvmc \
+	     --enable-dga \
+	     --enable-screensaver \
+	     --enable-xdmcp \
+	     --enable-xdm-auth-1 \
+	     --enable-glx \
+	     $(dri) \
+	     --enable-xinerama \
+	     --enable-xf86vidmode \
+	     --enable-xace \
+	     $(selinux) \
+	     --disable-xcsecurity \
+	     --disable-xcalibrate \
+	     --disable-tslib \
+	     --disable-multibuffer \
+	     --enable-dbe \
+	     --disable-xf86bigfont \
+	     --enable-dpms \
+	     --disable-config-dbus \
+	     $(config_hal) \
+	     --enable-xfree86-utils \
+	     --enable-xorg \
 	     --enable-dmx \
-	     --enable-vfb \
+	     --enable-xvfb \
+	     --enable-xnest \
+	     --disable-xquartz \
+	     --disable-xwin \
 	     --enable-kdrive \
 	     --enable-xephyr \
 	     --disable-xsdl \
 	     --disable-xfake \
 	     $(build_xfbdev) \
-	     --disable-kdrive-vesa \
-	     --disable-lbx \
-	     --disable-xprint \
-	     --disable-xorgconfig \
-	     --disable-xorgcfg \
-	     --with-xkb-path=/usr/share/X11/xkb \
-	     --with-xkb-output=/var/lib/xkb \
-	     --enable-xfree86-utils \
-	     --with-os-vendor="$(VENDOR)" \
-	     --with-builderstring="$(SOURCE_NAME) $(SOURCE_VERSION) ($(BUILDER))" \
-	     --with-int10=x86emu \
-	     $(dri2)
+	     --disable-install-setuid
 
 configure: $(STAMP_DIR)/patch
 	dh_testdir
