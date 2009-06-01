@@ -25,6 +25,9 @@ xorg-server (2:1.6.1.901-3) UNRELEASED; urgency=low
     + use --disable-config-hal and --disable-dri on hurd-i386
     + reorder options to match configure.ac, and use explicit
       --enable/--disable instead of using the defaults / autodetection
+  * Don't recommend xfonts-base.  libXfont provides builtin versions of the
+    fixed and cursor fonts, which are the only required ones.  Keep xfonts-*
+    packages in Suggests for xserver-xorg-core.
 
   [ David Nusinow ]
   * Add README.source
