@@ -303,16 +303,6 @@ EOF
   fi
 }
 
-# we require a readlink command or shell function
-if ! which readlink > /dev/null 2>&1; then
-  message "The readlink command was not found.  Please install version" \
-          "1.13.1 or later of the debianutils package."
-  readlink () {
-    # returns what symlink in $1 actually points to
-    perl -e '$l = shift; exit 1 unless -l $l; $r = readlink $l; exit 1 unless $r; print "$r\n"' "$1"
-  }
-fi
-
 check_symlink () {
   # syntax: check_symlink symlink
   #
