@@ -73,7 +73,7 @@ Build-Depends:
  libxv-dev,
  libxinerama-dev
 Build-Conflicts: xlibs-static-dev
-Standards-Version: 3.7.3
+Standards-Version: 3.8.1
 Vcs-Git: git://git.debian.org/git/pkg-xorg/xserver/xorg-server
 Vcs-Browser: http://git.debian.org/?p=pkg-xorg/xserver/xorg-server.git
 
