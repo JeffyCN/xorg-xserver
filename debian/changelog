@@ -28,7 +28,7 @@ xorg-server (2:1.6.1.901-3) UNRELEASED; urgency=low
   * Don't recommend xfonts-base.  libXfont provides builtin versions of the
     fixed and cursor fonts, which are the only required ones.  Keep xfonts-*
     packages in Suggests for xserver-xorg-core.
-  * Bump Standards-Version to 3.8.1 now that we have README.source.
+  * Bump Standards-Version to 3.8.2 now that we have README.source.
 
   [ David Nusinow ]
   * Add README.source
