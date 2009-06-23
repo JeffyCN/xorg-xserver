@@ -33,6 +33,7 @@ xorg-server (2:1.6.1.901-3) UNRELEASED; urgency=low
     point.
   * Pull from upstream server-1.6-branch as of June 23rd (commit dbac41b).
   * Bump build-dep on dri2proto to 2.1 for new protocol.
+  * Bump build-dep on libselinux1-dev to 2.0.80 for avc_netlink_acquire_fd.
 
   [ David Nusinow ]
   * Add README.source
