@@ -29,6 +29,8 @@ xorg-server (2:1.6.1.901-3) UNRELEASED; urgency=low
     fixed and cursor fonts, which are the only required ones.  Keep xfonts-*
     packages in Suggests for xserver-xorg-core.
   * Bump Standards-Version to 3.8.2 now that we have README.source.
+  * Drop Build-Conflicts on xlibs-static-dev; it's only in oldstable at this
+    point.
 
   [ David Nusinow ]
   * Add README.source
