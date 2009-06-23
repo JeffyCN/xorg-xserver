@@ -39,7 +39,7 @@ Build-Depends:
  xtrans-dev (>= 1.2.2),
  libxau-dev (>= 1:0.99.1),
  x11proto-input-dev (>= 1.5),
- x11proto-dri2-dev (>= 1.99.3),
+ x11proto-dri2-dev (>= 2.1),
  libxdmcp-dev (>= 1:0.99.1),
  libxfont-dev,
  libfontenc-dev,

@@ -31,6 +31,8 @@ xorg-server (2:1.6.1.901-3) UNRELEASED; urgency=low
   * Bump Standards-Version to 3.8.2 now that we have README.source.
   * Drop Build-Conflicts on xlibs-static-dev; it's only in oldstable at this
     point.
+  * Pull from upstream server-1.6-branch as of June 23rd (commit dbac41b).
+  * Bump build-dep on dri2proto to 2.1 for new protocol.
 
   [ David Nusinow ]
   * Add README.source

@@ -1,3 +1,169 @@
+commit dbac41b624e4aa86a6a184b7ebb52bfdd367bbf0
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Fri Jun 19 12:42:07 2009 -0400
+
+    pci: Dump vendor/devices ids in the printed device list
+    (cherry picked from commit eb35402d0a5290e8a73d7d1e92f173294c364cc2)
+
+commit 6be19e8f43086fb4b7fb30a47b89b5f3eed798ef
+Author: Ian Romanick <ian.d.romanick@intel.com>
+Date:   Wed Apr 8 14:54:30 2009 -0700
+
+    Use a #define instead of a magic number
+    
+    The number of buffers is likely to change in the future, so having
+    this as a define is the right way to go.
+    
+    Signed-off-by: Ian Romanick <ian.d.romanick@intel.com>
+    (cherry picked from commit 03aebed519986c4dd03e02b3b3d4af1f64595ca7)
+
+commit 540d5b87a4e24d85ec46620dfedd7bd7979180ea
+Author: Jerome Glisse <glisse@freedesktop.org>
+Date:   Mon May 11 22:52:46 2009 +0200
+
+    DRI2: update DRI2 private drawable width & height according to X drawable
+    (cherry picked from commit f250eea2e90fc50bec5214c2f41132b95edc2c46)
+
+commit ec9f1ae32474bc0507a3c66e63bdf2835d467a34
+Author: Ian Romanick <ian.d.romanick@intel.com>
+Date:   Mon Apr 27 15:11:10 2009 -0700
+
+    DRI2: Force allocation of real-front buffer for non-windows as well
+    
+    For redirected rendering we end up with pixmaps (which the app thinks are
+    windows) that are double buffered.
+    
+    Signed-off-by: Ian Romanick <ian.d.romanick@intel.com>
+    Tested-by: Pierre Willenbrock <pierre@pirsoft.de>
+    (cherry picked from commit 0d9d3f3e361f769822caedccf4c2a58cc9930ecc)
+
+commit 4fad615d689c61c6c3a000295a1fa755359737cb
+Author: Ian Romanick <ian.d.romanick@intel.com>
+Date:   Fri Apr 24 12:49:19 2009 -0700
+
+    DRI2: Implement protocol for DRI2GetBuffersWithFormat
+    
+    This change implements the protocol for DRI2GetBuffersWithFormat, but
+    the bulk of the differences are the changes to the extension / driver
+    interface to make this function work.  The old CreateBuffers and
+    DeleteBuffers routines are replaced with CreateBuffer and DeleteBuffer
+    (both singular).
+    
+    This allows drivers to allocate buffers for a drawable one at a time.
+    As a result, 3D drivers can now allocate the (fake) front-buffer for a
+    window only when it is needed.  Since 3D drivers only ask for the
+    front-buffer on demand, the real front-buffer is always created.  This
+    allows CopyRegion impelemenations of SwapBuffers to continue working.
+    As with previous version of this code, if the client asks for the
+    front-buffer for a window, we instead give it the fake front-buffer.
+    
+    Signed-off-by: Ian Romanick <ian.d.romanick@intel.com>
+    Reviewed-by: Kristian Høgsberg <krh@redhat.com>
+
+commit 98c3c21735197fbd2c8166c9bdabf055e14c9009
+Author: Ian Romanick <ian.d.romanick@intel.com>
+Date:   Fri Apr 24 12:09:21 2009 -0700
+
+    DRI2: Add interface for drivers to query DRI2 extension version
+    
+    Signed-off-by: Ian Romanick <ian.d.romanick@intel.com>
+    (cherry picked from commit 28ddfc88d8d547941c7f4713db527a3c2f9ec35a)
+
+commit 4cb4c210c365fd40ad314e0707eb38811f240a12
+Author: Ian Romanick <ian.d.romanick@intel.com>
+Date:   Thu Apr 16 12:10:34 2009 -0700
+
+    DRI2: Add missing front-buffer flush callback.
+    
+    Signed-off-by: Ian Romanick <ian.d.romanick@intel.com>
+    (cherry picked from commit d1e916d29be8b470cbc8cadcf6e83991fdbc5a9f)
+
+commit aa13faef2b1464f808e04de9826c6b8b8b91ae89
+Author: Ian Romanick <ian.d.romanick@intel.com>
+Date:   Wed Apr 15 11:13:48 2009 -0700
+
+    DRI2: Don't leave empty entries in private->buffers
+    
+    This should fix bug #21130.
+    
+    Signed-off-by: Ian Romanick <ian.d.romanick@intel.com>
+    (cherry picked from commit de1e43181bd670877b994db221ad8a04b5d63324)
+
+commit d7277296ed7aea7bd41b3489d4ceef750d400206
+Author: Ian Romanick <ian.d.romanick@intel.com>
+Date:   Thu Apr 9 14:38:24 2009 -0700
+
+    DRI2: Synchronize the contents of the real and fake front-buffers
+    
+    Signed-off-by: Ian Romanick <ian.d.romanick@intel.com>
+    (cherry picked from commit 567cf67959b30432ae30f4851ec17b3a375ab838)
+
+commit 73b786f7e7f46d40bf3b039538540c2e25f45947
+Author: Ian Romanick <ian.d.romanick@intel.com>
+Date:   Thu Apr 9 14:31:01 2009 -0700
+
+    DRI2: Do not send the real front buffer of a window to the client
+    
+    Signed-off-by: Ian Romanick <ian.d.romanick@intel.com>
+    (cherry picked from commit f1a995d1496d73741731e32f475097c44a8da972)
+
+commit 32d250a881341ece8a1f1d78359adc1b265b5174
+Author: Ian Romanick <ian.d.romanick@intel.com>
+Date:   Wed Apr 8 15:44:34 2009 -0700
+
+    DRI2: Add fake front-buffer to request list for windows
+    
+    If a front-buffer is requested for a window, add the fake front-buffer
+    to the list of requested buffers.
+    
+    Signed-off-by: Ian Romanick <ian.d.romanick@intel.com>
+    (cherry picked from commit aa2928325fe51d94a636dde9c090e8f54a311a12)
+
+commit db61eff891675aeaf2466c3529424de4621005dc
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Fri May 22 12:01:55 2009 -0400
+
+    EDID: Add modes from Established Timings III descriptor to mode pool
+    
+    EDID 1.4, section 3.10.3.9
+    (cherry picked from commit 99e22b86c5f1a3653f3caaf01368a777d2b208d0)
+
+commit ebca49e0fedcc1c536f1dee7c58cae9903e74fa2
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Thu May 21 10:20:48 2009 -0400
+
+    EDID: Be more cautious about finding vendor blocks.
+    
+    Many old monitors zero-fill the detailed descriptors, so check for that
+    to avoid a useless warning like:
+    
+    (WW) RADEON(0): Unknown vendor-specific block 0
+    (cherry picked from commit a2c5ee36b21c2ee5c0468f1b251e74c1412dbecb)
+
+commit c643d24cdeaade8d7839691a3113c4d2d17be61e
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Fri May 29 18:07:48 2009 -0400
+
+    vfb: Fix depth setup.
+    
+    Initialize the depth corresponding to the root window before the
+    pixmap-only depths.  Otherwise you end up with the root window depth in
+    the depth list twice, which is mildly confusing for clients and
+    catastrophically confusing for PanoramiXConsolidate().
+    (cherry picked from commit 45530d16097459a756696e255ab4e72d6e51fbc4)
+
+commit 5cd5a01259ba349f1868ca4af04207cf120d69e4
+Author: Eamon Walsh <ewalsh@tycho.nsa.gov>
+Date:   Tue May 19 19:30:33 2009 -0400
+
+    xace: Fix a bad device access hook call.
+    
+    Add a proper access mode, and reverse the logic of the return value.
+    Zero ("Success") is returned on success from the hook calls.
+    
+    Signed-off-by: Eamon Walsh <ewalsh@tycho.nsa.gov>
+    (cherry picked from commit 3cea176d5abcb0f14eefbdcbe17fed0847524dd4)
+
 commit a9f85dcefbadfe44d8c58ad08430aaadb8c59d34
 Author: Eamon Walsh <ewalsh@tycho.nsa.gov>
 Date:   Mon May 11 15:27:46 2009 -0400
