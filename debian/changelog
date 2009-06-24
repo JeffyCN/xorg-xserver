@@ -4,6 +4,7 @@ xorg-server (2:1.6.1.901-4) UNRELEASED; urgency=low
     previous upload.
   * Bump xserver-xorg-dev's dependency on dri2proto to >= 2.1 for the same
     reason.
+  * Don't set PCI_TXT_IDS_DIR, we don't use that anymore.
 
  -- Julien Cristau <jcristau@debian.org>  Wed, 24 Jun 2009 11:59:58 +0200
 

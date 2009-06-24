@@ -126,8 +126,7 @@ obj-$(DEB_BUILD_GNU_TYPE)/config.status: configure
 	  --localstatedir=/var \
 	  $(confflags) \
 	  CFLAGS="$(CFLAGS)" \
-	  CPPFLAGS="$(CPPFLAGS)" \
-	  PCI_TXT_IDS_DIR="/usr/share/xserver-xorg/pci"
+	  CPPFLAGS="$(CPPFLAGS)"
 
 
 build: build-stamp
