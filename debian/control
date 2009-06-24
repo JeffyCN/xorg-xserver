@@ -113,7 +113,7 @@ Depends: ${misc:Depends},
  x11proto-video-dev,
  x11proto-randr-dev (>= 1.2.99.3),
  x11proto-render-dev (>= 2:0.9.3),
- x11proto-dri2-dev,
+ x11proto-dri2-dev (>= 2.1),
  x11proto-fonts-dev,
  libpciaccess-dev
 Description: Xorg X server - development files

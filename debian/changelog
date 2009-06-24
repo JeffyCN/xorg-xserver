@@ -2,6 +2,8 @@ xorg-server (2:1.6.1.901-4) UNRELEASED; urgency=low
 
   * Bump serverminver to 2:1.6.1.901-3 for the dri2 upstream changes in the
     previous upload.
+  * Bump xserver-xorg-dev's dependency on dri2proto to >= 2.1 for the same
+    reason.
 
  -- Julien Cristau <jcristau@debian.org>  Wed, 24 Jun 2009 11:59:58 +0200
 
