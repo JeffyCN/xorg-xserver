@@ -118,7 +118,7 @@ else
 fi
 
 if [ -x /usr/bin/lshal ]; then
-    printf "HAL Information (lshal):\n"
+    printf "\nHAL Information (lshal):\n"
     for udi in `(hal-find-by-capability --capability input.keys;
                  hal-find-by-capability --capability input.mouse;
                  hal-find-by-capability --capability input.touchpad;
