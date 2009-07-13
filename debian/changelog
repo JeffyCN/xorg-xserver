@@ -1,14 +1,25 @@
-xorg-server (2:1.6.1.901-4) UNRELEASED; urgency=low
+xorg-server (2:1.6.2-1) UNRELEASED; urgency=low
 
-  * Bump serverminver to 2:1.6.1.901-3 for the dri2 upstream changes in the
+  [ Brice Goglin ]
+  * New upstream release.
+    + Fixes dri2 madness introduced in previous upload
+      (closes: #534522, #536019, #534766, #534771, #534890).
+    + Fixes xkb bogus length in write keyboard desc, closes: #529625.
+    + Fixes SWCursor being multiply rendered, closes: #526260.
+    + Drop Change-default-for-ExaOptimizeMigration-to-false.diff,
+      applied upstream.
+    + Pull upstream server-1.6-branch up to commit 606f6dba.
+  * Bump serverminver to 2:1.6.2 for the dri2 upstream changes in the
     previous upload.
+
+  [ Julien Cristau ]
   * Bump xserver-xorg-dev's dependency on dri2proto to >= 2.1 for the same
     reason.
   * Don't set PCI_TXT_IDS_DIR, we don't use that anymore.
   * xserver-xorg-core.bug.script: add a newline between X log and lshal
     output.
 
- -- Julien Cristau <jcristau@debian.org>  Wed, 24 Jun 2009 11:59:58 +0200
+ -- Brice Goglin <bgoglin@debian.org>  Mon, 13 Jul 2009 23:25:22 +0200
 
 xorg-server (2:1.6.1.901-3) unstable; urgency=low
 
