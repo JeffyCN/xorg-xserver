@@ -1,4 +1,4 @@
-xorg-server (2:1.6.2-1) UNRELEASED; urgency=low
+xorg-server (2:1.6.2-1) unstable; urgency=low
 
   [ Brice Goglin ]
   * New upstream release.
@@ -19,7 +19,7 @@ xorg-server (2:1.6.2-1) UNRELEASED; urgency=low
   * xserver-xorg-core.bug.script: add a newline between X log and lshal
     output.
 
- -- Brice Goglin <bgoglin@debian.org>  Mon, 13 Jul 2009 23:25:22 +0200
+ -- Brice Goglin <bgoglin@debian.org>  Mon, 13 Jul 2009 23:35:13 +0200
 
 xorg-server (2:1.6.1.901-3) unstable; urgency=low
 
