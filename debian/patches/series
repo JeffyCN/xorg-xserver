@@ -7,3 +7,4 @@ Turn-on-ModeDebug-by-default.patch
 Add-libgcrypt-as-an-option-for-sha1.diff
 fedora-bad-fbdev-thats-mine.patch
 fedora-pci-primary.diff
+fedora-vboxvideo.diff

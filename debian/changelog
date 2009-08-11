@@ -1,3 +1,10 @@
+xorg-server (2:1.6.3-2) UNRELEASED; urgency=low
+
+  * Add patch stolen from Fedora to add the vboxvideo driver to the
+    autodetection routine (closes: #540884).
+
+ -- Julien Cristau <jcristau@debian.org>  Tue, 11 Aug 2009 11:09:25 +0200
+
 xorg-server (2:1.6.3-1) unstable; urgency=low
 
   * New upstream release.
