@@ -4,6 +4,8 @@ xorg-server (2:1.6.3-2) UNRELEASED; urgency=low
     autodetection routine (closes: #540884).
   * Add built-ins to the default font path so that non-Xorg servers can use
     them (closes: #542707).  Thanks, Josselin Mouette!
+  * Add avr32 to the libselinux-dev/libaudit-dev build-deps (closes: #543540).
+    Thanks, Bradley Smith!
 
  -- Julien Cristau <jcristau@debian.org>  Tue, 11 Aug 2009 11:09:25 +0200
 
