@@ -1,15 +1,11 @@
 xorg-server (2:1.6.3-2) UNRELEASED; urgency=low
 
-  [ Julien Cristau ]
   * Add patch stolen from Fedora to add the vboxvideo driver to the
     autodetection routine (closes: #540884).
   * Add built-ins to the default font path so that non-Xorg servers can use
     them (closes: #542707).  Thanks, Josselin Mouette!
 
-  [ David Nusinow ]
-  * Add a note about re-enabling ctrl-alt-backspace killing to NEWS.Debian.
-
- -- David Nusinow <dnusinow@debian.org>  Mon, 24 Aug 2009 23:40:55 -0400
+ -- Julien Cristau <jcristau@debian.org>  Tue, 11 Aug 2009 11:09:25 +0200
 
 xorg-server (2:1.6.3-1) unstable; urgency=low
 
