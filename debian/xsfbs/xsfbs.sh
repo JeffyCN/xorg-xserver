@@ -199,37 +199,6 @@ usage_error () {
   exit $SHELL_LIB_USAGE_ERROR
 }
 
-
-maplink () {
-  # returns what symlink should point to; i.e., what the "sane" answer is
-  # Keep this in sync with the debian/*.links files.
-  # This is only needed for symlinks to directories.
-  #
-  # XXX: Most of these look wrong in the X11R7 world and need to be fixed.
-  # If we've stopped using this function, fixing it might enable us to re-enable
-  # it again and catch more errors.
-  case "$1" in
-    /etc/X11/xkb/compiled) echo /var/lib/xkb ;;
-    /etc/X11/xkb/xkbcomp) echo /usr/X11R6/bin/xkbcomp ;;
-    /usr/X11R6/lib/X11/app-defaults) echo /etc/X11/app-defaults ;;
-    /usr/X11R6/lib/X11/fs) echo /etc/X11/fs ;;
-    /usr/X11R6/lib/X11/lbxproxy) echo /etc/X11/lbxproxy ;;
-    /usr/X11R6/lib/X11/proxymngr) echo /etc/X11/proxymngr ;;
-    /usr/X11R6/lib/X11/rstart) echo /etc/X11/rstart ;;
-    /usr/X11R6/lib/X11/twm) echo /etc/X11/twm ;;
-    /usr/X11R6/lib/X11/xdm) echo /etc/X11/xdm ;;
-    /usr/X11R6/lib/X11/xinit) echo /etc/X11/xinit ;;
-    /usr/X11R6/lib/X11/xkb) echo /etc/X11/xkb ;;
-    /usr/X11R6/lib/X11/xserver) echo /etc/X11/xserver ;;
-    /usr/X11R6/lib/X11/xsm) echo /etc/X11/xsm ;;
-    /usr/bin/X11) echo ../X11R6/bin ;;
-    /usr/bin/rstartd) echo ../X11R6/bin/rstartd ;;
-    /usr/include/X11) echo ../X11R6/include/X11 ;;
-    /usr/lib/X11) echo ../X11R6/lib/X11 ;;
-    *) internal_error "maplink() called with unknown path \"$1\"" ;;
-  esac
-}
-
 find_culprits () {
   local f p dpkg_info_dir possible_culprits smoking_guns bad_packages package \
     msg
