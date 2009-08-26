@@ -230,32 +230,6 @@ maplink () {
   esac
 }
 
-analyze_path () {
-  # given a supplied set of pathnames, break each one up by directory and do an
-  # ls -dl on each component, cumulatively; i.e.
-  # analyze_path /usr/X11R6/bin -> ls -dl /usr /usr/X11R6 /usr/X11R6/bin
-  # Thanks to Randolph Chung for this clever hack.
-
-  local f g
-
-  while [ -n "$1" ]; do
-    reject_whitespace "$1"
-    g=
-    message "Analyzing $1:"
-    for f in $(echo "$1" | tr / \  ); do
-      if [ -e /$g$f ]; then
-        ls -dl /$g$f /$g$f.dpkg-* 2> /dev/null || true
-        g=$g$f/
-      else
-        message "/$g$f: nonexistent; directory contents of /$g:"
-        ls -l /$g
-        break
-      fi
-    done
-    shift
-  done
-}
-
 find_culprits () {
   local f p dpkg_info_dir possible_culprits smoking_guns bad_packages package \
     msg
