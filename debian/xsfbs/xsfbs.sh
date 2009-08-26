@@ -93,22 +93,6 @@ reject_nondigits () {
   done
 }
 
-reject_whitespace () {
-  # syntax: reject_whitespace [ operand ]
-  #
-  # scan operand (typically a shell variable whose value cannot be trusted) for
-  # whitespace characters and barf if any are found
-  if [ -n "$1" ]; then
-    # does the operand contain any whitespace?
-    if expr "$1" : "[[:space:]]" > /dev/null 2>&1; then
-      # can't use die(), because I want to avoid forward references
-      echo "$THIS_PACKAGE $THIS_SCRIPT error: reject_whitespace() encountered" \
-           "possibly malicious garbage \"$1\"" >&2
-      exit $SHELL_LIB_THROWN_ERROR
-    fi
-  fi
-}
-
 reject_unlikely_path_chars () {
   # syntax: reject_unlikely_path_chars [ operand ... ]
   #
