@@ -199,53 +199,6 @@ usage_error () {
   exit $SHELL_LIB_USAGE_ERROR
 }
 
-find_culprits () {
-  local f p dpkg_info_dir possible_culprits smoking_guns bad_packages package \
-    msg
-
-  reject_whitespace "$1"
-  message "Searching for overlapping packages..."
-  dpkg_info_dir=/var/lib/dpkg/info
-  if [ -d $dpkg_info_dir ]; then
-    if [ "$(echo $dpkg_info_dir/*.list)" != "$dpkg_info_dir/*.list" ]; then
-      possible_culprits=$(ls -1 $dpkg_info_dir/*.list | egrep -v \
-        "(xbase-clients|x11-common|xfs|xlibs)")
-      if [ -n "$possible_culprits" ]; then
-        smoking_guns=$(grep -l "$1" $possible_culprits || true)
-        if [ -n "$smoking_guns" ]; then
-          bad_packages=$(printf "\\n")
-          for f in $smoking_guns; do
-            # too bad you can't nest parameter expansion voodoo
-            p=${f%*.list}      # strip off the trailing ".list"
-            package=${p##*/}   # strip off the directories
-            bad_packages=$(printf "%s\n%s" "$bad_packages" "$package")
-          done
-          msg=$(cat <<EOF
-The following packages appear to have file overlaps with the X.Org packages;
-these packages are either very old, or in violation of Debian Policy.  Try
-upgrading each of these packages to the latest available version if possible:
-for example, with the command "apt-get install".  If no newer version of a
-package is available, you will have to remove it; for example, with the command
-"apt-get remove".  If even the latest available version of the package has
-this file overlap, please file a bug against that package with the Debian Bug
-Tracking System.  You may want to refer the package maintainer to section 12.8
-of the Debian Policy manual.
-EOF
-)
-          message "$msg"
-          message "The overlapping packages are: $bad_packages"
-        else
-          message "no overlaps found."
-        fi
-      fi
-    else
-      message "cannot search; no matches for $dpkg_info_dir/*.list."
-    fi
-  else
-    message "cannot search; $dpkg_info_dir does not exist."
-  fi
-}
-
 font_update () {
   # run $UPDATECMDS in $FONTDIRS
 
