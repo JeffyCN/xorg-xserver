@@ -265,10 +265,6 @@ $(STAMP_DIR)/genscripts: $(STAMP_DIR)/stampdir
 	#                                    debian/*.prerm
 	>$@
 
-# Generate the shlibs.local file.
-debian/shlibs.local:
-	cat debian/*.shlibs >$@
-
 SERVERMINVERS = $(shell cat /usr/share/xserver-xorg/serverminver 2>/dev/null)
 VIDEOABI = $(shell cat /usr/share/xserver-xorg/videoabiver 2>/dev/null)
 INPUTABI = $(shell cat /usr/share/xserver-xorg/inputabiver 2>/dev/null)
