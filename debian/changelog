@@ -11,6 +11,11 @@ xorg-server (2:1.6.3.901-1) UNRELEASED; urgency=low
     rather than whatever renderproto version the server built against.
   * New upstream release.
     + idle counter computation fixes (closes: #542064)
+  * Cherry-pick three more patches nominated on
+    http://www.x.org/wiki/Server16Branch:
+    - Don't reset the lastDeviceEventTime when doing DPMS actions
+    - dri2: Don't crash if pPriv is NULL
+    - EXA: Only take special code path for 1x1 fill for pixmaps
 
   [ David Nusinow ]
   * Update xsfbs to 5693792171d885769e58dcccc053c08b11acd12a
