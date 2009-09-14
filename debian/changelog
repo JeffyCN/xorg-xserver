@@ -1,6 +1,13 @@
 xorg-server (2:1.6.99.903-1) UNRELEASED; urgency=low
 
   * New upstream snapshot.
+    + doesn't fill log file with errors when acpid isn't running
+      (closes: #487904, #500583)
+    + adds autoconfig for geode variants (closes: #544988)
+    + fixes idle time computation (closes: #542064)
+    + Xnest uses the host's mouse acceleration and speed (closes: #325181)
+    + Xephyr now has a manpage (closes: #427121)
+    + Xdmx works again (closes: #541254)
   * Update build deps
   * Update patch stack:
     - 20_hurd-i386.diff applied upstream
