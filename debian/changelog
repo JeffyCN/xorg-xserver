@@ -1,4 +1,4 @@
-xorg-server (2:1.6.3-2) UNRELEASED; urgency=low
+xorg-server (2:1.6.3.901-1) UNRELEASED; urgency=low
 
   [ Julien Cristau ]
   * Add patch stolen from Fedora to add the vboxvideo driver to the
@@ -9,6 +9,8 @@ xorg-server (2:1.6.3-2) UNRELEASED; urgency=low
     Thanks, Bradley Smith!
   * Add patch to return the actually supported version in RenderQueryVersion
     rather than whatever renderproto version the server built against.
+  * New upstream release.
+    + idle counter computation fixes (closes: #542064)
 
   [ David Nusinow ]
   * Update xsfbs to 5693792171d885769e58dcccc053c08b11acd12a

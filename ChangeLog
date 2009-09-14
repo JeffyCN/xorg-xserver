@@ -1,3 +1,177 @@
+commit 3044711412d0a08ba65a491bd2441c0c8980f5e2
+Author: Keith Packard <keithp@keithp.com>
+Date:   Tue Aug 25 22:37:16 2009 -0700
+
+    Bump version to 1.6.3.901 (1.6.4 RC1)
+    
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit d8e48deb212767c4dfce982e6cb9d1b1fce63b96
+Author: Keith Packard <keithp@keithp.com>
+Date:   Tue Aug 25 22:29:25 2009 -0700
+
+    Block signals while delivering XTest events (fixes bug 23100)
+    
+    XTest uses the same event list as all input devices, and input devices
+    use it at SIGIO time. This causes mass confusion when a SIGIO event
+    occurs in the middle of XTest event processing.
+    
+    The master branch has a much different fix, using a separate input
+    queue which reduces latency that may be caused by XTest event queuing;
+    it's a 'nicer' fix in some ways, but this simple fix should solve the
+    problem.
+    
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit 76a1839b0a7dcb82e46c43533d252288677c6dbb
+Author: Keith Packard <keithp@keithp.com>
+Date:   Tue Aug 25 18:07:00 2009 -0700
+
+    Ensure that rotation updates happen frequently
+    
+    The smart scheduler is designed to minimize scheduler overhead by
+    increasing the interval between WaitForSomething calls when a single
+    client is running. However, the software rotation code depends on
+    its BlockHandler being invoked for screen updates; the long delays
+    caused by the smart scheduler optimizations means that screen updates
+    can be delayed a long time as well.
+    
+    The change is simple -- prevent the smart scheduler from increasing
+    the scheduling interval while any screen is using software rotation.
+    (cherry picked from commit e7dd1efef408effe52d0bd3d3aa0b5d4ee10ed90)
+    
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit 31dc4fe0be57da4e9458ee490811fbd92598b7a7
+Author: Keith Packard <keithp@keithp.com>
+Date:   Tue Aug 25 16:58:07 2009 -0700
+
+    Perform rotation redisplay before calling driver block handler (which may flush rendering)
+    
+    The rotation block handler uses regular driver rendering functions to
+    repaint the screen, if those functions queue commands in the driver,
+    it's important that the driver block handler be invoked after the
+    rotated image is drawn.
+    
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+    (cherry picked from commit 1740cda7a37abc7d0a169ab4555b446adaa62211)
+
+commit cebc0a7aa7a368b2ade3a808195d2e738fda83e9
+Author: Keith Packard <keithp@keithp.com>
+Date:   Tue Aug 25 16:54:16 2009 -0700
+
+    xf86_reload_cursors: fix cursor position to eliminate jumping after mode set
+    
+    xf86_reload_cursors restores the cursor to the correct position, but
+    that must adjust for cursor hot spot and frame before calling down to
+    the hardware function, otherwise the cursor jumps to the wrong
+    position until it is repositioned by the user.
+    
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+    (cherry picked from commit 4aab05e3b3231f1ec9795a66a075d17a722634a7)
+
+commit 5848fca11f3c5b65bb6634816c0df6aeb6eda87d
+Author: Michel Dänzer <daenzer@vmware.com>
+Date:   Tue Jun 23 16:45:40 2009 +0200
+
+    glx: Clean up more thoroughly if the drawable of a current context goes away.
+    
+    Fixes crash when restarting compiz, due to cl->currentContexts[x] being stale.
+    (cherry picked from commit 3020b1d43e34fca08cd51f7c7c8ed51497d49ef3)
+
+commit fad2de1cca057586a88fb20ebf9a9964f8e3e298
+Author: Michel Dänzer <daenzer@vmware.com>
+Date:   Thu May 14 11:46:41 2009 +0200
+
+    glx: If a destroyed window is bound to the current context, make it not current.
+    
+    Avoids subsequent crashes due to stale pointers to the DrawableRec, see
+    https://bugs.freedesktop.org/show_bug.cgi?id=21132#c15 and previous comments.
+    
+    Signed-off-by: Michel Dänzer <daenzer@vmware.com>
+    (cherry picked from commit 2075d4bf9e53b8baef0b919da6c44771220cd4a5)
+
+commit a32d717ac64b21e15a5736ae4981cdd32f2da56b
+Author: Richard Hughes <richard@hughsie.com>
+Date:   Mon Aug 17 09:15:32 2009 +0100
+
+    Do not reset lastDeviceEventTime when we do dixSaveScreens
+    
+    When we turn off DPMS with DPMSModeOff and do dixSaveScreens, don't reset the
+    event time else session clients using IDLETIME will be reset.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    (cherry picked from commit 6b5978dcf1f7ac3ecc2f22df06f7000f360e2066)
+
+commit 32115e690f43fde619234722aa674ff1ae1b44ae
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Fri Aug 14 11:48:54 2009 +1000
+
+    dix: update the sprite trace for all masters && floating slaves (#23257)
+    
+    When the windows are restructured, CheckMotion needs to be called for all
+    masters and floating slaves to update the spriteTrace.
+    
+    X.Org Bug 23257 <http://bugs.freedesktop.org/show_bug.cgi?id=23257>
+    (cherry picked from commit 6c292d17053eb2a7e7054e51210f423dbc0cb7e8)
+    
+    Tested-by: Thomas Jaeger
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit af7e62a913c3c5b9639b4557b31537853f3f58bb
+Author: Dan Nicholson <dbn.lists@gmail.com>
+Date:   Sun Aug 16 18:07:49 2009 -0700
+
+    xfree86: Link libselinux with Xorg system libraries
+    
+    Put the reference to -lselinux in XORG_SYS_LIBS so it isn't added as a
+    make dependency for libxorg.la. Otherwise, make goes looking for a file
+    -lselinux in the current directory, which it obviously won't find.
+    
+    Signed-off-by: Dan Nicholson <dbn.lists@gmail.com>
+    Tested-by: Justin P. Mattock <justinmattock@gmail.com>
+    (cherry picked from commit c73cd3b265c301b8a54ffe484d6c696f2abefb46)
+
+commit 397f7c42cd775f1dbfced58bc1dfaead48e86440
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Fri Aug 14 09:48:45 2009 +1000
+
+    config: don't shutdown the libhal ctx if it failed to initialize (#23213)
+    
+    Regression introduced by b1c3dc6ae226db178420e3b5f297b94afc87c94c.
+    Shutting down the libhal_ctx if the init failed may cause an abort.
+    This can happen if hald is not yet running at server startup.
+    
+    X.Org Bug 23213 <http://bugs.freedesktop.org/show_bug.cgi?id=23213>
+    
+    Tested-by: Stefan Dirsch
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    (cherry picked from commit 49046088f10cceaea7da97401d742d3fb59371f5)
+
+commit 55c26d8e4d110b689aea9d806e9d4fa7bbbdd32a
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Thu Aug 13 16:37:00 2009 +1000
+
+    Xext: fix up wrong conditions for negative sync transitions.
+    
+    If the counter had a value higher than the trigger value for a negative
+    transition, the trigger value did not get set.
+    
+    The correct sequence of checks is:
+    if (positive transition)
+       if (counter value < trigger value)
+          set up trigger
+    if (negative transition)
+       if (counter value > trigger value)
+          set up trigger
+    
+    Red Hat Bug 501601 <https://bugzilla.redhat.com/show_bug.cgi?id=501601>
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    (cherry picked from commit db568f9eabf3450d8a023597ff007df355b13ea8)
+
 commit f274e595ed56722450f6ecebad70500c92e50c58
 Author: Keith Packard <keithp@keithp.com>
 Date:   Fri Jul 31 23:37:53 2009 -0700
