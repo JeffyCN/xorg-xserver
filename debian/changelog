@@ -1,4 +1,4 @@
-xorg-server (2:1.6.3.901-1) UNRELEASED; urgency=low
+xorg-server (2:1.6.3.901-1) unstable; urgency=low
 
   [ Julien Cristau ]
   * Add patch stolen from Fedora to add the vboxvideo driver to the
@@ -20,7 +20,7 @@ xorg-server (2:1.6.3.901-1) UNRELEASED; urgency=low
   [ David Nusinow ]
   * Update xsfbs to 5693792171d885769e58dcccc053c08b11acd12a
 
- -- David Nusinow <dnusinow@debian.org>  Wed, 26 Aug 2009 23:24:25 -0400
+ -- Julien Cristau <jcristau@debian.org>  Mon, 14 Sep 2009 15:33:46 +0200
 
 xorg-server (2:1.6.3-1) unstable; urgency=low
 
