@@ -176,7 +176,7 @@ cleanscripts:
 xsfclean: cleanscripts unpatch
 	dh_testdir
 	rm -rf .pc
-	rm -rf $(STAMP_DIR) $(SOURCE_DIR)
+	rm -rf $(STAMP_DIR)
 	rm -rf imports
 	dh_clean debian/shlibs.local \
 	         debian/po/pothead
@@ -252,7 +252,6 @@ $(STAMP_DIR)/genscripts: $(STAMP_DIR)/stampdir
 	      | sed -e '/^#INCLUDE_SHELL_LIB#$$/d' >>$$MAINTSCRIPT.tmp; \
 	    sed -e 's/@SOURCE_VERSION@/$(SOURCE_VERSION)/' \
 	        -e 's/@OFFICIAL_BUILD@/$(OFFICIAL_BUILD)/' \
-	        -e 's/@DEFAULT_DCRESOLUTIONS@/$(DEFAULT_DCRESOLUTIONS)/' \
 	      <$$MAINTSCRIPT.tmp >$$MAINTSCRIPT; \
 	    rm $$MAINTSCRIPT.tmp; \
 	  fi; \
