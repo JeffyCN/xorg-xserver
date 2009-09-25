@@ -177,19 +177,7 @@ xsfclean: cleanscripts unpatch
 	dh_testdir
 	rm -rf .pc
 	rm -rf $(STAMP_DIR)
-	rm -rf imports
-	dh_clean debian/shlibs.local \
-	         debian/po/pothead
-
-# Generate the debconf templates POT file header.
-debian/po/pothead: debian/po/pothead.in
-	sed -e 's/SOURCE_VERSION/$(SOURCE_VERSION)/' \
-	  -e 's/DATE/$(shell date "+%F %X%z"/)' <$< >$@
-
-# Update POT and PO files.
-.PHONY: updatepo
-updatepo: debian/po/pothead
-	debian/scripts/debconf-updatepo --pot-header=pothead --verbose
+	dh_clean
 
 # Remove files from the upstream source tree that we don't need, or which have
 # licensing problems.  It must be run before creating the .orig.tar.gz.
