@@ -1,3 +1,9 @@
+xorg-server (2:1.6.3.901-2) UNRELEASED; urgency=low
+
+  * Update 20_hurd-i386.diff, thanks Samuel Thibault, closes: #548606.
+
+ -- Brice Goglin <bgoglin@debian.org>  Sun, 27 Sep 2009 20:16:51 +0200
+
 xorg-server (2:1.6.3.901-1) unstable; urgency=low
 
   [ Julien Cristau ]

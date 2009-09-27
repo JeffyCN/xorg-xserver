@@ -65,7 +65,7 @@ Index: xorg-server/hw/xfree86/os-support/hurd/hurd_video.c
 -pointer 
 -xf86MapVidMem(int ScreenNum,int Flags, unsigned long Base, unsigned long Size)
 +static pointer 
-+mapVidMem(int ScreenNum,int Flags, unsigned long Base, unsigned long Size)
++mapVidMem(int ScreenNum, unsigned long Base, unsigned long Size, int Flags)
  {
      mach_port_t device,iopl_dev;
      memory_object_t iopl_mem;
