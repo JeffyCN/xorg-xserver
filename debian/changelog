@@ -1,4 +1,4 @@
-xorg-server (2:1.6.4-1) UNRELEASED; urgency=low
+xorg-server (2:1.6.4-1) unstable; urgency=low
 
   * New upstream release.
   * Update 20_hurd-i386.diff, thanks Samuel Thibault, closes: #548606.
