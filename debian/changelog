@@ -1,4 +1,4 @@
-xorg-server (2:1.6.99.903-1) UNRELEASED; urgency=low
+xorg-server (2:1.6.99.903-1) experimental; urgency=low
 
   * New upstream snapshot.
     + doesn't fill log file with errors when acpid isn't running
@@ -24,7 +24,7 @@ xorg-server (2:1.6.99.903-1) UNRELEASED; urgency=low
     - fix xserver-xorg-core.install
   * Bump Standards-Version to 3.8.3.
 
- -- Julien Cristau <jcristau@debian.org>  Sun, 13 Sep 2009 18:42:55 +0200
+ -- Julien Cristau <jcristau@debian.org>  Tue, 29 Sep 2009 17:51:05 +0200
 
 xorg-server (2:1.6.4-1) unstable; urgency=low
 
