@@ -22,6 +22,7 @@ xorg-server (2:1.6.99.903-1) UNRELEASED; urgency=low
   * Bump debhelper compat level to 5:
     - handle dh_strip behaviour change
     - fix xserver-xorg-core.install
+  * Bump Standards-Version to 3.8.3.
 
  -- Julien Cristau <jcristau@debian.org>  Sun, 13 Sep 2009 18:42:55 +0200
 
