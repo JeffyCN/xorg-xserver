@@ -44,7 +44,7 @@
 #include "registry.h"
 
 static int PictureScreenPrivateKeyIndex;
-_X_EXPORT DevPrivateKey PictureScreenPrivateKey = &PictureScreenPrivateKeyIndex;
+DevPrivateKey PictureScreenPrivateKey = &PictureScreenPrivateKeyIndex;
 static int PictureWindowPrivateKeyIndex;
 DevPrivateKey	PictureWindowPrivateKey = &PictureWindowPrivateKeyIndex;
 static int	PictureGeneration;
@@ -200,6 +200,12 @@ PictureCreateDefaultFormats (ScreenPtr pScreen, int *nformatp)
     formats[nformats].format = PICT_x8r8g8b8;
     formats[nformats].depth = 32;
     nformats++;
+    formats[nformats].format = PICT_b8g8r8a8;
+    formats[nformats].depth = 32;
+    nformats++;
+    formats[nformats].format = PICT_b8g8r8x8;
+    formats[nformats].depth = 32;
+    nformats++;
 
     /* now look through the depths and visuals adding other formats */
     for (v = 0; v < pScreen->numVisuals; v++)
@@ -217,9 +223,8 @@ PictureCreateDefaultFormats (ScreenPtr pScreen, int *nformatp)
 	    b = Ones (pVisual->blueMask);
 	    type = PICT_TYPE_OTHER;
 	    /*
-	     * Current rendering code supports only two direct formats,
+	     * Current rendering code supports only three direct formats,
 	     * fields must be packed together at the bottom of the pixel
-	     * and must be either RGB or BGR
 	     */
 	    if (pVisual->offsetBlue == 0 &&
 		pVisual->offsetGreen == b &&
@@ -232,6 +237,12 @@ PictureCreateDefaultFormats (ScreenPtr pScreen, int *nformatp)
 		     pVisual->offsetBlue == r + g)
 	    {
 		type = PICT_TYPE_ABGR;
+	    }
+	    else if (pVisual->offsetRed == pVisual->offsetGreen - r &&
+		     pVisual->offsetGreen == pVisual->offsetBlue - g && 
+		     pVisual->offsetBlue == bpp - b)
+	    {
+		type = PICT_TYPE_BGRA;
 	    }
 	    if (type != PICT_TYPE_OTHER)
 	    {
@@ -311,6 +322,17 @@ PictureCreateDefaultFormats (ScreenPtr pScreen, int *nformatp)
 		nformats = addFormat (formats, nformats,
 				      PICT_x8b8g8r8, pDepth->depth);
 	    }
+	    if (pDepth->depth >= 30)
+	    {
+		nformats = addFormat (formats, nformats,
+				      PICT_a2r10g10b10, pDepth->depth);
+		nformats = addFormat (formats, nformats,
+				      PICT_x2r10g10b10, pDepth->depth);
+		nformats = addFormat (formats, nformats,
+				      PICT_a2b10g10r10, pDepth->depth);
+		nformats = addFormat (formats, nformats,
+				      PICT_x2b10g10r10, pDepth->depth);
+	    }
 	    break;
 	}
     }
@@ -366,6 +388,24 @@ PictureCreateDefaultFormats (ScreenPtr pScreen, int *nformatp)
 	    pFormats[f].direct.red = 0;
 	    break;
 
+	case PICT_TYPE_BGRA:
+	    pFormats[f].type = PictTypeDirect;
+	    
+	    pFormats[f].direct.blueMask = Mask(PICT_FORMAT_B(format));
+	    pFormats[f].direct.blue = (PICT_FORMAT_BPP(format) - PICT_FORMAT_B(format));
+
+	    pFormats[f].direct.greenMask = Mask(PICT_FORMAT_G(format));
+	    pFormats[f].direct.green = (PICT_FORMAT_BPP(format) - PICT_FORMAT_B(format) -
+					PICT_FORMAT_G(format));
+
+	    pFormats[f].direct.redMask = Mask(PICT_FORMAT_R(format));
+	    pFormats[f].direct.red = (PICT_FORMAT_BPP(format) - PICT_FORMAT_B(format) -
+				      PICT_FORMAT_G(format) - PICT_FORMAT_R(format));
+
+	    pFormats[f].direct.alphaMask = Mask(PICT_FORMAT_A(format));
+	    pFormats[f].direct.alpha = 0;
+	    break;
+
 	case PICT_TYPE_A:
 	    pFormats[f].type = PictTypeDirect;
 
@@ -410,8 +450,9 @@ PictureInitIndexedFormat(ScreenPtr pScreen, PictFormatPtr format)
 	return TRUE;
 
     if (format->index.vid == pScreen->rootVisual) {
-	format->index.pColormap =
-	    (ColormapPtr) LookupIDByType(pScreen->defColormap, RT_COLORMAP);
+	dixLookupResourceByType((pointer *)&format->index.pColormap,
+				pScreen->defColormap, RT_COLORMAP,
+				serverClient, DixGetAttrAccess);
     } else {
 	VisualPtr pVisual = PictureFindVisual(pScreen, format->index.vid);
 	if (CreateColormap(FakeClientID (0), pScreen, pVisual,
@@ -456,7 +497,7 @@ PictureFinishInit (void)
     return TRUE;
 }
 
-_X_EXPORT Bool
+Bool
 PictureSetSubpixelOrder (ScreenPtr pScreen, int subpixel)
 {
     PictureScreenPtr    ps = GetPictureScreenIfSet(pScreen);
@@ -468,7 +509,7 @@ PictureSetSubpixelOrder (ScreenPtr pScreen, int subpixel)
     
 }
 
-_X_EXPORT int
+int
 PictureGetSubpixelOrder (ScreenPtr pScreen)
 {
     PictureScreenPtr    ps = GetPictureScreenIfSet(pScreen);
@@ -568,7 +609,7 @@ PictureParseCmapPolicy (const char *name)
 	return PictureCmapPolicyInvalid;
 }
 
-_X_EXPORT Bool
+Bool
 PictureInit (ScreenPtr pScreen, PictFormatPtr formats, int nformats)
 {
     PictureScreenPtr	ps;
@@ -621,8 +662,10 @@ PictureInit (ScreenPtr pScreen, PictFormatPtr formats, int nformats)
 		type = PICT_TYPE_A;
 	    else if (formats[n].direct.red > formats[n].direct.blue)
 		type = PICT_TYPE_ARGB;
-	    else
+	    else if (formats[n].direct.red == 0)
 		type = PICT_TYPE_ABGR;
+	    else
+		type = PICT_TYPE_BGRA;
 	    a = Ones (formats[n].direct.alphaMask);
 	    r = Ones (formats[n].direct.redMask);
 	    g = Ones (formats[n].direct.greenMask);

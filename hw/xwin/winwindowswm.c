@@ -31,8 +31,6 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #endif
 #include "win.h"
 
-#define NEED_REPLIES
-#define NEED_EVENTS
 #include "misc.h"
 #include "dixstruct.h"
 #include "extnsionst.h"
@@ -42,7 +40,8 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include "servermd.h"
 #include "swaprep.h"
 #define _WINDOWSWM_SERVER_
-#include "windowswmstr.h"
+#include <X11/extensions/windowswmstr.h>
+#include "protocol-versions.h"
 
 static int WMErrorBase;
 
@@ -52,7 +51,7 @@ static DISPATCH_PROC(SProcWindowsWMDispatch);
 static unsigned char WMReqCode = 0;
 static int WMEventBase = 0;
 
-static RESTYPE ClientType, EventType; /* resource types for event masks */
+static RESTYPE ClientType, eventResourceType; /* resource types for event masks */
 static XID eventResource;
 
 /* Currently selected events */
@@ -87,10 +86,10 @@ winWindowsWMExtensionInit ()
   ExtensionEntry* extEntry;
 
   ClientType = CreateNewResourceType(WMFreeClient);
-  EventType = CreateNewResourceType(WMFreeEvents);
+  eventResourceType = CreateNewResourceType(WMFreeEvents);
   eventResource = FakeClientID(0);
 
-  if (ClientType && EventType &&
+  if (ClientType && eventResourceType &&
       (extEntry = AddExtension(WINDOWSWMNAME,
 			       WindowsWMNumberEvents,
 			       WindowsWMNumberErrors,
@@ -116,9 +115,9 @@ ProcWindowsWMQueryVersion(register ClientPtr client)
   rep.type = X_Reply;
   rep.length = 0;
   rep.sequenceNumber = client->sequence;
-  rep.majorVersion = WINDOWS_WM_MAJOR_VERSION;
-  rep.minorVersion = WINDOWS_WM_MINOR_VERSION;
-  rep.patchVersion = WINDOWS_WM_PATCH_VERSION;
+  rep.majorVersion = SERVER_WINDOWSWM_MAJOR_VERSION;
+  rep.minorVersion = SERVER_WINDOWSWM_MINOR_VERSION;
+  rep.patchVersion = SERVER_WINDOWSWM_PATCH_VERSION;
   if (client->swapped)
     {
       swaps(&rep.sequenceNumber, n);
@@ -149,7 +148,7 @@ WMFreeClient (pointer data, XID id)
   WMEventPtr   *pHead, pCur, pPrev;
 
   pEvent = (WMEventPtr) data;
-  pHead = (WMEventPtr *) LookupIDByType(eventResource, EventType);
+  pHead = (WMEventPtr *) LookupIDByType(eventResource, eventResourceType);
   if (pHead)
     {
       pPrev = 0;
@@ -195,7 +194,7 @@ ProcWindowsWMSelectInput (register ClientPtr client)
 
   REQUEST_SIZE_MATCH (xWindowsWMSelectInputReq);
   pHead = (WMEventPtr *)SecurityLookupIDByType(client, eventResource,
-					       EventType, DixWriteAccess);
+					       eventResourceType, DixWriteAccess);
   if (stuff->mask != 0)
     {
       if (pHead)
@@ -237,7 +236,7 @@ ProcWindowsWMSelectInput (register ClientPtr client)
 	{
 	  pHead = (WMEventPtr *) xalloc (sizeof (WMEventPtr));
 	  if (!pHead ||
-	      !AddResource (eventResource, EventType, (pointer)pHead))
+	      !AddResource (eventResource, eventResourceType, (pointer)pHead))
 	    {
 	      FreeResource (clientResource, RT_NONE);
 	      return BadAlloc;
@@ -295,7 +294,7 @@ winWindowsWMSendEvent (int type, unsigned int mask, int which, int arg,
   ErrorF ("winWindowsWMSendEvent %d %d %d %d,  %d %d - %d %d\n",
 	  type, mask, which, arg, x, y, w, h);
 #endif
-  pHead = (WMEventPtr *) LookupIDByType(eventResource, EventType);
+  pHead = (WMEventPtr *) LookupIDByType(eventResource, eventResourceType);
   if (!pHead)
     return;
   for (pEvent = *pHead; pEvent; pEvent = pEvent->next)

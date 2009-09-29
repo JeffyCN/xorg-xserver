@@ -31,6 +31,10 @@
 #include <CoreFoundation/CoreFoundation.h>
 #include <AvailabilityMacros.h>
 
+#ifdef HAVE_DIX_CONFIG_H
+#include <dix-config.h>
+#endif
+
 #include <X11/Xlib.h>
 #include <unistd.h>
 #include <stdio.h>
@@ -44,6 +48,7 @@
 #include <sys/un.h>
 
 #include <sys/time.h>
+#include <fcntl.h>
 
 #include <mach/mach.h>
 #include <mach/mach_error.h>
@@ -75,7 +80,7 @@ const char *__crashreporter_info__base = "X.Org X Server " XSERVER_VERSION " Bui
 char __crashreporter_info__buf[4096];
 char *__crashreporter_info__ = __crashreporter_info__buf;
 
-static char *server_bootstrap_name = "org.x.X11";
+static char *server_bootstrap_name = LAUNCHD_ID_PREFIX".X11";
 
 #define DEBUG 1
 
@@ -144,15 +149,17 @@ static int accept_fd_handoff(int connected_fd) {
     char databuf[] = "display";
     struct iovec iov[1];
     
-    iov[0].iov_base = databuf;
-    iov[0].iov_len  = sizeof(databuf);
-    
     union {
         struct cmsghdr hdr;
         char bytes[CMSG_SPACE(sizeof(int))];
     } buf;
     
     struct msghdr msg;
+    struct cmsghdr *cmsg;
+
+    iov[0].iov_base = databuf;
+    iov[0].iov_len  = sizeof(databuf);
+    
     msg.msg_iov = iov;
     msg.msg_iovlen = 1;
     msg.msg_control = buf.bytes;
@@ -161,7 +168,7 @@ static int accept_fd_handoff(int connected_fd) {
     msg.msg_namelen = 0;
     msg.msg_flags = 0;
     
-    struct cmsghdr *cmsg = CMSG_FIRSTHDR (&msg);
+    cmsg = CMSG_FIRSTHDR (&msg);
     cmsg->cmsg_level = SOL_SOCKET;
     cmsg->cmsg_type = SCM_RIGHTS;
     cmsg->cmsg_len = CMSG_LEN(sizeof(int));
@@ -192,6 +199,7 @@ static void socket_handoff_thread(void *arg) {
     socket_handoff_t *handoff_data = (socket_handoff_t *)arg;
     int launchd_fd = -1;
     int connected_fd;
+    unsigned remain;
 
     /* Now actually get the passed file descriptor from this connection
      * If we encounter an error, keep listening.
@@ -224,7 +232,7 @@ static void socket_handoff_thread(void *arg) {
      * into it.
      */
     
-    unsigned remain = 3000000;
+    remain = 3000000;
     fprintf(stderr, "X11.app: Received new $DISPLAY fd: %d ... sleeping to allow xinitrc to catchup.\n", launchd_fd);
     while((remain = usleep(remain)) > 0);
     
@@ -322,7 +330,7 @@ kern_return_t do_start_x11_server(mach_port_t port, string_array_t argv,
     char **_envp = alloca((envpCnt + 1) * sizeof(char *));
     size_t i;
     
-    /* If we didn't get handed a launchd DISPLAY socket, we shoul
+    /* If we didn't get handed a launchd DISPLAY socket, we should
      * unset DISPLAY or we can run into problems with pbproxy
      */
     if(!launchd_socket_handed_off)
@@ -350,7 +358,7 @@ kern_return_t do_start_x11_server(mach_port_t port, string_array_t argv,
         return KERN_FAILURE;
 }
 
-int startup_trigger(int argc, char **argv, char **envp) {
+static int startup_trigger(int argc, char **argv, char **envp) {
     Display *display;
     const char *s;
     
@@ -387,9 +395,9 @@ int startup_trigger(int argc, char **argv, char **envp) {
         kr = bootstrap_look_up(bootstrap_port, server_bootstrap_name, &mp);
         if (kr != KERN_SUCCESS) {
 #if MAC_OS_X_VERSION_MIN_REQUIRED >= 1050
-            fprintf(stderr, "bootstrap_look_up(): %s\n", bootstrap_strerror(kr));
+            fprintf(stderr, "bootstrap_look_up(%s): %s\n", server_bootstrap_name, bootstrap_strerror(kr));
 #else
-            fprintf(stderr, "bootstrap_look_up(): %ul\n", (unsigned long)kr);
+            fprintf(stderr, "bootstrap_look_up(%s): %ul\n", server_bootstrap_name, (unsigned long)kr);
 #endif
             exit(EXIT_FAILURE);
         }
@@ -444,9 +452,10 @@ static void ensure_path(const char *dir) {
     }
 }
 
-static void setup_env() {
+static void setup_env(void) {
     char *temp;
     const char *pds = NULL;
+    const char *disp = getenv("DISPLAY");
 
     /* Pass on our prefs domain to startx and its inheritors (mainly for
      * quartz-wm and the Xquartz stub's MachIPC)
@@ -463,12 +472,40 @@ static void setup_env() {
             }
         }
     }
+    /* We need to unset DISPLAY if it is not our socket */
+    if(disp) {
+        if(!pds) {
+            /* If we can't detet our id, we are beyond hope and need to just
+             * revert to the non-launchd startup */
+            unsetenv("DISPLAY");
+        } else {
+            /* s = basename(disp) */
+            const char *d, *s;
+	    for(s = NULL, d = disp; *d; d++) {
+                if(*d == '/')
+                     s = d + 1;
+            }
 
-    /* If we're not org.x.X11, we want to unset DISPLAY, so we don't
-     * use the launchd DISPLAY socket.
-     */
-    if(pds == NULL || strcmp(pds, "org.x.X11") != 0)
-        unsetenv("DISPLAY");
+            if(s && *s) {
+                size_t pds_len = strlen(pds);
+                temp = (char *)malloc(sizeof(char) * pds_len);
+                if(!temp) {
+                    fprintf(stderr, "Memory allocation error creating space for socket name test.\n");
+                }
+                strlcpy(temp, pds, pds_len - 3);
+                strlcat(temp, ":0", pds_len);
+
+                if(strcmp(temp, s) != 0) {
+                    /* If we don't have a match, unset it. */
+                    unsetenv("DISPLAY");
+                }
+                free(temp);
+            } else {
+                /* The DISPLAY environment variable is not formatted like a launchd socket, so reset. */
+                unsetenv("DISPLAY");
+            }
+        }
+    }
 
     /* Make sure PATH is right */
     ensure_path(X11BINDIR);
@@ -514,8 +551,43 @@ int main(int argc, char **argv, char **envp) {
      * thread handle it.
      */
     if(!listenOnly) {
-        if(fork() == 0) {
-            return startup_trigger(argc, argv, envp);
+        pid_t child1, child2;
+        int status;
+
+        /* Do the fork-twice trick to avoid having to reap zombies */
+        child1 = fork();
+        switch (child1) {
+            case -1:                                /* error */
+                break;
+
+            case 0:                                 /* child1 */
+                child2 = fork();
+
+                switch (child2) {
+                    int max_files, i;
+
+                    case -1:                            /* error */
+                        break;
+
+                    case 0:                             /* child2 */
+                        /* close all open files except for standard streams */
+                        max_files = sysconf(_SC_OPEN_MAX);
+                        for(i = 3; i < max_files; i++)
+                            close(i);
+
+                        /* ensure stdin is on /dev/null */
+                        close(0);
+                        open("/dev/null", O_RDONLY);
+
+                        return startup_trigger(argc, argv, envp);
+
+                    default:                            /* parent (child1) */
+                        _exit(0);
+                }
+                break;
+
+            default:                                /* parent */
+              waitpid(child1, &status, 0);
         }
     }
     
@@ -523,7 +595,7 @@ int main(int argc, char **argv, char **envp) {
     fprintf(stderr, "Waiting for startup parameters via Mach IPC.\n");
     kr = mach_msg_server(mach_startup_server, mxmsgsz, mp, 0);
     if (kr != KERN_SUCCESS) {
-        fprintf(stderr, "org.x.X11(mp): %s\n", mach_error_string(kr));
+        fprintf(stderr, "%s.X11(mp): %s\n", LAUNCHD_ID_PREFIX, mach_error_string(kr));
         return EXIT_FAILURE;
     }
     
@@ -557,11 +629,11 @@ static char *command_from_prefs(const char *key, const char *default_value) {
     
     if ((PlistRef == NULL) || (CFGetTypeID(PlistRef) != CFStringGetTypeID())) {
         CFStringRef cfDefaultValue = CFStringCreateWithCString(NULL, default_value, kCFStringEncodingASCII);
+        int len = strlen(default_value) + 1;
 
         CFPreferencesSetAppValue(cfKey, cfDefaultValue, kCFPreferencesCurrentApplication);
         CFPreferencesAppSynchronize(kCFPreferencesCurrentApplication);
         
-        int len = strlen(default_value) + 1;
         command = (char *)malloc(len * sizeof(char));
         if(!command)
             return NULL;

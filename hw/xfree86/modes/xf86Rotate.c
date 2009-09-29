@@ -40,8 +40,7 @@
 #include "xf86Modes.h"
 #include "xf86RandR12.h"
 #include "X11/extensions/render.h"
-#define DPMS_SERVER
-#include "X11/extensions/dpms.h"
+#include "X11/extensions/dpmsconst.h"
 #include "X11/Xatom.h"
 
 /* borrowed from composite extension, move to Render and publish? */
@@ -316,7 +315,7 @@ xf86RotateDestroy (xf86CrtcPtr crtc)
     }
 }
 
-_X_EXPORT void
+void
 xf86RotateFreeShadow(ScrnInfoPtr pScrn)
 {
     xf86CrtcConfigPtr config = XF86_CRTC_CONFIG_PTR(pScrn);
@@ -334,7 +333,7 @@ xf86RotateFreeShadow(ScrnInfoPtr pScrn)
    }
 }
 
-_X_EXPORT void
+void
 xf86RotateCloseScreen (ScreenPtr screen)
 {
     ScrnInfoPtr		scrn = xf86Screens[screen->myNum];
@@ -374,7 +373,7 @@ xf86CrtcFitsScreen (xf86CrtcPtr crtc, struct pict_f_transform *crtc_to_fb)
 	    0 <= b.y1 && b.y2 <= pScrn->virtualY);
 }
 
-_X_EXPORT Bool
+Bool
 xf86CrtcRotate (xf86CrtcPtr crtc)
 {
     ScrnInfoPtr		pScrn = crtc->scrn;

@@ -33,7 +33,6 @@ libXquartz_la_SOURCES = \
 	quartzAudio.c \
 	quartzCocoa.m \
 	quartzKeyboard.c \
-	quartzPasteboard.c \
 	quartzStartup.c \
 	threadSafety.c
 
@@ -41,8 +40,8 @@ EXTRA_DIST = \
 	X11Application.h \
 	X11Controller.h \
 	applewmExt.h \
-	darwinClut8.h \
 	darwin.h \
+	darwinfb.h \
 	darwinEvents.h \
 	keysym2ucs.h \
 	pseudoramiX.h \
@@ -50,7 +49,6 @@ EXTRA_DIST = \
 	quartzAudio.h \
 	quartzCommon.h \
 	quartzKeyboard.h \
-	quartzPasteboard.h \
 	sanitizedCarbon.h \
 	sanitizedCocoa.h \
 	threadSafety.h

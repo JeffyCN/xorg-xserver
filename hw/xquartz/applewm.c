@@ -33,8 +33,6 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #include "quartzCommon.h"
 
-#define NEED_REPLIES
-#define NEED_EVENTS
 #include "misc.h"
 #include "dixstruct.h"
 #include "globals.h"
@@ -49,9 +47,10 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <X11/Xatom.h>
 #include "darwin.h"
 #define _APPLEWM_SERVER_
-#include "X11/extensions/applewmstr.h"
+#include <X11/extensions/applewmproto.h>
 #include "applewmExt.h"
 #include "X11Application.h"
+#include "protocol-versions.h"
 
 #define DEFINE_ATOM_HELPER(func,atom_name)                      \
 static Atom func (void) {                                       \
@@ -139,7 +138,7 @@ AppleWMSetScreenOrigin(
     WindowPtr pWin
 )
 {
-    long data[2];
+    int32_t data[2];
 
     data[0] = (dixScreenOrigins[pWin->drawable.pScreen->myNum].x
                 + darwinMainScreenX);
@@ -185,9 +184,9 @@ ProcAppleWMQueryVersion(
     rep.type = X_Reply;
     rep.length = 0;
     rep.sequenceNumber = client->sequence;
-    rep.majorVersion = APPLE_WM_MAJOR_VERSION;
-    rep.minorVersion = APPLE_WM_MINOR_VERSION;
-    rep.patchVersion = APPLE_WM_PATCH_VERSION;
+    rep.majorVersion = SERVER_APPLEWM_MAJOR_VERSION;
+    rep.minorVersion = SERVER_APPLEWM_MINOR_VERSION;
+    rep.patchVersion = SERVER_APPLEWM_PATCH_VERSION;
     if (client->swapped) {
         swaps(&rep.sequenceNumber, n);
         swapl(&rep.length, n);
@@ -211,10 +210,7 @@ updateEventMask (WMEventPtr *pHead)
 
 /*ARGSUSED*/
 static int
-WMFreeClient (data, id)
-    pointer     data;
-    XID         id;
-{
+WMFreeClient (pointer data, XID id) {
     WMEventPtr   pEvent;
     WMEventPtr   *pHead, pCur, pPrev;
 
@@ -238,10 +234,7 @@ WMFreeClient (data, id)
 
 /*ARGSUSED*/
 static int
-WMFreeEvents (data, id)
-    pointer     data;
-    XID         id;
-{
+WMFreeEvents (pointer data, XID id) {
     WMEventPtr   *pHead, pCur, pNext;
 
     pHead = (WMEventPtr *) data;
@@ -345,10 +338,7 @@ ProcAppleWMSelectInput (register ClientPtr client)
  */
 
 void
-AppleWMSendEvent (type, mask, which, arg)
-    int type, which, arg;
-    unsigned int mask;
-{
+AppleWMSendEvent (int type, unsigned int mask, int which, int arg) {
     WMEventPtr      *pHead, pEvent;
     ClientPtr       client;
     xAppleWMNotifyEvent se;
@@ -488,6 +478,55 @@ ProcAppleWMSetWindowLevel(register ClientPtr client)
 
      err = appleWMProcs->SetWindowLevel(pWin, stuff->level);
      if (err != Success) {
+        return err;
+    }
+
+    return (client->noClientException);
+}
+
+static int
+ProcAppleWMSendPSN(register ClientPtr client)
+{
+    REQUEST(xAppleWMSendPSNReq);
+    int err;
+    
+    REQUEST_SIZE_MATCH(xAppleWMSendPSNReq);
+    
+    if(!appleWMProcs->SendPSN)
+        return BadRequest;
+
+    err = appleWMProcs->SendPSN(stuff->psn_hi, stuff->psn_lo);
+    if (err != Success) {
+        return err;
+    }
+
+    return (client->noClientException);
+}
+
+static int
+ProcAppleWMAttachTransient(register ClientPtr client)
+{
+    WindowPtr pWinChild, pWinParent;
+    REQUEST(xAppleWMAttachTransientReq);
+    int err;
+    
+    REQUEST_SIZE_MATCH(xAppleWMAttachTransientReq);
+    
+    if(!appleWMProcs->AttachTransient)
+        return BadRequest;
+
+    if (Success != dixLookupWindow(&pWinChild, stuff->child, client, DixReadAccess))
+        return BadValue;
+
+    if(stuff->parent) {
+        if(Success != dixLookupWindow(&pWinParent, stuff->parent, client, DixReadAccess))
+            return BadValue;
+    } else {
+        pWinParent = NULL;
+    }
+
+    err = appleWMProcs->AttachTransient(pWinChild, pWinParent);
+    if (err != Success) {
         return err;
     }
 
@@ -654,15 +693,17 @@ ProcAppleWMDispatch (
         return ProcAppleWMFrameHitTest(client);
     case X_AppleWMFrameDraw:
         return ProcAppleWMFrameDraw(client);
+    case X_AppleWMSendPSN:
+        return ProcAppleWMSendPSN(client);
+    case X_AppleWMAttachTransient:
+        return ProcAppleWMAttachTransient(client);
     default:
         return BadRequest;
     }
 }
 
 static void
-SNotifyEvent(from, to)
-    xAppleWMNotifyEvent *from, *to;
-{
+SNotifyEvent(xAppleWMNotifyEvent *from, xAppleWMNotifyEvent *to) {
     to->type = from->type;
     to->kind = from->kind;
     cpswaps (from->sequenceNumber, to->sequenceNumber);

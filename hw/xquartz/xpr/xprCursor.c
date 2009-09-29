@@ -128,7 +128,7 @@ load_cursor(CursorPtr src, int screen)
 
             while (ycount-- > 0)
             {
-                xcount = (src->bits->width + 7) / 8;
+                xcount = bits_to_bytes(src->bits->width);
                 sptr = srow; mptr = mrow;
                 dptr = drow;
 
@@ -392,7 +392,7 @@ QuartzSuspendXCursor(ScreenPtr pScreen)
  *  X server is showing. Restore the X cursor.
  */
 void
-QuartzResumeXCursor(ScreenPtr pScreen, int x, int y)
+QuartzResumeXCursor(ScreenPtr pScreen)
 {
     WindowPtr pWin;
     CursorPtr pCursor;
@@ -407,5 +407,5 @@ QuartzResumeXCursor(ScreenPtr pScreen, int x, int y)
     if (pCursor == NULL)
         return;
 
-    QuartzSetCursor(darwinPointer, pScreen, pCursor, x, y);
+    QuartzSetCursor(darwinPointer, pScreen, pCursor, /* x */ 0, /* y */ 0);
 }

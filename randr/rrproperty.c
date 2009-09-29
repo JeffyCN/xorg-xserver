@@ -31,7 +31,8 @@ DeliverPropertyEvent(WindowPtr pWin, void *value)
     RREventPtr *pHead, pRREvent;
     ClientPtr client;
 
-    pHead = LookupIDByType(pWin->drawable.id, RREventType);
+    dixLookupResourceByType((pointer *)&pHead, pWin->drawable.id,
+			    RREventType, serverClient, DixReadAccess);
     if (!pHead)
 	return WT_WALKCHILDREN;
 
@@ -125,6 +126,8 @@ RRDestroyOutputProperty (RRPropertyPtr prop)
 	xfree(prop->current.data);
     if (prop->pending.data)
 	xfree(prop->pending.data);
+    if (prop->valid_values)
+	xfree(prop->valid_values);
     xfree(prop);
 }
 
@@ -419,10 +422,7 @@ ProcRRListOutputProperties (ClientPtr client)
     
     REQUEST_SIZE_MATCH(xRRListOutputPropertiesReq);
 
-    output = LookupOutput (client, stuff->output, DixReadAccess);
-    
-    if (!output)
-        return RRErrorBase + BadRROutput;
+    VERIFY_RR_OUTPUT(stuff->output, output, DixReadAccess);
 
     for (prop = output->properties; prop; prop = prop->next)
 	numProps++;
@@ -431,7 +431,7 @@ ProcRRListOutputProperties (ClientPtr client)
             return(BadAlloc);
 
     rep.type = X_Reply;
-    rep.length = (numProps * sizeof(Atom)) >> 2;
+    rep.length = bytes_to_int32(numProps * sizeof(Atom));
     rep.sequenceNumber = client->sequence;
     rep.nAtoms = numProps;
     if (client->swapped) 
@@ -466,10 +466,7 @@ ProcRRQueryOutputProperty (ClientPtr client)
     
     REQUEST_SIZE_MATCH(xRRQueryOutputPropertyReq);
 
-    output = LookupOutput (client, stuff->output, DixReadAccess);
-    
-    if (!output)
-        return RRErrorBase + BadRROutput;
+    VERIFY_RR_OUTPUT(stuff->output, output, DixReadAccess);
     
     prop = RRQueryOutputProperty (output, stuff->property);
     if (!prop)
@@ -513,12 +510,9 @@ ProcRRConfigureOutputProperty (ClientPtr client)
     
     REQUEST_AT_LEAST_SIZE(xRRConfigureOutputPropertyReq);
 
-    output = LookupOutput (client, stuff->output, DixReadAccess);
+    VERIFY_RR_OUTPUT(stuff->output, output, DixReadAccess);
     
-    if (!output)
-        return RRErrorBase + BadRROutput;
-    
-    num_valid = stuff->length - (sizeof (xRRConfigureOutputPropertyReq) >> 2);
+    num_valid = stuff->length - bytes_to_int32(sizeof (xRRConfigureOutputPropertyReq));
     return RRConfigureOutputProperty (output, stuff->property,
 				      stuff->pending, stuff->range,
 				      FALSE, num_valid, 
@@ -552,15 +546,13 @@ ProcRRChangeOutputProperty (ClientPtr client)
         return BadValue;
     }
     len = stuff->nUnits;
-    if (len > ((0xffffffff - sizeof(xChangePropertyReq)) >> 2))
+    if (len > bytes_to_int32((0xffffffff - sizeof(xChangePropertyReq))))
 	return BadLength;
     sizeInBytes = format>>3;
     totalSize = len * sizeInBytes;
     REQUEST_FIXED_SIZE(xRRChangeOutputPropertyReq, totalSize);
 
-    output = LookupOutput (client, stuff->output, DixWriteAccess);
-    if (!output)
-	return RRErrorBase + BadRROutput;
+    VERIFY_RR_OUTPUT(stuff->output, output, DixReadAccess);
     
     if (!ValidAtom(stuff->property))
     {
@@ -590,9 +582,7 @@ ProcRRDeleteOutputProperty (ClientPtr client)
               
     REQUEST_SIZE_MATCH(xRRDeleteOutputPropertyReq);
     UpdateCurrentTime();
-    output = LookupOutput (client, stuff->output, DixWriteAccess);
-    if (!output)
-        return RRErrorBase + BadRROutput;
+    VERIFY_RR_OUTPUT(stuff->output, output, DixReadAccess);
     
     if (!ValidAtom(stuff->property))
     {
@@ -619,11 +609,8 @@ ProcRRGetOutputProperty (ClientPtr client)
     REQUEST_SIZE_MATCH(xRRGetOutputPropertyReq);
     if (stuff->delete)
 	UpdateCurrentTime();
-    output = LookupOutput (client, stuff->output, 
-			   stuff->delete ? DixWriteAccess :
-			   DixReadAccess);
-    if (!output)
-	return RRErrorBase + BadRROutput;
+    VERIFY_RR_OUTPUT(stuff->output, output,
+		     stuff->delete ? DixWriteAccess : DixReadAccess);
 
     if (!ValidAtom(stuff->property))
     {
@@ -723,7 +710,7 @@ ProcRRGetOutputProperty (ClientPtr client)
     }
     reply.bytesAfter = n - (ind + len);
     reply.format = prop_value->format;
-    reply.length = (len + 3) >> 2;
+    reply.length = bytes_to_int32(len);
     if (prop_value->format)
 	reply.nItems = len / (prop_value->format / 8);
     else
