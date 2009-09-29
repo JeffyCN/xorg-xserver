@@ -1,6 +1,7 @@
 xorg-server (2:1.6.99.903-1) UNRELEASED; urgency=low
 
   * New upstream snapshot.
+  * Update build deps
 
  -- Julien Cristau <jcristau@debian.org>  Sun, 13 Sep 2009 18:42:55 +0200
 
