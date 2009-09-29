@@ -80,12 +80,22 @@ Architecture: any
 Depends: xserver-common (>> 7), ${shlibs:Depends}, ${misc:Depends}, xserver-xorg
 Recommends: xkb-data, libgl1-mesa-dri (>= 7.1~rc1)
 Suggests: xfonts-base, xfonts-100dpi | xfonts-75dpi, xfonts-scalable
-Conflicts: xserver-xorg (<< 6.8.2-38), xserver-xfree86 (<< 1:7.0.0),
- xserver-xorg-video, xserver-common (<< 7), xserver-xorg-video-1.0, xserver-xorg-input,
- xserver-xorg-video-1.9, xserver-xorg-input-wacom (<< 0.7.8),
- xserver-xorg-video-2, xserver-xorg-input-2,
- xserver-xorg-video-4, xserver-xorg-input-2.1
-Replaces: xserver-xorg (<< 6.8.2-38), xserver-xfree86 (<< 1:7.0.0),
+Conflicts:
+ xserver-xorg (<< 6.8.2-38),
+ xserver-xfree86 (<< 1:7.0.0),
+ xserver-common (<< 7),
+ xserver-xorg-video,
+ xserver-xorg-video-1.0,
+ xserver-xorg-video-1.9,
+ xserver-xorg-video-2,
+ xserver-xorg-video-4,
+ xserver-xorg-input,
+ xserver-xorg-input-2,
+ xserver-xorg-input-2.1,
+ xserver-xorg-input-wacom (<< 0.7.8),
+Replaces:
+ xserver-xorg (<< 6.8.2-38),
+ xserver-xfree86 (<< 1:7.0.0),
  xserver-common (<< 7)
 Provides: xserver
 Description: Xorg X server - core server
