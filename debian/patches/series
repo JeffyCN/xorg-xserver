@@ -1,10 +1,4 @@
 001_fedora_extramodes.patch
 #13_debian_add_xkbpath_env_variable.diff
-20_hurd-i386.diff
-kfreebsd-ftbfs.diff
-0001-xorg.conf-5-refer-to-mousedrv-4-.-Debian-394058.patch
 Turn-on-ModeDebug-by-default.patch
 Add-libgcrypt-as-an-option-for-sha1.diff
-fedora-bad-fbdev-thats-mine.patch
-fedora-pci-primary.diff
-fedora-vboxvideo.diff

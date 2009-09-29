@@ -13,7 +13,7 @@ Index: xorg-server/configure.ac
 ===================================================================
 --- xorg-server.orig/configure.ac
 +++ xorg-server/configure.ac
-@@ -1108,6 +1108,12 @@
+@@ -1274,6 +1274,12 @@
              [Use libmd SHA1 functions instead of OpenSSL libcrypto])])
  fi
  
@@ -30,7 +30,7 @@ Index: xorg-server/include/dix-config.h.in
 ===================================================================
 --- xorg-server.orig/include/dix-config.h.in
 +++ xorg-server/include/dix-config.h.in
-@@ -157,6 +157,9 @@
+@@ -163,6 +163,9 @@
  /* Define to use libmd SHA1 functions instead of OpenSSL libcrypto */
  #undef HAVE_SHA1_IN_LIBMD
  

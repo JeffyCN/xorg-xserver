@@ -7,11 +7,11 @@ Subject: [PATCH] Turn on ModeDebug by default
  hw/xfree86/modes/xf86Crtc.c |    2 +-
  1 files changed, 1 insertions(+), 1 deletions(-)
 
-diff --git a/hw/xfree86/modes/xf86Crtc.c b/hw/xfree86/modes/xf86Crtc.c
-index f09b9b8..effb665 100644
---- a/hw/xfree86/modes/xf86Crtc.c
-+++ b/hw/xfree86/modes/xf86Crtc.c
-@@ -2225,7 +2225,7 @@ xf86InitialConfiguration (ScrnInfoPtr scrn, Bool canGrow)
+Index: xorg-server/hw/xfree86/modes/xf86Crtc.c
+===================================================================
+--- xorg-server.orig/hw/xfree86/modes/xf86Crtc.c
++++ xorg-server/hw/xfree86/modes/xf86Crtc.c
+@@ -2356,7 +2356,7 @@
  			scrn->options,
  			config->options);
      config->debug_modes = xf86ReturnOptValBool (config->options,
@@ -20,6 +20,3 @@ index f09b9b8..effb665 100644
  
      if (scrn->display->virtualX)
  	width = scrn->display->virtualX;
--- 
-1.6.1.3
-

@@ -2,6 +2,14 @@ xorg-server (2:1.6.99.903-1) UNRELEASED; urgency=low
 
   * New upstream snapshot.
   * Update build deps
+  * Update patch stack:
+    - 20_hurd-i386.diff applied upstream
+    - fedora-bad-fbdev-thats-mine.patch applied upstream
+    - fedora-pci-primary.diff superseded upstream
+    - fedora-vboxvideo.diff applied upstream
+    - kfreebsd-ftbfs.diff applied upstream
+    - Add-libgcrypt-as-an-option-for-sha1.diff refreshed
+    - Turn-on-ModeDebug-by-default.patch refreshed
 
  -- Julien Cristau <jcristau@debian.org>  Sun, 13 Sep 2009 18:42:55 +0200
 
