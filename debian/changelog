@@ -1,3 +1,9 @@
+xorg-server (2:1.6.99.903-2) UNRELEASED; urgency=low
+
+  * Add missing Conflicts on xserver-xorg-video-5 and xserver-xorg-input-4.
+
+ -- Julien Cristau <jcristau@debian.org>  Tue, 29 Sep 2009 21:58:49 +0200
+
 xorg-server (2:1.6.99.903-1) experimental; urgency=low
 
   * New upstream snapshot.

@@ -89,9 +89,11 @@ Conflicts:
  xserver-xorg-video-1.9,
  xserver-xorg-video-2,
  xserver-xorg-video-4,
+ xserver-xorg-video-5,
  xserver-xorg-input,
  xserver-xorg-input-2,
  xserver-xorg-input-2.1,
+ xserver-xorg-input-4,
  xserver-xorg-input-wacom (<< 0.7.8),
 Replaces:
  xserver-xorg (<< 6.8.2-38),
