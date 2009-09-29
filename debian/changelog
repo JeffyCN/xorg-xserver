@@ -10,6 +10,7 @@ xorg-server (2:1.6.99.903-1) UNRELEASED; urgency=low
     - kfreebsd-ftbfs.diff applied upstream
     - Add-libgcrypt-as-an-option-for-sha1.diff refreshed
     - Turn-on-ModeDebug-by-default.patch refreshed
+  * Cleanup some libtool cruft in debian/rules clean.
 
  -- Julien Cristau <jcristau@debian.org>  Sun, 13 Sep 2009 18:42:55 +0200
 

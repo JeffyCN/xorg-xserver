@@ -151,10 +151,11 @@ clean: xsfclean
 	# more generated files
 	rm -f include/dix-config.h include/do-not-use-config.h \
 		include/xorg-config.h include/xorg-server.h
-	rm -f $$(find -name Makefile.in)
 	rm -f compile config.guess config.sub configure depcomp install-sh
 	rm -f ltmain.sh missing INSTALL aclocal.m4 ylwrap
 	rm -f include/do-not-use-config.h.in
+	rm -f m4/lt*.m4 m4/libtool.m4
+	find -name Makefile.in -delete
 	
 	dh_clean
 
