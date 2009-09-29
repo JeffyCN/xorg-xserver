@@ -9,7 +9,7 @@ Uploaders: David Nusinow <dnusinow@debian.org>, Steve Langasek <vorlon@debian.or
 # x11proto-print-dev and libfreetype6-dev are for Xprint
 # everything on is for the DMX and Xnest servers.
 Build-Depends:
- debhelper (>= 4.0.0),
+ debhelper (>= 5.0.0),
  quilt,
  lsb-release,
  pkg-config,

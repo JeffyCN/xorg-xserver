@@ -19,6 +19,9 @@ xorg-server (2:1.6.99.903-1) UNRELEASED; urgency=low
     - Turn-on-ModeDebug-by-default.patch refreshed
   * Cleanup some libtool cruft in debian/rules clean.
   * Bump serverminver, videoabiver and inputabiver.
+  * Bump debhelper compat level to 5:
+    - handle dh_strip behaviour change
+    - fix xserver-xorg-core.install
 
  -- Julien Cristau <jcristau@debian.org>  Sun, 13 Sep 2009 18:42:55 +0200
 

@@ -1,8 +1,4 @@
-usr/lib/xorg/modules/*.so
-usr/lib/xorg/modules/extensions/*.so
-usr/lib/xorg/modules/linux/*.so
-usr/lib/xorg/modules/freebsd/*.so
-usr/lib/xorg/modules/multimedia/*.so
+usr/lib/xorg/modules/
 usr/bin/Xorg
 usr/share/man/man1/Xorg.1
 usr/share/man/man4/exa.4
