@@ -77,7 +77,11 @@ Vcs-Browser: http://git.debian.org/?p=pkg-xorg/xserver/xorg-server.git
 
 Package: xserver-xorg-core
 Architecture: any
-Depends: xserver-common (>> 7), ${shlibs:Depends}, ${misc:Depends}, xserver-xorg
+Depends:
+ xserver-common (>> 7),
+ xserver-xorg,
+ ${shlibs:Depends},
+ ${misc:Depends},
 Recommends: libgl1-mesa-dri (>= 7.1~rc1)
 Suggests: xfonts-base, xfonts-100dpi | xfonts-75dpi, xfonts-scalable
 Conflicts:
@@ -116,7 +120,7 @@ Description: Xorg X server - core server
 
 Package: xserver-xorg-dev
 Architecture: any
-Depends: ${misc:Depends},
+Depends:
  libpixman-1-dev (>= 0.15.20),
  x11proto-core-dev (>= 7.0.14),
  x11proto-input-dev (>= 1.9.99.902),
@@ -126,7 +130,8 @@ Depends: ${misc:Depends},
  x11proto-render-dev (>= 2:0.11),
  x11proto-dri2-dev (>= 2.1),
  x11proto-fonts-dev,
- libpciaccess-dev
+ libpciaccess-dev,
+ ${misc:Depends},
 Description: Xorg X server - development files
  This package provides development files for the X.Org ('Xorg') X server.
  This is not quite the same as the DDK (Driver Development Kit) from the
@@ -146,7 +151,10 @@ Description: Xorg X server - development files
 
 Package: xdmx
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}, xserver-common
+Depends:
+ xserver-common,
+ ${shlibs:Depends},
+ ${misc:Depends},
 Description: distributed multihead X server
  Xdmx is a proxy X server that uses one or more other X servers as its
  display device(s). It provides multi-head X functionality for displays that
@@ -166,7 +174,10 @@ Description: distributed multihead X server
 
 Package: xdmx-tools
 Architecture: any
-Depends: xdmx, ${shlibs:Depends}, ${misc:Depends}
+Depends:
+ xdmx,
+ ${shlibs:Depends},
+ ${misc:Depends},
 Replaces: xdmx (<= 2:1.1.1-10)
 Description: Distributed Multihead X tools
  This package provides a collection of tools used for administration of
@@ -181,7 +192,10 @@ Description: Distributed Multihead X tools
 
 Package: xnest
 Architecture: any
-Depends: xserver-common, ${shlibs:Depends}, ${misc:Depends}
+Depends:
+ xserver-common,
+ ${shlibs:Depends},
+ ${misc:Depends},
 Recommends: libgl1-mesa-dri (>= 7.1~rc1)
 Description: Nested X server
  Xnest is a nested X server that simply relays all its requests to another
@@ -200,7 +214,10 @@ Description: Nested X server
 
 Package: xvfb
 Architecture: any
-Depends: xserver-common, ${shlibs:Depends}, ${misc:Depends}
+Depends:
+ xserver-common,
+ ${shlibs:Depends},
+ ${misc:Depends},
 Recommends: xauth
 Description: Virtual Framebuffer 'fake' X server
  Xvfb provides an X server that can run on machines with no display hardware
@@ -227,7 +244,10 @@ Description: Virtual Framebuffer 'fake' X server
 
 Package: xserver-xephyr
 Architecture: any
-Depends: xserver-common, ${shlibs:Depends}, ${misc:Depends}
+Depends:
+ xserver-common,
+ ${shlibs:Depends},
+ ${misc:Depends},
 Recommends: xbase-clients, libgl1-mesa-dri (>= 7.1~rc1)
 Description: nested X server
  Xephyr is an X server that can be run inside another X server,
@@ -244,7 +264,10 @@ Description: nested X server
 
 Package: xserver-xfbdev
 Architecture: alpha amd64 arm armeb armel hppa i386 ia64 lpia m32r m68k mips mipsel powerpc ppc64 sh3 sh3eb sh4 sh4eb sparc
-Depends: xserver-common, ${shlibs:Depends}, ${misc:Depends}
+Depends:
+ xserver-common,
+ ${shlibs:Depends},
+ ${misc:Depends},
 Recommends: xbase-clients
 Description: Linux framebuffer device tiny X server
  xserver-xfbdev is a Linux framebuffer device tiny X server based on the
@@ -259,7 +282,9 @@ Description: Linux framebuffer device tiny X server
 
 Package: xserver-xorg-core-dbg
 Architecture: any
-Depends: xserver-xorg-core (= ${binary:Version}), ${misc:Depends}
+Depends:
+ xserver-xorg-core (= ${binary:Version}),
+ ${misc:Depends},
 Priority: extra
 Section: debug
 Description: Xorg - the X.Org X server (debugging symbols)
