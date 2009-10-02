@@ -78,7 +78,7 @@ Vcs-Browser: http://git.debian.org/?p=pkg-xorg/xserver/xorg-server.git
 Package: xserver-xorg-core
 Architecture: any
 Depends: xserver-common (>> 7), ${shlibs:Depends}, ${misc:Depends}, xserver-xorg
-Recommends: xkb-data, libgl1-mesa-dri (>= 7.1~rc1)
+Recommends: libgl1-mesa-dri (>= 7.1~rc1)
 Suggests: xfonts-base, xfonts-100dpi | xfonts-75dpi, xfonts-scalable
 Conflicts:
  xserver-xorg (<< 6.8.2-38),
@@ -274,7 +274,10 @@ Description: Xorg - the X.Org X server (debugging symbols)
 
 Package: xserver-common
 Architecture: all
-Depends: x11-common, ${misc:Depends}
+Depends:
+ x11-common,
+ xkb-data,
+ ${misc:Depends},
 Replaces: xserver-xorg-core (<< 2:1.5.2)
 Description: common files used by various X servers
  This package provides files necessary for all X.Org based X servers.
