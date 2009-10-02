@@ -1,3 +1,220 @@
+commit 4257023c1e40387aff096d5f00d746d3f7a521b4
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Fri Oct 2 14:05:43 2009 +1000
+
+    xserver 1.7.0
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit 15b4faff281ad8abce6b32fe2fc855eb6da42476
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Thu Oct 1 21:19:11 2009 +1000
+
+    dix: force a minimum of 0 for screen coordinates.
+    
+    Currently the root coordinates may fall into ]-1..0] if the subpixel
+    remainder is less than 0. Screen coordinates mustn't go below 0, so use
+    miPointerSetPosition to cap off the remainder if the coordinates are below
+    0.
+    
+    This is cheating a bit, a more comprehensive solution to deal with subpixels
+    correctly when crossing screens is needed. For now, this'll do.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Acked-by: Simon Thum <simon.thum@gmx.de>
+    (cherry picked from commit 45f447dafded5adfe11b7df3325c2d8f6ae0639b)
+
+commit 3788113618977bdc83e3ec1e7ca3160bad9a0d13
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Fri Oct 2 09:34:24 2009 +1000
+
+    configure: if xnest was requested but modules weren't found, fail.
+    
+    Tested-by: Xavier Chantry <shiningxc@gmail.com>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Acked-by: Julien Cristau <jcristau@debian.org>
+    (cherry picked from commit 64fe5784b49347e1fd27b0c463be5c16557594c9)
+
+commit c3034dc3af450802dda156136d9fabbc1cc58836
+Author: Dave Airlie <airlied@redhat.com>
+Date:   Thu Oct 1 15:25:55 2009 +1000
+
+    rotate: drop unwrapping inside block handler.
+    
+    Keith has shown half the block handlers wrappers are wrong, also
+    dynamic wrapping/unwrapping from what I can see will happen after
+    the drivers, so its really accidental ABI, that we can't change
+    now without modifing drivers. So be safe for 1.7.
+    
+    Signed-off-by: Dave Airlie <airlied@redhat.com>
+    Declared-as-sane-by: Keith Packard <keithp@keithp.com>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    (cherry picked from commit 3ebb82d61c2b56e8f7145443a552a4e913bbfc80)
+
+commit 47c0b80915d67346ec63b36b659a96b77e777a71
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Thu Oct 1 10:03:42 2009 +1000
+
+    render: Fix crash in RenderAddGlyphs (#23645)
+    
+    This patch fixes two bugs:
+    size is calculated as glyph height * padded_width. If the client submits
+    garbage, this may get above INT_MAX, resulting in a negative size if size is
+    unsigned. The sanity checks don't trigger for negative sizes and the server
+    goes and writes into random memory locations.
+    
+    If the client submits glyphs with a width or height 0, the destination
+    pixmap is NULL, causing a null-pointer dereference. Since there's nothing to
+    composite if the width/height is 0, we might as well skip the whole thing
+    anyway.
+    
+    Tested with Xvfb, Xephyr and Xorg.
+    
+    X.Org Bug 23645 <http://bugs.freedesktop.org/show_bug.cgi?id=23645>
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Keith Packard <keithp@keithp.com>
+    (cherry picked from commit 622fc98fd08aba98369e6933c3ab8c9ff85385d5)
+
+commit 30ebee3bfcadf915be98d407610c615e3e00f9c1
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Thu Oct 1 15:22:19 2009 +1000
+
+    render: set the glyph picture to NULL by default.
+    
+    In a follow-up patch we may have glyphs with a NULL picture. To cope with
+    that, always set the pictures for glyphs to NULL at creation time and cope
+    with cleaning up such glyphs. Also, since compositing a NULL source doesn't
+    do a lot anyway, skip trying to do so.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Keith Packard <keithp@keithp.com>
+    (cherry picked from commit 758ab55d2defc78d0169fd61a7036eb9f889e9e7)
+
+commit 8026c5a08584419be3adecd5965dd03e793ddf81
+Author: Michel Dänzer <daenzer@vmware.com>
+Date:   Thu Oct 1 15:17:11 2009 +1000
+
+    exa: avoid infinite loops if UTS sw fallbacks.
+    
+    The upload in finish access can cause an infinite loop if
+    UTS returns FALSE in here.
+    
+    Fixes fd.o bug #24246.
+    
+    Signed-off-by: Dave Airlie <airlied@redhat.com>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    (cherry picked from commit b5fcc5553eb784c9f4826936e839079c0cdee55a)
+
+commit e182c1b4368c6958579732dd4ddc59de2b46359b
+Author: Keith Packard <keithp@keithp.com>
+Date:   Wed Sep 30 11:40:19 2009 -0700
+
+    Re-fix DGA removal.
+    
+    Removing DGA ended up breaking any drivers calling into the old
+    xf86DiDGAInit function as it tried to see if DGA was already enabled
+    and ended up crashing if the VT wasn't completely initialized. Oops.
+    
+    Also, if the driver initializes DGA itself, have the DiDGA
+    initialization overwrite that information as the DiDGA code will call
+    ReInit on mode detect.
+    
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    (cherry picked from commit db98b26ee145f70e732e2cf4a6ac3de77fdf4adc)
+
+commit 369b5d526b699cd1c5cd38bb5a823ec66c5286ef
+Author: Dave Airlie <airlied@redhat.com>
+Date:   Tue Sep 29 11:49:09 2009 +1000
+
+    dix/glx/composite: consolidate visual resize in one place.
+    
+    The previous code was copied and in both cases incorrectly fixed
+    up the colormaps after resizing the visuals, this patch consolidates
+    the visual resize + colormaps fixups in one place. This version
+    also consolidates the vid allocation for the DepthPtr inside the
+    function.
+    
+    I'm not 100% sure colormap.[ch] is the correct place for this but
+    visuals are mostly created in fb and I know thats not the place to
+    be resizing them.
+    
+    Fixes fd.o bug #19470.
+    
+    Signed-off-by: Dave Airlie <airlied@redhat.com>
+    Reviewed-by: Keith Packard <keithp@keithp.com>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    (cherry picked from commit 6ffda5aae75272fabdc27d6f693ae827be119e95)
+
+commit d3ba814884154150ed3e6a71254dec7312593488
+Author: Michel Dänzer <daenzer@vmware.com>
+Date:   Tue Sep 29 08:56:59 2009 +0200
+
+    Fix ShmPutImage non-ZPixmap case.
+    
+    Fixes http://bugs.freedesktop.org/show_bug.cgi?id=23298 .
+    (cherry picked from commit 11817a881cb93a89788105d1e575a468f2a8d27c)
+
+commit 8fc0d54cbaf791d947c7bab23f2e982cabd7c958
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Mon Sep 28 14:18:45 2009 +1000
+
+    ephyr: if -parent is given, check for a trailing -screen. (#24144)
+    
+    If -parent is given, don't open up a new window if -screen is given as well.
+    The commandline option -screen allows to set the depth of the embedded
+    Xephry instance, even though width and height are autoscaled on -parent.
+    
+    This patch checks for a -screen parameter after -parent and - if one is
+    found - delays initializing the screen. The parent window id is stored
+    temporarily but re-set after a -screen argument.
+    The following command is thus valid:
+    
+    Xephyr -parent 1234 -screen 640x480@8 -screen 1024x768
+    
+    It embeds the first 8-bit screen into window 1234 and opens up a new window
+    for the second screen. Multiple parent arguments are possible, the screens
+    are embedded in-order.
+    
+    X.Org Bug 24144 <http://bugs.freedesktop.org/show_bug.cgi?id=24144>
+    
+    Tested-by: Vic Lee
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    (cherry picked from commit 19be992d9dc542b61fa3f4fd32a09071c9e64880)
+
+commit 857ec3e6fff571398dfcd9b4728b5c38cbcd3fcb
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Mon Sep 28 13:59:25 2009 +1000
+
+    xfree86: use the DDC size if either width or height of DisplaySize is bogus.
+    
+    If either width or height of DisplaySize is invalid, assume that the
+    configuration is invalid and use the DDC-reported values instead.
+    
+    See Comment 9, Bug 9758.
+    http://bugs.freedesktop.org/show_bug.cgi?id=9758#c9
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Acked-by: Dave Airlie <airlied@redhat.com>
+    (cherry picked from commit 83023ffd09a84ff48e6b99f57ebad101a00478db)
+
+commit 2d4bab18c0d894619f044f29769c67c2f63b540a
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Wed Sep 23 10:53:51 2009 +1000
+
+    render: Plug a memory leak in AddGlyph. (#23286)
+    
+    AddGlyph was missing the FreePicture() call that DeleteGlyph used, resulting
+    in a memory leak when more than one Glyph was added in a RenderAddGlyphs
+    request.
+    
+    Since the code in AddGlyph and DeleteGlyph is identical, move into a static
+    function to avoid such mistakes in the future.
+    
+    X.Org Bug 23286 <http://bugs.freedesktop.org/show_bug.cgi?id=23286>
+    (cherry picked from commit f772014c435f56db56520ca13ffa39431684f122)
+
 commit 290a9639db3e420ec4caf0e6aee9f7386724c765
 Author: Peter Hutterer <peter.hutterer@who-t.net>
 Date:   Mon Sep 28 21:05:11 2009 +1000
