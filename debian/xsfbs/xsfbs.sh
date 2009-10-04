@@ -1,5 +1,3 @@
-# $Id$
-
 # This is the X Strike Force shell library for X Window System package
 # maintainer scripts.  It serves to define shell functions commonly used by
 # such packages, and performs some error checking necessary for proper operation
@@ -8,7 +6,7 @@
 # removal tasks.
 
 # If you are reading this within a Debian package maintainer script (e.g.,
-# /var/lib/dpkg)info/PACKAGE.{config,preinst,postinst,prerm,postrm}), you can
+# /var/lib/dpkg/info/PACKAGE.{config,preinst,postinst,prerm,postrm}), you can
 # skip past this library by scanning forward in this file to the string
 # "GOBSTOPPER".
 
