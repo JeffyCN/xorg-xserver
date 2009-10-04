@@ -78,7 +78,7 @@ Vcs-Browser: http://git.debian.org/?p=pkg-xorg/xserver/xorg-server.git
 Package: xserver-xorg-core
 Architecture: any
 Depends:
- xserver-common (= ${source:Version}),
+ xserver-common (>= ${source:Version}),
  xserver-xorg,
  ${shlibs:Depends},
  ${misc:Depends},
@@ -152,7 +152,7 @@ Description: Xorg X server - development files
 Package: xdmx
 Architecture: any
 Depends:
- xserver-common (= ${source:Version}),
+ xserver-common (>= ${source:Version}),
  ${shlibs:Depends},
  ${misc:Depends},
 Description: distributed multihead X server
@@ -193,7 +193,7 @@ Description: Distributed Multihead X tools
 Package: xnest
 Architecture: any
 Depends:
- xserver-common (= ${source:Version}),
+ xserver-common (>= ${source:Version}),
  ${shlibs:Depends},
  ${misc:Depends},
 Recommends: libgl1-mesa-dri (>= 7.1~rc1)
@@ -215,7 +215,7 @@ Description: Nested X server
 Package: xvfb
 Architecture: any
 Depends:
- xserver-common (= ${source:Version}),
+ xserver-common (>= ${source:Version}),
  ${shlibs:Depends},
  ${misc:Depends},
 Recommends: xauth
@@ -245,7 +245,7 @@ Description: Virtual Framebuffer 'fake' X server
 Package: xserver-xephyr
 Architecture: any
 Depends:
- xserver-common (= ${source:Version}),
+ xserver-common (>= ${source:Version}),
  ${shlibs:Depends},
  ${misc:Depends},
 Recommends: xbase-clients, libgl1-mesa-dri (>= 7.1~rc1)
@@ -265,7 +265,7 @@ Description: nested X server
 Package: xserver-xfbdev
 Architecture: alpha amd64 arm armeb armel hppa i386 ia64 lpia m32r m68k mips mipsel powerpc ppc64 sh3 sh3eb sh4 sh4eb sparc
 Depends:
- xserver-common (= ${source:Version}),
+ xserver-common (>= ${source:Version}),
  ${shlibs:Depends},
  ${misc:Depends},
 Recommends: xbase-clients

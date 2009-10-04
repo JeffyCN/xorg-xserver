@@ -2,6 +2,8 @@ xorg-server (2:1.7.0-2) UNRELEASED; urgency=low
 
   * Delete 09_debian_xserver_rtff.diff.  Was disabled since 1.3.99, and is not
     necessary since the fall back to builtin fonts was added.
+  * Change the server's dependency on xserver-common to >= ${source:Version},
+    to allow installation of different versions of the various servers.
 
  -- Julien Cristau <jcristau@debian.org>  Sun, 04 Oct 2009 17:39:13 +0200
 
