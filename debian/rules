@@ -47,6 +47,11 @@ else
 	dri = --enable-dri --enable-dri2
 	config_hal = --enable-config-hal
 endif
+ifneq (,$(filter nocheck, $(DEB_BUILD_OPTIONS)))
+	config_tests = --disable-unit-tests
+else
+	config_tests = --enable-unit-tests
+endif
 
 INSTALL=/usr/bin/install
 
@@ -59,6 +64,7 @@ confflags += \
 	     --without-dtrace \
 	     --disable-werror \
 	     --disable-debug \
+	     $(config_tests) \
 	     --with-int10=x86emu \
 	     --with-os-vendor="$(VENDOR)" \
 	     --with-builderstring="$(SOURCE_NAME) $(SOURCE_VERSION) ($(BUILDER))" \
@@ -129,16 +135,20 @@ obj-$(DEB_BUILD_GNU_TYPE)/config.status: configure
 	  CPPFLAGS="$(CPPFLAGS)"
 
 
-build: build-stamp
+build: build-stamp tests-stamp
 build-stamp: obj-$(DEB_BUILD_GNU_TYPE)/config.status
 	dh_testdir
 	cd obj-$(DEB_BUILD_GNU_TYPE) && $(MAKE)
 	>$@
 
+tests-stamp: build-stamp
+	cd obj-$(DEB_BUILD_GNU_TYPE) && $(MAKE) check
+	>$@
+
 clean: xsfclean
 	dh_testdir
 	dh_testroot
-	rm -f build-stamp
+	rm -f build-stamp tests-stamp
 	
 	rm -f config.cache config.log config.status
 	rm -f */config.cache */config.log */config.status
