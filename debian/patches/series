@@ -1,3 +1,5 @@
+## Patches with a number < 100 are applied in debian.
+## Ubuntu patches start with 100.
 001_fedora_extramodes.patch
+02_Add-libgcrypt-as-an-option-for-sha1.diff
 #13_debian_add_xkbpath_env_variable.diff
-Add-libgcrypt-as-an-option-for-sha1.diff
