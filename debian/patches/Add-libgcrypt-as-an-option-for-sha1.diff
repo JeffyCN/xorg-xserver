@@ -3,6 +3,8 @@ From: Julien Cristau <jcristau@debian.org>
 Date: Thu, 2 Apr 2009 02:34:49 +0200
 Subject: [PATCH] Add libgcrypt as an option for sha1
 
+Included upstream in 1.7.99.x in a different way:
+commit a60e676f1fd243c78859440b87652f523d3f2ec1
 ---
  configure.ac            |    6 ++++++
  include/dix-config.h.in |    3 +++
