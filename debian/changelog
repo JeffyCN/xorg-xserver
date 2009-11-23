@@ -6,6 +6,8 @@ xorg-server (2:1.7.0-2) UNRELEASED; urgency=low
     to allow installation of different versions of the various servers.
   * Add build-dep on libglib2.0-dev, xkb-data and x11-xkb-utils for unit
     tests, and run the tests unless nocheck is in DEB_BUILD_OPTIONS.
+  * Cherry-pick upstream commit to turn ModeDebug on during server startup,
+    replacing our Turn-on-ModeDebug-by-default.patch.
 
  -- Julien Cristau <jcristau@debian.org>  Sun, 04 Oct 2009 17:39:13 +0200
 
