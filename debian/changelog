@@ -10,6 +10,9 @@ xorg-server (2:1.7.0-2) UNRELEASED; urgency=low
     replacing our Turn-on-ModeDebug-by-default.patch.
   * Number our patches to make it easier to keep track of things.  Requested
     by the Ubuntu folks.
+  * xvfb-run: retry a few times if Xvfb can't be started when using
+    --auto-servernum, to make concurrent invocations work (closes: #521075).
+    Thanks, Kees Cook!
 
  -- Julien Cristau <jcristau@debian.org>  Sun, 04 Oct 2009 17:39:13 +0200
 

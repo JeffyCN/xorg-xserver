@@ -109,7 +109,7 @@ eval set -- "$ARGS"
 
 while :; do
     case "$1" in
-        -a|--auto-servernum) SERVERNUM=$(find_free_servernum) ;;
+        -a|--auto-servernum) SERVERNUM=$(find_free_servernum); AUTONUM="yes" ;;
         -e|--error-file) ERRORFILE="$2"; shift ;;
         -f|--auth-file) AUTHFILE="$2"; shift ;;
         -h|--help) SHOWHELP="yes" ;;
@@ -148,22 +148,32 @@ trap clean_up EXIT
 # directory to house one.
 if [ -z "$AUTHFILE" ]; then
     XVFB_RUN_TMPDIR="$(mktemp -d -t $PROGNAME.XXXXXX)"
-    AUTHFILE="$XVFB_RUN_TMPDIR/Xauthority"
+    # Create empty file to avoid xauth warning
+    AUTHFILE=$(tempfile -n "$XVFB_RUN_TMPDIR/Xauthority")
 fi
 
 # Start Xvfb.
 MCOOKIE=$(mcookie)
-XAUTHORITY=$AUTHFILE xauth source - << EOF >>"$ERRORFILE" 2>&1
+tries=10
+while [ $tries -gt 0 ]; do
+    tries=$(( $tries - 1 ))
+    XAUTHORITY=$AUTHFILE xauth source - << EOF >>"$ERRORFILE" 2>&1
 add :$SERVERNUM $XAUTHPROTO $MCOOKIE
 EOF
-XAUTHORITY=$AUTHFILE Xvfb ":$SERVERNUM" $XVFBARGS $LISTENTCP >>"$ERRORFILE" \
-  2>&1 &
-XVFBPID=$!
-sleep "$STARTWAIT"
-if ! kill -0 $XVFBPID 2>/dev/null; then
-  echo "Xvfb failed to start" >&2
-  exit 1
-fi
+    XAUTHORITY=$AUTHFILE Xvfb ":$SERVERNUM" $XVFBARGS $LISTENTCP >>"$ERRORFILE" 2>&1 &
+    XVFBPID=$!
+
+    sleep "$STARTWAIT"
+    if kill -0 $XVFBPID 2>/dev/null; then
+        break
+    elif [ -n "$AUTONUM" ]; then
+        # The display is in use so try another one (if '-a' was specified).
+        SERVERNUM=$(find_free_servernum)
+        continue
+    fi
+    error "Xvfb failed to start" >&2
+    exit 1
+done
 
 # Start the command and save its exit status.
 set +e
