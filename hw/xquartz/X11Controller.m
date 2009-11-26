@@ -52,8 +52,6 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 
-BOOL xquartz_resetenv_display = NO;
-
 @implementation X11Controller
 
 - (void) awakeFromNib
@@ -353,7 +351,7 @@ BOOL xquartz_resetenv_display = NO;
     newargv[3] = NULL;
     
     s = getenv("DISPLAY");
-    if (xquartz_resetenv_display || s == NULL || s[0] == 0) {
+    if (s == NULL || s[0] == 0) {
         snprintf(buf, sizeof(buf), ":%s", display);
         setenv("DISPLAY", buf, TRUE);
     }
@@ -428,8 +426,8 @@ BOOL xquartz_resetenv_display = NO;
   [[columns objectAtIndex:2] setIdentifier:@"2"];
 	
   [apps_table setDataSource:self];
-  [apps_table selectRow:0 byExtendingSelection:NO];
-	
+  [apps_table selectRowIndexes:[NSIndexSet indexSetWithIndex:0] byExtendingSelection:NO];
+
   [[apps_table window] makeKeyAndOrderFront:sender];
   [apps_table reloadData];
   if(oldapps != nil)
@@ -476,7 +474,7 @@ BOOL xquartz_resetenv_display = NO;
   [item release];
 	
   [apps_table reloadData];
-  [apps_table selectRow:row byExtendingSelection:NO];
+  [apps_table selectRowIndexes:[NSIndexSet indexSetWithIndex:row] byExtendingSelection:NO];
 }
 
 - (IBAction) apps_table_duplicate:sender
@@ -499,7 +497,7 @@ BOOL xquartz_resetenv_display = NO;
   [item release];
 	
   [apps_table reloadData];
-  [apps_table selectRow:row+1 byExtendingSelection:NO];
+  [apps_table selectRowIndexes:[NSIndexSet indexSetWithIndex:row+1] byExtendingSelection:NO];
 }
 
 - (IBAction) apps_table_delete:sender
@@ -521,10 +519,10 @@ BOOL xquartz_resetenv_display = NO;
 	
   row = MIN (row, [table_apps count] - 1);
   if (row >= 0)
-    [apps_table selectRow:row byExtendingSelection:NO];
+    [apps_table selectRowIndexes:[NSIndexSet indexSetWithIndex:row] byExtendingSelection:NO];
 }
 
-- (int) numberOfRowsInTableView:(NSTableView *)tableView
+- (NSInteger) numberOfRowsInTableView:(NSTableView *)tableView
 {
   if (table_apps == nil) return 0;
   
@@ -532,7 +530,7 @@ BOOL xquartz_resetenv_display = NO;
 }
 
 - (id) tableView:(NSTableView *)tableView
-objectValueForTableColumn:(NSTableColumn *)tableColumn row:(int)row
+objectValueForTableColumn:(NSTableColumn *)tableColumn row:(NSInteger)row
 {
   NSArray *item;
   int col;
@@ -549,7 +547,7 @@ objectValueForTableColumn:(NSTableColumn *)tableColumn row:(int)row
 }
 
 - (void) tableView:(NSTableView *)tableView setObjectValue:(id)object
-    forTableColumn:(NSTableColumn *)tableColumn row:(int)row
+    forTableColumn:(NSTableColumn *)tableColumn row:(NSInteger)row
 {
   NSMutableArray *item;
   int col;

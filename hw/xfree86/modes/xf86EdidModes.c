@@ -266,7 +266,7 @@ static const ddc_quirk_map_t ddc_quirks[] = {
     },
     {
 	quirk_detailed_use_maximum_size,   DDC_QUIRK_DETAILED_USE_MAXIMUM_SIZE,
-	"Detailed timings give sizes in cm."
+	"Use maximum size instead of detailed timing sizes."
     },
     {
 	quirk_first_detailed_preferred, DDC_QUIRK_FIRST_DETAILED_PREFERRED,
@@ -498,8 +498,10 @@ DDCModesFromStandardTiming(struct std_timings *timing, ddc_quirk_t quirks,
 	vsize = timing[i].vsize;
 	refresh = timing[i].refresh;
 
-	/* HDTV hack.  Hooray. */
-	if (hsize == 1360 && vsize == 765 && refresh == 60) {
+	/* HDTV hack, because you can't say 1366 */
+	if (refresh == 60 &&
+	    ((hsize == 1360 && vsize == 765) ||
+	     (hsize == 1368 && vsize == 769))) {
 	    Mode = xf86CVTMode(1366, 768, 60, FALSE, FALSE);
 	    Mode->HDisplay = 1366;
 	    Mode->VSyncStart--;
@@ -525,6 +527,45 @@ DDCModesFromStandardTiming(struct std_timings *timing, ddc_quirk_t quirks,
     }
 
     return Modes;
+}
+
+static void
+DDCModeDoInterlaceQuirks(DisplayModePtr mode)
+{
+    /*
+     * EDID is delightfully ambiguous about how interlaced modes are to be
+     * encoded.  X's internal representation is of frame height, but some
+     * HDTV detailed timings are encoded as field height.
+     *
+     * The format list here is from CEA, in frame size.  Technically we
+     * should be checking refresh rate too.  Whatever.
+     */
+    static const struct {
+	int w, h;
+    } cea_interlaced[] = {
+	{ 1920, 1080 },
+	{  720,  480 },
+	{ 1440,  480 },
+	{ 2880,  480 },
+	{  720,  576 },
+	{ 1440,  576 },
+	{ 2880,  576 },
+    };
+    static const int n_modes = sizeof(cea_interlaced)/sizeof(cea_interlaced[0]);
+    int i;
+
+    for (i = 0; i < n_modes; i++) {
+	if ((mode->HDisplay == cea_interlaced[i].w) &&
+	    (mode->VDisplay == cea_interlaced[i].h / 2)) {
+	    mode->VDisplay *= 2;
+	    mode->VSyncStart *= 2;
+	    mode->VSyncEnd *= 2;
+	    mode->VTotal *= 2;
+	    mode->VTotal |= 1;
+	}
+    }
+
+    mode->Flags |= V_INTERLACE;
 }
 
 /*
@@ -596,7 +637,7 @@ DDCModeFromDetailedTiming(int scrnIndex, struct detailed_timings *timing,
     /* We ignore h/v_size and h/v_border for now. */
 
     if (timing->interlaced)
-        Mode->Flags |= V_INTERLACE;
+	DDCModeDoInterlaceQuirks(Mode);
 
     if (quirks & DDC_QUIRK_DETAILED_SYNC_PP)
 	Mode->Flags |= V_PVSYNC | V_PHSYNC;
@@ -935,6 +976,8 @@ xf86DDCGetModes(int scrnIndex, xf86MonPtr DDC)
 
     if (quirks & DDC_QUIRK_PREFER_LARGE_75)
 	xf86DDCSetPreferredRefresh(scrnIndex, Modes, 75);
+
+    Modes = xf86PruneDuplicateModes(Modes);
 
     return Modes;
 }

@@ -26,8 +26,8 @@ dnl
 dnl Process this file with autoconf to create configure.
 
 AC_PREREQ(2.57)
-AC_INIT([xorg-server], 1.7.0, [https://bugs.freedesktop.org/enter_bug.cgi?product=xorg], xorg-server)
-RELEASE_DATE="2009-10-2"
+AC_INIT([xorg-server], 1.7.1.902, [https://bugs.freedesktop.org/enter_bug.cgi?product=xorg], xorg-server)
+RELEASE_DATE="2009-11-20"
 AC_CONFIG_SRCDIR([Makefile.am])
 AM_INIT_AUTOMAKE([dist-bzip2 foreign])
 AM_MAINTAINER_MODE
@@ -102,8 +102,20 @@ fi
 if test "x$WDTRACE" != "xno" ; then
   AC_DEFINE(XSERVER_DTRACE, 1, 
       [Define to 1 if the DTrace Xserver provider probes should be built in.])
+
+# Solaris/OpenSolaris require dtrace -G to build dtrace probe information into
+# object files, and require linking with those as relocatable objects, not .a
+# archives. MacOS X handles all this in the normal compiler toolchain, and on
+# some releases (like Tiger), will error out on dtrace -G.  For now, other
+# platforms with Dtrace ports are assumed to support -G (the FreeBSD and Linux
+# ports appear to, based on my web searches, but have not yet been tested).
+	case $host_os in
+		darwin*)	SPECIAL_DTRACE_OBJECTS=no ;;
+		*)		SPECIAL_DTRACE_OBJECTS=yes ;;
+	esac
 fi
 AM_CONDITIONAL(XSERVER_DTRACE, [test "x$WDTRACE" != "xno"])
+AM_CONDITIONAL(SPECIAL_DTRACE_OBJECTS, [test "x$SPECIAL_DTRACE_OBJECTS" = "xyes"])
 
 AC_HEADER_DIRENT
 AC_HEADER_STDC
@@ -701,6 +713,7 @@ case $host_os in
 			XF86VIDMODE=no
 		fi
 		;;
+	*) XQUARTZ=no ;;
 esac
 
 dnl ---------------------------------------------------------------------------
@@ -734,11 +747,13 @@ REQUIRED_LIBS="xfont xau [pixman-1 >= 0.15.20]"
 
 dnl List of libraries that require a specific version
 LIBAPPLEWM="applewm >= 1.4"
+LIBDMX="dmx >= 1.0.99.1"
 LIBDRI="dri >= 7.1.0"
 LIBDRM="libdrm >= 2.3.0"
 LIBGL="gl >= 7.1.0"
 LIBXEXT="xext >= 1.0.99.4"
 LIBXI="xi >= 1.2.99.1"
+LIBXTST="xtst >= 1.0.99.2"
 LIBPCIACCESS="pciaccess >= 0.8.0"
 LIBGLIB="glib-2.0 >= 2.16"
 
@@ -1076,11 +1091,16 @@ AM_CONDITIONAL(INT10MODULE, test "x$INT10MODULE" = xyes)
 AC_DEFINE(SHAPE, 1, [Support SHAPE extension])
 
 AC_DEFINE_DIR(XKB_BASE_DIRECTORY, XKBPATH, [Path to XKB data])
-AC_DEFINE_DIR(XKB_BIN_DIRECTORY, bindir, [Path to XKB bin dir])
+AC_ARG_WITH(xkb-bin-directory,
+				AS_HELP_STRING([--with-xkb-bin-directory=DIR], [Directory containing xkbcomp program]),
+				[XKB_BIN_DIRECTORY="$withval"],
+				[XKB_BIN_DIRECTORY="$bindir"])
+
+AC_DEFINE_DIR(XKB_BIN_DIRECTORY, XKB_BIN_DIRECTORY, [Path to XKB bin dir])
 
 dnl Make sure XKM_OUTPUT_DIR is an absolute path
 XKBOUTPUT_FIRSTCHAR=`echo $XKBOUTPUT | cut -b 1`
-if [[ x$XKBOUTPUT_FIRSTCHAR != x/ ]] ; then
+if [[ x$XKBOUTPUT_FIRSTCHAR != x/ -a x$XKBOUTPUT_FIRSTCHAR != 'x$' ]] ; then
    XKBOUTPUT="$XKB_BASE_DIRECTORY/$XKBOUTPUT"
 fi
 
@@ -1244,13 +1264,15 @@ AC_DEFINE(XSYNC, 1, [Support XSync extension])
 AC_DEFINE(XCMISC, 1, [Support XCMisc extension])
 AC_DEFINE(BIGREQS, 1, [Support BigRequests extension])
 
-if test "x$WDTRACE" != "xno" && test "x$XQUARTZ" = "xno"; then
+if test "x$SPECIAL_DTRACE_OBJECTS" = "xyes" ; then
   DIX_LIB='$(top_builddir)/dix/dix.O'
   OS_LIB='$(top_builddir)/os/os.O'
 else
   DIX_LIB='$(top_builddir)/dix/libdix.la'
   OS_LIB='$(top_builddir)/os/libos.la'
 fi
+AC_SUBST([DIX_LIB])
+AC_SUBST([OS_LIB])
 
 MAIN_LIB='$(top_builddir)/dix/libmain.la'
 AC_SUBST([MAIN_LIB])
@@ -1507,6 +1529,7 @@ if test "x$XORG" = xyes; then
 	  solaris*)
 	  	XORG_OS="solaris"
 		XORG_OS_SUBDIR="solaris"
+		XORG_CFLAGS="$XORG_CFLAGS -DXF86PM"
 		# Use the same stubs as BSD for old functions, since we now
 		# use libpciaccess for PCI
 		xorg_bus_bsdpci="yes"
@@ -1539,7 +1562,6 @@ if test "x$XORG" = xyes; then
 			else
 				SOLARIS_INOUT_ARCH="ia32"
 			fi
-			XORG_CFLAGS="$XORG_CFLAGS -DXF86PM"
 			;;
 		  *)
 			AC_MSG_ERROR([Unsupported Solaris platform. Only SPARC & x86 \
@@ -1685,8 +1707,6 @@ if test "x$XWIN" = xauto; then
 		mingw*) XWIN="yes" ;;
 		*) XWIN="no" ;;
 	esac
-	XWIN_LIBS="$FB_LIB $MI_LIB $FIXES_LIB $XEXT_LIB $CONFIG_LIB $RANDR_LIB $RENDER_LIB $XTRAP_LIB $DBE_LIB $RECORD_LIB $GLX_LIBS $XKB_LIB $XKB_STUB_LIB $COMPOSITE_LIB $DAMAGE_LIB $MIEXT_DAMAGE_LIB $MIEXT_SHADOW_LIB $XI_LIB $MIEXT_LAYER_LIB $LAYER_LIB $XPSTUBS_LIB $SHADOW_LIB $OS_LIB"
-	AC_SUBST([XWIN_LIBS])
 fi
 AC_MSG_RESULT([$XWIN])
 
@@ -1699,8 +1719,14 @@ if test "x$XWIN" = xyes; then
 			XWIN_SERVER_NAME=XWin
 			PKG_CHECK_MODULES([XWINMODULES],[x11 xdmcp xau xfont])
 			AC_DEFINE(HAS_DEVWINDOWS,1,[Cygwin has /dev/windows for signaling new win32 messages])
-			AC_DEFINE(ROOTLESS,1,[Build Rootless code])
-			CFLAGS="$CFLAGS -DFD_SETSIZE=256 -DROOTLESS_WORKAROUND"
+
+			dnl if we have windowswmproto, build rootless extension for multwindowextwm mode
+			if test "x$WINDOWSWM" = xyes ; then
+			       AC_DEFINE(ROOTLESS,1,[Build Rootless code])
+			       CFLAGS="$CFLAGS -DROOTLESS_WORKAROUND"
+			fi
+
+			CFLAGS="$CFLAGS -DFD_SETSIZE=256"
 			;;
 		mingw*)
 			XWIN_SERVER_NAME=Xming
@@ -1710,7 +1736,9 @@ if test "x$XWIN" = xyes; then
 			XWIN_SYS_LIBS=-lwinsock2
 			;;
 	esac
+	XWIN_LIBS="$FB_LIB $MI_LIB $FIXES_LIB $XEXT_LIB $CONFIG_LIB $RANDR_LIB $RENDER_LIB $DBE_LIB $RECORD_LIB $GLX_LIBS $XKB_LIB $XKB_STUB_LIB $COMPOSITE_LIB $DAMAGE_LIB $MIEXT_DAMAGE_LIB $MIEXT_SHADOW_LIB $XI_LIB $OS_LIB"
 	XWIN_SYS_LIBS="$XWIN_SYS_LIBS $XWINMODULES_LIBS"
+	AC_SUBST(XWIN_LIBS)
 	AC_SUBST(XWIN_SERVER_NAME)
 	AC_SUBST(XWIN_SYS_LIBS)
 
@@ -1817,13 +1845,13 @@ dnl Linux sources in DMX require <linux/keyboard.h>
 	PKG_CHECK_MODULES([XDMXCONFIG_DEP], [xaw7 xmu xt xpm x11])
 	AC_SUBST(XDMXCONFIG_DEP_CFLAGS)
 	AC_SUBST(XDMXCONFIG_DEP_LIBS)
-	PKG_CHECK_MODULES([DMXEXAMPLES_DEP], [dmx $LIBXEXT x11])
+	PKG_CHECK_MODULES([DMXEXAMPLES_DEP], [$LIBDMX $LIBXEXT x11])
 	AC_SUBST(DMXEXAMPLES_DEP_LIBS)
-	PKG_CHECK_MODULES([DMXXMUEXAMPLES_DEP], [dmx xmu $LIBXEXT x11])
+	PKG_CHECK_MODULES([DMXXMUEXAMPLES_DEP], [$LIBDMX xmu $LIBXEXT x11])
 	AC_SUBST(DMXXMUEXAMPLES_DEP_LIBS)
-	PKG_CHECK_MODULES([DMXXIEXAMPLES_DEP], [dmx $LIBXI $LIBXEXT x11])
+	PKG_CHECK_MODULES([DMXXIEXAMPLES_DEP], [$LIBDMX $LIBXI $LIBXEXT x11])
 	AC_SUBST(DMXXIEXAMPLES_DEP_LIBS)
-	PKG_CHECK_MODULES([XTSTEXAMPLES_DEP], [xtst $LIBXEXT x11])
+	PKG_CHECK_MODULES([XTSTEXAMPLES_DEP], [$LIBXTST $LIBXEXT x11])
 	AC_SUBST(XTSTEXAMPLES_DEP_LIBS)
 	PKG_CHECK_MODULES([XRESEXAMPLES_DEP], [xres $LIBXEXT x11])
 	AC_SUBST(XRESEXAMPLES_DEP_LIBS)

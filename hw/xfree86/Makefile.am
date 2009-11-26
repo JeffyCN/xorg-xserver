@@ -80,7 +80,7 @@ BUILT_SOURCES = xorg.conf.example
 DISTCLEANFILES += xorg.conf.example xorg.conf.example.pre
 EXTRA_DIST = xorgconf.cpp
 
-if XSERVER_DTRACE
+if SPECIAL_DTRACE_OBJECTS
 # Re-add dtrace object code that gets lost when building static libraries
 Xorg_LDADD += $(XSERVER_LIBS)
 endif
@@ -92,7 +92,8 @@ if SOLARIS_ASM_INLINE
 BUILT_SOURCES += os-support/solaris/solaris-@SOLARIS_INOUT_ARCH@.il
 
 os-support/solaris/solaris-@SOLARIS_INOUT_ARCH@.il:
-	cd os-support/solaris ; make solaris-@SOLARIS_INOUT_ARCH@.il
+	cd os-support/solaris ; \
+	 $(MAKE) $(AM_MAKEFLAGS) solaris-@SOLARIS_INOUT_ARCH@.il
 endif
 
 # do not use $(mkdir_p) if you want automake 1.7 to work

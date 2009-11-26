@@ -41,13 +41,20 @@ SUBDIRS = \
 	hw \
 	test
 
+if XORG
 aclocaldir = $(datadir)/aclocal
 aclocal_DATA = xorg-server.m4
 
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = xorg-server.pc
+endif
 
 EXTRA_DIST = xorg-server.pc.in xorg-server.m4 ChangeLog autogen.sh
+
+DISTCHECK_CONFIGURE_FLAGS=\
+	--with-xkb-path=$(XKB_BASE_DIRECTORY) \
+	--with-xkb-bin-directory=$(XKB_BIN_DIRECTORY) \
+	--with-xkb-output='$${datadir}/X11/xkb/compiled'
 
 DISTCLEANFILES = doltcompile doltlibtool
 MAINTAINERCLEANFILES=ChangeLog

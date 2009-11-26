@@ -539,7 +539,7 @@ CoreKeyboardProc(DeviceIntPtr pDev, int what)
 int
 CorePointerProc(DeviceIntPtr pDev, int what)
 {
-#define NBUTTONS 7
+#define NBUTTONS 10
 #define NAXES 2
     BYTE map[NBUTTONS + 1];
     int i = 0;
@@ -1520,14 +1520,12 @@ int
 ProcGetModifierMapping(ClientPtr client)
 {
     xGetModifierMappingReply rep;
-    int ret, max_keys_per_mod = 0;
+    int max_keys_per_mod = 0;
     KeyCode *modkeymap = NULL;
     REQUEST_SIZE_MATCH(xReq);
 
-    ret = generate_modkeymap(client, PickKeyboard(client), &modkeymap,
-                             &max_keys_per_mod);
-    if (ret != Success)
-        return ret;
+    generate_modkeymap(client, PickKeyboard(client), &modkeymap,
+                       &max_keys_per_mod);
 
     memset(&rep, 0, sizeof(xGetModifierMappingReply));
     rep.type = X_Reply;
@@ -2221,11 +2219,14 @@ ProcQueryKeymap(ClientPtr client)
     rep.length = 2;
 
     rc = XaceHook(XACE_DEVICE_ACCESS, client, keybd, DixReadAccess);
-    if (rc != Success)
+    if (rc != Success && rc != BadAccess)
 	return rc;
 
     for (i = 0; i<32; i++)
 	rep.map[i] = down[i];
+
+    if (rc == BadAccess)
+	memset(rep.map, 0, 32);
 
     WriteReplyToClient(client, sizeof(xQueryKeymapReply), &rep);
 

@@ -62,8 +62,6 @@ void DarwinListenOnOpenFD(int fd);
 
 extern int noPanoramiXExtension;
 
-extern int xquartz_resetenv_display;
-
 #define DEFAULT_CLIENT X11BINDIR "/xterm"
 #define DEFAULT_STARTX X11BINDIR "/startx"
 #define DEFAULT_SHELL  "/bin/sh"
@@ -80,7 +78,8 @@ const char *__crashreporter_info__base = "X.Org X Server " XSERVER_VERSION " Bui
 char __crashreporter_info__buf[4096];
 char *__crashreporter_info__ = __crashreporter_info__buf;
 
-static char *server_bootstrap_name = LAUNCHD_ID_PREFIX".X11";
+static char *launchd_id_prefix = NULL;
+static char *server_bootstrap_name = NULL;
 
 #define DEBUG 1
 
@@ -301,6 +300,7 @@ kern_return_t do_request_fd_handoff_socket(mach_port_t port, string_t filename) 
 
     handoff_data->fd = create_socket(handoff_data->filename);
     if(!handoff_data->fd) {
+        free(handoff_data);
         return KERN_FAILURE;
     }
 
@@ -428,9 +428,6 @@ static int startup_trigger(int argc, char **argv, char **envp) {
     if((s = getenv("DISPLAY"))) {
         fprintf(stderr, "X11.app: Could not connect to server (DISPLAY=\"%s\", unsetting).  Starting X server.\n", s);
         unsetenv("DISPLAY");
-        
-        /* This tells X11Controller to not use the environment's DISPLAY and reset it based on the server's display */
-        xquartz_resetenv_display = 1;
     } else {
         fprintf(stderr, "X11.app: Could not connect to server (DISPLAY is not set).  Starting X server.\n");
     }
@@ -456,6 +453,7 @@ static void setup_env(void) {
     char *temp;
     const char *pds = NULL;
     const char *disp = getenv("DISPLAY");
+    size_t len;
 
     /* Pass on our prefs domain to startx and its inheritors (mainly for
      * quartz-wm and the Xquartz stub's MachIPC)
@@ -465,45 +463,56 @@ static void setup_env(void) {
         CFStringRef pd = CFBundleGetIdentifier(bundle);
         if(pd) {
             pds = CFStringGetCStringPtr(pd, 0);
-            if(pds) {
-                server_bootstrap_name = malloc(sizeof(char) * (strlen(pds) + 1));
-                strcpy(server_bootstrap_name, pds);
-                setenv("X11_PREFS_DOMAIN", pds, 1);
-            }
         }
     }
+
+    /* fallback to hardcoded value if we can't discover it */
+    if(!pds) {
+        pds = LAUNCHD_ID_PREFIX".X11";
+    }
+
+    server_bootstrap_name = malloc(sizeof(char) * (strlen(pds) + 1));
+    if(!server_bootstrap_name) {
+        fprintf(stderr, "Memory allocation error.\n");
+        exit(1);
+    }
+    strcpy(server_bootstrap_name, pds);
+    setenv("X11_PREFS_DOMAIN", server_bootstrap_name, 1);
+    
+    len = strlen(server_bootstrap_name);
+    launchd_id_prefix = malloc(sizeof(char) * (len - 3));
+    if(!launchd_id_prefix) {
+        fprintf(stderr, "Memory allocation error.\n");
+        exit(1);
+    }
+    strlcpy(launchd_id_prefix, server_bootstrap_name, len - 3);
+    
     /* We need to unset DISPLAY if it is not our socket */
     if(disp) {
-        if(!pds) {
-            /* If we can't detet our id, we are beyond hope and need to just
-             * revert to the non-launchd startup */
-            unsetenv("DISPLAY");
-        } else {
-            /* s = basename(disp) */
-            const char *d, *s;
+        /* s = basename(disp) */
+        const char *d, *s;
 	    for(s = NULL, d = disp; *d; d++) {
-                if(*d == '/')
-                     s = d + 1;
+            if(*d == '/')
+                s = d + 1;
+        }
+
+        if(s && *s) {
+            temp = (char *)malloc(sizeof(char) * len);
+            if(!temp) {
+                fprintf(stderr, "Memory allocation error creating space for socket name test.\n");
+                exit(1);
             }
-
-            if(s && *s) {
-                size_t pds_len = strlen(pds);
-                temp = (char *)malloc(sizeof(char) * pds_len);
-                if(!temp) {
-                    fprintf(stderr, "Memory allocation error creating space for socket name test.\n");
-                }
-                strlcpy(temp, pds, pds_len - 3);
-                strlcat(temp, ":0", pds_len);
-
-                if(strcmp(temp, s) != 0) {
-                    /* If we don't have a match, unset it. */
-                    unsetenv("DISPLAY");
-                }
-                free(temp);
-            } else {
-                /* The DISPLAY environment variable is not formatted like a launchd socket, so reset. */
+            strlcpy(temp, launchd_id_prefix, len);
+            strlcat(temp, ":0", len);
+            
+            if(strcmp(temp, s) != 0) {
+                /* If we don't have a match, unset it. */
                 unsetenv("DISPLAY");
             }
+            free(temp);
+        } else {
+            /* The DISPLAY environment variable is not formatted like a launchd socket, so reset. */
+            unsetenv("DISPLAY");
         }
     }
 

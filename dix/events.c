@@ -345,7 +345,9 @@ DevHasCursor(DeviceIntPtr pDev)
 Bool
 IsPointerDevice(DeviceIntPtr dev)
 {
-    return (dev->type == MASTER_POINTER) || (dev->valuator && dev->button);
+    return (dev->type == MASTER_POINTER) ||
+            (dev->valuator && dev->button) ||
+            (dev->valuator && !dev->key);
 }
 
 /*
@@ -1671,7 +1673,7 @@ AllowSome(ClientPtr client,
     thisGrabbed = grabinfo->grab && SameClient(grabinfo->grab, client);
     thisSynced = FALSE;
     otherGrabbed = FALSE;
-    othersFrozen = TRUE;
+    othersFrozen = FALSE;
     grabTime = grabinfo->grabTime;
     for (dev = inputInfo.devices; dev; dev = dev->next)
     {
@@ -1687,11 +1689,9 @@ AllowSome(ClientPtr client,
 	    otherGrabbed = TRUE;
 	    if (grabinfo->sync.other == devgrabinfo->grab)
 		thisSynced = TRUE;
-	    if (devgrabinfo->sync.state < FROZEN)
-		othersFrozen = FALSE;
+	    if (devgrabinfo->sync.state >= FROZEN)
+		othersFrozen = TRUE;
 	}
-	else if (!devgrabinfo->sync.other || !SameClient(devgrabinfo->sync.other, client))
-	    othersFrozen = FALSE;
     }
     if (!((thisGrabbed && grabinfo->sync.state >= FROZEN) || thisSynced))
 	return;
@@ -2496,15 +2496,15 @@ DeliverDeviceEvents(WindowPtr pWin, InternalEvent *event, GrabPtr grab,
             if (mask & XI_MASK)
             {
                 rc = EventToXI(event, &xE, &count);
-                if (rc == Success &&
-                    XaceHook(XACE_SEND_ACCESS, NULL, dev, pWin, xE, count) == Success)
-                {
-                    filter = GetEventFilter(dev, xE);
-                    FixUpEventFromWindow(dev, xE, pWin, child, FALSE);
-                    deliveries = DeliverEventsToWindow(dev, pWin, xE, count,
-                                                       filter, grab);
-                    if (deliveries > 0)
-                        goto unwind;
+                if (rc == Success) {
+                    if (XaceHook(XACE_SEND_ACCESS, NULL, dev, pWin, xE, count) == Success) {
+                        filter = GetEventFilter(dev, xE);
+                        FixUpEventFromWindow(dev, xE, pWin, child, FALSE);
+                        deliveries = DeliverEventsToWindow(dev, pWin, xE, count,
+                                                           filter, grab);
+                        if (deliveries > 0)
+                            goto unwind;
+                    }
                 } else if (rc != BadMatch)
                     ErrorF("[dix] %s: XI conversion failed in DDE (%d, %d). Skipping delivery.\n",
                             dev->name, event->any.type, rc);
@@ -2514,15 +2514,15 @@ DeliverDeviceEvents(WindowPtr pWin, InternalEvent *event, GrabPtr grab,
             if ((mask & CORE_MASK) && IsMaster(dev) && dev->coreEvents)
             {
                 rc = EventToCore(event, &core);
-                if (rc == Success &&
-                    XaceHook(XACE_SEND_ACCESS, NULL, dev, pWin, &core, 1) == Success)
-                {
-                    filter = GetEventFilter(dev, &core);
-                    FixUpEventFromWindow(dev, &core, pWin, child, FALSE);
-                    deliveries = DeliverEventsToWindow(dev, pWin, &core, 1,
-                            filter, grab);
-                    if (deliveries > 0)
-                        goto unwind;
+                if (rc == Success) {
+                    if (XaceHook(XACE_SEND_ACCESS, NULL, dev, pWin, &core, 1) == Success) {
+                        filter = GetEventFilter(dev, &core);
+                        FixUpEventFromWindow(dev, &core, pWin, child, FALSE);
+                        deliveries = DeliverEventsToWindow(dev, pWin, &core, 1,
+                                                           filter, grab);
+                        if (deliveries > 0)
+                            goto unwind;
+                    }
                 } else if (rc != BadMatch)
                         ErrorF("[dix] %s: Core conversion failed in DDE (%d, %d).\n",
                                 dev->name, event->any.type, rc);
@@ -3802,13 +3802,13 @@ DeliverFocusedEvent(DeviceIntPtr keybd, InternalEvent *event, WindowPtr window)
     if (sendCore)
     {
         rc = EventToCore(event, &core);
-        if (rc == Success &&
-            XaceHook(XACE_SEND_ACCESS, NULL, keybd, focus, &core, 1) == Success)
-        {
-            FixUpEventFromWindow(keybd, &core, focus, None, FALSE);
-            deliveries = DeliverEventsToWindow(keybd, focus, &core, 1,
-                                               GetEventFilter(keybd, &core),
-                                               NullGrab);
+        if (rc == Success) {
+            if (XaceHook(XACE_SEND_ACCESS, NULL, keybd, focus, &core, 1) == Success) {
+                FixUpEventFromWindow(keybd, &core, focus, None, FALSE);
+                deliveries = DeliverEventsToWindow(keybd, focus, &core, 1,
+                                                   GetEventFilter(keybd, &core),
+                                                   NullGrab);
+            }
         } else if (rc != BadMatch)
             ErrorF("[dix] %s: core conversion failed DFE (%d, %d). Skipping delivery.\n",
                     keybd->name, event->any.type, rc);
@@ -4972,7 +4972,7 @@ ProcQueryPointer(ClientPtr client)
     if (rc != Success)
 	return rc;
     rc = XaceHook(XACE_DEVICE_ACCESS, client, mouse, DixReadAccess);
-    if (rc != Success)
+    if (rc != Success && rc != BadAccess)
 	return rc;
 
     keyboard = GetPairedDevice(mouse);
@@ -5019,6 +5019,15 @@ ProcQueryPointer(ClientPtr client)
 	}
     }
 #endif
+
+    if (rc == BadAccess) {
+	rep.mask = 0;
+	rep.child = None;
+	rep.rootX = 0;
+	rep.rootY = 0;
+	rep.winX = 0;
+	rep.winY = 0;
+    }
 
     WriteReplyToClient(client, sizeof(xQueryPointerReply), &rep);
 

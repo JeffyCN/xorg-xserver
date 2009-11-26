@@ -411,6 +411,9 @@ static void message_kit_thread (SEL selector, NSObject *arg) {
         SetSystemUIMode(kUIModeAllHidden, quartzFullscreenMenu ? kUIOptionAutoShowMenuBar : 0); // kUIModeAllSuppressed or kUIOptionAutoShowMenuBar can be used to allow "mouse-activation"
 }
 
+- (void) launch_client:(NSString *)cmd {
+    (void)[_controller application:self openFile:cmd];
+}
 
 /* user preferences */
 
@@ -856,6 +859,16 @@ void X11ApplicationShowHideMenubar (int state) {
     [n release];
 }
 
+void X11ApplicationLaunchClient (const char *cmd) {
+    NSString *string;
+    
+    string = [[NSString alloc] initWithUTF8String:cmd];
+	
+    message_kit_thread (@selector (launch_client:), string);
+	
+    [string release];
+}
+
 static void check_xinitrc (void) {
     char *tem, buf[1024];
     NSString *msg;
@@ -986,7 +999,7 @@ static inline int ensure_flag(int flags, int device_independent, int device_depe
     isMouseOrTabletEvent =  [e type] == NSLeftMouseDown    ||  [e type] == NSOtherMouseDown    ||  [e type] == NSRightMouseDown    ||
                             [e type] == NSLeftMouseUp      ||  [e type] == NSOtherMouseUp      ||  [e type] == NSRightMouseUp      ||
                             [e type] == NSLeftMouseDragged ||  [e type] == NSOtherMouseDragged ||  [e type] == NSRightMouseDragged ||
-                            [e type] == NSMouseMoved       ||  [e type] == NSTabletPoint;
+                            [e type] == NSMouseMoved       ||  [e type] == NSTabletPoint       ||  [e type] == NSScrollWheel;
 
     isTabletEvent = ([e type] == NSTabletPoint) ||
                     (isMouseOrTabletEvent && ([e subtype] == NSTabletPointEventSubtype || [e subtype] == NSTabletProximityEventSubtype));
