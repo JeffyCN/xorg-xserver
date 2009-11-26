@@ -16,6 +16,7 @@ xorg-server (2:1.7.1.902-1) UNRELEASED; urgency=low
   * New upstream release
     + Xorg sets umask to 022 (closes: #555308)
   * Use libudev instead of libhal for input hotplug on linux.
+  * Add udev rule to get keymap from /etc/default/keyboard.
 
  -- Julien Cristau <jcristau@debian.org>  Thu, 26 Nov 2009 16:23:40 +0100
 

@@ -191,7 +191,6 @@ install: build
 	install -m 755 debian/local/xvfb-run debian/tmp/usr/bin
 	install debian/local/xvfb-run.1 debian/tmp/usr/share/man/man1
 
-
 # stub to start building deb files, used by binary-indep and binary-arch
 binary-initial:
 	dh_testdir
@@ -224,6 +223,10 @@ binary-arch: build install
 	           $(CURDIR)/debian/xserver-xorg-dev/usr/share/xserver-xorg/serverminver
 	$(INSTALL) -m 755 -d debian/xserver-xorg-core/usr/share/bug/xserver-xorg-core
 	$(INSTALL) -m 755 debian/xserver-xorg-core.bug.script debian/xserver-xorg-core/usr/share/bug/xserver-xorg-core/script
+ifeq ($(DEB_HOST_ARCH_OS), linux)
+	install -d debian/xserver-xorg-core/lib/udev/rules.d
+	install debian/local/64-xorg-xkb.rules debian/xserver-xorg-core/lib/udev/rules.d
+endif
 	dh_installdebconf -s
 	dh_installman -s
 	dh_link -s

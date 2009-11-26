@@ -85,6 +85,7 @@ Architecture: any
 Depends:
  xserver-common (>= ${source:Version}),
  xserver-xorg,
+ keyboard-configuration [linux-any kfreebsd-any],
  ${shlibs:Depends},
  ${misc:Depends},
 Recommends: libgl1-mesa-dri (>= 7.1~rc1)
