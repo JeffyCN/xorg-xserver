@@ -40,13 +40,21 @@ else
 	selinux = --disable-xselinux
 endif
 
-ifeq ($(DEB_HOST_ARCH), hurd-i386)
+ifeq ($(DEB_HOST_ARCH_OS), hurd)
 	dri = --disable-dri --disable-dri2
-	config_hal = --disable-config-hal
 else
 	dri = --enable-dri --enable-dri2
-	config_hal = --enable-config-hal
 endif
+
+config_backend = --disable-config-dbus
+ifeq ($(DEB_HOST_ARCH_OS), linux)
+	config_backend += --enable-config-udev --disable-config-hal
+else ifeq ($(DEB_HOST_ARCH_OS), kfreebsd)
+	config_backend += --disable-config-udev --enable-config-hal
+else # hurd
+	config_backend += --disable-config-udev --disable-config-hal
+endif
+
 ifneq (,$(filter nocheck, $(DEB_BUILD_OPTIONS)))
 	config_tests = --disable-unit-tests
 else
@@ -100,8 +108,7 @@ confflags += \
 	     --enable-dbe \
 	     --disable-xf86bigfont \
 	     --enable-dpms \
-	     --disable-config-dbus \
-	     $(config_hal) \
+	     $(config_backend) \
 	     --enable-xfree86-utils \
 	     --enable-xorg \
 	     --enable-dmx \
