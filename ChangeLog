@@ -1,3 +1,130 @@
+commit 1fff1b37a91c989c046d96d961862d592a307496
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Fri Nov 27 14:58:57 2009 +1000
+
+    xserver 1.7.2
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit 196aff9b18381d700fb28027186cce6e68ad587c
+Author: Aaron Plattner <aplattner@nvidia.com>
+Date:   Tue Nov 24 10:21:28 2009 -0800
+
+    Bug #25136: Revert "Fix clipping when windows are used as sources"
+    
+    That change causes lib(w)fb to make accelerated driver calls after the driver
+    has entered a software fallback.  Most drivers don't expect this, which leads to
+    corruption or crashes.  A change to make this code do the copy in software is
+    unacceptably slow.
+    
+    This reverts commit e9aa61e9f0d663d5b34a397b943b4d1df44e873d.
+    
+    Conflicts:
+    
+    	configure.ac
+    	fb/fbpict.c
+    
+    Signed-off-by: Aaron Plattner <aplattner@nvidia.com>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit 8eca8eaef56526b9649b48aa5f83c3d7914cfdc4
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Tue Nov 24 15:31:48 2009 +1000
+
+    Xi: when deleting all properties, reset property handler to NULL.
+    
+    Trying to unregister property handlers during the device closure process
+    leads to invalid memory accesses.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Keith Packard <keithp@keithp.com>
+    (cherry picked from commit 1b127ab8429616adf9ec31ba4d8bdd9af6e104a9)
+
+commit 9998105a387e0294054502331a56e1e020cd93e4
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Tue Nov 17 09:25:47 2009 +1000
+
+    Move xdmxconfig modules into DMX conditionals (#25102)
+    
+    xdmxconfig requires additional modules not checked for if Xdmx build is set
+    to auto (the default). This may lead to build errors if the Xdmx modules are
+    installed, but not the extra ones required for xdmxconfig.
+    
+    X.Org Bug 25102 <http://bugs.freedesktop.org/show_bug.cgi?id=25102>
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Remi Cardona <remi@gentoo.org>
+    Acked-by: Julien Cristau <jcristau@debian.org>
+    (cherry picked from commit 8806375ed72a3cd465fe0a49ead079a334accd6b)
+
+commit 18dcc102ac12a4b18c60b5dbabbc4d5debfe5556
+Author: Rami Ylimaki <ext-rami.ylimaki@nokia.com>
+Date:   Tue Nov 17 17:13:43 2009 +0200
+
+    Xext: Fix a memory leak on GE client disconnect.
+    
+    Add a call to dixRequestPrivate to inform dixFreePrivates that memory
+    allocated in GEClientCallback should be released when client
+    disconnects. Otherwise there is a leak of sizeof(GEClientInfoRec) for
+    every client connect/disconnect.
+    
+    Also remove the explicit allocation and let GEGetClient /
+    dixLookupPrivate do it. This makes GEClientCallback similar to the
+    other extension callbacks.
+    
+    Signed-off-by: Rami Ylimaki <ext-rami.ylimaki@nokia.com>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    (cherry picked from commit eb967ca36cfe0409972ac987a74d498cd6f6bafb)
+
+commit b8904935bbd26e9d34587f03810318d94cb771f6
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Mon Nov 23 13:07:56 2009 +1000
+
+    Xi: don't crash when deleting invalid device properties.
+    
+    Deleting a property that was not set on a device leads to a null-pointer
+    reference. The protocol allows deleting those properties - it has to be a
+    noop.
+    
+    Reproducible:
+    xinput --set-prop "My device" --type=int --format=8 "my property" 1
+    xinput --delete-prop "My other device" "my property"
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+    (cherry picked from commit a30e739a144912a68adcaa9f426d600c6ecbd529)
+
+commit a5308ceb127bf390cbe6fef3ba1e33e78f222ba1
+Author: Zhao Yakui <yakui.zhao@intel.com>
+Date:   Fri Nov 20 14:43:35 2009 +0800
+
+    xfree86: Edid quirk for Philips LCD LP154W01
+    
+    v1->v2: Make one condition case for one quirk instead of merging them
+    together. This is based on the Keithp's suggestion.
+    
+    Move the EDID quirk for Philips LCD LP154W01 as the panel reports the vertical
+    size in cm.
+    
+    https://bugs.freedesktop.org/show_bug.cgi?id=24482
+    
+    Signed-off-by: Zhao Yakui <yakui.zhao@intel.com>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+    (cherry picked from commit 19f7c15e2008dab3c46ba3e14dfa353d01c74f72)
+
+commit b466329c111c4b6696508b3c2c8a60c9fbc90157
+Author: Jeremy Huddleston <jeremyhu@freedesktop.org>
+Date:   Mon Nov 23 16:33:00 2009 -0800
+
+    XQuartz: Allow better compatability with older versions of xinit
+    
+    If we are id="org.x" and the launchd socket is ":0", we will claim
+    the socket to match the old behavior before we prefixed the
+    socket name with our id.
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@freedesktop.org>
+    (cherry picked from commit 4677b5a80025b50ba2a3e953fd487a549586ae9f)
+
 commit 19b24f014f4dad1cc73e2454d15c64ae05ac8ef2
 Author: Peter Hutterer <peter.hutterer@who-t.net>
 Date:   Fri Nov 20 15:29:05 2009 +1000
