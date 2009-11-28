@@ -162,12 +162,6 @@ clean: xsfclean
 	rm -f conftest* */conftest*
 	rm -rf autom4te.cache */autom4te.cache
 	rm -rf obj-*
-	# generated file, left over in the upstream tarball
-	# see https://bugs.freedesktop.org/show_bug.cgi?id=9277
-	rm -f hw/xfree86/common/xf86Build.h
-	# more generated files
-	rm -f include/dix-config.h include/do-not-use-config.h \
-		include/xorg-config.h include/xorg-server.h
 	rm -f compile config.guess config.sub configure depcomp install-sh
 	rm -f ltmain.sh missing INSTALL aclocal.m4 ylwrap
 	rm -f include/do-not-use-config.h.in
