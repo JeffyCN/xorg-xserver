@@ -225,7 +225,7 @@ binary-arch: build install
 	$(INSTALL) -m 755 debian/xserver-xorg-core.bug.script debian/xserver-xorg-core/usr/share/bug/xserver-xorg-core/script
 ifeq ($(DEB_HOST_ARCH_OS), linux)
 	install -d debian/xserver-xorg-core/lib/udev/rules.d
-	install debian/local/64-xorg-xkb.rules debian/xserver-xorg-core/lib/udev/rules.d
+	install -m 644 debian/local/64-xorg-xkb.rules debian/xserver-xorg-core/lib/udev/rules.d
 endif
 	dh_installdebconf -s
 	dh_installman -s
