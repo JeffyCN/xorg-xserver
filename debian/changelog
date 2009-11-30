@@ -1,11 +1,15 @@
 xorg-server (2:1.7.2-2) UNRELEASED; urgency=low
 
+  [ Julien Cristau ]
   * debian/rules: upstream build system got fixed, no need to remove
     configure-generated files.
   * Steal input_id helper from udev, install it in /lib/xorg.  Thanks, Martin
     Pitt!
 
- -- Julien Cristau <jcristau@debian.org>  Sat, 28 Nov 2009 17:07:07 +0100
+  [ Brice Goglin ]
+  * Cherry pick upstream commit to fix the ABI.
+
+ -- Brice Goglin <bgoglin@debian.org>  Mon, 30 Nov 2009 20:07:12 +0100
 
 xorg-server (2:1.7.2-1) experimental; urgency=low
 
