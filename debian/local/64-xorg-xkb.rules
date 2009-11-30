@@ -1,8 +1,11 @@
-ACTION!="add", GOTO="xorg_xkb_end"
+ACTION!="add|change", GOTO="xorg_xkb_end"
 SUBSYSTEM!="input", GOTO="xorg_xkb_end"
 KERNEL!="event*", GOTO="xorg_xkb_end"
 
+# input_id is only in udev > 147
+ENV{ID_INPUT}=="", IMPORT{program}="/lib/xorg/input_id %p"
+
 # import keyboard layout from /etc/default/keyboard
-IMPORT{file}="/etc/default/keyboard"
+ENV{ID_INPUT_KEY}=="?*", IMPORT{file}="/etc/default/keyboard"
 
 LABEL="xorg_xkb_end"
