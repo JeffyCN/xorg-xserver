@@ -2,6 +2,9 @@
 ## Ubuntu patches start with 100.
 001_fedora_extramodes.patch
 02_Add-libgcrypt-as-an-option-for-sha1.diff
+# 03 and 04 are backports from git master
+03_fedora_glx_versioning.diff
+04_fedora_glx14-swrast.diff
 #13_debian_add_xkbpath_env_variable.diff
 11-Move-config_init-after-CreateWellKnownSockets-and-In.diff
 12-Add-libudev-input-hotplug-backend.diff
