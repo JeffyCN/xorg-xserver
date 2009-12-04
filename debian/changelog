@@ -1,8 +1,12 @@
-xorg-server (2:1.7.2-3) UNRELEASED; urgency=low
+xorg-server (2:1.7.3-1) UNRELEASED; urgency=low
 
+  [ Julien Cristau ]
   * Enable GLX 1.4 on DRI2 and swrast (from upstream, via F12).
 
- -- Julien Cristau <jcristau@debian.org>  Wed, 02 Dec 2009 21:52:45 +0100
+  [ Timo Aaltonen ]
+  * New upstream release.
+
+ -- Timo Aaltonen <tjaalton@ubuntu.com>  Fri, 04 Dec 2009 15:08:55 +0200
 
 xorg-server (2:1.7.2-2) experimental; urgency=low
 

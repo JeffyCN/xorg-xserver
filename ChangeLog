@@ -1,3 +1,41 @@
+commit aea5ace1ee331fab0b72885ce0d5d3fc235e0708
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Thu Dec 3 11:57:16 2009 +1000
+
+    xserver 1.7.3
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit f41e87f32e7525e7425d7b300699dccd994b5002
+Author: Gaetan Nadon <memsize@videotron.ca>
+Date:   Sat Nov 28 21:32:47 2009 -0500
+
+    configure.ac: error while checking for XDMXCONFIG_DEP
+    
+    Introduced in commit 9998105a387e0294054502331a56e1e020cd93e4
+    The replacement third parameters to PKG_CHECK_MODULES([DMXMODULES]
+    was not quoted.
+    
+    Signed-off-by: Gaetan Nadon <memsize@videotron.ca>
+    Reviewed-by: Dan Nicholson <dbn.lists@gmail.com>
+    Tested-by: Julien Cristau <jcristau@debian.org>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    (cherry picked from commit 91c1bd78f7240c92702828f8e5a6b6ce944b9e36)
+    (cherry picked from commit b8623569a3acff31cb18a9f6046e60d0637cc0e0)
+
+commit c0de621b42bd69e883e15082c7fd35709d545d55
+Author: Aaron Plattner <aplattner@nvidia.com>
+Date:   Sun Nov 29 12:06:26 2009 -0800
+
+    Restore ABI by reintroducing the "is_src" paramter to image_from_pict.
+    
+    Restores old ABI after 196aff9b18381d700fb28027186cce6e68ad587c.
+    
+    Signed-off-by: Aaron Plattner <aplattner@nvidia.com>
+    Tested-by: Julien Cristau <jcristau@debian.org>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    (cherry picked from commit 155e61a9f0429bf28ce493c0fe7a2d076cb7e137)
+
 commit 1fff1b37a91c989c046d96d961862d592a307496
 Author: Peter Hutterer <peter.hutterer@who-t.net>
 Date:   Fri Nov 27 14:58:57 2009 +1000
