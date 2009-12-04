@@ -26,8 +26,8 @@ dnl
 dnl Process this file with autoconf to create configure.
 
 AC_PREREQ(2.57)
-AC_INIT([xorg-server], 1.7.2, [https://bugs.freedesktop.org/enter_bug.cgi?product=xorg], xorg-server)
-RELEASE_DATE="2009-11-27"
+AC_INIT([xorg-server], 1.7.3, [https://bugs.freedesktop.org/enter_bug.cgi?product=xorg], xorg-server)
+RELEASE_DATE="2009-12-3"
 AC_CONFIG_SRCDIR([Makefile.am])
 AM_INIT_AUTOMAKE([dist-bzip2 foreign])
 AM_MAINTAINER_MODE
@@ -1808,11 +1808,15 @@ AM_CONDITIONAL(XQUARTZ_SPARKLE, [test "x$XQUARTZ_SPARKLE" != "xno"])
 AM_CONDITIONAL(STANDALONE_XPBPROXY, [test "x$STANDALONE_XPBPROXY" = xyes])
 
 dnl DMX DDX
-PKG_CHECK_MODULES([DMXMODULES],
-    [xmuu $LIBXEXT x11 xrender xfixes xfont $LIBXI $DMXPROTO xau $XDMCP_MODULES],
-    PKG_CHECK_MODULES([XDMXCONFIG_DEP], [xaw7 xmu xt xpm x11], [have_dmx=yes],
-                      [have_dmx=no]),
-    [have_dmx=no])
+PKG_CHECK_MODULES(
+	[DMXMODULES],
+	[xmuu $LIBXEXT x11 xrender xfixes xfont $LIBXI $DMXPROTO xau $XDMCP_MODULES],
+	[PKG_CHECK_MODULES(
+		[XDMXCONFIG_DEP],
+		[xaw7 xmu xt xpm x11],
+		[have_dmx=yes],
+		[have_dmx=no])],
+	[have_dmx=no])
 AC_MSG_CHECKING([whether to build Xdmx DDX])
 if test "x$DMX" = xauto; then
 	DMX="$have_dmx"
