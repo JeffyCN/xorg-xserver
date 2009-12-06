@@ -4,6 +4,7 @@ xorg-server (2:1.7.3-1) UNRELEASED; urgency=low
   * Enable GLX 1.4 on DRI2 and swrast (from upstream, via F12).
   * xserver-xorg-dev: add Depends on x11proto-kb-dev and libxkbfile-dev for
     xkbsrv.h (closes: #559676).  Thanks, Ron!
+  * Update input_id to the version in udev 149.
 
   [ Timo Aaltonen ]
   * New upstream release.

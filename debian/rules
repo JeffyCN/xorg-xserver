@@ -142,6 +142,7 @@ obj-$(DEB_BUILD_GNU_TYPE)/config.status: configure
 	  CPPFLAGS="$(CPPFLAGS)"
 
 ifeq ($(DEB_HOST_ARCH_OS), linux)
+debian/local/input_id: LDFLAGS=-Wl,-z,defs -ludev
 build-stamp: debian/local/input_id
 endif
 
