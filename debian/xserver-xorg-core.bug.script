@@ -117,15 +117,11 @@ else
     printf "No Xorg X server log files found.\n"
 fi
 
-if [ -x /usr/bin/lshal ]; then
-    printf "\nHAL Information (lshal):\n"
-    for udi in `(hal-find-by-capability --capability input.keys;
-                 hal-find-by-capability --capability input.mouse;
-                 hal-find-by-capability --capability input.touchpad;
-                 hal-find-by-capability --capability input.tablet
-                )|sort -u`;
+if [ -x /sbin/udevadm ]; then
+    printf "\nudev information:\n"
+    for dev in /dev/input/event*;
     do
-        lshal -u "$udi"
+        /sbin/udevadm info --query=all --name=$dev
     done
 fi
 

@@ -5,6 +5,7 @@ xorg-server (2:1.7.3-1) UNRELEASED; urgency=low
   * xserver-xorg-dev: add Depends on x11proto-kb-dev and libxkbfile-dev for
     xkbsrv.h (closes: #559676).  Thanks, Ron!
   * Update input_id to the version in udev 149.
+  * Update xserver-xorg-core bug script to run udevadm info instead of lshal.
 
   [ Timo Aaltonen ]
   * New upstream release.
