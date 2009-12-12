@@ -9,6 +9,7 @@ xorg-server (2:1.7.3.901-1) UNRELEASED; urgency=low
 
   [ Brice Goglin ]
   * New upstream release.
+    + Refresh patches.
 
  -- Timo Aaltonen <tjaalton@ubuntu.com>  Fri, 04 Dec 2009 15:08:55 +0200
 

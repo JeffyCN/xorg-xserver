@@ -657,8 +657,8 @@ index 40f65bd..12f9d49 100644
 +#endif
 +	xf86Msg(X_INFO, "The server relies on %s to provide the list of "
  	                "input devices.\n\tIf no devices become available, "
--	                "reconfigure HAL or disable AllowEmptyInput.\n");
-+	                "reconfigure %s or disable AllowEmptyInput.\n",
+-	                "reconfigure HAL or disable AutoAddDevices.\n");
++	                "reconfigure %s or disable AutoAddDevices.\n",
 +			config_backend, config_backend);
  #else
 -	xf86Msg(X_INFO, "HAL is disabled and no input devices were configured.\n"
