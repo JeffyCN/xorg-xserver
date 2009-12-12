@@ -1,3 +1,18 @@
+commit 601db11ffc49343807cf562175c2fe51eb6ec056
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Fri Dec 11 15:34:05 2009 +1000
+
+    xserver 1.7.3.901
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit 441673906fbe58a877034d478eb04c4b0f9413c3
+Merge: 7ef49cb aea5ace
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Tue Dec 8 11:45:51 2009 +1000
+
+    Merge branch 'server-1.7-branch' into server-1.7-nominations
+
 commit aea5ace1ee331fab0b72885ce0d5d3fc235e0708
 Author: Peter Hutterer <peter.hutterer@who-t.net>
 Date:   Thu Dec 3 11:57:16 2009 +1000
@@ -35,6 +50,170 @@ Date:   Sun Nov 29 12:06:26 2009 -0800
     Tested-by: Julien Cristau <jcristau@debian.org>
     Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
     (cherry picked from commit 155e61a9f0429bf28ce493c0fe7a2d076cb7e137)
+
+commit 7ef49cbe702ab00913cb5c55d35b110cd81481aa
+Author: Luc Verhaegen <libv@skynet.be>
+Date:   Wed Nov 11 15:52:39 2009 +0100
+
+    [PATCH] Xv: Fix AdjustFrame when driver implements ReputImage.
+    
+    Finally fixes fd.o #4653, filed more than 4 years ago.
+    
+    Patch can be happily applied to all modular Xorg versions.
+    
+    Signed-off-by: Luc Verhaegen <libv@skynet.be>
+    Reviewed-by: Keith Packard <keithp@keithp.com>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+    (cherry picked from commit 0e084d8c71e697a5cf5d5d7c749455ae14bd6eb7)
+
+commit 21bf1de28c7f10bcee1b199cc976d58319dc9ecd
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Fri Nov 27 16:01:53 2009 +1000
+
+    dix: fix memory leak, free event list on shutdown. (#25028)
+    
+    X.Org Bug 25028 <http://bugs.freedesktop.org/show_bug.cgi?id=25028>
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Keith Packard <keithp@keithp.com>
+    (cherry picked from commit c20c8897272427cb3f755a3e28e80a9ad46f08a1)
+
+commit e840999ffc93ecb2d870dfed334e093ca1e5e65b
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Fri Nov 27 16:20:13 2009 +1000
+
+    dix: remove core devices when shutting down. (#25028)
+    
+    NewInputDeviceRequest (and RemoveDevice) have checks in place to not allow
+    removal of the VCP/VCK. When shutting down, they need to be cleaned up
+    nonetheless to free the memory associated.
+    
+    X.Org Bug 25028 <http://bugs.freedesktop.org/show_bug.cgi?id=25028>
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Keith Packard <keithp@keithp.com>
+    (cherry picked from commit 66bb8c6fbdfc0fc0d971aac4ec6f949bb9288c1b)
+
+commit 51aad8bebca938a41837ad73c98a0039665fa22f
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Fri Oct 30 12:11:41 2009 +1000
+
+    Set the source and deviceid for key repeat events (#24785)
+    
+    X.Org Bug 24785 <http://bugs.freedesktop.org/show_bug.cgi?id=24785>
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Acked-by: Adam Jackson <ajax@redhat.com>
+    (cherry picked from commit b584c224a888c9e7f92d7e49021f74232a727c7f)
+
+commit abb0a5c11e25733bcbcbbe4fdd8d54feb7786e63
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Tue Dec 1 14:38:19 2009 +1000
+
+    xfree86: tell users to disable AutoAddDevices, not AllowEmptyInput.
+    
+    Technically, disabling AEI is the right suggestion. AEI off forces the
+    server to init the built-in defaults for input devices (or pick the first
+    one from the config file). At the same time, hotplugging is still available
+    with AEI off.
+    
+    Unfortunatly, in the vast majority of cases users want to simply disable
+    hotplugging or have a working server while the local HAL configuration is
+    broken or missing. Disabling AEI will lead to duplicate events, triple
+    keystrokes, etc. once the configuration works again.
+    It's not actually required to remove AEI once hotplugging works again,
+    though it will in many cases lead to a setup that appears broken.
+    
+    Asking users to disable AutoAddDevices instead means those users disable
+    hotplugging, can then fix the HAL setup and they _must_ remove the config
+    line again to test if hotplugging works again. Which doesn't leave them with
+    a broken config once everything is working nice and dandy. Less bugreports,
+    everybody wins.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Acked-by: Dan Nicholson <dbn.lists@gmail.com>
+    Acked-by: Daniel Stone <daniel@fooishbar.org>
+    Acked-by: Rémi Cardona <remi@gentoo.org>
+    Acked-by: James Cloos <cloos@jhcloos.com>
+    (cherry picked from commit 761ae22f880bd79550ccf93d321b8a28b3755956)
+
+commit b8623569a3acff31cb18a9f6046e60d0637cc0e0
+Author: Gaetan Nadon <memsize@videotron.ca>
+Date:   Sat Nov 28 21:32:47 2009 -0500
+
+    configure.ac: error while checking for XDMXCONFIG_DEP
+    
+    Introduced in commit 9998105a387e0294054502331a56e1e020cd93e4
+    The replacement third parameters to PKG_CHECK_MODULES([DMXMODULES]
+    was not quoted.
+    
+    Signed-off-by: Gaetan Nadon <memsize@videotron.ca>
+    Reviewed-by: Dan Nicholson <dbn.lists@gmail.com>
+    Tested-by: Julien Cristau <jcristau@debian.org>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    (cherry picked from commit 91c1bd78f7240c92702828f8e5a6b6ce944b9e36)
+
+commit dde1f688006e08e26a8a43d0dbb877b8ea169825
+Author: Michel Dänzer <daenzer@vmware.com>
+Date:   Mon Nov 30 13:17:52 2009 +0100
+
+    EXA: Don't defragment offscreen memory at allocation time.
+    
+    Fixes http://bugs.freedesktop.org/show_bug.cgi?id=24300 .
+    
+    Offscreen memory allocation can occur from various places, and apparently
+    doing defragmentation from at least some of them can confuse some driver
+    acceleration code.
+    
+    There's still the regular background defragmentation in the WakeupHandler,
+    which should manage to keep fragmentation at a reasonable level.
+    
+    Signed-off-by: Michel Dänzer <daenzer@vmware.com>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+    (cherry picked from commit 8754db77d8169e5ea506a963cebee1a651bcf094)
+
+commit 17a1614c3b7410581d885be5f8f76aa7b3e2c070
+Author: Ben Skeggs <bskeggs@redhat.com>
+Date:   Sat Oct 24 10:45:49 2009 +1000
+
+    EXA: fix mixed-pixmaps issue where we could do accel with pixmap mapped
+    
+    The problem occurs in the following situation:
+    
+    1. Create Pixmap
+    2. Software fallback on pixmap: pExaPixmap->pDamage created
+    3. Accel to pixmap: driver pixmap created, exaPixmapIsOffscreen() now true
+    4. Software fallback on pixmap
+    4.1: PrepareAccess() from driver succeeds, so no DFS to system memory copy
+    4.2: Software rendering...
+    4.3: (pExaPixmap->pDamage && exaPixmapIsOffscreen()) is true, so we try
+         to (incorrectly) UTS the data back to the driver pixmap, when we
+         should just call the driver's FinishAccess() hook.
+    4.4: fail
+    
+    The patch adds an additional check on pExaPixmap->offscreen, which should
+    (for the cases exaPixmapIsOffscreen() will return true) only be FALSE
+    when we haven't used PrepareAccess() on the pixmap.
+    
+    Signed-off-by: Ben Skeggs <bskeggs@redhat.com>
+    Acked-By: Michel Dänzer <michel@daenzer.net>
+    
+    [ Michel Dänzer: This is a 'backport' of commit
+      647b79f87a9891225678dc6fc2fbda3bdef8fa9d from master - actually this patch
+      was submitted first but didn't apply to master anymore, so technically the
+      other change is a 'forward port' of this one ]
+
+commit 155e61a9f0429bf28ce493c0fe7a2d076cb7e137
+Author: Aaron Plattner <aplattner@nvidia.com>
+Date:   Sun Nov 29 12:06:26 2009 -0800
+
+    Restore ABI by reintroducing the "is_src" paramter to image_from_pict.
+    
+    Restores old ABI after 196aff9b18381d700fb28027186cce6e68ad587c.
+    
+    Signed-off-by: Aaron Plattner <aplattner@nvidia.com>
+    Tested-by: Julien Cristau <jcristau@debian.org>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
 
 commit 1fff1b37a91c989c046d96d961862d592a307496
 Author: Peter Hutterer <peter.hutterer@who-t.net>
