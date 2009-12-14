@@ -1,3 +1,9 @@
+xorg-server (2:1.7.3.901-2) UNRELEASED; urgency=low
+
+  * Run udevadm trigger on postinst, and depend on udev [linux-any].
+
+ -- Timo Aaltonen <tjaalton@ubuntu.com>  Mon, 14 Dec 2009 11:21:42 +0200
+
 xorg-server (2:1.7.3.901-1) experimental; urgency=low
 
   [ Julien Cristau ]

@@ -88,6 +88,7 @@ Depends:
  keyboard-configuration [linux-any kfreebsd-any],
  ${shlibs:Depends},
  ${misc:Depends},
+ udev [linux-any],
 Recommends: libgl1-mesa-dri (>= 7.1~rc1)
 Suggests: xfonts-base, xfonts-100dpi | xfonts-75dpi, xfonts-scalable
 Conflicts:
