@@ -1,6 +1,10 @@
 xorg-server (2:1.7.3.901-2) UNRELEASED; urgency=low
 
+  [ Timo Aaltonen ]
   * Run udevadm trigger on postinst, and depend on udev [linux-any].
+
+  [ Julien Cristau ]
+  * Add xserver-common dependency on x11-xkb-utils for xkbcomp.
 
  -- Timo Aaltonen <tjaalton@ubuntu.com>  Mon, 14 Dec 2009 11:21:42 +0200
 

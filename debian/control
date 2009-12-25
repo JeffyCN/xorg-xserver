@@ -311,6 +311,7 @@ Architecture: all
 Depends:
  x11-common,
  xkb-data,
+ x11-xkb-utils,
  ${misc:Depends},
 Replaces: xserver-xorg-core (<< 2:1.5.2)
 Description: common files used by various X servers
