@@ -5,6 +5,7 @@ xorg-server (2:1.7.3.901-2) UNRELEASED; urgency=low
 
   [ Julien Cristau ]
   * Add xserver-common dependency on x11-xkb-utils for xkbcomp.
+  * Remove our copy of input_id, add Depends on new enough udev instead.
 
  -- Timo Aaltonen <tjaalton@ubuntu.com>  Mon, 14 Dec 2009 11:21:42 +0200
 

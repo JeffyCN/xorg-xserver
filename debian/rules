@@ -141,11 +141,6 @@ obj-$(DEB_BUILD_GNU_TYPE)/config.status: configure
 	  CFLAGS="$(CFLAGS)" \
 	  CPPFLAGS="$(CPPFLAGS)"
 
-ifeq ($(DEB_HOST_ARCH_OS), linux)
-debian/local/input_id: LDFLAGS=-Wl,-z,defs -ludev
-build-stamp: debian/local/input_id
-endif
-
 build: build-stamp tests-stamp
 build-stamp: obj-$(DEB_BUILD_GNU_TYPE)/config.status
 	dh_testdir
@@ -172,7 +167,7 @@ clean: xsfclean
 	rm -f m4/lt*.m4 m4/libtool.m4
 	find -name Makefile.in -delete
 	
-	dh_clean debian/local/input_id
+	dh_clean
 
 install: build
 	dh_testdir
@@ -224,8 +219,6 @@ binary-arch: build install
 ifeq ($(DEB_HOST_ARCH_OS), linux)
 	install -d debian/xserver-xorg-core/lib/udev/rules.d
 	install -m 644 debian/local/64-xorg-xkb.rules debian/xserver-xorg-core/lib/udev/rules.d
-	install -d debian/xserver-xorg-core/lib/xorg
-	install -m 755 debian/local/input_id debian/xserver-xorg-core/lib/xorg
 endif
 	dh_installdebconf -s
 	dh_installman -s
