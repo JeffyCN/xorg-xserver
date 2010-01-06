@@ -26,8 +26,8 @@ dnl
 dnl Process this file with autoconf to create configure.
 
 AC_PREREQ(2.57)
-AC_INIT([xorg-server], 1.7.3.901, [https://bugs.freedesktop.org/enter_bug.cgi?product=xorg], xorg-server)
-RELEASE_DATE="2009-12-11"
+AC_INIT([xorg-server], 1.7.3.902, [https://bugs.freedesktop.org/enter_bug.cgi?product=xorg], xorg-server)
+RELEASE_DATE="2009-12-26"
 AC_CONFIG_SRCDIR([Makefile.am])
 AM_INIT_AUTOMAKE([dist-bzip2 foreign])
 AM_MAINTAINER_MODE
@@ -510,9 +510,9 @@ AC_ARG_WITH(default-xkb-rules, AS_HELP_STRING([--with-default-xkb-rules=RULES],
                                 [ XKB_DFLT_RULES="$withval" ],
                                 [ XKB_DFLT_RULES="" ])
 AC_ARG_WITH(default-xkb-model, AS_HELP_STRING([--with-default-xkb-model=MODEL],
-                                   [Keyboard model (default: pc104)]),
+                                   [Keyboard model (default: pc105)]),
                                 [ XKB_DFLT_MODEL="$withval" ],
-                                [ XKB_DFLT_MODEL="pc104" ])
+                                [ XKB_DFLT_MODEL="pc105" ])
 AC_ARG_WITH(default-xkb-layout, AS_HELP_STRING([--with-default-xkb-layout=LAYOUT],
                                    [Keyboard layout (default: us)]),
                                 [ XKB_DFLT_LAYOUT="$withval" ],
@@ -560,6 +560,9 @@ AC_ARG_ENABLE(null-root-cursor, AS_HELP_STRING([--enable-null-root-cursor], [Use
 AC_ARG_ENABLE(visibility,     AC_HELP_STRING([--enable-visibility], [Enable symbol visibility (default: auto)]),
 				[SYMBOL_VISIBILITY=$enableval],
 				[SYMBOL_VISIBILITY=auto])
+AC_ARG_ENABLE(pc98,     	AC_HELP_STRING([--enable-pc98], [Enable PC98 support in Xorg (default: auto)]),
+				[SUPPORT_PC98=$enableval],
+				[SUPPORT_PC98=auto])
 
 dnl GLX build options
 AC_ARG_WITH(dri-driver-path,  AS_HELP_STRING([--with-dri-driver-path=PATH], [Path to DRI drivers (default: ${libdir}/dri)]),
@@ -1575,6 +1578,9 @@ if test "x$XORG" = xyes; then
 			XORG_CFLAGS="${XORG_CFLAGS} "'$(SOLARIS_ASM_CFLAGS)'
 		fi
 		AC_SUBST([SOLARIS_ASM_CFLAGS])
+		if test "x$SUPPORT_PC98" = xauto; then
+			SUPPORT_PC98="no"
+		fi
 		;;
 	  gnu*)
 	  	XORG_OS="gnu"
@@ -1596,8 +1602,19 @@ if test "x$XORG" = xyes; then
 	  sparc*)
 		xorg_bus_sparc="yes"
 		;;
+	  i*86)
+		if test "x$SUPPORT_PC98" = xauto; then
+			SUPPORT_PC98="yes"
+		fi
+		;;
 	esac
 
+	if test "x$SUPPORT_PC98" = xauto; then
+		SUPPORT_PC98="no"
+	fi
+	if test "x$SUPPORT_PC98" = xyes; then
+		AC_DEFINE(SUPPORT_PC98, 1, [Support PC98])
+	fi
 	if test "x$XORG_OS_PCI" = x ; then
 		XORG_OS_PCI=$XORG_OS
 	fi
