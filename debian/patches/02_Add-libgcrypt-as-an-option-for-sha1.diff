@@ -15,7 +15,7 @@ Index: xorg-server/configure.ac
 ===================================================================
 --- xorg-server.orig/configure.ac
 +++ xorg-server/configure.ac
-@@ -1274,6 +1274,12 @@
+@@ -1299,6 +1299,12 @@
              [Use libmd SHA1 functions instead of OpenSSL libcrypto])])
  fi
  

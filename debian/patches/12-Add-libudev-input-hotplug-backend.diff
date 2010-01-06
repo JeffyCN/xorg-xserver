@@ -31,11 +31,11 @@ Tested-by: Peter Hutterer <peter.hutterer@who-t.net>
  11 files changed, 400 insertions(+), 79 deletions(-)
  create mode 100644 config/udev.c
 
-diff --git a/config/Makefile.am b/config/Makefile.am
-index 7fa2df8..8c57948 100644
---- a/config/Makefile.am
-+++ b/config/Makefile.am
-@@ -3,10 +3,18 @@ AM_CFLAGS = @DIX_CFLAGS@
+Index: xorg-server/config/Makefile.am
+===================================================================
+--- xorg-server.orig/config/Makefile.am
++++ xorg-server/config/Makefile.am
+@@ -3,10 +3,18 @@
  noinst_LTLIBRARIES = libconfig.la
  libconfig_la_SOURCES = config.c config-backends.h
  
@@ -55,7 +55,7 @@ index 7fa2df8..8c57948 100644
  
  if CONFIG_DBUS_API
  dbusconfigdir = $(sysconfdir)/dbus-1/system.d
-@@ -16,7 +24,13 @@ libconfig_la_SOURCES += dbus.c
+@@ -16,7 +24,13 @@
  endif
  
  if CONFIG_HAL
@@ -69,10 +69,10 @@ index 7fa2df8..8c57948 100644
 +endif # !CONFIG_UDEV
 +
  EXTRA_DIST = xorg-server.conf x11-input.fdi
-diff --git a/config/config-backends.h b/config/config-backends.h
-index 907e86b..0a2a22a 100644
---- a/config/config-backends.h
-+++ b/config/config-backends.h
+Index: xorg-server/config/config-backends.h
+===================================================================
+--- xorg-server.orig/config/config-backends.h
++++ xorg-server/config/config-backends.h
 @@ -26,8 +26,18 @@
  #ifdef HAVE_DIX_CONFIG_H
  #include <dix-config.h>
@@ -93,7 +93,7 @@ index 907e86b..0a2a22a 100644
  #include <dbus/dbus.h>
  
  typedef void (*config_dbus_core_connect_hook)(DBusConnection *connection,
-@@ -46,14 +56,15 @@ int config_dbus_core_init(void);
+@@ -46,14 +56,15 @@
  void config_dbus_core_fini(void);
  int config_dbus_core_add_hook(struct config_dbus_core_hook *hook);
  void config_dbus_core_remove_hook(struct config_dbus_core_hook *hook);
@@ -113,10 +113,10 @@ index 907e86b..0a2a22a 100644
  void config_hal_fini(void);
 +# endif
  #endif
-diff --git a/config/config.c b/config/config.c
-index b013293..7bf5e41 100644
---- a/config/config.c
-+++ b/config/config.c
+Index: xorg-server/config/config.c
+===================================================================
+--- xorg-server.orig/config/config.c
++++ xorg-server/config/config.c
 @@ -28,13 +28,17 @@
  #endif
  
@@ -136,7 +136,7 @@ index b013293..7bf5e41 100644
      if (config_dbus_core_init()) {
  # ifdef CONFIG_DBUS_API
         if (!config_dbus_init())
-@@ -54,7 +58,9 @@ config_init(void)
+@@ -54,7 +58,9 @@
  void
  config_fini(void)
  {
@@ -147,7 +147,7 @@ index b013293..7bf5e41 100644
  # ifdef CONFIG_HAL
      config_hal_fini();
  # endif
-@@ -64,3 +70,70 @@ config_fini(void)
+@@ -64,3 +70,70 @@
      config_dbus_core_fini();
  #endif
  }
@@ -218,11 +218,11 @@ index b013293..7bf5e41 100644
 +    (*options)->value = xstrdup(value);
 +    (*options)->next = NULL;
 +}
-diff --git a/config/hal.c b/config/hal.c
-index 28f55a0..22af10f 100644
---- a/config/hal.c
-+++ b/config/hal.c
-@@ -58,25 +58,9 @@ struct xkb_options {
+Index: xorg-server/config/hal.c
+===================================================================
+--- xorg-server.orig/config/hal.c
++++ xorg-server/config/hal.c
+@@ -58,25 +58,9 @@
      char* options;
  };
  
@@ -248,7 +248,7 @@ index 28f55a0..22af10f 100644
      char *value;
  
      value = xalloc(strlen(udi) + 5); /* "hal:" + NULL */
-@@ -84,36 +68,11 @@ device_removed(LibHalContext *ctx, const char *udi)
+@@ -84,36 +68,11 @@
          return;
      sprintf(value, "hal:%s", udi);
  
@@ -286,7 +286,7 @@ index 28f55a0..22af10f 100644
  static char *
  get_prop_string(LibHalContext *hal_ctx, const char *udi, const char *name)
  {
-@@ -166,26 +125,6 @@ get_prop_string_array(LibHalContext *hal_ctx, const char *udi, const char *prop)
+@@ -166,26 +125,6 @@
      return ret;
  }
  
@@ -313,11 +313,10 @@ index 28f55a0..22af10f 100644
  static void
  device_added(LibHalContext *hal_ctx, const char *udi)
  {
-diff --git a/config/udev.c b/config/udev.c
-new file mode 100644
-index 0000000..62b9052
+Index: xorg-server/config/udev.c
+===================================================================
 --- /dev/null
-+++ b/config/udev.c
++++ xorg-server/config/udev.c
 @@ -0,0 +1,247 @@
 +/*
 + * Copyright © 2009 Julien Cristau
@@ -566,11 +565,11 @@ index 0000000..62b9052
 +    udev_monitor = NULL;
 +    udev_unref(udev);
 +}
-diff --git a/configure.ac b/configure.ac
-index ed710f0..c7fb3d0 100644
---- a/configure.ac
-+++ b/configure.ac
-@@ -597,6 +597,7 @@ AC_ARG_ENABLE(multibuffer,    AS_HELP_STRING([--enable-multibuffer], [Build Mult
+Index: xorg-server/configure.ac
+===================================================================
+--- xorg-server.orig/configure.ac
++++ xorg-server/configure.ac
+@@ -601,6 +601,7 @@
  AC_ARG_ENABLE(dbe,            AS_HELP_STRING([--disable-dbe], [Build DBE extension (default: enabled)]), [DBE=$enableval], [DBE=yes])
  AC_ARG_ENABLE(xf86bigfont,    AS_HELP_STRING([--disable-xf86bigfont], [Build XF86 Big Font extension (default: disabled)]), [XF86BIGFONT=$enableval], [XF86BIGFONT=no])
  AC_ARG_ENABLE(dpms,           AS_HELP_STRING([--disable-dpms], [Build DPMS extension (default: enabled)]), [DPMSExtension=$enableval], [DPMSExtension=yes])
@@ -578,7 +577,7 @@ index ed710f0..c7fb3d0 100644
  AC_ARG_ENABLE(config-dbus,    AS_HELP_STRING([--enable-config-dbus], [Build D-BUS API support (default: no)]), [CONFIG_DBUS_API=$enableval], [CONFIG_DBUS_API=no])
  AC_ARG_ENABLE(config-hal,     AS_HELP_STRING([--disable-config-hal], [Build HAL support (default: auto)]), [CONFIG_HAL=$enableval], [CONFIG_HAL=auto])
  AC_ARG_ENABLE(xfree86-utils,     AS_HELP_STRING([--enable-xfree86-utils], [Build xfree86 DDX utilities (default: enabled)]), [XF86UTILS=$enableval], [XF86UTILS=yes])
-@@ -755,6 +756,26 @@ LIBXI="xi >= 1.2.99.1"
+@@ -759,6 +760,26 @@
  LIBXTST="xtst >= 1.0.99.2"
  LIBPCIACCESS="pciaccess >= 0.8.0"
  LIBGLIB="glib-2.0 >= 2.16"
@@ -605,7 +604,7 @@ index ed710f0..c7fb3d0 100644
  
  dnl HAVE_DBUS is true if we actually have the D-Bus library, whereas
  dnl CONFIG_DBUS_API is true if we want to enable the D-Bus config
-@@ -788,13 +809,11 @@ if test "x$CONFIG_HAL" = xyes; then
+@@ -792,13 +813,11 @@
  	fi
  
  	AC_DEFINE(CONFIG_HAL, 1, [Use the HAL hotplug API])
@@ -619,11 +618,11 @@ index ed710f0..c7fb3d0 100644
          AC_DEFINE(CONFIG_NEED_DBUS, 1, [Use D-Bus for input hotplug])
  fi
  AM_CONDITIONAL(CONFIG_NEED_DBUS, [test "x$CONFIG_NEED_DBUS" = xyes])
-diff --git a/hw/kdrive/src/kinput.c b/hw/kdrive/src/kinput.c
-index fb8ebd0..8682763 100644
---- a/hw/kdrive/src/kinput.c
-+++ b/hw/kdrive/src/kinput.c
-@@ -2280,6 +2280,14 @@ NewInputDeviceRequest(InputOption *options, DeviceIntPtr *pdev)
+Index: xorg-server/hw/kdrive/src/kinput.c
+===================================================================
+--- xorg-server.orig/hw/kdrive/src/kinput.c
++++ xorg-server/hw/kdrive/src/kinput.c
+@@ -2280,6 +2280,14 @@
              return BadValue;
          }
  #endif
@@ -638,11 +637,11 @@ index fb8ebd0..8682763 100644
      }
  
      if (!ki && !pi) {
-diff --git a/hw/xfree86/common/xf86Config.c b/hw/xfree86/common/xf86Config.c
-index 40f65bd..12f9d49 100644
---- a/hw/xfree86/common/xf86Config.c
-+++ b/hw/xfree86/common/xf86Config.c
-@@ -1453,12 +1453,19 @@ checkCoreInputDevices(serverLayoutPtr servlayoutp, Bool implicitLayout)
+Index: xorg-server/hw/xfree86/common/xf86Config.c
+===================================================================
+--- xorg-server.orig/hw/xfree86/common/xf86Config.c
++++ xorg-server/hw/xfree86/common/xf86Config.c
+@@ -1444,12 +1444,19 @@
      }
  
      if (xf86Info.allowEmptyInput && !(foundPointer && foundKeyboard)) {
@@ -666,11 +665,11 @@ index 40f65bd..12f9d49 100644
  			"\tTry disabling AllowEmptyInput.\n");
  #endif
      }
-diff --git a/hw/xfree86/common/xf86Globals.c b/hw/xfree86/common/xf86Globals.c
-index d8f7f7f..0b310e8 100644
---- a/hw/xfree86/common/xf86Globals.c
-+++ b/hw/xfree86/common/xf86Globals.c
-@@ -132,7 +132,7 @@ xf86InfoRec xf86Info = {
+Index: xorg-server/hw/xfree86/common/xf86Globals.c
+===================================================================
+--- xorg-server.orig/hw/xfree86/common/xf86Globals.c
++++ xorg-server/hw/xfree86/common/xf86Globals.c
+@@ -132,7 +132,7 @@
      .kbdCustomKeycodes          = FALSE,
      .disableRandR               = FALSE,
      .randRFrom                  = X_DEFAULT,
@@ -679,11 +678,11 @@ index d8f7f7f..0b310e8 100644
      .allowEmptyInput            = TRUE,
      .autoAddDevices             = TRUE,
      .autoEnableDevices          = TRUE
-diff --git a/hw/xfree86/common/xf86Xinput.c b/hw/xfree86/common/xf86Xinput.c
-index fd07c2a..8ad1f95 100644
---- a/hw/xfree86/common/xf86Xinput.c
-+++ b/hw/xfree86/common/xf86Xinput.c
-@@ -605,9 +605,9 @@ NewInputDeviceRequest (InputOption *options, DeviceIntPtr *pdev)
+Index: xorg-server/hw/xfree86/common/xf86Xinput.c
+===================================================================
+--- xorg-server.orig/hw/xfree86/common/xf86Xinput.c
++++ xorg-server/hw/xfree86/common/xf86Xinput.c
+@@ -605,9 +605,9 @@
              }
          }
  
@@ -695,11 +694,11 @@ index fd07c2a..8ad1f95 100644
              is_auto = 1;
              if (!xf86Info.autoAddDevices) {
                  rval = BadMatch;
-diff --git a/include/dix-config.h.in b/include/dix-config.h.in
-index 798d9e7..423ba3a 100644
---- a/include/dix-config.h.in
-+++ b/include/dix-config.h.in
-@@ -384,6 +384,9 @@
+Index: xorg-server/include/dix-config.h.in
+===================================================================
+--- xorg-server.orig/include/dix-config.h.in
++++ xorg-server/include/dix-config.h.in
+@@ -387,6 +387,9 @@
  /* Support D-Bus */
  #undef HAVE_DBUS
  
@@ -709,6 +708,3 @@ index 798d9e7..423ba3a 100644
  /* Use D-Bus for input hotplug */
  #undef CONFIG_NEED_DBUS
  
--- 
-1.6.5
-
