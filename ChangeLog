@@ -1,3 +1,327 @@
+commit d1320f4f2908fd3a248a79314bd78f76b03c71c5
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Sat Dec 26 10:13:46 2009 +1000
+
+    xserver 1.7.3.902
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit c18dd3fd9b2e4bf3862666671042b7c933f64100
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Mon Dec 7 12:58:57 2009 +1000
+
+    xkb: don't assign garbage value to led_return.
+    
+    As the comment for the function states, led_return is undefined if map is
+    NULL. We might as well skip writing to it then.
+    
+    Found by clang.
+    
+    Reported-by: Tomas Carnecky <tom@dbservice.com>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Jamey Sharp <jamey@minilop.net>
+    (cherry picked from commit 12fb31815db9de9c01f2d4155a2b74531777c0bf)
+
+commit 0f71be87b9174c587ccacd6aa61a9a66d3507ef4
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Mon Dec 14 11:05:20 2009 +1000
+
+    xfree86: belately init RandR12 if xinerama fails. (#24627)
+    
+    On Fri, Dec 11, 2009 at 10:19:01AM -0800, Keith Packard wrote:
+    > On Wed, 9 Dec 2009 11:55:14 +1000, Peter Hutterer <peter.hutterer@who-t.net> wrote:
+    > > On Tue, Dec 08, 2009 at 05:24:06PM -0800, Aaron Plattner wrote:
+    > > > On Tue, Dec 08, 2009 at 03:52:27PM -0800, Peter Hutterer wrote:
+    > > > > Xorg +xinerama crashes immediately due to whacky dependency between Xinerama
+    > > > > and RandR12. The latter doesn't initialize if Xinerama is enabled, but if
+    > > > > only one screen is found, Xinerama is disabled again and RandR12 tries to
+    > > > > access data it never initialized.
+    >
+    > I'd sure like to have RandR get enabled when xinerama doesn't; is there
+    > an easy way of making that happen here? Perhaps having the RandR12 code
+    > disable Xinerama when only one screen is found? Or some other kludge?
+    
+    you know the dependency better than I do so any hints are apreciated.
+    afaict, the screenInfo.numScreens (the check used by Xinerama) isn't
+    necessarily initialized at this point so we can't use the same check.
+    The following seems to work though:
+    
+    From 670b3ebdb7312a6433a8f093d0820785db2aea20 Mon Sep 17 00:00:00 2001
+    From: Peter Hutterer <peter.hutterer@who-t.net>
+    Date: Mon, 14 Dec 2009 11:00:58 +1000
+    Subject: [PATCH] xfree86: if only one screen was found, disable Xinerama (#24627)
+    
+    Xorg +xinerama crashes immediately due to whacky dependency between Xinerama
+    and RandR12. The latter doesn't initialize if Xinerama is enabled, but if
+    only one screen is found, Xinerama is disabled again and RandR12 tries to
+    access data it never initialized.
+    
+    Dependency chain is:
+    - ProcessCommandLine sets noPanoramiXExtension to FALSE
+    - xf86RandR12Init() is a noop
+    - PanoramiXExtensionInit sets noPanoramiXExtension to TRUE
+    - xf86RandR12CreateScreenResources tries to use the devPrivates key it never
+      initialized.
+    
+    This hack checks if there's only one screen at the time RandR12 is
+    initialized. If so, we expect Xinerama to fail anyhow so we disable it
+    ourselves and proceed as planned.
+    
+    X.Org Bug 24627 <http://bugs.freedesktop.org/show_bug.cgi?id=24627>
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+    (cherry picked from commit faca1bc582e374d32ee9d63d10e072fbef4940a3)
+
+commit b98a07d86dab5b6c5d524d36814fda8e9549120c
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Mon Dec 21 11:08:26 2009 +1000
+
+    xfree86: remove HistorySize from the xorg.conf man page.
+    
+    This option isn't parsed by anything anymore.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Keith Packard <keithp@keithp.com>
+    (cherry picked from commit 190610e0c62170a27ab3e40c6c6210a583ae1ad4)
+
+commit 7812d760e9b3fe3fc4de710fdddab504c1335fd5
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Mon Dec 21 10:42:32 2009 +1000
+
+    xfree86: reword InputDevice man sections, deprecate CorePointer/CoreKeyboard
+    
+    Reshuffle and reword - InputDevice sections are only necessary if
+    hotplugging is disabled. Put more emphasis on hotplugging and less on HAL
+    since we'll switch backends eventually.
+    
+    CorePointer, CoreKeyboard, and AlwaysCore should be listed as deprecated
+    since they don't do what they used to since 1.4. These days, only
+    SendCoreEvents matters and it's enabled for any driver calling
+    xf86ProcessCommonOptions (== every driver).
+    It only controls the startup behavior too, so document this.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Acked-by: Keith Packard <keithp@keithp.com>
+    Reviewed-by: Alan Coopersmith <alan.coopersmith@sun.com>
+    (cherry picked from commit 094c6b9f97a9f92e5a0ef3cf5be24c09ed4d6063)
+
+commit 93294355a0429e1f009386632a5fb19d8722c61f
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Mon Dec 14 08:43:19 2009 +1000
+
+    xfree86: update man page for special keys handling.
+    
+    SpecialKeyHandling was removed from the kbd driver with version 1.4.0. Since
+    this is the only version that will build against server 1.7+ it's not
+    reasonable to mention it in the man page. Reword, point to XKB instead and
+    make clear that some key combinations _may_ not be available in any given
+    config.
+    
+    Reported-by: Derek Fawcus
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Alan Coopersmith <alan.coopersmith@sun.com>
+    (cherry picked from commit 801bc8075aee664bd4c6b6ff842ab737c143a1de)
+
+commit 9941075acbeb2d069f78072cf710131b8cacc5ab
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Mon Dec 14 08:41:18 2009 +1000
+
+    xfree86: DontZap has been disabled for a while now, say so in the man page.
+    
+    1.7 always shipped with DontZap disabled, it's just the default keymaps that
+    may not include the symbol to trigger it.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Alan Coopersmith <alan.coopersmith@sun.com>
+    (cherry picked from commit 753310837cd3812882d8de67f063bb61813db675)
+
+commit 7f6fc40bedb31a2c1f6723f0e7b9a7654560d69f
+Author: Julien Cristau <jcristau@debian.org>
+Date:   Tue Dec 22 17:14:09 2009 +0100
+
+    test/xi2: fix maximum max_keycode (bug#25492)
+    
+    The number of keycodes needs to be lower than 0xFFFD so that the length
+    field of xXIKeyInfo doesn't overflow.
+    
+    Signed-off-by: Julien Cristau <jcristau@debian.org>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    (cherry picked from commit b44c9be244cee286835855483a69c69e80b095c0)
+
+commit 7cdc00cac817843c913ad442261a43646eb4240e
+Author: Jeremy Huddleston <jeremyhu@freedesktop.org>
+Date:   Fri Dec 11 16:42:43 2009 -0800
+
+    Xfake: Nuke -Wl,-undefined=InitExtensions from LDFLAGS
+    
+    This is not portable, and accodring to Paulo should not be required any more.
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@freedesktop.org>
+    (cherry picked from commit d50319550458f8127298cf8672b47f914b74ab1f)
+
+commit 6cdb0afc9884a13a3fd2da0835fef4724ba94507
+Author: Jeremy Huddleston <jeremyhu@freedesktop.org>
+Date:   Fri Dec 11 11:53:28 2009 -0800
+
+    dtrace: Add Xserver-dtrace.h to CLEANFILES
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@freedesktop.org>
+    Reviewed-by: Alan Coopersmith <alan.coopersmith@sun.com>
+    (cherry picked from commit ed7d2527190ec56aed38db19d9e958abe88441b9)
+
+commit 01921a2b82da627b223fb2690b4ccd5511437419
+Author: Jeremy Huddleston <jeremyhu@freedesktop.org>
+Date:   Wed Dec 9 18:27:31 2009 -0800
+
+    XQuartz: pbproxy: Fix building of standalone xpbproxy executable
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@freedesktop.org>
+    (cherry picked from commit 97a6454ea57587db490873fee8ff0f899882972d)
+
+commit 2b8ba62f006ac56c98b1b91a4215581905223255
+Author: Alan Coopersmith <alan.coopersmith@sun.com>
+Date:   Thu Dec 17 18:24:40 2009 -0800
+
+    Change default xkb model from pc104 to pc105
+    
+    PC105 is a more useful default for non-American keyboard users,
+    not harmful for American PC101/PC104 keyboard users.
+    
+    Signed-off-by: Alan Coopersmith <alan.coopersmith@sun.com>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+    (cherry picked from commit 1df4bd6011e110dcf0649b15bfffd4ab9e6961d6)
+
+commit 0240ad48884476ad5e43a08d35c371f0dd9a0e44
+Author: Alan Coopersmith <alan.coopersmith@sun.com>
+Date:   Thu Dec 17 18:24:38 2009 -0800
+
+    Add platform compatibility defines for Sun Studio compilers
+    
+    Signed-off-by: Alan Coopersmith <alan.coopersmith@sun.com>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+    (cherry picked from commit 48749cc21b074ee8e68c3854bd3977ec7c408225)
+
+commit 17a1587d1606351d3f0b9b148e9c3cbfb6026193
+Author: Alan Coopersmith <alan.coopersmith@sun.com>
+Date:   Thu Dec 17 18:24:37 2009 -0800
+
+    Convert checks for PC98 support from platform #ifdefs to configure flag
+    
+    Default remains the same - on for most OS'es on i386 (except Solaris),
+    off for everyone else.   Can be manually toggled via --enable-pc98 or
+    --disable-pc98.
+    
+    Signed-off-by: Alan Coopersmith <alan.coopersmith@sun.com>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+    (cherry picked from commit b63912ed4c69fedd1bea92274d6cae0429a79677)
+
+commit 2d6a8f668342a5190cdf43b5d385f592d10f5900
+Author: Dave Airlie <airlied@redhat.com>
+Date:   Mon Dec 21 12:26:26 2009 +1000
+
+    fb: backport fb changes from master for src window operations.
+    
+    This rolls up the following commits and also keeps the image_from_pict
+    API compatiblity. It introduces a new image_from_pict_18 API that is
+    used by the server leaving the old API alone.
+    
+    I've rolled this up as I don't want to introduce ABI breaks in bisection.
+    
+    a72c65e9176c51de95db2fdbf4c5d946a4911695 fb: Adjust transform or composite coordinates for pixman operations
+    bd567061c8b84b268d9bbb01bc4d8981feefb862 Split fbGetDrawable into fbGetDrawablePixmap and fbGetPixmapBitsData
+    61335052972a78d67c0ba74f902273b34c63a198 Revert "Fix clipping when windows are used as sources"
+    071b3c1810d9f2602173acc8578caac20e0b771e Revert "Use IncludeInferiors when copying windows before compositing."
+    8e640d6b131d2865a9725d8997023865b0ef3d69 Revert "Reserve space for two GC values in copy_drawable()."
+    
+    Signed-off-by: Dave Airlie <airlied@redhat.com>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit a2daadf914fda5177832c2d673b155083ec219ff
+Author: Alan Coopersmith <alan.coopersmith@sun.com>
+Date:   Mon Dec 14 18:46:00 2009 -0800
+
+    Add freetype & type1 to the LoadModules ignore list
+    
+    Signed-off-by: Alan Coopersmith <alan.coopersmith@sun.com>
+    Acked-by: Adam Jackson <ajax@redhat.com>
+
+commit 4548366c222e57515b8add199109dc428157dd66
+Author: Alan Coopersmith <alan.coopersmith@sun.com>
+Date:   Tue Dec 15 15:54:22 2009 -0800
+
+    Update Sun license notices to current X.Org standard form
+    
+    Signed-off-by: Alan Coopersmith <alan.coopersmith@sun.com>
+    Acked-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit 02abf3dab6a4c331e1f64ef9a3c55d6dd64a2787
+Author: Alan Coopersmith <alan.coopersmith@sun.com>
+Date:   Mon Nov 23 22:24:44 2009 -0800
+
+    COPYING: Update license preamble
+    
+    Update the comment about "a modification is currently under discussion"
+    since there hasn't been any such discussion for some time and this is
+    the consensus agreed upon preferred format.
+    
+    Also throw in a pointer to the OSI discussion page about the MIT license.
+    
+    Signed-off-by: Alan Coopersmith <alan.coopersmith@sun.com>
+    Signed-off-by: Daniel Stone <daniel@fooishbar.org>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit 044b374c06db73ddb26275498ccb0c4fdf93d0f0
+Author: Alan Coopersmith <alan.coopersmith@sun.com>
+Date:   Wed Nov 11 14:42:20 2009 -0800
+
+    Fix builds with --with-int10=stub
+    
+    Signed-off-by: Alan Coopersmith <alan.coopersmith@sun.com>
+    Acked-by: Adam Jackson <ajax@redhat.com>
+
+commit 1df3321a4002a00f56a05f86503123bcf9aa8db9
+Merge: df84200 601db11
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Mon Dec 14 13:52:08 2009 +1000
+
+    Merge branch 'server-1.7-branch' into server-1.7-nominations
+
+commit df842009a99100d81c645fa2877a3a67a42b2563
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Thu Dec 3 11:21:31 2009 +1000
+
+    Xi: reset device properties to NULL after deleting them. (#25374)
+    
+    Commit 0e6cee853d8e5bef3274e632ef034d37f14674a9 introduced cleanup code to
+    remove the accel properties when switching schemes. The same code is
+    triggered by the default closedown code but only after unconditionally
+    removing all device properties (as part of the cleanup). The properties,
+    although deleted never got reset to NULL.
+    
+    X.Org Bug 25374 <http://bugs.freedesktop.org/show_bug.cgi?id=25374>
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Tested-by: Andy Furniss <lists@andyfurniss.entadsl.com>
+    Reviewed-by: Dave Airlie <airlied@redhat.com>
+    (cherry picked from commit ea14a418214ba4c58910f5650d8b25b3fc3a7099)
+
+commit d55009f87fca7e2e160901af4755311cc6b0431f
+Author: Tomas Carnecky <tom@dbservice.com>
+Date:   Mon Dec 7 05:54:57 2009 +0100
+
+    Fix possible NULL dereference in XkbFlushLedEvents()
+    
+    Through some code paths it is possible that NULL is being passed in the
+    'ed' parameter to XkbFlushLedEvents(). Make sure we don't pass it along
+    to bzero().
+    
+    Signed-off-by: Tomas Carnecky <tom@dbservice.com>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    (cherry picked from commit 886140787852c660978a9bb3abc7cc2702cbaed1)
+
 commit 601db11ffc49343807cf562175c2fe51eb6ec056
 Author: Peter Hutterer <peter.hutterer@who-t.net>
 Date:   Fri Dec 11 15:34:05 2009 +1000

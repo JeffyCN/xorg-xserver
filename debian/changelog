@@ -1,4 +1,4 @@
-xorg-server (2:1.7.3.901-2) UNRELEASED; urgency=low
+xorg-server (2:1.7.3.902-1) UNRELEASED; urgency=low
 
   [ Timo Aaltonen ]
   * Run udevadm trigger on postinst, and depend on udev [linux-any].
@@ -6,8 +6,9 @@ xorg-server (2:1.7.3.901-2) UNRELEASED; urgency=low
   [ Julien Cristau ]
   * Add xserver-common dependency on x11-xkb-utils for xkbcomp.
   * Remove our copy of input_id, add Depends on new enough udev instead.
+  * New upstream release.
 
- -- Timo Aaltonen <tjaalton@ubuntu.com>  Mon, 14 Dec 2009 11:21:42 +0200
+ -- Julien Cristau <jcristau@debian.org>  Wed, 06 Jan 2010 16:57:05 +0000
 
 xorg-server (2:1.7.3.901-1) experimental; urgency=low
 
