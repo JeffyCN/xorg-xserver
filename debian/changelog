@@ -7,6 +7,8 @@ xorg-server (2:1.7.3.902-1) UNRELEASED; urgency=low
   * Add xserver-common dependency on x11-xkb-utils for xkbcomp.
   * Remove our copy of input_id, add Depends on new enough udev instead.
   * New upstream release.
+  * Make xserver-common recommend xfonts-base, some clients don't work without
+    those.
 
  -- Julien Cristau <jcristau@debian.org>  Wed, 06 Jan 2010 16:57:05 +0000
 
