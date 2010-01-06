@@ -1,4 +1,4 @@
-xorg-server (2:1.7.3.902-1) UNRELEASED; urgency=low
+xorg-server (2:1.7.3.902-1) unstable; urgency=low
 
   [ Timo Aaltonen ]
   * Run udevadm trigger on postinst, and depend on udev [linux-any].
@@ -9,8 +9,9 @@ xorg-server (2:1.7.3.902-1) UNRELEASED; urgency=low
   * New upstream release.
   * Make xserver-common recommend xfonts-base, some clients don't work without
     those.
+  * Upload to unstable.
 
- -- Julien Cristau <jcristau@debian.org>  Wed, 06 Jan 2010 16:57:05 +0000
+ -- Julien Cristau <jcristau@debian.org>  Wed, 06 Jan 2010 17:44:59 +0000
 
 xorg-server (2:1.7.3.901-1) experimental; urgency=low
 
