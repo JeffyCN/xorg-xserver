@@ -1,3 +1,43 @@
+commit 88582f3d41315abf548a52622e52b7652d2c5281
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Fri Jan 8 09:38:58 2010 +1000
+
+    xserver 1.7.4
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit e54309e2ec1d16eb5570fad60af9be31f710c852
+Author: Adam Tkac <atkac@redhat.com>
+Date:   Thu Jan 7 15:34:52 2010 +0100
+
+    Do not define members of include/eventstr.h:EventType enum conditionally.
+    
+    Main problem is that EventType enumeration members can be different in
+    module and in server, which obviously causes problems.
+    
+    Signed-off-by: Adam Tkac <atkac@redhat.com>
+    Reviewed-by: Adam Jackson <ajax@redhat.com>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+    (cherry picked from commit 8d53d84485fdce8ea9686e6f300a69f7ddebd467)
+
+commit 8661189c2c443e2d3e5d98e6b04d1852a98bac41
+Author: Alan Coopersmith <alan.coopersmith@sun.com>
+Date:   Mon Jan 4 18:21:54 2010 -0800
+
+    CloseDevice: call XkbRemoveResourceClient before freeing key class struct
+    
+    XkbRemoveResourceClient() returns immediately if dev->key is NULL.
+    CloseDevice calls XkbRemoveResourceClient until it removes all resources.
+    
+    If we free dev->key and NULL it before XkbRemoveResourceClient, then
+    infinite loop ensues, and the server appears to hang on exit or crash.
+    
+    Signed-off-by: Alan Coopersmith <alan.coopersmith@sun.com>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+    (cherry picked from commit 13c8bd3fde3b0831921e59f84936022a16379d63)
+
 commit d1320f4f2908fd3a248a79314bd78f76b03c71c5
 Author: Peter Hutterer <peter.hutterer@who-t.net>
 Date:   Sat Dec 26 10:13:46 2009 +1000
