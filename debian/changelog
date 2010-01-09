@@ -1,6 +1,12 @@
 xorg-server (2:1.7.4-1) UNRELEASED; urgency=low
 
+  [ Timo Aaltonen ]
   * New upstream release.
+
+  [ Julien Cristau ]
+  * Don't call config_init() until after InitInput() has initialized the event
+    queue, so that devices don't get enabled too early (closes: #564256,
+    #564324).
 
  -- Timo Aaltonen <tjaalton@ubuntu.com>  Fri, 08 Jan 2010 18:53:59 +0200
 

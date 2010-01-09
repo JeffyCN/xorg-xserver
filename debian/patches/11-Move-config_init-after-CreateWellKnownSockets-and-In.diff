@@ -12,11 +12,11 @@ Tested-by: Peter Hutterer <peter.hutterer@who-t.net>
  dix/main.c |    2 +-
  1 files changed, 1 insertions(+), 1 deletions(-)
 
-diff --git a/dix/main.c b/dix/main.c
-index f96245a..2117a1e 100644
---- a/dix/main.c
-+++ b/dix/main.c
-@@ -168,7 +168,6 @@ int main(int argc, char *argv[], char *envp[])
+Index: xorg-server/dix/main.c
+===================================================================
+--- xorg-server.orig/dix/main.c
++++ xorg-server/dix/main.c
+@@ -168,7 +168,6 @@
  	InitBlockAndWakeupHandlers();
  	/* Perform any operating system dependent initializations you'd like */
  	OsInit();
@@ -24,14 +24,11 @@ index f96245a..2117a1e 100644
  	if(serverGeneration == 1)
  	{
  	    CreateWellKnownSockets();
-@@ -254,6 +253,7 @@ int main(int argc, char *argv[], char *envp[])
- 	    InitRootWindow(WindowTable[i]);
- 
+@@ -256,6 +255,7 @@
          InitCoreDevices();
-+        config_init();
  	InitInput(argc, argv);
  	InitAndStartDevices();
++        config_init();
  
--- 
-1.6.5
-
+ 	dixSaveScreens(serverClient, SCREEN_SAVER_FORCER, ScreenSaverReset);
+ 
