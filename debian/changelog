@@ -1,4 +1,4 @@
-xorg-server (2:1.7.4-1) UNRELEASED; urgency=low
+xorg-server (2:1.7.4-1) unstable; urgency=low
 
   [ Timo Aaltonen ]
   * New upstream release.
@@ -8,7 +8,7 @@ xorg-server (2:1.7.4-1) UNRELEASED; urgency=low
     queue, so that devices don't get enabled too early (closes: #564256,
     #564324).
 
- -- Timo Aaltonen <tjaalton@ubuntu.com>  Fri, 08 Jan 2010 18:53:59 +0200
+ -- Julien Cristau <jcristau@debian.org>  Tue, 12 Jan 2010 10:49:22 +0000
 
 xorg-server (2:1.7.3.902-1) unstable; urgency=low
 
