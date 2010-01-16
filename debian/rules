@@ -127,10 +127,10 @@ configure: $(STAMP_DIR)/patch
 	dh_testdir
 	autoreconf -vfi
 
-obj-$(DEB_BUILD_GNU_TYPE)/config.status: configure
+build/config.status: configure
 	dh_testdir
-	mkdir -p obj-$(DEB_BUILD_GNU_TYPE)
-	cd obj-$(DEB_BUILD_GNU_TYPE) && \
+	mkdir -p build
+	cd build && \
 	../configure \
 	  --prefix=/usr \
 	  --mandir=\$${prefix}/share/man \
@@ -142,13 +142,13 @@ obj-$(DEB_BUILD_GNU_TYPE)/config.status: configure
 	  CPPFLAGS="$(CPPFLAGS)"
 
 build: build-stamp tests-stamp
-build-stamp: obj-$(DEB_BUILD_GNU_TYPE)/config.status
+build-stamp: build/config.status
 	dh_testdir
-	cd obj-$(DEB_BUILD_GNU_TYPE) && $(MAKE)
+	cd build && $(MAKE)
 	>$@
 
 tests-stamp: build-stamp
-	cd obj-$(DEB_BUILD_GNU_TYPE) && $(MAKE) check
+	cd build && $(MAKE) check
 	>$@
 
 clean: xsfclean
@@ -160,7 +160,7 @@ clean: xsfclean
 	rm -f */config.cache */config.log */config.status
 	rm -f conftest* */conftest*
 	rm -rf autom4te.cache */autom4te.cache
-	rm -rf obj-*
+	rm -rf build
 	rm -f compile config.guess config.sub configure depcomp install-sh
 	rm -f ltmain.sh missing INSTALL aclocal.m4 ylwrap
 	rm -f include/do-not-use-config.h.in
@@ -175,7 +175,7 @@ install: build
 	dh_clean -k
 	dh_installdirs
 	
-	cd obj-$(DEB_BUILD_GNU_TYPE) && $(MAKE) DESTDIR=$(CURDIR)/debian/tmp install
+	cd build && $(MAKE) DESTDIR=$(CURDIR)/debian/tmp install
 	
 	# oh, yuck.
 	find $(CURDIR)/debian/tmp/usr/lib/xorg -type f -name '*.la' | \

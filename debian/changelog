@@ -1,3 +1,10 @@
+xorg-server (2:1.7.4-2) UNRELEASED; urgency=low
+
+  * Rename the build directory to not include DEB_BUILD_GNU_TYPE for no
+    good reason.  Thanks, Colin Watson!
+
+ -- Julien Cristau <jcristau@debian.org>  Sat, 16 Jan 2010 16:48:01 +0000
+
 xorg-server (2:1.7.4-1) unstable; urgency=low
 
   [ Timo Aaltonen ]
