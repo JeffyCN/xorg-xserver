@@ -5,6 +5,7 @@
 # 03 and 04 are backports from git master
 03_fedora_glx_versioning.diff
 04_fedora_glx14-swrast.diff
+05_only_call_gamma_set_if_nonnull.diff
 #13_debian_add_xkbpath_env_variable.diff
 11-Move-config_init-after-CreateWellKnownSockets-and-In.diff
 12-Add-libudev-input-hotplug-backend.diff

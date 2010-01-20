@@ -1,7 +1,12 @@
 xorg-server (2:1.7.4-2) UNRELEASED; urgency=low
 
+  [ Julien Cristau ]
   * Rename the build directory to not include DEB_BUILD_GNU_TYPE for no
     good reason.  Thanks, Colin Watson!
+
+  [ Brice Goglin ]
+  * Add 05_only_call_gamma_set_if_nonnull.diff to unbreak the nv driver,
+    closes: #564203.
 
  -- Julien Cristau <jcristau@debian.org>  Sat, 16 Jan 2010 16:48:01 +0000
 
