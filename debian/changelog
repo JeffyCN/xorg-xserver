@@ -1,3 +1,9 @@
+xorg-server (2:1.7.4-3) UNRELEASED; urgency=low
+
+  * Remove myself from Uploaders
+
+ -- Julien Cristau <jcristau@debian.org>  Sat, 23 Jan 2010 01:43:22 +0100
+
 xorg-server (2:1.7.4-2) unstable; urgency=low
 
   [ Julien Cristau ]
