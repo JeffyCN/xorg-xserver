@@ -125,6 +125,23 @@ Description: Xorg X server - core server
  .
  This package is built from the X.org xserver module.
 
+Package: xserver-xorg-core-udeb
+Package-Type: udeb
+Section: debian-installer
+Architecture: any
+Depends:
+# merged: xserver-common (>= ${source:Version}),
+ xkb-data-udeb,
+ x11-xkb-utils-udeb,
+# useless: xserver-xorg,
+# disabled: keyboard-configuration [linux-any kfreebsd-any],
+ udev-udeb (>= 149) [linux-any],
+ ${shlibs:Depends},
+ ${misc:Depends},
+Provides: xserver
+Description: Xorg X server - core server
+ This is a udeb, or a microdeb, for the debian-installer.
+
 Package: xserver-xorg-dev
 Architecture: any
 Depends:

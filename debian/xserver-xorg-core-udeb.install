@@ -1,0 +1,6 @@
+# from xserver-common:
+usr/lib/xorg/protocol.txt
+
+# from xserver-xorg-core:
+usr/lib/xorg/modules
+usr/bin/Xorg

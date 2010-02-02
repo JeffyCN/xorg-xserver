@@ -17,6 +17,9 @@ xorg-server (2:1.7.5.902-1) UNRELEASED; urgency=low
   * Refresh patches.
   * Fix typo in xvfb-run.1, thanks Joey Hess, closes: #527490.
 
+  [ Cyril Brulebois ]
+  * Add udeb needed for the graphical installer: xserver-xorg-core-udeb.
+
  -- Drew Parsons <dparsons@debian.org>  Wed, 03 Mar 2010 23:33:54 +1100
 
 xorg-server (2:1.7.5-1) unstable; urgency=low
