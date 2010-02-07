@@ -19,6 +19,14 @@ xorg-server (2:1.7.5.902-1) UNRELEASED; urgency=low
 
   [ Cyril Brulebois ]
   * Add udeb needed for the graphical installer: xserver-xorg-core-udeb.
+  * Version/Bump some B-D to make sure xserver-xorg-core-udeb gets its
+    dependencies on the (recently-added) udebs rather than on the
+    libraries:
+     - libgcrypt11-dev (switching from the virtual libgcrypt-dev package)
+     - libpciaccess-dev
+     - libudev-dev
+     - libxau-dev
+     - libxfont-dev
 
  -- Drew Parsons <dparsons@debian.org>  Wed, 03 Mar 2010 23:33:54 +1100
 
