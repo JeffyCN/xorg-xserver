@@ -3,6 +3,7 @@ xorg-server (2:1.7.5.902-1) UNRELEASED; urgency=low
   [ Julien Cristau ]
   * config/udev: fix adding unnamed devices.
   * Build two flavours, one for the main package and one for the udeb.
+  * Add patch to fix Xorg build with XV disabled.
 
   [ Timo Aaltonen ]
   * Add 16-config-dont-filter-input-subsys.diff so for instance serial

@@ -13,3 +13,4 @@
 14-config-add-example-udev-rules.diff
 15-config-udev-look-for-xkb-rules-model-layout-variant-.diff
 16-config-dont-filter-input-subsys.diff
+16-xfree86-fix-build-with-xv-disabled.diff
