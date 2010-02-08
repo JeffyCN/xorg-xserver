@@ -76,31 +76,13 @@ confflags += \
 	     --with-int10=x86emu \
 	     --with-os-vendor="$(VENDOR)" \
 	     --with-builderstring="$(SOURCE_NAME) $(SOURCE_VERSION) ($(BUILDER))" \
-	     --with-default-font-path="/usr/share/fonts/X11/misc,/usr/share/fonts/X11/cyrillic,/usr/share/fonts/X11/100dpi/:unscaled,/usr/share/fonts/X11/75dpi/:unscaled,/usr/share/fonts/X11/Type1,/usr/share/fonts/X11/100dpi,/usr/share/fonts/X11/75dpi,/var/lib/defoma/x-ttcidfont-conf.d/dirs/TrueType,built-ins" \
 	     --with-xkb-path=/usr/share/X11/xkb \
 	     --with-xkb-output=/var/lib/xkb \
 	     --disable-builddocs \
 	     --disable-install-libxf86config \
 	     --disable-null-root-cursor \
-	     --enable-aiglx \
-	     --enable-glx-tls \
-	     --enable-registry \
-	     --enable-composite \
 	     --enable-mitshm \
 	     --enable-xres \
-	     --enable-record \
-	     --enable-xv \
-	     --enable-xvmc \
-	     --enable-dga \
-	     --enable-screensaver \
-	     --enable-xdmcp \
-	     --enable-xdm-auth-1 \
-	     --enable-glx \
-	     $(dri) \
-	     --enable-xinerama \
-	     --enable-xf86vidmode \
-	     --enable-xace \
-	     $(selinux) \
 	     --disable-xcsecurity \
 	     --disable-xcalibrate \
 	     --disable-tslib \
@@ -109,28 +91,79 @@ confflags += \
 	     --disable-xf86bigfont \
 	     --enable-dpms \
 	     $(config_backend) \
-	     --enable-xfree86-utils \
 	     --enable-xorg \
-	     --enable-dmx \
-	     --enable-xvfb \
-	     --enable-xnest \
 	     --disable-xquartz \
 	     --disable-xwin \
-	     --enable-kdrive \
-	     --enable-xephyr \
 	     --disable-xsdl \
 	     --disable-xfake \
-	     $(build_xfbdev) \
 	     --disable-install-setuid
 
-configure: $(STAMP_DIR)/patch
+confflags_main = \
+	--with-default-font-path="/usr/share/fonts/X11/misc,/usr/share/fonts/X11/cyrillic,/usr/share/fonts/X11/100dpi/:unscaled,/usr/share/fonts/X11/75dpi/:unscaled,/usr/share/fonts/X11/Type1,/usr/share/fonts/X11/100dpi,/usr/share/fonts/X11/75dpi,/var/lib/defoma/x-ttcidfont-conf.d/dirs/TrueType,built-ins" \
+	--enable-aiglx \
+	--enable-glx-tls \
+	--enable-registry \
+	--enable-composite \
+	--enable-record \
+	--enable-xv \
+	--enable-xvmc \
+	--enable-dga \
+	--enable-screensaver \
+	--enable-xdmcp \
+	--enable-xdm-auth-1 \
+	--enable-glx \
+	$(dri) \
+	--enable-xinerama \
+	--enable-xf86vidmode \
+	--enable-xace \
+	$(selinux) \
+	--enable-xfree86-utils \
+	--enable-dmx \
+	--enable-xvfb \
+	--enable-xnest \
+	--enable-kdrive \
+	--enable-xephyr \
+	$(build_xfbdev) \
+	$(void)
+
+confflags_udeb = \
+	--with-default-font-path="built-ins" \
+	--disable-aiglx \
+	--disable-glx-tls \
+	--disable-registry \
+	--disable-composite \
+	--disable-record \
+	--disable-xv \
+	--disable-xvmc \
+	--disable-dga \
+	--disable-screensaver \
+	--disable-xdmcp \
+	--disable-xdm-auth-1 \
+	--disable-glx \
+	--disable-dri \
+	--disable-dri2 \
+	--disable-xinerama \
+	--disable-xf86vidmode \
+	--disable-xace \
+	--disable-xselinux \
+	--disable-xfree86-utils \
+	--disable-dmx \
+	--disable-xvfb \
+	--disable-xnest \
+	--disable-kdrive \
+	--disable-xephyr \
+	--disable-xfbdev \
+	$(void)
+
+$(STAMP_DIR)/autoreconf: $(STAMP_DIR)/patch
 	dh_testdir
 	autoreconf -vfi
+	>$@
 
-build/config.status: configure
+$(STAMP_DIR)/configure-%: $(STAMP_DIR)/autoreconf
 	dh_testdir
-	mkdir -p build
-	cd build && \
+	mkdir -p build-$*
+	cd build-$* && \
 	../configure \
 	  --prefix=/usr \
 	  --mandir=\$${prefix}/share/man \
@@ -138,29 +171,32 @@ build/config.status: configure
 	  --sysconfdir=/etc \
 	  --localstatedir=/var \
 	  $(confflags) \
+	  $(confflags_$*) \
 	  CFLAGS="$(CFLAGS)" \
 	  CPPFLAGS="$(CPPFLAGS)"
+	>$@
 
-build: build-stamp tests-stamp
-build-stamp: build/config.status
+$(STAMP_DIR)/build-%: $(STAMP_DIR)/configure-%
 	dh_testdir
-	cd build && $(MAKE)
+	cd build-$* && $(MAKE)
 	>$@
 
-tests-stamp: build-stamp
-	cd build && $(MAKE) check
+$(STAMP_DIR)/tests-%: $(STAMP_DIR)/build-%
+	cd build-$* && $(MAKE) check
 	>$@
+
+build: $(STAMP_DIR)/build-main $(STAMP_DIR)/build-udeb
+build: $(STAMP_DIR)/tests-main $(STAMP_DIR)/tests-udeb
 
 clean: xsfclean
 	dh_testdir
 	dh_testroot
-	rm -f build-stamp tests-stamp
 	
 	rm -f config.cache config.log config.status
 	rm -f */config.cache */config.log */config.status
 	rm -f conftest* */conftest*
 	rm -rf autom4te.cache */autom4te.cache
-	rm -rf build
+	rm -rf build-*
 	rm -f compile config.guess config.sub configure depcomp install-sh
 	rm -f ltmain.sh missing INSTALL aclocal.m4 ylwrap
 	rm -f include/do-not-use-config.h.in
@@ -175,14 +211,15 @@ install: build
 	dh_clean -k
 	dh_installdirs
 	
-	cd build && $(MAKE) DESTDIR=$(CURDIR)/debian/tmp install
+	cd build-main && $(MAKE) DESTDIR=$(CURDIR)/debian/tmp/main install
+	cd build-udeb && $(MAKE) DESTDIR=$(CURDIR)/debian/tmp/udeb install
 	
 	# oh, yuck.
-	find $(CURDIR)/debian/tmp/usr/lib/xorg -type f -name '*.la' | \
+	find debian/tmp/*/usr/lib/xorg -type f -name '*.la' | \
 	  xargs rm -f
 	
-	install -m 755 debian/local/xvfb-run debian/tmp/usr/bin
-	install debian/local/xvfb-run.1 debian/tmp/usr/share/man/man1
+	install -m 755 debian/local/xvfb-run debian/tmp/main/usr/bin
+	install debian/local/xvfb-run.1 debian/tmp/main/usr/share/man/man1
 
 # stub to start building deb files, used by binary-indep and binary-arch
 binary-initial:

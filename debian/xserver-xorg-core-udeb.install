@@ -1,6 +1,6 @@
 # from xserver-common:
-usr/lib/xorg/protocol.txt
+udeb/usr/lib/xorg/protocol.txt	usr/lib/xorg
 
 # from xserver-xorg-core:
-usr/lib/xorg/modules
-usr/bin/Xorg
+udeb/usr/lib/xorg/modules	usr/lib/xorg
+udeb/usr/bin/Xorg	usr/bin

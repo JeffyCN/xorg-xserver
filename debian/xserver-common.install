@@ -1,2 +1,2 @@
-usr/lib/xorg/protocol.txt
-usr/share/man/man1/Xserver.1
+main/usr/lib/xorg/protocol.txt	usr/lib/xorg
+main/usr/share/man/man1/Xserver.1	usr/share/man/man1
