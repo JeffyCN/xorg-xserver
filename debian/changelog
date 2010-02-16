@@ -1,6 +1,10 @@
-xorg-server (2:1.7.4-3) UNRELEASED; urgency=low
+xorg-server (2:1.7.5-1) UNRELEASED; urgency=low
 
+  [ Julien Cristau ]
   * Remove myself from Uploaders
+
+  [ Brice Goglin ]
+  * New upstream release.
 
  -- Julien Cristau <jcristau@debian.org>  Sat, 23 Jan 2010 01:43:22 +0100
 

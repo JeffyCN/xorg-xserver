@@ -1,3 +1,354 @@
+commit f0ec2e0d7d0533b3b3fcccd9d78b76e4c9002d1e
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Tue Feb 16 11:34:38 2010 +1000
+
+    xserver 1.7.5
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit 15e9a3fc0c4776f3ff02a59375e61d9090e35a22
+Author: Julien Cristau <jcristau@debian.org>
+Date:   Fri Feb 12 23:34:57 2010 +0100
+
+    dix: restore lastDeviceEventTime update in dixSaveScreens
+    
+    This was removed in 6b5978dcf1f7ac3ecc2f22df06f7000f360e2066 (Do not
+    reset lastDeviceEventTime when we do dixSaveScreens), but caused a
+    regression for XResetScreenSaver.  Add the lastDeviceEventTime update
+    back, but restrict it to that case.
+    
+    X.Org bug#25855 <http://bugs.freedesktop.org/25855>
+    
+    Reported-by: Lubos Lunak <l.lunak@suse.cz>
+    Tested-by: Lubos Lunak <l.lunak@suse.cz>
+    Signed-off-by: Julien Cristau <jcristau@debian.org>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+    (cherry picked from commit 001ce71dc11287dc94cc2fbc5d35677c046e6c04)
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit 38a83dce236da44856c075b5589d38ef0a662d4b
+Author: Peter Harris <pharris@opentext.com>
+Date:   Fri Feb 12 15:36:30 2010 -0500
+
+    Don't double-swap the RandR PropertyNotify event
+    
+    The event is already swapped in randr.c/SRROutputPropertyNotifyEvent, so
+    it should not be swapped here.
+    
+    X.Org Bugzilla #26511: http://bugs.freedesktop.org/show_bug.cgi?id=26511
+    
+    Tested-by: Leonardo Chiquitto <leonardo@ngdn.org>
+    Acked-by: Adam Jackson <ajax at redhat.com>
+    Reviewed-by: Julien Cristau <jcristau at debian.org>
+    Signed-off-by: Peter Harris <pharris@opentext.com>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+    (cherry picked from commit 97b03037f4d99fcebc7603011f41c3aff9871ce2)
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit 829980a4ff36b46745cf958824338b6341302c7b
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Wed Jan 13 15:03:45 2010 +1000
+
+    Xi: reset the sli pointers after copying device classes. (#25640)
+    
+    If the indicator flags have the XkbSLI_IsDefault bit set, the indicator map
+    and names aren't their own bit of memory but rather point into the
+    device->key->xkbInfo->desc structure. XkbCopySrvLedInfo knows about this and
+    leaves the pointers alone.
+    
+    When copying the classes from the slave to the master, these pointers are
+    copied and still point to the dev->key class of the slave device. If the
+    slave device is removed, the memory becomes invalid and a call to modify
+    this data (e.g. XkbSetIndicators) may cause a deadlock.
+    
+    The copying of dev->key relies on dev->kbdfeed to be already set up. Hence
+    the pointers need to be reset once _both_ kbdfeed and key have been copied
+    into the master device.
+    
+    X.Org Bug 25640 <http://bugs.freedesktop.org/show_bug.cgi?id=25640>
+    Fedora Bug 540584 <https://bugzilla.redhat.com/show_bug.cgi?id=540584>
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Keith Packard <keithp@keithp.com>
+    (cherry picked from commit 48f7298657f91843db36566b8d66d6c4c18dbd4c)
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit 34cedd1e3d80cc84277662a94de797738bdb5fce
+Author: Robert Morell <rmorell@nvidia.com>
+Date:   Fri Jan 29 19:07:03 2010 -0800
+
+    RENDER: Fix gradient and solid fill pictures with Xinerama, and misc cleanup
+    
+    If these aren't wrapped, then procs that are wrapped (such as
+    RenderChangePicture) will fail in Xinerama when they see the resource
+    type of a picture created through one of these interfaces is PictureType
+    and not XRT_PICTURE like those allocated via RenderCreatePicture.
+    
+    Signed-off-by: Robert Morell <rmorell@nvidia.com>
+    Reviewed-by: Aaron Plattner <aplattner@nvidia.com>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+    (cherry picked from commit 4d575b0559817258f7a0ce6c4d2d0f9e7e5bba63)
+
+commit 85b04bb0ebaf7a6f1b1a34f7b1704a3e6cbdab8a
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Fri Feb 5 18:08:37 2010 +1000
+
+    xserver 1.7.4.902
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit 219a0d8fb54f179c7ac8d5953585849ab65a778b
+Author: Oldřich Jedlička <oldium.pro@seznam.cz>
+Date:   Sun Jan 17 17:59:03 2010 +0100
+
+    Allow driver to call DeleteInputDeviceRequest during UnInit
+    
+    When the input driver (like xf86-input-wacom) removes it's devices
+    during a call to UnInit, the CloseDownDevices() cannot handle it. The
+    "next" variable can become a pointer to freed memory.
+    
+    The patch introduces order-independent device freeing mechanism by
+    remembering the already freed device ids. The devices can reorder any
+    time during freeing. No device will be double-freed - if the removing
+    failed for any reason; some implementations of DeleteInputDeviceRequest
+    don't free the devices already.
+    
+    Signed-off-by: Oldřich Jedlička <oldium.pro@seznam.cz>
+    Reviewed-by: Simon Thum <simon.thum@gmx.de>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    (cherry picked from commit 08b22c7faf97217ea4d497eec6624fc3dd916d9b)
+
+commit a6a4c20121301905399c4e1c23980993bcbf2152
+Author: Horst Wente <horst.wente@acm.org>
+Date:   Wed Dec 30 19:35:20 2009 +0100
+
+    xkb: make ctrl+alt+keypad + / ctrl+alt+keypad - work again (#25743)
+    
+    Video mode switching via keypad keys did not work
+    
+    Signed-off-by: Horst Wente <horst.wente@acm.org>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    (cherry picked from commit b91cec26de367f75388e620772747b08eee34294)
+
+commit a5b558d065e24880ff14b3781f27d1a9ea6094ab
+Author: Oldřich Jedlička <oldium.pro@seznam.cz>
+Date:   Tue Jan 12 19:15:06 2010 +0100
+
+    Fix typo in updateSlaveDeviceCoords
+    
+    The index [0] for the second valuator looks bogus; fix it.
+    
+    Signed-off-by: Oldřich Jedlička <oldium.pro@seznam.cz>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    (cherry picked from commit 993e78d6c433f65bd8a87890a6bb6da480b2cdc4)
+
+commit 5d34e78c81bfba3d14146ddfd8e714cdfd9a1692
+Author: Robert Morell <rmorell@nvidia.com>
+Date:   Thu Jan 21 12:38:47 2010 -0800
+
+    Render: Fix request size verification
+    
+    RenderSetPictureClipRectangles and the Xinerama version of
+    RenderChangePicture were using the wrong structure types for request
+    size verification.
+    
+    Signed-off-by: Robert Morell <rmorell@nvidia.com>
+    Reviewed-by: Aaron Plattner <aplattner@nvidia.com>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+    (cherry picked from commit 8d6b1838330625b758ebc55bb0df1b425c5cefaf)
+
+commit 6f533994921725653306753f474c343fbb3b88a4
+Author: Simon Thum <simon.thum@gmx.de>
+Date:   Sat Jan 23 13:36:22 2010 +0100
+
+    xfree86: remove man page reference inexistent acceleration profile
+    
+    not implemented in the X.org server 1.7
+    
+    Signed-off-by: Simon Thum <simon.thum@gmx.de>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit 1c126ba53161933fa1a756e696e98f1395dfa61a
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Sat Jan 30 14:49:02 2010 -0800
+
+    XQuartz: Attatch a stub display when CoreGraphics reports no displays.
+    
+    This is half of the required changes to address the "stuck mouse pointer"
+    bug that occurs when X11 launches while the displays are asleep.  The
+    remainder of the fix is part of libXplugin which needs to be updated to
+    send XP_EVENT_DISPLAY_CHANGED when the display wakes up.  If you don't
+    have a recent enough libXplugin (expected in 2.5.0_beta2 or later), you
+    can cause this event to be sent by changing your display resolution (or
+    you could just start X11.app with your screens awake).
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+    (cherry picked from commit 52456c602c3cdd7d5eac677889a18fad37dfb7ae)
+
+commit 734a6b9c2150ce38cf120e179cdac9d3c625434e
+Author: Alan Coopersmith <alan.coopersmith@sun.com>
+Date:   Tue Jan 26 22:25:04 2010 -0800
+
+    Avoid segfaults in XF86VidMode GammaRamp functions if randr_crtc is NULL
+    
+    Fixes crash when xscreensaver tries to use GammaRamp calls to fade out
+    http://bugs.opensolaris.org/bugdatabase/view_bug.do?bug_id=6915712
+    
+    Signed-off-by: Alan Coopersmith <alan.coopersmith@sun.com>
+    Reviewed-by: Keith Packard <keithp@keithp.com>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit b47231b2fd4e403403945d6da6119398b16f385d
+Author: Aaron Zang <Aaron.Zang@Sun.COM>
+Date:   Mon Dec 14 17:55:46 2009 -0800
+
+    Solaris: Avoid switching to inactive VT's
+    
+    Fix for OpenSolaris bug 6876992: "[vconsole] Ctrl+Alt+F12 switchs to blank
+    console screen with hotkeys property turned-off"
+    http://bugs.opensolaris.org/bugdatabase/view_bug.do?bug_id=6876992
+    
+    Xorg needs to do sanity test for the VT it is commanded to switch to.
+    If the VT is not opened by any process, discard the switching request.
+    
+    The changes also contain the fix for some flaws discovered when
+    getting the new gdm to run.
+    
+    Signed-off-by: Aaron Zang <Aaron.Zang@Sun.COM>
+    Signed-off-by: Alan Coopersmith <alan.coopersmith@sun.com>
+
+commit 66b6e2fd49fdc650703e56aa176a902e4921251c
+Author: Pierre-Loup A. Griffais <pgriffais@nvidia.com>
+Date:   Wed Jan 27 14:03:03 2010 -0800
+
+    Fix source pictures getting random transforms after 2d6a8f668342a5190cdf43b5.
+    
+    *xoff and *yoff were uninitialized for source-only pictures.x
+    
+    Signed-off-by: Pierre-Loup A. Griffais <pgriffais@nvidia.com>
+    Reviewed-by: Aaron Plattner <aplattner@nvidia.com>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+    (cherry picked from commit a6bd5d2e482a5aa84acb3d4932e2a166d8670ef1)
+
+commit a191318f8dde2a4ff47c051244e8c88e8f92883a
+Author: Christian Zander <chzander@nvidia.com>
+Date:   Mon Jan 11 12:29:07 2010 -0800
+
+    x86emu: Respect the LEA 67h address size prefix.
+    
+    Signed-off-by: Christian Zander <chzander@nvidia.com>
+    Signed-off-by: Aaron Plattner <aplattner@nvidia.com>
+    Tested-by: Tiago Vignatti <tiago.vignatti@nokia.com>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+    (cherry picked from commit f57bc0ede8e018c7e264b917927c42a018cd1d5a)
+
+commit d3e54304578cbeb948a13654614b75bea4c55449
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Sat Jan 23 12:55:38 2010 +1300
+
+    xserver 1.7.4.901
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit 43412c6b8bc7af7df0c07590002c2f96d57ba861
+Author: Jeremy Huddleston <jeremyhu@freedesktop.org>
+Date:   Wed Jan 13 11:20:29 2010 -0800
+
+    XQuartz: Update copyright in bundle for 2010
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@freedesktop.org>
+    (cherry picked from commit 6bde306f7f6b9bbabeaa8bb910ea549be906cd8b)
+
+commit 268c00d24b1938aaa75ad23892fba6ef241fbe9d
+Author: Jeremy Huddleston <jeremyhu@freedesktop.org>
+Date:   Mon Jan 11 18:02:55 2010 -0800
+
+    XQuartz: Setup the modifier map in the quartz thread
+    
+    This avoids possible doing it twice which could result in incorrect
+    keycodes for alt due to our loss of information about its side.
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@freedesktop.org>
+    (cherry picked from commit 6008cc116493cb2825ad0bda0b407b7aefabb3f4)
+
+commit b852834bb1974a2c149869b6e19aff000a2b4187
+Author: Simon Thum <simon.thum@gmx.de>
+Date:   Wed Jan 6 18:13:27 2010 +0100
+
+    os: state effect of -a and -t options more precisely
+    
+    Signed-off-by: Simon Thum <simon.thum@gmx.de>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    (cherry picked from commit 14e4e4a294e648e0bdcb70c34748e1b81c5bb64f)
+
+commit d76f09406d07fd04a03d9cb3965419b1e95bdd03
+Author: Gaetan Nadon <memsize@videotron.ca>
+Date:   Thu Jan 7 15:23:34 2010 -0500
+
+    macros: use PKG_CONFIG variable rather than executable name
+    
+    User can defined alternate location for pkg-config.
+    Once option in place, all instances of pkg-config must be converted.
+    
+    Acked-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Dan Nicholson <dbn.lists@gmail.com>
+    Signed-off-by: Gaetan Nadon <memsize@videotron.ca>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+    (cherry picked from commit 6a2a57832709798d99d19ff4c587e22f3b3c150d)
+
+commit 08c2df881d61fccfd488b5ca4482686a7f3b47c0
+Author: Gaetan Nadon <memsize@videotron.ca>
+Date:   Fri Jan 8 19:04:25 2010 -0500
+
+    configure: use backticks rather than $() for commands
+    
+    This patch to xserver configure.ac is to increase code portability to
+    non POSIX system by using backticks rather than $() for command
+    substitution for BUILD_DATE and BUILD_TIME.
+    
+    Reviewed-by: Rémi Cardona <remi@gentoo.org>
+    Signed-off-by: Gaetan Nadon <memsize@videotron.ca>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+    (cherry picked from commit 6313d2da6c6910827d68cf31fe00b46a34c5bfc7)
+
+commit b7e903526c28eb4d5368d916708ff30486e94319
+Author: Simon Thum <simon.thum@gmx.de>
+Date:   Tue Jan 19 17:34:49 2010 +1300
+
+    xfree86: document pointer acceleration in xorg.conf.man
+    
+    Signed-off-by: Simon Thum <simon.thum@gmx.de>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Fernando Carrijo <fcarrijo@yahoo.com.br>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    (cherry picked from commit 0722c287a4c8a6cdedca9756192547bfcf77ade5)
+    
+    Conflicts:
+    
+    	hw/xfree86/doc/man/xorg.conf.man.pre
+
+commit c5e5a7adf0ed378b6f3b28f04af5ad8d967b31bc
+Author: Simon Thum <simon.thum@gmx.de>
+Date:   Tue Jan 19 17:33:09 2010 +1300
+
+    doc: actually document SendDragEvents
+    
+    Signed-off-by: Simon Thum <simon.thum@gmx.de>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    (cherry picked from commit 14039b5a7982fbf8130501bb00766176a4e9bccb)
+    
+    Conflicts:
+    
+    	hw/xfree86/doc/man/xorg.conf.man.pre
+
 commit 88582f3d41315abf548a52622e52b7652d2c5281
 Author: Peter Hutterer <peter.hutterer@who-t.net>
 Date:   Fri Jan 8 09:38:58 2010 +1000
