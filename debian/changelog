@@ -11,6 +11,7 @@ xorg-server (2:1.7.5-1) UNRELEASED; urgency=low
       closes: #569036.
     + Xi: reset the sli pointers after copying device classes,
       closes: #566147.
+  * Bump Standards-Version to 3.8.4.
 
  -- Julien Cristau <jcristau@debian.org>  Sat, 23 Jan 2010 01:43:22 +0100
 
