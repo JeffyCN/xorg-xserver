@@ -5,6 +5,12 @@ xorg-server (2:1.7.5-1) UNRELEASED; urgency=low
 
   [ Brice Goglin ]
   * New upstream release.
+    + Restore lastDeviceEventTime update in dixSaveScreens,
+      closes: #563816.
+    + Don't double-swap the RandR PropertyNotify event,
+      closes: #569036.
+    + Xi: reset the sli pointers after copying device classes,
+      closes: #566147.
 
  -- Julien Cristau <jcristau@debian.org>  Sat, 23 Jan 2010 01:43:22 +0100
 
