@@ -382,7 +382,7 @@ Index: xorg-server/config/udev.c
 +    parent = udev_device_get_parent(udev_device);
 +    if (parent)
 +        name = udev_device_get_property_value(parent, "NAME");
-+    else
++    if (!name)
 +        name = "(unnamed)";
 +
 +    if (!driver || !path || !syspath)
