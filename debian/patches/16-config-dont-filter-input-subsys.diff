@@ -1,0 +1,42 @@
+From 84905007702da2c05a4f7446b3fc5ff52be49655 Mon Sep 17 00:00:00 2001
+From: Thomas Jaeger <ThJaeger@gmail.com>
+Date: Mon, 04 Jan 2010 20:00:49 +0000
+Subject: udev: Don't filter subsystem "input"
+
+This allows serial wacom devices to work, whose subsystem is "tty".
+
+Signed-off-by: Thomas Jaeger <ThJaeger@gmail.com>
+Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+---
+Index: xorg-server/config/udev.c
+===================================================================
+--- xorg-server.orig/config/udev.c	2010-02-23 14:49:01.000000000 +0200
++++ xorg-server/config/udev.c	2010-02-23 14:49:01.000000000 +0200
+@@ -191,7 +191,6 @@
+     struct udev *udev;
+     struct udev_enumerate *enumerate;
+     struct udev_list_entry *devices, *device;
+-    int rc;
+ 
+     udev = udev_new();
+     if (!udev)
+@@ -199,10 +198,6 @@
+     udev_monitor = udev_monitor_new_from_netlink(udev, "udev");
+     if (!udev_monitor)
+         return 0;
+-    rc = udev_monitor_filter_add_match_subsystem_devtype(udev_monitor,
+-                                                         "input", NULL);
+-    if (rc < 0)
+-        return 0;
+ 
+     if (udev_monitor_enable_receiving(udev_monitor)) {
+         ErrorF("config/udev: failed to bind the udev monitor\n");
+@@ -212,7 +207,6 @@
+     enumerate = udev_enumerate_new(udev);
+     if (!enumerate)
+         return 0;
+-    udev_enumerate_add_match_subsystem(enumerate, "input");
+     udev_enumerate_scan_devices(enumerate);
+     devices = udev_enumerate_get_list_entry(enumerate);
+     udev_list_entry_foreach(device, devices) {

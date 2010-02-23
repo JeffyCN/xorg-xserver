@@ -12,3 +12,4 @@
 13-configure-config-udev-defaults-to-off-for-now.diff
 14-config-add-example-udev-rules.diff
 15-config-udev-look-for-xkb-rules-model-layout-variant-.diff
+16-config-dont-filter-input-subsys.diff
