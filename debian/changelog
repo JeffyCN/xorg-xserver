@@ -5,7 +5,8 @@ xorg-server (2:1.7.5-2) UNRELEASED; urgency=low
 
   [ Timo Aaltonen ]
   * Add 16-config-dont-filter-input-subsys.diff so for instance serial
-    wacom devices are initialized by the udev backend (LP: #522318).
+    wacom devices are initialized by the udev backend (LP: #522318,
+    closes: #568236).
 
  -- Julien Cristau <jcristau@debian.org>  Thu, 18 Feb 2010 19:14:51 +0100
 
