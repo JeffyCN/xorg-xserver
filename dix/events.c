@@ -1131,11 +1131,10 @@ EnqueueEvent(InternalEvent *ev, DeviceIntPtr device)
         event->type == ET_KeyRelease)
 	AccessXCancelRepeatKey(device->key->xkbInfo, event->detail.key);
 
-#if 0
-        /* FIXME: I'm broken now. Please fix me. */
     if (DeviceEventCallback)
     {
 	DeviceEventInfoRec eventinfo;
+
 	/*  The RECORD spec says that the root window field of motion events
 	 *  must be valid.  At this point, it hasn't been filled in yet, so
 	 *  we do it here.  The long expression below is necessary to get
@@ -1145,14 +1144,14 @@ EnqueueEvent(InternalEvent *ev, DeviceIntPtr device)
 	 *  the data that GetCurrentRootWindow relies on hasn't been
 	 *  updated yet.
 	 */
-	if (xE->u.u.type == DeviceMotionNotify)
-	    XE_KBPTR.root =
-		WindowTable[pSprite->hotPhys.pScreen->myNum]->drawable.id;
-	eventinfo.events = xE;
-	eventinfo.count = nevents;
+	if (ev->any.type == ET_Motion)
+	    ev->device_event.root = WindowTable[pSprite->hotPhys.pScreen->myNum]->drawable.id;
+
+	eventinfo.event = ev;
+	eventinfo.device = device;
 	CallCallbacks(&DeviceEventCallback, (pointer)&eventinfo);
     }
-#endif
+
     if (event->type == ET_Motion)
     {
 #ifdef PANORAMIX
@@ -1415,11 +1414,6 @@ CheckGrabForSyncs(DeviceIntPtr thisDev, Bool thisMode, Bool otherMode)
 	    thisDev->deviceGrab.sync.other = NullGrab;
     }
 
-    /*
-        XXX: Direct slave grab won't freeze the paired master device.
-        The correct thing to do would be to freeze all SDs attached to the
-        paired master device.
-     */
     if (IsMaster(thisDev))
     {
         dev = GetPairedDevice(thisDev);
@@ -3468,7 +3462,6 @@ CheckPassiveGrabsOnWindow(
     {
 	DeviceIntPtr	gdev;
 	XkbSrvInfoPtr	xkbi = NULL;
-	Mask		mask = 0;
 
 	gdev= grab->modifierDevice;
         if (grab->grabtype == GRABTYPE_CORE)
@@ -3521,10 +3514,6 @@ CheckPassiveGrabsOnWindow(
 	     (grab->confineTo->realized &&
 				BorderSizeNotEmpty(device, grab->confineTo))))
 	{
-            int rc, count = 0;
-            xEvent *xE = NULL;
-            xEvent core;
-
             event->corestate &= 0x1f00;
             event->corestate |= tempGrab.modifiersDetail.exact & (~0x1f00);
             grabinfo = &device->deviceGrab;
@@ -3571,62 +3560,8 @@ CheckPassiveGrabsOnWindow(
             }
 
 
-            if (match & CORE_MATCH)
-            {
-                rc = EventToCore((InternalEvent*)event, &core);
-                if (rc != Success)
-                {
-                    if (rc != BadMatch)
-                        ErrorF("[dix] %s: core conversion failed in CPGFW "
-                                "(%d, %d).\n", device->name, event->type, rc);
-                    continue;
-                }
-                xE = &core;
-                count = 1;
-                mask = grab->eventMask;
-            } else if (match & XI2_MATCH)
-            {
-                rc = EventToXI2((InternalEvent*)event, &xE);
-                if (rc != Success)
-                {
-                    if (rc != BadMatch)
-                        ErrorF("[dix] %s: XI2 conversion failed in CPGFW "
-                                "(%d, %d).\n", device->name, event->type, rc);
-                    continue;
-                }
-                count = 1;
-
-                /* FIXME: EventToXI2 returns NULL for enter events, so
-                 * dereferencing the event is bad. Internal event types are
-                 * aligned with core events, so the else clause is valid.
-                 * long-term we should use internal events for enter/focus
-                 * as well */
-                if (xE)
-                    mask = grab->xi2mask[device->id][((xGenericEvent*)xE)->evtype/8];
-                else if (event->type == XI_Enter || event->type == XI_FocusIn)
-                    mask = grab->xi2mask[device->id][event->type/8];
-            } else
-            {
-                rc = EventToXI((InternalEvent*)event, &xE, &count);
-                if (rc != Success)
-                {
-                    if (rc != BadMatch)
-                        ErrorF("[dix] %s: XI conversion failed in CPGFW "
-                                "(%d, %d).\n", device->name, event->type, rc);
-                    continue;
-                }
-                mask = grab->eventMask;
-            }
-
 	    (*grabinfo->ActivateGrab)(device, grab, currentTime, TRUE);
-
-            if (xE)
-            {
-                FixUpEventFromWindow(device, xE, grab->window, None, TRUE);
-
-                TryClientEvents(rClient(grab), device, xE, count, mask,
-                                       GetEventFilter(device, xE), grab);
-            }
+            DeliverGrabbedEvent((InternalEvent*)event, device, FALSE);
 
 	    if (grabinfo->sync.state == FROZEN_NO_EVENT)
 	    {
@@ -3636,8 +3571,6 @@ CheckPassiveGrabsOnWindow(
 		grabinfo->sync.state = FROZEN_WITH_EVENT;
             }
 
-            if (match & (XI_MATCH | XI2_MATCH))
-                xfree(xE); /* on core match xE == &core */
 	    return TRUE;
 	}
     }
