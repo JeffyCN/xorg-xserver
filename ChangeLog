@@ -1,3 +1,315 @@
+commit 1242e494c8abc25d51fa0f8120ba353ffcf7be08
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Fri Mar 5 09:27:13 2010 +1000
+
+    xserver 1.7.5.901
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit d023b78c739672894d6b8196d91129845614e369
+Author: Keith Packard <keithp@keithp.com>
+Date:   Thu Feb 25 11:37:05 2010 -0800
+
+    Allow for missing or disabled compat_output
+    
+    When the compat output is missing (I don't think this is actually
+    possible), or is disabled (and hence has no crtc), we would like to
+    avoid dereferencing NULL pointers. This patch creates inline functions
+    to extract the current compat output, crtc or associated RandR crtc
+    structure, carefully checking for NULL pointers everywhere.
+    
+    Reviewed-by: Adam Jackson <ajax@redhat.com>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+    (cherry picked from commit de86a3a3448f0a55c1cd99aee9ea80070a589877)
+
+commit 7def5cdf7dce0ace34e0befb3a9730e1bd607b61
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Thu Mar 4 15:42:47 2010 +1000
+
+    configure: move SELINUX_LIBS to XSERVER_SYS_LIBS
+    
+    All ddxs require linking against selinux if enabled.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Dan Nicholson <dbn.lists@gmail.com>
+    Reviewed-by: Eamon Walsh <ewalsh@tycho.nsa.gov>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+    (cherry picked from commit 1c2abec479cfbac9aeadc121af0825d368317658)
+    
+    Conflicts:
+    
+    	configure.ac
+
+commit 402668251135b63b7329722397fe7885e065f27c
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Thu Mar 4 15:41:53 2010 +1000
+
+    configure: move libselinux requirement up to the common section.
+    
+    Let's have all version-specific requirements in one block.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Dan Nicholson <dbn.lists@gmail.com>
+    Reviewed-by: Eamon Walsh <ewalsh@tycho.nsa.gov>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+    (cherry picked from commit cab99b947c66a42dbf8a906bdb02e23aa7cab519)
+    
+    Conflicts:
+    
+    	configure.ac
+
+commit 351d11fd466fae731df860a6ff4cf50ad565f43f
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Thu Feb 25 12:49:21 2010 +1000
+
+    dix: Use DeliverGrabbedEvent for implicit passive grabs (#25400)
+    
+    A client requesting a GrabModeSync button grab, owner-events true, with only
+    the ButtonRelease mask set would never receive the press event even if the
+    grab window had the ButtonPress mask set.
+    
+    The protocol requires that if owner-events is true, then the delivery mask
+    is the combination of the grab mask + the window event mask.
+    
+    DeliverGrabbedEvents does this already for us, checking first the delivery
+    based on owner_events and then based on the grab mask. AFAICT, the device
+    cannot enter the states FREEZE_BOTH_NEXT_EVENT or FREEZE_NEXT_EVENT that
+    would be handled by DGE in any possible path here.
+    
+    Bonus point - CheckPassiveGrabsOnWindows suddenly becomes a lot lesss
+    complicated.
+    
+    X.Org Bug 25400 <http://bugs.freedesktop.org/show_bug.cgi?id=25400>
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Keith Packard <keithp@keithp.com>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+    (cherry picked from commit cf72b5437d2d620521279077a29c5df6d0fbb576)
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit 8f743f17ed0076d10d6c60fe8bdf3f54d3432ae5
+Author: Alan Coopersmith <alan.coopersmith@sun.com>
+Date:   Mon Feb 15 17:42:11 2010 -0800
+
+    Solaris xf86OSRingBell() off-by-one error in filling iov[] array
+    
+    When generating sound buffers for /dev/audio bells, insert waveform
+    for beep *or* silence, but not both, so we don't write one entry past
+    the end of the iov buffer when the final bit of soundwave ends up in
+    the final entry allocated in the iov array.
+    
+    Fixes OpenSolaris bug 6894890:
+     http://bugs.opensolaris.org/bugdatabase/view_bug.do?bug_id=6894890
+    
+    Signed-off-by: Alan Coopersmith <alan.coopersmith@sun.com>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Acked-by: Adam Jackson <ajax@redhat.com>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit d35e08b6db911c404d7baf680dab30e8a6831bc4
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Thu Feb 18 16:00:15 2010 +1000
+
+    dix: remove now-erroneous comment about frozen slave devices.
+    
+    A direct grab on a slave device through XI2 detaches it, regardless of
+    whether the grab is sync or async. So this comment doesn't apply to XI2
+    anyway.
+    
+    For XI1, aside from your life being miserable already, it doesn't matter as
+    XI1 does not have a concept of attachment. You can freeze a device and if
+    you don't freeze _all_ other devices at the same time, the master device can
+    still happily send events to the client.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Acked-by: Adam Jackson <ajax@redhat.com>
+    (cherry picked from commit c0d941913199ed251fceab62fcf65437f6f9bd31)
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit 11c27f261efc5b7a8594ad2de7bed4339f2a62ce
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Mon Feb 15 16:32:16 2010 +1000
+
+    dix: try to ring the bell even if the current device doesn't have one. (#24503)
+    
+    Evdev devices do not have the bell proc set, but XTEST devices do. By
+    exiting early, the bell only rings if the last keyboard used was the XTEST
+    keyboard and hence the bell proc is still set on the master but not if an
+    evdev keyboard was used last.
+    
+    The better approach here is to try to ring the bell on all devices attached
+    to this master device in case one or more actually do produce an audible
+    sound. That's also XKB's behaviour if XkbUseCoreKbd is specified as device
+    identifier.
+    
+    X.Org Bug 24503 <http://bugs.freedesktop.org/show_bug.cgi?id=24503>
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Adam Jackson <ajax@redhat.com>
+    (cherry picked from commit 758f6971750ed507e64eee817d720a77181439f2)
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit 1f96c0371845d5904b7d4c8fe71ee545b649faca
+Author: Eamon Walsh <ewalsh@tycho.nsa.gov>
+Date:   Wed Feb 3 15:40:47 2010 -0500
+
+    xselinux: Bump extension minor version.
+    
+    Changes introduced in this version:
+    	- 3 window-related requests now handle pixmaps also.
+    
+    Signed-off-by: Eamon Walsh <ewalsh@tycho.nsa.gov>
+    Reviewed-by: Keith Packard <keithp@keithp.com>
+    (cherry picked from commit db4f676f25c6d8e58263d5151942be730592d444)
+
+commit dd9573d4086ca24c59a99a0a2019bf20c61b0f64
+Author: Eamon Walsh <ewalsh@tycho.nsa.gov>
+Date:   Wed Feb 3 15:38:57 2010 -0500
+
+    xselinux: Rename window-related requests that now support pixmaps.
+    
+    Renamed requests:
+    	SetWindowCreateContext -> SetDrawableCreateContext
+    	GetWindowCreateContext -> GetDrawableCreateContext
+    	GetWindowContext -> GetDrawableContext
+    
+    Signed-off-by: Eamon Walsh <ewalsh@tycho.nsa.gov>
+    Reviewed-by: Keith Packard <keithp@keithp.com>
+
+commit 7cec236a03917841131941ce97bd1dfd4a027327
+Author: Eamon Walsh <ewalsh@tycho.nsa.gov>
+Date:   Wed Feb 3 15:08:40 2010 -0500
+
+    xselinux: Allow GetWindowContext to be used for pixmaps as well.
+    
+    Signed-off-by: Eamon Walsh <ewalsh@tycho.nsa.gov>
+    Reviewed-by: Keith Packard <keithp@keithp.com>
+
+commit 1b6f498b84de7f79de735b004b8e16b9a31d228c
+Author: Eamon Walsh <ewalsh@tycho.nsa.gov>
+Date:   Wed Jan 6 12:52:51 2010 -0500
+
+    xselinux: Remove reference counting calls for SID objects.
+    
+    Starting with libselinux 2.0.86, SID objects are no longer
+    reference counted and the sidput() and sidget() calls are no-ops.
+    
+    Signed-off-by: Eamon Walsh <ewalsh@tycho.nsa.gov>
+    Reviewed-by: Keith Packard <keithp@keithp.com>
+
+commit c030ec32b6418e6258b380c0e29971be882a84d4
+Author: Eamon Walsh <ewalsh@tycho.nsa.gov>
+Date:   Wed Oct 21 19:28:26 2009 -0400
+
+    libselinux now has a pkgconfig file.  Use it.
+    
+    Also remove HAVE_NETLINK_AVC_ACQUIRE_FD tests, because we now
+    require a version of libselinux that has it.
+    
+    Signed-off-by: Eamon Walsh <ewalsh@tycho.nsa.gov>
+    Reviewed-by: Keith Packard <keithp@keithp.com>
+
+commit c8dd981c7f67d26850fad8c8a01f5de9850aa454
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Thu Feb 18 15:49:09 2010 +1000
+
+    Xi: assume BadMode for non-BadMatch errors returned from SetDeviceMode.
+    
+    The XI protocol spec only allows for two errors on the SetDeviceMode
+    requests: BadMatch or BadMode. BadMode however is a dynamically assigned
+    extension error and the driver doesn't have access to the actual error
+    number. Hence, if a SetDeviceMode driver returns an error other than
+    BadMatch, assume BadMode.
+    
+    The two exceptions are BadAlloc and BadImplementations, pass these on to the
+    client (any request is allowed to return either of those).
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Dan Nicholson <dbn.lists@gmail.com>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+    (cherry picked from commit e40ba5798c367bec584f6437b23d2c5f801fd013)
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit 5ac8298469cd4d5e56ef7fc41af4878b88706b28
+Author: Chris Dekter <cdekter@gmail.com>
+Date:   Thu Feb 11 16:34:09 2010 +1000
+
+    Re-enable RECORD extension.
+    
+    RECORD was disabled during the switch to internal events. This patch
+    modifies the record callback to work with internal events instead of
+    xEvents. The InternalEvents are converted to core/Xi events as needed.
+    
+    Since record is a loadable extension, the EventTo* calls must be externed.
+    
+    Signed-off-by: Chris Dekter <cdekter@gmail.com>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Adam Jackson <ajax@redhat.com>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    (cherry picked from commit 122fc0e7a0712df4ec2bd9ca6773f90bcd2095cf)
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit d1732a637e479f20a0edd1426c99d1c6f2027049
+Author: Tiago Vignatti <tiago.vignatti@nokia.com>
+Date:   Mon Jan 18 14:31:12 2010 +0200
+
+    xfree86: vgaarb: remove useless debug
+    
+    This is RAC's remnant. Any sane person would use a more wise method of
+    debugging instead.
+    
+    X.Org Bug 26074 <http://bugs.freedesktop.org/show_bug.cgi?id=26074>
+    
+    Signed-off-by: Tiago Vignatti <tiago.vignatti@nokia.com>
+    Reviewed-by: Keith Packard <keithp@keithp.com>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+    (cherry picked from commit 5e81078cf56aabbf6551d96d312c7840ba9370ae)
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit dd0217fc93c1d374d7d51f1b0270e7575fd48320
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Tue Jan 5 13:15:25 2010 +1000
+
+    dix: don't update the slave coordinates from the VCK.
+    
+    A keyboard event from a device with both valuators and keys will be posted
+    through the VCK. In this case, do not update the slave device coordinates
+    from the VCK - they're always 0/0. Leave them as-is, for the next pointer
+    event will continue where it left.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Keith Packard <keithp@keithp.com>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+    (cherry picked from commit 6f265d55a61f9be323583b8acacae783be72bda9)
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit 8dda9ba67ab530612cdc27c540a88a1465a82173
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Mon Feb 15 16:46:21 2010 -0800
+
+    XQuartz: Fix a possible buffer overrun in quartzAudio
+    
+    Also dropped deprecated API while there
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+    (cherry picked from commit 4e8bf12b13690afa6d9fee0e339d3819ef16fb3f)
+
+commit 4d8ad88b5747789b0c35bccab1088114470984cd
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Wed Feb 10 17:56:30 2010 -0800
+
+    XQuartz: clang static analysis fixes
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+    (cherry picked from commit 4127e8e5be5c366eb752bbb8d7f0ff5b519e641b)
+
 commit f0ec2e0d7d0533b3b3fcccd9d78b76e4c9002d1e
 Author: Peter Hutterer <peter.hutterer@who-t.net>
 Date:   Tue Feb 16 11:34:38 2010 +1000

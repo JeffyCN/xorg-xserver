@@ -1,4 +1,4 @@
-xorg-server (2:1.7.5-2) UNRELEASED; urgency=low
+xorg-server (2:1.7.5.901-1) UNRELEASED; urgency=low
 
   [ Julien Cristau ]
   * config/udev: fix adding unnamed devices.
@@ -13,6 +13,13 @@ xorg-server (2:1.7.5-2) UNRELEASED; urgency=low
     taken from upstream bug #25400 https://bugs.freedesktop.org/show_bug.cgi?id=25400
     Prevents mouse cursor getting trapped in lesstif menus (can be
     triggered for instance by xmgrace)   
+
+  [ Brice Goglin ]
+  * New upstream release.
+    + Allow for missing or disabled compat_output, cloes: #572268, #554450.
+    + Reenable RECORD extension, closes: #570680.
+    + dix: try to ring the bell even if the current device doesn't have one,
+      closes: #564200.
 
  -- Drew Parsons <dparsons@debian.org>  Wed, 03 Mar 2010 23:33:54 +1100
 
