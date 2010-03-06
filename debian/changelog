@@ -15,6 +15,7 @@ xorg-server (2:1.7.5.901-1) UNRELEASED; urgency=low
     + dix: try to ring the bell even if the current device doesn't have one,
       closes: #564200.
   * Refresh patches.
+  * Fix typo in xvfb-run.1, thanks Joey Hess, closes: #527490.
 
  -- Drew Parsons <dparsons@debian.org>  Wed, 03 Mar 2010 23:33:54 +1100
 
