@@ -1,7 +1,7 @@
 ## Patches with a number < 100 are applied in debian.
 ## Ubuntu patches start with 100.
 001_fedora_extramodes.patch
-02_Add-libgcrypt-as-an-option-for-sha1.diff
+02_Add-libgcrypt-and-libnettle-as-options-for-sha1.diff
 # 03 and 04 are backports from git master
 03_fedora_glx_versioning.diff
 04_fedora_glx14-swrast.diff

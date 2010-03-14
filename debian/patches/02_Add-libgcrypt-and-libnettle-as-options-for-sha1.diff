@@ -1,0 +1,180 @@
+From a6119f6cd7e47041044fcc9c15a6e3f9f189b3ed Mon Sep 17 00:00:00 2001
+From: Cyril Brulebois <kibi@debian.org>
+Date: Sun, 14 Mar 2010 22:01:47 +0100
+Subject: [PATCH] Add libgcrypt and libnettle as options for sha1.
+
+This is an adaptation of the following upstream commit:
+  d2a6a395435919aff8943285f9cbfe6569a9728f
+
+Support is also added for libnettle.
+
+Signed-off-by: Cyril Brulebois <kibi@debian.org>
+---
+diff --git a/configure.ac b/configure.ac
+index c215b5c..e688f94 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -1285,26 +1285,66 @@ MIEXT_SHADOW_INC='-I$(top_srcdir)/miext/shadow'
+ MIEXT_SHADOW_LIB='$(top_builddir)/miext/shadow/libshadow.la'
+ CORE_INCS='-I$(top_srcdir)/include -I$(top_builddir)/include'
+ 
+-# OpenSSL used for SHA1 hashing in render/glyph.c, but we don't need all of
+-# the OpenSSL libraries, just libcrypto
+-# Some systems have matching functionality in the smaller/simpler libmd
+-# Builders who want to force a choice can set SHA1_LIB and SHA1_CFLAGS
+-if test "x$SHA1_LIB" = "x" ; then
+-  AC_CHECK_LIB([md], [SHA1Init], [SHA1_LIB="-lmd"
+-            AC_DEFINE([HAVE_SHA1_IN_LIBMD], [1],
+-            [Use libmd SHA1 functions instead of OpenSSL libcrypto])])
+-fi
+-
+-if test "x$SHA1_LIB" = "x" ; then
+-  PKG_CHECK_EXISTS([OPENSSL], [openssl], [HAVE_OPENSSL_PKC=yes],
+-                    [HAVE_OPENSSL_PKC=no])
+-  if test "x$HAVE_OPENSSL_PKC" = xyes; then
+-    REQUIRED_LIBS="$REQUIRED_LIBS openssl"
+-  else
+-    AC_CHECK_LIB([crypto], [SHA1_Init], [SHA1_LIB="-lcrypto"],
+-                 [AC_MSG_ERROR([OpenSSL must be installed in order to build the X server.])])
+-  fi
++# SHA1 hashing
++AC_ARG_WITH([sha1],
++            [AS_HELP_STRING([--with-sha1=libmd|libgcrypt|libcrypto|libnettle],
++                            [choose SHA1 implementation])])
++AC_CHECK_LIB([md], [SHA1Init], [HAVE_LIBMD=yes])
++if test "x$with_sha1" = x && test "x$HAVE_LIBMD" = xyes; then
++        with_sha1=libmd
++fi
++if test "x$with_sha1" = xlibmd && test "x$HAVE_LIBMD" != xyes; then
++        AC_MSG_ERROR([libmd requested but not found])
++fi
++if test "x$with_sha1" = xlibmd; then
++        AC_DEFINE([HAVE_SHA1_IN_LIBMD], [1],
++                  [Use libmd SHA1 functions])
++        SHA1_LIBS=-lmd
++fi
++AC_CHECK_LIB([gcrypt], [gcry_md_open], [HAVE_LIBGCRYPT=yes])
++if test "x$with_sha1" = x && test "x$HAVE_LIBGCRYPT" = xyes; then
++        with_sha1=libgcrypt
++fi
++if test "x$with_sha1" = xlibgcrypt; then
++        AC_DEFINE([HAVE_SHA1_IN_LIBGCRYPT], [1],
++                  [Use libgcrypt SHA1 functions])
++        SHA1_LIBS=-lgcrypt
++fi
++AC_CHECK_LIB([nettle], [nettle_sha1_init], [HAVE_LIBNETTLE=yes])
++if test "x$with_sha1" = x && test "x$HAVE_LIBNETTLE" = xyes; then
++        with_sha1=libnettle
++fi
++if test "x$with_sha1" = xlibnettle; then
++        AC_DEFINE([HAVE_SHA1_IN_LIBNETTLE], [1],
++                  [Use libnettle SHA1 functions])
++        SHA1_LIBS=-lnettle
++fi
++# We don't need all of the OpenSSL libraries, just libcrypto
++AC_CHECK_LIB([crypto], [SHA1_Init], [HAVE_LIBCRYPTO=yes])
++PKG_CHECK_MODULES([OPENSSL], [openssl], [HAVE_OPENSSL_PKC=yes],
++                  [HAVE_OPENSSL_PKC=no])
++if test "x$HAVE_LIBCRYPTO" = xyes || test "x$HAVE_OPENSSL_PKC" = xyes; then
++        if test "x$with_sha1" = x; then
++                with_sha1=libcrypto
++        fi
++else
++        if test "x$with_sha1" = xlibcrypto; then
++                AC_MSG_ERROR([OpenSSL libcrypto requested but not found])
++        fi
++fi
++if test "x$with_sha1" = xlibcrypto; then
++        if test "x$HAVE_LIBCRYPTO" = xyes; then
++                SHA1_LIBS=-lcrypto
++        else
++                SHA1_LIBS="$OPENSSL_LIBS"
++                SHA1_CFLAGS="$OPENSSL_CFLAGS"
++        fi
++fi
++if test "x$with_sha1" = x; then
++        AC_MSG_ERROR([No suitable SHA1 implementation found])
+ fi
++AC_SUBST(SHA1_LIBS)
++AC_SUBST(SHA1_CFLAGS)
+ 
+ PKG_CHECK_MODULES([XSERVERCFLAGS], [$REQUIRED_MODULES $REQUIRED_LIBS])
+ PKG_CHECK_MODULES([XSERVERLIBS], [$REQUIRED_LIBS])
+@@ -1326,7 +1366,7 @@ PKG_CHECK_MODULES([XSERVERLIBS], [$REQUIRED_LIBS])
+ #
+ XSERVER_CFLAGS="${XSERVERCFLAGS_CFLAGS} ${SHA1_CFLAGS}"
+ XSERVER_LIBS="$DIX_LIB $CONFIG_LIB $MI_LIB $OS_LIB"
+-XSERVER_SYS_LIBS="${XSERVERLIBS_LIBS} ${SYS_LIBS} ${LIBS} ${SHA1_LIB}"
++XSERVER_SYS_LIBS="${XSERVERLIBS_LIBS} ${SYS_LIBS} ${LIBS} ${SHA1_LIBS}"
+ AC_SUBST([XSERVER_LIBS])
+ AC_SUBST([XSERVER_SYS_LIBS])
+ 
+diff --git a/include/dix-config.h.in b/include/dix-config.h.in
+index 6e450b6..782da4f 100644
+--- a/include/dix-config.h.in
++++ b/include/dix-config.h.in
+@@ -163,6 +163,12 @@
+ /* Define to use libmd SHA1 functions instead of OpenSSL libcrypto */
+ #undef HAVE_SHA1_IN_LIBMD
+ 
++/* Define to use libgcrypt SHA1 functions instead of OpenSSL libcrypto */
++#undef HAVE_SHA1_IN_LIBGCRYPT
++
++/* Define to use libnettle SHA1 functions instead of OpenSSL libcrypto */
++#undef HAVE_SHA1_IN_LIBNETTLE
++
+ /* Define to 1 if you have the `shmctl64' function. */
+ #undef HAVE_SHMCTL64
+ 
+diff --git a/render/glyph.c b/render/glyph.c
+index 7fcdfd9..37e80ec 100644
+--- a/render/glyph.c
++++ b/render/glyph.c
+@@ -28,6 +28,10 @@
+ 
+ #ifdef HAVE_SHA1_IN_LIBMD /* Use libmd for SHA1 */
+ # include <sha1.h>
++#elif defined(HAVE_SHA1_IN_LIBGCRYPT)
++# include <gcrypt.h>
++#elif defined(HAVE_SHA1_IN_LIBNETTLE)
++# include <nettle/sha.h>
+ #else /* Use OpenSSL's libcrypto */
+ # include <stddef.h>  /* buggy openssl/sha.h wants size_t */
+ # include <openssl/sha.h>
+@@ -205,6 +209,33 @@ HashGlyph (xGlyphInfo    *gi,
+     SHA1Update (&ctx, gi, sizeof (xGlyphInfo));
+     SHA1Update (&ctx, bits, size);
+     SHA1Final (sha1, &ctx);
++#elif defined(HAVE_SHA1_IN_LIBGCRYPT) /* Use libgcrypt for SHA1 */
++    static int init;
++    gcry_md_hd_t h;
++    gcry_error_t err;
++
++    if (!init) {
++	if (!gcry_check_version(NULL))
++	    return BadAlloc;
++	gcry_control(GCRYCTL_DISABLE_SECMEM, 0);
++	gcry_control(GCRYCTL_INITIALIZATION_FINISHED, 0);
++	init = 1;
++    }
++
++    err = gcry_md_open(&h, GCRY_MD_SHA1, 0);
++    if (err)
++	return BadAlloc;
++    gcry_md_write(h, gi, sizeof (xGlyphInfo));
++    gcry_md_write(h, bits, size);
++    memcpy(sha1, gcry_md_read(h, GCRY_MD_SHA1), 20);
++    gcry_md_close(h);
++#elif HAVE_SHA1_IN_LIBNETTLE
++    struct sha1_ctx ctx;
++
++    sha1_init(&ctx);
++    sha1_update(&ctx, sizeof (xGlyphInfo), gi);
++    sha1_update(&ctx, size, bits);
++    sha1_digest(&ctx, 20, sha1);
+ #else /* Use OpenSSL's libcrypto */
+     SHA_CTX ctx;
+     int success;
+-- 
+1.7.0
+

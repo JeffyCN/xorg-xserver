@@ -28,6 +28,9 @@ xorg-server (2:1.7.5.902-1) UNRELEASED; urgency=low
      - libudev-dev
      - libxau-dev
      - libxfont-dev
+  * Replace 02_Add-libgcrypt-as-an-option-for-sha1.diff with
+    02_Add-libgcrypt-and-libnettle-as-options-for-sha1.diff so that it's
+    also possible to link against libnettle.
 
  -- Drew Parsons <dparsons@debian.org>  Wed, 03 Mar 2010 23:33:54 +1100
 
