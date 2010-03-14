@@ -126,7 +126,7 @@ Description: Xorg X server - core server
  This package is built from the X.org xserver module.
 
 Package: xserver-xorg-core-udeb
-Package-Type: udeb
+XC-Package-Type: udeb
 Section: debian-installer
 Architecture: any
 Depends:
