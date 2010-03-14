@@ -24,7 +24,6 @@ xorg-server (2:1.7.5.902-1) UNRELEASED; urgency=low
   * Version/Bump some B-D to make sure xserver-xorg-core-udeb gets its
     dependencies on the (recently-added) udebs rather than on the
     libraries:
-     - libgcrypt11-dev (switching from the virtual libgcrypt-dev package)
      - libpciaccess-dev
      - libudev-dev
      - libxau-dev
