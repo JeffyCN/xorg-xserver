@@ -124,6 +124,7 @@ confflags_main = \
 	--enable-kdrive \
 	--enable-xephyr \
 	$(build_xfbdev) \
+	--with-sha1=libgcrypt \
 	$(void)
 
 confflags_udeb = \
@@ -153,6 +154,7 @@ confflags_udeb = \
 	--disable-kdrive \
 	--disable-xephyr \
 	--disable-xfbdev \
+	--with-sha1=libnettle \
 	$(void)
 
 $(STAMP_DIR)/autoreconf: $(STAMP_DIR)/patch
