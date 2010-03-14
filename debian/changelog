@@ -10,7 +10,7 @@ xorg-server (2:1.7.5.902-1) UNRELEASED; urgency=low
 
   [ Brice Goglin ]
   * New upstream release.
-    + Allow for missing or disabled compat_output, cloes: #572268, #554450.
+    + Allow for missing or disabled compat_output, closes: #572268, #554450.
     + Reenable RECORD extension, closes: #570680.
     + dix: try to ring the bell even if the current device doesn't have one,
       closes: #564200.
