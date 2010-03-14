@@ -1,4 +1,4 @@
-xorg-server (2:1.7.5.901-1) UNRELEASED; urgency=low
+xorg-server (2:1.7.5.902-1) UNRELEASED; urgency=low
 
   [ Julien Cristau ]
   * config/udev: fix adding unnamed devices.

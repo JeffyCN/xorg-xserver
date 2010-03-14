@@ -1,3 +1,93 @@
+commit 5a2b3f36a05d1e0fcfd1b0f85d6584478ba24eda
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Fri Mar 12 16:53:06 2010 +1000
+
+    xserver 1.7.5.902
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit c25b34fe61cb3fc7c3583a8ccf62c470cc8ead06
+Merge: 3ae6a37 ff5fb43
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Fri Mar 12 16:37:28 2010 +1000
+
+    Merge branch 'server-1.7-nominations' into server-1.7-branch
+
+commit ff5fb43a4b38c707a1a9948ace621a62b5b2457a
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Fri Mar 12 14:39:19 2010 +1000
+
+    Xext: Link to external libraries when necessary.
+    
+    Although the DDX should be linked to the necessary libraries, we may
+    also need to pull them in directly to the module to ensure the symbols
+    are resolved at runtime. Should fix this bug with XSELINUX:
+    
+    /usr/bin/X: symbol lookup error:
+    /usr/lib64/xorg/modules/extensions/libextmod.so: undefined symbol:
+    is_selinux_enabled
+    
+    -v2: use _LIBADD instead of _LIBS; remove SELINUX_LIBS from
+         XSERVER_SYS_LIBS as it should only be needed in extmod.
+    
+    Signed-off-by: Dan Nicholson <dbn.lists@gmail.com>
+    Signed-off-by: Eamon Walsh <ewalsh@tycho.nsa.gov>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    (cherry picked from commit 178da6534fe7ab4b99fb87925c04e6f963c88583)
+    
+    Conflicts:
+    
+    	configure.ac
+
+commit a69c7a4c539f933df3f6aa5444cdde95e4d5698a
+Author: Daniel Stone <daniel@fooishbar.org>
+Date:   Thu Mar 11 14:19:04 2010 +0200
+
+    Record: Avoid duplicates from replaying frozen events
+    
+    Reintroduce a check which used to be there in the old
+    ProcessKeyboardEvent/ProcessPointerEvent codepath, which avoids us
+    recording events subject to a grab twice: once when it's first processed
+    in EnqueueEvent, and then again when it's thawed and being replayed.
+    
+    This required a tiny amount of code motion to expose syncEvents.
+    
+    Signed-off-by: Daniel Stone <daniel@fooishbar.org>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    (cherry picked from commit a2ea8c2f2cc53607d57d60f41c879380ea70cd02)
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit 3ae6a3779d9040a4d7c3e1b7901117e24e0d3ecf
+Author: Dave Airlie <airlied@redhat.com>
+Date:   Wed Mar 10 16:07:09 2010 +1000
+
+    dri2: return FALSE not BadValue.
+    
+    With 1.7 if you try and send a DRI2Connect with this value set
+    to anything but 0, the server will segfault due to the strlen
+    in the function this returns to, since BadValue != FALSE.
+    
+    Fixed via other work in 1.8.
+    
+    Signed-off-by: Dave Airlie <airlied@redhat.com>
+
+commit 2086e4920a16248aa150114236dfb0637c20559a
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Tue Mar 9 09:42:42 2010 +1000
+
+    Revert "dix: Use DeliverGrabbedEvent for implicit passive grabs (#25400)"
+    
+    Reported-by: Florian Mickerl <florian@mickler.org>
+    "this regresses my desktop. fluxbox is not able to move the windows around
+    anymore. also popup of context-menue does not work. (well sometimes it does,
+    but then the fluxbox-keyboard-shortcuts do not work)"
+    
+    This reverts commit 351d11fd466fae731df860a6ff4cf50ad565f43f.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+
 commit 1242e494c8abc25d51fa0f8120ba353ffcf7be08
 Author: Peter Hutterer <peter.hutterer@who-t.net>
 Date:   Fri Mar 5 09:27:13 2010 +1000
