@@ -34,6 +34,7 @@ xorg-server (2:1.7.5.902-1) UNRELEASED; urgency=low
     statically against libnettle.a to avoid an extra udeb for a few bytes.
   * Add nettle-dev to Build-Depends; and pass --with-sha1=libnettle for
     the udeb build (and --with-sha1=libgcrypt for the main build).
+  * Add myself to Uploaders.
 
  -- Drew Parsons <dparsons@debian.org>  Wed, 03 Mar 2010 23:33:54 +1100
 
