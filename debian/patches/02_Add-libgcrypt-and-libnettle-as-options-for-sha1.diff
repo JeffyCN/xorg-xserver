@@ -69,7 +69,7 @@ index c215b5c..e688f94 100644
 +if test "x$with_sha1" = xlibnettle; then
 +        AC_DEFINE([HAVE_SHA1_IN_LIBNETTLE], [1],
 +                  [Use libnettle SHA1 functions])
-+        SHA1_LIBS=-lnettle
++        SHA1_LIBS=/usr/lib/libnettle.a
 +fi
 +# We don't need all of the OpenSSL libraries, just libcrypto
 +AC_CHECK_LIB([crypto], [SHA1_Init], [HAVE_LIBCRYPTO=yes])
