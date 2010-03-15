@@ -65,6 +65,8 @@ INSTALL=/usr/bin/install
 
 VENDOR = $(shell lsb_release -i -s)
 
+BUILDER=$(shell dpkg-parsechangelog | awk -F': ' '/^Maintainer: / {print $$2}')
+
 # disable-static is so we don't get libfoo.a for modules.  now if only we could
 # kill the .las.
 confflags += \
