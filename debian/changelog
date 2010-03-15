@@ -1,3 +1,10 @@
+xorg-server (2:1.7.5.902-2) UNRELEASED; urgency=low
+
+  * Add 06_dont_trap_access_to_timer_and_keyboard.diff,
+    thanks Samuel Thibault.
+
+ -- Brice Goglin <bgoglin@debian.org>  Tue, 16 Mar 2010 08:06:29 +0100
+
 xorg-server (2:1.7.5.902-1) unstable; urgency=low
 
   [ Julien Cristau ]
