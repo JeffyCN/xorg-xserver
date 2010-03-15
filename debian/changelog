@@ -18,6 +18,8 @@ xorg-server (2:1.7.5.902-1) UNRELEASED; urgency=low
       closes: #564200.
   * Refresh patches.
   * Fix typo in xvfb-run.1, thanks Joey Hess, closes: #527490.
+  * Add 06_dont_trap_access_to_timer_and_keyboard.diff,
+    thanks Samuel Thibault.
 
   [ Cyril Brulebois ]
   * Add udeb needed for the graphical installer: xserver-xorg-core-udeb.
