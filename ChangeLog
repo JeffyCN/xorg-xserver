@@ -1,3 +1,49 @@
+commit c552ec12f9112901d5266c00fb3aaf4e06f5d614
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Wed Mar 17 10:49:28 2010 +1000
+
+    xserver 1.7.6
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit 63ef872068299aa2ea6bfd7d11935c222cc1e102
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Tue Mar 16 11:40:53 2010 -0700
+
+    Revert "XQuartz: Explicitly pass a bellProc to make XBell() work again."
+    
+    I'm not quite sure why this was necessary, but DDXRingBell is being called
+    from CoreKeyboardBell, so we don't need a separate bellProc which would
+    result in multiple rings.
+    
+    This reverts commit 7e7e7935eeb86b5990664a662471800cfd2e7ce0.
+    
+    Conflicts:
+    
+    	hw/xquartz/quartzKeyboard.c
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+
+commit 31292a7c775e4a249926140a86bc19c3805cdd96
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Wed Feb 10 15:52:14 2010 -0800
+
+    XQuartz: Use an empty xkb keymap by default
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+    (cherry picked from commit 5172253bae3b9867118c6717434e73c173acd5e9)
+
+commit 5b4fabb910eefb393eb3bfb45df5e63fdeb71f26
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Mon Mar 15 08:44:01 2010 +1000
+
+    configure: restore SHA1_LIB for XSERVER_SYS_LIBS
+    
+    Accidentally removed in ff5fb43a4b38c707a, caused by
+    a botched merge when cherry-picking 178da6534fe7ab4b99fb.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+
 commit 5a2b3f36a05d1e0fcfd1b0f85d6584478ba24eda
 Author: Peter Hutterer <peter.hutterer@who-t.net>
 Date:   Fri Mar 12 16:53:06 2010 +1000
