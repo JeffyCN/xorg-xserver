@@ -7,6 +7,11 @@ xorg-server (2:1.7.6-1) UNRELEASED; urgency=low
   [ Timo Aaltonen ]
   * New upstream release, closes: #574354.
 
+  [ Julien Cristau ]
+  * Don't build xserver-xorg-core-udeb on sparc.  The linker fails because
+    relocations have to be truncated when building statically against
+    libnettle.
+
  -- Brice Goglin <bgoglin@debian.org>  Tue, 16 Mar 2010 08:06:29 +0100
 
 xorg-server (2:1.7.5.902-1) unstable; urgency=low

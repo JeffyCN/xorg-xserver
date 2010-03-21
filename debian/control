@@ -129,7 +129,8 @@ Description: Xorg X server - core server
 Package: xserver-xorg-core-udeb
 XC-Package-Type: udeb
 Section: debian-installer
-Architecture: any
+# exclude sparc because of linker errors
+Architecture: alpha amd64 armel hppa i386 ia64 kfreebsd-amd64 kfreebsd-i386 mips mipsel powerpc s390
 Depends:
 # merged: xserver-common (>= ${source:Version}),
  xkb-data-udeb,
