@@ -1,4 +1,15 @@
-xorg-server (2:1.7.5.902-1) UNRELEASED; urgency=low
+xorg-server (2:1.7.6-1) UNRELEASED; urgency=low
+
+  [ Brice Goglin ]
+  * Add 06_dont_trap_access_to_timer_and_keyboard.diff,
+    thanks Samuel Thibault.
+
+  [ Timo Aaltonen ]
+  * New upstream release.
+
+ -- Brice Goglin <bgoglin@debian.org>  Tue, 16 Mar 2010 08:06:29 +0100
+
+xorg-server (2:1.7.5.902-1) unstable; urgency=low
 
   [ Julien Cristau ]
   * config/udev: fix adding unnamed devices.
@@ -36,8 +47,11 @@ xorg-server (2:1.7.5.902-1) UNRELEASED; urgency=low
     statically against libnettle.a to avoid an extra udeb for a few bytes.
   * Add nettle-dev to Build-Depends; and pass --with-sha1=libnettle for
     the udeb build (and --with-sha1=libgcrypt for the main build).
+  * Add myself to Uploaders.
+  * Tweak builderstring to use the name of the person responsible for the
+    upload instead of an host-specific one (Closes: #574017).
 
- -- Drew Parsons <dparsons@debian.org>  Wed, 03 Mar 2010 23:33:54 +1100
+ -- Cyril Brulebois <kibi@debian.org>  Mon, 15 Mar 2010 22:19:01 +0100
 
 xorg-server (2:1.7.5-1) unstable; urgency=low
 
