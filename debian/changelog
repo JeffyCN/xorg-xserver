@@ -1,4 +1,4 @@
-xorg-server (2:1.7.6-1) UNRELEASED; urgency=low
+xorg-server (2:1.7.6-1) unstable; urgency=low
 
   [ Brice Goglin ]
   * Add 06_dont_trap_access_to_timer_and_keyboard.diff,
@@ -12,7 +12,7 @@ xorg-server (2:1.7.6-1) UNRELEASED; urgency=low
     relocations have to be truncated when building statically against
     libnettle.
 
- -- Brice Goglin <bgoglin@debian.org>  Tue, 16 Mar 2010 08:06:29 +0100
+ -- Cyril Brulebois <kibi@debian.org>  Tue, 23 Mar 2010 16:59:08 +0100
 
 xorg-server (2:1.7.5.902-1) unstable; urgency=low
 
