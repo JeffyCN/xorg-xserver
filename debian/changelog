@@ -1,7 +1,7 @@
 xorg-server (2:1.7.6-1.1) UNRELEASED; urgency=low
 
   * Backport xorg.conf.d, inputclass and libudev support from
-    xserver 1.8.
+    xserver 1.8. The udev support is slightly different from what we had.
 
  -- Timo Aaltonen <tjaalton@ubuntu.com>  Wed, 24 Mar 2010 16:08:25 +0200
 
