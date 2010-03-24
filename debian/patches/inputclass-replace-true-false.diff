@@ -1,0 +1,65 @@
+commit 6850ea8fb95417db9ce3a70fc17f90d6fdea1389
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Fri Jan 15 15:32:16 2010 +1000
+
+    xfree86: replace True/False with TRUE/FALSE.
+    
+    xf86Xinput.c relied on xkbsrv.h's definition of True/False which seems odd
+    at first and weird on second glance.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Dan Nicholson <dbn.lists@gmail.com>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+Index: xorg-server/hw/xfree86/common/xf86Xinput.c
+===================================================================
+--- xorg-server.orig/hw/xfree86/common/xf86Xinput.c	2010-03-24 13:43:58.000000000 +0200
++++ xorg-server/hw/xfree86/common/xf86Xinput.c	2010-03-24 13:44:05.000000000 +0200
+@@ -506,10 +506,10 @@
+ {
+     if (iclass->match_product &&
+         (!attrs->product || !strstr(attrs->product, iclass->match_product)))
+-        return False;
++        return FALSE;
+     if (iclass->match_vendor &&
+         (!attrs->vendor || !strstr(attrs->vendor, iclass->match_vendor)))
+-        return False;
++        return FALSE;
+     if (iclass->match_device &&
+ #ifdef HAVE_FNMATCH_H
+         (!attrs->device ||
+@@ -517,26 +517,26 @@
+ #else
+         (!attrs->device || !strstr(attrs->device, iclass->match_device)))
+ #endif
+-        return False;
++        return FALSE;
+     if (iclass->is_keyboard.set &&
+         iclass->is_keyboard.val != !!(attrs->flags & ATTR_KEYBOARD))
+-        return False;
++        return FALSE;
+     if (iclass->is_pointer.set &&
+         iclass->is_pointer.val != !!(attrs->flags & ATTR_POINTER))
+-        return False;
++        return FALSE;
+     if (iclass->is_joystick.set &&
+         iclass->is_joystick.val != !!(attrs->flags & ATTR_JOYSTICK))
+-        return False;
++        return FALSE;
+     if (iclass->is_tablet.set &&
+         iclass->is_tablet.val != !!(attrs->flags & ATTR_TABLET))
+-        return False;
++        return FALSE;
+     if (iclass->is_touchpad.set &&
+         iclass->is_touchpad.val != !!(attrs->flags & ATTR_TOUCHPAD))
+-        return False;
++        return FALSE;
+     if (iclass->is_touchscreen.set &&
+         iclass->is_touchscreen.val != !!(attrs->flags & ATTR_TOUCHSCREEN))
+-        return False;
+-    return True;
++        return FALSE;
++    return TRUE;
+ }
+ 
+ /*

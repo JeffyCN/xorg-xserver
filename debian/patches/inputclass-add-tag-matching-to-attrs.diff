@@ -1,0 +1,229 @@
+commit c6d9bc092c84ad5c68083a126aa7577baa42cef7
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Wed Feb 10 15:36:50 2010 +1000
+
+    Add tag matching to input attributes.
+    
+    Tags may be a list of comma-separated strings that match against a MatchTag
+    InputClass section. If any of the tags specified for a device match against
+    the MatchTag of the section, this match is evaluated true and passed on to
+    the next match condition.
+    
+    Tags are specified as "input.tags" (hal) or "ID_INPUT.tags" (udev), the
+    value of the tags is case-sensitive and require an exact match (not a
+    substring match).
+    
+    i.e. "quirk" will not match "QUIRK", "need_quirk" or "quirk_needed".
+    
+    Example configuration:
+    udev:
+        ENV{ID_INPUT.tags}="foo,bar"
+    
+    hal:
+        <merge key="input.tags" type="string">foo,bar</merge>
+    
+    xorg.conf:
+        Section "InputClass"
+                Identifier "foobar quirks"
+                MatchTag "foo|foobar"
+                Option "Foobar" "on"
+        EndSection
+    
+    Where the xorg.conf section matches against any device with the tag "foo"
+    or tag "foobar" set.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Tested-by: Dan Nicholson <dbn.lists@gmail.com>
+    Reviewed-by: Dan Nicholson <dbn.lists@gmail.com>
+
+Index: xorg-server/config/hal.c
+===================================================================
+--- xorg-server.orig/config/hal.c	2010-03-24 13:24:58.000000000 +0200
++++ xorg-server/config/hal.c	2010-03-24 13:44:23.000000000 +0200
+@@ -164,6 +164,7 @@
+         attrs.product = xstrdup(name);
+ 
+     attrs.vendor = get_prop_string(hal_ctx, udi, "info.vendor");
++    attrs.tags = xstrtokenize(get_prop_string(hal_ctx, udi, "input.tags"), ",");
+ 
+     if (libhal_device_query_capability(hal_ctx, udi, "input.keys", NULL))
+         attrs.flags |= ATTR_KEYBOARD;
+@@ -391,6 +392,14 @@
+     xfree(attrs.product);
+     xfree(attrs.vendor);
+     xfree(attrs.device);
++    if (attrs.tags) {
++        char **tag = attrs.tags;
++        while (*tag) {
++            xfree(*tag);
++            tag++;
++        }
++        xfree(attrs.tags);
++    }
+ 
+     if (xkb_opts.layout)
+         xfree(xkb_opts.layout);
+Index: xorg-server/config/udev.c
+===================================================================
+--- xorg-server.orig/config/udev.c	2010-03-24 13:24:58.000000000 +0200
++++ xorg-server/config/udev.c	2010-03-24 13:44:23.000000000 +0200
+@@ -84,6 +84,7 @@
+     add_option(&options, "path", path);
+     add_option(&options, "device", path);
+     attrs.device = path;
++    attrs.tags = xstrtokenize(udev_device_get_property_value(udev_device, "ID_INPUT.tags"), ",");
+ 
+     config_info = Xprintf("udev:%s", syspath);
+     if (!config_info)
+@@ -150,6 +151,15 @@
+         xfree(tmpo);
+     }
+ 
++    if (attrs.tags) {
++        char **tag = attrs.tags;
++        while (*tag) {
++            xfree(*tag);
++            tag++;
++        }
++        xfree(attrs.tags);
++    }
++
+     return;
+ }
+ 
+Index: xorg-server/hw/xfree86/common/xf86Xinput.c
+===================================================================
+--- xorg-server.orig/hw/xfree86/common/xf86Xinput.c	2010-03-24 13:44:17.000000000 +0200
++++ xorg-server/hw/xfree86/common/xf86Xinput.c	2010-03-24 13:44:23.000000000 +0200
+@@ -547,6 +547,24 @@
+         if (!match)
+             return FALSE;
+     }
++    if (iclass->match_tag) {
++        if (!attrs->tags)
++            return FALSE;
++
++        for (cur = iclass->match_tag, match = FALSE; *cur && !match; cur++) {
++            const char *tag;
++            for(tag = *attrs->tags; *tag; tag++) {
++                if (!strcmp(tag, *cur)) {
++                    match = TRUE;
++                    break;
++                }
++            }
++        }
++
++        if (!match)
++            return FALSE;
++    }
++
+     if (iclass->is_keyboard.set &&
+         iclass->is_keyboard.val != !!(attrs->flags & ATTR_KEYBOARD))
+         return FALSE;
+Index: xorg-server/hw/xfree86/doc/man/xorg.conf.man.pre
+===================================================================
+--- xorg-server.orig/hw/xfree86/doc/man/xorg.conf.man.pre	2010-03-24 13:44:13.000000000 +0200
++++ xorg-server/hw/xfree86/doc/man/xorg.conf.man.pre	2010-03-24 13:44:23.000000000 +0200
+@@ -1053,6 +1053,15 @@
+ pathname pattern. Multiple patterns can be matched by separating arguments
+ with a '|' character.
+ .TP 7
++.BI "MatchTag \*q" matchtag \*q
++This entry can be used to check if tags assigned by the config backend
++matches the
++.RI \*q matchtag \*q
++pattern.  Multiple patterns can be matched by separating arguments
++with a '|' character. A match is found if at least one of the tags given in
++.RI \*q matchtag \*q
++matches at least one of the tags assigned by the backend.
++.TP 7
+ .BI "MatchIsKeyboard     \*q" bool \*q
+ .TP 7
+ .BI "MatchIsPointer      \*q" bool \*q
+Index: xorg-server/hw/xfree86/parser/InputClass.c
+===================================================================
+--- xorg-server.orig/hw/xfree86/parser/InputClass.c	2010-03-24 13:44:19.000000000 +0200
++++ xorg-server/hw/xfree86/parser/InputClass.c	2010-03-24 13:44:23.000000000 +0200
+@@ -47,6 +47,7 @@
+     {MATCH_PRODUCT, "matchproduct"},
+     {MATCH_VENDOR, "matchvendor"},
+     {MATCH_DEVICE_PATH, "matchdevicepath"},
++    {MATCH_TAG, "matchtag"},
+     {MATCH_IS_KEYBOARD, "matchiskeyboard"},
+     {MATCH_IS_POINTER, "matchispointer"},
+     {MATCH_IS_JOYSTICK, "matchisjoystick"},
+@@ -107,6 +108,11 @@
+                 Error(QUOTE_MSG, "MatchDevicePath");
+             ptr->match_device = xstrtokenize(val.str, TOKEN_SEP);
+             break;
++        case MATCH_TAG:
++            if (xf86getSubToken(&(ptr->comment)) != STRING)
++                Error(QUOTE_MSG, "MatchTag");
++            ptr->match_tag = xstrtokenize(val.str, TOKEN_SEP);
++            break;
+         case MATCH_IS_KEYBOARD:
+             if (xf86getSubToken(&(ptr->comment)) != STRING)
+                 Error(QUOTE_MSG, "MatchIsKeyboard");
+@@ -211,6 +217,14 @@
+                         *list);
+             fprintf(cf, "\"\n");
+         }
++        if (ptr->match_tag) {
++            fprintf(cf, "\tMatchTag \"");
++            for (list = ptr->match_tag; *list; list++)
++                fprintf(cf, "%s%s",
++                        list == ptr->match_tag ? "" : TOKEN_SEP,
++                        *list);
++            fprintf(cf, "\"\n");
++        }
+         if (ptr->is_keyboard.set)
+             fprintf(cf, "\tIsKeyboard      \"%s\"\n",
+                     ptr->is_keyboard.val ? "yes" : "no");
+@@ -259,6 +273,11 @@
+                 free(*list);
+             free(ptr->match_device);
+         }
++        if (ptr->match_tag) {
++            for (list = ptr->match_tag; *list; list++)
++                free(*list);
++            free(ptr->match_tag);
++        }
+         TestFree(ptr->comment);
+         xf86optionListFree(ptr->option_lst);
+ 
+Index: xorg-server/hw/xfree86/parser/xf86Parser.h
+===================================================================
+--- xorg-server.orig/hw/xfree86/parser/xf86Parser.h	2010-03-24 13:44:13.000000000 +0200
++++ xorg-server/hw/xfree86/parser/xf86Parser.h	2010-03-24 13:44:23.000000000 +0200
+@@ -346,6 +346,7 @@
+ 	char **match_product;
+ 	char **match_vendor;
+ 	char **match_device;
++	char **match_tag;
+ 	xf86TriState is_keyboard;
+ 	xf86TriState is_pointer;
+ 	xf86TriState is_joystick;
+Index: xorg-server/hw/xfree86/parser/xf86tokens.h
+===================================================================
+--- xorg-server.orig/hw/xfree86/parser/xf86tokens.h	2010-03-24 13:14:42.000000000 +0200
++++ xorg-server/hw/xfree86/parser/xf86tokens.h	2010-03-24 13:44:23.000000000 +0200
+@@ -279,6 +279,7 @@
+     MATCH_PRODUCT,
+     MATCH_VENDOR,
+     MATCH_DEVICE_PATH,
++    MATCH_TAG,
+     MATCH_IS_KEYBOARD,
+     MATCH_IS_POINTER,
+     MATCH_IS_JOYSTICK,
+Index: xorg-server/include/input.h
+===================================================================
+--- xorg-server.orig/include/input.h	2010-03-24 13:14:42.000000000 +0200
++++ xorg-server/include/input.h	2010-03-24 13:44:23.000000000 +0200
+@@ -215,6 +215,7 @@
+     char                *product;
+     char                *vendor;
+     char                *device;
++    char                **tags; /* null-terminated */
+     uint32_t            flags;
+ } InputAttributes;
+ 

@@ -1,0 +1,1287 @@
+From 871bbe1d87fa3c7ebd075e1d1eec33e45b08493d Mon Sep 17 00:00:00 2001
+From: Keith Packard <keithp@keithp.com>
+Date: Wed, 30 Dec 2009 17:16:45 +0000
+Subject: Merge remote branch 'dbn/xorg.conf.d'
+
+---
+Index: xorg-server/configure.ac
+===================================================================
+--- xorg-server.orig/configure.ac	2010-03-24 13:05:51.000000000 +0200
++++ xorg-server/configure.ac	2010-03-24 13:05:51.000000000 +0200
+@@ -1696,6 +1696,7 @@
+ 
+ 	dnl these only go in xorg-config.h
+ 	XF86CONFIGFILE="xorg.conf"
++	XF86CONFIGDIR="xorg.conf.d"
+ 	CONFIGFILE="$sysconfdir/$XF86CONFIGFILE"
+ 	LOGPREFIX="$logdir/Xorg."
+ 	AC_DEFINE(XORG_SERVER, 1, [Building Xorg server])
+@@ -1708,6 +1709,7 @@
+ 	AC_DEFINE(__XSERVERNAME__, "Xorg", [Name of X server])
+ 	AC_DEFINE_DIR(__XCONFIGFILE__, XF86CONFIGFILE, [Name of configuration file])
+ 	AC_DEFINE_DIR(XF86CONFIGFILE, XF86CONFIGFILE, [Name of configuration file])
++	AC_DEFINE_DIR(__XCONFIGDIR__, XF86CONFIGDIR, [Name of configuration directory])
+ 	AC_DEFINE_DIR(DEFAULT_MODULE_PATH, moduledir, [Default module search path])
+ 	AC_DEFINE_DIR(DEFAULT_LIBRARY_PATH, libdir, [Default library install path])
+ 	AC_DEFINE_DIR(DEFAULT_LOGPREFIX, LOGPREFIX, [Default log location])
+Index: xorg-server/cpprules.in
+===================================================================
+--- xorg-server.orig/cpprules.in	2010-03-24 13:01:50.000000000 +0200
++++ xorg-server/cpprules.in	2010-03-24 13:05:51.000000000 +0200
+@@ -36,7 +36,8 @@
+ 	-D__adminmansuffix__=$(ADMIN_MAN_SUFFIX) \
+ 	-D__mandir__=$(mandir) \
+ 	-D__projectroot__=$(prefix) \
+-	-D__xconfigfile__=$(__XCONFIGFILE__) -D__xconfigdir__=$(XCONFIGDIR) \
++	-D__xconfigfile__=$(__XCONFIGFILE__) \
++	-D__xconfigdir__=$(__XCONFIGDIR__) \
+ 	-D__xkbdir__=$(XKB_BASE_DIRECTORY) \
+ 	-D__modulepath__="$(DEFAULT_MODULE_PATH)" \
+ 	-D__xlogfile__=$(XLOGFILE) -D__xservername__=$(XSERVERNAME) 
+Index: xorg-server/hw/xfree86/common/xf86AutoConfig.c
+===================================================================
+--- xorg-server.orig/hw/xfree86/common/xf86AutoConfig.c	2010-03-24 13:01:50.000000000 +0200
++++ xorg-server/hw/xfree86/common/xf86AutoConfig.c	2010-03-24 13:05:51.000000000 +0200
+@@ -272,7 +272,8 @@
+     for (cp = builtinConfig; *cp; cp++)
+ 	xf86ErrorFVerb(3, "\t%s", *cp);
+     xf86MsgVerb(X_DEFAULT, 3, "--- End of built-in configuration ---\n");
+-    
++
++    xf86initConfigFiles();
+     xf86setBuiltinConfig(builtinConfig);
+     ret = xf86HandleConfigFile(TRUE);
+     FreeConfig();
+Index: xorg-server/hw/xfree86/common/xf86Config.c
+===================================================================
+--- xorg-server.orig/hw/xfree86/common/xf86Config.c	2010-03-24 13:01:50.000000000 +0200
++++ xorg-server/hw/xfree86/common/xf86Config.c	2010-03-24 13:05:51.000000000 +0200
+@@ -95,6 +95,23 @@
+ 			"%P/lib/X11/%X.%H," "%P/lib/X11/%X-%M," \
+ 			"%P/lib/X11/%X"
+ #endif
++#ifndef ROOT_CONFIGDIRPATH
++#define ROOT_CONFIGDIRPATH	"%A," "%R," \
++				"/etc/X11/%R," "%P/etc/X11/%R," \
++				"/etc/X11/%X-%M," "/etc/X11/%X," "/etc/%X," \
++				"%P/etc/X11/%X.%H," "%P/etc/X11/%X-%M," \
++				"%P/etc/X11/%X," \
++				"%P/lib/X11/%X.%H," "%P/lib/X11/%X-%M," \
++				"%P/lib/X11/%X"
++#endif
++#ifndef USER_CONFIGDIRPATH
++#define USER_CONFIGDIRPATH	"/etc/X11/%S," "%P/etc/X11/%S," \
++				"/etc/X11/%X-%M," "/etc/X11/%X," "/etc/%X," \
++				"%P/etc/X11/%X.%H," "%P/etc/X11/%X-%M," \
++				"%P/etc/X11/%X," \
++				"%P/lib/X11/%X.%H," "%P/lib/X11/%X-%M," \
++				"%P/lib/X11/%X"
++#endif
+ #ifndef PROJECTROOT
+ #define PROJECTROOT	"/usr/X11R6"
+ #endif
+@@ -1471,6 +1488,45 @@
+        {0}, FALSE },
+ };
+ 
++static Bool
++configInputDevices(XF86ConfLayoutPtr layout, serverLayoutPtr servlayoutp)
++{
++    XF86ConfInputrefPtr irp;
++    IDevPtr *indp;
++    int count = 0;
++
++    /*
++     * Count the number of input devices.
++     */
++    irp = layout->lay_input_lst;
++    while (irp) {
++	count++;
++	irp = (XF86ConfInputrefPtr)irp->list.next;
++    }
++    DebugF("Found %d input devices in the layout section %s\n",
++	    count, layout.lay_identifier);
++    indp = xnfcalloc((count + 1), sizeof(IDevPtr));
++    indp[count] = NULL;
++    irp = layout->lay_input_lst;
++    count = 0;
++    while (irp) {
++	indp[count] = xnfalloc(sizeof(IDevRec));
++	if (!configInput(indp[count], irp->iref_inputdev, X_CONFIG)) {
++	    while(count--)
++		xfree(indp[count]);
++	    xfree(indp);
++	    return FALSE;
++	}
++	indp[count]->extraOptions = irp->iref_option_lst;
++	count++;
++	irp = (XF86ConfInputrefPtr)irp->list.next;
++    }
++    servlayoutp->inputs = indp;
++
++    return TRUE;
++}
++
++
+ /*
+  * figure out which layout is active, which screens are used in that layout,
+  * which drivers and monitors are used in these screens
+@@ -1481,14 +1537,12 @@
+ {
+     XF86ConfAdjacencyPtr adjp;
+     XF86ConfInactivePtr idp;
+-    XF86ConfInputrefPtr irp;
+     int count = 0;
+     int scrnum;
+     XF86ConfLayoutPtr l;
+     MessageType from;
+     screenLayoutPtr slp;
+     GDevPtr gdp;
+-    IDevPtr* indp;
+     int i = 0, j;
+ 
+     if (!servlayoutp)
+@@ -1701,37 +1755,13 @@
+         count++;
+         idp = (XF86ConfInactivePtr)idp->list.next;
+     }
+-    /*
+-     * Count the number of input devices.
+-     */
+-    count = 0;
+-    irp = conf_layout->lay_input_lst;
+-    while (irp) {
+-        count++;
+-        irp = (XF86ConfInputrefPtr)irp->list.next;
+-    }
+-    DebugF("Found %d input devices in the layout section %s\n",
+-           count, conf_layout->lay_identifier);
+-    indp = xnfcalloc((count + 1), sizeof(IDevPtr));
+-    indp[count] = NULL;
+-    irp = conf_layout->lay_input_lst;
+-    count = 0;
+-    while (irp) {
+-        indp[count] = xnfalloc(sizeof(IDevRec));
+-	if (!configInput(indp[count], irp->iref_inputdev, X_CONFIG)) {
+-            while(count--) 
+-                xfree(indp[count]);
+-            xfree(indp);
+-            return FALSE;
+-	}
+-	indp[count]->extraOptions = irp->iref_option_lst;
+-        count++;
+-        irp = (XF86ConfInputrefPtr)irp->list.next;
+-    }
++
++    if (!configInputDevices(conf_layout, servlayoutp))
++	return FALSE;
++
+     servlayoutp->id = conf_layout->lay_identifier;
+     servlayoutp->screens = slp;
+     servlayoutp->inactives = gdp;
+-    servlayoutp->inputs = indp;
+     servlayoutp->options = conf_layout->lay_option_lst;
+     from = X_DEFAULT;
+ 
+@@ -1743,12 +1773,14 @@
+  * the only active screen.
+  */
+ static Bool
+-configImpliedLayout(serverLayoutPtr servlayoutp, XF86ConfScreenPtr conf_screen)
++configImpliedLayout(serverLayoutPtr servlayoutp, XF86ConfScreenPtr conf_screen,
++                    XF86ConfigPtr xf86configptr)
+ {
+     MessageType from;
+     XF86ConfScreenPtr s;
+     screenLayoutPtr slp;
+     IDevPtr *indp;
++    XF86ConfLayoutRec layout;
+ 
+     if (!servlayoutp)
+ 	return FALSE;
+@@ -1784,10 +1816,19 @@
+     servlayoutp->screens = slp;
+     servlayoutp->inactives = xnfcalloc(1, sizeof(GDevRec));
+     servlayoutp->options = NULL;
+-    /* Set up an empty input device list, then look for some core devices. */
+-    indp = xnfalloc(sizeof(IDevPtr));
+-    *indp = NULL;
+-    servlayoutp->inputs = indp;
++
++    memset(&layout, 0, sizeof(layout));
++    layout.lay_identifier = servlayoutp->id;
++    if (xf86layoutAddInputDevices(xf86configptr, &layout) > 0) {
++	if (!configInputDevices(&layout, servlayoutp))
++	    return FALSE;
++	from = X_DEFAULT;
++    } else {
++	/* Set up an empty input device list, then look for some core devices. */
++	indp = xnfalloc(sizeof(IDevPtr));
++	*indp = NULL;
++	servlayoutp->inputs = indp;
++    }
+ 
+     return TRUE;
+ }
+@@ -2428,34 +2469,53 @@
+ ConfigStatus
+ xf86HandleConfigFile(Bool autoconfig)
+ {
+-    const char *filename;
+-    char *searchpath;
+-    MessageType from = X_DEFAULT;
++    const char *filename, *dirname;
++    char *filesearch, *dirsearch;
++    MessageType filefrom = X_DEFAULT;
++    MessageType dirfrom = X_DEFAULT;
+     char *scanptr;
+     Bool singlecard = 0;
+     Bool implicit_layout = FALSE;
+ 
+     if (!autoconfig) {
+-	if (getuid() == 0)
+-	    searchpath = ROOT_CONFIGPATH;
+-	else
+-	    searchpath = USER_CONFIGPATH;
++	if (getuid() == 0) {
++	    filesearch = ROOT_CONFIGPATH;
++	    dirsearch = ROOT_CONFIGDIRPATH;
++	} else {
++	    filesearch = USER_CONFIGPATH;
++	    dirsearch = USER_CONFIGDIRPATH;
++	}
+ 
+ 	if (xf86ConfigFile)
+-	    from = X_CMDLINE;
+-
+-	filename = xf86openConfigFile(searchpath, xf86ConfigFile, PROJECTROOT);
++	    filefrom = X_CMDLINE;
++	if (xf86ConfigDir)
++	    dirfrom = X_CMDLINE;
++
++	xf86initConfigFiles();
++	filename = xf86openConfigFile(filesearch, xf86ConfigFile, PROJECTROOT);
++	dirname = xf86openConfigDirFiles(dirsearch, xf86ConfigDir, PROJECTROOT);
+ 	if (filename) {
+-	    xf86MsgVerb(from, 0, "Using config file: \"%s\"\n", filename);
++	    xf86MsgVerb(filefrom, 0, "Using config file: \"%s\"\n", filename);
+ 	    xf86ConfigFile = xnfstrdup(filename);
+ 	} else {
+ 	    if (xf86ConfigFile)
+ 		xf86Msg(X_ERROR, "Unable to locate/open config file: \"%s\"\n",
+ 			xf86ConfigFile);
+-	    return CONFIG_NOFILE;
+ 	}
++	if (dirname) {
++	    xf86MsgVerb(dirfrom, 0, "Using config directory: \"%s\"\n",
++			dirname);
++	    xf86ConfigDir = xnfstrdup(dirname);
++	} else {
++	    if (xf86ConfigDir)
++		xf86Msg(X_ERROR,
++			"Unable to locate/open config directory: \"%s\"\n",
++			xf86ConfigDir);
++	}
++	if (!filename && !dirname)
++	    return CONFIG_NOFILE;
+     }
+-     
++
+     if ((xf86configptr = xf86readConfigFile ()) == NULL) {
+ 	xf86Msg(X_ERROR, "Problem parsing the config file\n");
+ 	return CONFIG_PARSE_ERROR;
+@@ -2481,7 +2541,8 @@
+ 		    "No Layout section.  Using the first Screen section.\n");
+ 	}
+ 	if (!configImpliedLayout(&xf86ConfigLayout,
+-				 xf86configptr->conf_screen_lst)) {
++				 xf86configptr->conf_screen_lst,
++				 xf86configptr)) {
+             xf86Msg(X_ERROR, "Unable to determine the screen layout\n");
+ 	    return CONFIG_PARSE_ERROR;
+ 	}
+Index: xorg-server/hw/xfree86/common/xf86Globals.c
+===================================================================
+--- xorg-server.orig/hw/xfree86/common/xf86Globals.c	2010-03-24 13:01:50.000000000 +0200
++++ xorg-server/hw/xfree86/common/xf86Globals.c	2010-03-24 13:05:51.000000000 +0200
+@@ -143,6 +143,7 @@
+ #endif
+ };
+ const char *xf86ConfigFile = NULL;
++const char *xf86ConfigDir = NULL;
+ const char *xf86ModulePath = DEFAULT_MODULE_PATH;
+ MessageType xf86ModPathFrom = X_DEFAULT;
+ const char *xf86LogFile = DEFAULT_LOGPREFIX;
+Index: xorg-server/hw/xfree86/common/xf86Init.c
+===================================================================
+--- xorg-server.orig/hw/xfree86/common/xf86Init.c	2010-03-24 13:01:50.000000000 +0200
++++ xorg-server/hw/xfree86/common/xf86Init.c	2010-03-24 13:05:51.000000000 +0200
+@@ -1373,6 +1373,19 @@
+     xf86ConfigFile = argv[i + 1];
+     return 2;
+   }
++  if (!strcmp(argv[i], "-configdir"))
++  {
++    CHECK_FOR_REQUIRED_ARGUMENT();
++    if (getuid() != 0 && !xf86PathIsSafe(argv[i + 1])) {
++      FatalError("\nInvalid argument for %s\n"
++	  "\tFor non-root users, the file specified with %s must be\n"
++	  "\ta relative path and must not contain any \"..\" elements.\n"
++	  "\tUsing default "__XCONFIGDIR__" search path.\n\n",
++	  argv[i], argv[i]);
++    }
++    xf86ConfigDir = argv[i + 1];
++    return 2;
++  }
+   if (!strcmp(argv[i],"-flipPixels"))
+   {
+     xf86FlipPixels = TRUE;
+@@ -1656,6 +1669,8 @@
+   }
+   ErrorF("-config file           specify a configuration file, relative to the\n");
+   ErrorF("                       "__XCONFIGFILE__" search path, only root can use absolute\n");
++  ErrorF("-configdir dir         specify a configuration directory, relative to the\n");
++  ErrorF("                       "__XCONFIGDIR__" search path, only root can use absolute\n");
+   ErrorF("-verbose [n]           verbose startup messages\n");
+   ErrorF("-logverbose [n]        verbose log messages\n");
+   ErrorF("-quiet                 minimal startup messages\n");
+Index: xorg-server/hw/xfree86/common/xf86Priv.h
+===================================================================
+--- xorg-server.orig/hw/xfree86/common/xf86Priv.h	2010-03-24 13:01:50.000000000 +0200
++++ xorg-server/hw/xfree86/common/xf86Priv.h	2010-03-24 13:05:51.000000000 +0200
+@@ -46,6 +46,7 @@
+  * The global state of these things is held in xf86InfoRec (when appropriate).
+  */
+ extern _X_EXPORT const char *xf86ConfigFile;
++extern _X_EXPORT const char *xf86ConfigDir;
+ extern _X_EXPORT  Bool xf86AllowMouseOpenFail;
+ #ifdef XF86VIDMODE
+ extern _X_EXPORT  Bool xf86VidModeDisabled;
+Index: xorg-server/hw/xfree86/doc/man/Xorg.man.pre
+===================================================================
+--- xorg-server.orig/hw/xfree86/doc/man/Xorg.man.pre	2010-03-24 13:01:50.000000000 +0200
++++ xorg-server/hw/xfree86/doc/man/Xorg.man.pre	2010-03-24 13:05:51.000000000 +0200
+@@ -109,7 +109,7 @@
+ .B __xservername__
+ supports several mechanisms for supplying/obtaining configuration and
+ run-time parameters: command line options, environment variables, the
+-__xconfigfile__(__filemansuffix__) configuration file, auto-detection, and
++__xconfigfile__(__filemansuffix__) configuration files, auto-detection, and
+ fallback defaults.  When the same information is supplied in more than
+ one way, the highest precedence mechanism is used.  The list of mechanisms
+ is ordered from highest precedence to lowest.  Note that not all parameters
+@@ -176,6 +176,13 @@
+ with real-uid 0), or for files relative to a directory in the config
+ search path for all other users.
+ .TP 8
++.BI \-configdir " directory"
++Read the server configuration files from
++.IR directory .
++This option will work for any directory when the server is run as root
++(i.e, with real-uid 0), or for directories relative to a directory in the
++config directory search path for all other users.
++.TP 8
+ .B \-configure
+ When this option is specified, the
+ .B __xservername__
+@@ -456,6 +463,10 @@
+ .B __xservername__
+ typically uses a configuration file called
+ .B __xconfigfile__
++and configuration files with the suffix
++.I .conf
++in a directory called
++.B __xconfigdir__
+ for its initial setup.
+ Refer to the __xconfigfile__(__filemansuffix__) manual page for information
+ about the format of this file.
+@@ -464,7 +475,9 @@
+ has a mechanism for automatically generating a built-in configuration
+ at run-time when no
+ .B __xconfigfile__
+-file is present.  The current version of this automatic configuration
++file or
++.B __xconfigdir__
++files are present.  The current version of this automatic configuration
+ mechanism works in two ways.
+ .PP
+ The first is via enhancements that have made many components of the
+@@ -486,7 +499,7 @@
+ .SH FILES
+ The
+ .B __xservername__
+-server config file can be found in a range of locations.  These are
++server config files can be found in a range of locations.  These are
+ documented fully in the __xconfigfile__(__filemansuffix__) manual page.  The
+ most commonly used locations are shown here.
+ .TP 30
+@@ -505,6 +518,21 @@
+ .B __projectroot__/lib/X11/__xconfigfile__
+ Server configuration file.
+ .TP 30
++.B /etc/X11/__xconfigdir__
++Server configuration directory.
++.TP 30
++.B /etc/X11/__xconfigdir__-4
++Server configuration directory.
++.TP 30
++.B /etc/__xconfigdir__
++Server configuration directory.
++.TP 30
++.B __projectroot__/etc/__xconfigdir__
++Server configuration directory.
++.TP 30
++.B __projectroot__/lib/X11/__xconfigdir__
++Server configuration directory.
++.TP 30
+ .BI __logdir__/__xservername__. n .log
+ Server log file for display
+ .IR n .
+Index: xorg-server/hw/xfree86/doc/man/xorg.conf.man.pre
+===================================================================
+--- xorg-server.orig/hw/xfree86/doc/man/xorg.conf.man.pre	2010-03-24 13:01:50.000000000 +0200
++++ xorg-server/hw/xfree86/doc/man/xorg.conf.man.pre	2010-03-24 13:05:51.000000000 +0200
+@@ -2,27 +2,35 @@
+ .ds q \N'34'
+ .TH __xconfigfile__ __filemansuffix__ __vendorversion__
+ .SH NAME
+-__xconfigfile__ \- configuration File for __xservername__ X server
++__xconfigfile__ and __xconfigdir__ \- configuration files for
++__xservername__ X server
+ .SH INTRODUCTION
+ .B __xservername__
+ supports several mechanisms for supplying/obtaining configuration and
+ run-time parameters: command line options, environment variables, the
+-__xconfigfile__ configuration file, auto-detection, and fallback defaults.
+-When the same information is supplied in more than one way, the highest
+-precedence mechanism is used.  The list of mechanisms is ordered from
+-highest precedence to lowest.  Note that not all parameters can be
+-supplied via all methods.  The available command line options and
+-environment variables (and some defaults) are described in the Xserver(__appmansuffix__)
+-and __xservername__(__appmansuffix__) manual pages.  Most configuration file parameters, with
+-their defaults, are described below.  Driver and module specific
+-configuration parameters are described in the relevant driver or module
+-manual page.
++__xconfigfile__ and __xconfigdir__ configuration files, auto-detection,
++and fallback defaults. When the same information is supplied in more
++than one way, the highest precedence mechanism is used. The list of
++mechanisms is ordered from highest precedence to lowest. Note that not
++all parameters can be supplied via all methods. The available command
++line options and environment variables (and some defaults) are
++described in the Xserver(__appmansuffix__) and
++__xservername__(__appmansuffix__) manual pages. Most configuration file
++parameters, with their defaults, are described below. Driver and module
++specific configuration parameters are described in the relevant driver
++or module manual page.
+ .SH DESCRIPTION
+ .B __xservername__
+ uses a configuration file called
+ .I __xconfigfile__
++and files ending in the suffix
++.I .conf
++from the directory
++.I __xconfigdir__
+ for its initial setup.
+-This configuration file is searched for in the following places when the
++The
++.I __xconfigfile__
++configuration file is searched for in the following places when the
+ server is started as a normal user:
+ .PP
+ .RS 4
+@@ -93,9 +101,28 @@
+ is the machine's hostname as reported by
+ .BR gethostname (__libmansuffix__).
+ .PP
++Additional configuration files are searched for in the following
++directories:
++.PP
++.RS 4
++.nf
++.I /etc/X11/__xconfigdir__\-4
++.I /etc/X11/__xconfigdir__
++.I /etc/__xconfigdir__
++.IR __projectroot__/etc/X11/__xconfigdir__. <hostname>
++.I __projectroot__/etc/X11/__xconfigdir__\-4
++.I __projectroot__/etc/X11/__xconfigdir__
++.IR __projectroot__/lib/X11/__xconfigdir__. <hostname>
++.I __projectroot__/lib/X11/__xconfigdir__\-4
++.I __projectroot__/lib/X11/__xconfigdir__
++.fi
++.RE
++.PP
+ The
+ .I __xconfigfile__
+-file is composed of a number of sections which may be present in any order,
++and
++.I __xconfigdir__
++files are composed of a number of sections which may be present in any order,
+ or omitted to use default configuration values.
+ Each section has the form:
+ .PP
+@@ -853,6 +880,11 @@
+ See the individual input driver manual pages for a description of the
+ device\-specific options.
+ .TP 7
++.BI "Option \*qAutoServerLayout\*q  \*q" boolean \*q
++Always add the device to the ServerLayout section used by this instance of
++the server. This affects implied layouts as well as explicit layouts
++specified in the configuration and/or on the command line.
++.TP 7
+ .BI "Option \*qCorePointer\*q"
+ Deprecated, use
+ .B SendCoreEvents
+Index: xorg-server/hw/xfree86/parser/Layout.c
+===================================================================
+--- xorg-server.orig/hw/xfree86/parser/Layout.c	2010-03-24 13:01:50.000000000 +0200
++++ xorg-server/hw/xfree86/parser/Layout.c	2010-03-24 13:05:51.000000000 +0200
+@@ -64,6 +64,10 @@
+ #include "Configint.h"
+ #include <string.h>
+ 
++
++/* Needed for auto server layout */
++extern int xf86CheckBoolOption(void* optlist, const char *name, int deflt);
++
+ extern LexRec val;
+ 
+ static xf86ConfigSymTabRec LayoutTab[] =
+@@ -450,15 +454,67 @@
+ }
+ 
+ int
++xf86layoutAddInputDevices(XF86ConfigPtr config, XF86ConfLayoutPtr layout)
++{
++    int count = 0;
++    XF86ConfInputPtr input = config->conf_input_lst;
++    XF86ConfInputrefPtr inptr;
++
++    /* add all AutoServerLayout devices to the server layout */
++    while (input)
++    {
++	if (xf86CheckBoolOption(input->inp_option_lst, "AutoServerLayout", FALSE))
++	{
++	    XF86ConfInputrefPtr iref = layout->lay_input_lst;
++
++	    /* avoid duplicates if referenced but lists AutoServerLayout too */
++	    while (iref)
++	    {
++		if (strcmp(iref->iref_inputdev_str, input->inp_identifier) == 0)
++		    break;
++		iref = iref->list.next;
++	    }
++
++	    if (!iref)
++	    {
++		XF86ConfInputrefPtr iptr;
++		iptr = calloc(1, sizeof(XF86ConfInputrefRec));
++		iptr->iref_inputdev_str = input->inp_identifier;
++		layout->lay_input_lst = (XF86ConfInputrefPtr)
++		    xf86addListItem((glp)layout->lay_input_lst, (glp)iptr);
++		count++;
++	    }
++	}
++	input = input->list.next;
++    }
++
++    inptr = layout->lay_input_lst;
++    while (inptr)
++    {
++	input = xf86findInput (inptr->iref_inputdev_str,
++		config->conf_input_lst);
++	if (!input)
++	{
++	    xf86validationError (UNDEFINED_INPUT_MSG,
++		    inptr->iref_inputdev_str, layout->lay_identifier);
++	    return -1;
++	}
++	else
++	    inptr->iref_inputdev = input;
++	inptr = inptr->list.next;
++    }
++
++    return count;
++}
++
++int
+ xf86validateLayout (XF86ConfigPtr p)
+ {
+ 	XF86ConfLayoutPtr layout = p->conf_layout_lst;
+ 	XF86ConfAdjacencyPtr adj;
+ 	XF86ConfInactivePtr iptr;
+-	XF86ConfInputrefPtr inptr;
+ 	XF86ConfScreenPtr screen;
+ 	XF86ConfDevicePtr device;
+-	XF86ConfInputPtr input;
+ 
+ 	while (layout)
+ 	{
+@@ -500,21 +556,10 @@
+ 				iptr->inactive_device = device;
+ 			iptr = iptr->list.next;
+ 		}
+-		inptr = layout->lay_input_lst;
+-		while (inptr)
+-		{
+-			input = xf86findInput (inptr->iref_inputdev_str,
+-									p->conf_input_lst);
+-			if (!input)
+-			{
+-				xf86validationError (UNDEFINED_INPUT_MSG,
+-						inptr->iref_inputdev_str, layout->lay_identifier);
+-				return (FALSE);
+-			}
+-			else
+-				inptr->iref_inputdev = input;
+-			inptr = inptr->list.next;
+-		}
++
++		if (xf86layoutAddInputDevices(p, layout) == -1)
++		    return FALSE;
++
+ 		layout = layout->list.next;
+ 	}
+ 	return (TRUE);
+Index: xorg-server/hw/xfree86/parser/scan.c
+===================================================================
+--- xorg-server.orig/hw/xfree86/parser/scan.c	2010-03-24 13:01:50.000000000 +0200
++++ xorg-server/hw/xfree86/parser/scan.c	2010-03-24 13:05:51.000000000 +0200
+@@ -62,8 +62,11 @@
+ #include <stdio.h>
+ #include <stdlib.h>
+ #include <string.h>
++#include <sys/types.h>
++#include <dirent.h>
+ #include <unistd.h>
+ #include <stdarg.h>
++#include <X11/Xdefs.h>
+ #include <X11/Xfuncproto.h>
+ 
+ #if defined(_POSIX_SOURCE)
+@@ -90,17 +93,24 @@
+ #include "xf86tokens.h"
+ 
+ #define CONFIG_BUF_LEN     1024
++#define CONFIG_MAX_FILES   64
+ 
+ static int StringToToken (char *, xf86ConfigSymTabRec *);
+ 
+-static FILE *configFile = NULL;
++static struct {
++	FILE *file;
++	char *path;
++} configFiles[CONFIG_MAX_FILES];
+ static const char **builtinConfig = NULL;
+ static int builtinIndex = 0;
+ static int configPos = 0;		/* current readers position */
+ static int configLineNo = 0;	/* linenumber */
+ static char *configBuf, *configRBuf;	/* buffer for lines */
+ static char *configPath;		/* path to config file */
++static char *configDirPath;		/* path to config dir */
+ static char *configSection = NULL;	/* name of current section being parsed */
++static int numFiles = 0;		/* number of config files */
++static int curFileIndex = 0;		/* index of current config file */
+ static int pushToken = LOCK_TOKEN;
+ static int eol_seen = 0;		/* private state to handle comments */
+ LexRec val;
+@@ -155,7 +165,7 @@
+ /*
+  * xf86getNextLine --
+  *
+- *  read from the configFile FILE stream until we encounter a new
++ *  read from the configFiles FILE stream until we encounter a new
+  *  line; this is effectively just a big wrapper for fgets(3).
+  *
+  *  xf86getToken() assumes that we will read up to the next
+@@ -213,9 +223,18 @@
+ 	/* read in another block of chars */
+ 
+ 	do {
+-		ret = fgets(configBuf + pos, configBufLen - pos - 1, configFile);
++		ret = fgets(configBuf + pos, configBufLen - pos - 1,
++			    configFiles[curFileIndex].file);
+ 
+-		if (!ret) break;
++		if (!ret) {
++			/* stop if there are no more files */
++			if (++curFileIndex >= numFiles) {
++				curFileIndex = 0;
++				break;
++			}
++			configLineNo = 0;
++			continue;
++		}
+ 
+ 		/* search for EOL in the new block of chars */
+ 
+@@ -306,7 +325,7 @@
+ 		if (!c)
+ 		{
+ 			char *ret;
+-			if (configFile)
++			if (numFiles > 0)
+ 				ret = xf86getNextLine();
+ 			else {
+ 				if (builtinConfig[builtinIndex] == NULL)
+@@ -575,6 +594,12 @@
+ #ifndef XCONFIGFILE
+ #define XCONFIGFILE	"xorg.conf"
+ #endif
++#ifndef XCONFIGDIR
++#define XCONFIGDIR	"xorg.conf.d"
++#endif
++#ifndef XCONFIGSUFFIX
++#define XCONFIGSUFFIX	".conf"
++#endif
+ #ifndef PROJECTROOT
+ #define PROJECTROOT	"/usr/X11R6"
+ #endif
+@@ -616,7 +641,8 @@
+ 
+ static char *
+ DoSubstitution(const char *template, const char *cmdline, const char *projroot,
+-				int *cmdlineUsed, int *envUsed, char *XConfigFile)
++				int *cmdlineUsed, int *envUsed,
++				const char *XConfigFile)
+ {
+ 	char *result;
+ 	int i, l;
+@@ -745,7 +771,164 @@
+ 	return result;
+ }
+ 
+-/* 
++/*
++ * Given some searching parameters, locate and open the xorg config file.
++ */
++static char *
++OpenConfigFile(const char *path, const char *cmdline, const char *projroot,
++	       const char *confname)
++{
++	char *filepath = NULL;
++	char *pathcopy;
++	const char *template;
++	int cmdlineUsed = 0;
++	FILE *file = NULL;
++
++	pathcopy = strdup(path);
++	for (template = strtok(pathcopy, ","); template && !file;
++	     template = strtok(NULL, ",")) {
++		filepath = DoSubstitution(template, cmdline, projroot,
++					  &cmdlineUsed, NULL, confname);
++		if (!filepath)
++			continue;
++		if (cmdline && !cmdlineUsed) {
++			free(filepath);
++			filepath = NULL;
++			continue;
++		}
++		file = fopen(filepath, "r");
++		if (!file) {
++			free(filepath);
++			filepath = NULL;
++		}
++	}
++
++	if (file) {
++		configFiles[numFiles].file = file;
++		configFiles[numFiles].path = strdup(filepath);
++		numFiles++;
++	}
++	return filepath;
++}
++
++/*
++ * Match non-hidden files in the xorg config directory with a .conf
++ * suffix. This filter is passed to scandir(3).
++ */
++static int
++ConfigFilter(const struct dirent *de)
++{
++	const char *name = de->d_name;
++	size_t len = strlen(name);
++	size_t suflen = strlen(XCONFIGSUFFIX);
++
++	if (!name || name[0] == '.' || len <= suflen)
++		return 0;
++	if (strcmp(&name[len-suflen], XCONFIGSUFFIX) != 0)
++		return 0;
++	return 1;
++}
++
++static Bool
++AddConfigDirFiles(const char *dirpath, struct dirent **list, int num)
++{
++	int i;
++	Bool openedFile = FALSE;
++	Bool warnOnce = FALSE;
++
++	for (i = 0; i < num; i++) {
++		char *path;
++		FILE *file;
++
++		if (numFiles >= CONFIG_MAX_FILES) {
++			if (!warnOnce) {
++				ErrorF("Maximum number of configuration "
++				       "files opened\n");
++				warnOnce = TRUE;
++			}
++			free(list[i]);
++			continue;
++		}
++
++		path = malloc(PATH_MAX + 1);
++		snprintf(path, PATH_MAX + 1, "%s/%s", dirpath,
++			 list[i]->d_name);
++		free(list[i]);
++		file = fopen(path, "r");
++		if (!file) {
++			free(path);
++			continue;
++		}
++		openedFile = TRUE;
++
++		configFiles[numFiles].file = file;
++		configFiles[numFiles].path = path;
++		numFiles++;
++	}
++
++	return openedFile;
++}
++
++/*
++ * Given some searching parameters, locate and open the xorg config
++ * directory. The directory does not need to contain config files.
++ */
++static char *
++OpenConfigDir(const char *path, const char *cmdline, const char *projroot,
++	      const char *confname)
++{
++	char *dirpath, *pathcopy;
++	const char *template;
++	Bool found = FALSE;
++	int cmdlineUsed = 0;
++
++	pathcopy = strdup(path);
++	for (template = strtok(pathcopy, ","); template && !found;
++	     template = strtok(NULL, ",")) {
++		struct dirent **list = NULL;
++		int num;
++
++		dirpath = DoSubstitution(template, cmdline, projroot,
++					 &cmdlineUsed, NULL, confname);
++		if (!dirpath)
++			continue;
++		if (cmdline && !cmdlineUsed) {
++			free(dirpath);
++			dirpath = NULL;
++			continue;
++		}
++
++		/* match files named *.conf */
++		num = scandir(dirpath, &list, ConfigFilter, alphasort);
++		found = AddConfigDirFiles(dirpath, list, num);
++		if (!found) {
++			free(dirpath);
++			dirpath = NULL;
++			if (list)
++				free(list);
++		}
++	}
++
++	return dirpath;
++}
++
++/*
++ * xf86initConfigFiles -- Setup global variables and buffers.
++ */
++void
++xf86initConfigFiles(void)
++{
++	curFileIndex = 0;
++	configPos = 0;
++	configLineNo = 0;
++	pushToken = LOCK_TOKEN;
++
++	configBuf = malloc(CONFIG_BUF_LEN);
++	configRBuf = malloc(CONFIG_BUF_LEN);
++	configBuf[0] = '\0';	/* sanity ... */
++}
++
++/*
+  * xf86openConfigFile --
+  *
+  * This function take a config file search path (optional), a command-line
+@@ -758,7 +941,7 @@
+  * opened.  When no file is found, the return value is NULL.
+  *
+  * The escape sequences allowed in the search path are defined above.
+- *  
++ *
+  */
+ 
+ #ifndef DEFAULT_CONF_PATH
+@@ -780,117 +963,90 @@
+ const char *
+ xf86openConfigFile(const char *path, const char *cmdline, const char *projroot)
+ {
+-	char *pathcopy;
+-	const char *template;
+-	int cmdlineUsed = 0;
+-
+-	configFile = NULL;
+-	configPos = 0;		/* current readers position */
+-	configLineNo = 0;	/* linenumber */
+-	pushToken = LOCK_TOKEN;
+-
+ 	if (!path || !path[0])
+ 		path = DEFAULT_CONF_PATH;
+-	pathcopy = malloc(strlen(path) + 1);
+-	strcpy(pathcopy, path);
+ 	if (!projroot || !projroot[0])
+ 		projroot = PROJECTROOT;
+ 
+-	template = strtok(pathcopy, ",");
+-
+-	/* First, search for a config file. */
+-	while (template && !configFile) {
+-		if ((configPath = DoSubstitution(template, cmdline, projroot,
+-						 &cmdlineUsed, NULL,
+-						 XCONFIGFILE))) {
+-			if ((configFile = fopen(configPath, "r")) != 0) {
+-				if (cmdline && !cmdlineUsed) {
+-					fclose(configFile);
+-					configFile = NULL;
+-				}
+-			}
+-		}
+-		if (configPath && !configFile) {
+-			free(configPath);
+-			configPath = NULL;
+-		}
+-		template = strtok(NULL, ",");
+-	}
+-	
+-	/* Then search for fallback */
+-	if (!configFile) {
+-	    strcpy(pathcopy, path);
+-	    template = strtok(pathcopy, ",");
+-
+-	    while (template && !configFile) {
+-		if ((configPath = DoSubstitution(template, cmdline, projroot,
+-						 &cmdlineUsed, NULL,
+-						 XFREE86CFGFILE))) {
+-		    if ((configFile = fopen(configPath, "r")) != 0) {
+-			if (cmdline && !cmdlineUsed) {
+-			    fclose(configFile);
+-			    configFile = NULL;
+-			}
+-		    }
+-		}
+-		if (configPath && !configFile) {
+-		    free(configPath);
+-		    configPath = NULL;
+-		}
+-		template = strtok(NULL, ",");
+-	    }
+-	}
+-	
+-	free(pathcopy);
+-	if (!configFile) {
+-
+-		return NULL;
+-	}
++	/* Search for a config file or a fallback */
++	configPath = OpenConfigFile(path, cmdline, projroot, XCONFIGFILE);
++	if (!configPath)
++		configPath = OpenConfigFile(path, cmdline, projroot,
++					    XFREE86CFGFILE);
++	return configPath;
++}
+ 
+-	configBuf = malloc (CONFIG_BUF_LEN);
+-	configRBuf = malloc (CONFIG_BUF_LEN);
+-	configBuf[0] = '\0';		/* sanity ... */
++/*
++ * xf86openConfigDirFiles --
++ *
++ * This function take a config directory search path (optional), a
++ * command-line specified directory name (optional) and the ProjectRoot path
++ * (optional) and locates and opens a config directory based on that
++ * information.  If a command-line name is specified, then this function
++ * fails if it is not found.
++ *
++ * The return value is a pointer to the actual name of the direcoty that was
++ * opened.  When no directory is found, the return value is NULL.
++ *
++ * The escape sequences allowed in the search path are defined above.
++ *
++ */
++const char *
++xf86openConfigDirFiles(const char *path, const char *cmdline,
++		       const char *projroot)
++{
++	if (!path || !path[0])
++		path = DEFAULT_CONF_PATH;
++	if (!projroot || !projroot[0])
++		projroot = PROJECTROOT;
+ 
+-	return configPath;
++	/* Search for the multiconf directory */
++	configDirPath = OpenConfigDir(path, cmdline, projroot, XCONFIGDIR);
++	return configDirPath;
+ }
+ 
+ void
+ xf86closeConfigFile (void)
+ {
++	int i;
++
+ 	free (configPath);
+ 	configPath = NULL;
++	free (configDirPath);
++	configDirPath = NULL;
+ 	free (configRBuf);
+ 	configRBuf = NULL;
+ 	free (configBuf);
+ 	configBuf = NULL;
+ 
+-	if (configFile) {
+-		fclose (configFile);
+-		configFile = NULL;
+-	} else {
++	if (numFiles == 0) {
+ 		builtinConfig = NULL;
+ 		builtinIndex = 0;
+ 	}
++	for (i = 0; i < numFiles; i++) {
++		fclose(configFiles[i].file);
++		configFiles[i].file = NULL;
++		free(configFiles[i].path);
++		configFiles[i].path = NULL;
++	}
++	numFiles = 0;
+ }
+ 
+ void
+ xf86setBuiltinConfig(const char *config[])
+ {
+ 	builtinConfig = config;
+-	configPath = strdup("<builtin configuration>");
+-	configBuf = malloc (CONFIG_BUF_LEN);
+-	configRBuf = malloc (CONFIG_BUF_LEN);
+-	configBuf[0] = '\0';		/* sanity ... */
+-
+ }
+ 
+ void
+ xf86parseError (char *format,...)
+ {
+ 	va_list ap;
++	char *filename = numFiles ? configFiles[curFileIndex].path :
++			 "<builtin configuration>";
+ 
+ 	ErrorF ("Parse error on line %d of section %s in file %s\n\t",
+-		 configLineNo, configSection, configPath);
++		 configLineNo, configSection, filename);
+ 	va_start (ap, format);
+ 	VErrorF (format, ap);
+ 	va_end (ap);
+@@ -902,8 +1058,10 @@
+ xf86validationError (char *format,...)
+ {
+ 	va_list ap;
++	char *filename = numFiles ? configFiles[curFileIndex].path :
++			 "<builtin configuration>";
+ 
+-	ErrorF ("Data incomplete in file %s\n\t", configPath);
++	ErrorF ("Data incomplete in file %s\n\t", filename);
+ 	va_start (ap, format);
+ 	VErrorF (format, ap);
+ 	va_end (ap);
+Index: xorg-server/hw/xfree86/parser/xf86Parser.h
+===================================================================
+--- xorg-server.orig/hw/xfree86/parser/xf86Parser.h	2010-03-24 13:01:50.000000000 +0200
++++ xorg-server/hw/xfree86/parser/xf86Parser.h	2010-03-24 13:05:51.000000000 +0200
+@@ -456,13 +456,16 @@
+ /*
+  * prototypes for public functions
+  */
+-extern _X_EXPORT const char *xf86openConfigFile (const char *, const char *,
+-					const char *);
+-extern _X_EXPORT void xf86setBuiltinConfig(const char *config[]);
+-extern _X_EXPORT XF86ConfigPtr xf86readConfigFile (void);
+-extern _X_EXPORT void xf86closeConfigFile (void);
+-extern _X_EXPORT void xf86freeConfig (XF86ConfigPtr p);
+-extern _X_EXPORT int xf86writeConfigFile (const char *, XF86ConfigPtr);
++extern void xf86initConfigFiles(void);
++extern const char *xf86openConfigFile(const char *path, const char *cmdline,
++				      const char *projroot);
++extern const char *xf86openConfigDirFiles(const char *path, const char *cmdline,
++					  const char *projroot);
++extern void xf86setBuiltinConfig(const char *config[]);
++extern XF86ConfigPtr xf86readConfigFile(void);
++extern void xf86closeConfigFile(void);
++extern void xf86freeConfig(XF86ConfigPtr p);
++extern int xf86writeConfigFile(const char *, XF86ConfigPtr);
+ extern _X_EXPORT XF86ConfDevicePtr xf86findDevice(const char *ident, XF86ConfDevicePtr p);
+ extern _X_EXPORT XF86ConfLayoutPtr xf86findLayout(const char *name, XF86ConfLayoutPtr list);
+ extern _X_EXPORT XF86ConfMonitorPtr xf86findMonitor(const char *ident, XF86ConfMonitorPtr p);
+@@ -473,6 +476,7 @@
+ extern _X_EXPORT XF86ConfInputPtr xf86findInputByDriver(const char *driver, XF86ConfInputPtr p);
+ extern _X_EXPORT XF86ConfVideoAdaptorPtr xf86findVideoAdaptor(const char *ident,
+ 						XF86ConfVideoAdaptorPtr p);
++extern int xf86layoutAddInputDevices(XF86ConfigPtr config, XF86ConfLayoutPtr layout);
+ 
+ extern _X_EXPORT GenericListPtr xf86addListItem(GenericListPtr head, GenericListPtr c_new);
+ extern _X_EXPORT int xf86itemNotSublist(GenericListPtr list_1, GenericListPtr list_2);
+Index: xorg-server/hw/xwin/InitOutput.c
+===================================================================
+--- xorg-server.orig/hw/xwin/InitOutput.c	2010-03-24 13:01:50.000000000 +0200
++++ xorg-server/hw/xwin/InitOutput.c	2010-03-24 13:05:51.000000000 +0200
+@@ -851,6 +851,9 @@
+   ErrorF ("-config\n"
+           "\tSpecify a configuration file.\n");
+ 
++  ErrorF ("-configdir\n"
++          "\tSpecify a configuration directory.\n");
++
+   ErrorF ("-keyboard\n"
+ 	  "\tSpecify a keyboard device from the configuration file.\n");
+ #endif
+Index: xorg-server/hw/xwin/winconfig.c
+===================================================================
+--- xorg-server.orig/hw/xwin/winconfig.c	2010-03-24 13:01:50.000000000 +0200
++++ xorg-server/hw/xwin/winconfig.c	2010-03-24 13:05:51.000000000 +0200
+@@ -50,6 +50,13 @@
+                     "%P/lib/X11/%X.%H," "%P/lib/X11/%X-%M," \
+                     "%P/lib/X11/%X"
+ #endif
++#ifndef CONFIGDIRPATH
++#define CONFIGDIRPATH  "/etc/X11/%X-%M," "/etc/X11/%X," "/etc/%X," \
++                       "%P/etc/X11/%X.%H," "%P/etc/X11/%X-%M," \
++                       "%P/etc/X11/%X," \
++                       "%P/lib/X11/%X.%H," "%P/lib/X11/%X-%M," \
++                       "%P/lib/X11/%X"
++#endif
+ 
+ XF86ConfigPtr g_xf86configptr = NULL;
+ #endif
+@@ -57,6 +64,7 @@
+ WinCmdlineRec g_cmdline = {
+ #ifdef XWIN_XF86CONFIG
+   NULL,				/* configFile */
++  NULL,				/* configDir */
+ #endif
+   NULL,				/* fontPath */
+ #ifdef XWIN_XF86CONFIG
+@@ -109,20 +117,28 @@
+ winReadConfigfile ()
+ {
+   Bool		retval = TRUE;
+-  const char	*filename;
+-  MessageType	from = X_DEFAULT;
++  const char	*filename, *dirname;
++  MessageType	filefrom = X_DEFAULT;
++  MessageType	dirfrom = X_DEFAULT;
+   char		*xf86ConfigFile = NULL;
++  char		*xf86ConfigDir = NULL;
+ 
+   if (g_cmdline.configFile)
+     {
+-      from = X_CMDLINE;
++      filefrom = X_CMDLINE;
+       xf86ConfigFile = g_cmdline.configFile;
+     }
++  if (g_cmdline.configDir)
++    {
++      dirfrom = X_CMDLINE;
++      xf86ConfigDir = g_cmdline.configDir;
++    }
+ 
+   /* Parse config file into data structure */
+-
++  xf86initConfigFiles();
+   filename = xf86openConfigFile (CONFIGPATH, xf86ConfigFile, PROJECTROOT);
+-    
++  dirname = xf86openConfigDirFiles (CONFIGDIRPATH, xf86ConfigDir, PROJECTROOT);
++
+   /* Hack for backward compatibility */
+   if (!filename && from == X_DEFAULT)
+     filename = xf86openConfigFile (CONFIGPATH, "XF86Config", PROJECTROOT);
+@@ -137,6 +153,20 @@
+       if (xf86ConfigFile)
+ 	ErrorF (": \"%s\"", xf86ConfigFile);
+       ErrorF ("\n");
++    }
++  if (dirname)
++    {
++      winMsg (from, "Using config directory: \"%s\"\n", dirname);
++    }
++  else
++    {
++      winMsg (X_ERROR, "Unable to locate/open config directory");
++      if (xf86ConfigDir)
++	ErrorF (": \"%s\"", xf86ConfigDir);
++      ErrorF ("\n");
++    }
++  if (!filename && !dirname)
++    {
+       return FALSE;
+     }
+   if ((g_xf86configptr = xf86readConfigFile ()) == NULL)
+Index: xorg-server/hw/xwin/winconfig.h
+===================================================================
+--- xorg-server.orig/hw/xwin/winconfig.h	2010-03-24 13:01:50.000000000 +0200
++++ xorg-server/hw/xwin/winconfig.h	2010-03-24 13:05:51.000000000 +0200
+@@ -188,6 +188,7 @@
+   /* Files */
+ #ifdef XWIN_XF86CONFIG
+   char *configFile;
++  char *configDir;
+ #endif
+   char *fontPath;
+   /* input devices - keyboard */
+Index: xorg-server/hw/xwin/winprocarg.c
+===================================================================
+--- xorg-server.orig/hw/xwin/winprocarg.c	2010-03-24 13:01:50.000000000 +0200
++++ xorg-server/hw/xwin/winprocarg.c	2010-03-24 13:05:51.000000000 +0200
+@@ -1318,6 +1318,24 @@
+     }
+ 
+   /*
++   * Look for the '-configdir' argument
++   */
++  if (IS_OPTION ("-configdir"))
++    {
++      CHECK_ARGS (1);
++#ifdef XWIN_XF86CONFIG
++      g_cmdline.configDir = argv[++i];
++#else
++      winMessageBoxF ("The %s option is not supported in this "
++		      "release.\n"
++		      "Ignoring this option and continuing.\n",
++		      MB_ICONINFORMATION,
++		      argv[i]);
++#endif
++      return 2;
++    }
++
++  /*
+    * Look for the '-keyboard' argument
+    */
+   if (IS_OPTION ("-keyboard"))
+Index: xorg-server/include/xorg-config.h.in
+===================================================================
+--- xorg-server.orig/include/xorg-config.h.in	2010-03-24 13:01:50.000000000 +0200
++++ xorg-server/include/xorg-config.h.in	2010-03-24 13:05:51.000000000 +0200
+@@ -36,6 +36,9 @@
+ /* Path to configuration file. */
+ #undef __XCONFIGFILE__
+ 
++/* Name of configuration directory. */
++#undef __XCONFIGDIR__
++
+ /* Path to loadable modules. */
+ #undef DEFAULT_MODULE_PATH
+ 

@@ -1,0 +1,95 @@
+commit 032f97808c65771a07bac748212cf6457a5d1660
+Author: Simon Thum <simon.thum@gmx.de>
+Date:   Wed Jan 6 17:32:24 2010 +0100
+
+    xfree86: init pointer feedback controls from options
+    
+    With InputClass support, it makes more sense to cover all
+    aspects of acceleration in options. Previously, one could only set the
+    default on the command line.
+    
+    Signed-off-by: Simon Thum <simon.thum@gmx.de>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+Index: xorg-server/hw/xfree86/common/xf86Xinput.c
+===================================================================
+--- xorg-server.orig/hw/xfree86/common/xf86Xinput.c	2010-03-24 13:24:58.000000000 +0200
++++ xorg-server/hw/xfree86/common/xf86Xinput.c	2010-03-24 13:24:59.000000000 +0200
+@@ -198,12 +198,12 @@
+ 
+ static void
+ ApplyAccelerationSettings(DeviceIntPtr dev){
+-    int scheme;
++    int scheme, i;
+     DeviceVelocityPtr pVel;
+     LocalDevicePtr local = (LocalDevicePtr)dev->public.devicePrivate;
+     char* schemeStr;
+ 
+-    if(dev->valuator){
++    if (dev->valuator && dev->ptrfeed) {
+ 	schemeStr = xf86SetStrOption(local->options, "AccelerationScheme", "");
+ 
+ 	scheme = dev->valuator->accelScheme.number;
+@@ -246,6 +246,30 @@
+                                               pVel);
+                 break;
+         }
++
++        i = xf86SetIntOption(local->options, "AccelerationNumerator",
++                             dev->ptrfeed->ctrl.num);
++        if (i >= 0)
++            dev->ptrfeed->ctrl.num = i;
++
++        i = xf86SetIntOption(local->options, "AccelerationDenominator",
++                             dev->ptrfeed->ctrl.den);
++        if (i > 0)
++            dev->ptrfeed->ctrl.den = i;
++
++        i = xf86SetIntOption(local->options, "AccelerationThreshold",
++                             dev->ptrfeed->ctrl.threshold);
++        if (i >= 0)
++            dev->ptrfeed->ctrl.threshold = i;
++
++        /* mostly a no-op anyway */
++        (*dev->ptrfeed->CtrlProc)(dev, &dev->ptrfeed->ctrl);
++
++        xf86Msg(X_CONFIG, "%s: (accel) acceleration factor: %.3f\n",
++                            local->name, ((float)dev->ptrfeed->ctrl.num)/
++                                         ((float)dev->ptrfeed->ctrl.den));
++        xf86Msg(X_CONFIG, "%s: (accel) acceleration threshold: %i\n",
++                local->name, dev->ptrfeed->ctrl.threshold);
+     }
+ }
+ 
+Index: xorg-server/hw/xfree86/doc/man/xorg.conf.man.pre
+===================================================================
+--- xorg-server.orig/hw/xfree86/doc/man/xorg.conf.man.pre	2010-03-24 13:24:50.000000000 +0200
++++ xorg-server/hw/xfree86/doc/man/xorg.conf.man.pre	2010-03-24 13:24:59.000000000 +0200
+@@ -958,6 +958,26 @@
+ .B  "predictable   default algorithm (behaving more predictable)"
+ .B  "lightweight   old acceleration code (as specified in the X protocol spec)"
+ .B  "none          no acceleration or deceleration"
++.fi
++.RE
++.TP 7
++.BI "Option \*qAccelerationNumerator\*q  \*q" integer \*q
++.TP 7
++.BI "Option \*qAccelerationDenominator\*q  \*q" integer \*q
++Set numerator and denominator of the acceleration factor. The acceleration
++factor is a rational which, together with threshold, can be used to tweak
++profiles to suit the users needs. The
++.B simple
++and
++.B limited
++profiles use it directly (i.e. they accelerate by the factor), for other
++profiles it should hold that a higher acceleration factor leads to a faster
++pointer. Typically, 1 is unaccelerated and values up to 5 are sensible.
++.TP 7
++.BI "Option \*qAccelerationThreshold\*q  \*q" integer \*q
++Set the threshold, which is roughly the velocity (usually device units per 10
++ms) required for acceleration to become effective. The precise effect varies
++with the profile however.
+ 
+ .SH "INPUTCLASS SECTION"
+ The config file may have multiple

@@ -1,0 +1,63 @@
+commit 8b1a685f00ae76be864cc188943a0874f48b8d64
+Author: Dan Nicholson <dbn.lists@gmail.com>
+Date:   Wed Feb 10 15:36:45 2010 +1000
+
+    xfree86: Handle config files ending without newline
+    
+    The config parser expects to find a newline at the end of each line, so
+    files ending without one would confuse it. A newline is inserted at the
+    end of the buffer in these situations. Additionally, switching to the
+    next config file is moved to the higher level to allow parsing of the
+    last line of the previous file to complete before shifting the index and
+    resetting the line number.
+    
+    Signed-off-by: Dan Nicholson <dbn.lists@gmail.com>
+    Tested-by: Stephan Raue<stephan.raue@gmx.net>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+Index: xorg-server/hw/xfree86/parser/scan.c
+===================================================================
+--- xorg-server.orig/hw/xfree86/parser/scan.c	2010-03-24 13:14:42.000000000 +0200
++++ xorg-server/hw/xfree86/parser/scan.c	2010-03-24 13:25:10.000000000 +0200
+@@ -227,13 +227,15 @@
+ 			    configFiles[curFileIndex].file);
+ 
+ 		if (!ret) {
+-			/* stop if there are no more files */
+-			if (++curFileIndex >= numFiles) {
+-				curFileIndex = 0;
++			/*
++			 * if the file doesn't end in a newline, add one
++			 * and trigger another read
++			 */
++			if (pos != 0) {
++				strcpy(&configBuf[pos], "\n");
++				ret = configBuf;
++			} else
+ 				break;
+-			}
+-			configLineNo = 0;
+-			continue;
+ 		}
+ 
+ 		/* search for EOL in the new block of chars */
+@@ -338,7 +340,17 @@
+ 			}
+ 			if (ret == NULL)
+ 			{
+-				return (pushToken = EOF_TOKEN);
++				/*
++				 * if necessary, move to the next file and
++				 * read the first line
++				 */
++				if (curFileIndex + 1 < numFiles) {
++					curFileIndex++;
++					configLineNo = 0;
++					goto again;
++				}
++				else
++					return (pushToken = EOF_TOKEN);
+ 			}
+ 			configLineNo++;
+ 			configPos = 0;

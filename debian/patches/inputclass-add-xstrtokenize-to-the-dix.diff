@@ -1,0 +1,152 @@
+commit 3ac43df5d4a25d6e0058b327fa05a1c1436b4794
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Wed Feb 10 15:36:49 2010 +1000
+
+    Add xstrtokenize to the dix.
+    
+    Move tokenize out of the parser, make it a dix util function instead.
+    Splitting a string into multiple substrings is useful by other places, so
+    let's use it across the line. Future users include config/hal, config/udev
+    and of course the parser.
+    
+    Example usage:
+    char **substrings = xstrtokenize(my_string, "\n");
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Dan Nicholson <dbn.lists@gmail.com>
+
+diff --git a/hw/xfree86/parser/InputClass.c b/hw/xfree86/parser/InputClass.c
+index 8041740..9fabb22 100644
+--- a/hw/xfree86/parser/InputClass.c
++++ b/hw/xfree86/parser/InputClass.c
+@@ -60,44 +60,6 @@ xf86ConfigSymTabRec InputClassTab[] =
+ 
+ #define TOKEN_SEP "|"
+ 
+-/*
+- * Tokenize a string into a NULL terminated array of strings. Always returns
+- * an allocated array unless an error occurs.
+- */
+-static char **
+-tokenize(const char *str)
+-{
+-    char **list, **nlist;
+-    char *tok, *tmp;
+-    unsigned num = 0, n;
+-
+-    list = calloc(1, sizeof(*list));
+-    if (!list)
+-        return NULL;
+-    tmp = strdup(str);
+-    if (!tmp)
+-        goto error;
+-    for (tok = strtok(tmp, TOKEN_SEP); tok; tok = strtok(NULL, TOKEN_SEP)) {
+-        nlist = realloc(list, (num + 2) * sizeof(*list));
+-        if (!nlist)
+-            goto error;
+-        list = nlist;
+-        list[num] = strdup(tok);
+-        if (!list[num])
+-            goto error;
+-        list[++num] = NULL;
+-    }
+-    free(tmp);
+-    return list;
+-
+-error:
+-    TestFree(tmp);
+-    for (n = 0; n < num; n++)
+-        free(list[n]);
+-    TestFree(list);
+-    return NULL;
+-}
+-
+ XF86ConfInputClassPtr
+ xf86parseInputClassSection(void)
+ {
+@@ -133,17 +95,17 @@ xf86parseInputClassSection(void)
+         case MATCH_PRODUCT:
+             if (xf86getSubToken(&(ptr->comment)) != STRING)
+                 Error(QUOTE_MSG, "MatchProduct");
+-            ptr->match_product = tokenize(val.str);
++            ptr->match_product = xstrtokenize(val.str, TOKEN_SEP);
+             break;
+         case MATCH_VENDOR:
+             if (xf86getSubToken(&(ptr->comment)) != STRING)
+                 Error(QUOTE_MSG, "MatchVendor");
+-            ptr->match_vendor = tokenize(val.str);
++            ptr->match_vendor = xstrtokenize(val.str, TOKEN_SEP);
+             break;
+         case MATCH_DEVICE_PATH:
+             if (xf86getSubToken(&(ptr->comment)) != STRING)
+                 Error(QUOTE_MSG, "MatchDevicePath");
+-            ptr->match_device = tokenize(val.str);
++            ptr->match_device = xstrtokenize(val.str, TOKEN_SEP);
+             break;
+         case MATCH_IS_KEYBOARD:
+             if (xf86getSubToken(&(ptr->comment)) != STRING)
+diff --git a/include/misc.h b/include/misc.h
+index 877c682..62d813e 100644
+--- a/include/misc.h
++++ b/include/misc.h
+@@ -210,6 +210,9 @@ pad_to_int32(const int bytes) {
+     return (((bytes) + 3) & ~3);
+ }
+ 
++extern char**
++xstrtokenize(const char *str, const char* separators);
++
+ /* some macros to help swap requests, replies, and events */
+ 
+ #define LengthRestB(stuff) \
+diff --git a/os/utils.c b/os/utils.c
+index d7c8388..71ab6f0 100644
+--- a/os/utils.c
++++ b/os/utils.c
+@@ -1870,6 +1870,46 @@ CheckUserAuthorization(void)
+ #endif
+ }
+ 
++/*
++ * Tokenize a string into a NULL terminated array of strings. Always returns
++ * an allocated array unless an error occurs.
++ */
++char**
++xstrtokenize(const char *str, const char *separators)
++{
++    char **list, **nlist;
++    char *tok, *tmp;
++    unsigned num = 0, n;
++
++    if (!str)
++        return NULL;
++    list = calloc(1, sizeof(*list));
++    if (!list)
++        return NULL;
++    tmp = strdup(str);
++    if (!tmp)
++        goto error;
++    for (tok = strtok(tmp, separators); tok; tok = strtok(NULL, separators)) {
++        nlist = realloc(list, (num + 2) * sizeof(*list));
++        if (!nlist)
++            goto error;
++        list = nlist;
++        list[num] = strdup(tok);
++        if (!list[num])
++            goto error;
++        list[++num] = NULL;
++    }
++    free(tmp);
++    return list;
++
++error:
++    free(tmp);
++    for (n = 0; n < num; n++)
++        free(list[n]);
++    free(list);
++    return NULL;
++}
++
+ #ifdef __SCO__
+ #include <fcntl.h>
+ 
