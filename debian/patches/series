@@ -27,3 +27,4 @@ add-tag-matching-to-attrs.diff
 xfree86-reorder-option-priorities.diff
 xfree86-fix-video-fallback.diff
 xfree86-dont-complain-about-missing-coredevices.diff
+xfree86-merge-driver-into-options.diff
