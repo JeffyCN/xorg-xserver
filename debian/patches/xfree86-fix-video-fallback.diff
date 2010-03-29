@@ -9,11 +9,11 @@ Date:   Thu Mar 25 18:32:04 2010 +0100
     create a screen section for each driver and let them be tried
     in a row
 
-diff --git a/hw/xfree86/common/xf86AutoConfig.c b/hw/xfree86/common/xf86AutoConfig.c
-index 7f4ada8..56f7deb 100644
---- a/hw/xfree86/common/xf86AutoConfig.c
-+++ b/hw/xfree86/common/xf86AutoConfig.c
-@@ -546,10 +546,41 @@ chooseVideoDriver(void)
+Index: xorg-server/hw/xfree86/common/xf86AutoConfig.c
+===================================================================
+--- xorg-server.orig/hw/xfree86/common/xf86AutoConfig.c	2010-03-29 18:32:57.000000000 +0300
++++ xorg-server/hw/xfree86/common/xf86AutoConfig.c	2010-03-29 19:27:15.000000000 +0300
+@@ -545,10 +545,41 @@
      return chosen_driver;
  }
  
@@ -55,7 +55,7 @@ index 7f4ada8..56f7deb 100644
  
      if (!xf86configptr) {
          return NULL;
-@@ -573,14 +604,59 @@ autoConfigDevice(GDevPtr preconf_device)
+@@ -572,14 +603,59 @@
          ptr->driver = NULL;
      }
      if (!ptr->driver) {
@@ -67,7 +67,11 @@ index 7f4ada8..56f7deb 100644
 +            xf86Msg(X_DEFAULT, "Matched %s as autoconfigured driver %d\n",
 +                    matches[num_matches], num_matches);
 +        }
-+
+ 
+-    /* TODO Handle multiple screen sections */
+-    if (xf86ConfigLayout.screens && !xf86ConfigLayout.screens->screen->device) {
+-        xf86ConfigLayout.screens->screen->device = ptr;
+-        ptr->myScreenSection = xf86ConfigLayout.screens->screen;
 +        slp = xf86ConfigLayout.screens;
 +        if (slp) {
 +            /* count the number of screens and make space for
@@ -93,11 +97,7 @@ index 7f4ada8..56f7deb 100644
 +                if (!copyScreen(slp[0].screen, ptr, i, matches[i]))
 +                    return NULL;
 +            }
- 
--    /* TODO Handle multiple screen sections */
--    if (xf86ConfigLayout.screens && !xf86ConfigLayout.screens->screen->device) {
--        xf86ConfigLayout.screens->screen->device = ptr;
--        ptr->myScreenSection = xf86ConfigLayout.screens->screen;
++
 +            /* shift the rest of the original screen list
 +             * to the end of the current screen list
 +             *

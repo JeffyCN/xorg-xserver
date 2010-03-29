@@ -1,13 +1,24 @@
-From 9fad8f06fb89ac2ae05bea0fa24cab3df7677297 Mon Sep 17 00:00:00 2001
-From: Keith Packard <keithp@keithp.com>
-Date: Wed, 30 Dec 2009 17:28:19 +0000
-Subject: Merge remote branch 'dbn/inputclass'
+Merged patches:
 
+9fad8f06fb89ac2ae05bea0fa24cab3df7677297
+b8b12e41c453c3bf94b11e7a18934d3b6e1869bf
+032f97808c65771a07bac748212cf6457a5d1660
+6850ea8fb95417db9ce3a70fc17f90d6fdea1389
+67bc278a511ca6ec42e1f8d2d5897c0109e94e2c
+8b1a685f00ae76be864cc188943a0874f48b8d64
+a378e361a5de89f0be8b68ebc3e854f56cefe666
+9b369f71273fb117c982e6ce16cd4462f206d365
+27d1b86d1b858f931b4cb1b6ddf857c76d92a6d9
+3ac43df5d4a25d6e0058b327fa05a1c1436b4794
+c6d9bc092c84ad5c68083a126aa7577baa42cef7 (apart from config/udev.c change)
+8736d112afb0dd61dfdaadd6378eafd200b2ef5f
+xfree86: merge driver from the input class into the options.
+031f92bf9ab15226df410012a0d1c9c390efc36d
 ---
 Index: xorg-server/Xi/stubs.c
 ===================================================================
---- xorg-server.orig/Xi/stubs.c	2010-01-08 14:18:49.000000000 +0200
-+++ xorg-server/Xi/stubs.c	2010-03-24 13:14:42.000000000 +0200
+--- xorg-server.orig/Xi/stubs.c	2010-03-29 18:29:58.000000000 +0300
++++ xorg-server/Xi/stubs.c	2010-03-29 18:32:30.000000000 +0300
 @@ -227,7 +227,8 @@
   *
   */
@@ -20,8 +31,8 @@ Index: xorg-server/Xi/stubs.c
  }
 Index: xorg-server/config/dbus.c
 ===================================================================
---- xorg-server.orig/config/dbus.c	2010-01-08 14:18:49.000000000 +0200
-+++ xorg-server/config/dbus.c	2010-03-24 13:14:42.000000000 +0200
+--- xorg-server.orig/config/dbus.c	2010-03-29 18:29:58.000000000 +0300
++++ xorg-server/config/dbus.c	2010-03-29 18:32:30.000000000 +0300
 @@ -147,7 +147,7 @@
          dbus_message_iter_next(&iter);
      }
@@ -33,8 +44,8 @@ Index: xorg-server/config/dbus.c
          goto unwind;
 Index: xorg-server/config/hal.c
 ===================================================================
---- xorg-server.orig/config/hal.c	2010-03-24 00:06:34.000000000 +0200
-+++ xorg-server/config/hal.c	2010-03-24 13:14:42.000000000 +0200
+--- xorg-server.orig/config/hal.c	2010-03-29 18:29:58.000000000 +0300
++++ xorg-server/config/hal.c	2010-03-29 19:13:12.000000000 +0300
 @@ -191,6 +191,7 @@
  {
      char *path = NULL, *driver = NULL, *name = NULL, *config_info = NULL;
@@ -43,7 +54,7 @@ Index: xorg-server/config/hal.c
      DeviceIntPtr dev = NULL;
      DBusError error;
      struct xkb_options xkb_opts = {0};
-@@ -215,10 +216,28 @@
+@@ -215,10 +216,29 @@
          LogMessage(X_WARNING,"config/hal: no driver or path specified for %s\n", udi);
          goto unwind;
      }
@@ -56,6 +67,7 @@ Index: xorg-server/config/hal.c
 +        attrs.product = xstrdup(name);
 +
 +    attrs.vendor = get_prop_string(hal_ctx, udi, "info.vendor");
++    attrs.tags = xstrtokenize(get_prop_string(hal_ctx, udi, "input.tags"), ",");
 +
 +    if (libhal_device_query_capability(hal_ctx, udi, "input.keys", NULL))
 +        attrs.flags |= ATTR_KEYBOARD;
@@ -72,7 +84,7 @@ Index: xorg-server/config/hal.c
  
      options = xcalloc(sizeof(*options), 1);
      if (!options){
-@@ -400,7 +419,7 @@
+@@ -400,7 +420,7 @@
  
      /* this isn't an error, but how else do you output something that the user can see? */
      LogMessage(X_INFO, "config/hal: Adding input device %s\n", name);
@@ -81,21 +93,29 @@ Index: xorg-server/config/hal.c
          LogMessage(X_ERROR, "config/hal: NewInputDeviceRequest failed (%d)\n", rc);
          dev = NULL;
          goto unwind;
-@@ -430,6 +449,10 @@
+@@ -430,6 +450,18 @@
          xfree(tmpo);
      }
  
 +    xfree(attrs.product);
 +    xfree(attrs.vendor);
 +    xfree(attrs.device);
++    if (attrs.tags) {
++        char **tag = attrs.tags;
++        while (*tag) {
++            xfree(*tag);
++            tag++;
++        }
++        xfree(attrs.tags);
++    }
 +
      if (xkb_opts.layout)
          xfree(xkb_opts.layout);
      if (xkb_opts.rules)
 Index: xorg-server/configure.ac
 ===================================================================
---- xorg-server.orig/configure.ac	2010-03-24 13:05:51.000000000 +0200
-+++ xorg-server/configure.ac	2010-03-24 13:14:42.000000000 +0200
+--- xorg-server.orig/configure.ac	2010-03-29 18:30:35.000000000 +0300
++++ xorg-server/configure.ac	2010-03-29 19:13:12.000000000 +0300
 @@ -119,7 +119,7 @@
  
  AC_HEADER_DIRENT
@@ -107,8 +127,8 @@ Index: xorg-server/configure.ac
  AC_C_CONST
 Index: xorg-server/hw/dmx/dmxinput.c
 ===================================================================
---- xorg-server.orig/hw/dmx/dmxinput.c	2010-01-08 14:18:50.000000000 +0200
-+++ xorg-server/hw/dmx/dmxinput.c	2010-03-24 13:14:42.000000000 +0200
+--- xorg-server.orig/hw/dmx/dmxinput.c	2010-03-29 18:29:58.000000000 +0300
++++ xorg-server/hw/dmx/dmxinput.c	2010-03-29 18:32:30.000000000 +0300
 @@ -103,7 +103,8 @@
  }
  
@@ -121,8 +141,8 @@ Index: xorg-server/hw/dmx/dmxinput.c
  }
 Index: xorg-server/hw/kdrive/src/kinput.c
 ===================================================================
---- xorg-server.orig/hw/kdrive/src/kinput.c	2010-03-24 00:06:34.000000000 +0200
-+++ xorg-server/hw/kdrive/src/kinput.c	2010-03-24 13:14:42.000000000 +0200
+--- xorg-server.orig/hw/kdrive/src/kinput.c	2010-03-29 18:29:58.000000000 +0300
++++ xorg-server/hw/kdrive/src/kinput.c	2010-03-29 19:13:12.000000000 +0300
 @@ -2249,7 +2249,8 @@
  }
  
@@ -135,8 +155,8 @@ Index: xorg-server/hw/kdrive/src/kinput.c
      KdPointerInfo *pi = NULL;
 Index: xorg-server/hw/xfree86/common/xf86Option.c
 ===================================================================
---- xorg-server.orig/hw/xfree86/common/xf86Option.c	2010-01-08 14:18:50.000000000 +0200
-+++ xorg-server/hw/xfree86/common/xf86Option.c	2010-03-24 13:14:42.000000000 +0200
+--- xorg-server.orig/hw/xfree86/common/xf86Option.c	2010-03-29 18:29:58.000000000 +0300
++++ xorg-server/hw/xfree86/common/xf86Option.c	2010-03-29 18:30:35.000000000 +0300
 @@ -42,6 +42,7 @@
  #include "xf86.h"
  #include "xf86Xinput.h"
@@ -178,8 +198,8 @@ Index: xorg-server/hw/xfree86/common/xf86Option.c
  static Bool
 Index: xorg-server/hw/xfree86/common/xf86Xinput.c
 ===================================================================
---- xorg-server.orig/hw/xfree86/common/xf86Xinput.c	2010-03-24 00:06:34.000000000 +0200
-+++ xorg-server/hw/xfree86/common/xf86Xinput.c	2010-03-24 13:14:42.000000000 +0200
+--- xorg-server.orig/hw/xfree86/common/xf86Xinput.c	2010-03-29 18:29:58.000000000 +0300
++++ xorg-server/hw/xfree86/common/xf86Xinput.c	2010-03-29 19:13:12.000000000 +0300
 @@ -57,9 +57,11 @@
  #include <X11/Xatom.h>
  #include "xf86.h"
@@ -204,7 +224,53 @@ Index: xorg-server/hw/xfree86/common/xf86Xinput.c
  #include "extnsionst.h"
  
  #include "windowstr.h"	/* screenIsSaved */
-@@ -466,6 +473,85 @@
+@@ -191,12 +198,12 @@
+ 
+ static void
+ ApplyAccelerationSettings(DeviceIntPtr dev){
+-    int scheme;
++    int scheme, i;
+     DeviceVelocityPtr pVel;
+     LocalDevicePtr local = (LocalDevicePtr)dev->public.devicePrivate;
+     char* schemeStr;
+ 
+-    if(dev->valuator){
++    if (dev->valuator && dev->ptrfeed) {
+ 	schemeStr = xf86SetStrOption(local->options, "AccelerationScheme", "");
+ 
+ 	scheme = dev->valuator->accelScheme.number;
+@@ -239,6 +246,30 @@
+                                               pVel);
+                 break;
+         }
++
++        i = xf86SetIntOption(local->options, "AccelerationNumerator",
++                             dev->ptrfeed->ctrl.num);
++        if (i >= 0)
++            dev->ptrfeed->ctrl.num = i;
++
++        i = xf86SetIntOption(local->options, "AccelerationDenominator",
++                             dev->ptrfeed->ctrl.den);
++        if (i > 0)
++            dev->ptrfeed->ctrl.den = i;
++
++        i = xf86SetIntOption(local->options, "AccelerationThreshold",
++                             dev->ptrfeed->ctrl.threshold);
++        if (i >= 0)
++            dev->ptrfeed->ctrl.threshold = i;
++
++        /* mostly a no-op anyway */
++        (*dev->ptrfeed->CtrlProc)(dev, &dev->ptrfeed->ctrl);
++
++        xf86Msg(X_CONFIG, "%s: (accel) acceleration factor: %.3f\n",
++                            local->name, ((float)dev->ptrfeed->ctrl.num)/
++                                         ((float)dev->ptrfeed->ctrl.den));
++        xf86Msg(X_CONFIG, "%s: (accel) acceleration threshold: %i\n",
++                local->name, dev->ptrfeed->ctrl.threshold);
+     }
+ }
+ 
+@@ -466,6 +497,157 @@
  {
  }
  
@@ -215,82 +281,154 @@ Index: xorg-server/hw/xfree86/common/xf86Xinput.c
 +static Bool
 +InputClassMatches(XF86ConfInputClassPtr iclass, InputAttributes *attrs)
 +{
-+    if (iclass->match_product &&
-+        (!attrs->product || !strstr(attrs->product, iclass->match_product)))
-+        return False;
-+    if (iclass->match_vendor &&
-+        (!attrs->vendor || !strstr(attrs->vendor, iclass->match_vendor)))
-+        return False;
-+    if (iclass->match_device &&
++    char **cur;
++    Bool match;
++
++    if (iclass->match_product) {
++        if (!attrs->product)
++            return FALSE;
++        /* see if any of the values match */
++        for (cur = iclass->match_product, match = FALSE; *cur; cur++)
++            if (strstr(attrs->product, *cur)) {
++                match = TRUE;
++                break;
++            }
++        if (!match)
++            return FALSE;
++    }
++    if (iclass->match_vendor) {
++        if (!attrs->vendor)
++            return FALSE;
++        /* see if any of the values match */
++        for (cur = iclass->match_vendor, match = FALSE; *cur; cur++)
++            if (strstr(attrs->vendor, *cur)) {
++                match = TRUE;
++                break;
++            }
++        if (!match)
++            return FALSE;
++    }
++    if (iclass->match_device) {
++        if (!attrs->device)
++            return FALSE;
++        /* see if any of the values match */
++        for (cur = iclass->match_device, match = FALSE; *cur; cur++)
 +#ifdef HAVE_FNMATCH_H
-+        (!attrs->device ||
-+         fnmatch(iclass->match_device, attrs->device, 0) != 0))
++            if (fnmatch(*cur, attrs->device, FNM_PATHNAME) == 0) {
 +#else
-+        (!attrs->device || !strstr(attrs->device, iclass->match_device)))
++            if (strstr(attrs->device, *cur)) {
 +#endif
-+        return False;
++                match = TRUE;
++                break;
++            }
++        if (!match)
++            return FALSE;
++    }
++    if (iclass->match_tag) {
++        if (!attrs->tags)
++            return FALSE;
++
++        for (cur = iclass->match_tag, match = FALSE; *cur && !match; cur++) {
++            const char *tag;
++            for(tag = *attrs->tags; *tag; tag++) {
++                if (!strcmp(tag, *cur)) {
++                    match = TRUE;
++                    break;
++                }
++            }
++        }
++
++        if (!match)
++            return FALSE;
++    }
++
 +    if (iclass->is_keyboard.set &&
 +        iclass->is_keyboard.val != !!(attrs->flags & ATTR_KEYBOARD))
-+        return False;
++        return FALSE;
 +    if (iclass->is_pointer.set &&
 +        iclass->is_pointer.val != !!(attrs->flags & ATTR_POINTER))
-+        return False;
++        return FALSE;
 +    if (iclass->is_joystick.set &&
 +        iclass->is_joystick.val != !!(attrs->flags & ATTR_JOYSTICK))
-+        return False;
++        return FALSE;
 +    if (iclass->is_tablet.set &&
 +        iclass->is_tablet.val != !!(attrs->flags & ATTR_TABLET))
-+        return False;
++        return FALSE;
 +    if (iclass->is_touchpad.set &&
 +        iclass->is_touchpad.val != !!(attrs->flags & ATTR_TOUCHPAD))
-+        return False;
++        return FALSE;
 +    if (iclass->is_touchscreen.set &&
 +        iclass->is_touchscreen.val != !!(attrs->flags & ATTR_TOUCHSCREEN))
-+        return False;
-+    return True;
++        return FALSE;
++    return TRUE;
 +}
 +
 +/*
-+ * Merge in any InputClass configurations. Each InputClass section can
-+ * add to the original device configuration as well as any previous
-+ * InputClass sections.
++ * Merge in any InputClass configurations. Options in each InputClass
++ * section have more priority than the original device configuration as
++ * well as any previous InputClass sections.
 + */
 +static int
 +MergeInputClasses(IDevPtr idev, InputAttributes *attrs)
 +{
 +    XF86ConfInputClassPtr cl;
-+    XF86OptionPtr classopts;
++    XF86OptionPtr classopts, mergedopts = NULL;
++    char *classdriver = NULL;
 +
 +    for (cl = xf86configptr->conf_inputclass_lst; cl; cl = cl->list.next) {
 +        if (!InputClassMatches(cl, attrs))
 +            continue;
 +
++        /* Collect class options and merge over previous classes */
 +        xf86Msg(X_CONFIG, "%s: Applying InputClass \"%s\"\n",
 +                idev->identifier, cl->identifier);
-+        if (cl->driver && !idev->driver) {
-+            idev->driver = xstrdup(cl->driver);
-+            if (!idev->driver) {
-+                xf86Msg(X_ERROR, "Could not allocate memory while merging "
-+                        "InputClass configuration");
-+                return BadAlloc;
-+            }
-+        }
-+
++        if (cl->driver)
++            classdriver = cl->driver;
 +        classopts = xf86optionListDup(cl->option_lst);
-+        if (idev->commonOptions)
-+            idev->commonOptions = xf86optionListMerge(classopts,
-+                                                      idev->commonOptions);
-+        else
-+            idev->commonOptions = classopts;
++        mergedopts = xf86optionListMerge(mergedopts, classopts);
 +    }
 +
++    /* Apply options to device with InputClass settings preferred. */
++    if (classdriver) {
++        xfree(idev->driver);
++        idev->driver = xstrdup(classdriver);
++        if (!idev->driver) {
++            xf86Msg(X_ERROR, "Failed to allocate memory while merging "
++                    "InputClass configuration");
++            return BadAlloc;
++        }
++        mergedopts = xf86ReplaceStrOption(mergedopts, "driver", idev->driver);
++    }
++    idev->commonOptions = xf86optionListMerge(idev->commonOptions, mergedopts);
++
 +    return Success;
++}
++
++static Bool
++IgnoreInputClass(IDevPtr idev, InputAttributes *attrs)
++{
++    XF86ConfInputClassPtr cl;
++    Bool ignore;
++
++    for (cl = xf86configptr->conf_inputclass_lst; cl; cl = cl->list.next) {
++        if (!InputClassMatches(cl, attrs))
++            continue;
++        if (xf86findOption(cl->option_lst, "Ignore")) {
++            ignore = xf86CheckBoolOption(cl->option_lst, "Ignore", FALSE);
++            if (ignore)
++                xf86Msg(X_CONFIG,
++                        "%s: Ignoring device from InputClass \"%s\"\n",
++                        idev->identifier, cl->identifier);
++            return ignore;
++        }
++    }
++    return FALSE;
 +}
 +
  /**
   * Create a new input device, activate and enable it.
   *
-@@ -568,7 +654,8 @@
+@@ -568,7 +750,8 @@
  }
  
  int
@@ -300,24 +438,55 @@ Index: xorg-server/hw/xfree86/common/xf86Xinput.c
  {
      IDevRec *idev = NULL;
      InputOption *option = NULL;
-@@ -635,6 +722,13 @@
-         option->value = NULL;
+@@ -615,6 +798,28 @@
+             }
+         }
      }
- 
++
++    for (option = options; option; option = option->next) {
++        /* Steal option key/value strings from the provided list.
++         * We need those strings, the InputOption list doesn't. */
++        idev->commonOptions = xf86addNewOption(idev->commonOptions,
++                                               option->key, option->value);
++        option->key = NULL;
++        option->value = NULL;
++    }
++
 +    /* Apply InputClass settings */
 +    if (attrs) {
++        if (IgnoreInputClass(idev, attrs)) {
++            rval = BadIDChoice;
++            goto unwind;
++        }
++
 +        rval = MergeInputClasses(idev, attrs);
 +        if (rval != Success)
 +            goto unwind;
 +    }
 +
+     if (!idev->driver || !idev->identifier) {
+         xf86Msg(X_ERROR, "No input driver/identifier specified (ignoring)\n");
+         rval = BadRequest;
+@@ -626,15 +831,6 @@
+         return BadMatch;
+     }
+ 
+-    for (option = options; option; option = option->next) {
+-        /* Steal option key/value strings from the provided list.
+-         * We need those strings, the InputOption list doesn't. */
+-        idev->commonOptions = xf86addNewOption(idev->commonOptions,
+-                                               option->key, option->value);
+-        option->key = NULL;
+-        option->value = NULL;
+-    }
+-
      rval = xf86NewInputDevice(idev, pdev,
                  (!is_auto || (is_auto && xf86Info.autoEnableDevices)));
      if (rval == Success)
 Index: xorg-server/hw/xfree86/doc/man/xorg.conf.man.pre
 ===================================================================
---- xorg-server.orig/hw/xfree86/doc/man/xorg.conf.man.pre	2010-03-24 13:05:51.000000000 +0200
-+++ xorg-server/hw/xfree86/doc/man/xorg.conf.man.pre	2010-03-24 13:20:33.000000000 +0200
+--- xorg-server.orig/hw/xfree86/doc/man/xorg.conf.man.pre	2010-03-29 18:30:35.000000000 +0300
++++ xorg-server/hw/xfree86/doc/man/xorg.conf.man.pre	2010-03-29 18:54:55.000000000 +0300
 @@ -144,6 +144,7 @@
  .BR "Module         " "Dynamic module loading"
  .BR "Extensions     " "Extension enabling"
@@ -326,10 +495,30 @@ Index: xorg-server/hw/xfree86/doc/man/xorg.conf.man.pre
  .BR "Device         " "Graphics device description"
  .BR "VideoAdaptor   " "Xv video adaptor description"
  .BR "Monitor        " "Monitor description"
-@@ -957,6 +958,102 @@
+@@ -957,6 +958,143 @@
  .B  "predictable   default algorithm (behaving more predictable)"
  .B  "lightweight   old acceleration code (as specified in the X protocol spec)"
  .B  "none          no acceleration or deceleration"
++.fi
++.RE
++.TP 7
++.BI "Option \*qAccelerationNumerator\*q  \*q" integer \*q
++.TP 7
++.BI "Option \*qAccelerationDenominator\*q  \*q" integer \*q
++Set numerator and denominator of the acceleration factor. The acceleration
++factor is a rational which, together with threshold, can be used to tweak
++profiles to suit the users needs. The
++.B simple
++and
++.B limited
++profiles use it directly (i.e. they accelerate by the factor), for other
++profiles it should hold that a higher acceleration factor leads to a faster
++pointer. Typically, 1 is unaccelerated and values up to 5 are sensible.
++.TP 7
++.BI "Option \*qAccelerationThreshold\*q  \*q" integer \*q
++Set the threshold, which is roughly the velocity (usually device units per 10
++ms) required for acceleration to become effective. The precise effect varies
++with the profile however.
 +
 +.SH "INPUTCLASS SECTION"
 +The config file may have multiple
@@ -339,8 +528,8 @@ Index: xorg-server/hw/xfree86/doc/man/xorg.conf.man.pre
 +class of input devices as they are automatically added. An input device can
 +match more than one
 +.B InputClass
-+section. Each class can only supplement settings from a previous class, so
-+it is best to arrange the sections with the most generic matches last.
++section. Each class can override settings from a previous class, so it is
++best to arrange the sections with the most generic matches first.
 +.PP
 +.B InputClass
 +sections have the following format:
@@ -372,7 +561,7 @@ Index: xorg-server/hw/xfree86/doc/man/xorg.conf.man.pre
 +entry specifies the name of the driver to use for this input device.
 +After all classes have been examined, the
 +.RI \*q inputdriver \*q
-+module from the final
++module from the first
 +.B Driver
 +entry will be enabled when using the loadable server.
 +.PP
@@ -390,17 +579,29 @@ Index: xorg-server/hw/xfree86/doc/man/xorg.conf.man.pre
 +.BI "MatchProduct  \*q" matchproduct \*q
 +This entry can be used to check if the substring
 +.RI \*q matchproduct \*q
-+occurs in the device's product name.
++occurs in the device's product name. Multiple substrings can be matched by
++separating arguments with a '|' character.
 +.TP 7
 +.BI "MatchVendor  \*q" matchvendor \*q
 +This entry can be used to check if the substring
 +.RI \*q matchvendor \*q
-+occurs in the device's vendor name.
++occurs in the device's vendor name. Multiple substrings can be matched by
++separating arguments with a '|' character.
 +.TP 7
 +.BI "MatchDevicePath \*q" matchdevice \*q
 +This entry can be used to check if the device file matches the
 +.RI \*q matchdevice \*q
-+pathname pattern.
++pathname pattern. Multiple patterns can be matched by separating arguments
++with a '|' character.
++.TP 7
++.BI "MatchTag \*q" matchtag \*q
++This entry can be used to check if tags assigned by the config backend
++matches the
++.RI \*q matchtag \*q
++pattern.  Multiple patterns can be matched by separating arguments
++with a '|' character. A match is found if at least one of the tags given in
++.RI \*q matchtag \*q
++matches at least one of the tags assigned by the backend.
 +.TP 7
 +.BI "MatchIsKeyboard     \*q" bool \*q
 +.TP 7
@@ -421,18 +622,27 @@ Index: xorg-server/hw/xfree86/doc/man/xorg.conf.man.pre
 +.B InputClass
 +section, any
 +.B Option
-+entries are applied to the device. See the
++entries are applied to the device. One
++.B InputClass
++specific
++.B Option
++is recognized. See the
 +.B InputDevice
-+section above for a description of the various
++section above for a description of the remaining
 +.B Option
 +entries.
++.TP 7
++.BI "Option \*qIgnore\*q \*q" boolean \*q
++This optional entry specifies that the device should be ignored entirely,
++and not added to the server. This can be useful when the device is handled
++by another program and no X events should be generated.
  .SH "DEVICE SECTION"
  The config file may have multiple
  .B Device
 Index: xorg-server/hw/xfree86/parser/Configint.h
 ===================================================================
---- xorg-server.orig/hw/xfree86/parser/Configint.h	2010-01-08 14:18:50.000000000 +0200
-+++ xorg-server/hw/xfree86/parser/Configint.h	2010-03-24 13:14:42.000000000 +0200
+--- xorg-server.orig/hw/xfree86/parser/Configint.h	2010-03-29 18:29:58.000000000 +0300
++++ xorg-server/hw/xfree86/parser/Configint.h	2010-03-29 18:30:35.000000000 +0300
 @@ -148,6 +148,8 @@
  "The %s keyword requires a number to follow it."
  #define POSITIVE_INT_MSG \
@@ -445,8 +655,8 @@ Index: xorg-server/hw/xfree86/parser/Configint.h
 Index: xorg-server/hw/xfree86/parser/InputClass.c
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ xorg-server/hw/xfree86/parser/InputClass.c	2010-03-24 13:14:42.000000000 +0200
-@@ -0,0 +1,232 @@
++++ xorg-server/hw/xfree86/parser/InputClass.c	2010-03-29 18:52:20.000000000 +0300
+@@ -0,0 +1,288 @@
 +/*
 + * Copyright (c) 2009 Dan Nicholson
 + *
@@ -478,6 +688,8 @@ Index: xorg-server/hw/xfree86/parser/InputClass.c
 +#include <xorg-config.h>
 +#endif
 +
++#include <string.h>
++#include "os.h"
 +#include "xf86Parser.h"
 +#include "xf86tokens.h"
 +#include "Configint.h"
@@ -494,6 +706,7 @@ Index: xorg-server/hw/xfree86/parser/InputClass.c
 +    {MATCH_PRODUCT, "matchproduct"},
 +    {MATCH_VENDOR, "matchvendor"},
 +    {MATCH_DEVICE_PATH, "matchdevicepath"},
++    {MATCH_TAG, "matchtag"},
 +    {MATCH_IS_KEYBOARD, "matchiskeyboard"},
 +    {MATCH_IS_POINTER, "matchispointer"},
 +    {MATCH_IS_JOYSTICK, "matchisjoystick"},
@@ -504,6 +717,8 @@ Index: xorg-server/hw/xfree86/parser/InputClass.c
 +};
 +
 +#define CLEANUP xf86freeInputClassList
++
++#define TOKEN_SEP "|"
 +
 +XF86ConfInputClassPtr
 +xf86parseInputClassSection(void)
@@ -540,17 +755,22 @@ Index: xorg-server/hw/xfree86/parser/InputClass.c
 +        case MATCH_PRODUCT:
 +            if (xf86getSubToken(&(ptr->comment)) != STRING)
 +                Error(QUOTE_MSG, "MatchProduct");
-+            ptr->match_product = val.str;
++            ptr->match_product = xstrtokenize(val.str, TOKEN_SEP);
 +            break;
 +        case MATCH_VENDOR:
 +            if (xf86getSubToken(&(ptr->comment)) != STRING)
 +                Error(QUOTE_MSG, "MatchVendor");
-+            ptr->match_vendor = val.str;
++            ptr->match_vendor = xstrtokenize(val.str, TOKEN_SEP);
 +            break;
 +        case MATCH_DEVICE_PATH:
 +            if (xf86getSubToken(&(ptr->comment)) != STRING)
 +                Error(QUOTE_MSG, "MatchDevicePath");
-+            ptr->match_device = val.str;
++            ptr->match_device = xstrtokenize(val.str, TOKEN_SEP);
++            break;
++        case MATCH_TAG:
++            if (xf86getSubToken(&(ptr->comment)) != STRING)
++                Error(QUOTE_MSG, "MatchTag");
++            ptr->match_tag = xstrtokenize(val.str, TOKEN_SEP);
 +            break;
 +        case MATCH_IS_KEYBOARD:
 +            if (xf86getSubToken(&(ptr->comment)) != STRING)
@@ -622,6 +842,8 @@ Index: xorg-server/hw/xfree86/parser/InputClass.c
 +void
 +xf86printInputClassSection (FILE * cf, XF86ConfInputClassPtr ptr)
 +{
++    char **list;
++
 +    while (ptr) {
 +        fprintf(cf, "Section \"InputClass\"\n");
 +        if (ptr->comment)
@@ -630,12 +852,38 @@ Index: xorg-server/hw/xfree86/parser/InputClass.c
 +            fprintf(cf, "\tIdentifier      \"%s\"\n", ptr->identifier);
 +        if (ptr->driver)
 +            fprintf(cf, "\tDriver          \"%s\"\n", ptr->driver);
-+        if (ptr->match_product)
-+            fprintf(cf, "\tMatchProduct    \"%s\"\n", ptr->match_product);
-+        if (ptr->match_vendor)
-+            fprintf(cf, "\tMatchVendor     \"%s\"\n", ptr->match_vendor);
-+        if (ptr->match_device)
-+            fprintf(cf, "\tMatchDevicePath \"%s\"\n", ptr->match_device);
++        if (ptr->match_product) {
++            fprintf(cf, "\tMatchProduct    \"");
++            for (list = ptr->match_product; *list; list++)
++                fprintf(cf, "%s%s",
++                        list == ptr->match_product ? "" : TOKEN_SEP,
++                        *list);
++            fprintf(cf, "\"\n");
++        }
++        if (ptr->match_vendor) {
++            fprintf(cf, "\tMatchVendor     \"");
++            for (list = ptr->match_vendor; *list; list++)
++                fprintf(cf, "%s%s",
++                        list == ptr->match_vendor ? "" : TOKEN_SEP,
++                        *list);
++            fprintf(cf, "\"\n");
++        }
++        if (ptr->match_device) {
++            fprintf(cf, "\tMatchDevicePath \"");
++            for (list = ptr->match_device; *list; list++)
++                fprintf(cf, "%s%s",
++                        list == ptr->match_device ? "" : TOKEN_SEP,
++                        *list);
++            fprintf(cf, "\"\n");
++        }
++        if (ptr->match_tag) {
++            fprintf(cf, "\tMatchTag \"");
++            for (list = ptr->match_tag; *list; list++)
++                fprintf(cf, "%s%s",
++                        list == ptr->match_tag ? "" : TOKEN_SEP,
++                        *list);
++            fprintf(cf, "\"\n");
++        }
 +        if (ptr->is_keyboard.set)
 +            fprintf(cf, "\tIsKeyboard      \"%s\"\n",
 +                    ptr->is_keyboard.val ? "yes" : "no");
@@ -664,13 +912,31 @@ Index: xorg-server/hw/xfree86/parser/InputClass.c
 +xf86freeInputClassList (XF86ConfInputClassPtr ptr)
 +{
 +    XF86ConfInputClassPtr prev;
++    char **list;
 +
 +    while (ptr) {
 +        TestFree(ptr->identifier);
 +        TestFree(ptr->driver);
-+        TestFree(ptr->match_product);
-+        TestFree(ptr->match_vendor);
-+        TestFree(ptr->match_device);
++        if (ptr->match_product) {
++            for (list = ptr->match_product; *list; list++)
++                free(*list);
++            free(ptr->match_product);
++        }
++        if (ptr->match_vendor) {
++            for (list = ptr->match_vendor; *list; list++)
++                free(*list);
++            free(ptr->match_vendor);
++        }
++        if (ptr->match_device) {
++            for (list = ptr->match_device; *list; list++)
++                free(*list);
++            free(ptr->match_device);
++        }
++        if (ptr->match_tag) {
++            for (list = ptr->match_tag; *list; list++)
++                free(*list);
++            free(ptr->match_tag);
++        }
 +        TestFree(ptr->comment);
 +        xf86optionListFree(ptr->option_lst);
 +
@@ -681,8 +947,8 @@ Index: xorg-server/hw/xfree86/parser/InputClass.c
 +}
 Index: xorg-server/hw/xfree86/parser/Makefile.am
 ===================================================================
---- xorg-server.orig/hw/xfree86/parser/Makefile.am	2010-01-08 14:18:50.000000000 +0200
-+++ xorg-server/hw/xfree86/parser/Makefile.am	2010-03-24 13:14:42.000000000 +0200
+--- xorg-server.orig/hw/xfree86/parser/Makefile.am	2010-03-29 18:29:58.000000000 +0300
++++ xorg-server/hw/xfree86/parser/Makefile.am	2010-03-29 18:30:35.000000000 +0300
 @@ -13,6 +13,7 @@
  	Files.c \
  	Flags.c \
@@ -693,8 +959,8 @@ Index: xorg-server/hw/xfree86/parser/Makefile.am
  	Video.c \
 Index: xorg-server/hw/xfree86/parser/configProcs.h
 ===================================================================
---- xorg-server.orig/hw/xfree86/parser/configProcs.h	2010-01-08 14:18:50.000000000 +0200
-+++ xorg-server/hw/xfree86/parser/configProcs.h	2010-03-24 13:14:42.000000000 +0200
+--- xorg-server.orig/hw/xfree86/parser/configProcs.h	2010-03-29 18:29:58.000000000 +0300
++++ xorg-server/hw/xfree86/parser/configProcs.h	2010-03-29 18:30:35.000000000 +0300
 @@ -48,6 +48,10 @@
  void xf86printInputSection(FILE *f, XF86ConfInputPtr ptr);
  void xf86freeInputList(XF86ConfInputPtr ptr);
@@ -708,8 +974,8 @@ Index: xorg-server/hw/xfree86/parser/configProcs.h
  void xf86printLayoutSection(FILE *cf, XF86ConfLayoutPtr ptr);
 Index: xorg-server/hw/xfree86/parser/read.c
 ===================================================================
---- xorg-server.orig/hw/xfree86/parser/read.c	2010-01-08 14:18:50.000000000 +0200
-+++ xorg-server/hw/xfree86/parser/read.c	2010-03-24 13:14:42.000000000 +0200
+--- xorg-server.orig/hw/xfree86/parser/read.c	2010-03-29 18:29:58.000000000 +0300
++++ xorg-server/hw/xfree86/parser/read.c	2010-03-29 18:30:35.000000000 +0300
 @@ -177,6 +177,14 @@
  				HANDLE_LIST (conf_input_lst, xf86parseInputSection,
  							 XF86ConfInputPtr);
@@ -727,9 +993,50 @@ Index: xorg-server/hw/xfree86/parser/read.c
  				free(val.str);
 Index: xorg-server/hw/xfree86/parser/scan.c
 ===================================================================
---- xorg-server.orig/hw/xfree86/parser/scan.c	2010-03-24 13:05:51.000000000 +0200
-+++ xorg-server/hw/xfree86/parser/scan.c	2010-03-24 13:14:42.000000000 +0200
-@@ -1186,3 +1186,33 @@
+--- xorg-server.orig/hw/xfree86/parser/scan.c	2010-03-29 18:30:35.000000000 +0300
++++ xorg-server/hw/xfree86/parser/scan.c	2010-03-29 19:13:24.000000000 +0300
+@@ -227,13 +227,15 @@
+ 			    configFiles[curFileIndex].file);
+ 
+ 		if (!ret) {
+-			/* stop if there are no more files */
+-			if (++curFileIndex >= numFiles) {
+-				curFileIndex = 0;
++			/*
++			 * if the file doesn't end in a newline, add one
++			 * and trigger another read
++			 */
++			if (pos != 0) {
++				strcpy(&configBuf[pos], "\n");
++				ret = configBuf;
++			} else
+ 				break;
+-			}
+-			configLineNo = 0;
+-			continue;
+ 		}
+ 
+ 		/* search for EOL in the new block of chars */
+@@ -338,7 +340,17 @@
+ 			}
+ 			if (ret == NULL)
+ 			{
+-				return (pushToken = EOF_TOKEN);
++				/*
++				 * if necessary, move to the next file and
++				 * read the first line
++				 */
++				if (curFileIndex + 1 < numFiles) {
++					curFileIndex++;
++					configLineNo = 0;
++					goto again;
++				}
++				else
++					return (pushToken = EOF_TOKEN);
+ 			}
+ 			configLineNo++;
+ 			configPos = 0;
+@@ -1186,3 +1198,33 @@
  
  	return (cur);
  }
@@ -742,21 +1049,21 @@ Index: xorg-server/hw/xfree86/parser/scan.c
 +	if (*str == '\0') {
 +		*val = TRUE;
 +	} else {
-+		if (strcmp(str, "1") == 0)
++		if (xf86nameCompare(str, "1") == 0)
 +			*val = TRUE;
-+		else if (strcmp(str, "on") == 0)
++		else if (xf86nameCompare(str, "on") == 0)
 +			*val = TRUE;
-+		else if (strcmp(str, "true") == 0)
++		else if (xf86nameCompare(str, "true") == 0)
 +			*val = TRUE;
-+		else if (strcmp(str, "yes") == 0)
++		else if (xf86nameCompare(str, "yes") == 0)
 +			*val = TRUE;
-+		else if (strcmp(str, "0") == 0)
++		else if (xf86nameCompare(str, "0") == 0)
 +			*val = FALSE;
-+		else if (strcmp(str, "off") == 0)
++		else if (xf86nameCompare(str, "off") == 0)
 +			*val = FALSE;
-+		else if (strcmp(str, "false") == 0)
++		else if (xf86nameCompare(str, "false") == 0)
 +			*val = FALSE;
-+		else if (strcmp(str, "no") == 0)
++		else if (xf86nameCompare(str, "no") == 0)
 +			*val = FALSE;
 +		else
 +			return FALSE;
@@ -765,8 +1072,8 @@ Index: xorg-server/hw/xfree86/parser/scan.c
 +}
 Index: xorg-server/hw/xfree86/parser/write.c
 ===================================================================
---- xorg-server.orig/hw/xfree86/parser/write.c	2010-01-08 14:18:50.000000000 +0200
-+++ xorg-server/hw/xfree86/parser/write.c	2010-03-24 13:14:42.000000000 +0200
+--- xorg-server.orig/hw/xfree86/parser/write.c	2010-03-29 18:29:58.000000000 +0300
++++ xorg-server/hw/xfree86/parser/write.c	2010-03-29 18:30:35.000000000 +0300
 @@ -117,6 +117,8 @@
  
  	xf86printInputSection (cf, cptr->conf_input_lst);
@@ -778,8 +1085,8 @@ Index: xorg-server/hw/xfree86/parser/write.c
  	xf86printModesSection (cf, cptr->conf_modes_lst);
 Index: xorg-server/hw/xfree86/parser/xf86Parser.h
 ===================================================================
---- xorg-server.orig/hw/xfree86/parser/xf86Parser.h	2010-03-24 13:05:51.000000000 +0200
-+++ xorg-server/hw/xfree86/parser/xf86Parser.h	2010-03-24 13:14:42.000000000 +0200
+--- xorg-server.orig/hw/xfree86/parser/xf86Parser.h	2010-03-29 18:30:35.000000000 +0300
++++ xorg-server/hw/xfree86/parser/xf86Parser.h	2010-03-29 18:52:20.000000000 +0300
 @@ -64,6 +64,7 @@
  #ifndef _xf86Parser_h_
  #define _xf86Parser_h_
@@ -788,7 +1095,7 @@ Index: xorg-server/hw/xfree86/parser/xf86Parser.h
  #include "xf86Optrec.h"
  
  #define HAVE_PARSER_DECLS
-@@ -330,6 +331,32 @@
+@@ -330,6 +331,33 @@
  }
  XF86ConfInputrefRec, *XF86ConfInputrefPtr;
  
@@ -804,9 +1111,10 @@ Index: xorg-server/hw/xfree86/parser/xf86Parser.h
 +	GenericListRec list;
 +	char *identifier;
 +	char *driver;
-+	char *match_product;
-+	char *match_vendor;
-+	char *match_device;
++	char **match_product;
++	char **match_vendor;
++	char **match_device;
++	char **match_tag;
 +	xf86TriState is_keyboard;
 +	xf86TriState is_pointer;
 +	xf86TriState is_joystick;
@@ -821,7 +1129,7 @@ Index: xorg-server/hw/xfree86/parser/xf86Parser.h
  /* Values for adj_where */
  #define CONF_ADJ_OBSOLETE	-1
  #define CONF_ADJ_ABSOLUTE	0
-@@ -438,6 +465,7 @@
+@@ -438,6 +466,7 @@
  	XF86ConfDevicePtr conf_device_lst;
  	XF86ConfScreenPtr conf_screen_lst;
  	XF86ConfInputPtr conf_input_lst;
@@ -829,7 +1137,7 @@ Index: xorg-server/hw/xfree86/parser/xf86Parser.h
  	XF86ConfLayoutPtr conf_layout_lst;
  	XF86ConfVendorPtr conf_vendor_lst;
  	XF86ConfDRIPtr conf_dri;
-@@ -484,5 +512,6 @@
+@@ -484,5 +513,6 @@
  extern _X_EXPORT int xf86pathIsAbsolute(const char *path);
  extern _X_EXPORT int xf86pathIsSafe(const char *path);
  extern _X_EXPORT char *xf86addComment(char *cur, char *add);
@@ -838,9 +1146,9 @@ Index: xorg-server/hw/xfree86/parser/xf86Parser.h
  #endif /* _xf86Parser_h_ */
 Index: xorg-server/hw/xfree86/parser/xf86tokens.h
 ===================================================================
---- xorg-server.orig/hw/xfree86/parser/xf86tokens.h	2010-01-08 14:18:50.000000000 +0200
-+++ xorg-server/hw/xfree86/parser/xf86tokens.h	2010-03-24 13:14:42.000000000 +0200
-@@ -273,7 +273,18 @@
+--- xorg-server.orig/hw/xfree86/parser/xf86tokens.h	2010-03-29 18:29:58.000000000 +0300
++++ xorg-server/hw/xfree86/parser/xf86tokens.h	2010-03-29 18:52:20.000000000 +0300
+@@ -273,7 +273,19 @@
  
      /* DRI Tokens */
      GROUP,
@@ -851,6 +1159,7 @@ Index: xorg-server/hw/xfree86/parser/xf86tokens.h
 +    MATCH_PRODUCT,
 +    MATCH_VENDOR,
 +    MATCH_DEVICE_PATH,
++    MATCH_TAG,
 +    MATCH_IS_KEYBOARD,
 +    MATCH_IS_POINTER,
 +    MATCH_IS_JOYSTICK,
@@ -862,8 +1171,8 @@ Index: xorg-server/hw/xfree86/parser/xf86tokens.h
  #endif /* _xf86_tokens_h */
 Index: xorg-server/hw/xquartz/darwinXinput.c
 ===================================================================
---- xorg-server.orig/hw/xquartz/darwinXinput.c	2010-01-08 14:18:50.000000000 +0200
-+++ xorg-server/hw/xquartz/darwinXinput.c	2010-03-24 13:14:42.000000000 +0200
+--- xorg-server.orig/hw/xquartz/darwinXinput.c	2010-03-29 18:29:58.000000000 +0300
++++ xorg-server/hw/xquartz/darwinXinput.c	2010-03-29 18:32:30.000000000 +0300
 @@ -230,7 +230,8 @@
   *
   */
@@ -876,8 +1185,8 @@ Index: xorg-server/hw/xquartz/darwinXinput.c
    return BadValue;
 Index: xorg-server/include/dix-config.h.in
 ===================================================================
---- xorg-server.orig/include/dix-config.h.in	2010-03-24 13:05:51.000000000 +0200
-+++ xorg-server/include/dix-config.h.in	2010-03-24 13:14:42.000000000 +0200
+--- xorg-server.orig/include/dix-config.h.in	2010-03-29 18:30:35.000000000 +0300
++++ xorg-server/include/dix-config.h.in	2010-03-29 19:13:12.000000000 +0300
 @@ -225,6 +225,9 @@
  /* Define to 1 if you have the <unistd.h> header file. */
  #undef HAVE_UNISTD_H
@@ -890,8 +1199,8 @@ Index: xorg-server/include/dix-config.h.in
  
 Index: xorg-server/include/input.h
 ===================================================================
---- xorg-server.orig/include/input.h	2010-01-08 14:18:49.000000000 +0200
-+++ xorg-server/include/input.h	2010-03-24 13:14:42.000000000 +0200
+--- xorg-server.orig/include/input.h	2010-03-29 18:29:58.000000000 +0300
++++ xorg-server/include/input.h	2010-03-29 18:52:20.000000000 +0300
 @@ -52,6 +52,7 @@
  #include "screenint.h"
  #include <X11/Xmd.h>
@@ -900,7 +1209,7 @@ Index: xorg-server/include/input.h
  #include "window.h"     /* for WindowPtr */
  #include "xkbrules.h"
  #include "events.h"
-@@ -210,6 +211,20 @@
+@@ -210,6 +211,21 @@
      struct _InputOption *next;
  } InputOption;
  
@@ -908,6 +1217,7 @@ Index: xorg-server/include/input.h
 +    char                *product;
 +    char                *vendor;
 +    char                *device;
++    char                **tags; /* null-terminated */
 +    uint32_t            flags;
 +} InputAttributes;
 +
@@ -921,7 +1231,7 @@ Index: xorg-server/include/input.h
  /* Key has been run through all input processing and events sent to clients. */
  #define KEY_PROCESSED 1
  /* Key has not been fully processed, no events have been sent. */
-@@ -514,6 +529,7 @@
+@@ -514,6 +530,7 @@
  /* Implemented by the DDX. */
  extern _X_EXPORT int NewInputDeviceRequest(
      InputOption *options,
@@ -929,3 +1239,96 @@ Index: xorg-server/include/input.h
      DeviceIntPtr *dev);
  extern  _X_EXPORT void DeleteInputDeviceRequest(
      DeviceIntPtr dev);
+Index: xorg-server/include/misc.h
+===================================================================
+--- xorg-server.orig/include/misc.h	2010-03-29 18:46:43.000000000 +0300
++++ xorg-server/include/misc.h	2010-03-29 18:49:34.000000000 +0300
+@@ -210,6 +210,9 @@
+     return (((bytes) + 3) & ~3);
+ }
+ 
++extern char**
++xstrtokenize(const char *str, const char* separators);
++
+ /* some macros to help swap requests, replies, and events */
+ 
+ #define LengthRestB(stuff) \
+Index: xorg-server/os/utils.c
+===================================================================
+--- xorg-server.orig/os/utils.c	2010-03-29 18:46:43.000000000 +0300
++++ xorg-server/os/utils.c	2010-03-29 18:49:34.000000000 +0300
+@@ -1870,6 +1870,46 @@
+ #endif
+ }
+ 
++/*
++ * Tokenize a string into a NULL terminated array of strings. Always returns
++ * an allocated array unless an error occurs.
++ */
++char**
++xstrtokenize(const char *str, const char *separators)
++{
++    char **list, **nlist;
++    char *tok, *tmp;
++    unsigned num = 0, n;
++
++    if (!str)
++        return NULL;
++    list = calloc(1, sizeof(*list));
++    if (!list)
++        return NULL;
++    tmp = strdup(str);
++    if (!tmp)
++        goto error;
++    for (tok = strtok(tmp, separators); tok; tok = strtok(NULL, separators)) {
++        nlist = realloc(list, (num + 2) * sizeof(*list));
++        if (!nlist)
++            goto error;
++        list = nlist;
++        list[num] = strdup(tok);
++        if (!list[num])
++            goto error;
++        list[++num] = NULL;
++    }
++    free(tmp);
++    return list;
++
++error:
++    free(tmp);
++    for (n = 0; n < num; n++)
++        free(list[n]);
++    free(list);
++    return NULL;
++}
++
+ #ifdef __SCO__
+ #include <fcntl.h>
+ 
+Index: xorg-server/hw/xfree86/common/xf86Config.c
+===================================================================
+--- xorg-server.orig/hw/xfree86/common/xf86Config.c	2010-03-29 18:42:09.000000000 +0300
++++ xorg-server/hw/xfree86/common/xf86Config.c	2010-03-29 19:13:12.000000000 +0300
+@@ -2492,8 +2492,8 @@
+ 	    dirfrom = X_CMDLINE;
+ 
+ 	xf86initConfigFiles();
+-	filename = xf86openConfigFile(filesearch, xf86ConfigFile, PROJECTROOT);
+ 	dirname = xf86openConfigDirFiles(dirsearch, xf86ConfigDir, PROJECTROOT);
++	filename = xf86openConfigFile(filesearch, xf86ConfigFile, PROJECTROOT);
+ 	if (filename) {
+ 	    xf86MsgVerb(filefrom, 0, "Using config file: \"%s\"\n", filename);
+ 	    xf86ConfigFile = xnfstrdup(filename);
+Index: xorg-server/hw/xwin/winconfig.c
+===================================================================
+--- xorg-server.orig/hw/xwin/winconfig.c	2010-03-29 18:32:58.000000000 +0300
++++ xorg-server/hw/xwin/winconfig.c	2010-03-29 18:54:55.000000000 +0300
+@@ -136,8 +136,8 @@
+ 
+   /* Parse config file into data structure */
+   xf86initConfigFiles();
+-  filename = xf86openConfigFile (CONFIGPATH, xf86ConfigFile, PROJECTROOT);
+   dirname = xf86openConfigDirFiles (CONFIGDIRPATH, xf86ConfigDir, PROJECTROOT);
++  filename = xf86openConfigFile (CONFIGPATH, xf86ConfigFile, PROJECTROOT);
+ 
+   /* Hack for backward compatibility */
+   if (!filename && from == X_DEFAULT)
