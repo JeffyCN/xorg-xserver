@@ -16,3 +16,4 @@ config-libudev-backend.diff
 xfree86-fix-video-fallback.diff
 xfree86-dont-complain-about-missing-coredevices.diff
 unbreak-input-abi.diff
+tone-down-nidr-errors.diff
