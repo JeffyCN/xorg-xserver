@@ -1,4 +1,4 @@
-xorg-server (2:1.7.6-2) UNRELEASED; urgency=low
+xorg-server (2:1.7.6-2) unstable; urgency=low
 
   [ Timo Aaltonen ]
   * Add 08-config-xorg-conf-d.diff, 09-inputclass-sans-abi9.diff,
@@ -21,7 +21,7 @@ xorg-server (2:1.7.6-2) UNRELEASED; urgency=low
     property as a transitional measure.  This should allow the new server to
     work while drivers aren't transitioned to xorg.conf.d yet.
 
- -- Timo Aaltonen <tjaalton@ubuntu.com>  Wed, 24 Mar 2010 16:08:25 +0200
+ -- Timo Aaltonen <tjaalton@ubuntu.com>  Tue, 30 Mar 2010 21:32:52 +0300
 
 xorg-server (2:1.7.6-1) unstable; urgency=low
 
