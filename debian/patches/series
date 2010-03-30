@@ -7,8 +7,8 @@
 04_fedora_glx14-swrast.diff
 05_only_call_gamma_set_if_nonnull.diff
 06_dont_trap_access_to_timer_and_keyboard.diff
+07-xfree86-fix-build-with-xv-disabled.diff
 #13_debian_add_xkbpath_env_variable.diff
-16-xfree86-fix-build-with-xv-disabled.diff
 config-xorg-conf-d.diff
 inputclass-sans-abi9.diff
 config-libudev-backend.diff
