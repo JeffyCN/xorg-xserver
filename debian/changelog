@@ -3,7 +3,9 @@ xorg-server (2:1.7.6-2) UNRELEASED; urgency=low
   * Add 08-config-xorg-conf-d.diff, 09-inputclass-sans-abi9.diff,
     10-config-libudev-backend.diff. Backport xorg.conf.d, inputclass
     and libudev support from xserver 1.8. Replaces the patches we had
-    before.
+    before. This allows us to migrate from a temporary udev based
+    input device configuration straight to the long term solution
+    introduced in 1.8.
   * Add 11-xfree86-fix-video-fallback.diff from SUSE. Allows the video
     fallback method to work when there's an xorg.conf around.
   * Add 12-xfree86-dont-complain-about-missing-coredevices.diff.
