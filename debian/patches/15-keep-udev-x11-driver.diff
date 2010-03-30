@@ -1,0 +1,19 @@
+From: Julien Cristau <jcristau@debian.org>
+Subject: Keep looking for x11_driver in udev for now
+
+Our drivers don't ship xorg.conf.d snippets for now, so keep using
+x11_driver from udev in the transition period.
+
+Index: xorg-server/config/udev.c
+===================================================================
+--- xorg-server.orig/config/udev.c
++++ xorg-server/config/udev.c
+@@ -118,6 +118,8 @@
+                 add_option(&options, "xkb_model", value);
+             else if (!strcasecmp(tmp, "options"))
+                 add_option(&options, "xkb_options", value);
++        } else if (!strcmp(key, "x11_driver")) {
++            add_option(&options, "driver", value);
+         } else if (!strcmp(key, "ID_VENDOR")) {
+             attrs.vendor = value;
+         } else if (!strcmp(key, "ID_INPUT_KEY")) {
