@@ -1,7 +1,17 @@
-xorg-server (2:1.7.6-1.1) UNRELEASED; urgency=low
+xorg-server (2:1.7.6-2) UNRELEASED; urgency=low
 
-  * Backport xorg.conf.d, inputclass and libudev support from
-    xserver 1.8. The udev support is slightly different from what we had.
+  * Add 08-config-xorg-conf-d.diff, 09-inputclass-sans-abi9.diff,
+    10-config-libudev-backend.diff. Backport xorg.conf.d, inputclass
+    and libudev support from xserver 1.8. Replaces the patches we had
+    before.
+  * Add 11-xfree86-fix-video-fallback.diff from SUSE. Allows the video
+    fallback method to work when there's an xorg.conf around.
+  * Add 12-xfree86-dont-complain-about-missing-coredevices.diff.
+    No reason to complain about these, unless AEI is off.
+  * Add 13-unbreak-input-abi.diff. Keep the old NewInputDeviceRequest(),
+    rename the new as NIDR18() and call it from NIDR(). This way we
+    don't break the input ABI.
+  * Add 14-tone-down-nidr-errors.diff. Use X_INFO instead of X_ERROR.
 
  -- Timo Aaltonen <tjaalton@ubuntu.com>  Wed, 24 Mar 2010 16:08:25 +0200
 
