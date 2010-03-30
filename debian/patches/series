@@ -9,10 +9,10 @@
 06_dont_trap_access_to_timer_and_keyboard.diff
 07-xfree86-fix-build-with-xv-disabled.diff
 #13_debian_add_xkbpath_env_variable.diff
-config-xorg-conf-d.diff
-inputclass-sans-abi9.diff
-config-libudev-backend.diff
-xfree86-fix-video-fallback.diff
-xfree86-dont-complain-about-missing-coredevices.diff
-unbreak-input-abi.diff
-tone-down-nidr-errors.diff
+08-config-xorg-conf-d.diff
+09-inputclass-sans-abi9.diff
+10-config-libudev-backend.diff
+11-xfree86-fix-video-fallback.diff
+12-xfree86-dont-complain-about-missing-coredevices.diff
+13-unbreak-input-abi.diff
+14-tone-down-nidr-errors.diff
