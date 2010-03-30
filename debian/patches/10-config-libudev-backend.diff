@@ -3,12 +3,13 @@ Merged patches:
 435f27667f84269768efecde34de4af2b2d43376
 84905007702da2c05a4f7446b3fc5ff52be49655
 c6d9bc092c84ad5c68083a126aa7577baa42cef7 (only the config/udev.c change)
+aa91508356f243edc3b11795b1481edcfe0d39c2
 
 ---
 Index: xorg-server/config/Makefile.am
 ===================================================================
---- xorg-server.orig/config/Makefile.am	2010-03-29 20:00:19.000000000 +0300
-+++ xorg-server/config/Makefile.am	2010-03-30 13:03:05.000000000 +0300
+--- xorg-server.orig/config/Makefile.am	2010-03-30 13:22:30.000000000 +0300
++++ xorg-server/config/Makefile.am	2010-03-30 13:55:51.000000000 +0300
 @@ -1,12 +1,20 @@
 -AM_CFLAGS = @DIX_CFLAGS@
 +AM_CFLAGS = $(DIX_CFLAGS)
@@ -49,8 +50,8 @@ Index: xorg-server/config/Makefile.am
  EXTRA_DIST = xorg-server.conf x11-input.fdi
 Index: xorg-server/config/config-backends.h
 ===================================================================
---- xorg-server.orig/config/config-backends.h	2010-03-29 20:00:19.000000000 +0300
-+++ xorg-server/config/config-backends.h	2010-03-30 13:03:05.000000000 +0300
+--- xorg-server.orig/config/config-backends.h	2010-03-30 13:22:30.000000000 +0300
++++ xorg-server/config/config-backends.h	2010-03-30 13:55:51.000000000 +0300
 @@ -26,8 +26,18 @@
  #ifdef HAVE_DIX_CONFIG_H
  #include <dix-config.h>
@@ -93,8 +94,8 @@ Index: xorg-server/config/config-backends.h
  #endif
 Index: xorg-server/config/config.c
 ===================================================================
---- xorg-server.orig/config/config.c	2010-03-29 20:00:19.000000000 +0300
-+++ xorg-server/config/config.c	2010-03-30 13:03:05.000000000 +0300
+--- xorg-server.orig/config/config.c	2010-03-30 13:22:30.000000000 +0300
++++ xorg-server/config/config.c	2010-03-30 13:55:51.000000000 +0300
 @@ -28,13 +28,17 @@
  #endif
  
@@ -198,8 +199,8 @@ Index: xorg-server/config/config.c
 +}
 Index: xorg-server/config/hal.c
 ===================================================================
---- xorg-server.orig/config/hal.c	2010-03-30 13:03:05.000000000 +0300
-+++ xorg-server/config/hal.c	2010-03-30 13:03:16.000000000 +0300
+--- xorg-server.orig/config/hal.c	2010-03-30 13:55:48.000000000 +0300
++++ xorg-server/config/hal.c	2010-03-30 13:55:51.000000000 +0300
 @@ -58,25 +58,9 @@
      char* options;
  };
@@ -294,8 +295,8 @@ Index: xorg-server/config/hal.c
 Index: xorg-server/config/udev.c
 ===================================================================
 --- /dev/null	1970-01-01 00:00:00.000000000 +0000
-+++ xorg-server/config/udev.c	2010-03-30 13:03:16.000000000 +0300
-@@ -0,0 +1,264 @@
++++ xorg-server/config/udev.c	2010-03-30 13:56:07.000000000 +0300
+@@ -0,0 +1,267 @@
 +/*
 + * Copyright © 2009 Julien Cristau
 + *
@@ -371,8 +372,11 @@ Index: xorg-server/config/udev.c
 +        goto unwind;
 +
 +    parent = udev_device_get_parent(udev_device);
-+    if (parent)
-+        name = udev_device_get_property_value(parent, "NAME");
++    if (parent) {
++        name = udev_device_get_sysattr_value(parent, "name");
++        if (!name)
++            name = udev_device_get_property_value(parent, "NAME");
++    }
 +    if (!name)
 +        name = "(unnamed)";
 +    else
@@ -562,8 +566,8 @@ Index: xorg-server/config/udev.c
 +}
 Index: xorg-server/configure.ac
 ===================================================================
---- xorg-server.orig/configure.ac	2010-03-30 13:03:05.000000000 +0300
-+++ xorg-server/configure.ac	2010-03-30 13:03:05.000000000 +0300
+--- xorg-server.orig/configure.ac	2010-03-30 13:55:48.000000000 +0300
++++ xorg-server/configure.ac	2010-03-30 13:55:51.000000000 +0300
 @@ -601,6 +601,7 @@
  AC_ARG_ENABLE(dbe,            AS_HELP_STRING([--disable-dbe], [Build DBE extension (default: enabled)]), [DBE=$enableval], [DBE=yes])
  AC_ARG_ENABLE(xf86bigfont,    AS_HELP_STRING([--disable-xf86bigfont], [Build XF86 Big Font extension (default: disabled)]), [XF86BIGFONT=$enableval], [XF86BIGFONT=no])
@@ -615,8 +619,8 @@ Index: xorg-server/configure.ac
  AM_CONDITIONAL(CONFIG_NEED_DBUS, [test "x$CONFIG_NEED_DBUS" = xyes])
 Index: xorg-server/hw/kdrive/src/kinput.c
 ===================================================================
---- xorg-server.orig/hw/kdrive/src/kinput.c	2010-03-30 13:03:05.000000000 +0300
-+++ xorg-server/hw/kdrive/src/kinput.c	2010-03-30 13:03:16.000000000 +0300
+--- xorg-server.orig/hw/kdrive/src/kinput.c	2010-03-30 13:55:48.000000000 +0300
++++ xorg-server/hw/kdrive/src/kinput.c	2010-03-30 13:55:51.000000000 +0300
 @@ -2281,6 +2281,14 @@
              return BadValue;
          }
@@ -634,8 +638,8 @@ Index: xorg-server/hw/kdrive/src/kinput.c
      if (!ki && !pi) {
 Index: xorg-server/hw/xfree86/common/xf86Config.c
 ===================================================================
---- xorg-server.orig/hw/xfree86/common/xf86Config.c	2010-03-30 13:03:05.000000000 +0300
-+++ xorg-server/hw/xfree86/common/xf86Config.c	2010-03-30 13:03:16.000000000 +0300
+--- xorg-server.orig/hw/xfree86/common/xf86Config.c	2010-03-30 13:55:48.000000000 +0300
++++ xorg-server/hw/xfree86/common/xf86Config.c	2010-03-30 13:55:51.000000000 +0300
 @@ -1461,12 +1461,19 @@
      }
  
@@ -662,8 +666,8 @@ Index: xorg-server/hw/xfree86/common/xf86Config.c
      }
 Index: xorg-server/hw/xfree86/common/xf86Globals.c
 ===================================================================
---- xorg-server.orig/hw/xfree86/common/xf86Globals.c	2010-03-30 13:03:05.000000000 +0300
-+++ xorg-server/hw/xfree86/common/xf86Globals.c	2010-03-30 13:03:05.000000000 +0300
+--- xorg-server.orig/hw/xfree86/common/xf86Globals.c	2010-03-30 13:55:47.000000000 +0300
++++ xorg-server/hw/xfree86/common/xf86Globals.c	2010-03-30 13:55:51.000000000 +0300
 @@ -132,7 +132,7 @@
      .kbdCustomKeycodes          = FALSE,
      .disableRandR               = FALSE,
@@ -675,8 +679,8 @@ Index: xorg-server/hw/xfree86/common/xf86Globals.c
      .autoEnableDevices          = TRUE
 Index: xorg-server/hw/xfree86/common/xf86Xinput.c
 ===================================================================
---- xorg-server.orig/hw/xfree86/common/xf86Xinput.c	2010-03-30 13:03:05.000000000 +0300
-+++ xorg-server/hw/xfree86/common/xf86Xinput.c	2010-03-30 13:03:16.000000000 +0300
+--- xorg-server.orig/hw/xfree86/common/xf86Xinput.c	2010-03-30 13:55:48.000000000 +0300
++++ xorg-server/hw/xfree86/common/xf86Xinput.c	2010-03-30 13:55:51.000000000 +0300
 @@ -788,9 +788,9 @@
              }
          }
@@ -691,8 +695,8 @@ Index: xorg-server/hw/xfree86/common/xf86Xinput.c
                  rval = BadMatch;
 Index: xorg-server/include/dix-config.h.in
 ===================================================================
---- xorg-server.orig/include/dix-config.h.in	2010-03-30 13:03:05.000000000 +0300
-+++ xorg-server/include/dix-config.h.in	2010-03-30 13:03:05.000000000 +0300
+--- xorg-server.orig/include/dix-config.h.in	2010-03-30 13:55:48.000000000 +0300
++++ xorg-server/include/dix-config.h.in	2010-03-30 13:55:51.000000000 +0300
 @@ -393,6 +393,9 @@
  /* Support D-Bus */
  #undef HAVE_DBUS
@@ -705,8 +709,8 @@ Index: xorg-server/include/dix-config.h.in
  
 Index: xorg-server/dix/main.c
 ===================================================================
---- xorg-server.orig/dix/main.c	2010-03-29 20:00:21.000000000 +0300
-+++ xorg-server/dix/main.c	2010-03-30 13:03:38.000000000 +0300
+--- xorg-server.orig/dix/main.c	2010-03-30 13:22:30.000000000 +0300
++++ xorg-server/dix/main.c	2010-03-30 13:55:51.000000000 +0300
 @@ -168,7 +168,6 @@
  	InitBlockAndWakeupHandlers();
  	/* Perform any operating system dependent initializations you'd like */
