@@ -8,11 +8,11 @@ Subject: [PATCH] xfree86: fix build with xv disabled
  hw/xfree86/modes/xf86Crtc.h |    2 ++
  2 files changed, 4 insertions(+), 0 deletions(-)
 
-diff --git a/hw/xfree86/modes/xf86Crtc.c b/hw/xfree86/modes/xf86Crtc.c
-index 30b49af..62f8737 100644
---- a/hw/xfree86/modes/xf86Crtc.c
-+++ b/hw/xfree86/modes/xf86Crtc.c
-@@ -3009,6 +3009,7 @@ xf86_crtc_box_area(BoxPtr box)
+Index: xorg-server/hw/xfree86/modes/xf86Crtc.c
+===================================================================
+--- xorg-server.orig/hw/xfree86/modes/xf86Crtc.c	2010-03-30 13:22:36.000000000 +0300
++++ xorg-server/hw/xfree86/modes/xf86Crtc.c	2010-03-30 13:22:39.000000000 +0300
+@@ -3011,6 +3011,7 @@
      return (int) (box->x2 - box->x1) * (int) (box->y2 - box->y1);
  }
  
@@ -20,7 +20,7 @@ index 30b49af..62f8737 100644
  /*
   * Return the crtc covering 'box'. If two crtcs cover a portion of
   * 'box', then prefer 'desired'. If 'desired' is NULL, then prefer the crtc
-@@ -3097,6 +3098,7 @@ xf86_crtc_clip_video_helper(ScrnInfoPtr pScrn,
+@@ -3099,6 +3100,7 @@
  
      return ret;
  }
@@ -28,11 +28,11 @@ index 30b49af..62f8737 100644
  
  xf86_crtc_notify_proc_ptr
  xf86_wrap_crtc_notify (ScreenPtr screen, xf86_crtc_notify_proc_ptr new)
-diff --git a/hw/xfree86/modes/xf86Crtc.h b/hw/xfree86/modes/xf86Crtc.h
-index 9baa956..2fb32c1 100644
---- a/hw/xfree86/modes/xf86Crtc.h
-+++ b/hw/xfree86/modes/xf86Crtc.h
-@@ -908,6 +908,7 @@ xf86_hide_cursors (ScrnInfoPtr scrn);
+Index: xorg-server/hw/xfree86/modes/xf86Crtc.h
+===================================================================
+--- xorg-server.orig/hw/xfree86/modes/xf86Crtc.h	2010-03-30 13:22:36.000000000 +0300
++++ xorg-server/hw/xfree86/modes/xf86Crtc.h	2010-03-30 13:22:39.000000000 +0300
+@@ -934,6 +934,7 @@
  extern _X_EXPORT void
  xf86_cursors_fini (ScreenPtr screen);
  
@@ -40,7 +40,7 @@ index 9baa956..2fb32c1 100644
  /*
   * For overlay video, compute the relevant CRTC and
   * clip video to that.
-@@ -926,6 +927,7 @@ xf86_crtc_clip_video_helper(ScrnInfoPtr pScrn,
+@@ -952,6 +953,7 @@
  			    RegionPtr   reg,
  			    INT32	width,
  			    INT32	height);
@@ -48,6 +48,3 @@ index 9baa956..2fb32c1 100644
      
  extern _X_EXPORT xf86_crtc_notify_proc_ptr
  xf86_wrap_crtc_notify (ScreenPtr pScreen, xf86_crtc_notify_proc_ptr new);
--- 
-1.6.6.1
-
