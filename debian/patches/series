@@ -17,3 +17,4 @@
 13-unbreak-input-abi.diff
 14-tone-down-nidr-errors.diff
 15-keep-udev-x11-driver.diff
+16-xaa-fbcomposite-fix-negative-size.diff

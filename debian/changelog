@@ -1,3 +1,13 @@
+xorg-server (2:1.7.6-3) UNRELEASED; urgency=low
+
+  * Steal patch 112_xaa-fbcomposite-fix-negative-size.patch from ubuntu,
+    and rename it 16-xaa-fbcomposite-fix-negative-size.diff as it's now
+    applied in Debian as well. It fixes arithmetic bugs in mod(), which
+    could lead to X crashes/exploits when XAA and compositing are used;
+    thanks to Bryce Harrington.
+
+ -- Cyril Brulebois <kibi@debian.org>  Mon, 05 Apr 2010 20:25:26 +0200
+
 xorg-server (2:1.7.6-2) unstable; urgency=low
 
   [ Timo Aaltonen ]
