@@ -11,6 +11,9 @@ xorg-server (2:1.7.6-3) UNRELEASED; urgency=low
     udeb flavour (even on architectures where udebs are supposed to be
     built) to speed up debug builds. When this is used, the udeb is still
     built, but rather empty…
+  * Modify bug script to include kernel version (from /proc/version) since
+    the uname in Xorg.*.log might not give enough details (like the Debian
+    revision).
 
  -- Cyril Brulebois <kibi@debian.org>  Mon, 05 Apr 2010 20:25:26 +0200
 

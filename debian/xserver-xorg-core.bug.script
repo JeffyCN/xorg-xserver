@@ -98,6 +98,17 @@ fi
 
 printf "\n"
 
+KERNEL_VERSION=/proc/version
+
+if [ -e "$KERNEL_VERSION" ]; then
+    printf "Kernel version ($KERNEL_VERSION):\n"
+    cat /proc/version
+else
+    printf "No kernel version found (missing $KERNEL_VERSION).\n"
+fi
+
+printf "\n"
+
 XORG_LOGS=$(ls -dt /var/log/Xorg.*.log 2>/dev/null)
 
 if [ -n "$XORG_LOGS" ]; then
