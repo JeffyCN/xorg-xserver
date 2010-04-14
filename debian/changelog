@@ -18,6 +18,9 @@ xorg-server (2:1.7.6-3) UNRELEASED; urgency=low
   [ Julien Cristau ]
   * Remove from debian/rules an obsolete reference to
     /usr/share/debhelper/dh_make/debianm/rules.
+  * Make xserver-xorg-core provide ABI-versioned virtual packages for drivers
+    to depend on.  This is a first step in making our ABI handling saner (see
+    #573371).
 
  -- Cyril Brulebois <kibi@debian.org>  Mon, 05 Apr 2010 20:25:26 +0200
 

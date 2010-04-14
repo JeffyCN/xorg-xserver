@@ -265,6 +265,8 @@ binary-deb:
 	dh_md5sums
 	dh_builddeb
 
+serverminver = $(shell cat debian/serverminver)
+
 # Build architecture-dependent files here.
 binary-arch: build install
 	$(MAKE) -f debian/rules DH_OPTIONS=-s binary-initial
@@ -273,6 +275,14 @@ binary-arch: build install
 	dh_installchangelogs -s ChangeLog
 	dh_install $(DH_INSTALL_OPTIONS) -s --sourcedir=debian/tmp --list-missing
 	$(INSTALL) -d $(CURDIR)/debian/xserver-xorg-dev/usr/share/xserver-xorg
+	# XXX might want to only extract the major ABI versions?
+	abi_videodrv=`PKG_CONFIG_DIR=debian/tmp/main/usr/lib/pkgconfig pkg-config --variable=abi_videodrv xorg-server`; \
+	echo videoabi=xorg-video-abi-$$abi_videodrv > debian/xserver-xorg-core.substvars && \
+	echo "xorg-video-abi-$$abi_videodrv, xserver-xorg-core (>= $(serverminver))" > debian/xserver-xorg-dev/usr/share/xserver-xorg/videodrvdep
+	abi_xinput=`PKG_CONFIG_DIR=debian/tmp/main/usr/lib/pkgconfig pkg-config --variable=abi_xinput xorg-server`; \
+	echo inputabi=xorg-input-abi-$$abi_xinput >> debian/xserver-xorg-core.substvars && \
+	echo "xorg-input-abi-$$abi_xinput, xserver-xorg-core (>= $(serverminver))" > debian/xserver-xorg-dev/usr/share/xserver-xorg/xinputdep
+
 	$(INSTALL) -m644 $(CURDIR)/debian/videoabiver \
 	           $(CURDIR)/debian/xserver-xorg-dev/usr/share/xserver-xorg/videoabiver
 	$(INSTALL) -m644 $(CURDIR)/debian/inputabiver \

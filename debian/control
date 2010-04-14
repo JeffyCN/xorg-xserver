@@ -111,7 +111,10 @@ Replaces:
  xserver-xorg (<< 6.8.2-38),
  xserver-xfree86 (<< 1:7.0.0),
  xserver-common (<< 7)
-Provides: xserver
+Provides:
+ xserver,
+ ${videoabi},
+ ${inputabi},
 Description: Xorg X server - core server
  The Xorg X server is an X server for several architectures and operating
  systems, which is derived from the XFree86 4.x series of X servers.
