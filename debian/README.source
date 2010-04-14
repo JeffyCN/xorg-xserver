@@ -25,7 +25,7 @@ just need to be pulled into git.debian.org in a "upstream-*" branch.
 Otherwise, the upstream sources are manually installed in the Debian
 git repository.
 
-The .orig.tar.gz upstream source file could be generated this
+The .orig.tar.gz upstream source file could be generated using this
 "upstream-*" branch in the Debian git repository but it is actually
 copied from upstream tarballs directly.
 
