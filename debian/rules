@@ -32,9 +32,17 @@ else
 	confflags += --build=$(DEB_BUILD_GNU_TYPE) --host=$(DEB_HOST_GNU_TYPE)
 endif
 
+# udeb is arch-dependent...
 ifneq (, $(filter %-udeb, $(shell dh_listpackages -s)))
 	udeb = yes
 endif
+
+# ...but let's support disabling it to speed up debug builds:
+ifneq (,$(filter noudeb,$(DEB_BUILD_OPTIONS)))
+	udeb =
+	DH_INSTALL_OPTIONS = -Nxserver-xorg-core-udeb
+endif
+
 
 ifeq ($(DEB_HOST_ARCH_OS), linux)
 	build_xfbdev = --enable-xfbdev
@@ -264,7 +272,7 @@ binary-arch: build install
 	
 	dh_installdocs -s
 	dh_installchangelogs -s ChangeLog
-	dh_install -s --sourcedir=debian/tmp --list-missing
+	dh_install $(DH_INSTALL_OPTIONS) -s --sourcedir=debian/tmp --list-missing
 	$(INSTALL) -d $(CURDIR)/debian/xserver-xorg-dev/usr/share/xserver-xorg
 	$(INSTALL) -m644 $(CURDIR)/debian/videoabiver \
 	           $(CURDIR)/debian/xserver-xorg-dev/usr/share/xserver-xorg/videoabiver

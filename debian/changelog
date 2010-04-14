@@ -7,6 +7,10 @@ xorg-server (2:1.7.6-3) UNRELEASED; urgency=low
     thanks to Bryce Harrington.
   * Merge 'xsfbs/debian-unstable' to fix target dependencies, which fixes
     useless rebuilds.
+  * Add support for “noudeb” in DEB_BUILD_OPTIONS to disable building the
+    udeb flavour (even on architectures where udebs are supposed to be
+    built) to speed up debug builds. When this is used, the udeb is still
+    built, but rather empty…
 
  -- Cyril Brulebois <kibi@debian.org>  Mon, 05 Apr 2010 20:25:26 +0200
 
