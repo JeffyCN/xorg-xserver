@@ -2,9 +2,8 @@ xorg-server (2:1.7.6-3) UNRELEASED; urgency=low
 
   * Steal patch 112_xaa-fbcomposite-fix-negative-size.patch from ubuntu,
     and rename it 16-xaa-fbcomposite-fix-negative-size.diff as it's now
-    applied in Debian as well. It fixes arithmetic bugs in mod(), which
-    could lead to X crashes/exploits when XAA and compositing are used;
-    thanks to Bryce Harrington.
+    applied in Debian as well. It fixes arithmetic bugs in mod(); thanks to
+    Bryce Harrington.
   * Merge 'xsfbs/debian-unstable' to fix target dependencies, which fixes
     useless rebuilds.
   * Add support for “noudeb” in DEB_BUILD_OPTIONS to disable building the
