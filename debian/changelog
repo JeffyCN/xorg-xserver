@@ -1,5 +1,6 @@
 xorg-server (2:1.7.6-3) UNRELEASED; urgency=low
 
+  [ Cyril Brulebois ]
   * Steal patch 112_xaa-fbcomposite-fix-negative-size.patch from ubuntu,
     and rename it 16-xaa-fbcomposite-fix-negative-size.diff as it's now
     applied in Debian as well. It fixes arithmetic bugs in mod(); thanks to
@@ -13,6 +14,10 @@ xorg-server (2:1.7.6-3) UNRELEASED; urgency=low
   * Modify bug script to include kernel version (from /proc/version) since
     the uname in Xorg.*.log might not give enough details (like the Debian
     revision).
+
+  [ Julien Cristau ]
+  * Remove from debian/rules an obsolete reference to
+    /usr/share/debhelper/dh_make/debianm/rules.
 
  -- Cyril Brulebois <kibi@debian.org>  Mon, 05 Apr 2010 20:25:26 +0200
 

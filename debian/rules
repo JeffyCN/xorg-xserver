@@ -256,7 +256,6 @@ binary-initial:
 	dh_testroot
 
 # stub to build deb files, used by binary-indep and binary-arch
-# (cf. /usr/share/debhelper/dh_make/debianm/rules)
 binary-deb:
 	dh_compress
 	dh_fixperms
