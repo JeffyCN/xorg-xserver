@@ -1,17 +1,9 @@
-commit eb07b8606f9a1349baf8114bb36dc2712e5d3419
-Author: Dan Nicholson <dbn.lists@gmail.com>
-Date:   Sat Apr 3 09:33:47 2010 -0700
+Merged patches:
 
-    xfree86: Allow adding sysconfdir and datadir to config search paths
-    
-    We could just use $projectroot/etc and $projectroot/share, but the user
-    might have other plans for them.
-    
-    Signed-off-by: Dan Nicholson <dbn.lists@gmail.com>
-    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
-    (cherry picked from commit 2460e921d18fd264e6f6374be0908f4100442650)
-    
-    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+eb07b8606f9a1349baf8114bb36dc2712e5d3419
+a4516965de447332794ee0afb9503c351fff6fe8
+59f96734633fce3c2bee62bce860aed33033ce3e
+0c4a358eae0e77f389380bbbf39d4419f2dd6dcd
 
 --- a/hw/xfree86/parser/Makefile.am
 +++ b/hw/xfree86/parser/Makefile.am
