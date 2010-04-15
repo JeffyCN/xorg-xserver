@@ -22,6 +22,10 @@ xorg-server (2:1.7.6-3) UNRELEASED; urgency=low
     to depend on.  This is a first step in making our ABI handling saner (see
     #573371).
 
+  [ Timo Aaltonen ]
+  * Add 17-xfree86-saner-conf-search-paths.diff. Allows using another
+    xorg.conf.d directory for local changes.
+
  -- Cyril Brulebois <kibi@debian.org>  Mon, 05 Apr 2010 20:25:26 +0200
 
 xorg-server (2:1.7.6-2) unstable; urgency=low

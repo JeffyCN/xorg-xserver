@@ -1,0 +1,224 @@
+commit eb07b8606f9a1349baf8114bb36dc2712e5d3419
+Author: Dan Nicholson <dbn.lists@gmail.com>
+Date:   Sat Apr 3 09:33:47 2010 -0700
+
+    xfree86: Allow adding sysconfdir and datadir to config search paths
+    
+    We could just use $projectroot/etc and $projectroot/share, but the user
+    might have other plans for them.
+    
+    Signed-off-by: Dan Nicholson <dbn.lists@gmail.com>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    (cherry picked from commit 2460e921d18fd264e6f6374be0908f4100442650)
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+--- a/hw/xfree86/parser/Makefile.am
++++ b/hw/xfree86/parser/Makefile.am
+@@ -34,7 +34,9 @@ libxf86config_a_SOURCES = \
+ 	$(INTERNAL_SOURCES)
+ libxf86config_a_CFLAGS = $(AM_CFLAGS)
+ 
+-AM_CFLAGS = $(DIX_CFLAGS) $(XORG_CFLAGS)
++AM_CFLAGS = $(DIX_CFLAGS) $(XORG_CFLAGS) \
++	-DSYSCONFDIR=\"$(sysconfdir)\" \
++	-DDATADIR=\"$(datadir)\"
+ 
+ EXTRA_DIST = \
+ 	Configint.h \
+--- a/hw/xfree86/parser/scan.c
++++ b/hw/xfree86/parser/scan.c
+@@ -599,6 +599,8 @@ xf86pathIsSafe(const char *path)
+  *    %F    config file environment ($XORGCONFIG) as a relative path
+  *    %G    config file environment ($XORGCONFIG) as a safe path
+  *    %P    projroot
++ *    %C    sysconfdir
++ *    %D    datadir
+  *    %M    major version number
+  *    %%    %
+  */
+@@ -615,6 +617,12 @@ xf86pathIsSafe(const char *path)
+ #ifndef PROJECTROOT
+ #define PROJECTROOT	"/usr/X11R6"
+ #endif
++#ifndef SYSCONFDIR
++#define SYSCONFDIR	PROJECTROOT "/etc"
++#endif
++#ifndef DATADIR
++#define DATADIR		PROJECTROOT "/share"
++#endif
+ #ifndef XCONFENV
+ #define XCONFENV	"XORGCONFIG"
+ #endif
+@@ -755,6 +763,12 @@ DoSubstitution(const char *template, con
+ 				else
+ 					BAIL_OUT;
+ 				break;
++			case 'C':
++				APPEND_STR(SYSCONFDIR);
++				break;
++			case 'D':
++				APPEND_STR(DATADIR);
++				break;
+ 			case 'M':
+ 				if (!majorvers[0]) {
+ 					if (XF86_VERSION_MAJOR < 0 || XF86_VERSION_MAJOR > 99) {
+--- a/hw/xfree86/doc/man/xorg.conf.man.pre
++++ b/hw/xfree86/doc/man/xorg.conf.man.pre
+@@ -102,19 +102,51 @@ is the machine's hostname as reported by
+ .BR gethostname (__libmansuffix__).
+ .PP
+ Additional configuration files are searched for in the following
+-directories:
++directories when the server is started as a normal user:
+ .PP
+ .RS 4
+ .nf
+-.I /etc/X11/__xconfigdir__\-4
++.IR /etc/X11/ <cmdline>
++.IR __sysconfdir__/X11/ <cmdline>
+ .I /etc/X11/__xconfigdir__
+-.I /etc/__xconfigdir__
+-.IR __projectroot__/etc/X11/__xconfigdir__. <hostname>
+-.I __projectroot__/etc/X11/__xconfigdir__\-4
+-.I __projectroot__/etc/X11/__xconfigdir__
+-.IR __projectroot__/lib/X11/__xconfigdir__. <hostname>
+-.I __projectroot__/lib/X11/__xconfigdir__\-4
+-.I __projectroot__/lib/X11/__xconfigdir__
++.I __sysconfdir__/X11/__xconfigdir__
++.fi
++.RE
++.PP
++where
++.I <cmdline>
++is a relative path (with no \(lq..\(rq components) specified with the
++.B \-configdir
++command line option.
++.PP
++When the __xservername__ server is started by the \(lqroot\(rq user, the
++config directory search locations are as follows:
++.PP
++.RS 4
++.nf
++<cmdline>
++.IR /etc/X11/ <cmdline>
++.IR __sysconfdir__/X11/ <cmdline>
++.I /etc/X11/__xconfigdir__
++.I __sysconfdir__/X11/__xconfigdir__
++.fi
++.RE
++.PP
++where
++.I <cmdline>
++is the path specified with the
++.B \-configdir
++command line option (which may be absolute or relative).
++.PP
++Finally, configuration files will also be searched for in directories
++reserved for system use. These are to separate configuration files from
++the vendor or 3rd party packages from those of local administration.
++These files are found in the following directories:
++.PP
++.RS 4
++.nf
++.I /usr/share/X11/__xconfigdir__
++.I __datadir__/X11/__xconfigdir__
+ .fi
+ .RE
+ .PP
+--- a/configure.ac
++++ b/configure.ac
+@@ -1743,8 +1743,10 @@ if test "x$XORG" = xyes; then
+ 	AC_SUBST([driverdir])
+ 	sdkdir="$includedir/xorg"
+ 	extdir="$includedir/X11/extensions"
++	sysconfigdir="$datadir/X11/$XF86CONFIGDIR"
+ 	AC_SUBST([sdkdir])
+ 	AC_SUBST([extdir])
++	AC_SUBST([sysconfigdir])
+ 	AC_SUBST([logdir])
+ 
+ 	# stuff the ABI versions into the pc file too
+--- a/hw/xfree86/common/xf86Config.c
++++ b/hw/xfree86/common/xf86Config.c
+@@ -97,20 +97,15 @@ extern DeviceAssocRec mouse_assoc;
+ #endif
+ #ifndef ROOT_CONFIGDIRPATH
+ #define ROOT_CONFIGDIRPATH	"%A," "%R," \
+-				"/etc/X11/%R," "%P/etc/X11/%R," \
+-				"/etc/X11/%X-%M," "/etc/X11/%X," "/etc/%X," \
+-				"%P/etc/X11/%X.%H," "%P/etc/X11/%X-%M," \
+-				"%P/etc/X11/%X," \
+-				"%P/lib/X11/%X.%H," "%P/lib/X11/%X-%M," \
+-				"%P/lib/X11/%X"
++				"/etc/X11/%R," "%C/X11/%R," \
++				"/etc/X11/%X," "%C/X11/%X"
+ #endif
+ #ifndef USER_CONFIGDIRPATH
+-#define USER_CONFIGDIRPATH	"/etc/X11/%S," "%P/etc/X11/%S," \
+-				"/etc/X11/%X-%M," "/etc/X11/%X," "/etc/%X," \
+-				"%P/etc/X11/%X.%H," "%P/etc/X11/%X-%M," \
+-				"%P/etc/X11/%X," \
+-				"%P/lib/X11/%X.%H," "%P/lib/X11/%X-%M," \
+-				"%P/lib/X11/%X"
++#define USER_CONFIGDIRPATH	"/etc/X11/%R," "%C/X11/%R," \
++				"/etc/X11/%X," "%C/X11/%X"
++#endif
++#ifndef SYS_CONFIGDIRPATH
++#define SYS_CONFIGDIRPATH	"/usr/share/X11/%X," "%D/X11/%X"
+ #endif
+ #ifndef PROJECTROOT
+ #define PROJECTROOT	"/usr/X11R6"
+@@ -2468,7 +2463,7 @@ checkInput(serverLayoutPtr layout, Bool 
+ ConfigStatus
+ xf86HandleConfigFile(Bool autoconfig)
+ {
+-    const char *filename, *dirname;
++    const char *filename, *dirname, *sysdirname;
+     char *filesearch, *dirsearch;
+     MessageType filefrom = X_DEFAULT;
+     MessageType dirfrom = X_DEFAULT;
+@@ -2491,6 +2486,8 @@ xf86HandleConfigFile(Bool autoconfig)
+ 	    dirfrom = X_CMDLINE;
+ 
+ 	xf86initConfigFiles();
++	sysdirname = xf86openConfigDirFiles(SYS_CONFIGDIRPATH, NULL,
++					    PROJECTROOT);
+ 	dirname = xf86openConfigDirFiles(dirsearch, xf86ConfigDir, PROJECTROOT);
+ 	filename = xf86openConfigFile(filesearch, xf86ConfigFile, PROJECTROOT);
+ 	if (filename) {
+@@ -2511,7 +2508,10 @@ xf86HandleConfigFile(Bool autoconfig)
+ 			"Unable to locate/open config directory: \"%s\"\n",
+ 			xf86ConfigDir);
+ 	}
+-	if (!filename && !dirname)
++	if (sysdirname)
++	    xf86MsgVerb(X_DEFAULT, 0, "Using system config directory \"%s\"\n",
++			sysdirname);
++	if (!filename && !dirname && !sysdirname)
+ 	    return CONFIG_NOFILE;
+     }
+ 
+--- a/xorg-server.pc.in
++++ b/xorg-server.pc.in
+@@ -2,8 +2,10 @@ prefix=@prefix@
+ exec_prefix=@exec_prefix@
+ libdir=@libdir@
+ includedir=@includedir@
++datarootdir=@datarootdir@
+ moduledir=@moduledir@
+ sdkdir=@sdkdir@
++sysconfigdir=@sysconfigdir@
+ 
+ abi_ansic=@abi_ansic@
+ abi_videodrv=@abi_videodrv@
+--- a/cpprules.in
++++ b/cpprules.in
+@@ -36,6 +36,7 @@ MANDEFS = \
+ 	-D__adminmansuffix__=$(ADMIN_MAN_SUFFIX) \
+ 	-D__mandir__=$(mandir) \
+ 	-D__projectroot__=$(prefix) \
++	-D__sysconfdir__=$(sysconfdir) \
+ 	-D__xconfigfile__=$(__XCONFIGFILE__) \
+ 	-D__xconfigdir__=$(__XCONFIGDIR__) \
+ 	-D__xkbdir__=$(XKB_BASE_DIRECTORY) \

@@ -18,3 +18,4 @@
 14-tone-down-nidr-errors.diff
 15-keep-udev-x11-driver.diff
 16-xaa-fbcomposite-fix-negative-size.diff
+17-xfree86-saner-conf-search-paths.diff
