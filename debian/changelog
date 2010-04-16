@@ -27,6 +27,7 @@ xorg-server (2:1.7.6.901-1) UNRELEASED; urgency=low
     #573371).
   * xvfb-run: don't rely on /tmp/X$i-lock to bump $SERVERNUM in auto-servernum
     mode (closes: #577195).  Thanks, Jozef Kutej!
+  * Bump serverminver for new handling of input config.
 
   [ Timo Aaltonen ]
   * Add 17-xfree86-saner-conf-search-paths.diff. Allows using another
