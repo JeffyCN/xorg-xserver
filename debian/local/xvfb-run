@@ -168,6 +168,7 @@ EOF
         break
     elif [ -n "$AUTONUM" ]; then
         # The display is in use so try another one (if '-a' was specified).
+        SERVERNUM=$((SERVERNUM + 1))
         SERVERNUM=$(find_free_servernum)
         continue
     fi

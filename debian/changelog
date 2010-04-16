@@ -25,6 +25,8 @@ xorg-server (2:1.7.6.901-1) UNRELEASED; urgency=low
   * Make xserver-xorg-core provide ABI-versioned virtual packages for drivers
     to depend on.  This is a first step in making our ABI handling saner (see
     #573371).
+  * xvfb-run: don't rely on /tmp/X$i-lock to bump $SERVERNUM in auto-servernum
+    mode (closes: #577195).  Thanks, Jozef Kutej!
 
   [ Timo Aaltonen ]
   * Add 17-xfree86-saner-conf-search-paths.diff. Allows using another
