@@ -5,9 +5,11 @@ a4516965de447332794ee0afb9503c351fff6fe8
 59f96734633fce3c2bee62bce860aed33033ce3e
 0c4a358eae0e77f389380bbbf39d4419f2dd6dcd
 
---- a/hw/xfree86/parser/Makefile.am
-+++ b/hw/xfree86/parser/Makefile.am
-@@ -34,7 +34,9 @@ libxf86config_a_SOURCES = \
+Index: xorg-server/hw/xfree86/parser/Makefile.am
+===================================================================
+--- xorg-server.orig/hw/xfree86/parser/Makefile.am
++++ xorg-server/hw/xfree86/parser/Makefile.am
+@@ -34,7 +34,9 @@
  	$(INTERNAL_SOURCES)
  libxf86config_a_CFLAGS = $(AM_CFLAGS)
  
@@ -18,9 +20,11 @@ a4516965de447332794ee0afb9503c351fff6fe8
  
  EXTRA_DIST = \
  	Configint.h \
---- a/hw/xfree86/parser/scan.c
-+++ b/hw/xfree86/parser/scan.c
-@@ -599,6 +599,8 @@ xf86pathIsSafe(const char *path)
+Index: xorg-server/hw/xfree86/parser/scan.c
+===================================================================
+--- xorg-server.orig/hw/xfree86/parser/scan.c
++++ xorg-server/hw/xfree86/parser/scan.c
+@@ -599,6 +599,8 @@
   *    %F    config file environment ($XORGCONFIG) as a relative path
   *    %G    config file environment ($XORGCONFIG) as a safe path
   *    %P    projroot
@@ -29,7 +33,7 @@ a4516965de447332794ee0afb9503c351fff6fe8
   *    %M    major version number
   *    %%    %
   */
-@@ -615,6 +617,12 @@ xf86pathIsSafe(const char *path)
+@@ -615,6 +617,12 @@
  #ifndef PROJECTROOT
  #define PROJECTROOT	"/usr/X11R6"
  #endif
@@ -42,7 +46,7 @@ a4516965de447332794ee0afb9503c351fff6fe8
  #ifndef XCONFENV
  #define XCONFENV	"XORGCONFIG"
  #endif
-@@ -755,6 +763,12 @@ DoSubstitution(const char *template, con
+@@ -755,6 +763,12 @@
  				else
  					BAIL_OUT;
  				break;
@@ -55,9 +59,11 @@ a4516965de447332794ee0afb9503c351fff6fe8
  			case 'M':
  				if (!majorvers[0]) {
  					if (XF86_VERSION_MAJOR < 0 || XF86_VERSION_MAJOR > 99) {
---- a/hw/xfree86/doc/man/xorg.conf.man.pre
-+++ b/hw/xfree86/doc/man/xorg.conf.man.pre
-@@ -102,19 +102,51 @@ is the machine's hostname as reported by
+Index: xorg-server/hw/xfree86/doc/man/xorg.conf.man.pre
+===================================================================
+--- xorg-server.orig/hw/xfree86/doc/man/xorg.conf.man.pre
++++ xorg-server/hw/xfree86/doc/man/xorg.conf.man.pre
+@@ -102,19 +102,51 @@
  .BR gethostname (__libmansuffix__).
  .PP
  Additional configuration files are searched for in the following
@@ -118,9 +124,11 @@ a4516965de447332794ee0afb9503c351fff6fe8
  .fi
  .RE
  .PP
---- a/configure.ac
-+++ b/configure.ac
-@@ -1743,8 +1743,10 @@ if test "x$XORG" = xyes; then
+Index: xorg-server/configure.ac
+===================================================================
+--- xorg-server.orig/configure.ac
++++ xorg-server/configure.ac
+@@ -1744,8 +1744,10 @@
  	AC_SUBST([driverdir])
  	sdkdir="$includedir/xorg"
  	extdir="$includedir/X11/extensions"
@@ -131,9 +139,11 @@ a4516965de447332794ee0afb9503c351fff6fe8
  	AC_SUBST([logdir])
  
  	# stuff the ABI versions into the pc file too
---- a/hw/xfree86/common/xf86Config.c
-+++ b/hw/xfree86/common/xf86Config.c
-@@ -97,20 +97,15 @@ extern DeviceAssocRec mouse_assoc;
+Index: xorg-server/hw/xfree86/common/xf86Config.c
+===================================================================
+--- xorg-server.orig/hw/xfree86/common/xf86Config.c
++++ xorg-server/hw/xfree86/common/xf86Config.c
+@@ -97,20 +97,15 @@
  #endif
  #ifndef ROOT_CONFIGDIRPATH
  #define ROOT_CONFIGDIRPATH	"%A," "%R," \
@@ -161,7 +171,7 @@ a4516965de447332794ee0afb9503c351fff6fe8
  #endif
  #ifndef PROJECTROOT
  #define PROJECTROOT	"/usr/X11R6"
-@@ -2468,7 +2463,7 @@ checkInput(serverLayoutPtr layout, Bool 
+@@ -2468,7 +2463,7 @@
  ConfigStatus
  xf86HandleConfigFile(Bool autoconfig)
  {
@@ -170,7 +180,7 @@ a4516965de447332794ee0afb9503c351fff6fe8
      char *filesearch, *dirsearch;
      MessageType filefrom = X_DEFAULT;
      MessageType dirfrom = X_DEFAULT;
-@@ -2491,6 +2486,8 @@ xf86HandleConfigFile(Bool autoconfig)
+@@ -2491,6 +2486,8 @@
  	    dirfrom = X_CMDLINE;
  
  	xf86initConfigFiles();
@@ -179,7 +189,7 @@ a4516965de447332794ee0afb9503c351fff6fe8
  	dirname = xf86openConfigDirFiles(dirsearch, xf86ConfigDir, PROJECTROOT);
  	filename = xf86openConfigFile(filesearch, xf86ConfigFile, PROJECTROOT);
  	if (filename) {
-@@ -2511,7 +2508,10 @@ xf86HandleConfigFile(Bool autoconfig)
+@@ -2511,7 +2508,10 @@
  			"Unable to locate/open config directory: \"%s\"\n",
  			xf86ConfigDir);
  	}
@@ -191,9 +201,11 @@ a4516965de447332794ee0afb9503c351fff6fe8
  	    return CONFIG_NOFILE;
      }
  
---- a/xorg-server.pc.in
-+++ b/xorg-server.pc.in
-@@ -2,8 +2,10 @@ prefix=@prefix@
+Index: xorg-server/xorg-server.pc.in
+===================================================================
+--- xorg-server.orig/xorg-server.pc.in
++++ xorg-server/xorg-server.pc.in
+@@ -2,8 +2,10 @@
  exec_prefix=@exec_prefix@
  libdir=@libdir@
  includedir=@includedir@
@@ -204,9 +216,11 @@ a4516965de447332794ee0afb9503c351fff6fe8
  
  abi_ansic=@abi_ansic@
  abi_videodrv=@abi_videodrv@
---- a/cpprules.in
-+++ b/cpprules.in
-@@ -36,6 +36,7 @@ MANDEFS = \
+Index: xorg-server/cpprules.in
+===================================================================
+--- xorg-server.orig/cpprules.in
++++ xorg-server/cpprules.in
+@@ -36,6 +36,7 @@
  	-D__adminmansuffix__=$(ADMIN_MAN_SUFFIX) \
  	-D__mandir__=$(mandir) \
  	-D__projectroot__=$(prefix) \

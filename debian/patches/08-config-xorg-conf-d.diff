@@ -6,9 +6,9 @@ Subject: Merge remote branch 'dbn/xorg.conf.d'
 ---
 Index: xorg-server/configure.ac
 ===================================================================
---- xorg-server.orig/configure.ac	2010-03-24 13:05:51.000000000 +0200
-+++ xorg-server/configure.ac	2010-03-24 13:05:51.000000000 +0200
-@@ -1696,6 +1696,7 @@
+--- xorg-server.orig/configure.ac
++++ xorg-server/configure.ac
+@@ -1697,6 +1697,7 @@
  
  	dnl these only go in xorg-config.h
  	XF86CONFIGFILE="xorg.conf"
@@ -16,7 +16,7 @@ Index: xorg-server/configure.ac
  	CONFIGFILE="$sysconfdir/$XF86CONFIGFILE"
  	LOGPREFIX="$logdir/Xorg."
  	AC_DEFINE(XORG_SERVER, 1, [Building Xorg server])
-@@ -1708,6 +1709,7 @@
+@@ -1709,6 +1710,7 @@
  	AC_DEFINE(__XSERVERNAME__, "Xorg", [Name of X server])
  	AC_DEFINE_DIR(__XCONFIGFILE__, XF86CONFIGFILE, [Name of configuration file])
  	AC_DEFINE_DIR(XF86CONFIGFILE, XF86CONFIGFILE, [Name of configuration file])
@@ -26,8 +26,8 @@ Index: xorg-server/configure.ac
  	AC_DEFINE_DIR(DEFAULT_LOGPREFIX, LOGPREFIX, [Default log location])
 Index: xorg-server/cpprules.in
 ===================================================================
---- xorg-server.orig/cpprules.in	2010-03-24 13:01:50.000000000 +0200
-+++ xorg-server/cpprules.in	2010-03-24 13:05:51.000000000 +0200
+--- xorg-server.orig/cpprules.in
++++ xorg-server/cpprules.in
 @@ -36,7 +36,8 @@
  	-D__adminmansuffix__=$(ADMIN_MAN_SUFFIX) \
  	-D__mandir__=$(mandir) \
@@ -40,8 +40,8 @@ Index: xorg-server/cpprules.in
  	-D__xlogfile__=$(XLOGFILE) -D__xservername__=$(XSERVERNAME) 
 Index: xorg-server/hw/xfree86/common/xf86AutoConfig.c
 ===================================================================
---- xorg-server.orig/hw/xfree86/common/xf86AutoConfig.c	2010-03-24 13:01:50.000000000 +0200
-+++ xorg-server/hw/xfree86/common/xf86AutoConfig.c	2010-03-24 13:05:51.000000000 +0200
+--- xorg-server.orig/hw/xfree86/common/xf86AutoConfig.c
++++ xorg-server/hw/xfree86/common/xf86AutoConfig.c
 @@ -272,7 +272,8 @@
      for (cp = builtinConfig; *cp; cp++)
  	xf86ErrorFVerb(3, "\t%s", *cp);
@@ -54,8 +54,8 @@ Index: xorg-server/hw/xfree86/common/xf86AutoConfig.c
      FreeConfig();
 Index: xorg-server/hw/xfree86/common/xf86Config.c
 ===================================================================
---- xorg-server.orig/hw/xfree86/common/xf86Config.c	2010-03-24 13:01:50.000000000 +0200
-+++ xorg-server/hw/xfree86/common/xf86Config.c	2010-03-24 13:05:51.000000000 +0200
+--- xorg-server.orig/hw/xfree86/common/xf86Config.c
++++ xorg-server/hw/xfree86/common/xf86Config.c
 @@ -95,6 +95,23 @@
  			"%P/lib/X11/%X.%H," "%P/lib/X11/%X-%M," \
  			"%P/lib/X11/%X"
@@ -302,8 +302,8 @@ Index: xorg-server/hw/xfree86/common/xf86Config.c
  	}
 Index: xorg-server/hw/xfree86/common/xf86Globals.c
 ===================================================================
---- xorg-server.orig/hw/xfree86/common/xf86Globals.c	2010-03-24 13:01:50.000000000 +0200
-+++ xorg-server/hw/xfree86/common/xf86Globals.c	2010-03-24 13:05:51.000000000 +0200
+--- xorg-server.orig/hw/xfree86/common/xf86Globals.c
++++ xorg-server/hw/xfree86/common/xf86Globals.c
 @@ -143,6 +143,7 @@
  #endif
  };
@@ -314,9 +314,9 @@ Index: xorg-server/hw/xfree86/common/xf86Globals.c
  const char *xf86LogFile = DEFAULT_LOGPREFIX;
 Index: xorg-server/hw/xfree86/common/xf86Init.c
 ===================================================================
---- xorg-server.orig/hw/xfree86/common/xf86Init.c	2010-03-24 13:01:50.000000000 +0200
-+++ xorg-server/hw/xfree86/common/xf86Init.c	2010-03-24 13:05:51.000000000 +0200
-@@ -1373,6 +1373,19 @@
+--- xorg-server.orig/hw/xfree86/common/xf86Init.c
++++ xorg-server/hw/xfree86/common/xf86Init.c
+@@ -1375,6 +1375,19 @@
      xf86ConfigFile = argv[i + 1];
      return 2;
    }
@@ -336,7 +336,7 @@ Index: xorg-server/hw/xfree86/common/xf86Init.c
    if (!strcmp(argv[i],"-flipPixels"))
    {
      xf86FlipPixels = TRUE;
-@@ -1656,6 +1669,8 @@
+@@ -1658,6 +1671,8 @@
    }
    ErrorF("-config file           specify a configuration file, relative to the\n");
    ErrorF("                       "__XCONFIGFILE__" search path, only root can use absolute\n");
@@ -347,8 +347,8 @@ Index: xorg-server/hw/xfree86/common/xf86Init.c
    ErrorF("-quiet                 minimal startup messages\n");
 Index: xorg-server/hw/xfree86/common/xf86Priv.h
 ===================================================================
---- xorg-server.orig/hw/xfree86/common/xf86Priv.h	2010-03-24 13:01:50.000000000 +0200
-+++ xorg-server/hw/xfree86/common/xf86Priv.h	2010-03-24 13:05:51.000000000 +0200
+--- xorg-server.orig/hw/xfree86/common/xf86Priv.h
++++ xorg-server/hw/xfree86/common/xf86Priv.h
 @@ -46,6 +46,7 @@
   * The global state of these things is held in xf86InfoRec (when appropriate).
   */
@@ -359,8 +359,8 @@ Index: xorg-server/hw/xfree86/common/xf86Priv.h
  extern _X_EXPORT  Bool xf86VidModeDisabled;
 Index: xorg-server/hw/xfree86/doc/man/Xorg.man.pre
 ===================================================================
---- xorg-server.orig/hw/xfree86/doc/man/Xorg.man.pre	2010-03-24 13:01:50.000000000 +0200
-+++ xorg-server/hw/xfree86/doc/man/Xorg.man.pre	2010-03-24 13:05:51.000000000 +0200
+--- xorg-server.orig/hw/xfree86/doc/man/Xorg.man.pre
++++ xorg-server/hw/xfree86/doc/man/Xorg.man.pre
 @@ -109,7 +109,7 @@
  .B __xservername__
  supports several mechanisms for supplying/obtaining configuration and
@@ -439,8 +439,8 @@ Index: xorg-server/hw/xfree86/doc/man/Xorg.man.pre
  .IR n .
 Index: xorg-server/hw/xfree86/doc/man/xorg.conf.man.pre
 ===================================================================
---- xorg-server.orig/hw/xfree86/doc/man/xorg.conf.man.pre	2010-03-24 13:01:50.000000000 +0200
-+++ xorg-server/hw/xfree86/doc/man/xorg.conf.man.pre	2010-03-24 13:05:51.000000000 +0200
+--- xorg-server.orig/hw/xfree86/doc/man/xorg.conf.man.pre
++++ xorg-server/hw/xfree86/doc/man/xorg.conf.man.pre
 @@ -2,27 +2,35 @@
  .ds q \N'34'
  .TH __xconfigfile__ __filemansuffix__ __vendorversion__
@@ -533,8 +533,8 @@ Index: xorg-server/hw/xfree86/doc/man/xorg.conf.man.pre
  .B SendCoreEvents
 Index: xorg-server/hw/xfree86/parser/Layout.c
 ===================================================================
---- xorg-server.orig/hw/xfree86/parser/Layout.c	2010-03-24 13:01:50.000000000 +0200
-+++ xorg-server/hw/xfree86/parser/Layout.c	2010-03-24 13:05:51.000000000 +0200
+--- xorg-server.orig/hw/xfree86/parser/Layout.c
++++ xorg-server/hw/xfree86/parser/Layout.c
 @@ -64,6 +64,10 @@
  #include "Configint.h"
  #include <string.h>
@@ -644,8 +644,8 @@ Index: xorg-server/hw/xfree86/parser/Layout.c
  	return (TRUE);
 Index: xorg-server/hw/xfree86/parser/scan.c
 ===================================================================
---- xorg-server.orig/hw/xfree86/parser/scan.c	2010-03-24 13:01:50.000000000 +0200
-+++ xorg-server/hw/xfree86/parser/scan.c	2010-03-24 13:05:51.000000000 +0200
+--- xorg-server.orig/hw/xfree86/parser/scan.c
++++ xorg-server/hw/xfree86/parser/scan.c
 @@ -62,8 +62,11 @@
  #include <stdio.h>
  #include <stdlib.h>
@@ -1101,8 +1101,8 @@ Index: xorg-server/hw/xfree86/parser/scan.c
  	va_end (ap);
 Index: xorg-server/hw/xfree86/parser/xf86Parser.h
 ===================================================================
---- xorg-server.orig/hw/xfree86/parser/xf86Parser.h	2010-03-24 13:01:50.000000000 +0200
-+++ xorg-server/hw/xfree86/parser/xf86Parser.h	2010-03-24 13:05:51.000000000 +0200
+--- xorg-server.orig/hw/xfree86/parser/xf86Parser.h
++++ xorg-server/hw/xfree86/parser/xf86Parser.h
 @@ -456,13 +456,16 @@
  /*
   * prototypes for public functions
@@ -1137,8 +1137,8 @@ Index: xorg-server/hw/xfree86/parser/xf86Parser.h
  extern _X_EXPORT int xf86itemNotSublist(GenericListPtr list_1, GenericListPtr list_2);
 Index: xorg-server/hw/xwin/InitOutput.c
 ===================================================================
---- xorg-server.orig/hw/xwin/InitOutput.c	2010-03-24 13:01:50.000000000 +0200
-+++ xorg-server/hw/xwin/InitOutput.c	2010-03-24 13:05:51.000000000 +0200
+--- xorg-server.orig/hw/xwin/InitOutput.c
++++ xorg-server/hw/xwin/InitOutput.c
 @@ -851,6 +851,9 @@
    ErrorF ("-config\n"
            "\tSpecify a configuration file.\n");
@@ -1151,8 +1151,8 @@ Index: xorg-server/hw/xwin/InitOutput.c
  #endif
 Index: xorg-server/hw/xwin/winconfig.c
 ===================================================================
---- xorg-server.orig/hw/xwin/winconfig.c	2010-03-24 13:01:50.000000000 +0200
-+++ xorg-server/hw/xwin/winconfig.c	2010-03-24 13:05:51.000000000 +0200
+--- xorg-server.orig/hw/xwin/winconfig.c
++++ xorg-server/hw/xwin/winconfig.c
 @@ -50,6 +50,13 @@
                      "%P/lib/X11/%X.%H," "%P/lib/X11/%X-%M," \
                      "%P/lib/X11/%X"
@@ -1232,8 +1232,8 @@ Index: xorg-server/hw/xwin/winconfig.c
    if ((g_xf86configptr = xf86readConfigFile ()) == NULL)
 Index: xorg-server/hw/xwin/winconfig.h
 ===================================================================
---- xorg-server.orig/hw/xwin/winconfig.h	2010-03-24 13:01:50.000000000 +0200
-+++ xorg-server/hw/xwin/winconfig.h	2010-03-24 13:05:51.000000000 +0200
+--- xorg-server.orig/hw/xwin/winconfig.h
++++ xorg-server/hw/xwin/winconfig.h
 @@ -188,6 +188,7 @@
    /* Files */
  #ifdef XWIN_XF86CONFIG
@@ -1244,8 +1244,8 @@ Index: xorg-server/hw/xwin/winconfig.h
    /* input devices - keyboard */
 Index: xorg-server/hw/xwin/winprocarg.c
 ===================================================================
---- xorg-server.orig/hw/xwin/winprocarg.c	2010-03-24 13:01:50.000000000 +0200
-+++ xorg-server/hw/xwin/winprocarg.c	2010-03-24 13:05:51.000000000 +0200
+--- xorg-server.orig/hw/xwin/winprocarg.c
++++ xorg-server/hw/xwin/winprocarg.c
 @@ -1318,6 +1318,24 @@
      }
  
@@ -1273,8 +1273,8 @@ Index: xorg-server/hw/xwin/winprocarg.c
    if (IS_OPTION ("-keyboard"))
 Index: xorg-server/include/xorg-config.h.in
 ===================================================================
---- xorg-server.orig/include/xorg-config.h.in	2010-03-24 13:01:50.000000000 +0200
-+++ xorg-server/include/xorg-config.h.in	2010-03-24 13:05:51.000000000 +0200
+--- xorg-server.orig/include/xorg-config.h.in
++++ xorg-server/include/xorg-config.h.in
 @@ -36,6 +36,9 @@
  /* Path to configuration file. */
  #undef __XCONFIGFILE__

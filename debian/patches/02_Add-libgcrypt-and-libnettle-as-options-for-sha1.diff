@@ -10,11 +10,11 @@ Support is also added for libnettle.
 
 Signed-off-by: Cyril Brulebois <kibi@debian.org>
 ---
-diff --git a/configure.ac b/configure.ac
-index c215b5c..e688f94 100644
---- a/configure.ac
-+++ b/configure.ac
-@@ -1285,26 +1285,66 @@ MIEXT_SHADOW_INC='-I$(top_srcdir)/miext/shadow'
+Index: xorg-server/configure.ac
+===================================================================
+--- xorg-server.orig/configure.ac
++++ xorg-server/configure.ac
+@@ -1286,26 +1286,66 @@
  MIEXT_SHADOW_LIB='$(top_builddir)/miext/shadow/libshadow.la'
  CORE_INCS='-I$(top_srcdir)/include -I$(top_builddir)/include'
  
@@ -26,7 +26,14 @@ index c215b5c..e688f94 100644
 -  AC_CHECK_LIB([md], [SHA1Init], [SHA1_LIB="-lmd"
 -            AC_DEFINE([HAVE_SHA1_IN_LIBMD], [1],
 -            [Use libmd SHA1 functions instead of OpenSSL libcrypto])])
--fi
++# SHA1 hashing
++AC_ARG_WITH([sha1],
++            [AS_HELP_STRING([--with-sha1=libmd|libgcrypt|libcrypto|libnettle],
++                            [choose SHA1 implementation])])
++AC_CHECK_LIB([md], [SHA1Init], [HAVE_LIBMD=yes])
++if test "x$with_sha1" = x && test "x$HAVE_LIBMD" = xyes; then
++        with_sha1=libmd
+ fi
 -
 -if test "x$SHA1_LIB" = "x" ; then
 -  PKG_CHECK_EXISTS([OPENSSL], [openssl], [HAVE_OPENSSL_PKC=yes],
@@ -37,14 +44,6 @@ index c215b5c..e688f94 100644
 -    AC_CHECK_LIB([crypto], [SHA1_Init], [SHA1_LIB="-lcrypto"],
 -                 [AC_MSG_ERROR([OpenSSL must be installed in order to build the X server.])])
 -  fi
-+# SHA1 hashing
-+AC_ARG_WITH([sha1],
-+            [AS_HELP_STRING([--with-sha1=libmd|libgcrypt|libcrypto|libnettle],
-+                            [choose SHA1 implementation])])
-+AC_CHECK_LIB([md], [SHA1Init], [HAVE_LIBMD=yes])
-+if test "x$with_sha1" = x && test "x$HAVE_LIBMD" = xyes; then
-+        with_sha1=libmd
-+fi
 +if test "x$with_sha1" = xlibmd && test "x$HAVE_LIBMD" != xyes; then
 +        AC_MSG_ERROR([libmd requested but not found])
 +fi
@@ -100,7 +99,7 @@ index c215b5c..e688f94 100644
  
  PKG_CHECK_MODULES([XSERVERCFLAGS], [$REQUIRED_MODULES $REQUIRED_LIBS])
  PKG_CHECK_MODULES([XSERVERLIBS], [$REQUIRED_LIBS])
-@@ -1326,7 +1366,7 @@ PKG_CHECK_MODULES([XSERVERLIBS], [$REQUIRED_LIBS])
+@@ -1327,7 +1367,7 @@
  #
  XSERVER_CFLAGS="${XSERVERCFLAGS_CFLAGS} ${SHA1_CFLAGS}"
  XSERVER_LIBS="$DIX_LIB $CONFIG_LIB $MI_LIB $OS_LIB"
@@ -109,10 +108,10 @@ index c215b5c..e688f94 100644
  AC_SUBST([XSERVER_LIBS])
  AC_SUBST([XSERVER_SYS_LIBS])
  
-diff --git a/include/dix-config.h.in b/include/dix-config.h.in
-index 6e450b6..782da4f 100644
---- a/include/dix-config.h.in
-+++ b/include/dix-config.h.in
+Index: xorg-server/include/dix-config.h.in
+===================================================================
+--- xorg-server.orig/include/dix-config.h.in
++++ xorg-server/include/dix-config.h.in
 @@ -163,6 +163,12 @@
  /* Define to use libmd SHA1 functions instead of OpenSSL libcrypto */
  #undef HAVE_SHA1_IN_LIBMD
@@ -126,10 +125,10 @@ index 6e450b6..782da4f 100644
  /* Define to 1 if you have the `shmctl64' function. */
  #undef HAVE_SHMCTL64
  
-diff --git a/render/glyph.c b/render/glyph.c
-index 7fcdfd9..37e80ec 100644
---- a/render/glyph.c
-+++ b/render/glyph.c
+Index: xorg-server/render/glyph.c
+===================================================================
+--- xorg-server.orig/render/glyph.c
++++ xorg-server/render/glyph.c
 @@ -28,6 +28,10 @@
  
  #ifdef HAVE_SHA1_IN_LIBMD /* Use libmd for SHA1 */
@@ -141,7 +140,7 @@ index 7fcdfd9..37e80ec 100644
  #else /* Use OpenSSL's libcrypto */
  # include <stddef.h>  /* buggy openssl/sha.h wants size_t */
  # include <openssl/sha.h>
-@@ -205,6 +209,33 @@ HashGlyph (xGlyphInfo    *gi,
+@@ -205,6 +209,33 @@
      SHA1Update (&ctx, gi, sizeof (xGlyphInfo));
      SHA1Update (&ctx, bits, size);
      SHA1Final (sha1, &ctx);
@@ -175,6 +174,3 @@ index 7fcdfd9..37e80ec 100644
  #else /* Use OpenSSL's libcrypto */
      SHA_CTX ctx;
      int success;
--- 
-1.7.0
-
