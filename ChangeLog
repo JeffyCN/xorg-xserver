@@ -1,3 +1,306 @@
+commit 501c0ee63570da7501d047c51c40a2568af1df08
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Mon Apr 12 11:51:21 2010 +1000
+
+    xserver 1.7.6.901
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit 8c0548bc34dead67bc944a59664be6254be928bd
+Author: Tiago Vignatti <tiago.vignatti@nokia.com>
+Date:   Thu Apr 1 18:57:50 2010 +0300
+
+    xfree86: die gracefully in the vga arbiter if AddScreen fails
+    
+    vga arbiter will be locked in one device while AbortDDX will call LeaveVT
+    routines from the other device. Fail!
+    
+    Signed-off-by: Tiago Vignatti <tiago.vignatti@nokia.com>
+    Reviewed-by: Keith Packard <keithp@keithp.com>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+    (cherry picked from commit b9ad452ec92a7dcbed680acb3f3b8ec29fa660df)
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit e7154e9375e6b624db01a787d9ec6c8cedc2eb81
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Wed Mar 17 14:32:38 2010 +1000
+
+    dix: if owner-events is true for passive grabs, add the window mask (#25400)
+    
+    A client requesting a GrabModeSync button grab, owner-events true, with only
+    the ButtonRelease mask set would never receive the press event even if the
+    grab window had the ButtonPress mask set.
+    
+    The protocol requires that if owner-events is true, then the delivery mask
+    is the combination of the grab mask + the window event mask.
+    
+    X.Org Bug 25400 <http://bugs.freedesktop.org/show_bug.cgi?id=25400>
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Tested-by: Jim Ramsay <i.am@jimramsay.com>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+    (cherry picked from commit 1c612acca8568fcdf9761d23f112adaf4d496f1b)
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit d33b3bf41b92e088e7aacbbcb01df18bae50baa8
+Author: Michel Dänzer <daenzer@vmware.com>
+Date:   Mon Mar 22 18:01:17 2010 +0100
+
+    Xext: Fix cursor reference counting hazard.
+    
+    Make sure the reference count of the new cursor is increased before the old
+    one is decreased, otherwise bad things will happen if they're one and the
+    same and the reference count is 1 initially. Not sure this can actually happen
+    here, but better safe than sorry.
+    
+    Signed-off-by: Michel Dänzer <daenzer@vmware.com>
+    Reviewed-by: Roland Scheidegger <sroland@vmware.com>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+    (cherry picked from commit 3083c5d0c4386cdd7083b7a83ac72fdad2f1e61e)
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit 4520d5cc5faccc5a3b623d4c7e61068431a927cc
+Author: Mikhail Gusarov <dottedmag@dottedmag.net>
+Date:   Tue Mar 23 01:03:53 2010 +0600
+
+    kdrive: Bump evdev maxKeycode
+    
+    There are keycodes > 193 in evdev, e.g. KEY_WIMAX which is 246 .
+    
+    Signed-off-by: Mikhail Gusarov <dottedmag@dottedmag.net>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Acked-by: Adam Jackson <ajax@nwnk.net>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+    (cherry picked from commit e086b99c1f5ce351b578de7cd9f616bc79d6cf64)
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit 48f8a7d1259a559b3cc774598b5d0d6edbc984bc
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Mon Mar 22 09:20:49 2010 +1000
+
+    configure: Always define XINPUT.
+    
+    This define was removed in e251c9e75afdc "Remove all traces of #ifdef XINPUT
+    and the matching bits from the configure.ac". Drivers that support multiple
+    server versions and still check for ifdef XINPUT now always build without
+    XINPUT support if they're calling XORG_DRIVER_CHECK_EXT(XINPUT, inputproto).
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Dan Nicholson <dbn.lists@gmail.com>
+    (cherry picked from commit 6389405b56d2221d8a7b80c4bb3bd3b4e1a29bab)
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit 1130a0def920fdeb064cd5958d59ee2882a79d28
+Author: Jeremy Huddleston <jeremyhu@freedesktop.org>
+Date:   Tue Mar 23 10:37:36 2010 -0700
+
+    XKB: Fix garbage initialization
+    
+    XkbEnableDisableControls set extra garbage bits on the xkbControlsNotify
+    changedControls mask because it was uninitialized on the stack.
+    
+    Found by clang
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    (cherry picked from commit 8311cd5f89ca6781842bb24671b8122cdf8be148)
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit ff5af4dc2d14c1bf2676f69e7dcee62eb9a08f78
+Author: Paulo Ricardo Zanoni <pzanoni@mandriva.com>
+Date:   Thu Mar 11 14:28:18 2010 -0300
+
+    dix: be more verbose when we run out of opcodes
+    
+    If we run out of opcodes, nothing is print on the log, making the
+    problem hard to debug. In the current Xserver, if you enable some
+    extensions like multibuffer (+2 events) and use nvidia binary driver (+5
+    events) you can run out of opcode numbers.
+    
+    Signed-off-by: Paulo Ricardo Zanoni <pzanoni@mandriva.com>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Julien Cristau <jcristau@debian.org>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+    (cherry picked from commit a9fe7cfa77ccee64d68732dc3f37d35cbfc27a65)
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit 2350035463bcfb6d80249b55ce392a154a8d91da
+Author: Pierre-Loup A. Griffais <pgriffais@nvidia.com>
+Date:   Fri Apr 2 12:48:21 2010 -0700
+
+    Don't keep a pointer to a possibly freed cursor when changing screens, preventing a crash in xf86CursorEnableDisableFBAccess() trying to restore it.
+    
+    Signed-off-by: Pierre-Loup A. Griffais <pgriffais@nvidia.com>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    (cherry picked from commit 6b09f66d8c6ebcee70382b5cca1ba82b68f20afa)
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit 2297ad916a15a116e92f2549f59b222449f08b89
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Fri Jan 8 15:18:41 2010 +1000
+
+    dix: EventToCore needs to copy the root window too.
+    
+    This value isn't actually set for normal events but it saves us some work
+    for the record extension support.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Keith Packard <keithp@keithp.com>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+    (cherry picked from commit b4baab90c0d98bef98d485682d4a69a327a380d6)
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit 49a2b55e0e1e265c1393c04c9df8e73f30dccd33
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Sun Mar 28 13:46:23 2010 -0700
+
+    XQuartz: Re-query dixScreenOrigins as the value could've changed.
+    
+    Fix a regression in 9c9c3a85b094a3c7b2763a572715d710325091aa
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+    Acked-by: Adam Jackson <ajax@redhat.com>
+    (cherry picked from commit 28a5f14b4089dccb8045cc4fdc923542a73dd22d)
+
+commit 68319e7f0755a7d36ed1544214dceae0afa05b76
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Thu Mar 25 22:15:58 2010 -0700
+
+    XQuartz: Workaround weird key data reported on some layouts
+    
+    This should make 'Unicode Hex Input' work as an input layout.
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+    Acked-by: Adam Jackson <ajax@redhat.com>
+    (cherry picked from commit 339207be6f184cc783076fc7e2cc12f92f57f2ba)
+
+commit 2ad8aae749fe08f139e3046e923da8233b9a7cd5
+Author: Roland Scheidegger <sroland@vmware.com>
+Date:   Fri Mar 12 16:53:30 2010 +0100
+
+    hw/xfree86: move reference counting out of the UseHWCursor[ARGB] functions
+    
+    The problem is that the xf86_use_hw_cursor(_argb) functions may get this
+    correctly now, some drivers will replace these generic versions with their
+    own functions. It is pretty insane to expect them to do reference counting
+    of the cursor (as an example, look at driver/xf86-video-vmware to see how
+    that looks like as a workaround). There are even places in xserver itself
+    which replace these two functions.
+    The segfaults if no reference counting is done are caused because the
+    reference count of the cursor reached zero, hence the cursor was freed,
+    however xf86CursorEnableDisableFBAccess() brought it back to life from
+    the dead (from the SavedCursor).
+    This patch hence adds reference counting in xf86CursorSetCursor. As per Michel
+    Daenzer's suggestion, also free the cursor upon xf86CursorCloseScreen.
+    In theory with this it should be possible to remove the reference
+    counting in the UseHwCursor functions I think, though it should also be
+    safe to keep them.
+    
+    Signed-off-by: Roland Scheidegger <sroland@vmware.com>
+    Reviewed-by: Michel Dänzer <michel@daenzer.net>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+    (cherry picked from commit 67a8c659f25218904bae64aac6e98e326c90330b)
+
+commit e481a4912bc53a09429002b2bf8c321b516d236f
+Author: Tomas Carnecky <tom@dbservice.com>
+Date:   Mon Mar 22 11:20:15 2010 -0700
+
+    Fix typos in the swap functions
+    
+    This should fix bug #3539.
+    
+    Signed-off-by: Tomas Carnecky <tom@dbservice.com>
+    Signed-off-by: Ian Romanick <ian.d.romanick@intel.com>
+    Reviewed-by: Keith Packard <keithp@keithp.com>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+    (cherry picked from commit 0c2fde5c8ad6e94b4ed1588aa93256a2b64f74d9)
+
+commit 2fa794f246b0224c458295a271a4246b52eb75c0
+Author: Peter Harris <pharris@opentext.com>
+Date:   Tue Mar 23 12:08:19 2010 -0400
+
+    Fix crash when all glyphs of a given depth are freed, but not all glyphsets
+    
+    This is how the crash can be triggered with only two clients on the system:
+    Client A: (already running)
+    Client B: Connect
+    Client B: CreateGlyphSet(depthN)
+    Client A: Disconnect
+    Server: free globalGlyphs(depthN)
+    Client B: AddGlyphs(depthN)
+    Server: SEGV
+    
+    This crash was introduced with the FindGlyphsByHash function
+    in 516b96387b0e57b524a37a96da22dbeeeb041712. Before that revision,
+    ResizeGlyphSet was always called before FindGlyphRef, which would
+    re-create globalGlyphs(depthN) if necessary.
+    
+    X.Org Bug 20718 <http://bugs.freedesktop.org/show_bug.cgi?id=20718>
+    
+    Reviewed-by: Adam Jackson <ajax@redhat.com>
+    Signed-off-by: Peter Harris <pharris@opentext.com>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+    (cherry picked from commit 185185eeb44a277c324be0f58a4b4a469b56b69b)
+
+commit 4c85c3815a6f1698e91d2043d51a716948f8c1df
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Fri Mar 19 17:24:27 2010 -0700
+
+    XQuartz: Constrain the pointer to the updated display bounds on display reconfigure.
+    
+    http://xquartz.macosforge.org/trac/ticket/346
+    (cherry picked from commit ed31d50b5f7f25e4db986711699704e615b8afcb)
+
+commit b226618f55a5393e32f339a963ae7aaf145c51a4
+Author: Jeremy Huddleston <jeremyhu@freedesktop.org>
+Date:   Sat Mar 20 11:03:28 2010 -0700
+
+    XQuartz: pbproxy: Make standalone xpbproxy respect the launchd prefix
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@freedesktop.org>
+    (cherry picked from commit 38215cc43e4c012588c7a50344b8fe368d1252cc)
+
+commit 088777f2b683d61d948cf346564a73b048da1ea2
+Author: Jeremy Huddleston <jeremyhu@freedesktop.org>
+Date:   Sat Mar 20 03:28:57 2010 -0700
+
+    XQuartz: xpbproxy: Cleanup xpbproxy threading
+    
+    Confine xpbproxy to a single thread
+    Runs inside its own CFRunLoop
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@freedesktop.org>
+    (cherry picked from commit 69869d79f4c21eb385ff3c64bac649d93c7dd2ad)
+
+commit b3f4a9a64be4b6bcc81f13cf9677a486b42dd2b4
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Fri Mar 19 17:23:12 2010 -0700
+
+    XQuartz: Minor cleanup
+    
+    Move RandRInit to where it will need to be (not yet implemented)
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+    (cherry picked from commit 7da4f9df9c6490e3e604c170415d5af2d8c8ff29)
+
+commit b444205399c236c21c68e2dda32ce51497dcd7e4
+Author: Jeremy Huddleston <jeremyhu@freedesktop.org>
+Date:   Fri Mar 19 15:26:50 2010 -0700
+
+    XQuartz: GLX: Fix Availability for Tiger ppc workaround
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@freedesktop.org>
+    (cherry picked from commit 88baffc25a193c7c7154a94a687e7cb0f8b180ba)
+
 commit c552ec12f9112901d5266c00fb3aaf4e06f5d614
 Author: Peter Hutterer <peter.hutterer@who-t.net>
 Date:   Wed Mar 17 10:49:28 2010 +1000
