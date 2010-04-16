@@ -108,7 +108,6 @@ Conflicts:
  xserver-xorg-input-4,
  xserver-xorg-input-wacom (<< 0.7.8),
 Breaks:
- xserver-xorg-input-evdev (<= 1:2.3.2-5),
  xserver-xorg-input-joystick (<= 1:1.5.0-3),
  xserver-xorg-input-synaptics (<= 1.2.2-1),
  xserver-xorg-input-tslib (<= 0.0.6-3),
