@@ -1,0 +1,97 @@
+From 6d0f5735216847a9b8ea96b874bd68bc97992e4f Mon Sep 17 00:00:00 2001
+From: Julien Cristau <jcristau@debian.org>
+Date: Fri, 16 Apr 2010 21:34:33 +0200
+Subject: [PATCH] Add 10-evdev.conf
+
+Cherry-picked from upstream commits:
+24952b7 Install 10-evdev.conf in $(prefix)/etc/X11/xorg.conf.d under udev
+c8a608c config: only match sane devices in 10-evdev.conf
+d4dd3d0 Move 10-evdev.conf to system config dir $datadir/X11/xorg.conf.d
+---
+ config/10-evdev.conf |   40 ++++++++++++++++++++++++++++++++++++++++
+ config/Makefile.am   |    5 ++++-
+ configure.ac         |    1 +
+ 3 files changed, 45 insertions(+), 1 deletions(-)
+ create mode 100644 config/10-evdev.conf
+
+diff --git a/config/10-evdev.conf b/config/10-evdev.conf
+new file mode 100644
+index 0000000..cc83ab2
+--- /dev/null
++++ b/config/10-evdev.conf
+@@ -0,0 +1,40 @@
++#
++# Catch-all evdev loader for udev-based systems
++# We don't simply match on any device since that also adds accelerometers
++# and other devices that we don't really want to use. The list below
++# matches everything but joysticks.
++
++Section "InputClass"
++        Identifier "evdev pointer catchall"
++        MatchIsPointer "on"
++        MatchDevicePath "/dev/input/event*"
++        Driver "evdev"
++EndSection
++
++Section "InputClass"
++        Identifier "evdev keyboard catchall"
++        MatchIsKeyboard "on"
++        MatchDevicePath "/dev/input/event*"
++        Driver "evdev"
++EndSection
++
++Section "InputClass"
++        Identifier "evdev touchpad catchall"
++        MatchIsTouchpad "on"
++        MatchDevicePath "/dev/input/event*"
++        Driver "evdev"
++EndSection
++
++Section "InputClass"
++        Identifier "evdev tablet catchall"
++        MatchIsTablet "on"
++        MatchDevicePath "/dev/input/event*"
++        Driver "evdev"
++EndSection
++
++Section "InputClass"
++        Identifier "evdev touchscreen catchall"
++        MatchIsTouchscreen "on"
++        MatchDevicePath "/dev/input/event*"
++        Driver "evdev"
++EndSection
+diff --git a/config/Makefile.am b/config/Makefile.am
+index 27f251b..675a3b2 100644
+--- a/config/Makefile.am
++++ b/config/Makefile.am
+@@ -9,6 +9,9 @@ AM_CFLAGS += $(UDEV_CFLAGS)
+ libconfig_la_SOURCES += udev.c
+ libconfig_la_LIBADD = $(UDEV_LIBS)
+ 
++xorgconfddir = $(datadir)/X11/$(XF86CONFIGDIR)
++xorgconfd_DATA = 10-evdev.conf
++
+ else
+ 
+ if CONFIG_NEED_DBUS
+@@ -33,4 +36,4 @@ endif # CONFIG_NEED_DBUS
+ 
+ endif # !CONFIG_UDEV
+ 
+-EXTRA_DIST = xorg-server.conf x11-input.fdi
++EXTRA_DIST = xorg-server.conf x11-input.fdi 10-evdev.conf
+diff --git a/configure.ac b/configure.ac
+index 574d9f0..9a10d8b 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -1717,6 +1717,7 @@ if test "x$XORG" = xyes; then
+ 	dnl these only go in xorg-config.h
+ 	XF86CONFIGFILE="xorg.conf"
+ 	XF86CONFIGDIR="xorg.conf.d"
++	AC_SUBST(XF86CONFIGDIR)
+ 	CONFIGFILE="$sysconfdir/$XF86CONFIGFILE"
+ 	LOGPREFIX="$logdir/Xorg."
+ 	AC_DEFINE(XORG_SERVER, 1, [Building Xorg server])
+-- 
+1.7.0.4
+

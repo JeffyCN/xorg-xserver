@@ -18,3 +18,4 @@
 14-tone-down-nidr-errors.diff
 16-xaa-fbcomposite-fix-negative-size.diff
 17-xfree86-saner-conf-search-paths.diff
+18-Add-10-evdev.conf.diff
