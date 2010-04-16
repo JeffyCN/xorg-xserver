@@ -1,6 +1,8 @@
 xorg-server (2:1.7.6.901-1) UNRELEASED; urgency=low
 
   * New upstream release candidate.
+    - Fix crash when all glyphs of a given depth are freed, but not all
+      glyphsets (closes: #568533)
 
   [ Cyril Brulebois ]
   * Steal patch 112_xaa-fbcomposite-fix-negative-size.patch from ubuntu,
