@@ -26,8 +26,8 @@ dnl
 dnl Process this file with autoconf to create configure.
 
 AC_PREREQ(2.57)
-AC_INIT([xorg-server], 1.7.6, [https://bugs.freedesktop.org/enter_bug.cgi?product=xorg], xorg-server)
-RELEASE_DATE="2010-03-17"
+AC_INIT([xorg-server], 1.7.6.901, [https://bugs.freedesktop.org/enter_bug.cgi?product=xorg], xorg-server)
+RELEASE_DATE="2010-04-12"
 AC_CONFIG_SRCDIR([Makefile.am])
 AM_INIT_AUTOMAKE([dist-bzip2 foreign])
 AM_MAINTAINER_MODE
@@ -1078,6 +1078,7 @@ MIEXT_DAMAGE_LIB='$(top_builddir)/miext/damage/libdamage.la'
 MIEXT_DAMAGE_INC='-I$(top_srcdir)/miext/damage'
 
 # XINPUT extension is integral part of the server
+AC_DEFINE(XINPUT, 1, [Support X Input extension])
 XI_LIB='$(top_builddir)/Xi/libXi.la'
 XI_INC='-I$(top_srcdir)/Xi'
 

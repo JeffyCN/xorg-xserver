@@ -129,6 +129,9 @@ xf86CursorCloseScreen(int i, ScreenPtr pScreen)
     if (ScreenPriv->isUp && pScrn->vtSema)
 	xf86SetCursor(pScreen, NullCursor, ScreenPriv->x, ScreenPriv->y);
 
+    if (ScreenPriv->CurrentCursor)
+	FreeCursor(ScreenPriv->CurrentCursor, None);
+
     pScreen->CloseScreen = ScreenPriv->CloseScreen;
     pScreen->QueryBestSize = ScreenPriv->QueryBestSize;
     pScreen->RecolorCursor = ScreenPriv->RecolorCursor;
@@ -309,6 +312,7 @@ xf86CursorSetCursor(DeviceIntPtr pDev, ScreenPtr pScreen, CursorPtr pCurs,
             xf86SetCursor(pScreen, NullCursor, x, y);
             ScreenPriv->isUp = FALSE;
         }
+        ScreenPriv->CurrentCursor = NullCursor;
         return;
     }
 
@@ -317,6 +321,9 @@ xf86CursorSetCursor(DeviceIntPtr pDev, ScreenPtr pScreen, CursorPtr pCurs,
     if (pDev == inputInfo.pointer ||
         (!IsMaster(pDev) && pDev->u.master == inputInfo.pointer))
     {
+	pCurs->refcnt++;
+	if (ScreenPriv->CurrentCursor)
+	    FreeCursor(ScreenPriv->CurrentCursor, None);
 	ScreenPriv->CurrentCursor = pCurs;
 	ScreenPriv->x = x;
 	ScreenPriv->y = y;
