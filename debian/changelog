@@ -30,6 +30,8 @@ xorg-server (2:1.7.6.901-1) UNRELEASED; urgency=low
   * Bump serverminver for new handling of input config.
   * Add Breaks on input drivers installing files in /usr/lib/X11/xorg.conf.d
     since we're changing the path.
+  * Stop looking for x11_driver property in udev, since we're migrating the
+    drivers over to xorg.conf.d anyway.
 
   [ Timo Aaltonen ]
   * Add 17-xfree86-saner-conf-search-paths.diff. Allows using another
