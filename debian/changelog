@@ -1,4 +1,4 @@
-xorg-server (2:1.7.6.901-1) UNRELEASED; urgency=low
+xorg-server (2:1.7.6.901-1) unstable; urgency=low
 
   * New upstream release candidate.
     - Fix crash when all glyphs of a given depth are freed, but not all
@@ -39,7 +39,7 @@ xorg-server (2:1.7.6.901-1) UNRELEASED; urgency=low
   * Add 17-xfree86-saner-conf-search-paths.diff. Allows using another
     xorg.conf.d directory for local changes.
 
- -- Julien Cristau <jcristau@debian.org>  Fri, 16 Apr 2010 19:01:02 +0200
+ -- Cyril Brulebois <kibi@debian.org>  Sat, 17 Apr 2010 16:55:39 +0200
 
 xorg-server (2:1.7.6-2) unstable; urgency=low
 
