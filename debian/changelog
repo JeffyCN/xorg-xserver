@@ -1,3 +1,11 @@
+xorg-server (2:1.7.6.901-2) UNRELEASED; urgency=low
+
+  * Fix dependency generation: Replace PKG_CONFIG_DIR with PKG_CONFIG_PATH
+    (/usr/share/xserver-xorg/{videodrv,xinput}dep may lack a version
+    otherwise).
+
+ -- Cyril Brulebois <kibi@debian.org>  Sat, 17 Apr 2010 18:28:46 +0200
+
 xorg-server (2:1.7.6.901-1) unstable; urgency=low
 
   * New upstream release candidate.
