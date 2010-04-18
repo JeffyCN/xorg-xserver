@@ -1,3 +1,10 @@
+xorg-server (2:1.7.6.901-3) UNRELEASED; urgency=low
+
+  * On !linux, install mouse and kbd catchall snippets in the xorg.conf.d
+    directory.  Fixes FTBFS on those archs.
+
+ -- Julien Cristau <jcristau@debian.org>  Sun, 18 Apr 2010 14:45:43 +0200
+
 xorg-server (2:1.7.6.901-2) unstable; urgency=low
 
   * Fix dependency generation: Replace PKG_CONFIG_DIR with PKG_CONFIG_PATH

@@ -249,6 +249,14 @@ endif
 	
 	install -m 755 debian/local/xvfb-run debian/tmp/main/usr/bin
 	install debian/local/xvfb-run.1 debian/tmp/main/usr/share/man/man1
+ifneq ($(DEB_HOST_ARCH_OS), linux)
+	install -d debian/tmp/main/usr/share/X11/xorg.conf.d
+	install -m 644 debian/local/10-*.conf debian/tmp/main/usr/share/X11/xorg.conf.d
+ifeq ($(udeb), yes)
+	install -d debian/tmp/udeb/usr/share/X11/xorg.conf.d
+	install -m 644 debian/local/10-*.conf debian/tmp/udeb/usr/share/X11/xorg.conf.d
+endif
+endif
 
 # stub to start building deb files, used by binary-indep and binary-arch
 binary-initial:
