@@ -6,6 +6,7 @@ PATH="/sbin:$PATH"
 CONFIG_DIR=/etc/X11
 SERVER_SYMLINK="$CONFIG_DIR/X"
 XORGCONFIG="$CONFIG_DIR/xorg.conf"
+XORGCONFIG_DIR="$CONFIG_DIR/xorg.conf.d"
 CONFIG_AUX_DIR=/var/lib/x11
 SERVER_SYMLINK_CHECKSUM="$CONFIG_AUX_DIR/${SERVER_SYMLINK##*/}.md5sum"
 SERVER_SYMLINK_ROSTER="$CONFIG_AUX_DIR/${SERVER_SYMLINK##*/}.roster"
@@ -92,6 +93,11 @@ if [ -e "$XORGCONFIG" ]; then
     printf "Contents of $XORGCONFIG:\n"
     iconv -c -t ascii "$XORGCONFIG"
     printf "\n"
+    if [ -d "$XORGCONFIG_DIR" ]; then
+        printf "Contents of $XORGCONFIG_DIR:\n"
+        ls -l "$XORGCONFIG_DIR"
+        printf "\n"
+    fi
 else
     printf "$XORGCONFIG does not exist.\n"
 fi

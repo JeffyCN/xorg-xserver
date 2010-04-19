@@ -1,6 +1,10 @@
 xorg-server (2:1.7.6.901-4) UNRELEASED; urgency=low
 
+  [ Timo Aaltonen ]
   * Update patch 17; Add missing __datadir__ to cpprules.in.
+
+  [ Cyril Brulebois ]
+  * Add listing files under /etc/X11/xorg.conf.d in bug script.
 
  -- Timo Aaltonen <tjaalton@ubuntu.com>  Tue, 20 Apr 2010 17:46:32 +0300
 
