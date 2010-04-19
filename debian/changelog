@@ -7,6 +7,7 @@ xorg-server (2:1.7.6.901-4) UNRELEASED; urgency=low
   * Add listing files under /etc/X11/xorg.conf.d in bug script.
   * Fix stuff pointed out by lintian:
      - Fix FSF address in debian/copyright.
+     - Point to the complete text of the GPL in debian/copyright.
 
  -- Timo Aaltonen <tjaalton@ubuntu.com>  Tue, 20 Apr 2010 17:46:32 +0300
 
