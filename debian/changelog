@@ -1,4 +1,4 @@
-xorg-server (2:1.7.6.901-3) UNRELEASED; urgency=low
+xorg-server (2:1.7.6.901-3) unstable; urgency=low
 
   [ Julien Cristau ]
   * On !linux, install mouse and kbd catchall snippets in the xorg.conf.d
@@ -10,7 +10,7 @@ xorg-server (2:1.7.6.901-3) UNRELEASED; urgency=low
     software fallbacks (Closes: #576816). Many thanks to Arthur Marsh for
     the tests!
 
- -- Julien Cristau <jcristau@debian.org>  Sun, 18 Apr 2010 14:45:43 +0200
+ -- Cyril Brulebois <kibi@debian.org>  Mon, 19 Apr 2010 15:26:15 +0200
 
 xorg-server (2:1.7.6.901-2) unstable; urgency=low
 
