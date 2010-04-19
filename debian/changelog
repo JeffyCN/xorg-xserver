@@ -1,7 +1,14 @@
 xorg-server (2:1.7.6.901-3) UNRELEASED; urgency=low
 
+  [ Julien Cristau ]
   * On !linux, install mouse and kbd catchall snippets in the xorg.conf.d
     directory.  Fixes FTBFS on those archs.
+
+  [ Cyril Brulebois ]
+  * Cherry-pick “exa: handle pixmap create/destroy in lower layers” which
+    fixes server crashes when pixmaps are created in the course of
+    software fallbacks (Closes: #576816). Many thanks to Arthur Marsh for
+    the tests!
 
  -- Julien Cristau <jcristau@debian.org>  Sun, 18 Apr 2010 14:45:43 +0200
 

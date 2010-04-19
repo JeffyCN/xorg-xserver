@@ -1,0 +1,887 @@
+From 23636fb5f7b9a984d0b16a195ad448a96f2f22d3 Mon Sep 17 00:00:00 2001
+From: Cyril Brulebois <kibi@debian.org>
+Date: Sat, 17 Apr 2010 01:12:34 +0200
+Subject: [PATCH] exa: handle pixmap create/destroy in lower layers
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+- Pixmaps that are created during a fallback are automatically prepared access.
+- During the fallback accelerated ops are blocked to prevent new/scratch gc's
+  from triggering accelerated ops on mapped pixmaps.
+- A few cases of incorrect wrapping (on the top level pointer instead of
+  between damage and (w)fb) have been removed.
+
+Signed-off-by: Maarten Maathuis <madman2003@gmail.com>
+Acked-by: Michel Dänzer <michel@daenzer.net>
+Signed-off-by: Keith Packard <keithp@keithp.com>
+(cherry picked from commit 342f3689d17256c92cbfee079d24501d27aa1153)
+
+Conflicts:
+
+	exa/exa_mixed.c
+
+Debian bug#576816 <http://bugs.debian.org/576816>
+
+Tested-by: Arthur Marsh <arthur.marsh@internode.on.net>
+Signed-off-by: Cyril Brulebois <kibi@debian.org>
+---
+ exa/exa.c         |  145 ++++++++++++-----------------------------------------
+ exa/exa_accel.c   |   40 +++++++++++----
+ exa/exa_classic.c |    8 +++
+ exa/exa_driver.c  |    8 +++
+ exa/exa_mixed.c   |    8 +++
+ exa/exa_priv.h    |   17 +++++--
+ exa/exa_unaccel.c |   73 ++++++++++++++-------------
+ 7 files changed, 137 insertions(+), 162 deletions(-)
+
+diff --git a/exa/exa.c b/exa/exa.c
+index e264d44..b8f0419 100644
+--- a/exa/exa.c
++++ b/exa/exa.c
+@@ -480,57 +480,6 @@ const GCFuncs exaGCFuncs = {
+     exaCopyClip
+ };
+ 
+-/*
+- * This wrapper exists to allow fbValidateGC to work.
+- * Note that we no longer assume newly created pixmaps to be in normal ram.
+- * This assumption is certainly not garuanteed with driver allocated pixmaps.
+- */
+-static PixmapPtr
+-exaCreatePixmapWithPrepare(ScreenPtr pScreen, int w, int h, int depth,
+-		unsigned usage_hint)
+-{
+-    PixmapPtr pPixmap;
+-    ExaScreenPriv(pScreen);
+-
+-    /* This swaps between this function and the real upper layer function.
+-     * Normally this would swap to the fb layer pointer, this is a very special case.
+-     */
+-    swap(pExaScr, pScreen, CreatePixmap);
+-    pPixmap = pScreen->CreatePixmap(pScreen, w, h, depth, usage_hint);
+-    swap(pExaScr, pScreen, CreatePixmap);
+-
+-    if (!pPixmap)
+-	return NULL;
+-
+-    /* Note the usage of ExaDoPrepareAccess, this allowed because:
+-     * The pixmap is new, so not offscreen in the classic exa case.
+-     * For EXA_HANDLES_PIXMAPS the driver will handle whatever is needed.
+-     * We want to signal that the pixmaps will be used as destination.
+-     */
+-    ExaDoPrepareAccess(pPixmap, EXA_PREPARE_AUX_DEST);
+-
+-    return pPixmap;
+-}
+-
+-static Bool
+-exaDestroyPixmapWithFinish(PixmapPtr pPixmap)
+-{
+-    ScreenPtr pScreen = pPixmap->drawable.pScreen;
+-    ExaScreenPriv(pScreen);
+-    Bool ret;
+-
+-    exaFinishAccess(&pPixmap->drawable, EXA_PREPARE_AUX_DEST);
+-
+-    /* This swaps between this function and the real upper layer function.
+-     * Normally this would swap to the fb layer pointer, this is a very special case.
+-     */
+-    swap(pExaScr, pScreen, DestroyPixmap);
+-    ret = pScreen->DestroyPixmap(pPixmap);
+-    swap(pExaScr, pScreen, DestroyPixmap);
+-
+-    return ret;
+-}
+-
+ static void
+ exaValidateGC(GCPtr pGC,
+ 		unsigned long changes,
+@@ -542,20 +491,9 @@ exaValidateGC(GCPtr pGC,
+ 
+     ScreenPtr pScreen = pDrawable->pScreen;
+     ExaScreenPriv(pScreen);
+-    CreatePixmapProcPtr old_ptr = NULL;
+-    DestroyPixmapProcPtr old_ptr2 = NULL;
++    ExaGCPriv(pGC);
+     PixmapPtr pTile = NULL;
+-    EXA_GC_PROLOGUE(pGC);
+-
+-    /* save the "fb" pointer. */
+-    old_ptr = pExaScr->SavedCreatePixmap;
+-    /* create a new upper layer pointer. */
+-    wrap(pExaScr, pScreen, CreatePixmap, exaCreatePixmapWithPrepare);
+-
+-    /* save the "fb" pointer. */
+-    old_ptr2 = pExaScr->SavedDestroyPixmap;
+-    /* create a new upper layer pointer. */
+-    wrap(pExaScr, pScreen, DestroyPixmap, exaDestroyPixmapWithFinish);
++    Bool finish_current_tile = FALSE;
+ 
+     /* Either of these conditions is enough to trigger access to a tile pixmap. */
+     /* With pGC->tileIsPixel == 1, you run the risk of dereferencing an invalid tile pixmap pointer. */
+@@ -569,8 +507,10 @@ exaValidateGC(GCPtr pGC,
+ 	 */
+ 	if (pTile && pTile->drawable.depth != pDrawable->depth && !(changes & GCTile)) {
+ 	    PixmapPtr pRotatedTile = fbGetRotatedPixmap(pGC);
+-	    if (pRotatedTile->drawable.depth == pDrawable->depth)
++	    if (pRotatedTile && pRotatedTile->drawable.depth == pDrawable->depth)
+ 		pTile = pRotatedTile;
++	    else
++		finish_current_tile = TRUE; /* CreatePixmap will be called. */
+ 	}
+     }
+ 
+@@ -579,42 +519,39 @@ exaValidateGC(GCPtr pGC,
+     if (pTile)
+ 	exaPrepareAccess(&pTile->drawable, EXA_PREPARE_SRC);
+ 
++    /* Calls to Create/DestroyPixmap have to be identified as special. */
++    pExaScr->fallback_counter++;
++    swap(pExaGC, pGC, funcs);
+     (*pGC->funcs->ValidateGC)(pGC, changes, pDrawable);
++    swap(pExaGC, pGC, funcs);
++    pExaScr->fallback_counter--;
+ 
+     if (pTile)
+ 	exaFinishAccess(&pTile->drawable, EXA_PREPARE_SRC);
++    if (finish_current_tile && pGC->tile.pixmap)
++	exaFinishAccess(&pGC->tile.pixmap->drawable, EXA_PREPARE_AUX_DEST);
+     if (pGC->stipple)
+-        exaFinishAccess(&pGC->stipple->drawable, EXA_PREPARE_MASK);
+-
+-    /* switch back to the normal upper layer. */
+-    unwrap(pExaScr, pScreen, CreatePixmap);
+-    /* restore copy of fb layer pointer. */
+-    pExaScr->SavedCreatePixmap = old_ptr;
+-
+-    /* switch back to the normal upper layer. */
+-    unwrap(pExaScr, pScreen, DestroyPixmap);
+-    /* restore copy of fb layer pointer. */
+-    pExaScr->SavedDestroyPixmap = old_ptr2;
+-
+-    EXA_GC_EPILOGUE(pGC);
++	exaFinishAccess(&pGC->stipple->drawable, EXA_PREPARE_MASK);
+ }
+ 
+ /* Is exaPrepareAccessGC() needed? */
+ static void
+ exaDestroyGC(GCPtr pGC)
+ {
+-    EXA_GC_PROLOGUE (pGC);
++    ExaGCPriv(pGC);
++    swap(pExaGC, pGC, funcs);
+     (*pGC->funcs->DestroyGC)(pGC);
+-    EXA_GC_EPILOGUE (pGC);
++    swap(pExaGC, pGC, funcs);
+ }
+ 
+ static void
+ exaChangeGC (GCPtr pGC,
+ 		unsigned long mask)
+ {
+-    EXA_GC_PROLOGUE (pGC);
++    ExaGCPriv(pGC);
++    swap(pExaGC, pGC, funcs);
+     (*pGC->funcs->ChangeGC) (pGC, mask);
+-    EXA_GC_EPILOGUE (pGC);
++    swap(pExaGC, pGC, funcs);
+ }
+ 
+ static void
+@@ -622,9 +559,10 @@ exaCopyGC (GCPtr pGCSrc,
+ 	      unsigned long mask,
+ 	      GCPtr	 pGCDst)
+ {
+-    EXA_GC_PROLOGUE (pGCDst);
++    ExaGCPriv(pGCDst);
++    swap(pExaGC, pGCDst, funcs);
+     (*pGCDst->funcs->CopyGC) (pGCSrc, mask, pGCDst);
+-    EXA_GC_EPILOGUE (pGCDst);
++    swap(pExaGC, pGCDst, funcs);
+ }
+ 
+ static void
+@@ -633,25 +571,28 @@ exaChangeClip (GCPtr pGC,
+ 		pointer pvalue,
+ 		int nrects)
+ {
+-    EXA_GC_PROLOGUE (pGC);
++    ExaGCPriv(pGC);
++    swap(pExaGC, pGC, funcs);
+     (*pGC->funcs->ChangeClip) (pGC, type, pvalue, nrects);
+-    EXA_GC_EPILOGUE (pGC);
++    swap(pExaGC, pGC, funcs);
+ }
+ 
+ static void
+ exaCopyClip(GCPtr pGCDst, GCPtr pGCSrc)
+ {
+-    EXA_GC_PROLOGUE (pGCDst);
++    ExaGCPriv(pGCDst);
++    swap(pExaGC, pGCDst, funcs);
+     (*pGCDst->funcs->CopyClip)(pGCDst, pGCSrc);
+-    EXA_GC_EPILOGUE (pGCDst);
++    swap(pExaGC, pGCDst, funcs);
+ }
+ 
+ static void
+ exaDestroyClip(GCPtr pGC)
+ {
+-    EXA_GC_PROLOGUE (pGC);
++    ExaGCPriv(pGC);
++    swap(pExaGC, pGC, funcs);
+     (*pGC->funcs->DestroyClip)(pGC);
+-    EXA_GC_EPILOGUE (pGC);
++    swap(pExaGC, pGC, funcs);
+ }
+ 
+ /**
+@@ -682,18 +623,6 @@ exaChangeWindowAttributes(WindowPtr pWin, unsigned long mask)
+     Bool ret;
+     ScreenPtr pScreen = pWin->drawable.pScreen;
+     ExaScreenPriv(pScreen);
+-    CreatePixmapProcPtr old_ptr = NULL;
+-    DestroyPixmapProcPtr old_ptr2 = NULL;
+-
+-    /* save the "fb" pointer. */
+-    old_ptr = pExaScr->SavedCreatePixmap;
+-    /* create a new upper layer pointer. */
+-    wrap(pExaScr, pScreen, CreatePixmap, exaCreatePixmapWithPrepare);
+-
+-    /* save the "fb" pointer. */
+-    old_ptr2 = pExaScr->SavedDestroyPixmap;
+-    /* create a new upper layer pointer. */
+-    wrap(pExaScr, pScreen, DestroyPixmap, exaDestroyPixmapWithFinish);
+ 
+     if ((mask & CWBackPixmap) && pWin->backgroundState == BackgroundPixmap) 
+ 	exaPrepareAccess(&pWin->background.pixmap->drawable, EXA_PREPARE_SRC);
+@@ -701,25 +630,17 @@ exaChangeWindowAttributes(WindowPtr pWin, unsigned long mask)
+     if ((mask & CWBorderPixmap) && pWin->borderIsPixel == FALSE)
+ 	exaPrepareAccess(&pWin->border.pixmap->drawable, EXA_PREPARE_MASK);
+ 
++    pExaScr->fallback_counter++;
+     swap(pExaScr, pScreen, ChangeWindowAttributes);
+     ret = pScreen->ChangeWindowAttributes(pWin, mask);
+     swap(pExaScr, pScreen, ChangeWindowAttributes);
++    pExaScr->fallback_counter--;
+ 
+     if ((mask & CWBackPixmap) && pWin->backgroundState == BackgroundPixmap) 
+ 	exaFinishAccess(&pWin->background.pixmap->drawable, EXA_PREPARE_SRC);
+     if ((mask & CWBorderPixmap) && pWin->borderIsPixel == FALSE)
+ 	exaFinishAccess(&pWin->border.pixmap->drawable, EXA_PREPARE_MASK);
+ 
+-    /* switch back to the normal upper layer. */
+-    unwrap(pExaScr, pScreen, CreatePixmap);
+-    /* restore copy of fb layer pointer. */
+-    pExaScr->SavedCreatePixmap = old_ptr;
+-
+-    /* switch back to the normal upper layer. */
+-    unwrap(pExaScr, pScreen, DestroyPixmap);
+-    /* restore copy of fb layer pointer. */
+-    pExaScr->SavedDestroyPixmap = old_ptr2;
+-
+     return ret;
+ }
+ 
+diff --git a/exa/exa_accel.c b/exa/exa_accel.c
+index 7e2dd70..4f94ae8 100644
+--- a/exa/exa_accel.c
++++ b/exa/exa_accel.c
+@@ -51,7 +51,8 @@ exaFillSpans(DrawablePtr pDrawable, GCPtr pGC, int n,
+     int		    partX1, partX2;
+     int		    off_x, off_y;
+ 
+-    if (pExaScr->swappedOut ||
++    if (pExaScr->fallback_counter ||
++	pExaScr->swappedOut ||
+ 	pGC->fillStyle != FillSolid ||
+ 	pExaPixmap->accel_blocked)
+     {
+@@ -153,7 +154,7 @@ exaDoPutImage (DrawablePtr pDrawable, GCPtr pGC, int depth, int x, int y,
+     int bpp = pDrawable->bitsPerPixel;
+     Bool ret = TRUE;
+ 
+-    if (pExaPixmap->accel_blocked || !pExaScr->info->UploadToScreen)
++    if (pExaScr->fallback_counter || pExaPixmap->accel_blocked || !pExaScr->info->UploadToScreen)
+ 	return FALSE;
+ 
+     /* Don't bother with under 8bpp, XYPixmaps. */
+@@ -568,7 +569,8 @@ exaCopyNtoN (DrawablePtr    pSrcDrawable,
+ {
+     ExaScreenPriv(pDstDrawable->pScreen);
+ 
+-    if (pExaScr->fallback_flags & EXA_FALLBACK_COPYWINDOW)
++    if (pExaScr->fallback_counter ||
++	    (pExaScr->fallback_flags & EXA_FALLBACK_COPYWINDOW))
+ 	return;
+ 
+     if (exaHWCopyNtoN(pSrcDrawable, pDstDrawable, pGC, pbox, nbox, dx, dy, reverse, upsidedown))
+@@ -590,7 +592,7 @@ exaCopyArea(DrawablePtr pSrcDrawable, DrawablePtr pDstDrawable, GCPtr pGC,
+ {
+     ExaScreenPriv (pDstDrawable->pScreen);
+ 
+-    if (pExaScr->swappedOut) {
++    if (pExaScr->fallback_counter || pExaScr->swappedOut) {
+         return  ExaCheckCopyArea(pSrcDrawable, pDstDrawable, pGC,
+                                  srcx, srcy, width, height, dstx, dsty);
+     }
+@@ -604,13 +606,14 @@ static void
+ exaPolyPoint(DrawablePtr pDrawable, GCPtr pGC, int mode, int npt,
+ 	     DDXPointPtr ppt)
+ {
++    ExaScreenPriv (pDrawable->pScreen);
+     int i;
+     xRectangle *prect;
+ 
+     /* If we can't reuse the current GC as is, don't bother accelerating the
+      * points.
+      */
+-    if (pGC->fillStyle != FillSolid) {
++    if (pExaScr->fallback_counter || pGC->fillStyle != FillSolid) {
+ 	ExaCheckPolyPoint(pDrawable, pGC, mode, npt, ppt);
+ 	return;
+     }
+@@ -639,10 +642,16 @@ static void
+ exaPolylines(DrawablePtr pDrawable, GCPtr pGC, int mode, int npt,
+ 	     DDXPointPtr ppt)
+ {
++    ExaScreenPriv (pDrawable->pScreen);
+     xRectangle *prect;
+     int x1, x2, y1, y2;
+     int i;
+ 
++    if (pExaScr->fallback_counter) {
++	ExaCheckPolylines(pDrawable, pGC, mode, npt, ppt);
++	return;
++    }
++
+     /* Don't try to do wide lines or non-solid fill style. */
+     if (pGC->lineWidth != 0 || pGC->lineStyle != LineSolid ||
+ 	pGC->fillStyle != FillSolid) {
+@@ -700,12 +709,13 @@ static void
+ exaPolySegment (DrawablePtr pDrawable, GCPtr pGC, int nseg,
+ 		xSegment *pSeg)
+ {
++    ExaScreenPriv (pDrawable->pScreen);
+     xRectangle *prect;
+     int i;
+ 
+     /* Don't try to do wide lines or non-solid fill style. */
+-    if (pGC->lineWidth != 0 || pGC->lineStyle != LineSolid ||
+-	pGC->fillStyle != FillSolid)
++    if (pExaScr->fallback_counter || pGC->lineWidth != 0 ||
++	pGC->lineStyle != LineSolid || pGC->fillStyle != FillSolid)
+     {
+ 	ExaCheckPolySegment(pDrawable, pGC, nseg, pSeg);
+ 	return;
+@@ -782,7 +792,8 @@ exaPolyFillRect(DrawablePtr pDrawable,
+ 
+     exaGetDrawableDeltas(pDrawable, pPixmap, &xoff, &yoff);
+ 
+-    if (pExaScr->swappedOut || pExaPixmap->accel_blocked)
++    if (pExaScr->fallback_counter || pExaScr->swappedOut ||
++	    pExaPixmap->accel_blocked)
+     {
+ 	goto fallback;
+     }
+@@ -956,12 +967,18 @@ exaCopyWindow(WindowPtr pWin, DDXPointRec ptOldOrg, RegionPtr prgnSrc)
+ 			  -pPixmap->screen_x, -pPixmap->screen_y);
+ #endif
+ 
++    if (pExaScr->fallback_counter) {
++	pExaScr->fallback_flags |= EXA_FALLBACK_COPYWINDOW;
++	goto fallback;
++    }
++
+     pExaScr->fallback_flags |= EXA_ACCEL_COPYWINDOW;
+     miCopyRegion (&pPixmap->drawable, &pPixmap->drawable,
+ 		  NULL,
+ 		  &rgnDst, dx, dy, exaCopyNtoN, 0, NULL);
+     pExaScr->fallback_flags &= ~EXA_ACCEL_COPYWINDOW;
+ 
++fallback:
+     REGION_UNINIT(pWin->drawable.pScreen, &rgnDst);
+ 
+     if (pExaScr->fallback_flags & EXA_FALLBACK_COPYWINDOW) {
+@@ -984,7 +1001,7 @@ exaFillRegionSolid (DrawablePtr	pDrawable, RegionPtr pRegion, Pixel pixel,
+     exaGetDrawableDeltas(pDrawable, pPixmap, &xoff, &yoff);
+     REGION_TRANSLATE(pScreen, pRegion, xoff, yoff);
+ 
+-    if (pExaPixmap->accel_blocked)
++    if (pExaScr->fallback_counter || pExaPixmap->accel_blocked)
+ 	goto out;
+ 
+     if (pExaScr->do_migration) {
+@@ -1080,7 +1097,8 @@ exaFillRegionTiled (DrawablePtr pDrawable, RegionPtr pRegion, PixmapPtr pTile,
+     pPixmap = exaGetDrawablePixmap (pDrawable);
+     pExaPixmap = ExaGetPixmapPriv (pPixmap);
+ 
+-    if (pExaPixmap->accel_blocked || pTileExaPixmap->accel_blocked)
++    if (pExaScr->fallback_counter || pExaPixmap->accel_blocked ||
++	    pTileExaPixmap->accel_blocked)
+ 	return FALSE;
+ 
+     if (pExaScr->do_migration) {
+@@ -1238,7 +1256,7 @@ exaGetImage (DrawablePtr pDrawable, int x, int y, int w, int h,
+     int xoff, yoff;
+     Bool ok;
+ 
+-    if (pExaScr->swappedOut)
++    if (pExaScr->fallback_counter || pExaScr->swappedOut)
+ 	goto fallback;
+ 
+     exaGetDrawableDeltas (pDrawable, pPix, &xoff, &yoff);
+diff --git a/exa/exa_classic.c b/exa/exa_classic.c
+index 1eff570..12f3987 100644
+--- a/exa/exa_classic.c
++++ b/exa/exa_classic.c
+@@ -137,6 +137,10 @@ exaCreatePixmap_classic(ScreenPtr pScreen, int w, int h, int depth,
+     exaSetAccelBlock(pExaScr, pExaPixmap,
+                      w, h, bpp);
+ 
++    /* During a fallback we must prepare access. */
++    if (pExaScr->fallback_counter)
++	exaPrepareAccess(&pPixmap->drawable, EXA_PREPARE_AUX_DEST);
++
+     return pPixmap;
+ }
+ 
+@@ -216,6 +220,10 @@ exaDestroyPixmap_classic (PixmapPtr pPixmap)
+     {
+ 	ExaPixmapPriv (pPixmap);
+ 
++	/* During a fallback we must finish access, but we don't know the index. */
++	if (pExaScr->fallback_counter)
++	    exaFinishAccess(&pPixmap->drawable, -1);
++
+ 	if (pExaPixmap->area)
+ 	{
+ 	    DBG_PIXMAP(("-- 0x%p (0x%x) (%dx%d)\n",
+diff --git a/exa/exa_driver.c b/exa/exa_driver.c
+index a9165a1..f55c300 100644
+--- a/exa/exa_driver.c
++++ b/exa/exa_driver.c
+@@ -115,6 +115,10 @@ exaCreatePixmap_driver(ScreenPtr pScreen, int w, int h, int depth,
+     exaSetAccelBlock(pExaScr, pExaPixmap,
+                      w, h, bpp);
+ 
++    /* During a fallback we must prepare access. */
++    if (pExaScr->fallback_counter)
++	exaPrepareAccess(&pPixmap->drawable, EXA_PREPARE_AUX_DEST);
++
+     return pPixmap;
+ }
+ 
+@@ -187,6 +191,10 @@ exaDestroyPixmap_driver (PixmapPtr pPixmap)
+     {
+ 	ExaPixmapPriv (pPixmap);
+ 
++	/* During a fallback we must finish access, but we don't know the index. */
++	if (pExaScr->fallback_counter)
++	    exaFinishAccess(&pPixmap->drawable, -1);
++
+ 	if (pExaPixmap->driverPriv)
+ 	    pExaScr->info->DestroyPixmap(pScreen, pExaPixmap->driverPriv);
+ 	pExaPixmap->driverPriv = NULL;
+diff --git a/exa/exa_mixed.c b/exa/exa_mixed.c
+index ff02f27..47adad7 100644
+--- a/exa/exa_mixed.c
++++ b/exa/exa_mixed.c
+@@ -97,6 +97,10 @@ exaCreatePixmap_mixed(ScreenPtr pScreen, int w, int h, int depth,
+     } else
+ 	pExaPixmap->offscreen = FALSE;
+ 
++    /* During a fallback we must prepare access. */
++    if (pExaScr->fallback_counter)
++	exaPrepareAccess(&pPixmap->drawable, EXA_PREPARE_AUX_DEST);
++
+     return pPixmap;
+ }
+ 
+@@ -188,6 +192,10 @@ exaDestroyPixmap_mixed(PixmapPtr pPixmap)
+     {
+ 	ExaPixmapPriv (pPixmap);
+ 
++	/* During a fallback we must finish access, but we don't know the index. */
++	if (pExaScr->fallback_counter)
++	    exaFinishAccess(&pPixmap->drawable, -1);
++
+ 	if (pExaPixmap->driverPriv)
+ 	    pExaScr->info->DestroyPixmap(pScreen, pExaPixmap->driverPriv);
+ 	pExaPixmap->driverPriv = NULL;
+diff --git a/exa/exa_priv.h b/exa/exa_priv.h
+index 1aec8e9..7d035d4 100644
+--- a/exa/exa_priv.h
++++ b/exa/exa_priv.h
+@@ -197,6 +197,7 @@ typedef struct {
+ 
+     /* Holds information on fallbacks that cannot be relayed otherwise. */
+     unsigned int fallback_flags;
++    unsigned int fallback_counter;
+ 
+     ExaGlyphCacheRec             glyphCaches[EXA_NUM_GLYPH_CACHES];
+ } ExaScreenPrivRec, *ExaScreenPrivPtr;
+@@ -240,13 +241,21 @@ extern DevPrivateKey exaGCPrivateKey;
+     real->mem = tmp; \
+ }
+ 
+-#define EXA_GC_PROLOGUE(_gc_) \
++#define EXA_PRE_FALLBACK(_screen_) \
++    ExaScreenPriv(_screen_); \
++    pExaScr->fallback_counter++;
++
++#define EXA_POST_FALLBACK(_screen_) \
++    pExaScr->fallback_counter--;
++
++#define EXA_PRE_FALLBACK_GC(_gc_) \
++    ExaScreenPriv(_gc_->pScreen); \
+     ExaGCPriv(_gc_); \
+-    swap(pExaGC, _gc_, funcs); \
++    pExaScr->fallback_counter++; \
+     swap(pExaGC, _gc_, ops);
+ 
+-#define EXA_GC_EPILOGUE(_gc_) \
+-    swap(pExaGC, _gc_, funcs); \
++#define EXA_POST_FALLBACK_GC(_gc_) \
++    pExaScr->fallback_counter--; \
+     swap(pExaGC, _gc_, ops);
+ 
+ /** Align an offset to an arbitrary alignment */
+diff --git a/exa/exa_unaccel.c b/exa/exa_unaccel.c
+index c8f0172..9bc765a 100644
+--- a/exa/exa_unaccel.c
++++ b/exa/exa_unaccel.c
+@@ -74,26 +74,26 @@ void
+ ExaCheckFillSpans (DrawablePtr pDrawable, GCPtr pGC, int nspans,
+ 		   DDXPointPtr ppt, int *pwidth, int fSorted)
+ {
+-    EXA_GC_PROLOGUE(pGC);
++    EXA_PRE_FALLBACK_GC(pGC);
+     EXA_FALLBACK(("to %p (%c)\n", pDrawable, exaDrawableLocation(pDrawable)));
+     exaPrepareAccess (pDrawable, EXA_PREPARE_DEST);
+     exaPrepareAccessGC (pGC);
+     pGC->ops->FillSpans (pDrawable, pGC, nspans, ppt, pwidth, fSorted);
+     exaFinishAccessGC (pGC);
+     exaFinishAccess (pDrawable, EXA_PREPARE_DEST);
+-    EXA_GC_EPILOGUE(pGC);
++    EXA_POST_FALLBACK_GC(pGC);
+ }
+ 
+ void
+ ExaCheckSetSpans (DrawablePtr pDrawable, GCPtr pGC, char *psrc,
+ 		 DDXPointPtr ppt, int *pwidth, int nspans, int fSorted)
+ {
+-    EXA_GC_PROLOGUE(pGC);
++    EXA_PRE_FALLBACK_GC(pGC);
+     EXA_FALLBACK(("to %p (%c)\n", pDrawable, exaDrawableLocation(pDrawable)));
+     exaPrepareAccess (pDrawable, EXA_PREPARE_DEST);
+     pGC->ops->SetSpans (pDrawable, pGC, psrc, ppt, pwidth, nspans, fSorted);
+     exaFinishAccess (pDrawable, EXA_PREPARE_DEST);
+-    EXA_GC_EPILOGUE(pGC);
++    EXA_POST_FALLBACK_GC(pGC);
+ }
+ 
+ void
+@@ -103,9 +103,8 @@ ExaCheckPutImage (DrawablePtr pDrawable, GCPtr pGC, int depth,
+ {
+     PixmapPtr pPixmap = exaGetDrawablePixmap(pDrawable);
+     ExaPixmapPriv(pPixmap);
+-    ExaScreenPriv(pDrawable->pScreen);
+ 
+-    EXA_GC_PROLOGUE(pGC);
++    EXA_PRE_FALLBACK_GC(pGC);
+     EXA_FALLBACK(("to %p (%c)\n", pDrawable, exaDrawableLocation(pDrawable)));
+     if (!pExaScr->prepare_access_reg || !pExaPixmap->pDamage ||
+ 	exaGCReadsDestination(pDrawable, pGC->planemask, pGC->fillStyle,
+@@ -116,7 +115,7 @@ ExaCheckPutImage (DrawablePtr pDrawable, GCPtr pGC, int depth,
+ 				    DamagePendingRegion(pExaPixmap->pDamage));
+     pGC->ops->PutImage (pDrawable, pGC, depth, x, y, w, h, leftPad, format, bits);
+     exaFinishAccess (pDrawable, EXA_PREPARE_DEST);
+-    EXA_GC_EPILOGUE(pGC);
++    EXA_POST_FALLBACK_GC(pGC);
+ }
+ 
+ void
+@@ -124,7 +123,7 @@ ExaCheckCopyNtoN (DrawablePtr pSrc, DrawablePtr pDst,  GCPtr pGC,
+ 	     BoxPtr	pbox, int nbox, int dx, int dy, Bool	reverse, 
+ 	     Bool upsidedown, Pixel bitplane, void *closure)
+ {
+-    EXA_GC_PROLOGUE(pGC);
++    EXA_PRE_FALLBACK_GC(pGC);
+     EXA_FALLBACK(("from %p to %p (%c,%c)\n", pSrc, pDst,
+ 		  exaDrawableLocation(pSrc), exaDrawableLocation(pDst)));
+     exaPrepareAccess (pDst, EXA_PREPARE_DEST);
+@@ -137,7 +136,7 @@ ExaCheckCopyNtoN (DrawablePtr pSrc, DrawablePtr pDst,  GCPtr pGC,
+     }
+     exaFinishAccess (pSrc, EXA_PREPARE_SRC);
+     exaFinishAccess (pDst, EXA_PREPARE_DEST);
+-    EXA_GC_EPILOGUE(pGC);
++    EXA_POST_FALLBACK_GC(pGC);
+ }
+ 
+ RegionPtr
+@@ -146,7 +145,7 @@ ExaCheckCopyArea (DrawablePtr pSrc, DrawablePtr pDst, GCPtr pGC,
+ {
+     RegionPtr ret;
+ 
+-    EXA_GC_PROLOGUE(pGC);
++    EXA_PRE_FALLBACK_GC(pGC);
+     EXA_FALLBACK(("from %p to %p (%c,%c)\n", pSrc, pDst,
+ 		  exaDrawableLocation(pSrc), exaDrawableLocation(pDst)));
+     exaPrepareAccess (pDst, EXA_PREPARE_DEST);
+@@ -154,7 +153,7 @@ ExaCheckCopyArea (DrawablePtr pSrc, DrawablePtr pDst, GCPtr pGC,
+     ret = pGC->ops->CopyArea (pSrc, pDst, pGC, srcx, srcy, w, h, dstx, dsty);
+     exaFinishAccess (pSrc, EXA_PREPARE_SRC);
+     exaFinishAccess (pDst, EXA_PREPARE_DEST);
+-    EXA_GC_EPILOGUE(pGC);
++    EXA_POST_FALLBACK_GC(pGC);
+ 
+     return ret;
+ }
+@@ -166,7 +165,7 @@ ExaCheckCopyPlane (DrawablePtr pSrc, DrawablePtr pDst, GCPtr pGC,
+ {
+     RegionPtr ret;
+ 
+-    EXA_GC_PROLOGUE(pGC);
++    EXA_PRE_FALLBACK_GC(pGC);
+     EXA_FALLBACK(("from %p to %p (%c,%c)\n", pSrc, pDst,
+ 		  exaDrawableLocation(pSrc), exaDrawableLocation(pDst)));
+     exaPrepareAccess (pDst, EXA_PREPARE_DEST);
+@@ -175,7 +174,7 @@ ExaCheckCopyPlane (DrawablePtr pSrc, DrawablePtr pDst, GCPtr pGC,
+ 		       bitPlane);
+     exaFinishAccess (pSrc, EXA_PREPARE_SRC);
+     exaFinishAccess (pDst, EXA_PREPARE_DEST);
+-    EXA_GC_EPILOGUE(pGC);
++    EXA_POST_FALLBACK_GC(pGC);
+ 
+     return ret;
+ }
+@@ -184,19 +183,19 @@ void
+ ExaCheckPolyPoint (DrawablePtr pDrawable, GCPtr pGC, int mode, int npt,
+ 		  DDXPointPtr pptInit)
+ {
+-    EXA_GC_PROLOGUE(pGC);
++    EXA_PRE_FALLBACK_GC(pGC);
+     EXA_FALLBACK(("to %p (%c)\n", pDrawable, exaDrawableLocation(pDrawable)));
+     exaPrepareAccess (pDrawable, EXA_PREPARE_DEST);
+     pGC->ops->PolyPoint (pDrawable, pGC, mode, npt, pptInit);
+     exaFinishAccess (pDrawable, EXA_PREPARE_DEST);
+-    EXA_GC_EPILOGUE(pGC);
++    EXA_POST_FALLBACK_GC(pGC);
+ }
+ 
+ void
+ ExaCheckPolylines (DrawablePtr pDrawable, GCPtr pGC,
+ 		  int mode, int npt, DDXPointPtr ppt)
+ {
+-    EXA_GC_PROLOGUE(pGC);
++    EXA_PRE_FALLBACK_GC(pGC);
+     EXA_FALLBACK(("to %p (%c), width %d, mode %d, count %d\n",
+ 		  pDrawable, exaDrawableLocation(pDrawable),
+ 		  pGC->lineWidth, mode, npt));
+@@ -206,14 +205,14 @@ ExaCheckPolylines (DrawablePtr pDrawable, GCPtr pGC,
+     pGC->ops->Polylines (pDrawable, pGC, mode, npt, ppt);
+     exaFinishAccessGC (pGC);
+     exaFinishAccess (pDrawable, EXA_PREPARE_DEST);
+-    EXA_GC_EPILOGUE(pGC);
++    EXA_POST_FALLBACK_GC(pGC);
+ }
+ 
+ void
+ ExaCheckPolySegment (DrawablePtr pDrawable, GCPtr pGC,
+ 		    int nsegInit, xSegment *pSegInit)
+ {
+-    EXA_GC_PROLOGUE(pGC);
++    EXA_PRE_FALLBACK_GC(pGC);
+     EXA_FALLBACK(("to %p (%c) width %d, count %d\n", pDrawable,
+ 		  exaDrawableLocation(pDrawable), pGC->lineWidth, nsegInit));
+ 
+@@ -222,14 +221,14 @@ ExaCheckPolySegment (DrawablePtr pDrawable, GCPtr pGC,
+     pGC->ops->PolySegment (pDrawable, pGC, nsegInit, pSegInit);
+     exaFinishAccessGC (pGC);
+     exaFinishAccess (pDrawable, EXA_PREPARE_DEST);
+-    EXA_GC_EPILOGUE(pGC);
++    EXA_POST_FALLBACK_GC(pGC);
+ }
+ 
+ void
+ ExaCheckPolyArc (DrawablePtr pDrawable, GCPtr pGC,
+ 		int narcs, xArc *pArcs)
+ {
+-    EXA_GC_PROLOGUE(pGC);
++    EXA_PRE_FALLBACK_GC(pGC);
+     EXA_FALLBACK(("to %p (%c)\n", pDrawable, exaDrawableLocation(pDrawable)));
+ 
+     exaPrepareAccess (pDrawable, EXA_PREPARE_DEST);
+@@ -237,14 +236,14 @@ ExaCheckPolyArc (DrawablePtr pDrawable, GCPtr pGC,
+     pGC->ops->PolyArc (pDrawable, pGC, narcs, pArcs);
+     exaFinishAccessGC (pGC);
+     exaFinishAccess (pDrawable, EXA_PREPARE_DEST);
+-    EXA_GC_EPILOGUE(pGC);
++    EXA_POST_FALLBACK_GC(pGC);
+ }
+ 
+ void
+ ExaCheckPolyFillRect (DrawablePtr pDrawable, GCPtr pGC,
+ 		     int nrect, xRectangle *prect)
+ {
+-    EXA_GC_PROLOGUE(pGC);
++    EXA_PRE_FALLBACK_GC(pGC);
+     EXA_FALLBACK(("to %p (%c)\n", pDrawable, exaDrawableLocation(pDrawable)));
+ 
+     exaPrepareAccess (pDrawable, EXA_PREPARE_DEST);
+@@ -252,7 +251,7 @@ ExaCheckPolyFillRect (DrawablePtr pDrawable, GCPtr pGC,
+     pGC->ops->PolyFillRect (pDrawable, pGC, nrect, prect);
+     exaFinishAccessGC (pGC);
+     exaFinishAccess (pDrawable, EXA_PREPARE_DEST);
+-    EXA_GC_EPILOGUE(pGC);
++    EXA_POST_FALLBACK_GC(pGC);
+ }
+ 
+ void
+@@ -260,7 +259,7 @@ ExaCheckImageGlyphBlt (DrawablePtr pDrawable, GCPtr pGC,
+ 		      int x, int y, unsigned int nglyph,
+ 		      CharInfoPtr *ppci, pointer pglyphBase)
+ {
+-    EXA_GC_PROLOGUE(pGC);
++    EXA_PRE_FALLBACK_GC(pGC);
+     EXA_FALLBACK(("to %p (%c)\n", pDrawable,
+ 		  exaDrawableLocation(pDrawable)));
+     exaPrepareAccess (pDrawable, EXA_PREPARE_DEST);
+@@ -268,7 +267,7 @@ ExaCheckImageGlyphBlt (DrawablePtr pDrawable, GCPtr pGC,
+     pGC->ops->ImageGlyphBlt (pDrawable, pGC, x, y, nglyph, ppci, pglyphBase);
+     exaFinishAccessGC (pGC);
+     exaFinishAccess (pDrawable, EXA_PREPARE_DEST);
+-    EXA_GC_EPILOGUE(pGC);
++    EXA_POST_FALLBACK_GC(pGC);
+ }
+ 
+ void
+@@ -276,7 +275,7 @@ ExaCheckPolyGlyphBlt (DrawablePtr pDrawable, GCPtr pGC,
+ 		     int x, int y, unsigned int nglyph,
+ 		     CharInfoPtr *ppci, pointer pglyphBase)
+ {
+-    EXA_GC_PROLOGUE(pGC);
++    EXA_PRE_FALLBACK_GC(pGC);
+     EXA_FALLBACK(("to %p (%c), style %d alu %d\n", pDrawable,
+ 		  exaDrawableLocation(pDrawable), pGC->fillStyle, pGC->alu));
+     exaPrepareAccess (pDrawable, EXA_PREPARE_DEST);
+@@ -284,7 +283,7 @@ ExaCheckPolyGlyphBlt (DrawablePtr pDrawable, GCPtr pGC,
+     pGC->ops->PolyGlyphBlt (pDrawable, pGC, x, y, nglyph, ppci, pglyphBase);
+     exaFinishAccessGC (pGC);
+     exaFinishAccess (pDrawable, EXA_PREPARE_DEST);
+-    EXA_GC_EPILOGUE(pGC);
++    EXA_POST_FALLBACK_GC(pGC);
+ }
+ 
+ void
+@@ -292,7 +291,7 @@ ExaCheckPushPixels (GCPtr pGC, PixmapPtr pBitmap,
+ 		   DrawablePtr pDrawable,
+ 		   int w, int h, int x, int y)
+ {
+-    EXA_GC_PROLOGUE(pGC);
++    EXA_PRE_FALLBACK_GC(pGC);
+     EXA_FALLBACK(("from %p to %p (%c,%c)\n", pBitmap, pDrawable,
+ 		  exaDrawableLocation(&pBitmap->drawable),
+ 		  exaDrawableLocation(pDrawable)));
+@@ -303,7 +302,7 @@ ExaCheckPushPixels (GCPtr pGC, PixmapPtr pBitmap,
+     exaFinishAccessGC (pGC);
+     exaFinishAccess (&pBitmap->drawable, EXA_PREPARE_SRC);
+     exaFinishAccess (pDrawable, EXA_PREPARE_DEST);
+-    EXA_GC_EPILOGUE(pGC);
++    EXA_POST_FALLBACK_GC(pGC);
+ }
+ 
+ void
+@@ -311,7 +310,7 @@ ExaCheckCopyWindow(WindowPtr pWin, DDXPointRec ptOldOrg, RegionPtr prgnSrc)
+ {
+     DrawablePtr pDrawable = &pWin->drawable;
+     ScreenPtr pScreen = pDrawable->pScreen;
+-    ExaScreenPriv(pScreen);
++    EXA_PRE_FALLBACK(pScreen);
+     EXA_FALLBACK(("from %p\n", pWin));
+ 
+     /* being both src and dest, src is safest. */
+@@ -320,6 +319,7 @@ ExaCheckCopyWindow(WindowPtr pWin, DDXPointRec ptOldOrg, RegionPtr prgnSrc)
+     pScreen->CopyWindow (pWin, ptOldOrg, prgnSrc);
+     swap(pExaScr, pScreen, CopyWindow);
+     exaFinishAccess (pDrawable, EXA_PREPARE_SRC);
++    EXA_POST_FALLBACK(pScreen);
+ }
+ 
+ void
+@@ -328,8 +328,7 @@ ExaCheckGetImage(DrawablePtr pDrawable, int x, int y, int w, int h,
+ {
+     ScreenPtr pScreen = pDrawable->pScreen;
+     PixmapPtr pPix = exaGetDrawablePixmap (pDrawable);
+-    ExaScreenPriv(pScreen);
+-
++    EXA_PRE_FALLBACK(pScreen);
+     EXA_FALLBACK(("from %p (%c)\n", pDrawable,
+ 		  exaDrawableLocation(pDrawable)));
+ 
+@@ -355,6 +354,7 @@ ExaCheckGetImage(DrawablePtr pDrawable, int x, int y, int w, int h,
+     pScreen->GetImage (pDrawable, x, y, w, h, format, planeMask, d);
+     swap(pExaScr, pScreen, GetImage);
+     exaFinishAccess (pDrawable, EXA_PREPARE_SRC);
++    EXA_POST_FALLBACK(pScreen);
+ }
+ 
+ void
+@@ -366,14 +366,15 @@ ExaCheckGetSpans (DrawablePtr pDrawable,
+ 		 char *pdstStart)
+ {
+     ScreenPtr pScreen = pDrawable->pScreen;
+-    ExaScreenPriv(pScreen);
+ 
++    EXA_PRE_FALLBACK(pScreen);
+     EXA_FALLBACK(("from %p (%c)\n", pDrawable, exaDrawableLocation(pDrawable)));
+     exaPrepareAccess (pDrawable, EXA_PREPARE_SRC);
+     swap(pExaScr, pScreen, GetSpans);
+     pScreen->GetSpans (pDrawable, wMax, ppt, pwidth, nspans, pdstStart);
+     swap(pExaScr, pScreen, GetSpans);
+     exaFinishAccess (pDrawable, EXA_PREPARE_SRC);
++    EXA_POST_FALLBACK(pScreen);
+ }
+ 
+ void
+@@ -394,9 +395,9 @@ ExaCheckComposite (CARD8      op,
+ #ifdef RENDER
+     PictureScreenPtr	ps = GetPictureScreen(pScreen);
+ #endif /* RENDER */
+-    ExaScreenPriv(pScreen);
+     RegionRec region;
+     int xoff, yoff;
++    EXA_PRE_FALLBACK(pScreen);
+ 
+     REGION_NULL(pScreen, &region);
+ 
+@@ -471,6 +472,7 @@ skip:
+ 	exaFinishAccess(pMask->alphaMap->pDrawable, EXA_PREPARE_AUX_MASK);
+ 
+     REGION_UNINIT(pScreen, &region);
++    EXA_POST_FALLBACK(pScreen);
+ }
+ 
+ void
+@@ -484,7 +486,7 @@ ExaCheckAddTraps (PicturePtr	pPicture,
+ #ifdef RENDER
+     PictureScreenPtr	ps = GetPictureScreen(pScreen);
+ #endif /* RENDER */
+-    ExaScreenPriv(pScreen);
++    EXA_PRE_FALLBACK(pScreen);
+ 
+     EXA_FALLBACK(("to pict %p (%c)\n",
+ 		  exaDrawableLocation(pPicture->pDrawable)));
+@@ -495,6 +497,7 @@ ExaCheckAddTraps (PicturePtr	pPicture,
+     swap(pExaScr, ps, AddTraps);
+ #endif /* RENDER */
+     exaFinishAccess(pPicture->pDrawable, EXA_PREPARE_DEST);
++    EXA_POST_FALLBACK(pScreen);
+ }
+ 
+ /**
+-- 
+1.7.0.4
+
