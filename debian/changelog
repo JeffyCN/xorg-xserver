@@ -1,3 +1,9 @@
+xorg-server (2:1.7.6.901-4) UNRELEASED; urgency=low
+
+  * Update patch 17; Add missing __datadir__ to cpprules.in.
+
+ -- Timo Aaltonen <tjaalton@ubuntu.com>  Tue, 20 Apr 2010 17:46:32 +0300
+
 xorg-server (2:1.7.6.901-3) unstable; urgency=low
 
   [ Julien Cristau ]

@@ -1,5 +1,6 @@
 Merged patches:
 
+7962c8f78964d460c76f76dda2795b971a8c2a94
 eb07b8606f9a1349baf8114bb36dc2712e5d3419
 a4516965de447332794ee0afb9503c351fff6fe8
 59f96734633fce3c2bee62bce860aed33033ce3e
@@ -220,11 +221,12 @@ Index: xorg-server/cpprules.in
 ===================================================================
 --- xorg-server.orig/cpprules.in
 +++ xorg-server/cpprules.in
-@@ -36,6 +36,7 @@
+@@ -36,6 +36,8 @@
  	-D__adminmansuffix__=$(ADMIN_MAN_SUFFIX) \
  	-D__mandir__=$(mandir) \
  	-D__projectroot__=$(prefix) \
 +	-D__sysconfdir__=$(sysconfdir) \
++	-D__datadir__=$(datadir) \
  	-D__xconfigfile__=$(__XCONFIGFILE__) \
  	-D__xconfigdir__=$(__XCONFIGDIR__) \
  	-D__xkbdir__=$(XKB_BASE_DIRECTORY) \
