@@ -2,9 +2,6 @@
 ## Ubuntu patches start with 100.
 001_fedora_extramodes.patch
 02_Add-libgcrypt-and-libnettle-as-options-for-sha1.diff
-# 03 and 04 are backports from git master
-03_fedora_glx_versioning.diff
-04_fedora_glx14-swrast.diff
 05_only_call_gamma_set_if_nonnull.diff
 06_dont_trap_access_to_timer_and_keyboard.diff
 07-xfree86-fix-build-with-xv-disabled.diff
