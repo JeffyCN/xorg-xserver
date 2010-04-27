@@ -92,10 +92,7 @@ Depends:
  ${misc:Depends},
 Recommends: libgl1-mesa-dri (>= 7.1~rc1)
 Suggests: xfonts-100dpi | xfonts-75dpi, xfonts-scalable
-Conflicts:
- xserver-xorg (<< 6.8.2-38),
- xserver-xfree86 (<< 1:7.0.0),
- xserver-common (<< 7),
+Breaks:
  xserver-xorg-video,
  xserver-xorg-video-1.0,
  xserver-xorg-video-1.9,
@@ -107,16 +104,11 @@ Conflicts:
  xserver-xorg-input-2.1,
  xserver-xorg-input-4,
  xserver-xorg-input-wacom (<< 0.7.8),
-Breaks:
  xserver-xorg-input-joystick (<= 1:1.5.0-3),
  xserver-xorg-input-synaptics (<= 1.2.2-1),
  xserver-xorg-input-tslib (<= 0.0.6-3),
  xserver-xorg-input-vmmouse (<= 1:12.6.5-4),
  xserver-xorg-input-wacom (<= 0.10.5+20100415-1),
-Replaces:
- xserver-xorg (<< 6.8.2-38),
- xserver-xfree86 (<< 1:7.0.0),
- xserver-common (<< 7)
 Provides:
  xserver,
  ${videoabi},
