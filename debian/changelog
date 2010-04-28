@@ -15,6 +15,7 @@ xorg-server (2:1.7.6.901-4) UNRELEASED; urgency=low
     #567677).
   * Change driver ABI Conflicts to Breaks.  Drop old Conflicts/Replaces on
     pre-modular xserver packages.
+  * Unset PRERELEASE to avoid the prerelease warning in the log.
 
  -- Timo Aaltonen <tjaalton@ubuntu.com>  Tue, 20 Apr 2010 17:46:32 +0300
 
