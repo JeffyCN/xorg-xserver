@@ -1,3 +1,300 @@
+commit 2c94da4e22520f4a3e783db06b73251131382868
+Author: Michel Dänzer <daenzer@vmware.com>
+Date:   Thu Apr 22 14:16:59 2010 +0200
+
+    EXA: Check sys_ptr isn't NULL before passing it to the UploadToScreen hook.
+    
+    Fixes https://bugs.freedesktop.org/show_bug.cgi?id=27380 .
+    
+    Signed-off-by: Michel Dänzer <daenzer@vmware.com>
+    Reviewed-by: Alex Deucher <alexdeucher@gmail.com>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+    (cherry picked from commit 7b6517526631a65891b806bca30be8f49955d0a8)
+
+commit 7815b02e8d9636b6abbe1f7cb555a1069db2d59f
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Wed Apr 21 11:47:24 2010 +1000
+
+    Revert "mi: don't thrash resources when displaying the software cursor across screens"
+    
+    This commit leads to a segfault on the very first XTS test case.
+    
+    Backtrace:
+    0: /opt/xorg/bin/Xorg (xorg_backtrace+0x3b) [0x80a33db]
+    1: /opt/xorg/bin/Xorg (0x8048000+0x62a75) [0x80aaa75]
+    2: (vdso) (__kernel_rt_sigreturn+0x0) [0x5d140c]
+    3: /lib/libc.so.6 (0x9bb000+0x73579) [0xa2e579]
+    4: /lib/libc.so.6 (realloc+0xe0) [0xa2e830]
+    5: /opt/xorg/bin/Xorg (Xrealloc+0x33) [0x80a3f33]
+    6: /opt/xorg/bin/Xorg (0x8048000+0x1ab79) [0x8062b79]
+    7: /opt/xorg/bin/Xorg (0x8048000+0x1ac4e) [0x8062c4e]
+    8: /opt/xorg/bin/Xorg (RegisterExtensionNames+0x2ce) [0x8062fbe]
+    9: /opt/xorg/bin/Xorg (AddExtension+0x19a) [0x807bd7a]
+    10: /opt/xorg//lib/xorg/modules/extensions/libextmod.so (0x728000+0x1169a)
+    [0x73969a]
+    11: /opt/xorg/bin/Xorg (InitExtensions+0x85) [0x80c0eb5]
+    12: /opt/xorg/bin/Xorg (0x8048000+0x1a51d) [0x806251d]
+    13: /lib/libc.so.6 (__libc_start_main+0xe6) [0x9d1bb6]
+    14: /opt/xorg/bin/Xorg (0x8048000+0x1a2a1) [0x80622a1]
+    Segmentation fault at address 0x10b2d5f8
+    
+    valgrind output:
+    ==5069== Invalid read of size 4
+    ==5069==    at 0x80F928D: FreePicture (picture.c:1531)
+    ==5069==    by 0x818DDEF: miDCDeviceCleanup (midispcur.c:867)
+    ==5069==    by 0x81B97F0: miSpriteDeviceCursorCleanup (misprite.c:968)
+    ==5069==    by 0x80995FA: miPointerDeviceCleanup (mipointer.c:292)
+    ==5069==    by 0x807973E: CloseDevice (devices.c:840)
+    ==5069==    by 0x80799B6: CloseDownDevices (devices.c:933)
+    ==5069==    by 0x8062705: main (main.c:309)
+    ==5069==  Address 0x4cce844 is 12 bytes inside a block of size 84 free'd
+    ==5069==    at 0x40057F6: free (vg_replace_malloc.c:325)
+    ==5069==    by 0x80A3DE0: Xfree (utils.c:1154)
+    ==5069==    by 0x80F9332: FreePicture (picture.c:1576)
+    ==5069==    by 0x80FBB4B: PictureDestroyWindow (picture.c:69)
+    ==5069==    by 0x810B1A3: damageDestroyWindow (damage.c:1840)
+    ==5069==    by 0x80864F1: FreeWindowResources (window.c:846)
+    ==5069==    by 0x8086812: DeleteWindow (window.c:925)
+    ==5069==    by 0x806B53E: FreeClientResources (resource.c:806)
+    ==5069==    by 0x806B60F: FreeAllResources (resource.c:823)
+    ==5069==    by 0x80626E4: main (main.c:299)
+    ==5069==
+    ==5069== Invalid write of size 4
+    ==5069==    at 0x80F9295: FreePicture (picture.c:1531)
+    ==5069==    by 0x818DDEF: miDCDeviceCleanup (midispcur.c:867)
+    ==5069==    by 0x81B97F0: miSpriteDeviceCursorCleanup (misprite.c:968)
+    ==5069==    by 0x80995FA: miPointerDeviceCleanup (mipointer.c:292)
+    ==5069==    by 0x807973E: CloseDevice (devices.c:840)
+    ==5069==    by 0x80799B6: CloseDownDevices (devices.c:933)
+    ==5069==    by 0x8062705: main (main.c:309)
+    ==5069==  Address 0x4cce844 is 12 bytes inside a block of size 84 free'd
+    ==5069==    at 0x40057F6: free (vg_replace_malloc.c:325)
+    ==5069==    by 0x80A3DE0: Xfree (utils.c:1154)
+    ==5069==    by 0x80F9332: FreePicture (picture.c:1576)
+    ==5069==    by 0x80FBB4B: PictureDestroyWindow (picture.c:69)
+    ==5069==    by 0x810B1A3: damageDestroyWindow (damage.c:1840)
+    ==5069==    by 0x80864F1: FreeWindowResources (window.c:846)
+    ==5069==    by 0x8086812: DeleteWindow (window.c:925)
+    ==5069==    by 0x806B53E: FreeClientResources (resource.c:806)
+    ==5069==    by 0x806B60F: FreeAllResources (resource.c:823)
+    ==5069==    by 0x80626E4: main (main.c:299)
+    
+    XTS test case: Xproto pAllocColor
+    
+    This reverts commit 00b8b7ad61b6f818271fb4d1e383113170309d72.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit ba2ba32e04f9002dbb60f10e174ac63d16e5f507
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Wed Apr 21 09:17:26 2010 +1000
+
+    xserver 1.7.6.902
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit e8fae02f19d6d75ac3edbea2f5af8d250dcfbde3
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Wed Apr 14 17:43:22 2010 +1000
+
+    dix: Fix crash in DeliverGrabbedEvents.
+    
+    If both devices are synchronously grabbed, first with a GrabPointer, then
+    with a GrabKeyboard (GrabModeSync on both), sync.other of each device points
+    to the grab of the respective other device.
+    
+    If the keyboard is then thawed through a AllowSome request, the VCK's
+    sync.other is reset to NULL. Subsequently, an event on the VCP would crash
+    the server when dereferencing sync.other on the VCP.
+    
+    The check's purpose is to compare if the other device is grabbed by the same
+    client, which should be checked by accessing (dev->deviceGrab->grab->resource).
+    A check of the server-1.3 sources confirms that.
+    
+    XTS test case: Xlib13 XAllowEvents 20.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Keith Packard <keithp@keithp.com>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+    (cherry picked from commit 9ddbb03fa56aa73c3f417d8ee6433e45b94445b3)
+
+commit aa6a18fdebf444084c27e4a7f3eef7d93f9929b0
+Author: Cyril Brulebois <kibi@debian.org>
+Date:   Sat Apr 17 01:31:14 2010 +0200
+
+    exa: handle pixmap create/destroy in lower layers
+    
+    - Pixmaps that are created during a fallback are automatically prepared access.
+    - During the fallback accelerated ops are blocked to prevent new/scratch gc's
+      from triggering accelerated ops on mapped pixmaps.
+    - A few cases of incorrect wrapping (on the top level pointer instead of
+      between damage and (w)fb) have been removed.
+    
+    Signed-off-by: Maarten Maathuis <madman2003@gmail.com>
+    Acked-by: Michel Dänzer <michel@daenzer.net>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+    (cherry picked from commit 342f3689d17256c92cbfee079d24501d27aa1153)
+    
+    Conflicts:
+    
+    	exa/exa_mixed.c
+    
+    Debian bug#576816 <http://bugs.debian.org/576816>
+    
+    Tested-by: Arthur Marsh <arthur.marsh@internode.on.net>
+    Signed-off-by: Cyril Brulebois <kibi@debian.org>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit acbcb77bf6acf513660b4a9df8d20a5c04f1c865
+Author: Julien Cristau <jcristau@debian.org>
+Date:   Tue Apr 6 11:51:53 2010 +0200
+
+    XGE: don't register an extension event
+    
+    The GenericEvent is a core event, we never send an extension event, so
+    don't reserve an id for one.
+    
+    Signed-off-by: Julien Cristau <jcristau@debian.org>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+    (cherry picked from commit fc5d76740851725e3788c68e14474a012a205892)
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit c52b9e143da294e787d93ddbd7b9b620a3a892e2
+Author: Julien Cristau <jcristau@debian.org>
+Date:   Tue Apr 13 22:28:36 2010 +0200
+
+    vfb: add a name and type to the pointer and keyboard
+    
+    Fixes a crash in XIQueryDevice which calls strlen on a NULL pointer.
+    
+     #0  strlen () at ../sysdeps/x86_64/strlen.S:31
+     #1  0x00000000004c16ed in SizeDeviceInfo (dev=0x969bd0)
+         at ../../Xi/xiquerydevice.c:204
+     #2  0x00000000004c1a01 in ProcXIQueryDevice (client=0xa57510)
+         at ../../Xi/xiquerydevice.c:98
+    
+    Debian bug#575905 <http://bugs.debian.org/575905>
+    
+    Reported-by: "Bernhard R. Link" <brlink@debian.org>
+    Signed-off-by: Julien Cristau <jcristau@debian.org>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    (cherry picked from commit 0e7703f9b1927328954a2fc87aac6be244819329)
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit 9a9a19ac4ecdab0e2602d70354145545de37f3c5
+Author: Pierre-Loup A. Griffais <pgriffais@nvidia.com>
+Date:   Wed Apr 7 13:52:47 2010 -0700
+
+    mi: don't thrash resources when displaying the software cursor across screens
+    
+    This changes the DC layer to maintain a persistent set of GCs/pixmaps/pictures
+    for each pScreen instead of failing to thrash between them when changing
+    screens.
+    
+    Signed-off-by: Pierre-Loup A. Griffais <pgriffais@nvidia.com>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    (cherry picked from commit 00b8b7ad61b6f818271fb4d1e383113170309d72)
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit ff02e0e4a2f33131520bc3bf7d6621a301c5296d
+Author: Tim Yamin <plasm@roo.me.uk>
+Date:   Mon Mar 8 12:45:15 2010 +1000
+
+    dix: fix cursor screen check for xinerama setups.
+    
+    The de-duplication of CheckPhysLimits 942eae6868b8b0f343b6a added a
+    condition that is invalid for a Xinerama setup. pScreen is invalid for the
+    Xinerama case, so comparing it to anything is a bad idea.
+    
+    Signed-off-by: Tim Yamin <plasm@roo.me.uk>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    (cherry picked from commit 5f31e2196179f8db3170d65a17d8ad40da1acb0d)
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit 8616c5eb756aeb408545da5d186ad28909574dcb
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Thu Apr 15 10:55:53 2010 -0700
+
+    XQuartz GLX: Don't let garbage enter our pixel request
+    
+    https://bugs.freedesktop.org/show_bug.cgi?id=27654
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+    (cherry picked from commit 5b0faf355465c9f21ad96e0ed266fbdbc29efb5b)
+
+commit 0dd9d27eaacc02f968ce98749a1696189274a8f8
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Wed Apr 14 09:06:04 2010 -0700
+
+    XQuartz: Fix possible NULL dereference in ListenOnOpenFD
+    
+    <rdar://problem/7862319>
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+    Reviewed-by: Marc Majka <majka@apple.com>
+    (cherry picked from commit fe7778e58e099d353689755ed2f5aa440569ebe3)
+
+commit 3d7d699e3a024c870bca9cb0e1c922dbb87d5316
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Tue Apr 13 14:33:49 2010 -0700
+
+    XQuartz: Localization update
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+    (cherry picked from commit 206531f75cd41c034e89fdfbc75ab0910682eef8)
+
+commit e7ab6537c2745decb7143c5e4eb31440be262fd0
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Fri Apr 9 16:19:43 2010 -0700
+
+    XQuartz: Add a GUI preference for the Alt / Mode_switch toggle
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+    Reviewed-by: Kevin Van Vechten <kvv@apple.com>
+    (cherry picked from commit 59edde7c28db2d3174a5813a0af334e4ead2082f)
+
+commit 30f4c7e4fb20f9d465e6a56db937c4af48885161
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Fri Apr 9 13:33:06 2010 -0700
+
+    XQuartz: Customize the NSDefaults id in the man file.
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+    Reviewed-by: Kevin Van Vechten <kvv@apple.com>
+    (cherry picked from commit 5600f7f001529b3afdee95546aec212a70d6a5b2)
+
+commit a75e4be03c7888a86a9b76de11e39ff8f9f7ac86
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Fri Apr 9 13:29:34 2010 -0700
+
+    XQuartz: Add a defaults option to toggle Alt / Mode_switch
+    
+    See option_sends_alt in Xquartz(1)
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+    Reviewed-by: Kevin Van Vechten <kvv@apple.com>
+    (cherry picked from commit 840d12c7a6ac6a974da185045215ce944a61fab6)
+
+commit af86a25009c337954f61475196a0092712cab1e1
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Mon Apr 5 16:54:22 2010 -0700
+
+    XQuartz: Blacklist some oddball legacy Mac keycodes that break wine
+    
+    http://xquartz.macosforge.org/trac/ticket/295
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+    Reviewed-by: Kevin Van Vechten <kvv@apple.com>
+    (cherry picked from commit d6f160510a50d4c4eaa48c9c69a5ddda0d50052c)
+
 commit 501c0ee63570da7501d047c51c40a2568af1df08
 Author: Peter Hutterer <peter.hutterer@who-t.net>
 Date:   Mon Apr 12 11:51:21 2010 +1000
