@@ -253,25 +253,33 @@ $(STAMP_DIR)/genscripts: $(STAMP_DIR)/stampdir
 	#                                    debian/*.prerm
 	>$@
 
-SERVERMINVERS = $(shell cat /usr/share/xserver-xorg/serverminver 2>/dev/null)
+# Compute dependencies for drivers
+#
+VIDEODEP = $(shell cat /usr/share/xserver-xorg/videodrvdep 2>/dev/null)
+INPUTDEP = $(shell cat /usr/share/xserver-xorg/xinputdep 2>/dev/null)
+
+# these two can be removed post-squeeze
 VIDEOABI = $(shell cat /usr/share/xserver-xorg/videoabiver 2>/dev/null)
 INPUTABI = $(shell cat /usr/share/xserver-xorg/inputabiver 2>/dev/null)
-SERVER_DEPENDS = xserver-xorg-core (>= $(SERVERMINVERS))
 VIDDRIVER_PROVIDES = xserver-xorg-video-$(VIDEOABI)
 INPDRIVER_PROVIDES = xserver-xorg-input-$(INPUTABI)
+
 ifeq ($(PACKAGE),)
 PACKAGE=$(shell awk '/^Package:/ { print $$2; exit }' < debian/control)
 endif
 
 .PHONY: serverabi
 serverabi: install
-ifeq ($(SERVERMINVERS),)
-	@echo error: xserver-xorg-dev needs to be installed
+ifeq ($(VIDEODEP),)
+	@echo 'error: xserver-xorg-dev >= 1.7.6.901 needs to be installed'
 	@exit 1
 else
-	echo "xserver:Depends=$(SERVER_DEPENDS)" >> debian/$(PACKAGE).substvars
+	echo "xviddriver:Depends=$(VIDEODEP)" >> debian/$(PACKAGE).substvars
+	echo "xinpdriver:Depends=$(INPUTDEP)" >> debian/$(PACKAGE).substvars
+	# the following is there for compatibility...
 	echo "xviddriver:Provides=$(VIDDRIVER_PROVIDES)" >> debian/$(PACKAGE).substvars
 	echo "xinpdriver:Provides=$(INPDRIVER_PROVIDES)" >> debian/$(PACKAGE).substvars
+	echo "xserver:Depends=$(VIDEODEP), $(INPUTDEP)" >> debian/$(PACKAGE).substvars
 endif
 
 # vim:set noet ai sts=8 sw=8 tw=0:
