@@ -462,7 +462,7 @@ miDCPutUpCursor (DeviceIntPtr pDev, ScreenPtr pScreen, CursorPtr pCursor,
     if (pPriv->pPicture)
     {
         /* see comment in miDCPutUpCursor */
-        if (pBuffer->pRootPicture && 
+        if (pBuffer->pRootPicture &&
                 pBuffer->pRootPicture->pDrawable &&
                 pBuffer->pRootPicture->pDrawable->pScreen != pScreen)
         {
@@ -810,7 +810,7 @@ miDCMoveCursor (DeviceIntPtr pDev, ScreenPtr pScreen, CursorPtr pCursor,
     if (pPriv->pPicture)
     {
         /* see comment in miDCPutUpCursor */
-        if (pBuffer->pTempPicture && 
+        if (pBuffer->pTempPicture &&
                 pBuffer->pTempPicture->pDrawable &&
                 pBuffer->pTempPicture->pDrawable->pScreen != pScreen)
         {
@@ -918,7 +918,7 @@ miDCDeviceCleanup(DeviceIntPtr pDev, ScreenPtr pScreen)
 #ifdef ARGB_CURSOR
 #if 0				/* This has been free()d before */
         tossPict (pScreenPriv->pRootPicture);
-#endif 
+#endif
         tossPict (pBuffer->pTempPicture);
 #endif
         xfree(pBuffer);
