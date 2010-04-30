@@ -5,9 +5,6 @@ xorg-server (2:1.7.6.902-1) UNRELEASED; urgency=low
 
   [ Cyril Brulebois ]
   * Add listing files under /etc/X11/xorg.conf.d in bug script.
-  * Fix stuff pointed out by lintian:
-     - Fix FSF address in debian/copyright.
-     - Point to the complete text of the GPL in debian/copyright.
   * Fix typo in 10-mouse.conf: s/Mouse/Pointer/ (Closes: #579130).
 
   [ Julien Cristau ]
@@ -21,6 +18,8 @@ xorg-server (2:1.7.6.902-1) UNRELEASED; urgency=low
     - fixes Xvfb crash with XI2 (closes: #575905)
   * 19-exa-handle-pixmap-create-destroy-in-lower-layers.diff is now upstream,
     remove it.
+  * Drop mention of input_id from debian/copyright since we stopped shipping
+    it a while back.
 
  -- Julien Cristau <jcristau@debian.org>  Fri, 30 Apr 2010 15:46:51 +0200
 
