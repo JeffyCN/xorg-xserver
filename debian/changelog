@@ -1,4 +1,4 @@
-xorg-server (2:1.7.7-1) UNRELEASED; urgency=low
+xorg-server (2:1.7.7-1) unstable; urgency=low
 
   [ Timo Aaltonen ]
   * Update patch 17; Add missing __datadir__ to cpprules.in.
@@ -22,7 +22,7 @@ xorg-server (2:1.7.7-1) UNRELEASED; urgency=low
   * Drop mention of input_id from debian/copyright since we stopped shipping
     it a while back.
 
- -- Julien Cristau <jcristau@debian.org>  Tue, 04 May 2010 14:40:08 +0200
+ -- Julien Cristau <jcristau@debian.org>  Tue, 04 May 2010 15:17:59 +0200
 
 xorg-server (2:1.7.6.901-3) unstable; urgency=low
 
