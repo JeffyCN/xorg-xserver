@@ -1,4 +1,4 @@
-xorg-server (2:1.7.6.902-1) UNRELEASED; urgency=low
+xorg-server (2:1.7.7-1) UNRELEASED; urgency=low
 
   [ Timo Aaltonen ]
   * Update patch 17; Add missing __datadir__ to cpprules.in.
@@ -13,15 +13,16 @@ xorg-server (2:1.7.6.902-1) UNRELEASED; urgency=low
   * Change driver ABI Conflicts to Breaks.  Drop old Conflicts/Replaces on
     pre-modular xserver packages.
   * Unset PRERELEASE to avoid the prerelease warning in the log.
-  * New upstream release candidate
-    - pull server-1.7-nominations up to commit 2c94da4
+  * New upstream release:
     - fixes Xvfb crash with XI2 (closes: #575905)
+    - EXA: Check sys_ptr isn't NULL before passing it to the UploadToScreen
+      hook (closes: #576656)
   * 19-exa-handle-pixmap-create-destroy-in-lower-layers.diff is now upstream,
     remove it.
   * Drop mention of input_id from debian/copyright since we stopped shipping
     it a while back.
 
- -- Julien Cristau <jcristau@debian.org>  Fri, 30 Apr 2010 15:46:51 +0200
+ -- Julien Cristau <jcristau@debian.org>  Tue, 04 May 2010 14:40:08 +0200
 
 xorg-server (2:1.7.6.901-3) unstable; urgency=low
 

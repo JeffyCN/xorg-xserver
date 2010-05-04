@@ -1,3 +1,64 @@
+commit e9a2eb86e9dd1f0d3d955bb7c16f2660c773e070
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Tue May 4 10:55:22 2010 +1000
+
+    xserver 1.7.7
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit ad48184752970541aa153bf2961a2d7da1a910b5
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Wed Apr 21 15:51:20 2010 +1000
+
+    Xext: only update the sprite on pointer events.
+    
+    A call to miPointerUpdateSprite for the XTEST keyboard may result in a
+    NULL pointer dereference in miDCPutUpCursor() when the save buffer is NULL.
+    
+    XTS test case: Xlib 11 KeymapNotify
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    (cherry picked from commit af170a4ab76d33254dd4e54a33bb410fa1624739)
+
+commit d2229e829d61033141d25fd4486c689c0367b97e
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Tue Apr 27 13:14:47 2010 -0700
+
+    XQuartz GLX: Change around includes for better compatability with different OS versions
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+    (cherry picked from commit 0efd7b8d82a48793341e27d4c224986e0971687c)
+
+commit 86f37fa8627807030cee89c117b05a4a06d2d734
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Wed Apr 21 08:38:53 2010 -0700
+
+    rootless: Add some sanity checking to miPaintWindow
+    
+    This avoids painting the root window when it isn't actually drawable.
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+    (cherry picked from commit 7b506fdc840aebed6b5acb91437a2cb620b5bddc)
+
+commit 1dbdcfbcbc8105a5878ebce4c74aff7f8071f590
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Sun Apr 18 01:22:27 2010 -0700
+
+    rootless: Remove an unneeded comment
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+    (cherry picked from commit 4d3789c9b3fbe6aad32fcacd964353b612640f27)
+
+commit 67a50803da4eb8d7f827c32776441f34cb726365
+Author: Oliver McFadden <oliver.mcfadden@nokia.com>
+Date:   Thu Apr 22 10:29:44 2010 +0300
+
+    x-list.c: null-returning function malloc() was called without checking
+    
+    Signed-off-by: Oliver McFadden <oliver.mcfadden@nokia.com>
+    Reviewed-by: Jeremy Huddleston <jeremyhu@apple.com>
+    (cherry picked from commit 048d15192af39ba5111882d18a957b6ff4e34cad)
+
 commit 2c94da4e22520f4a3e783db06b73251131382868
 Author: Michel Dänzer <daenzer@vmware.com>
 Date:   Thu Apr 22 14:16:59 2010 +0200
