@@ -1,3 +1,9 @@
+xorg-server (2:1.7.7-2) UNRELEASED; urgency=low
+
+  * autoconfig: load the nouveau driver for nvidia hw.  Stolen from F13.
+
+ -- Julien Cristau <jcristau@debian.org>  Fri, 07 May 2010 17:03:15 +0200
+
 xorg-server (2:1.7.7-1) unstable; urgency=low
 
   [ Timo Aaltonen ]
