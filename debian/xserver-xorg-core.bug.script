@@ -136,10 +136,7 @@ fi
 
 if [ -x /sbin/udevadm ]; then
     printf "\nudev information:\n"
-    for dev in /dev/input/event*;
-    do
-        /sbin/udevadm info --query=all --name=$dev
-    done
+    /sbin/udevadm info --export-db | awk -F '\n' -v RS='\n\n' '/E: ID_INPUT/ { print; print "" }'
 fi
 
 if [ -x /bin/dmesg ]; then

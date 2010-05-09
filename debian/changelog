@@ -1,6 +1,8 @@
 xorg-server (2:1.7.7-2) UNRELEASED; urgency=low
 
   * autoconfig: load the nouveau driver for nvidia hw.  Stolen from F13.
+  * Try to catch non-event devices when running udevadm info in the bug
+    script.
 
  -- Julien Cristau <jcristau@debian.org>  Fri, 07 May 2010 17:03:15 +0200
 
