@@ -94,7 +94,6 @@ confflags += \
 	     --with-xkb-output=/var/lib/xkb \
 	     --disable-builddocs \
 	     --disable-install-libxf86config \
-	     --disable-null-root-cursor \
 	     --enable-mitshm \
 	     --enable-xres \
 	     --disable-xcsecurity \
@@ -108,7 +107,6 @@ confflags += \
 	     --enable-xorg \
 	     --disable-xquartz \
 	     --disable-xwin \
-	     --disable-xsdl \
 	     --disable-xfake \
 	     --disable-install-setuid
 
