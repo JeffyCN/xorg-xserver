@@ -1,4 +1,4 @@
-xorg-server (2:1.8.1-1) UNRELEASED; urgency=low
+xorg-server (2:1.8.1-1) experimental; urgency=low
 
   * New upstream release
     - 02_Add-libgcrypt-and-libnettle-as-options-for-sha1.diff: partly merged
@@ -26,7 +26,7 @@ xorg-server (2:1.8.1-1) UNRELEASED; urgency=low
   * xdmx-tools.install: xdmx was renamed to dmxinfo.
   * Bump debian/serverminver and ABI versions.
 
- -- Julien Cristau <jcristau@debian.org>  Wed, 12 May 2010 15:51:40 +0200
+ -- Julien Cristau <jcristau@debian.org>  Wed, 12 May 2010 18:01:39 +0200
 
 xorg-server (2:1.7.7-2) UNRELEASED; urgency=low
 
