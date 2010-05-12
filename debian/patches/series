@@ -2,18 +2,8 @@
 ## Ubuntu patches start with 100.
 001_fedora_extramodes.patch
 02_Add-libgcrypt-and-libnettle-as-options-for-sha1.diff
-05_only_call_gamma_set_if_nonnull.diff
 06_dont_trap_access_to_timer_and_keyboard.diff
 07-xfree86-fix-build-with-xv-disabled.diff
 #13_debian_add_xkbpath_env_variable.diff
-08-config-xorg-conf-d.diff
-09-inputclass-sans-abi9.diff
-10-config-libudev-backend.diff
-11-xfree86-fix-video-fallback.diff
-12-xfree86-dont-complain-about-missing-coredevices.diff
-13-unbreak-input-abi.diff
-14-tone-down-nidr-errors.diff
 15-nouveau.diff
 16-xaa-fbcomposite-fix-negative-size.diff
-17-xfree86-saner-conf-search-paths.diff
-18-Add-10-evdev.conf.diff
