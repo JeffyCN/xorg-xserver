@@ -1,15 +1,20 @@
 xorg-server (2:1.8.1-1) UNRELEASED; urgency=low
 
   * New upstream release
+    - 02_Add-libgcrypt-and-libnettle-as-options-for-sha1.diff: partly merged
+      upstream, rest renamed to 02_Add-libnettle-as-option-for-sha1.diff and
+      ported to new version
     - 05_only_call_gamma_set_if_nonnull.diff: merged upstream
-    - 08-config-xorg-conf-d.diff: likewise
+    - 07-xfree86-fix-build-with-xv-disabled.diff: rediffed
+    - 08-config-xorg-conf-d.diff: merged upstream
     - 09-inputclass-sans-abi9.diff: likewise
     - 10-config-libudev-backend.diff: likewise
     - 11-xfree86-fix-video-fallback.diff: likewise
     - 12-xfree86-dont-complain-about-missing-coredevices.diff: likewise
     - 13-unbreak-input-abi.diff: obsolete
     - 14-tone-down-nidr-errors.diff: merged upstream
-    - 17-xfree86-saner-conf-search-paths.diff: likewise
+    - 15-nouveau.diff: rediffed
+    - 17-xfree86-saner-conf-search-paths.diff: merged upstream
     - 18-Add-10-evdev.conf.diff: likewise
 
  -- Julien Cristau <jcristau@debian.org>  Wed, 12 May 2010 15:51:40 +0200

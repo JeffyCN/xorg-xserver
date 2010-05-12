@@ -168,7 +168,7 @@ confflags_udeb = \
 	--disable-kdrive \
 	--disable-xephyr \
 	--disable-xfbdev \
-	--with-sha1=libnettle \
+	--with-sha1=nettle \
 	$(void)
 
 $(STAMP_DIR)/autoreconf: $(STAMP_DIR)/patch

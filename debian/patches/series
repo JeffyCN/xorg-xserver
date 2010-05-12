@@ -1,7 +1,7 @@
 ## Patches with a number < 100 are applied in debian.
 ## Ubuntu patches start with 100.
 001_fedora_extramodes.patch
-02_Add-libgcrypt-and-libnettle-as-options-for-sha1.diff
+02_Add-libnettle-as-option-for-sha1.diff
 06_dont_trap_access_to_timer_and_keyboard.diff
 07-xfree86-fix-build-with-xv-disabled.diff
 #13_debian_add_xkbpath_env_variable.diff
