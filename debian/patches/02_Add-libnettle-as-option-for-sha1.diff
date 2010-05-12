@@ -33,7 +33,7 @@ Index: xorg-server/configure.ac
 +	AC_DEFINE([HAVE_SHA1_IN_LIBNETTLE], [1],
 +	          [Use libnettle SHA1 functions])
 +	# XXX hack for d-i: use the static lib
-+	SHA1_LIBS=/usr/lib/libnettle.a
++	SHA1_LIBS=-l:libnettle.a
 +fi
  AC_MSG_CHECKING([for SHA1 implementation])
  if test "x$with_sha1" = x; then
