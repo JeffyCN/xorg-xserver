@@ -253,7 +253,7 @@ configureInputSection (void)
 	int fd;
 #ifdef WSCONS_SUPPORT
 	fd = open("/dev/wsmouse", 0);
-	if (fd > 0) {
+	if (fd >= 0) {
 	    DFLT_MOUSE_DEV = "/dev/wsmouse";
 	    DFLT_MOUSE_PROTO = "wsmouse";
 	    close(fd);
@@ -544,10 +544,39 @@ configureMonitorSection (int screennum)
     return ptr;
 }
 
+/* Initialize Configure Monitor from Detailed Timing Block */
+static void handle_detailed_input(struct detailed_monitor_section *det_mon,
+                                  void *data)
+{
+    XF86ConfMonitorPtr ptr = (XF86ConfMonitorPtr) data;
+
+    switch (det_mon->type) {
+    case DS_NAME:
+        ptr->mon_modelname = realloc(ptr->mon_modelname,
+                                     strlen((char*)(det_mon->section.name)) +
+                                     1);
+        strcpy(ptr->mon_modelname,
+	      (char*)(det_mon->section.name));
+        break;
+    case DS_RANGES:
+        ptr->mon_hsync[ptr->mon_n_hsync].lo =
+            det_mon->section.ranges.min_h;
+        ptr->mon_hsync[ptr->mon_n_hsync].hi =
+            det_mon->section.ranges.max_h;
+        ptr->mon_n_vrefresh = 1;
+        ptr->mon_vrefresh[ptr->mon_n_hsync].lo =
+            det_mon->section.ranges.min_v;
+        ptr->mon_vrefresh[ptr->mon_n_hsync].hi =
+            det_mon->section.ranges.max_v;
+        ptr->mon_n_hsync++;
+    default:
+        break;
+    }
+}
+
 static XF86ConfMonitorPtr
 configureDDCMonitorSection (int screennum)
 {
-    int i = 0;
     int len, mon_width, mon_height;
 #define displaySizeMaxLen 80
     char displaySize_string[displaySizeMaxLen];
@@ -583,37 +612,15 @@ configureDDCMonitorSection (int screennum)
 	  len = 0;
 	}
 	if ((ptr->mon_comment =
-	     realloc(ptr->mon_comment, len+strlen(displaySize_string)))) {
+	     realloc(ptr->mon_comment, len + strlen(displaySize_string) + 1))) {
 	  strcpy(ptr->mon_comment + len, displaySize_string);
 	}
       }
     }
 #endif /* def CONFIGURE_DISPLAYSIZE */
 
-    for (i=0;i<4;i++) {
-	switch (ConfiguredMonitor->det_mon[i].type) {
-	    case DS_NAME:
-		ptr->mon_modelname  = realloc(ptr->mon_modelname, 
-		  strlen((char*)(ConfiguredMonitor->det_mon[i].section.name))
-		    + 1);
-		strcpy(ptr->mon_modelname,
-		       (char*)(ConfiguredMonitor->det_mon[i].section.name));
-		break;
-	    case DS_RANGES:
-		ptr->mon_hsync[ptr->mon_n_hsync].lo =
-		    ConfiguredMonitor->det_mon[i].section.ranges.min_h;
-		ptr->mon_hsync[ptr->mon_n_hsync].hi =
-		    ConfiguredMonitor->det_mon[i].section.ranges.max_h;
-		ptr->mon_n_vrefresh = 1;
-		ptr->mon_vrefresh[ptr->mon_n_hsync].lo =
-		    ConfiguredMonitor->det_mon[i].section.ranges.min_v;
-		ptr->mon_vrefresh[ptr->mon_n_hsync].hi =
-		    ConfiguredMonitor->det_mon[i].section.ranges.max_v;
-		ptr->mon_n_hsync++;
-	    default:
-		break;
-	}
-    }
+    xf86ForEachDetailedBlock(ConfiguredMonitor, handle_detailed_input,
+                             ptr);
 
     if (ConfiguredMonitor->features.dpms) {
       ptr->mon_option_lst = xf86addNewOption(ptr->mon_option_lst, xstrdup("DPMS"), NULL);

@@ -38,15 +38,7 @@
 #ifdef __CYGWIN__
 #include <errno.h>
 #endif
-#include "X11/Xauth.h"
 #include "misc.h"
-
-
-/*
- * Constants
- */
-
-#define AUTH_NAME	"MIT-MAGIC-COOKIE-1"
 
 
 /*
@@ -55,10 +47,6 @@
 
 extern Bool		g_fUnicodeClipboard;
 extern unsigned long	serverGeneration;
-#if defined(XCSECURITY)
-extern unsigned int	g_uiAuthDataLen;
-extern char		*g_pAuthData;
-#endif
 extern Bool		g_fClipboardStarted;
 extern HWND		g_hwndClipboard;
 extern void		*g_pClipboardDisplay;
@@ -131,8 +119,7 @@ winClipboardProc (void *pvNotUsed)
   /* See if X supports the current locale */
   if (XSupportsLocale () == False)
     {
-      ErrorF ("winClipboardProc - Locale not supported by X.  Exiting.\n");
-      pthread_exit (NULL);
+      ErrorF ("winClipboardProc - Warning: Locale not supported by X.\n");
     }
 
   /* Set jump point for Error exits */
@@ -154,13 +141,8 @@ winClipboardProc (void *pvNotUsed)
       pthread_exit (NULL);
     }
 
-#if defined(XCSECURITY)
   /* Use our generated cookie for authentication */
-  XSetAuthorization (AUTH_NAME,
-		     strlen (AUTH_NAME),
-		     g_pAuthData,
-		     g_uiAuthDataLen);
-#endif
+  winSetAuthorization();
 
   /* Set error handler */
   XSetErrorHandler (winClipboardErrorHandler);
@@ -471,7 +453,7 @@ winClipboardErrorHandler (Display *pDisplay, XErrorEvent *pErr)
 static int
 winClipboardIOErrorHandler (Display *pDisplay)
 {
-  ErrorF ("\nwinClipboardIOErrorHandler!\n\n");
+  ErrorF ("winClipboardIOErrorHandler!\n\n");
 
   /* Restart at the main entry point */
   longjmp (g_jmpEntry, WIN_JMP_ERROR_IO);

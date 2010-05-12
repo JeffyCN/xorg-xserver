@@ -2084,11 +2084,6 @@ fbFillRegionSolid (DrawablePtr	pDrawable,
 extern _X_EXPORT pixman_image_t *
 image_from_pict (PicturePtr	pict,
 		 Bool		has_clip,
-		 Bool		is_src);
-
-extern _X_EXPORT pixman_image_t *
-image_from_pict_18 (PicturePtr	pict,
-		 Bool		has_clip,
 		 int		*xoff,
 		 int		*yoff);
 

@@ -90,6 +90,8 @@
 #include "Pci.h"
 #include "xf86Bus.h"
 
+#include <hotplug.h>
+
 /* forward declarations */
 static Bool probe_devices_from_device_sections(DriverPtr drvp);
 static Bool add_matching_devices_to_configure_list(DriverPtr drvp);
@@ -97,6 +99,7 @@ static Bool add_matching_devices_to_configure_list(DriverPtr drvp);
 #ifdef XF86PM
 void (*xf86OSPMClose)(void) = NULL;
 #endif
+static Bool xorgHWOpenConsole = FALSE;
 
 /* Common pixmap formats */
 
@@ -132,7 +135,7 @@ static void
 xf86PrintBanner(void)
 {
 #if PRE_RELEASE
-  ErrorF("\n"
+  xf86ErrorFVerb(0, "\n"
     "This is a pre-release version of the X server from " XVENDORNAME ".\n"
     "It is not supported in any way.\n"
     "Bugs may be filed in the bugzilla at http://bugs.freedesktop.org/.\n"
@@ -141,12 +144,12 @@ xf86PrintBanner(void)
     "latest version in the X.Org Foundation git repository.\n"
     "See http://wiki.x.org/wiki/GitPage for git access instructions.\n");
 #endif
-  ErrorF("\nX.Org X Server %d.%d.%d",
+  xf86ErrorFVerb(0, "\nX.Org X Server %d.%d.%d",
 	 XORG_VERSION_MAJOR,
 	 XORG_VERSION_MINOR,
 	 XORG_VERSION_PATCH);
 #if XORG_VERSION_SNAP > 0
-  ErrorF(".%d", XORG_VERSION_SNAP);
+  xf86ErrorFVerb(0, ".%d", XORG_VERSION_SNAP);
 #endif
 
 #if XORG_VERSION_SNAP >= 900
@@ -158,26 +161,28 @@ xf86PrintBanner(void)
    * candidate for the next point release.  (X.Y.Z)
    */
 #if XORG_VERSION_MINOR >= 99
-  ErrorF(" (%d.0.0 RC %d)", XORG_VERSION_MAJOR+1, XORG_VERSION_SNAP - 900);
+  xf86ErrorFVerb(0, " (%d.0.0 RC %d)", XORG_VERSION_MAJOR+1,
+                 XORG_VERSION_SNAP - 900);
 #elif XORG_VERSION_PATCH == 99
-  ErrorF(" (%d.%d.0 RC %d)", XORG_VERSION_MAJOR, XORG_VERSION_MINOR + 1,
-				XORG_VERSION_SNAP - 900);
+  xf86ErrorFVerb(0, " (%d.%d.0 RC %d)", XORG_VERSION_MAJOR,
+                 XORG_VERSION_MINOR + 1, XORG_VERSION_SNAP - 900);
 #else
-  ErrorF(" (%d.%d.%d RC %d)", XORG_VERSION_MAJOR, XORG_VERSION_MINOR,
- 			 XORG_VERSION_PATCH + 1, XORG_VERSION_SNAP - 900);
+  xf86ErrorFVerb(0, " (%d.%d.%d RC %d)", XORG_VERSION_MAJOR,
+                 XORG_VERSION_MINOR, XORG_VERSION_PATCH + 1,
+                 XORG_VERSION_SNAP - 900);
 #endif
 #endif
 
 #ifdef XORG_CUSTOM_VERSION
-  ErrorF(" (%s)", XORG_CUSTOM_VERSION);
+  xf86ErrorFVerb(0, " (%s)", XORG_CUSTOM_VERSION);
 #endif
 #ifndef XORG_DATE
 # define XORG_DATE "Unknown"
 #endif
-  ErrorF("\nRelease Date: %s\n", XORG_DATE);
-  ErrorF("X Protocol Version %d, Revision %d\n",
+  xf86ErrorFVerb(0, "\nRelease Date: %s\n", XORG_DATE);
+  xf86ErrorFVerb(0, "X Protocol Version %d, Revision %d\n",
          X_PROTOCOL, X_PROTOCOL_REVISION);
-  ErrorF("Build Operating System: %s %s\n", OSNAME, OSVENDOR);
+  xf86ErrorFVerb(0, "Build Operating System: %s %s\n", OSNAME, OSVENDOR);
 #ifdef HAS_UTSNAME
   {
     struct utsname name;
@@ -187,17 +192,17 @@ xf86PrintBanner(void)
        All agree that failure is represented by a negative number.
      */
     if (uname(&name) >= 0) {
-      ErrorF("Current Operating System: %s %s %s %s %s\n",
+      xf86ErrorFVerb(0, "Current Operating System: %s %s %s %s %s\n",
 	name.sysname, name.nodename, name.release, name.version, name.machine);
 #ifdef linux
       do {
 	  char buf[80];
 	  int fd = open("/proc/cmdline", O_RDONLY);
 	  if (fd != -1) {
-	    ErrorF("Kernel command line: ");
+	    xf86ErrorFVerb(0, "Kernel command line: ");
 	    memset(buf, 0, 80);
 	    while (read(fd, buf, 80) > 0) {
-		ErrorF("%.80s", buf);
+		xf86ErrorFVerb(0, "%.80s", buf);
 		memset(buf, 0, 80);
 	    }
 	    close(fd);
@@ -222,19 +227,21 @@ xf86PrintBanner(void)
     t.tm_min = (BUILD_TIME / 100) % 100;
     t.tm_hour = (BUILD_TIME / 10000) % 100;
     if (strftime(buf, sizeof(buf), "%d %B %Y  %I:%M:%S%p", &t))
-       ErrorF("Build Date: %s\n", buf);
+       xf86ErrorFVerb(0, "Build Date: %s\n", buf);
 #else
     if (strftime(buf, sizeof(buf), "%d %B %Y", &t))
-       ErrorF("Build Date: %s\n", buf);
+       xf86ErrorFVerb(0, "Build Date: %s\n", buf);
 #endif
   }
 #endif
 #if defined(BUILDERSTRING)
-  ErrorF("%s \n",BUILDERSTRING);
+  xf86ErrorFVerb(0, "%s \n", BUILDERSTRING);
 #endif
-  ErrorF("Current version of pixman: %s\n", pixman_version_string());
-  ErrorF("\tBefore reporting problems, check "__VENDORDWEBSUPPORT__"\n"
-	 "\tto make sure that you have the latest version.\n");
+  xf86ErrorFVerb(0, "Current version of pixman: %s\n",
+                 pixman_version_string());
+  xf86ErrorFVerb(0, "\tBefore reporting problems, check "
+                 ""__VENDORDWEBSUPPORT__"\n"
+                 "\tto make sure that you have the latest version.\n");
 }
 
 static void
@@ -601,8 +608,6 @@ InitOutput(ScreenInfo *pScreenInfo, int argc, char **argv)
     if (xf86DoShowOptions)
         DoShowOptions();
 
-    xf86OpenConsole();
-
     /* Do a general bus probe.  This will be a PCI probe for x86 platforms */
     xf86BusProbe();
 
@@ -676,19 +681,28 @@ InitOutput(ScreenInfo *pScreenInfo, int argc, char **argv)
      */
 
     for (i = 0; i < xf86NumDrivers; i++) {
-	xorgHWFlags flags;
-
 	if (xf86DriverList[i]->Identify != NULL)
 	    xf86DriverList[i]->Identify(0);
 
-	if (!xorgHWAccess
-	    && (!xf86DriverList[i]->driverFunc
+	if (!xorgHWAccess || !xorgHWOpenConsole) {
+	    xorgHWFlags flags;
+	    if(!xf86DriverList[i]->driverFunc
 		|| !xf86DriverList[i]->driverFunc(NULL,
 						  GET_REQUIRED_HW_INTERFACES,
-						  &flags)
-		|| NEED_IO_ENABLED(flags)))
-	    xorgHWAccess = TRUE;
+						  &flags))
+		flags = HW_IO;
+
+	    if(NEED_IO_ENABLED(flags))
+		xorgHWAccess = TRUE;
+	    if(!(flags & HW_SKIP_CONSOLE))
+		xorgHWOpenConsole = TRUE;
+	}
     }
+
+    if (xorgHWOpenConsole)
+	xf86OpenConsole();
+    else
+	xf86Info.dontVTSwitch = TRUE;
 
     /* Enable full I/O access */
     if (xorgHWAccess)
@@ -966,7 +980,8 @@ InitOutput(ScreenInfo *pScreenInfo, int argc, char **argv)
     /*
      * serverGeneration != 1; some OSs have to do things here, too.
      */
-    xf86OpenConsole();
+    if (xorgHWOpenConsole)
+	xf86OpenConsole();
 
 #ifdef XF86PM
     /*
@@ -1125,6 +1140,14 @@ InitInput(int argc, char **argv)
         if (xf86NewInputDevice(*pDev, &dev, TRUE) == BadAlloc)
             break;
     }
+
+    config_init();
+}
+
+void
+CloseInput (void)
+{
+    config_fini();
 }
 
 /*
@@ -1205,13 +1228,14 @@ ddxGiveUp(void)
     DGAShutdown();
 #endif
 
-    xf86CloseConsole();
+    if (xorgHWOpenConsole)
+	xf86CloseConsole();
 
     xf86CloseLog();
 
     /* If an unexpected signal was caught, dump a core for debugging */
     if (xf86Info.caughtSignal)
-	abort();
+	OsAbort();
 }
 
 
@@ -1375,6 +1399,19 @@ ddxProcessArgument(int argc, char **argv, int i)
     xf86ConfigFile = argv[i + 1];
     return 2;
   }
+  if (!strcmp(argv[i], "-configdir"))
+  {
+    CHECK_FOR_REQUIRED_ARGUMENT();
+    if (getuid() != 0 && !xf86PathIsSafe(argv[i + 1])) {
+      FatalError("\nInvalid argument for %s\n"
+	  "\tFor non-root users, the file specified with %s must be\n"
+	  "\ta relative path and must not contain any \"..\" elements.\n"
+	  "\tUsing default "__XCONFIGDIR__" search path.\n\n",
+	  argv[i], argv[i]);
+    }
+    xf86ConfigDir = argv[i + 1];
+    return 2;
+  }
   if (!strcmp(argv[i],"-flipPixels"))
   {
     xf86FlipPixels = TRUE;
@@ -1436,7 +1473,7 @@ ddxProcessArgument(int argc, char **argv, int i)
   }
   if (!strcmp(argv[i],"-quiet"))
   {
-    xf86SetVerbosity(0);
+    xf86SetVerbosity(-1);
     return 1;
   }
   if (!strcmp(argv[i],"-showconfig") || !strcmp(argv[i],"-version"))
@@ -1658,6 +1695,8 @@ ddxUseMsg(void)
   }
   ErrorF("-config file           specify a configuration file, relative to the\n");
   ErrorF("                       "__XCONFIGFILE__" search path, only root can use absolute\n");
+  ErrorF("-configdir dir         specify a configuration directory, relative to the\n");
+  ErrorF("                       "__XCONFIGDIR__" search path, only root can use absolute\n");
   ErrorF("-verbose [n]           verbose startup messages\n");
   ErrorF("-logverbose [n]        verbose log messages\n");
   ErrorF("-quiet                 minimal startup messages\n");

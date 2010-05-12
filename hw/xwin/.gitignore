@@ -1,0 +1,6 @@
+#		Add & Override for this directory and it's subdirectories
+winprefslex.c
+winprefsyacc.c
+winprefsyacc.h
+XWin.man
+XWinrc.man

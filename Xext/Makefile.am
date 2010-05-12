@@ -81,7 +81,7 @@ endif
 
 # SELinux extension: provides SELinux policy support for X objects
 # requires X-ACE extension
-XSELINUX_SRCS = xselinux.c xselinux.h
+XSELINUX_SRCS = xselinux_ext.c xselinux_hooks.c xselinux_label.c xselinux.h xselinuxint.h
 if XSELINUX
 MODULE_SRCS += $(XSELINUX_SRCS)
 MODULE_LIBS += $(SELINUX_LIBS)
@@ -107,7 +107,7 @@ MODULE_SRCS  += $(MULTIBUFFER_SRCS)
 endif
 
 # XF86 Big Font extension
-BIGFONT_SRCS = xf86bigfont.c
+BIGFONT_SRCS = xf86bigfont.c xf86bigfontsrv.h
 if XF86BIGFONT
 BUILTIN_SRCS += $(BIGFONT_SRCS)
 endif
@@ -137,6 +137,7 @@ EXTRA_DIST = \
 	$(SCREENSAVER_SRCS) \
 	$(XACE_SRCS) \
 	$(XCSECURITY_SRCS) \
+	$(XSELINUX_SRCS) \
 	$(XCALIBRATE_SRCS) \
 	$(XINERAMA_SRCS) \
 	$(MULTIBUFFER_SRCS) \

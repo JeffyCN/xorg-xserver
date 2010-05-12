@@ -116,8 +116,8 @@ winDrawURLWindow (LPARAM lParam)
     crText = RGB(0,0,128+64);
   SetTextColor (draw->hDC, crText);
   
-  /* Create underlined font 14 high, standard dialog font */
-  font = CreateFont (-14, 0, 0, 0, FW_NORMAL, FALSE, TRUE, FALSE,
+  /* Create font 8 high, standard dialog font */
+  font = CreateFont (-8, 0, 0, 0, FW_DONTCARE, FALSE, FALSE, FALSE,
 		     0, 0, 0, 0, 0, "MS Sans Serif");
   if (!font)
     {
@@ -282,8 +282,9 @@ winDisplayExitDialog (winPrivScreenPtr pScreenPriv)
   if (liveClients < 0)
     liveClients = 0;      
 
-  /* Don't show the exit confirmation dialog if SilentExit is enabled */
-  if (pref.fSilentExit && liveClients <= 0)
+  /* Don't show the exit confirmation dialog if SilentExit & no clients,
+     or ForceExit, is enabled */
+  if ((pref.fSilentExit && liveClients <= 0) || pref.fForceExit)
     {
       if (g_hDlgExit != NULL)
 	{
@@ -326,7 +327,7 @@ winDisplayExitDialog (winPrivScreenPtr pScreenPriv)
 	       GetDlgItem (g_hDlgExit, IDCANCEL), TRUE);
 }
 
-#define CONNECTED_CLIENTS_FORMAT	"There are currently %d clients connected."
+#define CONNECTED_CLIENTS_FORMAT	"There %s currently %d client%s connected."
 
 
 /*
@@ -353,7 +354,9 @@ winExitDlgProc (HWND hDialog, UINT message,
 
 	/* Format the connected clients string */
 	pszConnectedClients = Xprintf (CONNECTED_CLIENTS_FORMAT,
-            s_pScreenPriv->iConnectedClients);
+           (s_pScreenPriv->iConnectedClients == 1) ? "is" : "are",
+            s_pScreenPriv->iConnectedClients,
+           (s_pScreenPriv->iConnectedClients == 1) ? "" : "s");
 	if (!pszConnectedClients)
 	    return TRUE;
      
@@ -702,7 +705,7 @@ winAboutDlgProc (HWND hwndDialog, UINT message,
 
 	case ID_ABOUT_WEBSITE:
 	  {
-	    const char *	pszPath = "http://x.cygwin.com/";
+	    const char *	pszPath = __VENDORDWEBSUPPORT__;
 	    int			iReturn;
 	    
 	    iReturn = ShellExecute (NULL,

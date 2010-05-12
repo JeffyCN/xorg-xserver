@@ -49,9 +49,6 @@ static Bool g_winKeyState[NUM_KEYCODES];
  */
 
 static void
-winGetKeyMappings (KeySymsPtr pKeySyms, CARD8 *pModMap);
-
-static void
 winKeybdBell (int iPercent, DeviceIntPtr pDeviceInt,
 	      pointer pCtrl, int iClass);
 
@@ -73,10 +70,31 @@ winTranslateKey (WPARAM wParam, LPARAM lParam, int *piScanCode)
 {
   int		iKeyFixup = g_iKeyMap[wParam * WIN_KEYMAP_COLS + 1];
   int		iKeyFixupEx = g_iKeyMap[wParam * WIN_KEYMAP_COLS + 2];
-  int		iParamScanCode = LOBYTE (HIWORD (lParam));
+  int		iParam = HIWORD (lParam);
+  int		iParamScanCode = LOBYTE (iParam);
+
+/* WM_ key messages faked by Vista speech recognition (WSR) don't have a
+ * scan code.
+ *
+ * Vocola 3 (Rick Mohr's supplement to WSR) uses
+ * System.Windows.Forms.SendKeys.SendWait(), which appears always to give a
+ * scan code of 1
+ */
+  if (iParamScanCode <= 1)
+    {
+      if (VK_PRIOR <= wParam && wParam <= VK_DOWN)
+        /* Trigger special case table to translate to extended
+         * keycode, otherwise if num_lock is on, we can get keypad
+         * numbers instead of navigation keys. */
+        iParam |= KF_EXTENDED;
+      else
+        iParamScanCode = MapVirtualKeyEx(wParam,
+                         /*MAPVK_VK_TO_VSC*/0,
+                         GetKeyboardLayout(0));
+    }
 
   /* Branch on special extended, special non-extended, or normal key */
-  if ((HIWORD (lParam) & KF_EXTENDED) && iKeyFixupEx)
+  if ((iParam & KF_EXTENDED) && iKeyFixupEx)
     *piScanCode = iKeyFixupEx;
   else if (iKeyFixup)
     *piScanCode = iKeyFixup;
@@ -95,89 +113,6 @@ winTranslateKey (WPARAM wParam, LPARAM lParam, int *piScanCode)
         *piScanCode = iParamScanCode;
         break;
     }
-}
-
-
-/*
- * We call this function from winKeybdProc when we are
- * initializing the keyboard.
- */
-
-static void
-winGetKeyMappings (KeySymsPtr pKeySyms, CARD8 *pModMap)
-{
-  int			i;
-  KeySym		*pMap = map;
-  KeySym		*pKeySym;
-
-  /*
-   * Initialize all key states to up... which may not be true
-   * but it is close enough.
-   */
-  ZeroMemory (g_winKeyState, sizeof (g_winKeyState[0]) * NUM_KEYCODES);
-
-  /* MAP_LENGTH is defined in Xserver/include/input.h to be 256 */
-  for (i = 0; i < MAP_LENGTH; i++)
-    pModMap[i] = NoSymbol;  /* make sure it is restored */
-
-  /* Loop through all valid entries in the key symbol table */
-  for (pKeySym = pMap, i = MIN_KEYCODE;
-       i < (MIN_KEYCODE + NUM_KEYCODES);
-       i++, pKeySym += GLYPHS_PER_KEY)
-    {
-      switch (*pKeySym)
-	{
-	case XK_Shift_L:
-	case XK_Shift_R:
-	  pModMap[i] = ShiftMask;
-	  break;
-
-	case XK_Control_L:
-	case XK_Control_R:
-	  pModMap[i] = ControlMask;
-	  break;
-
-	case XK_Caps_Lock:
-	  pModMap[i] = LockMask;
-	  break;
-
-	case XK_Alt_L:
-	case XK_Alt_R:
-	  pModMap[i] = AltMask;
-	  break;
-
-	case XK_Num_Lock:
-	  pModMap[i] = NumLockMask;
-	  break;
-
-	case XK_Scroll_Lock:
-	  pModMap[i] = ScrollLockMask;
-	  break;
-
-#if 0
-	case XK_Super_L:
-	case XK_Super_R:
-	  pModMap[i] = Mod4Mask;
-	  break;
-#else
-	/* Hirigana/Katakana toggle */
-	case XK_Kana_Lock:
-	case XK_Kana_Shift:
-	  pModMap[i] = KanaMask;
-	  break;
-#endif
-
-	/* alternate toggle for multinational support */
-	case XK_Mode_switch:
-	  pModMap[i] = AltLangMask;
-	  break;
-	}
-    }
-
-  pKeySyms->map        = (KeySym *) pMap;
-  pKeySyms->mapWidth   = GLYPHS_PER_KEY;
-  pKeySyms->minKeyCode = MIN_KEYCODE;
-  pKeySyms->maxKeyCode = MAX_KEYCODE;
 }
 
 
@@ -252,6 +187,10 @@ winKeybdProc (DeviceIntPtr pDeviceInt, int iState)
       
     case DEVICE_ON: 
       pDevice->on = TRUE;
+
+      // immediately copy the state of this keyboard device to the VCK
+      // (which otherwise happens lazily after the first keypress)
+      CopyKeyClass(pDeviceInt, inputInfo.keyboard);
       break;
 
     case DEVICE_CLOSE:

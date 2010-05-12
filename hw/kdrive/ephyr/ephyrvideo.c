@@ -302,7 +302,7 @@ ephyrInitVideo (ScreenPtr pScreen)
 
     EPHYR_LOG ("enter\n") ;
 
-    if (screen->fb[0].bitsPerPixel == 8) {
+    if (screen->fb.bitsPerPixel == 8) {
         EPHYR_LOG_ERROR ("8 bits depth not supported\n") ;
         return FALSE ;
     }
@@ -371,10 +371,8 @@ ephyrXVPrivDelete (EphyrXVPriv *a_this)
         ephyrHostXVAdaptorArrayDelete (a_this->host_adaptors) ;
         a_this->host_adaptors = NULL ;
     }
-    if (a_this->adaptors) {
-        xfree (a_this->adaptors) ;
-        a_this->adaptors = NULL ;
-    }
+    xfree (a_this->adaptors) ;
+    a_this->adaptors = NULL ;
     xfree (a_this) ;
     EPHYR_LOG ("leave\n") ;
 }
@@ -675,14 +673,11 @@ ephyrXVPrivRegisterAdaptors (EphyrXVPriv *a_this,
     is_ok = TRUE ;
 
 out:
-    if (registered_adaptors) {
-        xfree (registered_adaptors) ;
-        registered_adaptors = NULL ;
-    }
-    if (adaptors) {
-        xfree (adaptors) ;
-        adaptors=NULL ;
-    }
+    xfree (registered_adaptors) ;
+    registered_adaptors = NULL ;
+    xfree (adaptors) ;
+    adaptors = NULL ;
+
     EPHYR_LOG ("leave\n") ;
     return is_ok ;
 }

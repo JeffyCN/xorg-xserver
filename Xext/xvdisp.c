@@ -1863,10 +1863,10 @@ void XineramifyXv(void)
    XvAdaptorPtr MatchingAdaptors[MAXSCREENS];
    int i, j, k, l;
 
-   XvXRTPort = CreateNewResourceType(XineramaDeleteResource);
+   XvXRTPort = CreateNewResourceType(XineramaDeleteResource, "XvXRTPort");
 
-   if(!xvsp0) return;
-   
+   if (!xvsp0 || !XvXRTPort) return;
+
    for(i = 0; i < xvsp0->nAdaptors; i++) {
       refAdapt = xvsp0->pAdaptors + i;
 
@@ -1912,7 +1912,7 @@ void XineramifyXv(void)
 	    if((pAdapt->type & XvImageMask) && (pAdapt->nImages > 0)) {
 	      hasOverlay = FALSE;
               for(l = 0; l < pAdapt->nAttributes; l++) {
-	         if(!strcmp(pAdapt->name, "XV_COLORKEY")) {
+	         if(!strcmp(pAdapt->pAttributes[l].name, "XV_COLORKEY")) {
 		   hasOverlay = TRUE;
 		   break;
 		 }

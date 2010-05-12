@@ -38,7 +38,6 @@
 #include "xf86Priv.h"
 #include "xf86_OSlib.h"
 #include "xf86OSpriv.h"
-#include "lnx.h"
 #ifdef __alpha__
 #include "shared/xf86Axp.h"
 #endif
@@ -74,15 +73,9 @@ extern int iopl(int __level);
 #endif
 
 #ifdef __alpha__
-
-extern void sethae(unsigned long hae);
-
 # define BUS_BASE bus_base
-
 #else 
-
 #define BUS_BASE (0)
-
 #endif /*  __alpha__ */
 
 /***************************************************************************/
@@ -92,6 +85,10 @@ extern void sethae(unsigned long hae);
 static pointer mapVidMem(int, unsigned long, unsigned long, int);
 static void unmapVidMem(int, pointer, unsigned long);
 #if defined (__alpha__) 
+extern void sethae(unsigned long hae);
+extern unsigned long _bus_base __P ((void)) __attribute__ ((const));
+extern unsigned long _bus_base_sparse __P ((void)) __attribute__ ((const));
+
 static pointer mapVidMemSparse(int, unsigned long, unsigned long, int);
 extern axpDevice lnxGetAXP(void);
 static void unmapVidMemSparse(int, pointer, unsigned long);
@@ -100,7 +97,6 @@ static Bool needSparse;
 static unsigned long hae_thresh;
 static unsigned long hae_mask;
 static unsigned long bus_base;
-static unsigned long sparse_size;
 #endif
 
 #ifdef HAS_MTRR_SUPPORT
@@ -336,7 +332,7 @@ mtrr_undo_wc_region(int screenNum, struct mtrr_wc_region *wcr)
 {
 	struct mtrr_wc_region *p, *prev;
 
-	if (mtrr_fd > 0) {
+	if (mtrr_fd >= 0) {
 		p = wcr;
 		while (p) {
 			if (p->added)
@@ -376,7 +372,6 @@ xf86OSInitVidMem(VidMemInfoPtr pVidMem)
 	  if ((needSparse = (_bus_base_sparse() > 0))) {
 	    hae_thresh = xf86AXPParams[axpSystem].hae_thresh;
 	    hae_mask = xf86AXPParams[axpSystem].hae_mask;
-	    sparse_size = xf86AXPParams[axpSystem].size;
 	  }
 	  bus_base = _bus_base();
 	}

@@ -160,8 +160,20 @@
 /* Define to 1 if you have the <rpcsvc/dbm.h> header file. */
 #undef HAVE_RPCSVC_DBM_H
 
-/* Define to use libmd SHA1 functions instead of OpenSSL libcrypto */
+/* Define to use libc SHA1 functions */
+#undef HAVE_SHA1_IN_LIBC
+
+/* Define to use CommonCrypto SHA1 functions */
+#undef HAVE_SHA1_IN_COMMONCRYPTO
+
+/* Define to use libmd SHA1 functions */
 #undef HAVE_SHA1_IN_LIBMD
+
+/* Define to use libgcrypt SHA1 functions */
+#undef HAVE_SHA1_IN_LIBGCRYPT
+
+/* Define to use libsha1 for SHA1 */
+#undef HAVE_SHA1_IN_LIBSHA1
 
 /* Define to 1 if you have the `shmctl64' function. */
 #undef HAVE_SHMCTL64
@@ -218,6 +230,9 @@
 
 /* Define to 1 if you have the <unistd.h> header file. */
 #undef HAVE_UNISTD_H
+
+/* Define to 1 if you have the <fnmatch.h> header file. */
+#undef HAVE_FNMATCH_H
 
 /* Have /dev/urandom */
 #undef HAVE_URANDOM
@@ -384,6 +399,9 @@
 /* Support D-Bus */
 #undef HAVE_DBUS
 
+/* Use libudev for input hotplug */
+#undef CONFIG_UDEV
+
 /* Use D-Bus for input hotplug */
 #undef CONFIG_NEED_DBUS
 
@@ -395,9 +413,6 @@
 
 /* Use only built-in fonts */
 #undef BUILTIN_FONTS
-
-/* Use an empty root cursor */
-#undef NULL_ROOT_CURSOR
 
 /* Have a monotonic clock from clock_gettime() */
 #undef MONOTONIC_CLOCK

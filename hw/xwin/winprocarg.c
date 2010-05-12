@@ -1,6 +1,7 @@
 /*
 
 Copyright 1993, 1998  The Open Group
+Copyright (C) Colin Harrison 2005-2008
 
 Permission to use, copy, modify, distribute, and sell this software and its
 documentation for any purpose is hereby granted without fee, provided that
@@ -52,11 +53,12 @@ extern Bool			g_fUnicodeClipboard;
 extern Bool			g_fClipboard;
 #endif
 extern int			g_iLogVerbose;
-extern char *			g_pszLogFile;
+extern const char *		g_pszLogFile;
 #ifdef RELOCATE_PROJECTROOT
 extern Bool			g_fLogFileChanged;
 #endif
 extern Bool			g_fXdmcpEnabled;
+extern Bool			g_fAuthEnabled;
 extern char *			g_pszCommandLine;
 extern Bool			g_fKeyboardHookLL;
 extern Bool			g_fNoHelpMessageBox;                     
@@ -887,7 +889,19 @@ ddxProcessArgument (int argc, char *argv[], int i)
    */
   if (IS_OPTION ("-clipboard"))
     {
+      /* Now the default, we still accept the arg for backwards compatibility */
       g_fClipboard = TRUE;
+
+      /* Indicate that we have processed this argument */
+      return 1;
+    }
+
+  /*
+   * Look for the '-noclipboard' argument
+   */
+  if (IS_OPTION ("-noclipboard"))
+    {
+      g_fClipboard = FALSE;
 
       /* Indicate that we have processed this argument */
       return 1;
@@ -1289,6 +1303,15 @@ ddxProcessArgument (int argc, char *argv[], int i)
     }
 
   /*
+   * Look for the '-auth' argument
+   */
+  if (IS_OPTION ("-auth"))
+    {
+      g_fAuthEnabled = TRUE;
+      return 0; /* Let DIX parse this again */
+    }
+
+  /*
    * Look for the '-indirect' or '-broadcast' arguments
    */
   if (IS_OPTION ("-indirect")
@@ -1307,6 +1330,24 @@ ddxProcessArgument (int argc, char *argv[], int i)
       CHECK_ARGS (1);
 #ifdef XWIN_XF86CONFIG
       g_cmdline.configFile = argv[++i];
+#else
+      winMessageBoxF ("The %s option is not supported in this "
+		      "release.\n"
+		      "Ignoring this option and continuing.\n",
+		      MB_ICONINFORMATION,
+		      argv[i]);
+#endif
+      return 2;
+    }
+
+  /*
+   * Look for the '-configdir' argument
+   */
+  if (IS_OPTION ("-configdir"))
+    {
+      CHECK_ARGS (1);
+#ifdef XWIN_XF86CONFIG
+      g_cmdline.configDir = argv[++i];
 #else
       winMessageBoxF ("The %s option is not supported in this "
 		      "release.\n"
@@ -1515,6 +1556,7 @@ winLogVersionInfo (void)
   ErrorF ("Welcome to the XWin X Server\n");
   ErrorF ("Vendor: %s\n", VENDOR_STRING);
   ErrorF ("Release: %d.%d.%d.%d (%d)\n", XORG_VERSION_MAJOR, XORG_VERSION_MINOR, XORG_VERSION_PATCH, XORG_VERSION_SNAP, XORG_VERSION_CURRENT);
+  ErrorF ("%s\n\n", BUILDERSTRING);
   ErrorF ("Contact: %s\n", VENDOR_CONTACT);
 }
 

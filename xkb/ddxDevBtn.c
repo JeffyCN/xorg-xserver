@@ -28,18 +28,9 @@ THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #include <dix-config.h>
 #endif
 
-#include <stdio.h>
-#include <X11/X.h>
-#include <X11/Xproto.h>
-#include <X11/keysym.h>
 #include "inputstr.h"
-#include "scrnintstr.h"
-#include "windowstr.h"
-#include "eventstr.h"
 #include <xkbsrv.h>
 #include "mi.h"
-#include <X11/extensions/XI.h>
-#include <X11/extensions/XIproto.h>
 
 void
 XkbDDXFakeDeviceButton(DeviceIntPtr dev,Bool press,int button)
@@ -51,24 +42,25 @@ XkbDDXFakeDeviceButton(DeviceIntPtr dev,Bool press,int button)
     /* If dev is a slave device, and the SD is attached, do nothing. If we'd
      * post through the attached master pointer we'd get duplicate events.
      *
-     * if dev is a master keyboard, post through the master pointer.
+     * if dev is a master keyboard, post through the XTEST device
      *
      * if dev is a floating slave, post through the device itself.
      */
 
     if (IsMaster(dev))
-        ptr = GetMaster(dev, MASTER_POINTER);
+        ptr = GetXTestDevice(GetMaster(dev, MASTER_POINTER));
     else if (!dev->u.master)
         ptr = dev;
     else
         return;
 
     events = InitEventList(GetMaximumEventsNum());
+    OsBlockSignals();
     nevents = GetPointerEvents(events, ptr,
                                press ? ButtonPress : ButtonRelease, button,
                                0 /* flags */, 0 /* first */,
                                0 /* num_val */, NULL);
-
+    OsReleaseSignals();
 
     for (i = 0; i < nevents; i++)
         mieqProcessDeviceEvent(ptr, (InternalEvent*)events[i].event, NULL);

@@ -93,7 +93,7 @@ static Bool
 compRepaintBorder (ClientPtr pClient, pointer closure)
 {
     WindowPtr pWindow;
-    int rc = dixLookupWindow(&pWindow, (XID)closure, pClient, DixWriteAccess);
+    int rc = dixLookupWindow(&pWindow, (XID)(intptr_t)closure, pClient, DixWriteAccess);
 
     if (rc == Success) {
 	RegionRec exposed;
@@ -124,7 +124,7 @@ compSetPixmapVisitWindow (WindowPtr pWindow, pointer data)
     SetBorderSize (pWindow);
     if (HasBorder (pWindow))
 	QueueWorkProc (compRepaintBorder, serverClient,
-		       (pointer) pWindow->drawable.id);
+		       (pointer)(intptr_t) pWindow->drawable.id);
     return WT_WALKCHILDREN;
 }
 
@@ -205,7 +205,7 @@ compPositionWindow (WindowPtr pWin, int x, int y)
 #ifdef COMPOSITE_DEBUG
     if ((pWin->redirectDraw != RedirectDrawNone) !=
 	(pWin->viewable && (GetCompWindow(pWin) != NULL)))
-	abort ();
+	OsAbort ();
 #endif
     if (pWin->redirectDraw != RedirectDrawNone)
     {

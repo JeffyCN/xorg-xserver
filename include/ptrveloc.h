@@ -37,7 +37,8 @@
 #define AccelProfileSimple 4
 #define AccelProfilePower 5
 #define AccelProfileLinear 6
-#define AccelProfileLAST AccelProfileLinear
+#define AccelProfileSmoothLimited 7
+#define AccelProfileLAST AccelProfileSmoothLimited
 
 /* fwd */
 struct _DeviceVelocityRec;
@@ -108,6 +109,9 @@ FreeVelocityData(DeviceVelocityPtr vel);
 
 extern _X_INTERNAL BOOL
 InitializePredictableAccelerationProperties(DeviceIntPtr dev);
+
+extern _X_INTERNAL BOOL
+DeletePredictableAccelerationProperties(DeviceIntPtr dev);
 
 extern _X_EXPORT int
 SetAccelerationProfile(DeviceVelocityPtr vel, int profile_num);

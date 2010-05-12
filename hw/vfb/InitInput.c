@@ -148,3 +148,8 @@ InitInput(int argc, char *argv[])
     AssignTypeAndName(k, xiclass, "Xvfb keyboard");
     (void)mieqInit();
 }
+
+void
+CloseInput (void)
+{
+}

@@ -165,6 +165,7 @@ typedef struct {
     BitmapToRegionProcPtr        SavedBitmapToRegion;
     CreateScreenResourcesProcPtr SavedCreateScreenResources;
     ModifyPixmapHeaderProcPtr    SavedModifyPixmapHeader;
+    SourceValidateProcPtr        SavedSourceValidate;
 #ifdef RENDER
     CompositeProcPtr             SavedComposite;
     TrianglesProcPtr		 SavedTriangles;
@@ -173,11 +174,10 @@ typedef struct {
     AddTrapsProcPtr		 SavedAddTraps;
 #endif
     void (*do_migration) (ExaMigrationPtr pixmaps, int npixmaps, Bool can_accel);
-    Bool (*pixmap_is_offscreen) (PixmapPtr pPixmap);
+    Bool (*pixmap_has_gpu_copy) (PixmapPtr pPixmap);
     void (*do_move_in_pixmap) (PixmapPtr pPixmap);
     void (*do_move_out_pixmap) (PixmapPtr pPixmap);
     void (*prepare_access_reg)(PixmapPtr pPixmap, int index, RegionPtr pReg);
-    void (*finish_access)(PixmapPtr pPixmap, int index);
 
     Bool			 swappedOut;
     enum ExaMigrationHeuristic	 migration;
@@ -188,11 +188,13 @@ typedef struct {
     unsigned			 numOffscreenAvailable;
     CARD32			 lastDefragment;
     CARD32			 nextDefragment;
+    PixmapPtr			 deferred_mixed_pixmap;
 
     /* Reference counting for accessed pixmaps */
     struct {
 	PixmapPtr pixmap;
 	int count;
+	Bool retval;
     } access[EXA_NUM_PREPARE_INDICES];
 
     /* Holds information on fallbacks that cannot be relayed otherwise. */
@@ -200,6 +202,15 @@ typedef struct {
     unsigned int fallback_counter;
 
     ExaGlyphCacheRec             glyphCaches[EXA_NUM_GLYPH_CACHES];
+
+    /**
+     * Regions affected by fallback composite source / mask operations.
+     */
+
+    RegionRec srcReg;
+    RegionRec maskReg;
+    PixmapPtr srcPix;
+
 } ExaScreenPrivRec, *ExaScreenPrivPtr;
 
 /*
@@ -282,7 +293,7 @@ extern DevPrivateKey exaGCPrivateKey;
 typedef struct {
     ExaOffscreenArea *area;
     int		    score;	/**< score for the move-in vs move-out heuristic */
-    Bool	    offscreen;
+    Bool	    use_gpu_copy;
 
     CARD8	    *sys_ptr;	/**< pointer to pixmap data in system memory */
     int		    sys_pitch;	/**< pitch of pixmap in system memory */
@@ -538,7 +549,7 @@ exaGetDrawableDeltas (DrawablePtr pDrawable, PixmapPtr pPixmap,
 		      int *xp, int *yp);
 
 Bool
-exaPixmapIsOffscreen(PixmapPtr p);
+exaPixmapHasGpuCopy(PixmapPtr p);
 
 PixmapPtr
 exaGetOffscreenPixmap (DrawablePtr pDrawable, int *xp, int *yp);
@@ -575,7 +586,7 @@ Bool
 exaDestroyPixmap_classic (PixmapPtr pPixmap);
 
 Bool
-exaPixmapIsOffscreen_classic(PixmapPtr pPixmap);
+exaPixmapHasGpuCopy_classic(PixmapPtr pPixmap);
 
 /* exa_driver.c */
 PixmapPtr
@@ -590,7 +601,7 @@ Bool
 exaDestroyPixmap_driver (PixmapPtr pPixmap);
 
 Bool
-exaPixmapIsOffscreen_driver(PixmapPtr pPixmap);
+exaPixmapHasGpuCopy_driver(PixmapPtr pPixmap);
 
 /* exa_mixed.c */
 PixmapPtr
@@ -605,7 +616,7 @@ Bool
 exaDestroyPixmap_mixed(PixmapPtr pPixmap);
 
 Bool
-exaPixmapIsOffscreen_mixed(PixmapPtr pPixmap);
+exaPixmapHasGpuCopy_mixed(PixmapPtr pPixmap);
 
 /* exa_migration_mixed.c */
 void
@@ -618,10 +629,10 @@ void
 exaMoveInPixmap_mixed(PixmapPtr pPixmap);
 
 void
-exaPrepareAccessReg_mixed(PixmapPtr pPixmap, int index, RegionPtr pReg);
+exaDamageReport_mixed(DamagePtr pDamage, RegionPtr pRegion, void *closure);
 
 void
-exaFinishAccess_mixed(PixmapPtr pPixmap, int index);
+exaPrepareAccessReg_mixed(PixmapPtr pPixmap, int index, RegionPtr pReg);
 
 /* exa_render.c */
 Bool

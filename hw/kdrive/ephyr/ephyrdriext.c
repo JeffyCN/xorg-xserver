@@ -140,7 +140,11 @@ ephyrDRIExtensionInit (ScreenPtr a_screen)
     EPHYR_LOG ("host X does have XShape extension\n") ;
 
 #ifdef XF86DRI_EVENTS
-    EventType = CreateNewResourceType (XF86DRIFreeEvents);
+    EventType = CreateNewResourceType (XF86DRIFreeEvents, "DRIEvents");
+    if (!EventType) {
+        EPHYR_LOG_ERROR ("failed to register DRI event resource type\n") ;
+        goto out ;
+    }
 #endif
 
     if ((extEntry = AddExtension(XF86DRINAME,
@@ -436,10 +440,9 @@ ephyrDRIClipNotify (WindowPtr a_win,
     is_ok = TRUE ;
 
 out:
-    if (rects) {
-        xfree (rects) ;
-        rects = NULL ;
-    }
+    xfree (rects) ;
+    rects = NULL ;
+
     EPHYR_LOG ("leave. is_ok:%d\n", is_ok) ;
     /*do cleanup here*/
 }
@@ -562,10 +565,9 @@ EphyrDuplicateVisual (unsigned int a_screen,
 
     is_ok = TRUE ;
 out:
-    if (new_visuals) {
-        xfree (new_visuals) ;
-        new_visuals = NULL ;
-    }
+    xfree (new_visuals) ;
+    new_visuals = NULL ;
+
     EPHYR_LOG ("leave\n") ; 
     return is_ok ;
 }
@@ -1250,10 +1252,9 @@ ProcXF86DRIGetDrawableInfo (register ClientPtr client)
                       sizeof(drm_clip_rect_t) * rep.numBackClipRects,
                       (char *)backClipRects);
     }
-    if (clipRects) {
-        xfree(clipRects);
-        clipRects = NULL ;
-    }
+    xfree(clipRects);
+    clipRects = NULL ;
+
     EPHYR_LOG ("leave\n") ;
 
     return (client->noClientException);

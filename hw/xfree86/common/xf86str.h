@@ -241,20 +241,6 @@ typedef struct x_ClockRange {
     int			PrivFlags;
 } ClockRange, *ClockRangePtr;
 
-/* Need to store the strategy with clockRange for VidMode extension */
-typedef struct x_ClockRanges {
-    struct x_ClockRanges *next;
-    int			minClock;
-    int			maxClock;
-    int			clockIndex;	/* -1 for programmable clocks */
-    Bool		interlaceAllowed;
-    Bool		doubleScanAllowed;
-    int			ClockMulFactor;
-    int			ClockDivFactor;
-    int			PrivFlags;
-    int			strategy;
-} ClockRanges, *ClockRangesPtr;
-
 /*
  * The driverFunc. xorgDriverFuncOp specifies the action driver should
  * perform. If requested option is not supported function should return
@@ -299,6 +285,7 @@ typedef struct {
 /* GET_REQUIRED_HW_INTERFACES */
 #define HW_IO 1
 #define HW_MMIO 2
+#define HW_SKIP_CONSOLE 4
 #define NEED_IO_ENABLED(x) (x & HW_IO)
 
 typedef CARD32 xorgHWFlags;
@@ -785,7 +772,7 @@ typedef struct _ScrnInfoRec {
     Bool		silkenMouse;
 
     /* Storage for clockRanges and adjustFlags for use with the VidMode ext */
-    ClockRangesPtr	clockRanges;
+    ClockRangePtr	clockRanges;
     int			adjustFlags;
 
     /*

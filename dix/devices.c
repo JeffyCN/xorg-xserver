@@ -686,7 +686,6 @@ FreeDeviceClass(int type, pointer *class)
             {
                 ValuatorClassPtr *v = (ValuatorClassPtr*)class;
 
-                /* Counterpart to 'biggest hack ever' in init. */
                 if ((*v)->motion)
                     xfree((*v)->motion);
                 xfree((*v));
@@ -1260,6 +1259,8 @@ InitPointerAccelerationScheme(DeviceIntPtr dev,
     if(-1 == i)
         return FALSE;
 
+    if (val->accelScheme.AccelCleanupProc)
+        val->accelScheme.AccelCleanupProc(dev);
 
     /* init scheme-specific data */
     switch(scheme){

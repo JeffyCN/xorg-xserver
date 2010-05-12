@@ -50,7 +50,6 @@
 #include "indirect_dispatch.h"
 #include "indirect_table.h"
 #include "indirect_util.h"
-#include "protocol-versions.h"
 
 static int
 validGlxScreen(ClientPtr client, int screen, __GLXscreen **pGlxScreen, int *err)
@@ -162,7 +161,11 @@ validGlxDrawable(ClientPtr client, XID id, int type, int access_mode,
 	return FALSE;
     }
 
+    /* If the ID of the glx drawable we looked up doesn't match the id
+     * we looked for, it's because we looked it up under the X
+     * drawable ID (see DoCreateGLXDrawable). */
     if (rc == BadValue ||
+	(*drawable)->drawId != id ||
 	(type != GLX_DRAWABLE_ANY && type != (*drawable)->type)) {
 	client->errorValue = id;
 	switch (type) {
@@ -739,8 +742,8 @@ int __glXDisp_QueryVersion(__GLXclientState *cl, GLbyte *pc)
     ** client if it wants to work with older clients; however, in this
     ** implementation the server just returns its version number.
     */
-    reply.majorVersion = SERVER_GLX_MAJOR_VERSION;
-    reply.minorVersion = SERVER_GLX_MINOR_VERSION;
+    reply.majorVersion = glxMajorVersion;
+    reply.minorVersion = glxMinorVersion;
     reply.length = 0;
     reply.type = X_Reply;
     reply.sequenceNumber = client->sequence;
@@ -1098,14 +1101,6 @@ __glXDrawableInit(__GLXdrawable *drawable,
 void
 __glXDrawableRelease(__GLXdrawable *drawable)
 {
-    ScreenPtr pScreen = drawable->pDraw->pScreen;
-
-    switch (drawable->type) {
-    case GLX_DRAWABLE_PIXMAP:
-    case GLX_DRAWABLE_PBUFFER:
-	(*pScreen->DestroyPixmap)((PixmapPtr) drawable->pDraw);
-	break;
-    }
 }
 
 static int 
@@ -1113,8 +1108,6 @@ DoCreateGLXDrawable(ClientPtr client, __GLXscreen *pGlxScreen, __GLXconfig *conf
 		    DrawablePtr pDraw, XID glxDrawableId, int type)
 {
     __GLXdrawable *pGlxDraw;
-
-    LEGAL_NEW_RESOURCE(glxDrawableId, client);
 
     if (pGlxScreen->pScreen != pDraw->pScreen)
 	return BadMatch;
@@ -1129,6 +1122,15 @@ DoCreateGLXDrawable(ClientPtr client, __GLXscreen *pGlxScreen, __GLXconfig *conf
 	return BadAlloc;
     }
 
+    /* Add the glx drawable under the XID of the underlying X drawable
+     * too.  That way we'll get a callback in DrawableGone and can
+     * clean up properly when the drawable is destroyed. */
+    if (pDraw->id != glxDrawableId &&
+	!AddResource(pDraw->id, __glXDrawableRes, pGlxDraw)) {
+	pGlxDraw->destroy (pGlxDraw);
+	return BadAlloc;
+    }
+
     return Success;
 }
 
@@ -1138,6 +1140,8 @@ DoCreateGLXPixmap(ClientPtr client, __GLXscreen *pGlxScreen, __GLXconfig *config
 {
     DrawablePtr pDraw;
     int err;
+
+    LEGAL_NEW_RESOURCE(glxDrawableId, client);
 
     err = dixLookupDrawable(&pDraw, drawableId, client, 0, DixAddAccess);
     if (err != Success) {
@@ -1151,9 +1155,6 @@ DoCreateGLXPixmap(ClientPtr client, __GLXscreen *pGlxScreen, __GLXconfig *config
 
     err = DoCreateGLXDrawable(client, pGlxScreen, config, pDraw,
 			      glxDrawableId, GLX_DRAWABLE_PIXMAP);
-
-    if (err == Success)
-	((PixmapPtr) pDraw)->refcnt++;
 
     return err;
 }
@@ -1295,6 +1296,8 @@ DoCreatePbuffer(ClientPtr client, int screenNum, XID fbconfigId,
     PixmapPtr		 pPixmap;
     int			 err;
 
+    LEGAL_NEW_RESOURCE(glxDrawableId, client);
+
     if (!validGlxScreen(client, screenNum, &pGlxScreen, &err))
 	return err;
     if (!validGlxFBConfig(client, pGlxScreen, fbconfigId, &config, &err))
@@ -1304,6 +1307,13 @@ DoCreatePbuffer(ClientPtr client, int screenNum, XID fbconfigId,
     pPixmap = (*pGlxScreen->pScreen->CreatePixmap) (pGlxScreen->pScreen,
 						    width, height, config->rgbBits, 0);
     __glXleaveServer(GL_FALSE);
+
+    /* Assign the pixmap the same id as the pbuffer and add it as a
+     * resource so it and the DRI2 drawable will be reclaimed when the
+     * pbuffer is destroyed. */
+    pPixmap->drawable.id = glxDrawableId;
+    if (!AddResource(pPixmap->drawable.id, RT_PIXMAP, pPixmap))
+	return BadAlloc;
 
     return DoCreateGLXDrawable(client, pGlxScreen, config, &pPixmap->drawable,
 			       glxDrawableId, GLX_DRAWABLE_PBUFFER);
@@ -1412,6 +1422,8 @@ int __glXDisp_CreateWindow(__GLXclientState *cl, GLbyte *pc)
     DrawablePtr		 pDraw;
     int			 err;
 
+    LEGAL_NEW_RESOURCE(req->glxwindow, client);
+
     if (!validGlxScreen(client, req->screen, &pGlxScreen, &err))
 	return err;
     if (!validGlxFBConfig(client, pGlxScreen, req->fbconfig, &config, &err))
@@ -1482,7 +1494,7 @@ int __glXDisp_SwapBuffers(__GLXclientState *cl, GLbyte *pc)
 	return error;
 
     if (pGlxDraw->type == DRAWABLE_WINDOW &&
-	(*pGlxDraw->swapBuffers)(pGlxDraw) == GL_FALSE)
+	(*pGlxDraw->swapBuffers)(cl->client, pGlxDraw) == GL_FALSE)
 	return __glXError(GLXBadDrawable);
 
     return Success;
@@ -2058,7 +2070,7 @@ int __glXDisp_BindSwapBarrierSGIX(__GLXclientState *cl, GLbyte *pc)
             if (ret == Success) {
                 if (barrier)
                     /* add source for cleanup when drawable is gone */
-                    AddResource(drawable, __glXSwapBarrierRes, (pointer)screen);
+                    AddResource(drawable, __glXSwapBarrierRes, (pointer)(intptr_t)screen);
                 else
                     /* delete source */
                     FreeResourceByType(drawable, __glXSwapBarrierRes, FALSE);
@@ -2360,6 +2372,7 @@ int __glXDisp_QueryServerString(__GLXclientState *cl, GLbyte *pc)
     char *buf;
     __GLXscreen *pGlxScreen;
     int err;
+    char ver_str[16];
 
     if (!validGlxScreen(client, req->screen, &pGlxScreen, &err))
 	return err;
@@ -2369,7 +2382,11 @@ int __glXDisp_QueryServerString(__GLXclientState *cl, GLbyte *pc)
 	    ptr = pGlxScreen->GLXvendor;
 	    break;
 	case GLX_VERSION:
-	    ptr = pGlxScreen->GLXversion;
+	    /* Return to the server version rather than the screen version
+	     * to prevent confusion when they do not match.
+	     */
+	    snprintf(ver_str, 16, "%d.%d", glxMajorVersion, glxMinorVersion);
+	    ptr = ver_str;
 	    break;
 	case GLX_EXTENSIONS:
 	    ptr = pGlxScreen->GLXextensions;

@@ -157,6 +157,10 @@ exaDoPutImage (DrawablePtr pDrawable, GCPtr pGC, int depth, int x, int y,
     if (pExaScr->fallback_counter || pExaPixmap->accel_blocked || !pExaScr->info->UploadToScreen)
 	return FALSE;
 
+    /* If there's a system copy, we want to save the result there */
+    if (pExaPixmap->pDamage)
+	return FALSE;
+
     /* Don't bother with under 8bpp, XYPixmaps. */
     if (format != ZPixmap || bpp < 8)
 	return FALSE;
@@ -482,9 +486,9 @@ exaHWCopyNtoN (DrawablePtr    pSrcDrawable,
 	goto fallback;
     }
 
-    if (exaPixmapIsOffscreen(pDstPixmap)) {
+    if (exaPixmapHasGpuCopy(pDstPixmap)) {
 	/* Normal blitting. */
-	if (exaPixmapIsOffscreen(pSrcPixmap)) {
+	if (exaPixmapHasGpuCopy(pSrcPixmap)) {
 	    if (!(*pExaScr->info->PrepareCopy) (pSrcPixmap, pDstPixmap, reverse ? -1 : 1,
 						upsidedown ? -1 : 1,
 						pGC ? pGC->alu : GXcopy,
@@ -504,8 +508,11 @@ exaHWCopyNtoN (DrawablePtr    pSrcDrawable,
 
 	    (*pExaScr->info->DoneCopy) (pDstPixmap);
 	    exaMarkSync (pDstDrawable->pScreen);
-	/* UTS: mainly for SHM PutImage's secondary path. */
-	} else if (pSrcExaPixmap->sys_ptr) {
+	/* UTS: mainly for SHM PutImage's secondary path.
+	 *
+	 * Only taking this path for directly accessible pixmaps.
+	 */
+	} else if (!pDstExaPixmap->pDamage && pSrcExaPixmap->sys_ptr) {
 	    int bpp = pSrcDrawable->bitsPerPixel;
 	    int src_stride = exaGetPixmapPitch(pSrcPixmap);
 	    CARD8 *src = NULL;
@@ -835,7 +842,7 @@ exaPolyFillRect(DrawablePtr pDrawable,
 	exaDoMigration (pixmaps, 1, TRUE);
     }
 
-    if (!exaPixmapIsOffscreen (pPixmap) ||
+    if (!exaPixmapHasGpuCopy (pPixmap) ||
 	!(*pExaScr->info->PrepareSolid) (pPixmap,
 					 pGC->alu,
 					 pGC->planemask,
@@ -1017,7 +1024,7 @@ exaFillRegionSolid (DrawablePtr	pDrawable, RegionPtr pRegion, Pixel pixel,
 	exaDoMigration (pixmaps, 1, TRUE);
     }
 
-    if (exaPixmapIsOffscreen (pPixmap) &&
+    if (exaPixmapHasGpuCopy (pPixmap) &&
 	(*pExaScr->info->PrepareSolid) (pPixmap, alu, planemask, pixel))
     {
 	int nbox;
@@ -1040,6 +1047,7 @@ exaFillRegionSolid (DrawablePtr	pDrawable, RegionPtr pRegion, Pixel pixel,
 	    pDrawable->width == 1 && pDrawable->height == 1 &&
 	    pDrawable->bitsPerPixel != 24) {
 	    ExaPixmapPriv(pPixmap);
+	    RegionPtr pending_damage = DamagePendingRegion(pExaPixmap->pDamage);
 
 	    switch (pDrawable->bitsPerPixel) {
 	    case 32:
@@ -1054,6 +1062,9 @@ exaFillRegionSolid (DrawablePtr	pDrawable, RegionPtr pRegion, Pixel pixel,
 
 	    REGION_UNION(pScreen, &pExaPixmap->validSys, &pExaPixmap->validSys,
 			 pRegion);
+	    REGION_UNION(pScreen, &pExaPixmap->validFB, &pExaPixmap->validFB,
+			 pRegion);
+	    REGION_SUBTRACT(pScreen, pending_damage, pending_damage, pRegion);
 	}
 
 	ret = TRUE;
@@ -1120,7 +1131,7 @@ exaFillRegionTiled (DrawablePtr pDrawable, RegionPtr pRegion, PixmapPtr pTile,
 
     pPixmap = exaGetOffscreenPixmap (pDrawable, &xoff, &yoff);
 
-    if (!pPixmap || !exaPixmapIsOffscreen(pTile))
+    if (!pPixmap || !exaPixmapHasGpuCopy(pTile))
 	return FALSE;
 
     if ((*pExaScr->info->PrepareCopy) (pTile, pPixmap, 1, 1, alu, planemask))
@@ -1254,35 +1265,16 @@ exaGetImage (DrawablePtr pDrawable, int x, int y, int w, int h,
 {
     ExaScreenPriv (pDrawable->pScreen);
     PixmapPtr pPix = exaGetDrawablePixmap (pDrawable);
+    ExaPixmapPriv(pPix);
     int xoff, yoff;
     Bool ok;
 
     if (pExaScr->fallback_counter || pExaScr->swappedOut)
 	goto fallback;
 
-    exaGetDrawableDeltas (pDrawable, pPix, &xoff, &yoff);
-
-    if (pExaScr->do_migration) {
-	BoxRec Box;
-	RegionRec Reg;
-	ExaMigrationRec pixmaps[1];
-
-	Box.x1 = pDrawable->y + x + xoff;
-	Box.y1 = pDrawable->y + y + yoff;
-	Box.x2 = Box.x1 + w;
-	Box.y2 = Box.y1 + h;
-
-	REGION_INIT(pScreen, &Reg, &Box, 1);
-
-	pixmaps[0].as_dst = FALSE;
-	pixmaps[0].as_src = TRUE;
-	pixmaps[0].pPix = pPix;
-	pixmaps[0].pReg = &Reg;
-
-	exaDoMigration(pixmaps, 1, FALSE);
-
-	REGION_UNINIT(pScreen, &Reg);
-    }
+    /* If there's a system copy, we want to save the result there */
+    if (pExaPixmap->pDamage)
+	goto fallback;
 
     pPix = exaGetOffscreenPixmap (pDrawable, &xoff, &yoff);
 

@@ -233,19 +233,19 @@ exaPixmapIsPinned (PixmapPtr pPix)
 }
 
 /**
- * exaPixmapIsOffscreen() is used to determine if a pixmap is in offscreen
+ * exaPixmapHasGpuCopy() is used to determine if a pixmap is in offscreen
  * memory, meaning that acceleration could probably be done to it, and that it
  * will need to be wrapped by PrepareAccess()/FinishAccess() when accessing it
  * with the CPU.
  *
  * Note that except for UploadToScreen()/DownloadFromScreen() (which explicitly
  * deal with moving pixmaps in and out of system memory), EXA will give drivers
- * pixmaps as arguments for which exaPixmapIsOffscreen() is TRUE.
+ * pixmaps as arguments for which exaPixmapHasGpuCopy() is TRUE.
  *
  * @return TRUE if the given drawable is in framebuffer memory.
  */
 Bool
-exaPixmapIsOffscreen(PixmapPtr pPixmap)
+exaPixmapHasGpuCopy(PixmapPtr pPixmap)
 {
     ScreenPtr	pScreen = pPixmap->drawable.pScreen;
     ExaScreenPriv(pScreen);
@@ -253,16 +253,16 @@ exaPixmapIsOffscreen(PixmapPtr pPixmap)
     if (!(pExaScr->info->flags & EXA_OFFSCREEN_PIXMAPS))
 	return FALSE;
 
-    return (*pExaScr->pixmap_is_offscreen)(pPixmap);
+    return (*pExaScr->pixmap_has_gpu_copy)(pPixmap);
 }
 
 /**
- * exaDrawableIsOffscreen() is a convenience wrapper for exaPixmapIsOffscreen().
+ * exaDrawableIsOffscreen() is a convenience wrapper for exaPixmapHasGpuCopy().
  */
 Bool
 exaDrawableIsOffscreen (DrawablePtr pDrawable)
 {
-    return exaPixmapIsOffscreen (exaGetDrawablePixmap (pDrawable));
+    return exaPixmapHasGpuCopy (exaGetDrawablePixmap (pDrawable));
 }
 
 /**
@@ -276,14 +276,14 @@ exaGetOffscreenPixmap (DrawablePtr pDrawable, int *xp, int *yp)
 
     exaGetDrawableDeltas (pDrawable, pPixmap, xp, yp);
 
-    if (exaPixmapIsOffscreen (pPixmap))
+    if (exaPixmapHasGpuCopy (pPixmap))
 	return pPixmap;
     else
 	return NULL;
 }
 
 /**
- * Returns TRUE if pixmap can be accessed offscreen.
+ * Returns TRUE if the pixmap GPU copy is being accessed.
  */
 Bool
 ExaDoPrepareAccess(PixmapPtr pPixmap, int index)
@@ -291,7 +291,7 @@ ExaDoPrepareAccess(PixmapPtr pPixmap, int index)
     ScreenPtr pScreen = pPixmap->drawable.pScreen;
     ExaScreenPriv (pScreen);
     ExaPixmapPriv(pPixmap);
-    Bool offscreen;
+    Bool has_gpu_copy, ret;
     int i;
 
     if (!(pExaScr->info->flags & EXA_OFFSCREEN_PIXMAPS))
@@ -304,7 +304,7 @@ ExaDoPrepareAccess(PixmapPtr pPixmap, int index)
     for (i = 0; i < EXA_NUM_PREPARE_INDICES; i++) {
 	if (pExaScr->access[i].pixmap == pPixmap) {
 	    pExaScr->access[i].count++;
-	    return TRUE;
+	    return pExaScr->access[i].retval;
 	}
     }
 
@@ -321,31 +321,35 @@ ExaDoPrepareAccess(PixmapPtr pPixmap, int index)
 			     pPixmap->devPrivate.ptr));
     }
 
-    offscreen = exaPixmapIsOffscreen(pPixmap);
+    has_gpu_copy = exaPixmapHasGpuCopy(pPixmap);
 
-    if (offscreen && pExaPixmap->fb_ptr)
+    if (has_gpu_copy && pExaPixmap->fb_ptr) {
 	pPixmap->devPrivate.ptr = pExaPixmap->fb_ptr;
-    else
+	ret = TRUE;
+    } else {
 	pPixmap->devPrivate.ptr = pExaPixmap->sys_ptr;
+	ret = FALSE;
+    }
 
     /* Store so we can handle repeated / nested calls. */
     pExaScr->access[index].pixmap = pPixmap;
     pExaScr->access[index].count = 1;
 
-    if (!offscreen)
-	return FALSE;
+    if (!has_gpu_copy)
+	goto out;
 
     exaWaitSync (pScreen);
 
     if (pExaScr->info->PrepareAccess == NULL)
-	return TRUE;
+	goto out;
 
     if (index >= EXA_PREPARE_AUX_DEST &&
 	!(pExaScr->info->flags & EXA_SUPPORTS_PREPARE_AUX)) {
 	if (pExaPixmap->score == EXA_PIXMAP_SCORE_PINNED)
 	    FatalError("Unsupported AUX indices used on a pinned pixmap.\n");
 	exaMoveOutPixmap (pPixmap);
-	return FALSE;
+	ret = FALSE;
+	goto out;
     }
 
     if (!(*pExaScr->info->PrepareAccess) (pPixmap, index)) {
@@ -353,11 +357,15 @@ ExaDoPrepareAccess(PixmapPtr pPixmap, int index)
 	    !(pExaScr->info->flags & EXA_MIXED_PIXMAPS))
 	    FatalError("Driver failed PrepareAccess on a pinned pixmap.\n");
 	exaMoveOutPixmap (pPixmap);
-
-	return FALSE;
+	ret = FALSE;
+	goto out;
     }
 
-    return TRUE;
+    ret = TRUE;
+
+out:
+    pExaScr->access[index].retval = ret;
+    return ret;
 }
 
 /**
@@ -409,18 +417,15 @@ exaFinishAccess(DrawablePtr pDrawable, int index)
 
     /* Catch unbalanced Prepare/FinishAccess calls. */
     if (i == EXA_NUM_PREPARE_INDICES)
-	EXA_FatalErrorDebug(("EXA bug: FinishAccess called without PrepareAccess for pixmap 0x%p.\n",
-			     pPixmap));
+      EXA_FatalErrorDebugWithRet(("EXA bug: FinishAccess called without PrepareAccess for pixmap 0x%p.\n",
+				  pPixmap),);
 
     pExaScr->access[i].pixmap = NULL;
 
     /* We always hide the devPrivate.ptr. */
     pPixmap->devPrivate.ptr = NULL;
 
-    if (pExaScr->finish_access)
-	pExaScr->finish_access(pPixmap, index);
-
-    if (!pExaScr->info->FinishAccess || !exaPixmapIsOffscreen(pPixmap))
+    if (!pExaScr->info->FinishAccess || !exaPixmapHasGpuCopy(pPixmap))
 	return;
 
     if (i >= EXA_PREPARE_AUX_DEST &&
@@ -695,9 +700,17 @@ ExaBlockHandler(int screenNum, pointer blockData, pointer pTimeout,
     ScreenPtr pScreen = screenInfo.screens[screenNum];
     ExaScreenPriv(pScreen);
 
+    /* Move any deferred results from a software fallback to the driver pixmap */
+    if (pExaScr->deferred_mixed_pixmap)
+	exaMoveInPixmap_mixed(pExaScr->deferred_mixed_pixmap);
+
     unwrap(pExaScr, pScreen, BlockHandler);
     (*pScreen->BlockHandler) (screenNum, blockData, pTimeout, pReadmask);
     wrap(pExaScr, pScreen, BlockHandler, ExaBlockHandler);
+
+    /* The rest only applies to classic EXA */
+    if (pExaScr->info->flags & EXA_HANDLES_PIXMAPS)
+	return;
 
     /* Try and keep the offscreen memory area tidy every now and then (at most 
      * once per second) when the server has been idle for at least 100ms.
@@ -912,10 +925,12 @@ exaDriverInit (ScreenPtr		pScreen,
      * Replace various fb screen functions
      */
     if ((pExaScr->info->flags & EXA_OFFSCREEN_PIXMAPS) &&
-	!(pExaScr->info->flags & EXA_HANDLES_PIXMAPS)) {
+	(!(pExaScr->info->flags & EXA_HANDLES_PIXMAPS) ||
+	 (pExaScr->info->flags & EXA_MIXED_PIXMAPS)))
 	wrap(pExaScr, pScreen, BlockHandler, ExaBlockHandler);
+    if ((pExaScr->info->flags & EXA_OFFSCREEN_PIXMAPS) &&
+	!(pExaScr->info->flags & EXA_HANDLES_PIXMAPS))
 	wrap(pExaScr, pScreen, WakeupHandler, ExaWakeupHandler);
-    }
     wrap(pExaScr, pScreen, CreateGC, exaCreateGC);
     wrap(pExaScr, pScreen, CloseScreen, exaCloseScreen);
     wrap(pExaScr, pScreen, GetImage, exaGetImage);
@@ -959,32 +974,29 @@ exaDriverInit (ScreenPtr		pScreen,
 		wrap(pExaScr, pScreen, DestroyPixmap, exaDestroyPixmap_mixed);
 		wrap(pExaScr, pScreen, ModifyPixmapHeader, exaModifyPixmapHeader_mixed);
 		pExaScr->do_migration = exaDoMigration_mixed;
-		pExaScr->pixmap_is_offscreen = exaPixmapIsOffscreen_mixed;
+		pExaScr->pixmap_has_gpu_copy = exaPixmapHasGpuCopy_mixed;
 		pExaScr->do_move_in_pixmap = exaMoveInPixmap_mixed;
 		pExaScr->do_move_out_pixmap = NULL;
 		pExaScr->prepare_access_reg = exaPrepareAccessReg_mixed;
-		pExaScr->finish_access = exaFinishAccess_mixed;
 	    } else {
 		wrap(pExaScr, pScreen, CreatePixmap, exaCreatePixmap_driver);
 		wrap(pExaScr, pScreen, DestroyPixmap, exaDestroyPixmap_driver);
 		wrap(pExaScr, pScreen, ModifyPixmapHeader, exaModifyPixmapHeader_driver);
 		pExaScr->do_migration = NULL;
-		pExaScr->pixmap_is_offscreen = exaPixmapIsOffscreen_driver;
+		pExaScr->pixmap_has_gpu_copy = exaPixmapHasGpuCopy_driver;
 		pExaScr->do_move_in_pixmap = NULL;
 		pExaScr->do_move_out_pixmap = NULL;
 		pExaScr->prepare_access_reg = NULL;
-		pExaScr->finish_access = NULL;
 	    }
 	} else {
 	    wrap(pExaScr, pScreen, CreatePixmap, exaCreatePixmap_classic);
 	    wrap(pExaScr, pScreen, DestroyPixmap, exaDestroyPixmap_classic);
 	    wrap(pExaScr, pScreen, ModifyPixmapHeader, exaModifyPixmapHeader_classic);
 	    pExaScr->do_migration = exaDoMigration_classic;
-	    pExaScr->pixmap_is_offscreen = exaPixmapIsOffscreen_classic;
+	    pExaScr->pixmap_has_gpu_copy = exaPixmapHasGpuCopy_classic;
 	    pExaScr->do_move_in_pixmap = exaMoveInPixmap_classic;
 	    pExaScr->do_move_out_pixmap = exaMoveOutPixmap_classic;
 	    pExaScr->prepare_access_reg = exaPrepareAccessReg_classic;
-	    pExaScr->finish_access = NULL;
 	}
 	if (!(pExaScr->info->flags & EXA_HANDLES_PIXMAPS)) {
 	    LogMessage(X_INFO, "EXA(%d): Offscreen pixmap area of %lu bytes\n",

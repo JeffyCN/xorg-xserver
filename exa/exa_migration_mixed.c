@@ -80,7 +80,7 @@ exaDoMigration_mixed(ExaMigrationPtr pixmaps, int npixmaps, Bool can_accel)
      */
     for (i = 0; i < npixmaps; i++) {
 	if (exaPixmapIsPinned (pixmaps[i].pPix) &&
-	    !exaPixmapIsOffscreen (pixmaps[i].pPix))
+	    !exaPixmapHasGpuCopy (pixmaps[i].pPix))
 	{
 	    can_accel = FALSE;
 	    break;
@@ -98,12 +98,26 @@ exaDoMigration_mixed(ExaMigrationPtr pixmaps, int npixmaps, Bool can_accel)
 	if (!pExaPixmap->driverPriv)
 	    exaCreateDriverPixmap_mixed(pPixmap);
 
-	if (pExaPixmap->pDamage && exaPixmapIsOffscreen(pPixmap)) {
+	if (pExaPixmap->pDamage && exaPixmapHasGpuCopy(pPixmap)) {
+	    ExaScreenPriv(pPixmap->drawable.pScreen);
+
+	    /* This pitch is needed for proper acceleration. For some reason
+	     * there are pixmaps without pDamage and a bad fb_pitch value.
+	     * So setting devKind when only exaPixmapHasGpuCopy() is true
+	     * causes corruption. Pixmaps without pDamage are not migrated
+	     * and should have a valid devKind at all times, so that's why this
+	     * isn't causing problems. Pixmaps have their gpu pitch set the
+	     * first time in the MPH call from exaCreateDriverPixmap_mixed().
+	     */
 	    pPixmap->devKind = pExaPixmap->fb_pitch;
 	    exaCopyDirtyToFb(pixmaps + i);
+
+	    if (pExaScr->deferred_mixed_pixmap == pPixmap &&
+		!pixmaps[i].as_dst && !pixmaps[i].pReg)
+		pExaScr->deferred_mixed_pixmap = NULL;
 	}
 
-	pExaPixmap->offscreen = exaPixmapIsOffscreen(pPixmap);
+	pExaPixmap->use_gpu_copy = exaPixmapHasGpuCopy(pPixmap);
     }
 }
 
@@ -120,17 +134,68 @@ exaMoveInPixmap_mixed(PixmapPtr pPixmap)
     exaDoMigration(pixmaps, 1, TRUE);
 }
 
+void
+exaDamageReport_mixed(DamagePtr pDamage, RegionPtr pRegion, void *closure)
+{
+    PixmapPtr pPixmap = closure;
+    ExaPixmapPriv(pPixmap);
+
+    /* Move back results of software rendering on system memory copy of mixed driver
+     * pixmap (see exaPrepareAccessReg_mixed).
+     *
+     * Defer moving the destination back into the driver pixmap, to try and save
+     * overhead on multiple subsequent software fallbacks.
+     */
+    if (!pExaPixmap->use_gpu_copy && exaPixmapHasGpuCopy(pPixmap)) {
+	ExaScreenPriv(pPixmap->drawable.pScreen);
+
+	if (pExaScr->deferred_mixed_pixmap &&
+	    pExaScr->deferred_mixed_pixmap != pPixmap)
+	    exaMoveInPixmap_mixed(pExaScr->deferred_mixed_pixmap);
+	pExaScr->deferred_mixed_pixmap = pPixmap;
+    }
+}
+
 /* With mixed pixmaps, if we fail to get direct access to the driver pixmap, we
  * use the DownloadFromScreen hook to retrieve contents to a copy in system
  * memory, perform software rendering on that and move back the results with the
- * UploadToScreen hook (see exaFinishAccess_mixed).
+ * UploadToScreen hook (see exaDamageReport_mixed).
  */
 void
 exaPrepareAccessReg_mixed(PixmapPtr pPixmap, int index, RegionPtr pReg)
 {
-    if (!ExaDoPrepareAccess(pPixmap, index)) {
-	ExaPixmapPriv(pPixmap);
-	Bool is_offscreen = exaPixmapIsOffscreen(pPixmap);
+    ExaPixmapPriv(pPixmap);
+    Bool has_gpu_copy = exaPixmapHasGpuCopy(pPixmap);
+    Bool success;
+
+    success = ExaDoPrepareAccess(pPixmap, index);
+
+    if (success && has_gpu_copy && pExaPixmap->pDamage) {
+	/* You cannot do accelerated operations while a buffer is mapped. */
+	exaFinishAccess(&pPixmap->drawable, index);
+	/* Update the gpu view of both deferred destination pixmaps and of
+	 * source pixmaps that were migrated with a bounding region.
+	 */
+	exaMoveInPixmap_mixed(pPixmap);
+	success = ExaDoPrepareAccess(pPixmap, index);
+
+	if (success) {
+	    /* We have a gpu pixmap that can be accessed, we don't need the cpu
+	     * copy anymore. Drivers that prefer DFS, should fail prepare
+	     * access.
+	     */
+	    DamageUnregister(&pPixmap->drawable, pExaPixmap->pDamage);
+	    DamageDestroy(pExaPixmap->pDamage);
+	    pExaPixmap->pDamage = NULL;
+
+	    free(pExaPixmap->sys_ptr);
+	    pExaPixmap->sys_ptr = NULL;
+
+	    return;
+	}
+    }
+
+    if (!success) {
 	ExaMigrationRec pixmaps[1];
 
 	/* Do we need to allocate our system buffer? */
@@ -152,12 +217,14 @@ exaPrepareAccessReg_mixed(PixmapPtr pPixmap, int index, RegionPtr pReg)
 	pixmaps[0].pPix = pPixmap;
 	pixmaps[0].pReg = pReg;
 
-	if (!pExaPixmap->pDamage && (is_offscreen || !exaPixmapIsPinned(pPixmap))) {
+	if (!pExaPixmap->pDamage &&
+		(has_gpu_copy || !exaPixmapIsPinned(pPixmap))) {
 	    Bool as_dst = pixmaps[0].as_dst;
 
 	    /* Set up damage tracking */
-	    pExaPixmap->pDamage = DamageCreate(NULL, NULL, DamageReportNone,
-					       TRUE, pPixmap->drawable.pScreen,
+	    pExaPixmap->pDamage = DamageCreate(exaDamageReport_mixed, NULL,
+					       DamageReportNonEmpty, TRUE,
+					       pPixmap->drawable.pScreen,
 					       pPixmap);
 
 	    DamageRegister(&pPixmap->drawable, pExaPixmap->pDamage);
@@ -165,7 +232,7 @@ exaPrepareAccessReg_mixed(PixmapPtr pPixmap, int index, RegionPtr pReg)
 	    /* This is used by exa to optimize migration. */
 	    DamageSetReportAfterOp(pExaPixmap->pDamage, TRUE);
 
-	    if (is_offscreen) {
+	    if (has_gpu_copy) {
 		exaPixmapDirty(pPixmap, 0, 0, pPixmap->drawable.width,
 			       pPixmap->drawable.height);
 
@@ -177,34 +244,18 @@ exaPrepareAccessReg_mixed(PixmapPtr pPixmap, int index, RegionPtr pReg)
 		    pixmaps[0].as_src = TRUE;
 		    pixmaps[0].pReg = NULL;
 		}
-		pPixmap->devKind = pExaPixmap->fb_pitch;
 		exaCopyDirtyToSys(pixmaps);
 	    }
 
 	    if (as_dst)
 		exaPixmapDirty(pPixmap, 0, 0, pPixmap->drawable.width,
 			       pPixmap->drawable.height);
-	} else if (is_offscreen) {
-	    pPixmap->devKind = pExaPixmap->fb_pitch;
+	} else if (has_gpu_copy)
 	    exaCopyDirtyToSys(pixmaps);
-	}
 
 	pPixmap->devPrivate.ptr = pExaPixmap->sys_ptr;
 	pPixmap->devKind = pExaPixmap->sys_pitch;
-	pExaPixmap->offscreen = FALSE;
+	pExaPixmap->use_gpu_copy = FALSE;
     }
 }
 
-/* Move back results of software rendering on system memory copy of mixed driver
- * pixmap (see exaPrepareAccessReg_mixed).
- */
-void exaFinishAccess_mixed(PixmapPtr pPixmap, int index)
-{
-    ExaPixmapPriv(pPixmap);
-
-    if (pExaPixmap->pDamage && exaPixmapIsOffscreen(pPixmap) &&
-	!pExaPixmap->offscreen) {
-	DamageRegionProcessPending(&pPixmap->drawable);
-	exaMoveInPixmap_mixed(pPixmap);
-    }
-}

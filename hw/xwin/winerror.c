@@ -41,8 +41,9 @@
 
 /* References to external symbols */
 extern char *		g_pszCommandLine;
-extern char *		g_pszLogFile;
+extern const char *	g_pszLogFile;
 extern Bool		g_fSilentFatalError;
+extern Bool		g_fLogInited;
 
 
 #ifdef DDXOSVERRORF
@@ -87,6 +88,12 @@ OsVendorFatalError (void)
   if (g_fSilentFatalError)
     return;
 
+  if (!g_fLogInited) {
+    g_fLogInited = TRUE;
+    g_pszLogFile = LogInit (g_pszLogFile, NULL);
+  }
+  LogClose ();
+
   winMessageBoxF (
           "A fatal error has occurred and " PROJECT_NAME " will now exit.\n" \
 		  "Please open %s for more information.\n",
@@ -117,6 +124,7 @@ winMessageBoxF (const char *pszError, UINT uType, ...)
 	"Vendor: %s\n" \
 	"Release: %d.%d.%d.%d (%d)\n" \
 	"Contact: %s\n" \
+	"%s\n\n" \
 	"XWin was started with the following command-line:\n\n" \
 	"%s\n"
 
@@ -124,6 +132,7 @@ winMessageBoxF (const char *pszError, UINT uType, ...)
 	   pszErrorF, VENDOR_STRING,
 		       XORG_VERSION_MAJOR, XORG_VERSION_MINOR, XORG_VERSION_PATCH, XORG_VERSION_SNAP, XORG_VERSION_CURRENT,
 		       VENDOR_CONTACT,
+		       BUILDERSTRING,
 	   g_pszCommandLine);
   if (!pszMsgBox)
     goto winMessageBoxF_Cleanup;

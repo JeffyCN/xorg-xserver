@@ -108,7 +108,7 @@ __glXDRIdrawableDestroy(__GLXdrawable *drawable)
 }
 
 static GLboolean
-__glXDRIdrawableSwapBuffers(__GLXdrawable *drawable)
+__glXDRIdrawableSwapBuffers(ClientPtr client, __GLXdrawable *drawable)
 {
     __GLXDRIdrawable *private = (__GLXDRIdrawable *) drawable;
     const __DRIcoreExtension *core = private->screen->core;
@@ -509,6 +509,9 @@ __glXDRIscreenProbe(ScreenPtr pScreen)
     screen->base.fbconfigs = glxConvertConfigs(screen->core, driConfigs);
 
     __glXScreenInit(&screen->base, pScreen);
+
+    screen->base.GLXmajor = 1;
+    screen->base.GLXminor = 4;
 
     LogMessage(X_INFO,
 	       "AIGLX: Loaded and initialized %s\n", filename);

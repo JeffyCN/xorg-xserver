@@ -166,9 +166,9 @@ fbComposite (CARD8      op,
     if (pMask)
 	miCompositeSourceValidate (pMask, xMask - xDst, yMask - yDst, width, height);
     
-    src = image_from_pict_18 (pSrc, FALSE, &src_xoff, &src_yoff);
-    mask = image_from_pict_18 (pMask, FALSE, &msk_xoff, &msk_yoff);
-    dest = image_from_pict_18 (pDst, TRUE, &dst_xoff, &dst_yoff);
+    src = image_from_pict (pSrc, FALSE, &src_xoff, &src_yoff);
+    mask = image_from_pict (pMask, FALSE, &msk_xoff, &msk_yoff);
+    dest = image_from_pict (pDst, TRUE, &dst_xoff, &dst_yoff);
 
     if (src && dest && !(pMask && !mask))
     {
@@ -389,7 +389,7 @@ set_image_properties (pixman_image_t *image, PicturePtr pict, Bool has_clip, int
     if (pict->alphaMap)
     {
 	int alpha_xoff, alpha_yoff;
-	pixman_image_t *alpha_map = image_from_pict_18 (pict->alphaMap, FALSE, &alpha_xoff, &alpha_yoff);
+	pixman_image_t *alpha_map = image_from_pict (pict->alphaMap, FALSE, &alpha_xoff, &alpha_yoff);
 	
 	pixman_image_set_alpha_map (
 	    image, alpha_map, pict->alphaOrigin.x, pict->alphaOrigin.y);
@@ -421,9 +421,8 @@ set_image_properties (pixman_image_t *image, PicturePtr pict, Bool has_clip, int
     pixman_image_set_source_clipping (image, TRUE);
 }
 
-
 pixman_image_t *
-image_from_pict_18 (PicturePtr pict, Bool has_clip, int *xoff, int *yoff)
+image_from_pict (PicturePtr pict, Bool has_clip, int *xoff, int *yoff)
 {
     pixman_image_t *image = NULL;
 
@@ -462,13 +461,6 @@ image_from_pict_18 (PicturePtr pict, Bool has_clip, int *xoff, int *yoff)
     return image;
 }
 
-pixman_image_t *
-image_from_pict (PicturePtr pict, Bool has_clip, Bool is_src)
-{
-    int xoff = 0, yoff = 0;
-    return image_from_pict_18(pict, has_clip, &xoff, &yoff);
-}
-
 void
 free_pixman_pict (PicturePtr pict, pixman_image_t *image)
 {
@@ -498,4 +490,3 @@ fbPictureInit (ScreenPtr pScreen, PictFormatPtr formats, int nformats)
 
     return TRUE;
 }
-

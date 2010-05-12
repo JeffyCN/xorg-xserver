@@ -2893,7 +2893,7 @@ RecordExtensionInit(void)
 {
     ExtensionEntry *extentry;
 
-    RTContext = CreateNewResourceType(RecordDeleteContext);
+    RTContext = CreateNewResourceType(RecordDeleteContext, "RecordContext");
     if (!RTContext)
 	return;
 

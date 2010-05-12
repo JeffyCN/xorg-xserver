@@ -230,7 +230,8 @@ ChangeDeviceControl(ClientPtr client, DeviceIntPtr dev,
  *
  */
 int
-NewInputDeviceRequest(InputOption *options, DeviceIntPtr *pdev)
+NewInputDeviceRequest(InputOption *options, InputAttributes *attrs,
+                      DeviceIntPtr *pdev)
 {
   DEBUG_LOG("NewInputDeviceRequest(%p, %p)\n", options, pdev);
   return BadValue;
@@ -248,3 +249,9 @@ DeleteInputDeviceRequest(DeviceIntPtr dev)
 {
   DEBUG_LOG("DeleteInputDeviceRequest(%p)\n", dev);
 }
+
+void
+CloseInput (void)
+{
+}
+

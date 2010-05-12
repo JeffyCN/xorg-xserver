@@ -93,9 +93,25 @@ exaCreatePixmap_mixed(ScreenPtr pScreen, int w, int h, int depth,
     /* A scratch pixmap will become a driver pixmap right away. */
     if (!w || !h) {
 	exaCreateDriverPixmap_mixed(pPixmap);
-	pExaPixmap->offscreen = exaPixmapIsOffscreen(pPixmap);
-    } else
-	pExaPixmap->offscreen = FALSE;
+	pExaPixmap->use_gpu_copy = exaPixmapHasGpuCopy(pPixmap);
+    } else {
+	pExaPixmap->use_gpu_copy = FALSE;
+
+	if (w == 1 && h == 1) {
+	    pExaPixmap->sys_ptr = malloc((pPixmap->drawable.bitsPerPixel + 7) / 8);
+
+	    /* Set up damage tracking */
+	    pExaPixmap->pDamage = DamageCreate(exaDamageReport_mixed, NULL,
+					       DamageReportNonEmpty, TRUE,
+					       pPixmap->drawable.pScreen,
+					       pPixmap);
+
+	    DamageRegister(&pPixmap->drawable, pExaPixmap->pDamage);
+	    /* This ensures that pending damage reflects the current operation. */
+	    /* This is used by exa to optimize migration. */
+	    DamageSetReportAfterOp(pExaPixmap->pDamage, TRUE);
+	}
+    }
 
     /* During a fallback we must prepare access. */
     if (pExaScr->fallback_counter)
@@ -111,7 +127,7 @@ exaModifyPixmapHeader_mixed(PixmapPtr pPixmap, int width, int height, int depth,
     ScreenPtr pScreen = pPixmap->drawable.pScreen;
     ExaScreenPrivPtr pExaScr;
     ExaPixmapPrivPtr pExaPixmap;
-    Bool ret, is_offscreen;
+    Bool ret, has_gpu_copy;
 
     if (!pPixmap)
         return FALSE;
@@ -131,22 +147,58 @@ exaModifyPixmapHeader_mixed(PixmapPtr pPixmap, int width, int height, int depth,
 	    pExaPixmap->driverPriv = NULL;
 	}
 
-	pExaPixmap->offscreen = FALSE;
+	pExaPixmap->use_gpu_copy = FALSE;
 	pExaPixmap->score = EXA_PIXMAP_SCORE_PINNED;
     }
 
-    if (pExaPixmap->driverPriv) {
-        if (width > 0 && height > 0 && bitsPerPixel > 0) {
+    has_gpu_copy = exaPixmapHasGpuCopy(pPixmap);
+
+    if (width <= 0)
+	width = pPixmap->drawable.width;
+
+    if (height <= 0)
+	height = pPixmap->drawable.height;
+
+    if (bitsPerPixel <= 0) {
+	if (depth <= 0)
+	    bitsPerPixel = pPixmap->drawable.bitsPerPixel;
+	else
+	    bitsPerPixel = BitsPerPixel(depth);
+    }
+
+    if (depth <= 0)
+	depth = pPixmap->drawable.depth;
+
+    if (width != pPixmap->drawable.width ||
+	height != pPixmap->drawable.height ||
+	depth != pPixmap->drawable.depth ||
+	bitsPerPixel != pPixmap->drawable.bitsPerPixel) {
+	if (pExaPixmap->driverPriv) {
             exaSetFbPitch(pExaScr, pExaPixmap,
                           width, height, bitsPerPixel);
 
             exaSetAccelBlock(pExaScr, pExaPixmap,
                              width, height, bitsPerPixel);
+            REGION_EMPTY(pScreen, &pExaPixmap->validFB);
         }
+
+	/* Need to re-create system copy if there's also a GPU copy */
+	if (has_gpu_copy && pExaPixmap->sys_ptr) {
+	    free(pExaPixmap->sys_ptr);
+	    pExaPixmap->sys_ptr = NULL;
+	    pExaPixmap->sys_pitch = devKind > 0 ? devKind :
+	        PixmapBytePad(width, depth);
+	    DamageUnregister(&pPixmap->drawable, pExaPixmap->pDamage);
+	    DamageDestroy(pExaPixmap->pDamage);
+	    pExaPixmap->pDamage = NULL;
+	    REGION_EMPTY(pScreen, &pExaPixmap->validSys);
+
+	    if (pExaScr->deferred_mixed_pixmap == pPixmap)
+		pExaScr->deferred_mixed_pixmap = NULL;
+	}
     }
 
-    is_offscreen = exaPixmapIsOffscreen(pPixmap);
-    if (is_offscreen) {
+    if (has_gpu_copy) {
 	pPixmap->devPrivate.ptr = pExaPixmap->fb_ptr;
 	pPixmap->devKind = pExaPixmap->fb_pitch;
     } else {
@@ -168,7 +220,7 @@ exaModifyPixmapHeader_mixed(PixmapPtr pPixmap, int width, int height, int depth,
     swap(pExaScr, pScreen, ModifyPixmapHeader);
 
 out:
-    if (is_offscreen) {
+    if (has_gpu_copy) {
 	pExaPixmap->fb_ptr = pPixmap->devPrivate.ptr;
 	pExaPixmap->fb_pitch = pPixmap->devKind;
     } else {
@@ -196,6 +248,9 @@ exaDestroyPixmap_mixed(PixmapPtr pPixmap)
 	if (pExaScr->fallback_counter)
 	    exaFinishAccess(&pPixmap->drawable, -1);
 
+	if (pExaScr->deferred_mixed_pixmap == pPixmap)
+	    pExaScr->deferred_mixed_pixmap = NULL;
+
 	if (pExaPixmap->driverPriv)
 	    pExaScr->info->DestroyPixmap(pScreen, pExaPixmap->driverPriv);
 	pExaPixmap->driverPriv = NULL;
@@ -216,7 +271,7 @@ exaDestroyPixmap_mixed(PixmapPtr pPixmap)
 }
 
 Bool
-exaPixmapIsOffscreen_mixed(PixmapPtr pPixmap)
+exaPixmapHasGpuCopy_mixed(PixmapPtr pPixmap)
 {
     ScreenPtr pScreen = pPixmap->drawable.pScreen;
     ExaScreenPriv(pScreen);
