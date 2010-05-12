@@ -84,7 +84,7 @@ BUILDER=$(shell dpkg-parsechangelog | awk -F': ' '/^Maintainer: / {print $$2}')
 confflags += \
 	     --disable-static \
 	     --without-dtrace \
-	     --disable-werror \
+	     --disable-strict-compilation \
 	     --disable-debug \
 	     $(config_tests) \
 	     --with-int10=x86emu \
