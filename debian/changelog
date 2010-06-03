@@ -3,6 +3,10 @@ xorg-server (2:1.7.7-2) UNRELEASED; urgency=low
   * autoconfig: load the nouveau driver for nvidia hw.  Stolen from F13.
   * Try to catch non-event devices when running udevadm info in the bug
     script.
+  * Pull from upstream server-1.7-nominations branch
+    - dix: make DeviceEvent coordinates signed for Xinerama (closes: #581763)
+    - xfree86: dga needs to use the master keyboard state (closes: #576393)
+    - Fix null pointer dereference in xf86_reload_cursors (closes: #507916)
 
  -- Julien Cristau <jcristau@debian.org>  Fri, 07 May 2010 17:03:15 +0200
 

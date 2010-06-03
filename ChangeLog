@@ -1,3 +1,98 @@
+commit f44ebbd3d52fa0dfdc51f6635721592b70affb6e
+Author: Cyril Brulebois <kibi@debian.org>
+Date:   Mon Mar 1 02:11:36 2010 +0100
+
+    Fix null pointer dereference in xf86_reload_cursors().
+    
+    Upon resume, X may try to dereference a null pointer, which has been
+    reported in Debian bug #507916 (http://bugs.debian.org/507916).
+    
+    Jim Paris came up with a patch which solves the problem for him. Here's
+    a (hopefully) fixed version of his patch (without the typo).
+    
+    Cc: Jim Paris <jim@jtan.com>
+    Signed-off-by: Cyril Brulebois <kibi@debian.org>
+    Reviewed-By: Matthias Hopf <mhopf@suse.de>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+    (cherry picked from commit fa6c7012572093a82c9389682977efff85590719)
+
+commit d2f29b85d14fa56f22302854b585d04124b0db92
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Fri Apr 16 16:35:22 2010 +1000
+
+    xfree86: dga needs to use the master keyboard state (#27573)
+    
+    GetPairedDevice() may not always return the keyboard, resulting in a
+    null-pointer dereference when accessing the XKB state.
+    For floating devices, the GetMaster() returns the device itself.
+    
+    X.Org Bug 27573 <http://bugs.freedesktop.org/show_bug.cgi?id=27573>
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+    Tested-by: Ben Hutchings <ben@decadent.org.uk>
+    (cherry picked from commit 10de9e8ee37265a35ceeceb2007d711da70d4f2d)
+
+commit 89a2b2771f799f371c25945df18440dc4695909a
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Sun May 16 10:03:13 2010 -0700
+
+    XQuartz: Don't use deltaXY for determining pointer location on scroll events
+    
+    <rdar://problem/7989690>
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+    Reviewed-by: Edward Moy <emoy@apple.com>
+    (cherry picked from commit ecfeabec8d0dcfe286fb893047f1fe1a7ea9f8f5)
+
+commit 754b995a3f08d72a6a91d72e891fa65548046379
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Sat May 15 10:53:09 2010 -0700
+
+    XQuartz: Don't trust deltaXY for middle mouse clicks.
+    
+    The middle mouse clicks return erroneous values after returning from
+    Fast User Switching.
+    
+    <rdar://problem/7979468>
+    http://xquartz.macosforge.org/trac/ticket/389
+    
+    Signed-off-by: Martin Otte <otte@duke.edu>
+    Reviewed-by: Jeremy Huddleston <jeremyhu@apple.com>
+    Reviewed-by: Edward Moy <emoy@apple.com>
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+    (cherry picked from commit a911292c85f7069d2caabcb677ed716a04227526)
+
+commit 1e7a9b15de57e06bbcd33e2c43480ea4e4e7542a
+Author: Julien Cristau <jcristau@debian.org>
+Date:   Tue May 4 15:15:02 2010 +0200
+
+    XQuartz: add new localization files to EXTRA_DIST
+    
+    commit 206531f75cd41c034e89fdfbc75ab0910682eef8 added localization files
+    for ar, add them to the Makefile.
+    
+    Signed-off-by: Julien Cristau <jcristau@debian.org>
+    Reviewed-by: Jeremy Huddleston <jeremyhu@apple.com>
+    (cherry picked from commit 72758287f79a4f1aa8fa388f20947042e3e14693)
+
+commit c247f81ca188407ac2ddd31adcae00074b2cda0b
+Author: Chris Humbert <freedesktop@mahadri.com>
+Date:   Fri May 7 17:02:43 2010 +1000
+
+    dix: make DeviceEvent coordinates signed for Xinerama. #24986
+    
+    With Xinerama enabled, event coordinates are relative to Screen 0, so
+    they can be negative.  The new DeviceEvent's coordinates are of type
+    uint16_t, making screens above and to the left of Screen 0 unusable.
+    
+    X.Org Bug 24986 <https://bugs.freedesktop.org/show_bug.cgi?id=24986>
+    
+    Signed-off-by: Chris Humbert <freedesktop@mahadri.com>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+    (cherry picked from commit 21ed660f30a3f96c787ab00a16499e0fb034b2ad)
+
 commit e9a2eb86e9dd1f0d3d955bb7c16f2660c773e070
 Author: Peter Hutterer <peter.hutterer@who-t.net>
 Date:   Tue May 4 10:55:22 2010 +1000
