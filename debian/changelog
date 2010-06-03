@@ -1,3 +1,9 @@
+xorg-server (2:1.8.1.901-1) UNRELEASED; urgency=low
+
+  * New upstream release
+
+ -- Julien Cristau <jcristau@debian.org>  Thu, 03 Jun 2010 18:29:42 +0200
+
 xorg-server (2:1.8.1-1) experimental; urgency=low
 
   * New upstream release

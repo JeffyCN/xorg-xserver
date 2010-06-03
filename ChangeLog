@@ -1,3 +1,585 @@
+commit b65c5be170835db2282192381ef411997e61a6f1
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Wed Jun 2 09:27:33 2010 +1000
+
+    xserver 1.8.1.901
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit 1b71e0a8b9e915c806f6c3596b6ee5913d62fdc3
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Mon May 24 12:25:15 2010 +1000
+
+    xfree86: fix multiple InputAttributes tag matching.
+    
+    attr->tags is an array of strings (null-terminated). When matching, match
+    against each string instead of each [i,end] substring in the first tag.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Jamey Sharp <jamey@minilop.net>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+    (cherry picked from commit b5e0f6d8f45c5b24eb50b305c66fa80c783ef488)
+
+commit f7a2da6df80044bf2d92b0bee94a13f7d76960ad
+Merge: 2ab11e0 354e4ce
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Tue May 25 15:52:53 2010 +1000
+
+    Merge branch 'server-1.8-branch' of git://people.freedesktop.org/~alanc/xserver into server-1.8-branch
+
+commit 354e4ce3774d6b7f0c571f426bd2db1c8ab272ea
+Author: Alan Coopersmith <alan.coopersmith@oracle.com>
+Date:   Sat May 22 10:29:00 2010 -0700
+
+    Add RandR 1.2 README.modes doc to EXTRA_DIST
+    
+    Signed-off-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Reviewed-by: Julien Cristau <jcristau@debian.org>
+    (cherry picked from commit 1805c74d9b0ed46802481bcd6beea5feeb60212c)
+
+commit 9a71d21cc27c7b0d35bae9d6dc4eed591dea99a4
+Author: Aaron Zang <Aaron.Zang@Sun.COM>
+Date:   Thu May 20 17:56:28 2010 -0700
+
+    Solaris: Use VT_SET_CONSUSER ioctl to set Console User rights profile
+    
+    When Xorg is started on display :0, this ioctl is called to grant the
+    user the rights traditionally associated with /dev/console (before VT
+    support was added), such as access to local peripheral devices.
+    
+    Also adds a Solaris-specific -C flag to force starting on /dev/console
+    instead of /dev/vt*, allowing programs like xterm -C to access the
+    console device.
+    
+    Signed-off-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Reviewed-by: Adam Jackson <ajax@redhat.com>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+    (cherry picked from commit 989db930d739483759087b13b8d9a043299feafb)
+
+commit a8d40f61bf42a55fbd4fcd6468c94cb595e490cc
+Author: Alan Coopersmith <alan.coopersmith@oracle.com>
+Date:   Thu May 20 17:56:26 2010 -0700
+
+    Xserver(1) man page updates
+    
+    - Note that -br is now default.
+    - Move -bs after -br for alphabetical ordering.
+    - Remove -config option that's been hidden in "ignore" section,
+      since ajax removed the -config code a couple years back.
+    - Add -nocursor option.
+    - Add xinput & xrandr to list of runtime server control programs
+    - Replace XDarwin with Xquartz in list of Xservers
+    
+    Signed-off-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Reviewed-by: Adam Jackson <ajax@redhat.com>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+    (cherry picked from commit 7b09335a46f9428141811230c69eef7968531359)
+
+commit 2ab11e09734dec4f119166fa6512eb25b4572e48
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Fri May 21 13:30:25 2010 +1000
+
+    dix: remove obsolete comment.from EnableDevice.
+    
+    The code this comment was referring to was removed in
+    8b5086250aa5dae8de8b763408ff480d7beac819 "Eliminate bogus event resizing."
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+    (cherry picked from commit cf4f3d051858aadedd6e333bb317a1daa3987ad7)
+
+commit 869d37721425d219c50962b694c3326407d1d2e6
+Author: Jamey Sharp <jamey@minilop.net>
+Date:   Wed May 19 10:44:33 2010 -0700
+
+    Device init: Don't crash when CreateGC fails.
+    
+    ActivateDevice was ignoring errors from DeviceCursorInitialize, so
+    cursor-related calls failed later. Jeremy Huddleston saw that crash in
+    miPointerConstrainCursor, while with Xvfb I saw it in
+    miSpriteRealizeCursor.
+    
+    miDCDeviceCleanup frees any non-NULL GCs. miDCDeviceInitialize calls
+    Cleanup on any failure, but if it failed early then some of the pointers
+    in the miDCBufferPtr were garbage. Switch from malloc to calloc to
+    ensure everything's initialized safely first.
+    
+    With these two fixes, if CreateGC fails then the server gracefully fails
+    in FatalError instead of segfaulting.
+    
+    Signed-off-by: Jamey Sharp <jamey@minilop.net>
+    Cc: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+    
+    (cherry-picked from commit b9f48d60bc0c839bd323c582231e8e7e2b810af6)
+
+commit a8de0866130df62c2b1e4653e028a0fe365e0e3a
+Author: Jesse Barnes <jbarnes@virtuousgeek.org>
+Date:   Tue Mar 23 09:47:08 2010 -0700
+
+    GLX/DRI2: expose swap control extensions if DDX support is present
+    
+    Export DDX swap control status from the DRI2 module and check for it in
+    GLX when initializing extensions.
+    
+    Reviewed-by: Mario Kleiner <mario.kleiner@tuebingen.mpg.de>
+    Signed-off-by: Jesse Barnes <jbarnes@virtuousgeek.org>
+    (cherry picked from commit 165a4a9c7de0fcc6ef6a6421736b412ccb35965e)
+
+commit b24856626e1836657ebf35ad4c61984e0a407c5b
+Author: Jesse Barnes <jbarnes@virtuousgeek.org>
+Date:   Mon Mar 8 15:10:47 2010 -0800
+
+    DRI2: prevent swap wakes from waking MSC waiters
+    
+    If a few swaps were queued leading to a throttle related block on the
+    client, and then the client submitted an MSC wait, one of the previous
+    swap wakeups could have caused the MSC wait to complete early.  Add a
+    flag for this to prevent a swap wake from prematurely waking an MSC
+    waiter.
+    
+    Reported-by: Mario Kleiner <mario.kleiner@tuebingen.mpg.de>
+    Reviewed-by: Mario Kleiner <mario.kleiner@tuebingen.mpg.de>
+    Signed-off-by: Jesse Barnes <jbarnes@virtuousgeek.org>
+    (cherry picked from commit 5933b0abc6a76aaea84aa534df89900cd795c888)
+
+commit 5c54e7fa004532d595160a815177dda467b3cc9c
+Author: Jesse Barnes <jbarnes@virtuousgeek.org>
+Date:   Mon Mar 8 12:41:25 2010 -0800
+
+    DRI2: handle swapsPending better
+    
+    Avoid a potential swapsPending underflow by incrementing it before
+    ScheduleSwap, which may complete it immediately.  And be sure to
+    decrement it again in case the schedule failed.
+    
+    Reported-by: Mario Kleiner <mario.kleiner@tuebingen.mpg.de>
+    Reviewed-by: Mario Kleiner <mario.kleiner@tuebingen.mpg.de>
+    Signed-off-by: Jesse Barnes <jbarnes@virtuousgeek.org>
+    (cherry picked from commit b00d435ddf2e9817e33bfd5f7e9b905442dc23c7)
+
+commit fcd76ddfc59de6a1d37ca2aa6e6e91cb8d814744
+Author: Jesse Barnes <jbarnes@virtuousgeek.org>
+Date:   Mon Mar 8 12:39:54 2010 -0800
+
+    DRI2: throttle swaps at submission time too
+    
+    We need to throttle swaps here in addition to when the context is made
+    current to avoid causing problems with clients that just swap.
+    Throttling here also ensures our swaps get ordered as long as we block
+    the client occasionally.
+    
+    Reported-by: Mario Kleiner <mario.kleiner@tuebingen.mpg.de>
+    Reviewed-by: Mario Kleiner <mario.kleiner@tuebingen.mpg.de>
+    Signed-off-by: Jesse Barnes <jbarnes@virtuousgeek.org>
+    (cherry picked from commit 0294ff2a5cadddc8fcc77ba9a851f979f0b91fc3)
+
+commit c7e9e36fd3cdb889704d3b0e1333653d06ef9069
+Author: Jesse Barnes <jbarnes@virtuousgeek.org>
+Date:   Mon Mar 8 12:38:37 2010 -0800
+
+    DRI2: advertise lowest supported DRI2 protocol version
+    
+    Update our supported DRI2 protocol version as each driver does
+    DRI2ScreenInit, since depending on available kernel features, each DDX
+    may support different callbacks and therefore protocol.
+    
+    Reviewed-by: Mario Kleiner <mario.kleiner@tuebingen.mpg.de>
+    Signed-off-by: Jesse Barnes <jbarnes@virtuousgeek.org>
+    (cherry picked from commit db1c7cb604167baf49e61be4c09ccf7b592c4af3)
+
+commit 20708781d43501f116b4161c1cc96b0eb39e96b1
+Author: Jesse Barnes <jbarnes@virtuousgeek.org>
+Date:   Fri Mar 5 09:49:03 2010 -0800
+
+    DRI2: handle swap_interval of 0 correctly
+    
+    A 0 swap interval means that swaps shouldn't be sync'd to vblank, so
+    just complete the swap immediately in that case.
+    
+    Reviewed-by: Mario Kleiner <mario.kleiner@tuebingen.mpg.de>
+    Signed-off-by: Jesse Barnes <jbarnes@virtuousgeek.org>
+    (cherry picked from commit 87ca6320f26eb3129e3c19056e1d8fa5c1784723)
+
+commit 73fe4a0952b5c8aea90bce6f758546c13d0754b5
+Author: Jesse Barnes <jbarnes@virtuousgeek.org>
+Date:   Fri Mar 5 09:15:24 2010 -0800
+
+    DRI2: drawable lifetime fixes
+    
+    Handle drawable destruction and lifetime correctly.
+    
+    Check whether the drawable priv is valid in DRI2SwapInterval(),
+    DRI2WaitSBC() and DRI2WaitMSC(); it may have gone away, so be sure to
+    check it before using it.
+    
+    If more than 1 outstanding swap is queued, we may complete several after
+    an app has exited.  If we free it after the first one completes and the
+    refcount reaches 0, we'll crash the server on subsequent completions.
+    So delay freeing until all swaps complete and remove the error message
+    as this is a normal occurence.  To do this properly, we must also avoid
+    destroying drawables in DRI2DestroyDrawable() if a swap or wait event is
+    pending.
+    
+    And finally, make sure we free drawables in DRI2WaitMSCComplete() if
+    necessary (i.e. if the refcount has reached 0 and this MSC was the last
+    pending event on the object).
+    
+    Reported-by: Mario Kleiner <mario.kleiner@tuebingen.mpg.de>
+    Reviewed-by: Mario Kleiner <mario.kleiner@tuebingen.mpg.de>
+    Signed-off-by: Jesse Barnes <jbarnes@virtuousgeek.org>
+    (cherry picked from commit 8476d99231cb725c090305d60f1c1c889d25c8dc)
+
+commit 23d78005b06b15f7b68fc4eed7e325ad29d0880a
+Author: Jesse Barnes <jbarnes@virtuousgeek.org>
+Date:   Thu Mar 4 10:31:59 2010 -0800
+
+    DRI2: fix swapbuffers handling of SBC and target MSC
+    
+    Returns expected SBC after completion of swap to caller, as required by
+    OML_sync_control spec, instead of the last_swap_target value.
+    
+    Passes target_msc, divisor, remainder, correctly for
+    glXSwapBuffersMscOML() call, while retaining old behaviour for simple
+    glXSwapBuffers() call.
+    
+    An OML swap can have a 0 target_msc, which just means it needs to
+    satisfy the divisor/remainder equation.  Pass this down to the driver as
+    needed so we can support it.
+    
+    Signed-off-by: Jesse Barnes <jbarnes@virtuousgeek.org>
+    Signed-off-by: Mario Kleiner <mario.kleiner@tuebingen.mpg.de>
+    (cherry picked from commit b180e43977710b56ccfd6780f204ddcc952987a1)
+
+commit a56178402ede82ed3ffd81439b2efc4a39f2779e
+Author: Mario Kleiner <mario.kleiner@tuebingen.mpg.de>
+Date:   Sun Feb 21 05:26:00 2010 +0100
+
+    DRI2WaitSbc(): Fixes for correct semantic of glXWaitForSbcOML()
+    
+    Added implementation for case target_sbc == 0. In that case, the
+    function shall schedule a wait until all pending swaps for the drawable
+    have completed.
+    
+    Fix for non-blocking case. Old implementation returned random,
+    uninitialized values for (ust,msc,sbc) if it returned immediately
+    without scheduling a wait due to sbc >= target_sbc.
+    
+    Now if function doesn't schedule a wait, but returns immediately,
+    it returns the (ust,msc,sbc) of the most recently completed swap,
+    i.e., the UST and MSC corresponding to the time when the returned
+    current SBC was reached.
+    
+    Signed-off-by: Mario Kleiner <mario.kleiner@tuebingen.mpg.de>
+    (cherry picked from commit 751e8c09d34df4b41e8d8384a3ec1bf5cb8ca028)
+
+commit a9b70da1afe7361955a19d34bb5e9b94dc156889
+Author: Mario Kleiner <mario.kleiner@tuebingen.mpg.de>
+Date:   Sun Feb 21 05:25:59 2010 +0100
+
+    DRI2: Fix glitches in DRI2SwapComplete() and DRI2WakeupClient()
+    
+    DRI2SwapComplete(): Increment pPriv->swap_count++; before calling
+    into callback for INTEL_swap_events extension, so the swap event
+    contains the current SBC after swap completion instead of the
+    previous one.
+    
+    DRI2WakeupClient: Check for pPriv->target_sbc <= pPriv->swap_count,
+    had wrong comparison pPriv->target_sbc >= pPriv->swap_count for
+    unblocking of clients of DRI2WaitSBC().
+    
+    Signed-off-by: Mario Kleiner <mario.kleiner@tuebingen.mpg.de>
+    (cherry picked from commit 0de4974b90b10fa6a447cdf980b4a114c6c9e5a8)
+
+commit 96a12314ae41a2edec67d388c1c4770bd099d9ec
+Author: Jesse Barnes <jbarnes@virtuousgeek.org>
+Date:   Thu Mar 4 09:54:15 2010 -0800
+
+    DRI2: make target_sbc signed
+    
+    We need to track invalid targets as well as 0 targets, so just make it
+    signed so our comparisons work like they should.
+    
+    Reviewed-by: Mario Kleiner <mario.kleiner@tuebingen.mpg.de>
+    Reported-by: Kristian Høgsberg <krh@bitplanet.net>
+    Signed-off-by: Jesse Barnes <jbarnes@virtuousgeek.org>
+    (cherry picked from commit 4c8ec49826a46eb3b36c69d2ad3f82320c179c38)
+
+commit 18dc5d1f15fe0df7e836b057d34c4ca596e31e8f
+Author: Jesse Barnes <jbarnes@virtuousgeek.org>
+Date:   Thu Mar 4 09:19:13 2010 -0800
+
+    DRI2: fixup handling of last_swap_target
+    
+    We need to initialize the swap target, which is passed to the driver to
+    schedule events.  Rather than using -1 to indicate that the field is
+    uninitialized, just make sure we initialize it at drawable creation
+    time.
+    
+    Reviewed-by: Mario Kleiner <mario.kleiner@tuebingen.mpg.de>
+    Signed-off-by: Jesse Barnes <jbarnes@virtuousgeek.org>
+    (cherry picked from commit c4d54816f2ee4883d8f9bcf4595474fb58c95146)
+
+commit 0d9d1e114322878fb50503f69b308b25a812dfb1
+Merge: 4b7ff07 7be5527
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Tue May 18 14:46:42 2010 +1000
+
+    Merge branch 'server-1.8-branch' of git://people.freedesktop.org/~jeremyhu/xserver into server-1.8-branch
+
+commit 4b7ff07db28ea5302a1965496d1fd71a9d99780e
+Author: Keith Packard <keithp@keithp.com>
+Date:   Mon May 10 11:46:25 2010 -0700
+
+    Check pixmap allocation return value when creating glyphs
+    
+    The driver may decide that the pixmap is too large or something and
+    fail to allocate a pixmap; not checking would lead to a segfault.
+    
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+    Reviewed-by: Jamey Sharp <jamey@minilop.net>
+    (cherry picked from commit 87ea5760f86eb60840e6e2c10012915952df5377)
+
+commit e789c860a682454fc86032e88b618f255409c33a
+Author: Alan Coopersmith <alan.coopersmith@oracle.com>
+Date:   Thu Apr 29 18:45:34 2010 -0700
+
+    Fix compiler issues with getifaddrs() call on OpenSolaris
+    
+    OpenSolaris recently added support for the getifaddrs() API.
+    
+    Building with that uncovered two compiler issues (one warning, one error)
+    in the code that was now being built for the first time in our builds:
+    
+    "access.c", line 768: warning: argument #1 is incompatible with prototype:
+            prototype: pointer to struct sockaddr {unsigned short sa_family, array[14] of char sa_data} : "access.c", line 213
+            argument : pointer to struct sockaddr_storage {unsigned short ss_family, array[6] of char _ss_pad1, double _ss_align, array[240] of char _ss_pad2}
+    
+    "access.c", line 838: assignment type mismatch:
+            struct sockaddr {unsigned short sa_family, array[14] of char sa_data} "=" struct sockaddr_storage {unsigned short ss_family, array[6] of char _ss_pad1, double _ss_align, array[240] of char _ss_pad2}
+    
+    Signed-off-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Reviewed-by: Jamey Sharp <jamey@minilop.net>
+    (cherry picked from commit e42a29d269fadc11e065c63ee369e3165196f2d7)
+
+commit 3b6d2b0026f5c37eaeb50441eb2392b9cde962e8
+Author: Jamey Sharp <jamey@minilop.net>
+Date:   Fri May 14 10:36:13 2010 -0700
+
+    test/xi2: Initialize predefined atoms before XInputExtensionInit.
+    
+    XInputExtensionInit calls MakeAtom, which doesn't work without the atoms
+    table initialized.
+    
+    Signed-off-by: Jamey Sharp <jamey@minilop.net>
+    Cc: Peter Hutterer <peter.hutterer@who-t.net>
+    Tested-by: Keith Packard <keithp@keithp.com>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+    (cherry picked from commit c6613cfc26e76b296e620640bf33e756eb4ae178)
+
+commit 3a3edb2c3d63a3849a95c7911612b57c9af6a341
+Author: Cyril Brulebois <kibi@debian.org>
+Date:   Mon Mar 1 02:11:36 2010 +0100
+
+    Fix null pointer dereference in xf86_reload_cursors().
+    
+    Upon resume, X may try to dereference a null pointer, which has been
+    reported in Debian bug #507916 (http://bugs.debian.org/507916).
+    
+    Jim Paris came up with a patch which solves the problem for him. Here's
+    a (hopefully) fixed version of his patch (without the typo).
+    
+    Cc: Jim Paris <jim@jtan.com>
+    Signed-off-by: Cyril Brulebois <kibi@debian.org>
+    Reviewed-By: Matthias Hopf <mhopf@suse.de>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+    (cherry picked from commit fa6c7012572093a82c9389682977efff85590719)
+
+commit 6bb86db2eb6e27e06bd2270429a76008af2dcd94
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Fri Apr 16 16:35:22 2010 +1000
+
+    xfree86: dga needs to use the master keyboard state (#27573)
+    
+    GetPairedDevice() may not always return the keyboard, resulting in a
+    null-pointer dereference when accessing the XKB state.
+    For floating devices, the GetMaster() returns the device itself.
+    
+    X.Org Bug 27573 <http://bugs.freedesktop.org/show_bug.cgi?id=27573>
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+    Tested-by: Ben Hutchings <ben@decadent.org.uk>
+    (cherry picked from commit 10de9e8ee37265a35ceeceb2007d711da70d4f2d)
+
+commit fd562d11d6cbde2b227e524ae2a9ce4e347b944b
+Author: David James <davidjames@google.com>
+Date:   Mon May 10 14:00:49 2010 -0700
+
+    Fix wrong bracket values when startOver = FALSE.
+    
+    Currently, SyncComputeBracketValues reuses old values of bracket_greater
+    and bracket_less when startOver = FALSE. This can result in incorrect bracket
+    values. To fix this issue, the startOver parameter is removed, and we do not
+    reuse old values of bracket_greater and bracket_less.
+    
+    X.Org Bug 27023 <http://bugs.freedesktop.org/show_bug.cgi?id=27023>
+    
+    Signed-off-by: David James <davidjames@google.com>
+    Reviewed-by: Adam Jackson <ajax@redhat.com>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+    (cherry picked from commit 758b8614477b53dc3de2b884fec5ccaf8a736432)
+
+commit 4bcc0448b42b06ec133886ccb4f029b57b6f2b3e
+Author: Jamey Sharp <jamey@minilop.net>
+Date:   Sat May 8 09:41:46 2010 -0700
+
+    miPolyPoint bugfix: Check memory allocation before changing the GC.
+    
+    miPolyPoint ought to leave the GC unchanged even if it fails. ajax says:
+    
+    > We have a new winner for the oldest-bug competition!  It's actually
+    > been like that since X11R1:
+    >
+    > -rw-r--r--. 1 ajax ajax 2817 1987-09-12 01:20 ddx/mi/mipolypnt.c
+    
+    Signed-off-by: Jamey Sharp <jamey@minilop.net>
+    Reviewed-by: Adam Jackson <ajax@redhat.com>
+    (cherry picked from commit 4080cd42fde8b4c693eab7557581af2622479109)
+
+commit c1e6e7ea968f86f61fd1bfdf4764c57be2a93605
+Author: Keith Packard <keithp@keithp.com>
+Date:   Mon Apr 26 17:22:12 2010 -0700
+
+    dmxBERestoreRenderGlyph was passing wrong value to free
+    
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+    Reviewed-by: Jamey Sharp <jamey@minilop.net>
+    Reviewed-by: Matt Turner <mattst88@gmail.com>
+    (cherry picked from commit c0799779dffeef8cef228bdc57aa6c8b323e7485)
+
+commit de3275537db09065510ca2a697cbbe184da9f207
+Author: Matthias Hopf <mhopf@suse.de>
+Date:   Fri May 7 18:46:30 2010 +0200
+
+    Fix mod() definition.
+    
+    Presumably no implications, especially security-wise.
+    
+    Signed-off-by: Matthias Hopf <mhopf@suse.de>
+    Reviewed-by: Matt Turner <mattst88@gmail.com>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+    (cherry picked from commit e2e2747f40c4b9e23dba38ea656d4c082e83a794)
+
+commit 80547b14a85e4c44631e8b2dc3cd67ccfda7fb43
+Author: Chris Humbert <freedesktop@mahadri.com>
+Date:   Fri May 7 17:02:43 2010 +1000
+
+    dix: make DeviceEvent coordinates signed for Xinerama. #24986
+    
+    With Xinerama enabled, event coordinates are relative to Screen 0, so
+    they can be negative.  The new DeviceEvent's coordinates are of type
+    uint16_t, making screens above and to the left of Screen 0 unusable.
+    
+    X.Org Bug 24986 <https://bugs.freedesktop.org/show_bug.cgi?id=24986>
+    
+    Signed-off-by: Chris Humbert <freedesktop@mahadri.com>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+    (cherry picked from commit 21ed660f30a3f96c787ab00a16499e0fb034b2ad)
+
+commit 331e9720b5c05e43b8343d5c71d821dee0463c3e
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Fri May 7 16:22:12 2010 +1000
+
+    Xi: reset the known properties at the end of the server generation.
+    
+    Properties allocated through XIGetKnownProperty() aren't reset on the second
+    server generation but keep the old value. As a result, wrong Atoms are
+    supplied to the driver, resulting in potential data corruption or weird
+    error message.
+    
+    Reproducible by running "xlsatom | grep FLOAT" twice on a plain X server.
+    The second X server generation won't have the FLOAT atom defined anymore,
+    despite the users of this atom not noticing any errors.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Julien Cristau <jcristau@debian.org>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+    (cherry picked from commit 9802839d35aaf788790f1d0e8300db4693a70096)
+
+commit dee99e6925c8e51263398bd2c8fb70289dae748c
+Author: Keith Packard <keithp@keithp.com>
+Date:   Fri Apr 30 16:10:32 2010 -0700
+
+    Make sure XFixes invisible cursor gets freed on server reset
+    
+    This uses the same hack that dix uses for the rootCursor -- allocate
+    a resource ID for the invisible cursor so that it gets freed at reset
+    time. This also allows us to unconditionally create it during
+    extension initialization; necessary as the privates layout may well be
+    different on subsequent generations.
+    
+    Reviewed-by: Adam Jackson <ajax@redhat.com>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+    (cherry picked from commit a3f5d30ba61e70b3de8b48754dea32715ba93c40)
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit ede10681c4f9d835fa8af115e349e2fd9feeb697
+Author: Keith Packard <keithp@keithp.com>
+Date:   Fri Apr 30 12:18:09 2010 -0700
+
+    Fix cursor ref counting mistakes with sprites and xf86Cursor.c
+    
+    A few cursor value assignments weren't getting correctly ref counted,
+    causing leaks of cursor objects.
+    
+    Reviewed-by: Adam Jackson <ajax@redhat.com>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+    (cherry picked from commit cdeb2c23f80ced961fe205125547e16905885534)
+
+commit 7be55271d090d9c837ee7e1c43c09c76961a7173
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Sun May 16 10:14:02 2010 -0700
+
+    XQuartz: Fix a build failure on Tiger
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+    (cherry picked from commit 37f0b45dbe4ea52bc127720207c7157b2b803ac0)
+
+commit d415f36b8e40d7df94da8910f370fb28004046cf
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Sun May 16 10:03:13 2010 -0700
+
+    XQuartz: Don't use deltaXY for determining pointer location on scroll events
+    
+    <rdar://problem/7989690>
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+    Reviewed-by: Edward Moy <emoy@apple.com>
+    (cherry picked from commit ecfeabec8d0dcfe286fb893047f1fe1a7ea9f8f5)
+
+commit aad87519b8bd6983a28d537eec4fb15570da73b5
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Sat May 15 10:53:09 2010 -0700
+
+    XQuartz: Don't trust deltaXY for middle mouse clicks.
+    
+    The middle mouse clicks return erroneous values after returning from
+    Fast User Switching.
+    
+    <rdar://problem/7979468>
+    http://xquartz.macosforge.org/trac/ticket/389
+    
+    Signed-off-by: Martin Otte <otte@duke.edu>
+    Reviewed-by: Jeremy Huddleston <jeremyhu@apple.com>
+    Reviewed-by: Edward Moy <emoy@apple.com>
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+    (cherry picked from commit a911292c85f7069d2caabcb677ed716a04227526)
+
 commit afd730f57fa1cd3e10ac47666bd6739016d60d55
 Author: Peter Hutterer <peter.hutterer@who-t.net>
 Date:   Tue May 11 13:55:55 2010 +1000
