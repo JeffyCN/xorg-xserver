@@ -318,10 +318,6 @@ EnableDevice(DeviceIntPtr dev, BOOL sendevent)
         }
     }
 
-    /* Before actually enabling the device, we need to make sure the event
-     * list's events have enough memory for a ClassesChangedEvent from the
-     * device
-     */
     if ((*prev != dev) || !dev->inited ||
 	((ret = (*dev->deviceProc)(dev, DEVICE_ON)) != Success)) {
         ErrorF("[dix] couldn't enable device %d\n", dev->id);
@@ -474,7 +470,8 @@ ActivateDevice(DeviceIntPtr dev, BOOL sendevent)
 
     /* Initialize memory for sprites. */
     if (IsMaster(dev) && dev->spriteInfo->spriteOwner)
-        pScreen->DeviceCursorInitialize(dev, pScreen);
+        if (!pScreen->DeviceCursorInitialize(dev, pScreen))
+            ret = BadAlloc;
 
     SendDevicePresenceEvent(dev->id, DeviceAdded);
     if (sendevent)
@@ -857,6 +854,8 @@ CloseDevice(DeviceIntPtr dev)
     }
 
     if (DevHasCursor(dev) && dev->spriteInfo->sprite) {
+	if (dev->spriteInfo->sprite->current)
+	    FreeCursor(dev->spriteInfo->sprite->current, None);
         xfree(dev->spriteInfo->sprite->spriteTrace);
         xfree(dev->spriteInfo->sprite);
     }
