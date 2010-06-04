@@ -1,9 +1,14 @@
 xorg-server (2:1.8.1.901-1) UNRELEASED; urgency=low
 
+  [ Julien Cristau ]
   * New upstream release
   * Merge changes from 2:1.7.7-1.
 
- -- Julien Cristau <jcristau@debian.org>  Thu, 03 Jun 2010 18:29:42 +0200
+  [ Christopher James Halse Rogers ]
+  * 16-xaa-fbcomposite-fix-negative-size.diff:
+    - mi hunk merged upstream.  Update to keep just the fbpict.c hunk.
+
+ -- Christopher James Halse Rogers <raof@ubuntu.com>  Fri, 04 Jun 2010 14:16:14 +1000
 
 xorg-server (2:1.8.1-1) experimental; urgency=low
 
