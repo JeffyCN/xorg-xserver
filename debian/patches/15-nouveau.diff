@@ -46,7 +46,7 @@ Index: xorg-server/glx/glxdri2.c
 ===================================================================
 --- xorg-server.orig/glx/glxdri2.c
 +++ xorg-server/glx/glxdri2.c
-@@ -683,6 +683,7 @@
+@@ -678,6 +678,7 @@
      const __DRIextension **extensions;
      const __DRIconfig **driConfigs;
      int i;
@@ -54,7 +54,7 @@ Index: xorg-server/glx/glxdri2.c
  
      screen = xcalloc(1, sizeof *screen);
      if (screen == NULL)
-@@ -709,7 +710,9 @@
+@@ -704,7 +705,9 @@
  
      screen->driver = dlopen(filename, RTLD_LAZY | RTLD_LOCAL);
      if (screen->driver == NULL) {
@@ -65,7 +65,7 @@ Index: xorg-server/glx/glxdri2.c
  		   filename, dlerror());
          goto handle_error;
      }
-@@ -800,7 +803,7 @@
+@@ -795,7 +798,7 @@
  
      xfree(screen);
  
