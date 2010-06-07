@@ -278,7 +278,7 @@ binary-arch: build install
 	$(MAKE) -f debian/rules DH_OPTIONS=-s binary-initial
 	
 	dh_installdocs -s
-	dh_installchangelogs -s ChangeLog
+	dh_installchangelogs -s
 	dh_install $(DH_INSTALL_OPTIONS) -s --sourcedir=debian/tmp --list-missing
 	$(INSTALL) -d $(CURDIR)/debian/xserver-xorg-dev/usr/share/xserver-xorg
 	# XXX might want to only extract the major ABI versions?
@@ -318,7 +318,7 @@ binary-indep: build install
 	$(MAKE) -f debian/rules DH_OPTIONS=-i binary-initial
 	dh_install -i --sourcedir=debian/tmp
 	dh_installdocs -i
-	dh_installchangelogs -i
+	dh_installchangelogs -i ChangeLog
 
 	$(MAKE) -f debian/rules DH_OPTIONS=-i binary-deb
 
