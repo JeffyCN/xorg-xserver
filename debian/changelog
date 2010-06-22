@@ -1,15 +1,18 @@
-xorg-server (2:1.8.1.901-2) UNRELEASED; urgency=low
+xorg-server (2:1.8.1.902-1) UNRELEASED; urgency=low
 
   [ Julien Cristau ]
   * Install the upstream changelog in xserver-common, instead of duplicating
     its 1MB in all other packages.
 
   [ Christopher James Halse Rogers ]
+  * New upstream RC
+    - A number of DRI2 fixes.
+    - Fix for hanging OpenGL clients with multiple heads.
   * 17-fix-DRI2-segfault-when-clientGone.diff:
     - Pick up fix from https://bugs.freedesktop.org/show_bug.cgi?id=27497 to
       fix server crash in DRI2SwapEvent handling (LP: #595182).
 
- -- Christopher James Halse Rogers <raof@ubuntu.com>  Fri, 18 Jun 2010 13:32:45 +1000
+ -- Christopher James Halse Rogers <raof@ubuntu.com>  Tue, 22 Jun 2010 11:45:01 +1000
 
 xorg-server (2:1.8.1.901-1) experimental; urgency=low
 
