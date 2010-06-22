@@ -1484,7 +1484,7 @@ InitPointerDeviceStruct(DevicePtr device, CARD8 *map, int numButtons, Atom* btn_
 
     return(InitButtonClassDeviceStruct(dev, numButtons, btn_labels, map) &&
 	   InitValuatorClassDeviceStruct(dev, numAxes, axes_labels,
-					 numMotionEvents, 0) &&
+					 numMotionEvents, Relative) &&
 	   InitPtrFeedbackClassDeviceStruct(dev, controlProc));
 }
 
@@ -1956,7 +1956,7 @@ ProcChangeKeyboardControl (ClientPtr client)
     keyboard = PickKeyboard(client);
 
     for (pDev = inputInfo.devices; pDev; pDev = pDev->next) {
-        if ((pDev == keyboard || (!IsMaster(keyboard) && pDev->u.master == keyboard)) &&
+        if ((pDev == keyboard || (!IsMaster(pDev) && pDev->u.master == keyboard)) &&
             pDev->kbdfeed && pDev->kbdfeed->CtrlProc) {
             ret = XaceHook(XACE_DEVICE_ACCESS, client, pDev, DixManageAccess);
 	    if (ret != Success)
@@ -1965,7 +1965,7 @@ ProcChangeKeyboardControl (ClientPtr client)
     }
 
     for (pDev = inputInfo.devices; pDev; pDev = pDev->next) {
-        if ((pDev == keyboard || (!IsMaster(keyboard) && pDev->u.master == keyboard)) &&
+        if ((pDev == keyboard || (!IsMaster(pDev) && pDev->u.master == keyboard)) &&
             pDev->kbdfeed && pDev->kbdfeed->CtrlProc) {
             ret = DoChangeKeyboardControl(client, pDev, vlist, vmask);
             if (ret != Success)

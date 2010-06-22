@@ -51,7 +51,6 @@
 #include "xf86Module.h"
 
 static ExtensionEntry	*dri2Extension;
-static RESTYPE		 dri2DrawableRes;
 
 static Bool
 validDrawable(ClientPtr client, XID drawable, Mask access_mode,
@@ -168,14 +167,9 @@ ProcDRI2CreateDrawable(ClientPtr client)
 		       &pDrawable, &status))
 	return status;
 
-    status = DRI2CreateDrawable(pDrawable);
+    status = DRI2CreateDrawable(client, pDrawable, stuff->drawable);
     if (status != Success)
 	return status;
-
-    if (!AddResource(stuff->drawable, dri2DrawableRes, pDrawable)) {
-	DRI2DestroyDrawable(pDrawable);
-	return BadAlloc;
-    }
 
     return client->noClientException;
 }
@@ -191,8 +185,6 @@ ProcDRI2DestroyDrawable(ClientPtr client)
     if (!validDrawable(client, stuff->drawable, DixRemoveAccess,
 		       &pDrawable, &status))
 	return status;
-
-    FreeResourceByType(stuff->drawable, dri2DrawableRes, FALSE);
 
     return client->noClientException;
 }
@@ -516,9 +508,8 @@ static int
 ProcDRI2WaitSBC(ClientPtr client)
 {
     REQUEST(xDRI2WaitSBCReq);
-    xDRI2MSCReply rep;
     DrawablePtr pDrawable;
-    CARD64 target, ust, msc, sbc;
+    CARD64 target;
     int status;
 
     REQUEST_SIZE_MATCH(xDRI2WaitSBCReq);
@@ -528,18 +519,9 @@ ProcDRI2WaitSBC(ClientPtr client)
 	return status;
 
     target = vals_to_card64(stuff->target_sbc_lo, stuff->target_sbc_hi);
-    status = DRI2WaitSBC(client, pDrawable, target, &ust, &msc, &sbc);
-    if (status != Success)
-	return status;
+    status = DRI2WaitSBC(client, pDrawable, target);
 
-    rep.type = X_Reply;
-    rep.length = 0;
-    rep.sequenceNumber = client->sequence;
-    load_msc_reply(&rep, ust, msc, sbc);
-
-    WriteToClient(client, sizeof(xDRI2MSCReply), &rep);
-
-    return client->noClientException;
+    return status;
 }
 
 static int
@@ -627,25 +609,11 @@ SProcDRI2Dispatch (ClientPtr client)
     }
 }
 
-static int DRI2DrawableGone(pointer p, XID id)
-{
-    DrawablePtr pDrawable = p;
-
-    DRI2DestroyDrawable(pDrawable);
-
-    return Success;
-}
-
 int DRI2EventBase;
 
 static void
 DRI2ExtensionInit(void)
 {
-    dri2DrawableRes = CreateNewResourceType(DRI2DrawableGone, "DRI2Drawable");
-
-    if (!dri2DrawableRes)
-	return;
-
     dri2Extension = AddExtension(DRI2_NAME,
 				 DRI2NumberEvents,
 				 DRI2NumberErrors,
