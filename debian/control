@@ -110,6 +110,13 @@ Breaks:
  xserver-xorg-input-tslib (<= 0.0.6-3),
  xserver-xorg-input-vmmouse (<= 1:12.6.5-4),
  xserver-xorg-input-wacom (<= 0.10.5+20100415-1),
+ xserver-xorg-video-cyrix (<= 1:1.1.0-8),
+ xserver-xorg-video-i810 (<< 2:2.4),
+ xserver-xorg-video-imstt (<= 1:1.1.0-7),
+ xserver-xorg-video-nsc (<= 1:2.8.3-4),
+ xserver-xorg-video-sunbw2 (<= 1:1.1.0-5),
+ xserver-xorg-video-v4l (<< 1:0.2.0),
+ xserver-xorg-video-vga (<= 1:4.1.0-8),
  libgl1-mesa-dri (<< 7.10.2-4),
  libgl1-mesa-dri-experimental (<< 7.10.2-4),
 Provides:

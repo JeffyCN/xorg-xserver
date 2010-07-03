@@ -25,6 +25,9 @@ xorg-server (2:1.10.99.901+git20110731-1) UNRELEASED; urgency=low
       early, add a Breaks against pre-multiarch libgl1-mesa-dri and
       libgl1-mesa-dri-experimental.
     + Bump Standards-Version to 3.9.2 (no changes).
+    + Add Breaks on drivers abandoned between lenny and squeeze.  This helps
+      apt decide to remove them instead of removing all of X.  Thanks, David
+      Kalnischkies!
 
  -- Cyril Brulebois <kibi@debian.org>  Tue, 31 May 2011 13:52:04 +0200
 
