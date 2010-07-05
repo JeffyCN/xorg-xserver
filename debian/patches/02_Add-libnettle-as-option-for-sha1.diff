@@ -10,9 +10,9 @@ Signed-off-by: Julien Cristau <jcristau@debian.org>
 ---
 Index: xorg-server/configure.ac
 ===================================================================
---- xorg-server.orig/configure.ac
-+++ xorg-server/configure.ac
-@@ -1351,7 +1351,7 @@
+--- xorg-server.orig/configure.ac	2010-07-05 16:58:09.868394001 +1000
++++ xorg-server/configure.ac	2010-07-05 16:59:02.628394001 +1000
+@@ -1358,7 +1358,7 @@
  
  # SHA1 hashing
  AC_ARG_WITH([sha1],
@@ -21,7 +21,7 @@ Index: xorg-server/configure.ac
                              [choose SHA1 implementation])])
  AC_CHECK_FUNC([SHA1Init], [HAVE_SHA1_IN_LIBC=yes])
  if test "x$with_sha1" = x && test "x$HAVE_SHA1_IN_LIBC" = xyes; then
-@@ -1434,6 +1434,16 @@
+@@ -1441,6 +1441,16 @@
  		SHA1_CFLAGS="$OPENSSL_CFLAGS"
  	fi
  fi
@@ -40,8 +40,8 @@ Index: xorg-server/configure.ac
  	AC_MSG_ERROR([No suitable SHA1 implementation found])
 Index: xorg-server/include/dix-config.h.in
 ===================================================================
---- xorg-server.orig/include/dix-config.h.in
-+++ xorg-server/include/dix-config.h.in
+--- xorg-server.orig/include/dix-config.h.in	2010-07-05 16:58:09.888394001 +1000
++++ xorg-server/include/dix-config.h.in	2010-07-05 16:59:02.628394001 +1000
 @@ -175,6 +175,9 @@
  /* Define to use libsha1 for SHA1 */
  #undef HAVE_SHA1_IN_LIBSHA1
@@ -54,8 +54,8 @@ Index: xorg-server/include/dix-config.h.in
  
 Index: xorg-server/os/xsha1.c
 ===================================================================
---- xorg-server.orig/os/xsha1.c
-+++ xorg-server/os/xsha1.c
+--- xorg-server.orig/os/xsha1.c	2010-07-05 16:58:09.898394001 +1000
++++ xorg-server/os/xsha1.c	2010-07-05 16:59:02.628394001 +1000
 @@ -127,6 +127,31 @@
      return 1;
  }

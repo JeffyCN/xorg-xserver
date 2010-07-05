@@ -1,8 +1,8 @@
 Index: xorg-server/fb/fbpict.c
 ===================================================================
---- xorg-server.orig/fb/fbpict.c	2010-06-04 13:54:10.000000000 +1000
-+++ xorg-server/fb/fbpict.c	2010-06-04 13:57:34.657009716 +1000
-@@ -37,7 +37,7 @@
+--- xorg-server.orig/fb/fbpict.c	2010-07-05 16:12:34.118394001 +1000
++++ xorg-server/fb/fbpict.c	2010-07-05 17:20:51.548394001 +1000
+@@ -35,7 +35,7 @@
  #include "mipict.h"
  #include "fbpict.h"
  
