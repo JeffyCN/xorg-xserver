@@ -1,0 +1,2 @@
+version=3
+http://xorg.freedesktop.org/releases/individual/xserver/ xorg-server-(.*)\.tar\.gz debian debian/xsfbs/repack.sh
