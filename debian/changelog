@@ -3,6 +3,8 @@ xorg-server (2:1.8.99.904-1) UNRELEASED; urgency=low
   [ Julien Cristau ]
   * Install the upstream changelog in xserver-common, instead of duplicating
     its 1MB in all other packages.
+  * Stop repacking the tarball: the non-modifiable README.DRI was removed
+    upstream.
 
   [ Christopher James Halse Rogers ]
   * New upstream RC

@@ -1,7 +1,5 @@
 This package was downloaded from
 http://xorg.freedesktop.org/releases/individual/xserver/
-The upstream tarball has been modified to remove the files listed in
-debian/prune/non-free.
 
                                   Licenses
 
