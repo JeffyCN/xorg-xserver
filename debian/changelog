@@ -1,4 +1,4 @@
-xorg-server (2:1.8.1.902-1) UNRELEASED; urgency=low
+xorg-server (2:1.8.99.904-1) UNRELEASED; urgency=low
 
   [ Julien Cristau ]
   * Install the upstream changelog in xserver-common, instead of duplicating
