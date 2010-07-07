@@ -8,6 +8,7 @@ xorg-server (2:1.8.99.904-1) UNRELEASED; urgency=low
   * Bump build-deps on x11proto-core-dev, x11proto-dri2-dev, libxfont-dev.
   * Bump xserver-xorg-dev dependency on x11proto-core-dev and
     x11proto-dri2-dev, add dependency on x11proto-xinerama-dev.
+  * Bump serverminver, videoabiver, inputabiver.
 
   [ Christopher James Halse Rogers ]
   * New upstream RC
