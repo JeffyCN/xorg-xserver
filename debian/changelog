@@ -1,3 +1,9 @@
+xorg-server (2:1.8.99.904-2) UNRELEASED; urgency=low
+
+  * Drop recommends on xbase-clients.
+
+ -- Julien Cristau <jcristau@debian.org>  Fri, 09 Jul 2010 13:20:31 +0100
+
 xorg-server (2:1.8.99.904-1) experimental; urgency=low
 
   [ Julien Cristau ]

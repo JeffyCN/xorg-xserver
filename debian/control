@@ -269,7 +269,7 @@ Depends:
  xserver-common (>= ${source:Version}),
  ${shlibs:Depends},
  ${misc:Depends},
-Recommends: xbase-clients, libgl1-mesa-dri (>= 7.1~rc1)
+Recommends: libgl1-mesa-dri (>= 7.1~rc1)
 Description: nested X server
  Xephyr is an X server that can be run inside another X server,
  much like Xnest. It is based on the kdrive X server, and as a
@@ -287,7 +287,6 @@ Depends:
  xserver-common (>= ${source:Version}),
  ${shlibs:Depends},
  ${misc:Depends},
-Recommends: xbase-clients
 Description: Linux framebuffer device tiny X server
  xserver-xfbdev is a Linux framebuffer device tiny X server based on the
  kdrive X server.
