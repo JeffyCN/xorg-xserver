@@ -293,8 +293,6 @@ binary-arch: build install
 	           $(CURDIR)/debian/xserver-xorg-dev/usr/share/xserver-xorg/videoabiver
 	$(INSTALL) -m644 $(CURDIR)/debian/inputabiver \
 	           $(CURDIR)/debian/xserver-xorg-dev/usr/share/xserver-xorg/inputabiver
-	$(INSTALL) -m644 $(CURDIR)/debian/serverminver \
-	           $(CURDIR)/debian/xserver-xorg-dev/usr/share/xserver-xorg/serverminver
 	$(INSTALL) -m 755 -d debian/xserver-xorg-core/usr/share/bug/xserver-xorg-core
 	$(INSTALL) -m 755 debian/xserver-xorg-core.bug.script debian/xserver-xorg-core/usr/share/bug/xserver-xorg-core/script
 ifeq ($(DEB_HOST_ARCH_OS), linux)
