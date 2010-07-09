@@ -1,4 +1,4 @@
-xorg-server (2:1.8.99.904-1) UNRELEASED; urgency=low
+xorg-server (2:1.8.99.904-1) experimental; urgency=low
 
   [ Julien Cristau ]
   * Install the upstream changelog in xserver-common, instead of duplicating
@@ -18,7 +18,7 @@ xorg-server (2:1.8.99.904-1) UNRELEASED; urgency=low
     - Pick up fix from https://bugs.freedesktop.org/show_bug.cgi?id=27497 to
       fix server crash in DRI2SwapEvent handling (LP: #595182).
 
- -- Christopher James Halse Rogers <raof@ubuntu.com>  Tue, 22 Jun 2010 11:45:01 +1000
+ -- Julien Cristau <jcristau@debian.org>  Fri, 09 Jul 2010 12:45:09 +0100
 
 xorg-server (2:1.8.1.901-1) experimental; urgency=low
 
