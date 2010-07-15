@@ -7,4 +7,3 @@
 #13_debian_add_xkbpath_env_variable.diff
 15-nouveau.diff
 16-xaa-fbcomposite-fix-negative-size.diff
-17-fix-DRI2-segfault-when-clientGone.diff
