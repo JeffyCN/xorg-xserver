@@ -1,4 +1,4 @@
-xorg-server (2:1.8.99.905-1) UNRELEASED; urgency=low
+xorg-server (2:1.8.99.905-1) experimental; urgency=low
 
   * Drop recommends on xbase-clients.
   * Add xauth to xserver-common recommends.
@@ -6,7 +6,7 @@ xorg-server (2:1.8.99.905-1) UNRELEASED; urgency=low
   * Don't install serverminver, drivers shouldn't use this anymore.
   * New upstream release candidate.
 
- -- Julien Cristau <jcristau@debian.org>  Sat, 17 Jul 2010 10:25:47 +0100
+ -- Julien Cristau <jcristau@debian.org>  Sat, 17 Jul 2010 11:13:32 +0100
 
 xorg-server (2:1.8.99.904-1) experimental; urgency=low
 
