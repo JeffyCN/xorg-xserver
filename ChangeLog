@@ -1,3 +1,335 @@
+commit a2c13f0d6548310e3cd115cf486d3e43edf23dcc
+Author: Keith Packard <keithp@keithp.com>
+Date:   Wed Jul 14 12:57:29 2010 -0700
+
+    Bump to version 1.8.99.905 (1.9 RC5)
+    
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit 0fc02c0bf92f694889589e3648acc08d4684de37
+Merge: 0540c46 9d8ec71
+Author: Keith Packard <keithp@keithp.com>
+Date:   Tue Jul 13 15:05:36 2010 -0700
+
+    Merge remote branch 'jeremyhu/master'
+
+commit 0540c46066f938ad5611c56081cfcd8457a9b718
+Author: Michel Dänzer <daenzer@vmware.com>
+Date:   Tue Jul 13 14:56:53 2010 +0200
+
+    EXA: Finish access to pixmap if it's prepared at destruction time.
+    
+    Previously we assumed every pixmap destroyed during a software fallback was
+    also created during a software fallback and had access prepared, but that's
+    not always true.
+    
+    Fixes a server abort
+    Reported-by: 邓逸昕 <bupt.dengyixin@gmail.com>
+    
+    Signed-off-by: Michel Dänzer <daenzer@vmware.com>
+    Acked-by: Maarten Maathuis <madman2003@gmail.com>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit d75e8146c414bfd512ba5dbd4a83acb334bbe19b
+Author: Keith Packard <keithp@keithp.com>
+Date:   Mon Jul 12 16:01:34 2010 -0700
+
+    Unwrap/rewrap EnterVT/LeaveVT completely, Fixes 28998
+    
+    Because some EnterVT code needs to remove it self from the
+    call chain, we need to fix all of the wrappers to correctly
+    unwrap/rewrap during the call chain. This is a follow-on to the fix
+    for bug 27114 in commit 68a9ee8370e6f9b38218376ac92d5130a5b0ef1e.
+    
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+    Tested-by: Jesse Barnes <jesse.barnes@intel.com>
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+    Reviewed-by: Tiago Vignatti <tiago.vignatti@nokia.com>
+
+commit 9d8ec712a67ce71ea7408f0626cda7e0fa7c3bac
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Tue Jul 13 08:56:36 2010 -0700
+
+    XQuartz: Bump bundle version to 2.6.0 for xorg-server-1.9.0 and X11R7.6
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+
+commit b2b9c458a46e9a41c3c76ffe83a2b580a41d0e90
+Author: Jan Hauffa <hauffa@in.tum.de>
+Date:   Wed Jun 16 09:25:41 2010 -0700
+
+    XQuartz: Remove some dead code.
+    
+    Signed-off-by: Jan Hauffa <hauffa@in.tum.de>
+    Reviewed-by: Jeremy Huddleston <jeremyhu@apple.com>
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+
+commit 648d189548530fa23d97d1e8737f89d297f1c443
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Tue Jul 13 08:25:27 2010 -0700
+
+    XQuartz: Avoid a crash when mistakenly free()ing in QuartzSetCursor on some configs
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+
+commit 3209b094a3b1466b579e8020e12a4f3fa78a5f3f
+Author: Jesse Barnes <jbarnes@virtuousgeek.org>
+Date:   Fri Jul 9 10:36:56 2010 -0700
+
+    DRI2: re-allocate DRI2 drawable if pixmap serial changes
+    
+    If a pixmap header is modified or the drawable serial changes, some
+    aspects of the drawable are likely to have changed so we should
+    re-allocate the corresponding DRI2 drawable in that case.  This is one
+    way of catching when the root window pixmap changes through xrandr.
+    
+    Fixes bug https://bugs.freedesktop.org/show_bug.cgi?id=28365.
+    
+    Reviewed-by: Keith Packard <keithp@keithp.com>
+    Reviewed-by: Kristian Høgsberg <krh@bitplanet.net>
+    Signed-off-by: Jesse Barnes <jbarnes@virtuousgeek.org>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit 02b11509b25686ff7bd567ecb78a435701edc4c2
+Author: Jesse Barnes <jbarnes@virtuousgeek.org>
+Date:   Fri Jul 9 10:36:12 2010 -0700
+
+    miModifyPixmapHeader: always update serialNumber
+    
+    We should update the serial number even if we just change a single field.
+    
+    Reviewed-by: Keith Packard <keithp@keithp.com>
+    Reviewed-by: Kristian Høgsberg <krh@bitplanet.net>
+    Signed-off-by: Jesse Barnes <jbarnes@virtuousgeek.org>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit 2307ab5bc9365ebbe04568edb7c7620a23689b70
+Merge: c65280c fd4f505
+Author: Keith Packard <keithp@keithp.com>
+Date:   Tue Jul 6 23:54:54 2010 -0400
+
+    Merge remote branch 'whot/for-keith'
+
+commit fd4f5059f08165a726071dc9f1ca877038292f6f
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Tue Jul 6 09:19:09 2010 +1000
+
+    dix: purge leftover manual key down bit setting.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+
+commit a1afe172559aff010e886cfc2a7a922d4a06c697
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Tue Jul 6 09:16:42 2010 +1000
+
+    dix: add aux. functions for button_is_down, set_button_down, set_button_up.
+    
+    Same as the matching key functions. Buttons, like keys, can have two states
+    for down/up - one posted, one processed. Posted is set during event
+    generation (usually in the signal handler). Processed is set during event
+    processing when the event queue is emptied and events are being delivered to
+    the client.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+
+commit 32473d6bf38c95b2d6d5ddbf583a1e801c6605e4
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Tue Jul 6 08:56:12 2010 +1000
+
+    dix: use BitIsOn/SetBit/ClearBit macros for set_key_down helpers.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+
+commit c18442908080c9833dfd6bb2ff367945d1892421
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Mon Jul 5 16:47:57 2010 +1000
+
+    Xi: use set_key_up/down instead of manual bit handling.
+    
+    We have the wrappers, use them.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit 10442ce02b5be7f82b373bee1939e2b523e291d9
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Mon Jul 5 16:54:48 2010 +1000
+
+    dix: treat flags as flags, not as value in key_is_down.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+
+commit b46ffd25d3f211e91c67bc618ecbd58257939388
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Fri Jul 2 15:25:14 2010 +1000
+
+    mi: rename miPointerMoved to miPointerMoveNoEvent.
+    
+    Having miPointerMove and miPointerMoved is confusing, especially since both
+    do the same thing bar the event delivery. Also, miPointerMove calls
+    miPointerMoved which indicates some confusion in the temporal alignment of
+    cause and effect.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Acked-by: Tiago Vignatti <tiago.vignatti@nokia.com>
+    Reviewed-by: Keith Packard <keithp@keithp.com>
+
+commit dbd621705a5211540b353af81c4af83c297b74dc
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Fri Jul 2 14:22:03 2010 +1000
+
+    mi: De-duplicate some code in mipointer.c
+    
+    miPointerMoved already has the same code.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Keith Packard <keithp@keithp.com>
+
+commit c65280ce8df4836bd7424a90482e8aa00ab6f447
+Author: Robert Hooker <sarvatt@ubuntu.com>
+Date:   Sat Jun 12 20:23:09 2010 -0400
+
+    Increase advertised RENDER protocol minor version to 11
+    
+    Support for the blend mode operators was added in
+    0ce42adbf4cff9e7f049d9fc79d588ece5936177
+    and the requirement was bumped but when things were split off into
+    include/protocol-versions.h it defined it to 10. render uses
+    the lower of the client and server advertised versions so it's not
+    using the new blend mode operators.
+    
+    Signed-off-by: Robert Hooker <sarvatt@ubuntu.com>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit 9f0b193acdc29e491b6245390cf9f53b5222e6d3
+Author: Keith Packard <keithp@keithp.com>
+Date:   Thu Jul 1 09:13:43 2010 -0400
+
+    miDbe window priv priv is pre-allocated, don't use dixSetPrivate (bug 28639)
+    
+    miDbeInit pre-allocates space in each DBE window private private for a
+    MiDbeWindowPrivPrivRec. miDbeAllocBackBufferName used the
+    pre-allocated space correctly (simply fetching it instead of
+    allocating a new piece of memory). However, it then called
+    dixSetPrivate anyways, which isn't necessary, and (in the new
+    dixPrivate world) causes an assert failure.
+    
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+    Tested-by: Magnus Kessler <Magnus.Kessler@gmx.net>
+    Reviewed-by: Magnus Kessler <Magnus.Kessler@gmx.net>
+
+commit a94cb400d15b8c78dc04148cbd8db8e5ec8364b5
+Author: Keith Packard <keithp@keithp.com>
+Date:   Thu Jul 1 09:11:36 2010 -0400
+
+    Delete unused miDbe screen private private datatype
+    
+    MiDbeScreenPrivPrivRec is not used in the server. Remove it, along
+    with the MI_DBE_SCREEN_PRIV_PRIV macro that tried to use it.
+    
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+    Reviewed-by: Magnus.Kessler <Magnus.Kessler@gmx.net>
+
+commit f0fcffe55f280add5e4db2f5e9198a48c6f1b015
+Author: Alan Coopersmith <alan.coopersmith@oracle.com>
+Date:   Thu Jun 3 19:00:54 2010 -0700
+
+    Update the sprite immediately when moving it with MouseKeys
+    
+    Fix for OpenSolaris bug 6949755: Mouse Keys are ununusable
+    and possibly https://bugs.freedesktop.org/show_bug.cgi?id=24856
+    
+    Ensures waitForUpdate is False before calling SetCursorPosition.
+    Normally waitForUpdate is False when SilkenMouse is active, True
+    when it's not.   When it's True, the mouse cursor position on
+    screen is not updated immediately.
+    
+    This is more critical on Solaris, since we disabled SigIO, thus in turn
+    disable SilkenMouse, due to the SSE2 vs. signal handler issues described in
+    Sun bugs 6849925, 6859428, and 6879897.
+    
+    Signed-off-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit 3d9079b898c432a87f9b95c1f39a85f660bf0858
+Author: Alan Coopersmith <alan.coopersmith@oracle.com>
+Date:   Thu Jun 3 19:00:53 2010 -0700
+
+    Add API to update setting of waitForUpdate screen private in miPointer
+    
+    Signed-off-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit 69b2b5c85ec079ef49f84722daa5f148cedc2e1b
+Merge: b90faa7 1432785
+Author: Keith Packard <keithp@keithp.com>
+Date:   Thu Jul 1 23:46:53 2010 -0400
+
+    Merge remote branch 'whot/for-keith'
+
+commit b90faa71567c4461b28515756ba5c1e6286dda16
+Author: Keith Packard <keithp@keithp.com>
+Date:   Thu Jul 1 23:46:27 2010 -0400
+
+    Revert "xkb: merge lockedPtrButtons state from all attached SDs."
+    
+    Preparing to merge Peter's branch.
+    
+    This reverts commit 6052710670953b43b4fff5d101b727163fcb1187.
+
+commit 9fb0785449b287ba1998e08613b3c2102ec24842
+Author: Keith Packard <keithp@keithp.com>
+Date:   Thu Jul 1 23:45:50 2010 -0400
+
+    Revert "Revert "dix: use the event mask of the grab for TryClientEvents.""
+    
+    Preparing to merge Peter's branch.
+    
+    This reverts commit 018c878e9495b21146c8f38617fdd1bf6d8cc73b.
+
+commit 48cac27870992f6bde2c48429ff03c0a7606d5c1
+Author: James Jones <jajones@nvidia.com>
+Date:   Fri Jun 18 17:28:15 2010 -0700
+
+    Cast void* to pointer* to appease some compilers.
+    
+    When this privates.h is included in C++ builds, the compiler
+    complains about implicitly casting void* to void**.  This small
+    patch fixes that up.
+    
+    Signed-off-by: James Jones <jajones@nvidia.com>
+    Reviewed-by: Keith Packard <keithp@keithp.com>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit 14327858391ebe929b806efb53ad79e789361883
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Thu Jul 1 12:44:57 2010 +1000
+
+    xkb: release XTEST pointer buttons on physical releases. (#28808)
+    
+    If a button release event is posted for the MD pointer, post a release event
+    through the matching XTEST device. This way, a client who posts a button
+    press through the XTEST extension cannot inadvertedly lock the button.
+    
+    This behaviour is required for historical reasons, until server 1.7 the core
+    pointer would release a button press on physical events, regardless of the
+    XTEST state. Clients seem to rely on this behaviour, causing seemingly stuck
+    grabs.
+    
+    The merged behaviour is kept for multiple keyboard PointerKey events, if two
+    physical keyboards hold the button down as a result of PointerKey actions,
+    the button is not released until the last keyboard releases the button.
+    
+    X.Org Bug 28808 <http://bugs.freedesktop.org/show_bug.cgi?id=28808>
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+
 commit a71dbc03e65cf7b0654a6eca93ce0bf6a1711ffa
 Author: Keith Packard <keithp@keithp.com>
 Date:   Thu Jul 1 08:27:05 2010 -0400
@@ -43,6 +375,93 @@ Date:   Tue Jun 29 16:08:01 2010 +0300
     Reviewed-by: Mikhail Gusarov <dottedmag@dottedmag.net>
     Reviewed-by: Alex Deucher <alexdeucher@gmail.com>
     Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit 339f62b1bfadb0ee77d67e351f4e30f5d5e9625f
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Tue Jun 29 15:24:51 2010 +1000
+
+    xkb: emulate PointerKeys events only on the master device.
+    
+    This patch replicates the behaviour for button events. Only generate a
+    PointerKeys motion event on the master device, not on the slave device.
+    Fixes the current issue of PointerKey motion events generating key events as
+    well.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit 69ac909878ef80bb74c4a9ca4150eda66debd754
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Tue Jun 29 12:12:53 2010 +1000
+
+    xkb: merge lockedPtrButtons state from all attached SDs.
+    
+    Problem:
+    lockedPtrButtons keeps the state of the buttons locked by a PointerKeys button
+    press. Unconditionally clearing the bits may cause stuck buttons in this
+    sequence of events:
+    
+    1. type Shift + NumLock to enable PointerKeys
+    2. type 0/Ins on keypad to emulate Button 1 press
+            → button1 press event to client
+    3. press and release button 1 on physical mouse
+            → button1 release event to client
+    
+    Button 1 on the MD is now stuck and cannot be released.
+    
+    Cause:
+    XKB PointerKeys button events are posted through the XTEST pointer device.
+    Once a press is generated, the XTEST device's button is down. The DIX merges
+    the button state of all attached SDs, hence the MD will have a button down
+    while the XTEST device has a button down.
+    
+    PointerKey button events are only generated on the master device to avoid
+    duplicate events (see XkbFakeDeviceButton()). If the MD has the
+    lockedPtrButtons bit cleared by a release event on a physical device, no
+    such event is generated when a keyboard device triggers the PointerKey
+    ButtonRelease trigger. Since the event - if generated - is posted through
+    the XTEST pointer device, lack of a generated ButtonRelease event on the
+    XTEST pointer device means the button is never released, resulting in the
+    stuck button observed above.
+    
+    Solution:
+    This patch merges the MD's lockedPtrButtons with the one of all attached
+    slave devices on release events. Thus, as long as one attached keyboard has
+    a lockedPtrButtons bit set, this bit is kept in the MD. Once a PointerKey
+    button is released on all keyboards, the matching release event is emulated
+    from the MD through the XTEST pointer device, thus also releasing the button
+    in the DIX.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit 09645864f5a52882eee51c801b3e610d683e7147
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Tue Jun 29 13:49:27 2010 +1000
+
+    xkb: Mark switch case fallthrough with comment.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit c7330ecb5d28d7a92d24feb289f7f1812ce055a4
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Wed Jun 30 13:23:14 2010 +1000
+
+    dix: fix up erroneous error message.
+    
+    (WW) Device 'device name' has 36 axes, only using first 36.
+    does seem a bit silly.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit dbf249ec6638f0a8dfa4c2286099845aafc8ac88
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Tue Jun 29 10:43:51 2010 +1000
+
+    xkb: remove now obsolete comment.
+    
+    Looks like nothing broke from removing the hardcoded CoreProcessPointerEvent
+    call. Whoop. Di. Doo.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
 
 commit f028e70ca714f6956e41754f132cb9b8a1e8db63
 Author: Keith Packard <keithp@keithp.com>
@@ -204,6 +623,47 @@ Date:   Fri Jun 25 09:48:10 2010 +1000
     Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
     Reviewed-by: Keith Packard <keithp@keithp.com>
     Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit 1884db430a5680e37e94726dff46686e2218d525
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Thu Jun 24 12:52:53 2010 +1000
+
+    Revert "dix: use the event mask of the grab for TryClientEvents."
+    
+    Behaviour of earlier X servers was to deliver the ButtonPress event
+    unconditionally, regardless of the actual event mask being set. This is
+    documented in the protocol:
+    "This request establishes a passive grab.  In the future, the pointer is
+    actively grabbed as described in GrabPointer, the last-pointer-grab time is
+    set to the time at which the button was pressed (as transmitted in the
+    ButtonPress event), and the ButtonPress event is reported if all of the
+    following conditions are true:
+        <list of conditions, event mask is not one of them>"
+    
+    Thus, a GrabButton event will always deliver the button press event, a
+    GrabKey always the key press event, etc. Same goes for XI and XI2.
+    
+    Reproducible with a simple client requesting a button grab in the form of:
+        XGrabButton(dpy, AnyButton, AnyModifier, win, True, ButtonReleaseMask,
+                    GrabModeAsync, GrabModeAsync, None, None);
+    
+    On servers before MPX/XI2, the client will receive a button press and
+    release event. On current servers, the client receives only the release.
+    Clients that expect the press event to be delivered unconditionally.
+    
+    XTS Xlib13 XGrabButton 5/39 now passes.
+    
+    This reverts commit 48585bd1e3e98db0f3df1ecc68022510216e00cc.
+    Effectively reverts commit 1c612acca8568fcdf9761d23f112adaf4d496f1b as well,
+    the code introduced with 1c612 is not needed anymore.
+    
+    Conflicts:
+    
+    	dix/events.c
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Acked-by: Daniel Stone <daniel@fooishbar.org>
+    Reviewed-by: Keith Packard <keithp@keithp.com>
 
 commit 3b3c77b87070ddcdbb2acb114a81628485e7a129
 Author: Tiago Vignatti <tiago.vignatti@Nokia.com>
