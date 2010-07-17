@@ -12,9 +12,9 @@ Also, don't treat DRI setup failure as an error for nouveau.
 
 Index: xorg-server/glx/glxdri.c
 ===================================================================
---- xorg-server.orig/glx/glxdri.c	2010-07-05 16:12:34.000000000 +1000
-+++ xorg-server/glx/glxdri.c	2010-07-05 17:17:49.378394001 +1000
-@@ -968,6 +968,7 @@
+--- xorg-server.orig/glx/glxdri.c
++++ xorg-server/glx/glxdri.c
+@@ -981,6 +981,7 @@
      const __DRIconfig **driConfigs;
      const __DRIextension **extensions;
      int i;
@@ -22,7 +22,7 @@ Index: xorg-server/glx/glxdri.c
  
      if (!xf86LoaderCheckSymbol("DRIQueryDirectRenderingCapable") ||
  	!DRIQueryDirectRenderingCapable(pScreen, &isCapable) ||
-@@ -1047,7 +1048,9 @@
+@@ -1060,7 +1061,9 @@
  
      screen->driver = dlopen(filename, RTLD_LAZY | RTLD_LOCAL);
      if (screen->driver == NULL) {
@@ -33,7 +33,7 @@ Index: xorg-server/glx/glxdri.c
  		   filename, dlerror());
          goto handle_error;
      }
-@@ -1185,7 +1188,7 @@
+@@ -1198,7 +1201,7 @@
  
      free(screen);
  
@@ -44,9 +44,9 @@ Index: xorg-server/glx/glxdri.c
  }
 Index: xorg-server/glx/glxdri2.c
 ===================================================================
---- xorg-server.orig/glx/glxdri2.c	2010-07-05 16:12:34.000000000 +1000
-+++ xorg-server/glx/glxdri2.c	2010-07-05 17:17:49.378394001 +1000
-@@ -696,6 +696,7 @@
+--- xorg-server.orig/glx/glxdri2.c
++++ xorg-server/glx/glxdri2.c
+@@ -709,6 +709,7 @@
      const __DRIextension **extensions;
      const __DRIconfig **driConfigs;
      int i;
@@ -54,7 +54,7 @@ Index: xorg-server/glx/glxdri2.c
  
      screen = calloc(1, sizeof *screen);
      if (screen == NULL)
-@@ -722,7 +723,9 @@
+@@ -735,7 +736,9 @@
  
      screen->driver = dlopen(filename, RTLD_LAZY | RTLD_LOCAL);
      if (screen->driver == NULL) {
@@ -65,7 +65,7 @@ Index: xorg-server/glx/glxdri2.c
  		   filename, dlerror());
          goto handle_error;
      }
-@@ -816,7 +819,7 @@
+@@ -829,7 +832,7 @@
  
      free(screen);
  
@@ -76,8 +76,8 @@ Index: xorg-server/glx/glxdri2.c
  }
 Index: xorg-server/hw/xfree86/common/xf86pciBus.c
 ===================================================================
---- xorg-server.orig/hw/xfree86/common/xf86pciBus.c	2010-07-05 17:20:04.268394001 +1000
-+++ xorg-server/hw/xfree86/common/xf86pciBus.c	2010-07-05 17:20:27.318394001 +1000
+--- xorg-server.orig/hw/xfree86/common/xf86pciBus.c
++++ xorg-server/hw/xfree86/common/xf86pciBus.c
 @@ -1118,7 +1118,24 @@
  	    break;
  	case 0x102b:		    driverList[0] = "mga";	break;

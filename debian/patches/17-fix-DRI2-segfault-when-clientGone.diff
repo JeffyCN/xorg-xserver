@@ -19,9 +19,9 @@ Cc: Kristian Høgsberg <krh@bitplanet.net>
 
 Index: xorg-server/hw/xfree86/dri2/dri2ext.c
 ===================================================================
---- xorg-server.orig/hw/xfree86/dri2/dri2ext.c	2010-06-18 12:59:17.534477001 +1000
-+++ xorg-server/hw/xfree86/dri2/dri2ext.c	2010-06-18 13:06:30.914477000 +1000
-@@ -355,6 +355,9 @@
+--- xorg-server.orig/hw/xfree86/dri2/dri2ext.c
++++ xorg-server/hw/xfree86/dri2/dri2ext.c
+@@ -362,6 +362,9 @@
      xDRI2BufferSwapComplete event;
      DrawablePtr pDrawable = data;
  
@@ -29,5 +29,5 @@ Index: xorg-server/hw/xfree86/dri2/dri2ext.c
 +	return;
 +
      event.type = DRI2EventBase + DRI2_BufferSwapComplete;
-     event.sequenceNumber = client->sequence;
      event.event_type = type;
+     event.drawable = pDrawable->id;
