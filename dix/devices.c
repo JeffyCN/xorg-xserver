@@ -2336,7 +2336,7 @@ RecalculateMasterButtons(DeviceIntPtr slave)
         maxbuttons = max(maxbuttons, dev->button->numButtons);
     }
 
-    if (master->button->numButtons != maxbuttons)
+    if (master->button && master->button->numButtons != maxbuttons)
     {
         int i;
         DeviceChangedEvent event;
@@ -2347,7 +2347,7 @@ RecalculateMasterButtons(DeviceIntPtr slave)
 
         event.header = ET_Internal;
         event.type = ET_DeviceChanged;
-        event.time = CurrentTime;
+        event.time = GetTimeInMillis();
         event.deviceid = master->id;
         event.flags = DEVCHANGE_POINTER_EVENT | DEVCHANGE_DEVICE_CHANGE;
         event.buttons.num_buttons = maxbuttons;
