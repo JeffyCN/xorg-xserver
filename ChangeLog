@@ -1,3 +1,1223 @@
+commit 8ab87dc7ff48d4db8e5f95a74df627dac9c53c0a
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Fri Oct 1 13:37:49 2010 -0700
+
+    Bump version to 1.9.0.901 (1.9.1 rc1)
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+
+commit 5fb1780d6a44c7fca5143e5f456259499ddb0852
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Fri Oct 1 14:05:03 2010 -0700
+
+    test: Fix make distcheck when not building unit tests
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+
+commit 4d2542a16bd955ae448cc2cb160d1e0f2d9c291b
+Merge: 5b64f85 560e425
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Thu Sep 30 00:19:24 2010 -0700
+
+    Merge remote branch 'ajax/server-1.9-xfree86' into server-1.9-branch
+
+commit 5b64f85b1b34d42f581db617ce3f3f7b12e6cdf8
+Author: Tobias Droste <tdroste@gmx.de>
+Date:   Wed Sep 29 22:51:48 2010 +0200
+
+    randr: set error numbers of resource types in RRExtenstionInit() (V2)
+    
+    Fixes: https://bugs.freedesktop.org/show_bug.cgi?id=30367
+    
+    Currently the ddx calls xf86RandR12Init()
+      (-> RRScreenInit()
+         -> RRInit()
+           -> RRModeInit()
+           -> RRCrtcInit()
+           -> RROutputInit())
+    before RRExtensionInit() is called. This causes RRErrorBase
+    being 0 while setting resource type error values (resource types:
+    RROutput, RRMode and RRCrtc). The fix moves the setting of error
+    values to own functions which are called in RRExtensionInit()
+    to get the right RRErrorBase.
+    
+    V2: With header file
+    
+    Signed-off-by: Tobias Droste <tdroste@gmx.de>
+    Reviewed-by: Keith Packard <keithp@keithp.com>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+    (cherry picked from commit c7e4222c9a27094ce4fc2831ac92acbb7b21fb1a)
+
+commit 560e4254997df26b6abaa93ca2f59bcf7f68d551
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Mon Sep 27 17:06:46 2010 -0400
+
+    xfree86: Add 18bpp support
+    
+    Signed-off-by: Adam Jackson <ajax@redhat.com>
+    Reviewed-by: Keith Packard <keithp@keithp.com>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+    (cherry picked from commit 9df4fb0adf66fb82f0c007897d79af0f54a6dad9)
+
+commit 5ae0c0cdb29dd35e0c10e6429e0df59f064a5c73
+Author: Macpaul Lin <macpaul@andestech.com>
+Date:   Tue Sep 21 15:13:34 2010 +0800
+
+    xfree86: nds32: add nds32 support for compiler related mmio codes
+    
+    Add nds32 support for compiler related mmio codes.
+    It includes byte-swap or non-swap operations.
+    
+    Signed-off-by: Macpaul Lin <macpaul@andestech.com>
+    Acked-by: Tiago Vignatti <tiago.vignatti@nokia.com>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+    (cherry picked from commit 58bd317e29f4abf7f950891339d2a6a78ddf7903)
+
+commit dfef37797c79d767d156a356ad7ea69316d4f693
+Author: Macpaul Lin <macpaul@andestech.com>
+Date:   Tue Sep 21 15:13:33 2010 +0800
+
+    xfree86: nds32: add nds32 support for compiler specific codes
+    
+    Add nds32 definitions and related assembly codes to compiler header files.
+    
+    Signed-off-by: Macpaul Lin <macpaul@andestech.com>
+    Acked-by: Tiago Vignatti <tiago.vignatti@nokia.com>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+    (cherry picked from commit 28e6de66b42062a885ba38416387f2dbc15707fd)
+
+commit 7c016917b0fb5ab06f04f48914f78591482abb12
+Author: Macpaul Lin <macpaul@andestech.com>
+Date:   Tue Sep 21 15:13:32 2010 +0800
+
+    xfree86: nds32: add nds32 definition for vgaHW support.
+    
+    Add __nds32__ definitions for vgaHW support.
+    
+    Signed-off-by: Macpaul Lin <macpaul@andestech.com>
+    Acked-by: Tiago Vignatti <tiago.vignatti@nokia.com>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+    (cherry picked from commit 2b24b2bd859a4b4b8ccaf3b7d1b529dcda2d3b94)
+
+commit 8d6e2e9906fb0389db2b777d9d8bc2373f537f88
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Fri Jul 23 14:48:32 2010 +1000
+
+    xfree86: fix compiler warning about implicied decl of DuplicateModule.
+    
+    ../../../../hw/xfree86/common/xf86Xinput.c: In function ‘xf86AllocateInput’:
+    ../../../../hw/xfree86/common/xf86Xinput.c:722: warning: implicit
+    declaration of function ‘DuplicateModule’
+    ../../../../hw/xfree86/common/xf86Xinput.c:722: warning: nested extern
+    declaration of ‘DuplicateModule’
+    ../../../../hw/xfree86/common/xf86Xinput.c:722: warning: assignment makes
+    pointer from integer without a cast
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Adam Jackson <ajax@redhat.com>
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+    (cherry picked from commit 3cc5e4422430e9ca44615f3e63feccd2e5729046)
+
+commit 223794505e64ab5aa215f4847822d66cd6f3450f
+Author: Jesse Adkins <jesserayadkins@gmail.com>
+Date:   Wed Aug 4 09:21:31 2010 +0000
+
+    xfree86: Fix leaks in OpenConfigFile and OpenConfigDir
+    
+    [mattst88: fixed whitespace and a missing semicolon]
+    
+    Signed-off-by: Jesse Adkins <jesserayadkins@gmail.com>
+    Signed-off-by: Matt Turner <mattst88@gmail.com>
+    (cherry picked from commit 18b62e0479f15e965611880ada6e0195367df025)
+
+commit 6a0b4051972a4fa6f1a3b22ec1ae54bd1849bc9f
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Tue Aug 3 12:51:51 2010 -0700
+
+    XQuartz: RandR: Refactor legacy mode-switching to be better integrated with RandR
+    
+    Adds three new functions
+    void QuartzRandRSetFakeRootless (void);
+    void QuartzRandRSetFakeFullscreen (void);
+    void QuartzRandRToggleFullscreen (void);
+    
+    The first two are identical to requesting the fake modes from a RandR client
+    The third responds to cmd-alt-a to leave fullscreen or RandR.
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+    (cherry picked from commit c45bea0c044ad37bedb42209f7e6ea8b587999f0)
+
+commit abfb3c7994ee4459d2de93083e4d5ba388095d55
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Mon Jul 26 23:34:49 2010 -0700
+
+    XQuartz: RandR: Don't change the rootless preference when changing RandR mode
+    
+    Also renames a bunch of other variables for better consistency.
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+    (cherry picked from commit 229323a19b06f80d9b03f487e598b933b9b31d87)
+
+commit 92b3dc67eef47db336674cf55ced4af40a6c29d7
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Mon Jul 26 11:45:59 2010 -0700
+
+    XQuartz: RandR: Better handle switching betwen RandR modes that share CG modes
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+    (cherry picked from commit 721edc69c3597578d3e7f711769ff0195af6068a)
+
+commit 0402a4409641598427c7d3385aa006964ae0b75a
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Mon Jul 26 01:17:12 2010 -0700
+
+    XQuartz: RandR: Respond better to resolution changes made outside X
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+    (cherry picked from commit 026a47e21226b64eb9a7624ada3d74c3fe5fa763)
+
+commit e540c517a831a256a6e76a8c2b92629fe87aa8df
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Sun Jul 25 22:25:49 2010 -0700
+
+    XQuartz: RandR: Use deprecated CG APIs only on Leopard and earlier
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+    (cherry picked from commit 59cd93f48a3a0a34781d4a94a3cd05a575e2d4ba)
+
+commit e4918634ab166b72d9d44663d69443e13f153fd7
+Author: Jan Hauffa <hauffa@in.tum.de>
+Date:   Fri Jul 16 17:56:44 2010 +0200
+
+    XQuartz: RandR: Remove FAKE_RANDR code.
+    
+    Signed-off-by: Jan Hauffa <hauffa@in.tum.de>
+    Reviewed-by: Jeremy Huddleston <jeremyhu@apple.com>
+    (cherry picked from commit 629c3f473b7415069a87ef4717ec3d701978dc48)
+
+commit b374b9e68a8d8f18a8220e90a98d983ec4068938
+Author: Jan Hauffa <hauffa@in.tum.de>
+Date:   Fri Jul 16 17:54:55 2010 +0200
+
+    XQuartz: RandR: Toggle rootless mode on XRandR mode switch.
+    
+    Report a fake screen mode that corresponds to the screen mode at startup of the
+    server excluding the height of the menu bar. If a client requests this mode,
+    rootless mode is enabled. In all other modes, the root window is shown.
+    
+    Signed-off-by: Jan Hauffa <hauffa@in.tum.de>
+    Reviewed-by: Jeremy Huddleston <jeremyhu@apple.com>
+    (cherry picked from commit 97b5f5306437bfd13390485fc7a58a363c261ec9)
+
+commit 29e9c25efb3e006b22019575fdb9ec1cc958c096
+Author: Jan Hauffa <hauffa@in.tum.de>
+Date:   Fri Jul 16 17:18:03 2010 +0200
+
+    XQuartz: RandR: Implement basic RandR functionality.
+    
+    Querying and changing of resolution and refresh rate is supported,
+    rotation is not implemented yet.
+    
+    Signed-off-by: Jan Hauffa <hauffa@in.tum.de>
+    Reviewed-by: Jeremy Huddleston <jeremyhu@apple.com>
+    (cherry picked from commit 2d411472c2915614bdeb8fdc15d19dae4621444d)
+
+commit f939ab0175e1662f5df664449cba5d72fa1dbe1c
+Author: Chris Wilson <chris@chris-wilson.co.uk>
+Date:   Mon Sep 27 17:30:13 2010 +0100
+
+    modes: Beware the driver switching root pixmaps
+    
+    Program received signal SIGSEGV, Segmentation fault.
+    0x080d4a2d in xf86RandR12ScreenSetSize (pScreen=0x8dca3a0, width=800,
+        height=600, mmWidth=210, mmHeight=157)
+        at ../../../../hw/xfree86/modes/xf86RandR12.c:731
+    731     ../../../../hw/xfree86/modes/xf86RandR12.c: No such file or directory.
+            in ../../../../hw/xfree86/modes/xf86RandR12.c
+    (gdb) bt full
+        height=600, mmWidth=210, mmHeight=157)
+        at ../../../../hw/xfree86/modes/xf86RandR12.c:731
+            randrp = 0x8dcae68
+            pScrn = 0x8dbeb28
+            config = <value optimized out>
+            pRoot = 0x8e08e30
+            pScrnPix = 0xb6d12008
+            ret = 1
+            c = <value optimized out>
+        mmWidth=210, mmHeight=157) at ../../randr/rrscreen.c:185
+    No locals.
+        at ../../randr/rrscreen.c:307
+            pWin = 0x8e08e30
+            pScreen = 0x8dca3a0
+            i = <value optimized out>
+            rc = 0
+    ../../randr/randr.c:485
+    
+    Signed-off-by: Chris Wilson <chris@chris-wilson.co.uk>
+    Cc: Julien Cristau <jcristau@debian.org>
+    Tested-by: Julien Cristau <jcristau@debian.org>
+    Cc: Keith Packard <keithp@keithp.com>
+    Reviewed-by: Keith Packard <keithp@keithp.com>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+    (cherry picked from commit fdabcec57ae0fdc9910060609bb0848552c1db4d)
+
+commit 3ea7d271c8847a3135442ea24b8d5ff81d5e20b7
+Author: Aaron Plattner <aplattner@nvidia.com>
+Date:   Fri Aug 27 10:20:29 2010 -0700
+
+    os: Return BadLength instead of disconnecting BigReq clients (#4565)
+    
+    If a client sends a big request that's too big (i.e. bigger than
+    maxBigRequestSize << 2 bytes), the server just disconnects it.  This makes the
+    client receive SIGPIPE the next time it tries to send something.
+    
+    The X Test Suite sends requests that are too big when the test specifies the
+    TOO_LONG test type.  When the client receives SIGPIPE, XTS marks it as
+    UNRESOLVED, which counts as a failure.
+    
+    Instead, remember how long the request is supposed to be and then return that
+    size.  Dispatch() checks the length and sends BadLength to the client.  Then,
+    whenever oci->ignoreBytes is nonzero, ignore the data read instead of trying to
+    process it as a request.
+    
+    Signed-off-by: Aaron Plattner <aplattner@nvidia.com>
+    Reviewed-by: Keith Packard <keithp@keithp.com>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+    (cherry picked from commit cf88363db0ebb42df7cc286b85d30d7898aea840)
+
+commit 3b687814a5b999305042775a2bddc3c10706f6da
+Author: Kristian Høgsberg <krh@bitplanet.net>
+Date:   Thu Sep 23 09:04:11 2010 -0400
+
+    glx: Fix use after free in DrawableGone
+    
+    (note that nearly identical patches were proposed by Kristian and Chris)
+    
+    Signed-off-by: Kristian Høgsberg <krh@bitplanet.net>
+    Signed-off-by: Chris Wilson <chris@chris-wilson.co.uk>
+    Reported-by: Julien Cristau <jcristau@debian.org>
+    Reviewed-by: Adam Jackson <ajax@redhat.com>
+    Reviewed-by: Jamey Sharp <jamey@minilop.net>
+    Tested-by: Chris Wilson <chris@chris-wilson.co.uk>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+    (cherry picked from commit 2f0abd7d690c3bcce2a80c093a0880f43e56d8cb)
+
+commit 57d454758994312b8572a753501dd1e5c89b4f7e
+Author: Thomas Hellstrom <thellstrom@vmware.com>
+Date:   Thu Sep 2 10:53:28 2010 +0200
+
+    linux: Don't lose console events on non-evdev drivers (#29969)
+    
+    The drain_console() function will race with new keyboard events being added
+    by the hardware causing the server to lose keyboard events if the console fd
+    is used for input.
+    
+    Only use the drain_console() when AllowEmptyInput is off which is the best
+    indicator we have for whether the keyboard driver will be used. This patch
+    will only fix the bug when hotplugging is disabled.
+    What we really need is a way to figure out either whether we're _not_ using
+    the keyboard driver (not predictable) or a way for the keyboard driver to
+    disable drain_console().
+    
+    X.Org Bug 29969 <http://bugs.freedesktop.org/show_bug.cgi?id=29969>
+    
+    Signed-off-by: Thomas Hellstrom <thellstrom@vmware.com>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Adam Jackson <ajax@redhat.com>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    (cherry picked from commit 71972c2534d490284d3d42b456c2f34b964b2894)
+
+commit 918cb214ab4240be4772a141d1209c0ff5dfd63b
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Mon Aug 23 08:35:01 2010 +1000
+
+    xfree86: Check for existence of button class before dereferencing it.
+    
+    The Irxon Super Mini Bluetooth Wireless Keyboard for PC/PDA/Cell Phones
+    keyboards have axes but not buttons. The evdev driver doesn't set up a
+    button class for these keyboards and a motion event handled by
+    DGAProcessPointerEvent dereferences the dev->button NULL pointer, causing a
+    server crash.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Keith Packard <keithp@keithp.com>
+    (cherry picked from commit e00e2e7b68fbc932269d607ac5dc2c441d07ad9d)
+
+commit 5a29cb126de577a2a0a41e10d9af13091a73d334
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Tue Aug 24 13:46:35 2010 +1000
+
+    dix: don't set time to CurrentTime in DeviceChangedEvents.
+    
+    CurrentTime is used by clients to skip setting the time, but not by the
+    server.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Keith Packard <keithp@keithp.com>
+    (cherry picked from commit 86560b5d05f14bdf04d21b3457a66c0d5045db9c)
+
+commit 72e3e6f4a7690f70a6b5f7689633cdea859535e1
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Mon Aug 23 13:20:09 2010 +1000
+
+    dix: fix crash when removing devices on a buttonless MD pointer (#29669)
+    
+    If the master does not have a button class, recalculating the number of
+    buttons required for this master dereferences a NULL pointer. Guard against
+    this, if the master pointer doesn't have a button class, it doesn't need to
+    update it's number of buttons.
+    
+    Reproducible:
+    Two devices on the same master, device NB with axes but no buttons, device
+    A+B with axes and button .
+    If NB was the last one to send an event through the master when A+B is
+    removed from the server, master->button is NULL and leads to the above
+    NULL-pointer dereference.
+    
+    X.Org Bug 29669 <http://bugs.freedesktop.org/show_bug.cgi?id=29669>
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Keith Packard <keithp@keithp.com>
+    (cherry picked from commit ff055506f0cbb852bed17acb9f9bbf1d715a854e)
+
+commit 0f3a0ab1f01ec5314ccb0bfb932c49f8c61b9866
+Author: Chase Douglas <chase.douglas@ubuntu.com>
+Date:   Wed Sep 1 14:45:34 2010 +1000
+
+    Fix udev population of Bluetooth input device product IDs
+    
+    The udev device_added function takes the vendor and model IDs of added
+    devices and converts them into an attribute that can be matched for by
+    an InputClass configuration using MatchUSBID. Currently, the udev
+    mechanism works for USB devices, but fails to work properly for
+    Bluetooth devices. The product IDs of the event node are actually the
+    IDs of the Bluetooth receiver instead of the device.
+    
+    This patch reads the product ID from the PRODUCT property of the parent
+    of the added device. This tag is set correctly for both USB and
+    Bluetooth input devices. The following devices have been tested by
+    specifying individual InputClass sections in xorg.conf:
+    
+    * Apple Keyboard (Bluetooth)
+    * Apple Magic Trackpad (Bluetooth)
+    * Apple Magic Mouse (Bluetooth)
+    * Microsoft Bluetooth Notebook Mouse 5000 (Bluetooth)
+    * Microsoft IntelliMouse Optical (USB)
+    * N-Trig Touchscreen (USB)
+    * Wacom Bamboo Touch (USB)
+    
+    Signed-off-by: Chase Douglas <chase.douglas@canonical.com>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    (cherry picked from commit 7925e8945649d4af237e6c3c5593b895a461bd1e)
+
+commit a0040f9870c78fd1f7e7ac81555cb783c152e287
+Author: Jesse Adkins <jesserayadkins@gmail.com>
+Date:   Wed Aug 25 13:48:29 2010 -0700
+
+    xfree86: Document terminate not mapped by default (bug 25083)
+    
+    Document that terminate is not mapped to Ctrl+Alt+Backspace by default, to help alleviate some confusion.
+    
+    Signed-off-by: Jesse Adkins <jesserayadkins@gmail.com>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    (cherry picked from commit 4a12aecac670debd0dafb17c245fccb93eea2d60)
+
+commit 34b11fcd90258a70c02a04a13598b4a4af2c2974
+Author: David Ge <davidqge@gmail.com>
+Date:   Thu Aug 19 00:33:57 2010 -0500
+
+    xkb: Fix RedirectKey didn't send any event.
+    
+    Xorg.log shows error: Valuators reported for non-valuator device.
+    This is caused by uninitialized valuators.mask in _XkbFilterRedirectKey(),
+    which trigger the error in UpdateDeviceState().
+    
+    Signed-off-by: David Ge <davidqge@gmail.com>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    (cherry picked from commit a90052ba8697e217b0dc68057d7b9202ae8797db)
+
+commit 0062d94cafcea5a2fea6224904188d1435c1983f
+Author: Pauli Nieminen <ext-pauli.nieminen@nokia.com>
+Date:   Mon Jul 26 15:31:03 2010 +0300
+
+    xkb: Check if AddResource failed
+    
+    Signed-off-by: Pauli Nieminen <ext-pauli.nieminen@nokia.com>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+    (cherry picked from commit b5c9953bbf4ffd11f1a70d058c6d3feb2bd1bca8)
+
+commit eecf91150d4c17fe73913fd6c24064c0394fb40e
+Author: Pauli Nieminen <ext-pauli.nieminen@nokia.com>
+Date:   Thu Jul 22 15:11:27 2010 +0300
+
+    xkb: Fix memory leak in error path
+    
+    map is allocated but not freed if reply length and data don't match.
+    
+    Signed-off-by: Pauli Nieminen <ext-pauli.nieminen@nokia.com>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+    (cherry picked from commit adc0697cfcfba295a15d7a307125093cbccd637f)
+
+commit b912c08ffa09ec9d7c55db7df1df622dd4b6ab64
+Author: Pauli Nieminen <ext-pauli.nieminen@nokia.com>
+Date:   Thu Jul 22 11:33:33 2010 +0300
+
+    xkb: Fix memory leak if opening file fails
+    
+    If fopen fails pointer in buf would be overwriten with a new pointer.
+    
+    Signed-off-by: Pauli Nieminen <ext-pauli.nieminen@nokia.com>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+    (cherry picked from commit 1223340644744c0b38aa85f5956eb5ab7c696517)
+
+commit d4ef63f602325a9920dc1cbf64e3969dfa394d5f
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Tue Aug 17 12:08:52 2010 +1000
+
+    dix: don't create core motion events for non-x/y valuators.
+    
+    Devices that send motion events with valuators other than x/y get core
+    motion events with unchanged x/y coordinates. This confuses some
+    applications.
+    
+    If the DeviceEvent does not have the x/y valuators set, return BadMatch on
+    core conversion, thus skipping the event altogether.
+    
+    Reported-by: Bartosz Brachaczek <b.brachaczek@gmail.com>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Tested-by: Bartosz Brachaczek <b.brachaczek@gmail.com>
+    (cherry picked from commit de8be07cc0a8163b6ef04455706fd5ca2cebe587)
+
+commit d0ca4826d6dca7c43965e4606a31e90091207412
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Sat Sep 11 14:25:21 2010 -0700
+
+    XQuartz: Localization updates
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+    (cherry picked from commit 0a3e6b0345a96aae278dd776c00b5a7c7ccf65af)
+
+commit c89f0521044083a11d538ebfeaabee6fc7fb9a03
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Sun Aug 15 20:07:28 2010 -0700
+
+    rootless: Remove ROOTLESS_WORKAROUND
+    
+    This was already removed for XWin (20701522be803fe47e921fcf059dadf64c7f287d)
+    with no reported side effects.  XQuartz seems to be behaving ok without it as
+    well.  While this possibly brings back bug #1168, we don't have any reproduction
+    steps for that issue, and if it crops up again, we should fix it a real way
+    rather than this hokey workaround which doesn't even work for COMPOSITE.
+    
+    This effectively reverts the following two changes:
+    b2135e589baeb2ea26da50b9167feaea23bcce3c
+    d7fef52254126aa5897a5c58faeda1f61d5b13d8
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+    Reviewed-by: Jon TURNEY <jon.turney@dronecode.org.uk>
+    (cherry picked from commit 4e09a69c5b1f3c8d6f2f92ec24aaab3a1119940c)
+
+commit e615acf06feabd4de695d1237aa3891957428999
+Author: Eamon Walsh <ewalsh@tycho.nsa.gov>
+Date:   Mon Aug 30 16:37:05 2010 -0400
+
+    Add screens to the PRIVATE_XSELINUX set.
+    
+    The SELinux extension does store a security label in the screen
+    devPrivates.  Fixes crash caused by overwriting another private.
+    
+    Signed-off-by: Eamon Walsh <ewalsh@tycho.nsa.gov>
+    Reported-by: Justin Mattock <justinmattock@gmail.com>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+    (cherry picked from commit 9a1a4ccbe026f34beca5db3b2243874906961b49)
+
+commit ad62b2400907bf856ece615197066aad02503716
+Author: Eamon Walsh <ewalsh@tycho.nsa.gov>
+Date:   Mon Aug 23 16:04:03 2010 -0400
+
+    Fix property and selection devPrivate allocation.
+    
+    Selection objects were not being allocated with privates, and both
+    objects had a stray statement that zeroed out the devPrivates field.
+    
+    Signed-off-by: Eamon Walsh <ewalsh@tycho.nsa.gov>
+    Reported-by: Justin Mattock <justinmattock@gmail.com>
+    Reviewed-by: Adam Jackson <ajax@redhat.com>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+    (cherry picked from commit 9ef6241c2382bfc555284a4985f6d1e37d750d6f)
+
+commit 79ee78de9de49d0cab03401662baa476a18e53b8
+Author: Keith Packard <keithp@keithp.com>
+Date:   Fri Aug 20 17:32:27 2010 -0700
+
+    xserver 1.9.0
+    
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit 3e56efcfb63677cd8574e1e435e61d96f79ea536
+Author: Keith Packard <keithp@keithp.com>
+Date:   Fri Aug 20 10:01:48 2010 -0700
+
+    fb: make isClipped always reject negative coordinates (bug 11503)
+    
+    A window with either dimension > 32767 can be positioned such that
+    coordinates > 32767 are visible on the screen. Attempts to draw to
+    those pixels will generate coordinates wrapped around to negative
+    values.
+    
+    The optimized clipping macro, 'isClipped', in fbbits.h, computes
+    clipping in window space rather than screen space using int16 values,
+    and so it too has coordinates wrapped around to negative values and
+    hence ends up accepting the wrapped drawing coordinates.
+    
+    Two possible fixes for this problem
+    
+     1) Detect wrapped region coordinates and clip those to 32767.
+     2) Detect negative incoming coordinates and reject those
+    
+    This patch takes the second approach as it is much shorter, simply
+    detecting when either X or Y incoming coordinate is negative, which
+    can never be 'within' any drawable.
+    
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+    Reviewed-by: Adam Jackson <ajax@redhat.com>
+
+commit 951605b4660290044fb238bcf1d6d9e498567e8c
+Author: Chris Wilson <chris@chris-wilson.co.uk>
+Date:   Fri Aug 20 13:51:04 2010 +0100
+
+    edid: Adjust rounding of max_clock
+    
+    A simple hack to accommodate various EDID who have detailed modes that
+    exceed the EDID's max pixel clock. The pixel clock is only defined in
+    units of 10MHz and often appears as the maximum pixel code of the
+    detailed modes, rounded to the nearest 10MHz. Adjusting the max_clock to
+    include an extra 5MHz prevents the parser from rejecting the detailed
+    modes.
+    
+    The kernel uses the same fuzz and by including it in X we can use the
+    same modes in X as for the console.
+    
+    Fixes:
+    
+      Bug 23833 - X uses different refresh rate to that set by kernel module
+      https://bugs.freedesktop.org/show_bug.cgi?id=23833
+    
+    In the future, we will want to try harder to keep the KMS modes but at
+    the same time we need to apply the restrictions as specified by the
+    user's configuration, and need to fill in modes for fullscreen games on
+    fixed-mode panels.
+    
+    Reported-and-tested-by: Fabio Pedretti <fabio.ped@libero.it>
+    Signed-off-by: Chris Wilson <chris@chris-wilson.co.uk>
+    Reviewed-by: Alex Deucher <alexdeucher@gmail.com>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit 7e581780603d6b15291d032efdeeca77f969e0ba
+Author: Chris Wilson <chris@chris-wilson.co.uk>
+Date:   Thu Jun 24 12:24:58 2010 +0100
+
+    glx: Prevent NULL context deref in __glXGetDrawable() (bug 29184)
+    
+    During a SwapBuffers request, we may end up querying an unknown drawable
+    outside of an active context, and so need to report this error prior to
+    attempting to dereference the NULL context.
+    
+    Also fixes:
+    
+      [Bug 29184] glXSwapBuffers with no GLX context crashes X.
+      https://bugs.freedesktop.org/show_bug.cgi?id=29184
+    
+    Signed-off-by: Chris Wilson <chris@chris-wilson.co.uk>
+    Cc: Kristian Høgsberg <krh@bitplanet.net>
+    Reviewed-by: Adam Jackson <ajax@redhat.com>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit 5725849a1b427cd4a72b84e57f211edb35838718
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Mon Jun 28 18:08:50 2010 -0400
+
+    render: Bounds check for nglyphs in ProcRenderAddGlyphs (#28801)
+    
+    Signed-off-by: Adam Jackson <ajax@redhat.com>
+    Reviewed-by: Julien Cristau <jcristau@debian.org>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit fc091936e2bddbbab9c9a501edc5a5f08388617e
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Mon Aug 16 14:18:45 2010 +1000
+
+    dix: copy the valuators passed into GPE/GKVE/GProxE.
+    
+    GPE and friends modify the valuators array passed in. Which means any driver
+    using e.g. xf86PostButtonEventP(..., valuators) twice to emulate a button
+    click will provide garbage data on the second run.
+    
+    This is currently affecting the wacom driver, xf86PostButtonEventP() with
+    valuators is required to have input events with device-specific axis values.
+    Passing the same valuators in twice, once with press, once with release,
+    will see the valuators modified in the first call and garbage submitted in
+    the next one.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Keith Packard <keithp@keithp.com>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit 6e3e559e9fa63069a10eb834a6dab9a4cfc140ee
+Author: Keith Packard <keithp@keithp.com>
+Date:   Sun Aug 15 20:53:20 2010 -0700
+
+    dix: reset pScreen->root to NULL when root window is deleted.
+    
+    From: Dave Airlie <airlied@linux.ie>
+    
+    We were seeing a crash in the FreeAllResources codepath,
+    running valgrind revealed this,
+    
+    ==12536== Invalid read of size 4
+    ==12536==    at 0x810BCAB: DeliverPropertyEvent (rrproperty.c:33)
+    ==12536==    by 0x80958A4: TraverseTree (window.c:227)
+    ==12536==    by 0x809593E: WalkTree (window.c:255)
+    ==12536==    by 0x810BC66: RRDeliverPropertyEvent (rrproperty.c:53)
+    ==12536==    by 0x810BD5D: RRDeleteProperty.clone.0 (rrproperty.c:76)
+    ==12536==    by 0x810BD98: RRDeleteAllOutputProperties (rrproperty.c:88)
+    ==12536==    by 0x810A36E: RROutputDestroyResource (rroutput.c:407)
+    ==12536==    by 0x808DF4E: FreeClientResources (resource.c:859)
+    ==12536==    by 0x808E005: FreeAllResources (resource.c:876)
+    ==12536==    by 0x8062300: main (main.c:305)
+    ==12536==  Address 0x46ba8ac is 4 bytes inside a block of size 164 free'd
+    ==12536==    at 0x40057F6: free (vg_replace_malloc.c:325)
+    ==12536==    by 0x8087F1F: _dixFreeObjectWithPrivates (privates.c:357)
+    ==12536==    by 0x809832A: DeleteWindow (window.c:926)
+    ==12536==    by 0x808DF4E: FreeClientResources (resource.c:859)
+    ==12536==    by 0x808E005: FreeAllResources (resource.c:876)
+    ==12536==    by 0x8062300: main (main.c:305)
+    
+    Its a use after free on the root window, since we have already deleted it
+    at this point. This patch checks if the window we are destroying is the root
+    window and resets the pointer to NULL if it is.
+    
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+    Reviewed-by: Dave Airlie <airlied@redhat.com>
+    Tested-by: Dave Airlie <airlied@redhat.com>
+
+commit 5d1d9d9ae39fab2ee2ac085f9776f82768828dc8
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Sun Aug 1 11:41:58 2010 -0700
+
+    XQuartz: xpr: Bail on errors during unlock and destroy
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+
+commit ee7fd8fc58d9fadfbb92302ddea224537f068538
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Sun Aug 1 11:39:14 2010 -0700
+
+    XQuartz: UpdateScreen at the end of SetRootless
+    
+    This will ensure that pRoot is unlocked after the miPaintWindow
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+
+commit 4fc4cab98d454afbfd0d2f48548b5b481e8e7c82
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Thu Jul 29 14:49:10 2010 -0700
+
+    XQuartz: Make application switching work better for the no-spaces case
+    
+    We still have the issue with not raising the frontmost window for the case
+    when spaces is enabled, and the AppleSpacesSwitchOnActivate preference is
+    disabled.
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+
+commit e5bc62a03289f956c54c4699edf47f7ff237b5be
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Sun Jul 25 22:29:11 2010 -0700
+
+    XQuartz: Ignore kXquartzToggleFullscreen when rootless
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+
+commit 71af1f71c0492c365707c6b3810f94642ff39352
+Author: Keith Packard <keithp@keithp.com>
+Date:   Thu Aug 12 23:01:59 2010 -0700
+
+    Bump to version 1.8.99.906 (1.9 RC6)
+    
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit 0af322858e86665ee43f065741318e69c2755510
+Author: Keith Packard <keithp@keithp.com>
+Date:   Thu Aug 12 22:56:36 2010 -0700
+
+    Silence GCC warning about uninitialized lastSlave variable
+    
+    Not an actual bug, but gcc can't tell that this variable cannot be
+    used without being initialized
+    
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit b5cf9c5090d15a50b105470900823f2d398d4bd2
+Author: Alan Coopersmith <alan.coopersmith@oracle.com>
+Date:   Thu Aug 12 00:09:01 2010 -0700
+
+    Stop checking or calling PtrCtrlProcs
+    
+    None of them do anything useful now that pointer acceleration is
+    entirely handled in the server.   (Does not completely nuke yet,
+    since that would be an API/ABI break.)
+    
+    Signed-off-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit bce12f2956f23c0ee53f7f6485dba631293a0931
+Author: Jesse Adkins <jesserayadkins@gmail.com>
+Date:   Wed Aug 4 23:39:14 2010 -0700
+
+    xfree86: parser: Never use constant strings for driver names (fixes #17438)
+    
+    When the parser sees the "keyboard" driver, it automatically (and
+     silently) replaces it with the constant string "kbd".
+    Everybody else uses malloc'd memory for the driver name, so input
+     device closure assumes it can use free.
+    Free val.str, so this crash doesn't turn into a memory leak. Whew.
+    
+    Signed-off-by: Jesse Adkins <jesserayadkins@gmail.com>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit 619ca32202cd22f2a408586cbc906b8bbaeb9358
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Wed Jul 28 15:08:27 2010 +1000
+
+    Xi: reset the unused classes pointer after copying
+    
+    After copying the unused_classes into the device, reset the original
+    pointer. Otherwise we have two pointers pointing to the same field and both
+    get freed on device removal.
+    
+    Some classes already have this behaviour since 51c8fd69.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Keith Packard <keithp@keithp.com>
+
+commit 1a172f3297369a72865232c382abfc14281102a4
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Fri Jul 23 13:24:34 2010 +1000
+
+    xkb: if the button isn't down, don't fake an event.
+    
+    If the button we're about to fake isn't down (or up), don't fake a release
+    (or press) event for it. Behaviour is the same as before, this just saves
+    a few cycles.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Keith Packard <keithp@keithp.com>
+
+commit 651c36e95ec0ac60d3fb98966df4218712ae78c2
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Fri Jul 23 11:46:30 2010 +1000
+
+    xkb: post-fix PointerKeys button events with a DeviceChangedEvent.
+    
+    commit 14327858391ebe929b806efb53ad79e789361883
+        xkb: release XTEST pointer buttons on physical releases. (#28808)
+    revealed a bug with the XTEST/PointerKeys interaction.
+    
+    Events resulting from PointerKeys are injected into the event processing
+    stream, not appended to the event queue. The events generated for the fake
+    button press include a DeviceChangedEvent (DCE), a raw button event and the
+    button event itself. The DCE causes the master to switch classes to the
+    attached XTEST pointer device.
+    
+    Once the fake button is processed, normal event processing continues with
+    events in the EQ. The master still contains the XTEST classes, causing some
+    events to be dropped if e.g. the number of valuators of the event in the
+    queue exceeds the XTEST device's number of valuators.
+    
+    Example: the EQ contains the following events, processed one-by-one, left to
+    right.
+    
+    [DCE (dev)][Btn down][Btn up][Motion][Motion][...]
+                      ^ XkbFakeDeviceButton injects [DCE (XTEST)][Btn up]
+    
+    Thus the event sequence processed looks like this:
+    
+    [DCE (dev)][Btn down][Btn up][DCE (XTEST)][Btn up][Motion][Motion][...]
+    
+    The first DCE causes the master to switch to the device. The button up event
+    injects a DCE to the XTEST device, causing the following Motion events to be
+    processed with the master still being on XTEST classes.
+    
+    This patch post-fixes the injected event sequence with a DCE to restore the
+    classes of the original slave device, resulting in an event sequence like
+    this:
+    [DCE (dev)][Btn down][Btn up][DCE (XTEST)][Btn up][DCE (dev)][Motion][Motion]
+    
+    Note that this is a simplified description. The event sequence injected by
+    the PointerKeys code is injected for the master device only and the matching
+    slave device that caused the injection has already finished processing on
+    the slave. Furthermore, the injection happens as part of the the XKB layer,
+    before the unwrapping of the processInputProc takes us into the DIX where
+    the DCE is actually handled.
+    
+    Bug reproducible with a device that reports more than 2 valuators. Simply
+    cause button releases on the device and wait for a "too many valuators"
+    warning message.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Acked-by: Daniel Stone <daniel@fooishbar.org>
+    Reviewed-by: Keith Packard <keithp@keithp.com>
+
+commit 6dae7f3792611aace1df0cca63bf50c50d93de43
+Author: Chris Wilson <chris@chris-wilson.co.uk>
+Date:   Tue Aug 10 19:30:20 2010 +0100
+
+    xace: Invalid reference to out-of-scope data.
+    
+    The callback data passed by reference to the hook was allocated on stack
+    within the scope of the case statement. The compiler is free to reuse
+    any of that stack space whilst making the function call so we may end up
+    passing garbage into the callback.
+    
+    References:
+    
+      Bug 18451 - Xorg server 1.5.2 SEGV during XFixesGetCursorImage()
+      https://bugs.freedesktop.org/show_bug.cgi?id=18451
+    
+    v2: Drop the unrelated hunk that snuck in when ammending the commit
+    message.
+    
+    Signed-off-by: Chris Wilson <chris@chris-wilson.co.uk>
+    Reviewed-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit fbd02046797185715e1a120d52e410ec78fc365f
+Author: Jon TURNEY <jon.turney@dronecode.org.uk>
+Date:   Thu Aug 5 15:19:20 2010 +0100
+
+    Cygwin/X: Fix glxWinCreateDrawable() for API change
+    
+    Commit 9de0e31746d5f0d9d39d11c94ec3cbc04a9935fc changed the signature
+    of __GLXScreen's createDrawable method.
+    
+    Update the glxWinCreateDrawable() function in XWin's GLX provider
+    appropriately.
+    
+    Signed-off-by: Jon TURNEY <jon.turney@dronecode.org.uk>
+    Tested-by: Colin Harrison <colin.harrison@virgin.net>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit ff70848e623920779d20f35d47e9e1f34157de47
+Author: Keith Packard <keithp@keithp.com>
+Date:   Fri May 21 09:01:43 2010 -0700
+
+    Don't let alpha maps recurse in fb. Bug 23581.
+    
+    Recursive alpha maps (where one picture's alpha map is set to a
+    picture with an external alpha map) would be all fine and dandy,
+    except for the case where the client constructs a loop. Detecting this
+    case when setting the alpha map values would be difficult as any time
+    an alpha map is set, the server would have to check for the looping
+    case.
+    
+    Instead, a far simpler fix is to simply disallow recursive alpha maps
+    in the rendering code, the Render spec is ambiguous in this area and
+    allows us to to ignore the recursive case.
+    
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+    Reviewed-by: Adam Jackson <ajax@redhat.com>
+
+commit 70a94c5b7a42adc0995bf774c44587a0778be0d0
+Author: Jon TURNEY <jon.turney@dronecode.org.uk>
+Date:   Tue Aug 3 19:49:10 2010 +0100
+
+    rootless: fix uninitialized private key assert in non-rootless modes in Cygwin/X
+    
+    IsFramedWindow() is called from miPaintWindow() if the server has
+    been built with ROOTLESS defined, irrespective of if RootlessInit()
+    has ever been called, or not.
+    
+    Add a check to IsFramedWindow() to check if rootlessWindowPrivateKey
+    has been registered (as a proxy for checking if the rootless extension
+    has been initialized) so we don't go on to try to use that key,
+    triggering an assert.
+    
+    This bug exposes what appears to be a difference in opinion about
+    the rootless extension between XQuartz and XWin.  XQuartz always
+    initializes the rootless extension, whereas XWin offers several modes
+    of operation, and the rootless extension is only used for one of them
+    
+    That probably means that the all code under compile time guard for
+    ROOTLESS should be carefully checked that it doesn't also need to be
+    under a run-time guard
+    
+    (I've reviewed the other ROOTLESS blocks in dix/events.c and
+    dix/window.c and they look ok -- keithp)
+    
+    Signed-off-by: Jon TURNEY <jon.turney@dronecode.org.uk>
+    Reviewed-by: Keith Packard <keithp@keithp.com>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit 3ab6cd31cbdf8095b2948034fce5fb645422d8da
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Mon Aug 9 15:20:20 2010 -0400
+
+    fonts: Fix refcounting for asynchronous font operations (#3040)
+    
+    When doing Xinerama, we'll dispatch font ops across all backend screens.
+    If using a font server (such that some operations can sleep), we'll put
+    the client to sleep once for each screen, but only wake up once, because
+    we're trying to keep track of the sleep count in _each_ screen's
+    closure.
+    
+    Instead, just ask the core whether the client is already asleep.
+    
+    Signed-off-by: Adam Jackson <ajax@redhat.com>
+    Reviewed-by: Keith Packard <keithp@keithp.com>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit 35c0dbe4b0a6ab790f4271325b8a0b16894daa8b
+Author: Gaetan Nadon <memsize@videotron.ca>
+Date:   Sun Aug 8 10:03:08 2010 -0400
+
+    doc: add missing .gitignore for Xserver-DTrace
+    
+    The dtrace doc was recently added in commit
+    9c171d4aee695ab66e6db1ab92539557bd368cfa
+    
+    Reviewed-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Signed-off-by: Gaetan Nadon <memsize@videotron.ca>
+
+commit 05c4fe83fdc20b838fd59658478278dc31a55eb9
+Author: Alan Coopersmith <alan.coopersmith@oracle.com>
+Date:   Fri Jul 30 17:43:24 2010 -0700
+
+    Check HAVE_XMLTO_TEXT before trying to use xmlto to make text files
+    
+    Reported-by: Matt Turner <mattst88@gmail.com>
+    Tested-by: Gaetan Nadon <memsize@videotron.ca>
+    Signed-off-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+
+commit a6fb7829ed9bf26c4c2a02c6ed075fb1b17f7b2a
+Author: Alan Coopersmith <alan.coopersmith@oracle.com>
+Date:   Mon Jul 26 19:55:27 2010 -0700
+
+    Xserver-spec: Update ChangeGC prototype, add ChangeGCXIDs
+    
+    Signed-off-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Reviewed-by: Jamey Sharp <jamey@minilop.net>
+
+commit a817271d461e2f95dd7dc62cd1c7d123ce92f555
+Author: Alan Coopersmith <alan.coopersmith@oracle.com>
+Date:   Thu Jul 22 23:57:57 2010 -0700
+
+    Update Xserver-spec for new devPrivates API
+    
+    Signed-off-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Reviewed-by: Patrick E. Kane <pekane52@gmail.com>
+
+commit 40d598a4f84091db743ceef4d60752bb910c3e56
+Author: Alan Coopersmith <alan.coopersmith@oracle.com>
+Date:   Thu Jul 22 23:57:02 2010 -0700
+
+    Correct function name in dixRegisterPrivateKey comments
+    
+    Signed-off-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Reviewed-by: Patrick E. Kane <pekane52@gmail.com>
+
+commit 8d7b7a0d71e0b89321b3341b781bc8845386def6
+Author: Kristian Høgsberg <krh@bitplanet.net>
+Date:   Thu Jul 29 20:36:25 2010 -0400
+
+    Set DamageSetReportAfterOp to true for the damage extension
+    
+    Change the damage extension reporter to queue up events after we chain
+    to the wrapped functions.  Damage events are typically sent out after
+    the rendering happens anyway, since we submit batch buffers from the
+    flush callback chain and then flush client io buffers.  Compositing
+    managers relie on this order, and there is no way we could reliably
+    provide damage events to clients before the rendering happens anyway.
+    
+    By queueing up the damage events before the rendering happens, there's
+    a risk that the client io buffer may overflow and send the damage
+    events to the client before the driver has even seen the rendering
+    request.  Reporting damage events after the rendering fixes this
+    corner case and better corresponds with how we expect this to work.
+    
+    Signed-off-by: Kristian Høgsberg <krh@bitplanet.net>
+    Reviewed-by: Keith Packard <keithp@keithp.com>
+
+commit c65f610e12f9df168d5639534ed3c2bd40afffc8
+Author: Kristian Høgsberg <krh@bitplanet.net>
+Date:   Thu Jul 29 18:52:35 2010 -0400
+
+    Always call the flush callback chain when we flush client buffers
+    
+    We were missing the callback in a couple of places.  Drivers may use
+    the flush callback to submit batched up rendering before events (for
+    example, damage events) are sent out, to ensure that the rendering
+    has been queued when the client receives the event.
+    
+    Signed-off-by: Kristian Høgsberg <krh@bitplanet.net>
+    Reviewed-by: Keith Packard <keithp@keithp.com>
+
+commit 7e0575baf14ec4a89492fd2780f9ab5b9244afbd
+Author: Matt Turner <mattst88@gmail.com>
+Date:   Tue Jul 27 23:32:36 2010 -0400
+
+    ddc: Fix memory leak in GetEDID_DDC1
+    
+    Mark argument to DDC_checksum as const too.
+    
+    Signed-off-by: Matt Turner <mattst88@gmail.com>
+    Reviewed-by: Adam Jackson <ajax@redhat.com>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit 750d4e82a0c1161292d24216bcff200cd6647611
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Thu Jul 29 11:39:40 2010 -0700
+
+    XQuartz: xpbproxy: Don't take down the whole server on an IO error
+    
+    Calls pthread_exit to prevent _XIOError from calling exit()
+    
+    This fixes http://xquartz.macosforge.org/trac/ticket/421
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+
+commit 98f90145d786695ecbc02a667c6ffe7c619dc67e
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Wed Jul 28 18:08:02 2010 -0700
+
+    XQuartz: GLX: Don't mangle __GLXDrawable's pDraw
+    
+    We were incorrectly NULLing out pDraw in __GLXDrawable instead of ours in
+    __GLXAquaDrawable. (we should refactor to eliminate this redundancy later)
+    
+    This was causing http://xquartz.macosforge.org/trac/ticket/426
+    This was benign until commit f0006aa58f6cf7552a239e169ff6e7e4fda532f4
+    The root cause of this change was  fed7ccc481ad1caaa518cafe944c2327a5d0b6c65
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+
+commit 9c171d4aee695ab66e6db1ab92539557bd368cfa
+Author: Alan Coopersmith <alan.coopersmith@oracle.com>
+Date:   Fri Jun 25 16:52:42 2010 -0700
+
+    Add documentation of the Xserver DTrace probes
+    
+    Mostly pulled together from posts to my blog and the docs posted
+    at http://people.freedesktop.org/~alanc/dtrace/ and converted to
+    DocBook.
+    
+    Signed-off-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Reviewed-by: Patrick E. Kane <pekane52@gmail.com>
+
+commit 6b912b08ce65072b2401167fbf2150b99c0ca6b0
+Author: Alan Coopersmith <alan.coopersmith@oracle.com>
+Date:   Sat Jun 19 23:56:20 2010 -0700
+
+    Add name argument to CreateNewResourceType documentation
+    
+    Reflects API change made in commit 895f40792a during Xorg 1.8 development
+    
+    Signed-off-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Reviewed-by: Patrick E. Kane <pekane52@gmail.com>
+
+commit 44c9350d72b3eda982c642feb45d6648afc626cf
+Author: Alan Coopersmith <alan.coopersmith@oracle.com>
+Date:   Sat Jun 19 23:40:37 2010 -0700
+
+    Use DocBook stylesheets from xorg-sgml-doctools if they're available
+    
+    Bumps minimum xorg-macros requirement from 1.6 to 1.10
+    
+    Signed-off-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Reviewed-by: Patrick E. Kane <pekane52@gmail.com>
+
+commit 9fbbff3c0456f1969d45cc957d3260723caf62d7
+Merge: 95756f4 9ac8e20
+Author: Keith Packard <keithp@keithp.com>
+Date:   Wed Jul 21 11:56:39 2010 -0700
+
+    Merge remote branch 'whot/for-keith'
+
+commit 9ac8e206ffe1016a8bc203261ade6c763a8a4f86
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Thu Jul 15 15:46:15 2010 +1000
+
+    xkb: use GetMaster instead of dev->u.master.
+    
+    Devices that are both pointers and keyboards are not affected by keyboard
+    changes as their master device is a master pointer, not a master keyboard.
+    Use GetMaster() instead to ensure devices that are attached to the paired
+    master pointer device will still be update.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Keith Packard <keithp@keithp.com>
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+
+commit c54f81ba7a58faf37a612bd9a45276bb2922b5d8
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Thu Jul 15 13:24:14 2010 +1000
+
+    dix: hack around enter/leave event issues for grabbed devices (#27804)
+    
+    The current core enter/leave does not cater for device grabs during
+    enter/leave events. If a window W contains a pointer P1 and a client grabs a
+    pointer P2, this pointer will not generate enter/leave events inside this
+    window.
+    
+    Hack around this by forcing grabbed devices to always send enter/leave
+    events.
+    
+    X.Org Bug 27804 <http://bugs.freedesktop.org/show_bug.cgi?id=27804>
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Keith Packard <keithp@keithp.com>
+
+commit 95756f410c65a6510a797e94a792b959d45cdb9e
+Author: Jan Hauffa <hauffa@in.tum.de>
+Date:   Sat Jul 17 12:18:39 2010 -0700
+
+    rootless: Adjust the frame size of the native root window in RootlessResizeWindow
+    
+    If the native root window isn't resized as well, we will likely crash the
+    next time we draw to the root.  On OS X, this can be seen by:
+    
+    1) Put the display preferences in the menu bar and set X11's preferences so you
+       can access the menu bar in fullscreen mode
+    2) Set the resolution of your screen lower than normal.
+    3) Start X11 in fullscreen mode.  The root window will cover the screen as
+       expected.
+    4) Use the menu bar to increase the resolution of the display.  The root
+       window will now cover the old area and not the full screen, but
+       'xwininfo -root' will report the full width.
+    5) Run 'xsetroot -solid red', and we have the crash you mention above.
+    
+    Leaving/entering fullscreen after #4 will fix the problem.  This is because the
+    WINREC is erased when we leave fullscreen mode and it is recreated upon
+    re-entry:
+    
+    RootlessUpdateRooted(FALSE)
+        RootlessDisableRoot(screenInfo.screens[0])
+            RootlessDestroyFrame (pRoot, winRec);
+    RootlessUpdateRooted(TRUE)
+        RootlessEnableRoot(screenInfo.screens[0])
+            RootlessEnsureFrame(screenInfo.screens[0]->pRoot)
+                creates a new WINREC...
+    
+    Signed-off-by: Jan Hauffa <hauffa@in.tum.de>
+    Reviewed-by: Jeremy Huddleston <jeremyhu@apple.com>
+    Acked-By: Jon TURNEY <jon.turney@dronecode.org.uk>
+    Tested-by: Jeremy Huddleston <jeremyhu@apple.com>
+
 commit a2c13f0d6548310e3cd115cf486d3e43edf23dcc
 Author: Keith Packard <keithp@keithp.com>
 Date:   Wed Jul 14 12:57:29 2010 -0700

@@ -1,10 +1,14 @@
-xorg-server (2:1.9.0-1) UNRELEASED; urgency=low
-  
-  * New upstream release.  
+xorg-server (2:1.9.0.901-1) UNRELEASED; urgency=low
+
+  [ Christopher James Halse Rogers ]
+  * New upstream release (1.9.0):
     - Fixes crash in DamageUnregister on session close (LP: #343694)
     - Fixes crash with extremely large windows exposed by xpdf (Closes: #320627)
   * Drop 17-fix-DRI2-segfault-when-clientGone.diff: fixed upstream in more
     generality.
+
+  [ Cyril Brulebois ]
+  * New upstream release (1.9.1 rc1).
 
  -- Christopher James Halse Rogers <raof@ubuntu.com>  Mon, 23 Aug 2010 12:28:45 +1000
 
