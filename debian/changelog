@@ -9,6 +9,9 @@ xorg-server (2:1.9.0.901-1) UNRELEASED; urgency=low
 
   [ Cyril Brulebois ]
   * New upstream release (1.9.1 rc1).
+  * Add patch: 20-Revert-for-bug-30267.diff, to fix FTBFS due to test
+    failures, see https://bugs.freedesktop.org/show_bug.cgi?id=30267 for
+    reference.
 
  -- Christopher James Halse Rogers <raof@ubuntu.com>  Mon, 23 Aug 2010 12:28:45 +1000
 
