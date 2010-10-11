@@ -99,7 +99,6 @@ confflags += \
 	     --disable-xcsecurity \
 	     --disable-xcalibrate \
 	     --disable-tslib \
-	     --disable-multibuffer \
 	     --enable-dbe \
 	     --disable-xf86bigfont \
 	     --enable-dpms \
