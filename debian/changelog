@@ -1,4 +1,4 @@
-xorg-server (2:1.9.0.901-1) UNRELEASED; urgency=low
+xorg-server (2:1.9.0.901-1) experimental; urgency=low
 
   [ Christopher James Halse Rogers ]
   * New upstream release (1.9.0):
@@ -16,7 +16,7 @@ xorg-server (2:1.9.0.901-1) UNRELEASED; urgency=low
   * Remove --disable-multibuffer from configure flags, that extension is
     gone for real now.
 
- -- Christopher James Halse Rogers <raof@ubuntu.com>  Mon, 23 Aug 2010 12:28:45 +1000
+ -- Cyril Brulebois <kibi@debian.org>  Tue, 12 Oct 2010 22:13:20 +0200
 
 xorg-server (2:1.8.99.905-1) experimental; urgency=low
 
