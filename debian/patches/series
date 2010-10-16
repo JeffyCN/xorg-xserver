@@ -7,4 +7,3 @@
 #13_debian_add_xkbpath_env_variable.diff
 15-nouveau.diff
 16-xaa-fbcomposite-fix-negative-size.diff
-20-Revert-for-bug-30267.diff
