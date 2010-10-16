@@ -1,3 +1,51 @@
+commit 4dd316f25261707620cd4c52e2987b93627ff260
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Fri Oct 15 11:08:42 2010 -0700
+
+    Bump version to 1.9.0.902 (1.9.1 rc2)
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+
+commit 712853fbcbc644575d791fa48fbd5757cd850f1d
+Author: Jon TURNEY <jon.turney@dronecode.org.uk>
+Date:   Wed Oct 13 17:34:31 2010 +0100
+
+    event_size is currently never assigned to in mieqProcessInputEvents().
+    
+    event_size is never assigned to in mieqProcessInputEvents(), so realloc()
+    is always called.  This is benign, but I'm guessing not intended.
+    
+    Signed-off-by: Jon TURNEY <jon.turney@dronecode.org.uk>
+    Reviewed-by: Keith Packard <keithp@keithp.com>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+    (cherry picked from commit da4eebe58ec81e2297cc1773af1fb622fb392bbd)
+
+commit efeb2ebd7e307224a735469ff89a3a6af4cf143b
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Tue Oct 5 11:24:28 2010 -0400
+
+    vbe: Fix copying the mode info block
+    
+    Just use memcpy, seriously.
+    
+    Reviewed-by: Rémi Cardona <remi@gentoo.org>
+    Signed-off-by: Adam Jackson <ajax@redhat.com>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+    (cherry picked from commit 853d7ebfa3e2d281d92890a39010ff5787a00ffd)
+
+commit e5b19f14eac609e3c315e14e20ca1935de8de0e3
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Tue Oct 12 17:42:55 2010 -0700
+
+    Revert "dix: don't create core motion events for non-x/y valuators."
+    
+    Reverting due to fallout discussed in bug #30267.  See:
+    https://bugs.freedesktop.org/show_bug.cgi?id=30267
+    
+    This reverts commit d4ef63f602325a9920dc1cbf64e3969dfa394d5f.
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+
 commit 8ab87dc7ff48d4db8e5f95a74df627dac9c53c0a
 Author: Jeremy Huddleston <jeremyhu@apple.com>
 Date:   Fri Oct 1 13:37:49 2010 -0700
