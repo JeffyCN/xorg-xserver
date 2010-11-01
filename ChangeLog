@@ -1,3 +1,31 @@
+commit e3769c20d5f656f76e2c475a722db97c58089260
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Sat Oct 30 19:49:42 2010 -0700
+
+    Bump version to 1.9.2
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+
+commit e0ab016d85f828a78cb53ee9bcb171535de6032e
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Sat Oct 30 19:48:22 2010 -0700
+
+    Revert "rootless: Remove ROOTLESS_WORKAROUND"
+    
+    Christof Wolf has reported a regression that seems to be caused by
+    this change, so reverting the change in the 1.9 branch.  We'll
+    investigate a proper fix in master for 1.10.
+    
+    This reverts commit c89f0521044083a11d538ebfeaabee6fc7fb9a03.
+
+commit 6e1f78bddfb854933206f9f5fd8d1dfc66ba8820
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Fri Oct 22 20:18:38 2010 -0700
+
+    Bump version to 1.9.1
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+
 commit 4dd316f25261707620cd4c52e2987b93627ff260
 Author: Jeremy Huddleston <jeremyhu@apple.com>
 Date:   Fri Oct 15 11:08:42 2010 -0700
