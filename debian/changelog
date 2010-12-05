@@ -1,9 +1,9 @@
-xorg-server (2:1.9.2.902-1) UNRELEASED; urgency=low
+xorg-server (2:1.9.2.902-1) experimental; urgency=low
 
   * New upstream release (1.9.3 rc2).
   * Drop 06_dont_trap_access_to_timer_and_keyboard.diff, merged upstream.
 
- -- Cyril Brulebois <kibi@debian.org>  Sun, 05 Dec 2010 01:42:45 +0100
+ -- Cyril Brulebois <kibi@debian.org>  Sun, 05 Dec 2010 02:16:14 +0100
 
 xorg-server (2:1.9.2-1) experimental; urgency=low
 
