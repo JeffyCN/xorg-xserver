@@ -1,0 +1,3 @@
+main/usr/include/xorg	usr/include
+main/usr/lib/pkgconfig/xorg-server.pc	usr/lib/pkgconfig
+main/usr/share/aclocal	usr/share

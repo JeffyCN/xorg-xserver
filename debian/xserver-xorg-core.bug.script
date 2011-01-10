@@ -1,0 +1,149 @@
+#!/bin/sh
+
+# $Id$
+
+PATH="/sbin:$PATH"
+CONFIG_DIR=/etc/X11
+SERVER_SYMLINK="$CONFIG_DIR/X"
+XORGCONFIG="$CONFIG_DIR/xorg.conf"
+XORGCONFIG_DIR="$CONFIG_DIR/xorg.conf.d"
+CONFIG_AUX_DIR=/var/lib/x11
+SERVER_SYMLINK_CHECKSUM="$CONFIG_AUX_DIR/${SERVER_SYMLINK##*/}.md5sum"
+SERVER_SYMLINK_ROSTER="$CONFIG_AUX_DIR/${SERVER_SYMLINK##*/}.roster"
+XORGCONFIG_CHECKSUM="$CONFIG_AUX_DIR/${XORGCONFIG##*/}.md5sum"
+XORGCONFIG_ROSTER="$CONFIG_AUX_DIR/${XORGCONFIG##*/}.roster"
+
+exec >&3
+
+if [ -e "$SERVER_SYMLINK_ROSTER" ]; then
+    printf "Contents of $SERVER_SYMLINK_ROSTER:\n"
+    cat "$SERVER_SYMLINK_ROSTER"
+else
+    printf "$SERVER_SYMLINK_ROSTER does not exist.\n"
+fi
+
+printf "\n"
+
+if [ -e "$SERVER_SYMLINK" ]; then
+    if [ -e "$SERVER_SYMLINK_CHECKSUM" ]; then
+        if [ "$(readlink "$SERVER_SYMLINK" | md5sum)" = \
+             "$(cat "$SERVER_SYMLINK_CHECKSUM")" ]; then
+            printf "%s target unchanged from checksum in %s.\n" \
+              "$SERVER_SYMLINK" "$SERVER_SYMLINK_CHECKSUM"
+        else
+            printf "%s target does not match checksum in %s.\n" \
+              "$SERVER_SYMLINK" "$SERVER_SYMLINK_CHECKSUM"
+        fi
+    else
+        printf "$SERVER_SYMLINK_CHECKSUM does not exist.\n"
+    fi
+    printf "\n"
+    printf "X server symlink status:\n"
+    ls -dl "$SERVER_SYMLINK"
+    ls -dl "$(readlink "$SERVER_SYMLINK")"
+else
+    printf "$SERVER_SYMLINK does not exist.\n"
+fi
+
+if ! [ -L "$SERVER_SYMLINK" ]; then
+    printf "$SERVER_SYMLINK is not a symlink.\n"
+fi
+
+if ! [ -x "$SERVER_SYMLINK" ]; then
+    printf "$SERVER_SYMLINK is not executable.\n"
+fi
+
+printf "\n"
+
+if [ -e "$XORGCONFIG_ROSTER" ]; then
+    printf "Contents of $XORGCONFIG_ROSTER:\n"
+    cat "$XORGCONFIG_ROSTER"
+else
+    printf "$XORGCONFIG_ROSTER does not exist.\n"
+fi
+
+printf "\n"
+
+if which lspci > /dev/null 2>&1; then
+    printf "VGA-compatible devices on PCI bus:\n"
+    LC_ALL=C lspci | grep 'VGA compatible controller:'
+    LC_ALL=C lspci -n | grep 'Class 0300:'
+else
+    printf "The lspci command was not found; not including PCI data.\n"
+fi
+
+printf "\n"
+
+if [ -e "$XORGCONFIG" ]; then
+    if [ -e "$XORGCONFIG_CHECKSUM" ]; then
+        if [ "$(md5sum "$XORGCONFIG")" = "$(cat "$XORGCONFIG_CHECKSUM")" ]; then
+            printf "%s unchanged from checksum in %s.\n" "$XORGCONFIG" \
+              "$XORGCONFIG_CHECKSUM"
+        else
+            printf "%s does not match checksum in %s.\n" "$XORGCONFIG" \
+              "$XORGCONFIG_CHECKSUM"
+        fi
+    else
+        printf "$XORGCONFIG_CHECKSUM does not exist.\n"
+    fi
+    printf "\n"
+    printf "Xorg X server configuration file status:\n"
+    ls -dl "$XORGCONFIG"
+    printf "\n"
+    printf "Contents of $XORGCONFIG:\n"
+    iconv -c -t ascii "$XORGCONFIG"
+    printf "\n"
+    if [ -d "$XORGCONFIG_DIR" ]; then
+        printf "Contents of $XORGCONFIG_DIR:\n"
+        ls -l "$XORGCONFIG_DIR"
+        printf "\n"
+    fi
+else
+    printf "$XORGCONFIG does not exist.\n"
+fi
+
+printf "\n"
+
+KERNEL_VERSION=/proc/version
+
+if [ -e "$KERNEL_VERSION" ]; then
+    printf "Kernel version ($KERNEL_VERSION):\n"
+    cat /proc/version
+else
+    printf "No kernel version found (missing $KERNEL_VERSION).\n"
+fi
+
+printf "\n"
+
+XORG_LOGS=$(ls -dt /var/log/Xorg.*.log 2>/dev/null)
+
+if [ -n "$XORG_LOGS" ]; then
+    printf "Xorg X server log files on system:\n"
+    ls -dlrt /var/log/Xorg.*.log 2>/dev/null
+    printf "\n"
+    for LOG in $XORG_LOGS; do
+        if [ -f "$LOG" ]; then
+            printf "Contents of most recent Xorg X server log file\n"
+            printf "%s:\n" "$LOG"
+            cat "$LOG"
+            # the log files are large; only show the most recent
+            break
+        fi
+    done
+else
+    printf "No Xorg X server log files found.\n"
+fi
+
+if [ -x /sbin/udevadm ]; then
+    printf "\nudev information:\n"
+    /sbin/udevadm info --export-db | awk -F '\n' -v RS='\n\n' '/E: ID_INPUT/ { print; print "" }'
+fi
+
+if [ -x /bin/dmesg ]; then
+    printf "DRM Information from dmesg:\n"
+    dmesg | egrep -i 'drm|agp'
+fi
+
+printf "\n"
+
+# vim:set ai et sts=4 sw=4 tw=0:
