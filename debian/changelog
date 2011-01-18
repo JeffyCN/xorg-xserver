@@ -1,4 +1,4 @@
-xorg-server (2:1.9.99.901-1) experimental; urgency=low
+xorg-server (2:1.9.99.901-1) UNRELEASED; urgency=low
   
   * New upstream release (1.10 rc1)
   * Drop 16-xaa-fbcomposite-fix-negative-size.diff, the mod macro that this
