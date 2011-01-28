@@ -2,10 +2,13 @@
 
 PATH="/sbin:$PATH"
 CONFIG_DIR=/etc/X11
+SERVER_BINARY=/usr/bin/Xorg
 SERVER_SYMLINK="$CONFIG_DIR/X"
 XORGCONFIG="$CONFIG_DIR/xorg.conf"
 XORGCONFIG_DIR="$CONFIG_DIR/xorg.conf.d"
 CONFIG_AUX_DIR=/var/lib/x11
+OLD_LIBS=/usr/X11R6
+LOCAL_LIBS=/usr/local
 
 # Pretty echo, underline the specified string:
 pecho() {
@@ -29,6 +32,23 @@ fi
 
 if ! [ -x "$SERVER_SYMLINK" ]; then
     echo "$SERVER_SYMLINK is not executable."
+fi
+
+echo
+
+if ldd "$SERVER_BINARY" | grep -qs "$LOCAL_LIBS"; then
+   pecho "The server is using local libraries!"
+   ldd "$SERVER_BINARY" | grep "$LOCAL_LIBS"
+else
+   echo "No local libraries in sight."
+fi
+
+echo
+
+if [ -d "$OLD_LIBS" ]; then
+   echo "There might still be some libraries in obsolete $OLD_LIBS directory!"
+else
+   echo "No obsolete libraries in sight."
 fi
 
 echo
