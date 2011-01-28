@@ -1,3 +1,11 @@
+xorg-server (2:1.9.3.901-2) UNRELEASED; urgency=low
+
+  * Improve bug script:
+    - Stop reporting about roster and checksum for config file and server
+      symlink, they are no longer used.
+
+ -- Cyril Brulebois <kibi@debian.org>  Fri, 28 Jan 2011 01:30:13 +0100
+
 xorg-server (2:1.9.3.901-1) experimental; urgency=low
 
   * New upstream release (1.9.4 rc1).

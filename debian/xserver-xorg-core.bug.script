@@ -8,36 +8,10 @@ SERVER_SYMLINK="$CONFIG_DIR/X"
 XORGCONFIG="$CONFIG_DIR/xorg.conf"
 XORGCONFIG_DIR="$CONFIG_DIR/xorg.conf.d"
 CONFIG_AUX_DIR=/var/lib/x11
-SERVER_SYMLINK_CHECKSUM="$CONFIG_AUX_DIR/${SERVER_SYMLINK##*/}.md5sum"
-SERVER_SYMLINK_ROSTER="$CONFIG_AUX_DIR/${SERVER_SYMLINK##*/}.roster"
-XORGCONFIG_CHECKSUM="$CONFIG_AUX_DIR/${XORGCONFIG##*/}.md5sum"
-XORGCONFIG_ROSTER="$CONFIG_AUX_DIR/${XORGCONFIG##*/}.roster"
 
 exec >&3
 
-if [ -e "$SERVER_SYMLINK_ROSTER" ]; then
-    printf "Contents of $SERVER_SYMLINK_ROSTER:\n"
-    cat "$SERVER_SYMLINK_ROSTER"
-else
-    printf "$SERVER_SYMLINK_ROSTER does not exist.\n"
-fi
-
-printf "\n"
-
 if [ -e "$SERVER_SYMLINK" ]; then
-    if [ -e "$SERVER_SYMLINK_CHECKSUM" ]; then
-        if [ "$(readlink "$SERVER_SYMLINK" | md5sum)" = \
-             "$(cat "$SERVER_SYMLINK_CHECKSUM")" ]; then
-            printf "%s target unchanged from checksum in %s.\n" \
-              "$SERVER_SYMLINK" "$SERVER_SYMLINK_CHECKSUM"
-        else
-            printf "%s target does not match checksum in %s.\n" \
-              "$SERVER_SYMLINK" "$SERVER_SYMLINK_CHECKSUM"
-        fi
-    else
-        printf "$SERVER_SYMLINK_CHECKSUM does not exist.\n"
-    fi
-    printf "\n"
     printf "X server symlink status:\n"
     ls -dl "$SERVER_SYMLINK"
     ls -dl "$(readlink "$SERVER_SYMLINK")"
@@ -55,15 +29,6 @@ fi
 
 printf "\n"
 
-if [ -e "$XORGCONFIG_ROSTER" ]; then
-    printf "Contents of $XORGCONFIG_ROSTER:\n"
-    cat "$XORGCONFIG_ROSTER"
-else
-    printf "$XORGCONFIG_ROSTER does not exist.\n"
-fi
-
-printf "\n"
-
 if which lspci > /dev/null 2>&1; then
     printf "VGA-compatible devices on PCI bus:\n"
     LC_ALL=C lspci | grep 'VGA compatible controller:'
@@ -75,18 +40,6 @@ fi
 printf "\n"
 
 if [ -e "$XORGCONFIG" ]; then
-    if [ -e "$XORGCONFIG_CHECKSUM" ]; then
-        if [ "$(md5sum "$XORGCONFIG")" = "$(cat "$XORGCONFIG_CHECKSUM")" ]; then
-            printf "%s unchanged from checksum in %s.\n" "$XORGCONFIG" \
-              "$XORGCONFIG_CHECKSUM"
-        else
-            printf "%s does not match checksum in %s.\n" "$XORGCONFIG" \
-              "$XORGCONFIG_CHECKSUM"
-        fi
-    else
-        printf "$XORGCONFIG_CHECKSUM does not exist.\n"
-    fi
-    printf "\n"
     printf "Xorg X server configuration file status:\n"
     ls -dl "$XORGCONFIG"
     printf "\n"
