@@ -1,7 +1,5 @@
 #!/bin/sh
 
-# $Id$
-
 PATH="/sbin:$PATH"
 CONFIG_DIR=/etc/X11
 SERVER_SYMLINK="$CONFIG_DIR/X"
