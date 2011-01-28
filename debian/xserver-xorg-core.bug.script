@@ -49,14 +49,17 @@ if [ -e "$XORGCONFIG" ]; then
     echo
     pecho "Contents of $XORGCONFIG:"
     iconv -c -t ascii "$XORGCONFIG"
-    echo
-    if [ -d "$XORGCONFIG_DIR" ]; then
-        pecho "Contents of $XORGCONFIG_DIR:"
-        ls -l "$XORGCONFIG_DIR"
-        echo
-    fi
 else
     echo "$XORGCONFIG does not exist."
+fi
+
+echo
+
+if [ -d "$XORGCONFIG_DIR" ]; then
+    pecho "Contents of $XORGCONFIG_DIR:"
+    ls -l "$XORGCONFIG_DIR"
+else
+    echo "$XORGCONFIG_DIR does not exist."
 fi
 
 echo
