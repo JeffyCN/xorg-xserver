@@ -10,8 +10,9 @@ xorg-server (2:1.9.3.901-2) UNRELEASED; urgency=low
     - Fix listing xorg.conf.d's contents. Previously, that was only done
       if xorg.conf existed.
     - Check for local libraries by running ldd on the server.
-    - Warn about possible obsolete libraries by checking for /usr/X11R6's
-      existence.
+    - Check for obsolete libraries in the same way (/usr/X11R6/lib might
+      still exist in some cases, and be referenced in /etc/ld.so.conf, so
+      using ldd is sufficient to find out, see #546836 for an example).
 
  -- Cyril Brulebois <kibi@debian.org>  Fri, 28 Jan 2011 01:30:13 +0100
 

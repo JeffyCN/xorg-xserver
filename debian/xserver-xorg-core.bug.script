@@ -7,8 +7,8 @@ SERVER_SYMLINK="$CONFIG_DIR/X"
 XORGCONFIG="$CONFIG_DIR/xorg.conf"
 XORGCONFIG_DIR="$CONFIG_DIR/xorg.conf.d"
 CONFIG_AUX_DIR=/var/lib/x11
-OLD_LIBS=/usr/X11R6
-LOCAL_LIBS=/usr/local
+X11R6_LIBS=/usr/X11R6/lib
+LOCAL_LIBS=/usr/local/lib
 
 # Pretty echo, underline the specified string:
 pecho() {
@@ -39,19 +39,14 @@ echo
 if ldd "$SERVER_BINARY" | grep -qs "$LOCAL_LIBS"; then
    pecho "The server is using local libraries!"
    ldd "$SERVER_BINARY" | grep "$LOCAL_LIBS"
-else
-   echo "No local libraries in sight."
+   echo
 fi
 
-echo
-
-if [ -d "$OLD_LIBS" ]; then
-   echo "There might still be some libraries in obsolete $OLD_LIBS directory!"
-else
-   echo "No obsolete libraries in sight."
+if ldd "$SERVER_BINARY" | grep -qs "$X11R6_LIBS"; then
+   pecho "The server is using obsolete libraries!"
+   ldd "$SERVER_BINARY" | grep "$X11R6_LIBS"
+   echo
 fi
-
-echo
 
 if which lspci > /dev/null 2>&1; then
     pecho "VGA-compatible devices on PCI bus:"
