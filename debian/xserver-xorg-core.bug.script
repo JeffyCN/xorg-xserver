@@ -12,8 +12,8 @@ LOCAL_LIBS=/usr/local
 
 # Pretty echo, underline the specified string:
 pecho() {
-    echo "$1"
-    echo "$1"|sed 's/./-/g'
+    echo "$@"
+    echo "$@"|sed 's/./-/g'
 }
 
 exec >&3
