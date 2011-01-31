@@ -1,5 +1,6 @@
-xorg-server (2:1.9.3.901-2) UNRELEASED; urgency=low
+xorg-server (2:1.9.3.902-1) UNRELEASED; urgency=low
 
+  * New upstream release (1.9.4 rc2).
   * Improve bug script:
     - Stop reporting about roster and checksum for config file and server
       symlink, they are no longer used.
@@ -14,7 +15,7 @@ xorg-server (2:1.9.3.901-2) UNRELEASED; urgency=low
       still exist in some cases, and be referenced in /etc/ld.so.conf, so
       using ldd is sufficient to find out, see #546836 for an example).
 
- -- Cyril Brulebois <kibi@debian.org>  Fri, 28 Jan 2011 01:30:13 +0100
+ -- Cyril Brulebois <kibi@debian.org>  Mon, 31 Jan 2011 13:59:26 +0100
 
 xorg-server (2:1.9.3.901-1) experimental; urgency=low
 
