@@ -270,7 +270,9 @@ binary-deb:
 	dh_md5sums
 	dh_builddeb
 
-serverminver = $(shell cat debian/serverminver)
+# Only read the first line, the rest of the file is used to determine
+# when the minimal version as to be bumped:
+serverminver = $(shell head -1 debian/serverminver)
 
 # Build architecture-dependent files here.
 binary-arch: build install
