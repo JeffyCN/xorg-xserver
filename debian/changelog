@@ -15,6 +15,8 @@ xorg-server (2:1.9.3.902-2) UNRELEASED; urgency=low
     xorg-*-abi-$MAJOR-$MINOR to xorg-*-abi-$MAJOR, add xorg-video-abi-8.0
     and xorg-input-abi-11.0 to the server's Provides temporarily (until
     the next ABI bump).
+  * Add ${videoabi}, ${inputabi} to the udeb's Provides. There's no reason
+    for udebs to have loose dependencies.
 
  -- Cyril Brulebois <kibi@debian.org>  Tue, 01 Feb 2011 15:01:20 +0100
 

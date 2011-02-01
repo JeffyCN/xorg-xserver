@@ -142,7 +142,10 @@ Depends:
  udev-udeb (>= 149) [linux-any],
  ${shlibs:Depends},
  ${misc:Depends},
-Provides: xserver
+Provides:
+ xserver,
+ ${videoabi},
+ ${inputabi},
 Description: Xorg X server - core server
  This is a udeb, or a microdeb, for the debian-installer.
 
