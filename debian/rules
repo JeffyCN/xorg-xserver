@@ -282,11 +282,11 @@ binary-arch: build install
 	dh_installchangelogs -s
 	dh_install $(DH_INSTALL_OPTIONS) -s --sourcedir=debian/tmp --list-missing
 	$(INSTALL) -d $(CURDIR)/debian/xserver-xorg-dev/usr/share/xserver-xorg
-	# XXX might want to only extract the major ABI versions?
-	abi_videodrv=`PKG_CONFIG_PATH=debian/tmp/main/usr/lib/pkgconfig pkg-config --variable=abi_videodrv xorg-server`; \
+	# Extract only the major ABI version:
+	abi_videodrv=`PKG_CONFIG_PATH=debian/tmp/main/usr/lib/pkgconfig pkg-config --variable=abi_videodrv xorg-server|cut -d . -f 1`; \
 	echo videoabi=xorg-video-abi-$$abi_videodrv > debian/xserver-xorg-core.substvars && \
 	echo "xorg-video-abi-$$abi_videodrv, xserver-xorg-core (>= $(serverminver))" > debian/xserver-xorg-dev/usr/share/xserver-xorg/videodrvdep
-	abi_xinput=`PKG_CONFIG_PATH=debian/tmp/main/usr/lib/pkgconfig pkg-config --variable=abi_xinput xorg-server`; \
+	abi_xinput=`PKG_CONFIG_PATH=debian/tmp/main/usr/lib/pkgconfig pkg-config --variable=abi_xinput xorg-server|cut -d . -f 1`; \
 	echo inputabi=xorg-input-abi-$$abi_xinput >> debian/xserver-xorg-core.substvars && \
 	echo "xorg-input-abi-$$abi_xinput, xserver-xorg-core (>= $(serverminver))" > debian/xserver-xorg-dev/usr/share/xserver-xorg/xinputdep
 

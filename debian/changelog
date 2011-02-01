@@ -8,6 +8,9 @@ xorg-server (2:1.9.3.902-2) UNRELEASED; urgency=low
   * rules: Only read the first line of debian/serverminver to set the
     serverminver variable, used to prepare xinputdep and videodrvdep
     files.
+  * rules: Keep only the major ABI version from pkg-config's output to
+    build xorg-{input,video}-abi-$ABI. To handle minor ABI versions, we
+    have the serverminver mechanism.
 
  -- Cyril Brulebois <kibi@debian.org>  Tue, 01 Feb 2011 15:01:20 +0100
 
