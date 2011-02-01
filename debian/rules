@@ -205,7 +205,7 @@ build: $(STAMP_DIR)/build-udeb
 build: $(STAMP_DIR)/tests-udeb
 endif
 
-clean: xsfclean
+clean: xsfclean abibumpcheck
 	dh_testdir
 	dh_testroot
 	
@@ -272,7 +272,24 @@ binary-deb:
 
 # Only read the first line, the rest of the file is used to determine
 # when the minimal version as to be bumped:
-serverminver = $(shell head -1 debian/serverminver)
+SERVERMINVER = debian/serverminver
+serverminver = $(shell head -1 $(SERVERMINVER))
+
+.PHONY: abibumpcheck
+abibumpcheck: debian/serverminver
+	@echo Checking for the need of an ABI bump
+	# Build an updated version of the file:
+	head -1 $(SERVERMINVER) > $(SERVERMINVER).new
+	perl -ne 'print "$$1:$$2.$$3\n" if /^#define\s+(ABI_(?:VIDEODRV|XINPUT)_VERSION)\s+SET_ABI_VERSION\(\s*(\d+)\s*,\s*(\d+)\s*\)/' hw/xfree86/common/xf86Module.h|sort >> $(SERVERMINVER).new
+	# Compare both files:
+	@if ! cmp --quiet $(SERVERMINVER) $(SERVERMINVER).new; then \
+	echo "serverminver bump required, ABI changed!";\
+	diff -u $(SERVERMINVER) $(SERVERMINVER).new; \
+	exit 1; \
+	else \
+	echo "ABI unchanged"; \
+	rm -f $(SERVERMINVER).new; \
+	fi
 
 # Build architecture-dependent files here.
 binary-arch: build install
