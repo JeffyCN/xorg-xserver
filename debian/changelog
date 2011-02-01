@@ -17,6 +17,8 @@ xorg-server (2:1.9.3.902-2) UNRELEASED; urgency=low
     the next ABI bump).
   * Add ${videoabi}, ${inputabi} to the udeb's Provides. There's no reason
     for udebs to have loose dependencies.
+  * Accordingly, copy server's substvars as udeb's substvars once the
+    videoabi/inputabi variables are computed.
   * Add an abibumpcheck target which checks for xinput and videodrv ABI
     updates, based on the versions stored in debian/serverminver; make
     clean depend on it to make sure such an update is noticed at the very
