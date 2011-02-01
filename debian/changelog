@@ -1,3 +1,9 @@
+xorg-server (2:1.9.3.902-2) UNRELEASED; urgency=low
+
+  * Get rid of long obsolete NEWS file.
+
+ -- Cyril Brulebois <kibi@debian.org>  Tue, 01 Feb 2011 15:14:18 +0100
+
 xorg-server (2:1.9.3.902-1) experimental; urgency=low
 
   * New upstream release (1.9.4 rc2).
