@@ -306,7 +306,7 @@ endif
 	dh_installman -s
 	dh_link -s
 	dh_strip -pxserver-xorg-core --dbg-package=xserver-xorg-core-dbg
-	dh_strip -s --remaining-packages
+	dh_strip -s -Nxserver-xorg-core -Nxserver-xorg-core-dbg
 	$(MAKE) -f debian/rules DH_OPTIONS=-s binary-deb
 
 

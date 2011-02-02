@@ -1,6 +1,8 @@
 xorg-server (2:1.9.3.902-2) UNRELEASED; urgency=low
 
   * Get rid of long obsolete NEWS file.
+  * Replace “--remaining-packages” with “-Nfoo -Nbar” in the “dh_strip -s”
+    call, to avoid non-stripped binaries if the build is resumed.
 
  -- Cyril Brulebois <kibi@debian.org>  Tue, 01 Feb 2011 15:14:18 +0100
 
