@@ -3,6 +3,8 @@ xorg-server (2:1.9.3.902-2) UNRELEASED; urgency=low
   * Introduce dh_xsf_substvars, to be used in driver packages to set
     appropriate substitution variables for Depends and Provides, before
     calling dh_gencontrol. Ship it in xserver-xorg-dev.
+  * Also ship a debhelper sequence: xsf.pm, to insert dh_xsf_substvars
+    before dh_gencontrol. Usage: “dh $@ --with xsf” when using dh.
   * Get rid of inputabiver and videoabiver files, they've been deprecated
     for a while, and drivers should all have switched by now.
   * rules: Only read the first line of debian/serverminver to set the
