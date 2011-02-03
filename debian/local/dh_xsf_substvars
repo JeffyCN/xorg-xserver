@@ -36,8 +36,8 @@ for package in $(dh_listpackages); do
   # To avoid having "unused substitution variable" warnings from
   # dpkg-gencontrol, only set variables which make sense:
   case $package in
-    *-dbg|*-dev)
-      # debug or devel package, no need for Depends/Provides.
+    *-dbg|*-dev|*-all)
+      # debug, devel, or meta package, no need for Depends/Provides.
       :
     ;;
     xserver-xorg-input-*)
