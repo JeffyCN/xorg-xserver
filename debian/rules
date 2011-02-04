@@ -205,7 +205,7 @@ build: $(STAMP_DIR)/build-udeb
 build: $(STAMP_DIR)/tests-udeb
 endif
 
-clean: xsfclean
+clean: xsfclean abibumpcheck
 	dh_testdir
 	dh_testroot
 	
@@ -270,7 +270,26 @@ binary-deb:
 	dh_md5sums
 	dh_builddeb
 
-serverminver = $(shell cat debian/serverminver)
+# Only read the first line, the rest of the file is used to determine
+# when the minimal version as to be bumped:
+SERVERMINVER = debian/serverminver
+serverminver = $(shell head -1 $(SERVERMINVER))
+
+.PHONY: abibumpcheck
+abibumpcheck: debian/serverminver
+	@echo Checking for the need of an ABI bump
+	# Build an updated version of the file:
+	head -1 $(SERVERMINVER) > $(SERVERMINVER).new
+	perl -ne 'print "$$1:$$2.$$3\n" if /^#define\s+(ABI_(?:VIDEODRV|XINPUT)_VERSION)\s+SET_ABI_VERSION\(\s*(\d+)\s*,\s*(\d+)\s*\)/' hw/xfree86/common/xf86Module.h|sort >> $(SERVERMINVER).new
+	# Compare both files:
+	@if ! cmp --quiet $(SERVERMINVER) $(SERVERMINVER).new; then \
+	echo "serverminver bump required, ABI changed!";\
+	diff -u $(SERVERMINVER) $(SERVERMINVER).new; \
+	exit 1; \
+	else \
+	echo "ABI unchanged"; \
+	rm -f $(SERVERMINVER).new; \
+	fi
 
 # Build architecture-dependent files here.
 binary-arch: build install
@@ -280,18 +299,17 @@ binary-arch: build install
 	dh_installchangelogs -s
 	dh_install $(DH_INSTALL_OPTIONS) -s --sourcedir=debian/tmp --list-missing
 	$(INSTALL) -d $(CURDIR)/debian/xserver-xorg-dev/usr/share/xserver-xorg
-	# XXX might want to only extract the major ABI versions?
-	abi_videodrv=`PKG_CONFIG_PATH=debian/tmp/main/usr/lib/pkgconfig pkg-config --variable=abi_videodrv xorg-server`; \
+	# Extract only the major ABI version:
+	abi_videodrv=`PKG_CONFIG_PATH=debian/tmp/main/usr/lib/pkgconfig pkg-config --variable=abi_videodrv xorg-server|cut -d . -f 1`; \
 	echo videoabi=xorg-video-abi-$$abi_videodrv > debian/xserver-xorg-core.substvars && \
 	echo "xorg-video-abi-$$abi_videodrv, xserver-xorg-core (>= $(serverminver))" > debian/xserver-xorg-dev/usr/share/xserver-xorg/videodrvdep
-	abi_xinput=`PKG_CONFIG_PATH=debian/tmp/main/usr/lib/pkgconfig pkg-config --variable=abi_xinput xorg-server`; \
+	abi_xinput=`PKG_CONFIG_PATH=debian/tmp/main/usr/lib/pkgconfig pkg-config --variable=abi_xinput xorg-server|cut -d . -f 1`; \
 	echo inputabi=xorg-input-abi-$$abi_xinput >> debian/xserver-xorg-core.substvars && \
 	echo "xorg-input-abi-$$abi_xinput, xserver-xorg-core (>= $(serverminver))" > debian/xserver-xorg-dev/usr/share/xserver-xorg/xinputdep
 
-	$(INSTALL) -m644 $(CURDIR)/debian/videoabiver \
-	           $(CURDIR)/debian/xserver-xorg-dev/usr/share/xserver-xorg/videoabiver
-	$(INSTALL) -m644 $(CURDIR)/debian/inputabiver \
-	           $(CURDIR)/debian/xserver-xorg-dev/usr/share/xserver-xorg/inputabiver
+	# The udeb uses the same substvars:
+	cp debian/xserver-xorg-core.substvars debian/xserver-xorg-core-udeb.substvars
+
 	$(INSTALL) -m 755 -d debian/xserver-xorg-core/usr/share/bug/xserver-xorg-core
 	$(INSTALL) -m 755 debian/xserver-xorg-core.bug.script debian/xserver-xorg-core/usr/share/bug/xserver-xorg-core/script
 ifeq ($(DEB_HOST_ARCH_OS), linux)

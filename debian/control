@@ -114,8 +114,8 @@ Breaks:
  xserver-xorg-input-wacom (<= 0.10.5+20100415-1),
 Provides:
  xserver,
- ${videoabi},
- ${inputabi},
+ ${videoabi}, xorg-video-abi-8.0,
+ ${inputabi}, xorg-input-abi-11.0,
 Description: Xorg X server - core server
  The Xorg X server is an X server for several architectures and operating
  systems, which is derived from the XFree86 4.x series of X servers.
@@ -142,7 +142,10 @@ Depends:
  udev-udeb (>= 149) [linux-any],
  ${shlibs:Depends},
  ${misc:Depends},
-Provides: xserver
+Provides:
+ xserver,
+ ${videoabi},
+ ${inputabi},
 Description: Xorg X server - core server
  This is a udeb, or a microdeb, for the debian-installer.
 

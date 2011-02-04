@@ -5,6 +5,32 @@ xorg-server (2:1.9.4-1) UNRELEASED; urgency=low
   * Replace “--remaining-packages” with “-Nfoo -Nbar” in the “dh_strip -s”
     call, to avoid non-stripped binaries if the build is resumed.
   * Use “dh_prep” instead of deprecated “dh_clean -k”.
+  * Introduce dh_xsf_substvars, to be used in driver packages to set
+    appropriate substitution variables for Depends and Provides, before
+    calling dh_gencontrol. Ship it in xserver-xorg-dev.
+  * Also ship a debhelper sequence: xsf.pm, to insert dh_xsf_substvars
+    before dh_gencontrol. Usage: “dh $@ --with xsf” when using dh.
+  * Get rid of inputabiver and videoabiver files, they've been deprecated
+    for a while, and drivers should all have switched by now.
+  * rules: Only read the first line of debian/serverminver to set the
+    serverminver variable, used to prepare xinputdep and videodrvdep
+    files.
+  * rules: Keep only the major ABI version from pkg-config's output to
+    build xorg-{input,video}-abi-$ABI. To handle minor ABI versions, we
+    have the serverminver mechanism.
+  * To avoid having to binNMU all drivers to update their Depends from
+    xorg-*-abi-$MAJOR-$MINOR to xorg-*-abi-$MAJOR, add xorg-video-abi-8.0
+    and xorg-input-abi-11.0 to the server's Provides temporarily (until
+    the next ABI bump).
+  * Add ${videoabi}, ${inputabi} to the udeb's Provides. There's no reason
+    for udebs to have loose dependencies.
+  * Accordingly, copy server's substvars as udeb's substvars once the
+    videoabi/inputabi variables are computed.
+  * Add an abibumpcheck target which checks for xinput and videodrv ABI
+    updates, based on the versions stored in debian/serverminver; make
+    clean depend on it to make sure such an update is noticed at the very
+    beginning of the build.
+  * Add current versions to debian/serverminver accordingly.
 
  -- Cyril Brulebois <kibi@debian.org>  Tue, 01 Feb 2011 15:14:18 +0100
 
