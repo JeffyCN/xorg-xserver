@@ -40,6 +40,7 @@ xorg-server (2:1.9.4-1) UNRELEASED; urgency=low
   * Cherry-pick, thanks to Samuel Thibault (Closes: #590715):
     - xserver: enable TLS even if AIGLX is not enabled
   * Update Uploaders list. Thanks, David & Steve & Brice!
+  * Bump Standards-Version to 3.9.1 (no changes needed).
 
  -- Cyril Brulebois <kibi@debian.org>  Tue, 01 Feb 2011 15:14:18 +0100
 
