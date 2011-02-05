@@ -33,6 +33,8 @@ xorg-server (2:1.9.4-1) UNRELEASED; urgency=low
   * Add current versions to debian/serverminver accordingly.
   * Remove “xserver” from Provides, it's deprecated.
   * Use architecture wildcards for build-deps.
+  * Make xserver-xfbdev linux-any; add armhf and powerpcspe to the udeb
+    (Closes: #585697, #605764).
 
  -- Cyril Brulebois <kibi@debian.org>  Tue, 01 Feb 2011 15:14:18 +0100
 

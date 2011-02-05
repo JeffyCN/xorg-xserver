@@ -131,7 +131,7 @@ Package: xserver-xorg-core-udeb
 XC-Package-Type: udeb
 Section: debian-installer
 # exclude sparc because of linker errors
-Architecture: alpha amd64 armel hppa i386 ia64 kfreebsd-amd64 kfreebsd-i386 mips mipsel powerpc s390
+Architecture: alpha amd64 armel armhf hppa i386 ia64 kfreebsd-amd64 kfreebsd-i386 mips mipsel powerpc powerpcspe s390
 Depends:
 # merged: xserver-common (>= ${source:Version}),
  xkb-data-udeb,
@@ -283,7 +283,7 @@ Description: nested X server
  This package is built from the X.org xserver module.
 
 Package: xserver-xfbdev
-Architecture: alpha amd64 arm armeb armel hppa i386 ia64 lpia m32r m68k mips mipsel powerpc ppc64 sh3 sh3eb sh4 sh4eb sparc
+Architecture: linux-any
 Depends:
  xserver-common (>= ${source:Version}),
  ${shlibs:Depends},
