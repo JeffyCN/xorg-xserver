@@ -32,6 +32,7 @@ xorg-server (2:1.9.4-1) UNRELEASED; urgency=low
     beginning of the build.
   * Add current versions to debian/serverminver accordingly.
   * Remove “xserver” from Provides, it's deprecated.
+  * Use architecture wildcards for build-deps.
 
  -- Cyril Brulebois <kibi@debian.org>  Tue, 01 Feb 2011 15:14:18 +0100
 
