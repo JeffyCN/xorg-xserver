@@ -1,5 +1,6 @@
 xorg-server (2:1.9.4-1) UNRELEASED; urgency=low
 
+  * The “Squeeze is released, target sid!” upload.
   * New upstream release.
   * Get rid of long obsolete NEWS file.
   * Replace “--remaining-packages” with “-Nfoo -Nbar” in the “dh_strip -s”
