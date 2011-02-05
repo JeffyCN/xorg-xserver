@@ -1,6 +1,6 @@
 xorg-server (2:1.9.4-1) UNRELEASED; urgency=low
 
-  * The “Squeeze is released, target sid!” upload.
+  * The “squeeze is released, target sid!” upload.
   * New upstream release.
   * Unfuzzy all patches.
   * Get rid of long obsolete NEWS file.
