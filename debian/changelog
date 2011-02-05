@@ -7,6 +7,7 @@ xorg-server (2:1.9.4-1) UNRELEASED; urgency=low
   * Replace “--remaining-packages” with “-Nfoo -Nbar” in the “dh_strip -s”
     call, to avoid non-stripped binaries if the build is resumed.
   * Use “dh_prep” instead of deprecated “dh_clean -k”.
+  * Bump debhelper build-dep accordingly.
   * Introduce dh_xsf_substvars, to be used in driver packages to set
     appropriate substitution variables for Depends and Provides, before
     calling dh_gencontrol. Ship it in xserver-xorg-dev.
