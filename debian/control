@@ -20,7 +20,7 @@ Build-Depends:
  xutils-dev (>= 1:7.5+4),
  xfonts-utils (>= 1:7.5+1),
  x11proto-bigreqs-dev (>= 1:1.1.0),
- x11proto-composite-dev (>= 1:0.4), 
+ x11proto-composite-dev (>= 1:0.4),
  x11proto-core-dev (>= 7.0.17),
  x11proto-damage-dev (>= 1.1),
  x11proto-fixes-dev (>= 1:4.1),
