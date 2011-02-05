@@ -208,7 +208,7 @@ endif
 clean: xsfclean abibumpcheck
 	dh_testdir
 	dh_testroot
-	
+
 	rm -f config.cache config.log config.status
 	rm -f */config.cache */config.log */config.status
 	rm -f conftest* */conftest*
@@ -219,7 +219,7 @@ clean: xsfclean abibumpcheck
 	rm -f include/do-not-use-config.h.in
 	rm -f m4/lt*.m4 m4/libtool.m4
 	find -name Makefile.in -delete
-	
+
 	dh_clean
 
 install: build
@@ -227,23 +227,23 @@ install: build
 	dh_testroot
 	dh_prep
 	dh_installdirs
-	
+
 	cd build-main && $(MAKE) DESTDIR=$(CURDIR)/debian/tmp/main install
 ifeq ($(udeb), yes)
 	cd build-udeb && $(MAKE) DESTDIR=$(CURDIR)/debian/tmp/udeb install
 endif
-	
+
 	# oh, yuck.
 	find debian/tmp/*/usr/lib/xorg -type f -name '*.la' | \
 	  xargs rm -f
-	
+
 	# remove modules not needed in d-i
 	rm -rf debian/tmp/udeb/usr/lib/xorg/modules/multimedia
 	rm -f debian/tmp/udeb/usr/lib/xorg/modules/libxaa.so
 	rm -f debian/tmp/udeb/usr/lib/xorg/modules/libexa.so
 	rm -f debian/tmp/udeb/usr/lib/xorg/modules/libwfb.so
 	rm -f debian/tmp/udeb/usr/lib/xorg/modules/libxf8_16bpp.so
-	
+
 	install -m 755 debian/local/xvfb-run debian/tmp/main/usr/bin
 	install debian/local/xvfb-run.1 debian/tmp/main/usr/share/man/man1
 ifneq ($(DEB_HOST_ARCH_OS), linux)
@@ -294,7 +294,7 @@ abibumpcheck: debian/serverminver
 # Build architecture-dependent files here.
 binary-arch: build install
 	$(MAKE) -f debian/rules DH_OPTIONS=-s binary-initial
-	
+
 	dh_installdocs -s
 	dh_installchangelogs -s
 	dh_install $(DH_INSTALL_OPTIONS) -s --sourcedir=debian/tmp --list-missing
