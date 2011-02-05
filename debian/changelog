@@ -31,6 +31,7 @@ xorg-server (2:1.9.4-1) UNRELEASED; urgency=low
     clean depend on it to make sure such an update is noticed at the very
     beginning of the build.
   * Add current versions to debian/serverminver accordingly.
+  * Remove “xserver” from Provides, it's deprecated.
 
  -- Cyril Brulebois <kibi@debian.org>  Tue, 01 Feb 2011 15:14:18 +0100
 
