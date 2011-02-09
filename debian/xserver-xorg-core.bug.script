@@ -50,8 +50,7 @@ fi
 
 if which lspci > /dev/null 2>&1; then
     pecho "VGA-compatible devices on PCI bus:"
-    LC_ALL=C lspci | grep 'VGA compatible controller:'
-    LC_ALL=C lspci -n | grep 'Class 0300:'
+    LC_ALL=C lspci -nn | grep 'VGA compatible controller'
 else
     echo "The lspci command was not found; not including PCI data."
 fi
