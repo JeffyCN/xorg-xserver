@@ -1,3 +1,16 @@
+xorg-server (2:1.9.4-2) UNRELEASED; urgency=low
+
+  * Put an end to the dependency hell! Now that we have proper
+    dependencies between drivers and the server, remove xserver-xorg from
+    xserver-xorg-core's Depends (Closes: #362313). In a nutshell, one may
+    want to choose between installing:
+    - xserver-xorg-core: the server itself, with no strings attached.
+    - xserver-xorg: pulls the server and drivers, contains the X wrapper
+      and some documentation.
+    - xorg: pulls xserver-xorg as well as various X11 clients and fonts.
+
+ -- Cyril Brulebois <kibi@debian.org>  Wed, 09 Feb 2011 08:57:02 +0100
+
 xorg-server (2:1.9.4-1) unstable; urgency=low
 
   * The “squeeze is released, target sid!” upload.

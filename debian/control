@@ -86,7 +86,6 @@ Package: xserver-xorg-core
 Architecture: any
 Depends:
  xserver-common (>= ${source:Version}),
- xserver-xorg,
  keyboard-configuration [linux-any kfreebsd-any],
  udev (>= 149) [linux-any],
  ${shlibs:Depends},
@@ -136,7 +135,6 @@ Depends:
 # merged: xserver-common (>= ${source:Version}),
  xkb-data-udeb,
  x11-xkb-utils-udeb,
-# useless: xserver-xorg,
 # disabled: keyboard-configuration [linux-any kfreebsd-any],
  udev-udeb (>= 149) [linux-any],
  ${shlibs:Depends},
