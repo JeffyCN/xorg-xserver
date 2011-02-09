@@ -79,6 +79,22 @@ fi
 
 echo
 
+KMS_CONFS_DIR=/etc/modprobe.d
+KMS_CONFS=$(ls $KMS_CONFS_DIR/*-kms.conf 2>/dev/null)
+
+if [ -n "$KMS_CONFS" ]; then
+    pecho "KMS configuration files:"
+    for CONF in $KMS_CONFS; do
+      echo "$CONF:"
+      # Indent, and get rid of empty lines:
+      sed 's/^/  /' < "$CONF"|egrep -v '^\s*$'
+    done
+else
+    echo "$KMS_CONFS_DIR contains no KMS configuration files."
+fi
+
+echo
+
 KERNEL_VERSION=/proc/version
 
 if [ -e "$KERNEL_VERSION" ]; then
