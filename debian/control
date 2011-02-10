@@ -112,8 +112,8 @@ Breaks:
  xserver-xorg-input-vmmouse (<= 1:12.6.5-4),
  xserver-xorg-input-wacom (<= 0.10.5+20100415-1),
 Provides:
- ${videoabi}, xorg-video-abi-8.0,
- ${inputabi}, xorg-input-abi-11.0,
+ ${videoabi},
+ ${inputabi},
 Description: Xorg X server - core server
  The Xorg X server is an X server for several architectures and operating
  systems, which is derived from the XFree86 4.x series of X servers.

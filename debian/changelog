@@ -11,6 +11,8 @@ xorg-server (2:1.9.4-2) UNRELEASED; urgency=low
   * bug script: Report KMS configuration files and their contents.
   * bug script: Keep only one lspci call (with proper filtering), which
     makes PCI IDs come back.
+  * Stop providing xorg-input-abi-11.0 and xorg-video-abi-8.0 now that
+    drivers have reached unstable.
 
  -- Cyril Brulebois <kibi@debian.org>  Wed, 09 Feb 2011 08:57:02 +0100
 
