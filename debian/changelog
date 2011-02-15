@@ -1,11 +1,15 @@
 xorg-server (2:1.9.99.901-1) UNRELEASED; urgency=low
   
+  [ Christopher James Halse Rogers ]
   * New upstream release (1.10 rc1)
   * Drop 16-xaa-fbcomposite-fix-negative-size.diff, the mod macro that this
     patch fixes is no longer used.
   * debian/control:
     - Bump x11proto-xrandr-dev and x11proto-xext-dev build-deps to 1.4 and 
       7.1.99 for new XRandR and XSync extension protocols.
+
+  [ Julien Cristau ]
+  * Bump serverminver and ABI versions.
 
  -- Christopher James Halse Rogers <raof@ubuntu.com>  Wed, 19 Jan 2011 10:28:16 +1100
 
