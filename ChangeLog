@@ -1,3 +1,120 @@
+commit ce83d1bd5a7dee70cc1616b583fbd3ce2392f0a0
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Fri Feb 4 11:35:58 2011 -0800
+
+    xorg-server 1.9.4
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+
+commit df12f4a4d9afe819fd3ae1ec8aaa5a7ec9d6567f
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Sun Jan 30 17:07:25 2011 -0800
+
+    xorg-server 1.9.3.902
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+
+commit 79a367d6e3075f31c89ce9fe4189ffe1ca649e37
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Fri Jan 28 21:13:38 2011 -0800
+
+    XQuartz: Localization Updates
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+    (cherry picked from commit 8c1f75a1d4cb5a34b4d10f3f5068bccc4356f31a)
+
+commit 3396d237a5e7d7f32c7c555597d4f17f49d3b937
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Sun Jan 23 22:35:34 2011 -0800
+
+    XQuartz: Use the default signal handler
+    
+    This allows better interaction with CrashTracer
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+    (cherry picked from commit effaf9459c450f13e35bf263835d3e37d48ff29d)
+
+commit e7871a95125d85bef37fee51e8f8691a058a984d
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Thu Jan 13 17:12:17 2011 -0800
+
+    XQuartz: Call RRScreenSizeNotify after handling externally-generated XP_EVENT_DISPLAY_CHANGED
+    
+    We get an XP_EVENT_DISPLAY_CHANGED event when our display configuration is
+    changed.  If this change was caused by hotplugging a monitor or Mac Display
+    Preferences changes by the user, we need to call RRScreenSizeNotify in order
+    to ensure new connections get the correct screen size.
+    
+    http://xquartz.macosforge.org/trac/ticket/460
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+    (cherry picked from commit 418bb57a3923311338baa8a85c0794a72e15ceeb)
+
+commit 824ebda72ab61f0640a14d79ef893a1d78644db8
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Thu Jan 13 16:08:46 2011 -0800
+
+    XQuartz: Bump version string to 2.6.1
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+    (cherry picked from commit 6f52b10b9e8068e3deafb2bbb64b62175a208c49)
+
+commit 188148e1cc1cdecc7731a4251a9ecb9dd73e6241
+Author: Oliver McFadden <oliver.mcfadden@nokia.com>
+Date:   Mon Jan 24 22:03:30 2011 +0200
+
+    dix: GetPointerEvents: added valuator range checking
+    
+    Button events may be sent with no valuators (e.g. to simply indicate
+    ButtonPress or ButtonRelease without any coordinates); when this happens
+    the server would read uninitialized memory.
+    
+    ==9999== Conditional jump or move depends on uninitialised value(s)
+    ==9999==    at 0x48E87E8: pixman_f_transform_point (in /usr/lib/libpixman-1.so.0.18.2)
+    ==9999==  Uninitialised value was created by a stack allocation
+    ==9999==    at 0x37524: GetPointerEvents (getevents.c:1074)
+    ==9999==
+    ==9999== Conditional jump or move depends on uninitialised value(s)
+    ==9999==    at 0x496D074: lround (s_lround.c:40)
+    ==9999==    by 0x3773B: GetPointerEvents (getevents.c:1048)
+    ==9999==    by 0x683BB: xf86PostButtonEventP (xf86Xinput.c:1162)
+    ==9999==    by 0x6853B: xf86PostButtonEvent (xf86Xinput.c:1126)
+    ==9999==    by 0x5779037: process_state (multitouch.c:321)      (xf86-input-mtev)
+    ==9999==    by 0x577908F: read_input (multitouch.c:331))        (xf86-input-mtev)
+    ==9999==    by 0x66B4F: xf86SigioReadInput (xf86Events.c:298)
+    ==9999==    by 0x112697: xf86SIGIO (sigio.c:118)
+    ==9999==    by 0x4A12B2F: ??? (sigrestorer.S:51)
+    ==9999==  Uninitialised value was created by a stack allocation
+    ==9999==    at 0x37524: GetPointerEvents (getevents.c:1074)
+    
+    Signed-off-by: Oliver McFadden <oliver.mcfadden@nokia.com>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit 089a510dc9511721817df63bf9a968a10b842198
+Author: Pauli Nieminen <ext-pauli.nieminen@nokia.com>
+Date:   Thu Dec 30 19:19:38 2010 +0200
+
+    mi: Fix the debug message
+    
+    Signed-off-by: Pauli Nieminen <ext-pauli.nieminen@nokia.com>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+    (cherry picked from commit bf48082f30818b96bc623834be3022600371d4fc)
+
+commit b22415b0d567fae358b9b7a7067a70c80dd0dd1d
+Author: Pauli Nieminen <ext-pauli.nieminen@nokia.com>
+Date:   Thu Dec 30 19:19:41 2010 +0200
+
+    udev: Fix removing of the wake up handler
+    
+    RemoveBlockAndWakeupHandlers requires caller to pass same block data
+    parameter as for RegisterBlockAndWakeupHandlers.
+    
+    Signed-off-by: Pauli Nieminen <ext-pauli.nieminen@nokia.com>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+    (cherry picked from commit 3e1455505addc7e52178fa04399aef2a8522c921)
+
 commit 6451a3ff949ff55c9dff7399d0babb6b98201e99
 Author: Jeremy Huddleston <jeremyhu@apple.com>
 Date:   Fri Jan 7 15:40:25 2011 -0800

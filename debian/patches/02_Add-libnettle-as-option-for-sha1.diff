@@ -8,11 +8,9 @@ Signed-off-by: Cyril Brulebois <kibi@debian.org>
 [jcristau: forward-ported from 1.7 to 1.8]
 Signed-off-by: Julien Cristau <jcristau@debian.org>
 ---
-Index: xorg-server/configure.ac
-===================================================================
---- xorg-server.orig/configure.ac	2010-07-05 16:58:09.868394001 +1000
-+++ xorg-server/configure.ac	2010-07-05 16:59:02.628394001 +1000
-@@ -1358,7 +1358,7 @@
+--- a/configure.ac
++++ b/configure.ac
+@@ -1360,7 +1360,7 @@ CORE_INCS='-I$(top_srcdir)/include -I$(t
  
  # SHA1 hashing
  AC_ARG_WITH([sha1],
@@ -21,7 +19,7 @@ Index: xorg-server/configure.ac
                              [choose SHA1 implementation])])
  AC_CHECK_FUNC([SHA1Init], [HAVE_SHA1_IN_LIBC=yes])
  if test "x$with_sha1" = x && test "x$HAVE_SHA1_IN_LIBC" = xyes; then
-@@ -1441,6 +1441,16 @@
+@@ -1443,6 +1443,16 @@ if test "x$with_sha1" = xlibcrypto; then
  		SHA1_CFLAGS="$OPENSSL_CFLAGS"
  	fi
  fi
@@ -38,10 +36,8 @@ Index: xorg-server/configure.ac
  AC_MSG_CHECKING([for SHA1 implementation])
  if test "x$with_sha1" = x; then
  	AC_MSG_ERROR([No suitable SHA1 implementation found])
-Index: xorg-server/include/dix-config.h.in
-===================================================================
---- xorg-server.orig/include/dix-config.h.in	2010-07-05 16:58:09.888394001 +1000
-+++ xorg-server/include/dix-config.h.in	2010-07-05 16:59:02.628394001 +1000
+--- a/include/dix-config.h.in
++++ b/include/dix-config.h.in
 @@ -175,6 +175,9 @@
  /* Define to use libsha1 for SHA1 */
  #undef HAVE_SHA1_IN_LIBSHA1
@@ -52,11 +48,9 @@ Index: xorg-server/include/dix-config.h.in
  /* Define to 1 if you have the `shmctl64' function. */
  #undef HAVE_SHMCTL64
  
-Index: xorg-server/os/xsha1.c
-===================================================================
---- xorg-server.orig/os/xsha1.c	2010-07-05 16:58:09.898394001 +1000
-+++ xorg-server/os/xsha1.c	2010-07-05 16:59:02.628394001 +1000
-@@ -127,6 +127,31 @@
+--- a/os/xsha1.c
++++ b/os/xsha1.c
+@@ -127,6 +127,31 @@ int x_sha1_final(void *ctx, unsigned cha
      return 1;
  }
  

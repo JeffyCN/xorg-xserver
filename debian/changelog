@@ -9,6 +9,90 @@ xorg-server (2:1.9.99.901-1) UNRELEASED; urgency=low
 
  -- Christopher James Halse Rogers <raof@ubuntu.com>  Wed, 19 Jan 2011 10:28:16 +1100
 
+xorg-server (2:1.9.4-2) UNRELEASED; urgency=low
+
+  * Put an end to the dependency hell! Now that we have proper
+    dependencies between drivers and the server, remove xserver-xorg from
+    xserver-xorg-core's Depends (Closes: #362313). In a nutshell, one may
+    want to choose between installing:
+    - xserver-xorg-core: the server itself, with no strings attached.
+    - xserver-xorg: pulls the server and drivers, contains the X wrapper
+      and some documentation.
+    - xorg: pulls xserver-xorg as well as various X11 clients and fonts.
+  * bug script: Report KMS configuration files and their contents.
+  * bug script: Keep only one lspci call (with proper filtering), which
+    makes PCI IDs come back.
+  * Stop providing xorg-input-abi-11.0 and xorg-video-abi-8.0 now that
+    drivers have reached unstable.
+
+ -- Cyril Brulebois <kibi@debian.org>  Wed, 09 Feb 2011 08:57:02 +0100
+
+xorg-server (2:1.9.4-1) unstable; urgency=low
+
+  * The “squeeze is released, target sid!” upload.
+  * New upstream release.
+  * Unfuzzy all patches.
+  * Get rid of long obsolete NEWS file.
+  * Replace “--remaining-packages” with “-Nfoo -Nbar” in the “dh_strip -s”
+    call, to avoid non-stripped binaries if the build is resumed.
+  * Use “dh_prep” instead of deprecated “dh_clean -k”.
+  * Bump debhelper build-dep accordingly.
+  * Introduce dh_xsf_substvars, to be used in driver packages to set
+    appropriate substitution variables for Depends and Provides, before
+    calling dh_gencontrol. Ship it in xserver-xorg-dev.
+  * Also ship a debhelper sequence: xsf.pm, to insert dh_xsf_substvars
+    before dh_gencontrol. Usage: “dh $@ --with xsf” when using dh.
+  * Get rid of inputabiver and videoabiver files, they've been deprecated
+    for a while, and drivers should all have switched by now.
+  * rules: Only read the first line of debian/serverminver to set the
+    serverminver variable, used to prepare xinputdep and videodrvdep
+    files.
+  * rules: Keep only the major ABI version from pkg-config's output to
+    build xorg-{input,video}-abi-$ABI. To handle minor ABI versions, we
+    have the serverminver mechanism.
+  * To avoid having to binNMU all drivers to update their Depends from
+    xorg-*-abi-$MAJOR-$MINOR to xorg-*-abi-$MAJOR, add xorg-video-abi-8.0
+    and xorg-input-abi-11.0 to the server's Provides temporarily (until
+    the next ABI bump).
+  * Add ${videoabi}, ${inputabi} to the udeb's Provides. There's no reason
+    for udebs to have loose dependencies.
+  * Accordingly, copy server's substvars as udeb's substvars once the
+    videoabi/inputabi variables are computed.
+  * Add an abibumpcheck target which checks for xinput and videodrv ABI
+    updates, based on the versions stored in debian/serverminver; make
+    clean depend on it to make sure such an update is noticed at the very
+    beginning of the build.
+  * Add current versions to debian/serverminver accordingly.
+  * Remove “xserver” from Provides, it's deprecated.
+  * Use architecture wildcards for build-deps.
+  * Make xserver-xfbdev linux-any; add armhf and powerpcspe to the udeb
+    (Closes: #585697, #605764).
+  * Cherry-pick, thanks to Samuel Thibault (Closes: #590715):
+    - xserver: enable TLS even if AIGLX is not enabled
+  * Update Uploaders list. Thanks, David & Steve & Brice!
+  * Bump Standards-Version to 3.9.1 (no changes needed).
+
+ -- Cyril Brulebois <kibi@debian.org>  Sat, 05 Feb 2011 10:40:55 +0100
+
+xorg-server (2:1.9.3.902-1) experimental; urgency=low
+
+  * New upstream release (1.9.4 rc2).
+  * Improve bug script:
+    - Stop reporting about roster and checksum for config file and server
+      symlink, they are no longer used.
+    - Replace printf with echo everywhere, it's slightly more readable and
+      all lines are newline-terminated anyway.
+    - Also use a “pecho” (pretty echo) function to underline some strings,
+      making the output slightly more readable.
+    - Fix listing xorg.conf.d's contents. Previously, that was only done
+      if xorg.conf existed.
+    - Check for local libraries by running ldd on the server.
+    - Check for obsolete libraries in the same way (/usr/X11R6/lib might
+      still exist in some cases, and be referenced in /etc/ld.so.conf, so
+      using ldd is sufficient to find out, see #546836 for an example).
+
+ -- Cyril Brulebois <kibi@debian.org>  Mon, 31 Jan 2011 14:00:41 +0100
+
 xorg-server (2:1.9.3.901-1) experimental; urgency=low
 
   * New upstream release (1.9.4 rc1).
