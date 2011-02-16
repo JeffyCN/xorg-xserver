@@ -1,4 +1,4 @@
-xorg-server (2:1.9.4-2) UNRELEASED; urgency=low
+xorg-server (2:1.9.4-2) unstable; urgency=low
 
   * Put an end to the dependency hell! Now that we have proper
     dependencies between drivers and the server, remove xserver-xorg from
@@ -16,7 +16,7 @@ xorg-server (2:1.9.4-2) UNRELEASED; urgency=low
     drivers have reached unstable.
   * Merge server-1.9-branch up to 0a4b0de9af.
 
- -- Cyril Brulebois <kibi@debian.org>  Wed, 09 Feb 2011 08:57:02 +0100
+ -- Cyril Brulebois <kibi@debian.org>  Wed, 16 Feb 2011 23:17:07 +0100
 
 xorg-server (2:1.9.4-1) unstable; urgency=low
 
