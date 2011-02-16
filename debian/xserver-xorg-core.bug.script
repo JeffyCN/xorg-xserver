@@ -48,6 +48,12 @@ if ldd "$SERVER_BINARY" | grep -qs "$X11R6_LIBS"; then
    echo
 fi
 
+if dpkg-divert --list | grep -qs -i libgl; then
+    pecho "Diversions concerning libGL are in place"
+    dpkg-divert --list | grep -i libgl
+    echo
+fi
+
 if which lspci > /dev/null 2>&1; then
     pecho "VGA-compatible devices on PCI bus:"
     LC_ALL=C lspci -nn | grep 'VGA compatible controller'

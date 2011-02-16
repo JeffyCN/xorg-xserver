@@ -11,6 +11,9 @@ xorg-server (2:1.9.99.901-1) UNRELEASED; urgency=low
   [ Julien Cristau ]
   * Bump serverminver and ABI versions.
 
+  [ Cyril Brulebois ]
+  * bug script: Report libGL-related diversions.
+
  -- Christopher James Halse Rogers <raof@ubuntu.com>  Wed, 19 Jan 2011 10:28:16 +1100
 
 xorg-server (2:1.9.4-2) UNRELEASED; urgency=low
