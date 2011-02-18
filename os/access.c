@@ -54,7 +54,7 @@ SOFTWARE.
 ******************************************************************/
 
 /*
- * Copyright © 2004 Sun Microsystems, Inc.  All rights reserved.
+ * Copyright (c) 2004, Oracle and/or its affiliates. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -102,9 +102,9 @@ SOFTWARE.
 #include <sys/ioctl.h>
 #include <ctype.h>
 
-#if defined(TCPCONN) || defined(STREAMSCONN) || defined(__SCO__)
+#if defined(TCPCONN) || defined(STREAMSCONN) 
 #include <netinet/in.h>
-#endif /* TCPCONN || STREAMSCONN || __SCO__ */
+#endif /* TCPCONN || STREAMSCONN */
 
 #ifdef HAS_GETPEERUCRED
 # include <ucred.h>
@@ -176,10 +176,6 @@ SOFTWARE.
 #endif
 #endif 
 
-#ifdef __SCO__
-/* The system defined value is wrong. MAXPATHLEN is set in sco5.cf. */
-#undef PATH_MAX
-#endif
 
 #define X_INCLUDE_NETDB_H
 #include <X11/Xos_r.h>
@@ -297,7 +293,7 @@ AccessUsingXdmcp (void)
 }
 
 
-#if  defined(SVR4) && !defined(SCO325) && !defined(sun)  && defined(SIOCGIFCONF) && !defined(USE_SIOCGLIFCONF)
+#if  defined(SVR4) && !defined(sun)  && defined(SIOCGIFCONF) && !defined(USE_SIOCGLIFCONF)
 
 /* Deal with different SIOCGIFCONF ioctl semantics on these OSs */
 
@@ -327,7 +323,7 @@ ifioctl (int fd, int cmd, char *arg)
 #endif
     return ret;
 }
-#else /* Case sun, SCO325 and others  */
+#else
 #define ifioctl ioctl
 #endif
 
@@ -1032,20 +1028,19 @@ ResetHosts (char *display)
 }
 
 /* Is client on the local host */
-Bool LocalClient(ClientPtr client)
+Bool
+ComputeLocalClient(ClientPtr client)
 {
     int    		alen, family, notused;
     Xtransaddr		*from = NULL;
     pointer		addr;
     register HOST	*host;
+    OsCommPtr           oc = (OsCommPtr) client->osPrivate;
 
-    if (!client->osPrivate)
-        return FALSE;
-    if (!((OsCommPtr)client->osPrivate)->trans_conn)
+    if (!oc->trans_conn)
         return FALSE;
 
-    if (!_XSERVTransGetPeerAddr (((OsCommPtr)client->osPrivate)->trans_conn,
-	&notused, &alen, &from))
+    if (!_XSERVTransGetPeerAddr (oc->trans_conn, &notused, &alen, &from))
     {
 	family = ConvertAddr ((struct sockaddr *) from,
 	    &alen, (pointer *)&addr);
@@ -1061,12 +1056,21 @@ Bool LocalClient(ClientPtr client)
 	}
 	for (host = selfhosts; host; host = host->next)
 	{
-	    if (addrEqual (family, addr, alen, host))
+	    if (addrEqual (family, addr, alen, host)) {
+		free(from);
 		return TRUE;
+	    }
 	}
 	free(from);
     }
     return FALSE;
+}
+
+Bool LocalClient(ClientPtr client)
+{
+    if (!client->osPrivate)
+        return FALSE;
+    return ((OsCommPtr)client->osPrivate)->local_client;
 }
 
 /*

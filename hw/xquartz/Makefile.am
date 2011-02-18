@@ -14,9 +14,9 @@ if GLX
 GL_DIR = GL
 endif
 
-SUBDIRS = bundle . $(GL_DIR) xpr pbproxy mach-startup doc
+SUBDIRS = bundle . $(GL_DIR) xpr pbproxy mach-startup man
 
-DIST_SUBDIRS = bundle . GL xpr pbproxy mach-startup doc
+DIST_SUBDIRS = bundle . GL xpr pbproxy mach-startup man
 
 libXquartz_la_SOURCES = \
 	$(top_srcdir)/fb/fbcmap_mi.c \
@@ -30,7 +30,6 @@ libXquartz_la_SOURCES = \
 	keysym2ucs.c \
 	pseudoramiX.c \
 	quartz.c \
-	quartzAudio.c \
 	quartzCocoa.m \
 	quartzKeyboard.c \
 	quartzStartup.c \
@@ -47,7 +46,6 @@ EXTRA_DIST = \
 	keysym2ucs.h \
 	pseudoramiX.h \
 	quartz.h \
-	quartzAudio.h \
 	quartzCommon.h \
 	quartzKeyboard.h \
 	quartzRandR.h \

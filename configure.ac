@@ -26,8 +26,8 @@ dnl
 dnl Process this file with autoconf to create configure.
 
 AC_PREREQ(2.57)
-AC_INIT([xorg-server], 1.9.99.901, [https://bugs.freedesktop.org/enter_bug.cgi?product=xorg], xorg-server)
-RELEASE_DATE="2010-12-06"
+AC_INIT([xorg-server], 1.9.99.902, [https://bugs.freedesktop.org/enter_bug.cgi?product=xorg], xorg-server)
+RELEASE_DATE="2011-2-18"
 AC_CONFIG_SRCDIR([Makefile.am])
 AM_INIT_AUTOMAKE([foreign dist-bzip2])
 AM_MAINTAINER_MODE
@@ -203,7 +203,7 @@ dnl Checks for library functions.
 AC_FUNC_VPRINTF
 AC_CHECK_FUNCS([geteuid getuid link memmove memset mkstemp strchr strrchr \
 		strtol getopt getopt_long vsnprintf walkcontext backtrace \
-		getisax getzoneid shmctl64 strcasestr ffs])
+		getisax getzoneid shmctl64 strcasestr ffs vasprintf])
 AC_FUNC_ALLOCA
 dnl Old HAS_* names used in os/*.c.
 AC_CHECK_FUNC([getdtablesize],
@@ -581,9 +581,6 @@ AC_ARG_ENABLE(sparkle,AS_HELP_STRING([--enable-sparkle], [Enable updating of X11
 				[ XQUARTZ_SPARKLE="${enableval}" ],
 				[ XQUARTZ_SPARKLE="no" ])
 AC_SUBST([XQUARTZ_SPARKLE])
-AC_ARG_ENABLE(builddocs,      AS_HELP_STRING([--enable-builddocs], [Build docs (default: disabled)]),
-                                [BUILDDOCS=$enableval],
-                                [BUILDDOCS=no])
 AC_ARG_ENABLE(install-libxf86config,
 				AS_HELP_STRING([--enable-install-libxf86config],
 				[Install libxf86config (default: disabled)]),
@@ -600,9 +597,14 @@ dnl GLX build options
 AC_ARG_ENABLE(aiglx,          AS_HELP_STRING([--enable-aiglx], [Build accelerated indirect GLX (default: enabled)]),
                                 [AIGLX=$enableval],
                                 [AIGLX=yes])
-AC_ARG_ENABLE(glx-tls,        AS_HELP_STRING([--enable-glx-tls], [Build GLX with TLS support (default: disabled)]),
+AX_TLS
+AC_ARG_ENABLE(glx-tls,        AS_HELP_STRING([--enable-glx-tls], [Build GLX with TLS support (default: auto)]),
                                 [GLX_USE_TLS=$enableval],
-                                [GLX_USE_TLS=no])
+                                [GLX_USE_TLS=no
+                                 if test "${ac_cv_tls}" != "none" ; then
+                                   GLX_USE_TLS=yes
+                                 fi])
+AC_SUBST(GLX_TLS, ${GLX_USE_TLS})
 
 dnl Extensions.
 AC_ARG_ENABLE(registry,       AS_HELP_STRING([--disable-registry], [Build string registry module (default: enabled)]), [XREGISTRY=$enableval], [XREGISTRY=yes])
@@ -709,8 +711,6 @@ if test "x$INT10" = xyes; then
 	AC_CHECK_HEADERS([sys/vm86.h sys/io.h])
 fi
 
-dnl Handle building documentation
-AM_CONDITIONAL(BUILDDOCS, test "x$BUILDDOCS" = xyes)
 XORG_ENABLE_DOCS
 XORG_ENABLE_DEVEL_DOCS
 XORG_WITH_XMLTO(0.0.20)
@@ -1888,7 +1888,7 @@ if test "x$XWIN" = xyes; then
 			XWIN_SYS_LIBS=-lwinsock2
 			;;
 	esac
-	XWIN_LIBS="$FB_LIB $MI_LIB $FIXES_LIB $XEXT_LIB $CONFIG_LIB $RANDR_LIB $DBE_LIB $RECORD_LIB $GLX_LIBS $XKB_LIB $XKB_STUB_LIB $COMPOSITE_LIB $DAMAGE_LIB $MIEXT_SYNC_LIB $MIEXT_DAMAGE_LIB $MIEXT_SHADOW_LIB $XI_LIB $OS_LIB"
+	XWIN_LIBS="$FB_LIB $MI_LIB $FIXES_LIB $XEXT_LIB $RANDR_LIB $RENDER_LIB $DBE_LIB $RECORD_LIB $GLX_LIBS $XKB_LIB $XKB_STUB_LIB $COMPOSITE_LIB $DAMAGE_LIB $MIEXT_SYNC_LIB $MIEXT_DAMAGE_LIB $MIEXT_SHADOW_LIB $XI_LIB $OS_LIB"
 	XWIN_SYS_LIBS="$XWIN_SYS_LIBS $XWINMODULES_LIBS"
 	AC_SUBST(XWIN_LIBS)
 	AC_SUBST(XWIN_SERVER_NAME)
@@ -1908,8 +1908,8 @@ AM_CONDITIONAL(XWIN_MULTIWINDOW, [test "x$XWIN" = xyes])
 AM_CONDITIONAL(XWIN_MULTIWINDOWEXTWM, [test "x$XWIN" = xyes && test "x$WINDOWSWM" = xyes])
 AM_CONDITIONAL(XWIN_CLIPBOARD, [test "x$XWIN" = xyes])
 AM_CONDITIONAL(XWIN_GLX_WINDOWS, [test "x$XWIN" = xyes && false])
-AM_CONDITIONAL(XWIN_NATIVEGDI, [test "x$XWIN" = xyes && false])
-AM_CONDITIONAL(XWIN_PRIMARYFB, [test "x$XWIN" = xyes && false])
+AM_CONDITIONAL(XWIN_NATIVEGDI, [test "x$XWIN" = xyes])
+AM_CONDITIONAL(XWIN_PRIMARYFB, [test "x$XWIN" = xyes])
 AM_CONDITIONAL(XWIN_RANDR, [test "x$XWIN" = xyes])
 AM_CONDITIONAL(XWIN_XV, [test "x$XWIN" = xyes && test "x$XV" = xyes])
 
@@ -2218,7 +2218,9 @@ hw/xfree86/doc/sgml/Makefile
 hw/xfree86/dri/Makefile
 hw/xfree86/dri2/Makefile
 hw/xfree86/exa/Makefile
+hw/xfree86/exa/man/Makefile
 hw/xfree86/fbdevhw/Makefile
+hw/xfree86/fbdevhw/man/Makefile
 hw/xfree86/i2c/Makefile
 hw/xfree86/int10/Makefile
 hw/xfree86/loader/Makefile
@@ -2229,7 +2231,6 @@ hw/xfree86/os-support/bus/Makefile
 hw/xfree86/os-support/hurd/Makefile
 hw/xfree86/os-support/misc/Makefile
 hw/xfree86/os-support/linux/Makefile
-hw/xfree86/os-support/sco/Makefile
 hw/xfree86/os-support/solaris/Makefile
 hw/xfree86/parser/Makefile
 hw/xfree86/ramdac/Makefile
@@ -2239,27 +2240,34 @@ hw/xfree86/vgahw/Makefile
 hw/xfree86/x86emu/Makefile
 hw/xfree86/xaa/Makefile
 hw/xfree86/utils/Makefile
+hw/xfree86/utils/man/Makefile
 hw/xfree86/utils/cvt/Makefile
 hw/xfree86/utils/gtf/Makefile
 hw/dmx/config/Makefile
+hw/dmx/config/man/Makefile
 hw/dmx/doc/Makefile
 hw/dmx/examples/Makefile
 hw/dmx/input/Makefile
 hw/dmx/glxProxy/Makefile
 hw/dmx/Makefile
+hw/dmx/man/Makefile
 hw/vfb/Makefile
+hw/vfb/man/Makefile
 hw/xnest/Makefile
+hw/xnest/man/Makefile
 hw/xwin/Makefile
 hw/xwin/glx/Makefile
+hw/xwin/man/Makefile
 hw/xquartz/Makefile
 hw/xquartz/GL/Makefile
 hw/xquartz/bundle/Makefile
-hw/xquartz/doc/Makefile
+hw/xquartz/man/Makefile
 hw/xquartz/mach-startup/Makefile
 hw/xquartz/pbproxy/Makefile
 hw/xquartz/xpr/Makefile
 hw/kdrive/Makefile
 hw/kdrive/ephyr/Makefile
+hw/kdrive/ephyr/man/Makefile
 hw/kdrive/fake/Makefile
 hw/kdrive/fbdev/Makefile
 hw/kdrive/linux/Makefile

@@ -667,7 +667,7 @@ doListFontsAndAliases(ClientPtr client, LFclosurePtr c)
 		    ((pointer) c->client, fpe, &name, &namelen, &tmpname,
 		     &resolvedlen, c->current.private);
 		if (err == Suspended) {
-		    if (ClientIsAsleep(client))
+		    if (!ClientIsAsleep(client))
 			ClientSleep(client,
 				    (ClientSleepProcPtr)doListFontsAndAliases,
 				    c);
@@ -1817,7 +1817,9 @@ SetDefaultFontPath(char *path)
 	start = end;
     }
     if (!start) {
-	temp_path = Xprintf("%s%sbuilt-ins", path, *path ? "," : "");
+	if (asprintf(&temp_path, "%s%sbuilt-ins", path, *path ? "," : "")
+	    == -1)
+	    temp_path = NULL;
     } else {
 	temp_path = strdup(path);
     }

@@ -253,6 +253,7 @@ cat > sdksyms.c << EOF
 
 /* include/Makefile.am */
 #include "XIstubs.h"
+#include "Xprintf.h"
 #include "closestr.h"
 #include "closure.h"
 #include "colormap.h"
@@ -358,13 +359,17 @@ BEGIN {
 	    # skip modifiers, if any
 	    $n ~ /^\*?(unsigned|const|volatile|struct)$/ ||
 	    # skip pointer
-	    $n ~ /\*$/)
+	    $n ~ /^[a-zA-Z0-9_]*\*$/)
 	    n++;
 
 	# type specifier may not be set, as in
 	#   extern _X_EXPORT unsigned name(...)
 	if ($n !~ /[^a-zA-Z0-9_]/)
 	    n++;
+
+	# go back if we are at the parameter list already
+	if ($n ~ /^[(]([^*].*)?$/)
+	    n--;
 
 	# match
 	#    extern _X_EXPORT type (* name[])(...)

@@ -915,9 +915,14 @@ ProcXkbSetControls(ClientPtr client)
                                        stuff->axtOptsMask);
             }
 
-            if (stuff->changeCtrls & XkbPerKeyRepeatMask)
+            if (stuff->changeCtrls & XkbPerKeyRepeatMask) {
                 memcpy(new.per_key_repeat, stuff->perKeyRepeat,
                        XkbPerKeyBitArraySize);
+                if (xkbi->repeatKey &&
+                    !BitIsOn(new.per_key_repeat, xkbi->repeatKey)) {
+                    AccessXCancelRepeatKey(xkbi, xkbi->repeatKey);
+                }
+            }
 
             old= *ctrl;
             *ctrl= new;
@@ -3639,7 +3644,7 @@ register int            n;
 	swapl(&rep->indicators,n);
     }
 
-    start = desc = malloc(length);
+    start = desc = calloc(1, length);
     if ( !start )
 	return BadAlloc;
     if (xkb->names) {
@@ -5564,13 +5569,13 @@ ProcXkbGetKbdByName(ClientPtr client)
 {
     DeviceIntPtr 		dev;
     DeviceIntPtr                tmpd;
-    xkbGetKbdByNameReply 	rep;
-    xkbGetMapReply		mrep;
-    xkbGetCompatMapReply	crep;
-    xkbGetIndicatorMapReply	irep;
-    xkbGetNamesReply		nrep;
-    xkbGetGeometryReply		grep;
-    XkbComponentNamesRec	names;
+    xkbGetKbdByNameReply 	rep = {0};
+    xkbGetMapReply		mrep = {0};
+    xkbGetCompatMapReply	crep = {0};
+    xkbGetIndicatorMapReply	irep = {0};
+    xkbGetNamesReply		nrep = {0};
+    xkbGetGeometryReply		grep = {0};
+    XkbComponentNamesRec	names = {0};
     XkbDescPtr			xkb, new;
     unsigned char *		str;
     char 			mapFile[PATH_MAX];

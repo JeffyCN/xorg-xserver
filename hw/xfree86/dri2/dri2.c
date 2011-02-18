@@ -403,7 +403,7 @@ do_get_buffers(DrawablePtr pDraw, int *width, int *height,
 	&& (pDraw->height == pPriv->height)
 	&& (pPriv->serialNumber == DRI2DrawableSerial(pDraw));
 
-    buffers = malloc((count + 1) * sizeof(buffers[0]));
+    buffers = calloc((count + 1), sizeof(buffers[0]));
 
     for (i = 0; i < count; i++) {
 	const unsigned attachment = *(attachments++);
@@ -638,6 +638,17 @@ DRI2CanFlip(DrawablePtr pDraw)
     if (pRootPixmap != pWinPixmap)
 	return FALSE;
     if (!RegionEqual(&pWin->clipList, &pRoot->winSize))
+	return FALSE;
+
+    /* Does the window match the pixmap exactly? */
+    if (pDraw->x != 0 ||
+	pDraw->y != 0 ||
+#ifdef COMPOSITE
+	pDraw->x != pWinPixmap->screen_x ||
+	pDraw->y != pWinPixmap->screen_y ||
+#endif
+	pDraw->width != pWinPixmap->drawable.width ||
+	pDraw->height != pWinPixmap->drawable.height)
 	return FALSE;
 
     return TRUE;

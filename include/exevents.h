@@ -69,7 +69,7 @@ extern _X_EXPORT int XIChangeDeviceProperty(
         int                     /* format*/,
         int                     /* mode*/,
         unsigned long           /* len*/,
-        pointer                 /* value*/,
+        const pointer           /* value*/,
         Bool                    /* sendevent*/
         );
 
@@ -307,6 +307,6 @@ XISetEventMask(DeviceIntPtr dev, WindowPtr win, ClientPtr client,
                            unsigned int len, unsigned char* mask);
 
 extern int
-XICheckInvalidMaskBits(unsigned char *mask, int len);
+XICheckInvalidMaskBits(ClientPtr client, unsigned char *mask, int len);
 
 #endif /* EXEVENTS_H */

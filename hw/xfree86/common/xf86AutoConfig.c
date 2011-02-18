@@ -120,7 +120,7 @@ FreeList(const char ***list, int *lines)
     int i;
 
     for (i = 0; i < *lines; i++) {
-	free((*list)[i]);
+	free((char *)((*list)[i]));
     }
     free(*list);
     *list = NULL;
@@ -297,8 +297,8 @@ copyScreen(confScreenPtr oscreen, GDevPtr odev, int i, char *driver)
     }
     memcpy(cptr, odev, sizeof(GDevRec));
 
-    cptr->identifier = Xprintf("Autoconfigured Video Device %s", driver);
-    if (!cptr->identifier) {
+    if (asprintf(&cptr->identifier, "Autoconfigured Video Device %s", driver)
+        == -1) {
         free(cptr);
         free(nscreen);
         return FALSE;
