@@ -14,6 +14,8 @@ xorg-server (2:1.9.99.902-1) UNRELEASED; urgency=low
   [ Cyril Brulebois ]
   * New upstream release (1.10 rc2).
   * bug script: Report libGL-related diversions.
+  * Bump serverminver again, since ABI_XINPUT_VERSION was bumped from 12.0
+    to 12.2.
 
  -- Christopher James Halse Rogers <raof@ubuntu.com>  Wed, 19 Jan 2011 10:28:16 +1100
 
