@@ -1,3 +1,3358 @@
+commit 443d75446bcbe7d97a23860a1e2d46c0b7e7cb26
+Author: Keith Packard <keithp@keithp.com>
+Date:   Fri Feb 18 14:46:33 2011 -0800
+
+    Version bumped to 1.9.99.902 (1.10 RC2)
+    
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit 2c77aeb39f59f1a94cc603a2e6256a62ce785c36
+Merge: 816d67d 402b329
+Author: Keith Packard <keithp@keithp.com>
+Date:   Fri Feb 18 14:29:32 2011 -0800
+
+    Merge remote branch 'jcristau/for-keith'
+
+commit 816d67de2ba9bdfe652da32cb6447a3056342b98
+Merge: a73c28f 3bbb70a
+Author: Keith Packard <keithp@keithp.com>
+Date:   Fri Feb 18 12:20:26 2011 -0800
+
+    Merge remote branch 'whot/for-keith'
+
+commit a73c28f0bdafb1c5cb8129179188a99c0ca052e2
+Author: Justin Dou <Justin.Dou@intel.com>
+Date:   Thu Feb 10 16:27:29 2011 -0500
+
+    Replace malloc with calloc to initialize the buffers[] as NULL in do_get_buffers function
+    
+    The calling for allocate_or_reuse_buffer may fail due to some reason, e.g. out of memory.
+    If the buffers[] were not initialized to be NULL, the following err_out may try to access an illegal memory, which will cause X crash afterward.
+    
+    Reviewed-by: Kristian Høgsberg <krh@bitplanet.net>
+    Signed-off-by: Justin Dou <Justin.Dou@intel.com>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit 0bc9b15a622377c57e617411ccd26c4b5bf8cba4
+Merge: d1123b6 93cd4b1
+Author: Keith Packard <keithp@keithp.com>
+Date:   Fri Feb 18 12:04:41 2011 -0800
+
+    Merge remote branch 'ajax/for-keithp'
+
+commit d1123b66ebbcf96dd816236f54befc568a5f7c68
+Merge: 5d020c3 f6e4ace
+Author: Keith Packard <keithp@keithp.com>
+Date:   Fri Feb 18 11:59:25 2011 -0800
+
+    Merge remote branch 'jturney/master'
+
+commit 3bbb70a1a7b24d3d1375b20a13db7011cf961c86
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Wed Feb 16 07:56:58 2011 +1000
+
+    xfree86: fix up an out-of-date comment.
+    
+    InitInput simply initialises all input devices now.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Keith Packard <keithp@keithp.com>
+
+commit 402b329c3aa8ddbebaa1f593306a02d4cd6fed26
+Author: Julien Cristau <jcristau@debian.org>
+Date:   Sun Jan 23 13:35:54 2011 +0100
+
+    glx: Work around wrong request lengths sent by mesa
+    
+    mesa used to send too long requests for GLXDestroyPixmap,
+    GLXDestroyWindow, GLXChangeDrawableAttributes, GLXGetDrawableAttributes
+    and GLXGetFBConfigsSGIX.
+    
+    Fixes a regression introduced in ec9c97c6bf70b523bc500bd3adf62176f1bb33a4
+    X.Org bug#33324 <https://bugs.freedesktop.org/show_bug.cgi?id=33324>
+    
+    Reported-by: xunx.fang@intel.com
+    Signed-off-by: Julien Cristau <jcristau@debian.org>
+    Reviewed-by: Adam Jackson <ajax@redhat.com>
+
+commit 1137c11be0f82049d28024eaf963c6f76e0d4334
+Author: Julien Cristau <jcristau@debian.org>
+Date:   Wed Jan 26 13:06:53 2011 +0100
+
+    glx: fix BindTexImageEXT length check
+    
+    The request is followed by a list of attributes.
+    
+    X.Org bug#33449
+    
+    Reported-and-tested-by: meng <mengmeng.meng@intel.com>
+    Signed-off-by: Julien Cristau <jcristau@debian.org>
+    Reviewed-by: Adam Jackson <ajax@redhat.com>
+
+commit a883cf1545abd89bb2cadfa659718884b56fd234
+Author: Julien Cristau <jcristau@debian.org>
+Date:   Sun Jan 23 17:05:26 2011 +0100
+
+    glx: fix request length check for CreateGLXPbufferSGIX
+    
+    The request is followed by an attribute list.
+    
+    Signed-off-by: Julien Cristau <jcristau@debian.org>
+    Reviewed-by: Adam Jackson <ajax@redhat.com>
+
+commit c9f7b303a36ca501c6ecf1196c266ee8e8f49d2d
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Fri Feb 11 13:50:10 2011 +1000
+
+    xfixes: calloc, not malloc the cursorScreenRec
+    
+    Debugging NULL pointers is significantly easier than random memory.
+    Plus, if new fields (such as pointer barriers) are added they may just be
+    properly initialised.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Keith Packard <keithp@keithp.com>
+
+commit d3499556d8d83396fa2585bd00371a81e086be36
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Thu Feb 10 15:12:14 2011 +1000
+
+    xkb: if the keymap failed to compile, load the default keymap instead.
+    
+    We really need symbols, compat, keynames, vmods and types for a sensible keymap.
+    
+    Try this in your xorg.conf.d snippets for all keyboards:
+            Option "XkbLayout" "us"
+            Option "XkbVariant" "nodeadkeys"
+    
+    us(nodeadkeys) doesn't exist so xkbcomp provides everything but the symbols
+    map. We say we want everything but don't _need_ anything, the server happily
+    gives us a keymap with every key mapped to NoSymbol. This in turn isn't what
+    we want after all.
+    
+    So instead, require symbols, compat, keynames, vmods and types from the
+    keymap and if that fails, load the default keymap instead. If that fails
+    too, all bets are off.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Dan Nicholson <dbn.lists@gmail.com>
+
+commit 47d1d2fed656c3a3b2600491078da90962c46934
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Thu Feb 10 15:11:34 2011 +1000
+
+    xkb: split out keymap compilation.
+    
+    Refactoring for simpler double-use in the next patch. No functional changes.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Dan Nicholson <dbn.lists@gmail.com>
+
+commit 787ba25a8a3af52b38448a1a6f8c9704ea8b7905
+Author: Carlos Garnacho <carlosg@gnome.org>
+Date:   Mon Feb 7 18:21:31 2011 +0100
+
+    Xi: make XIQueryPointer return the current modifiers/group as documented.
+    
+    The previous XKB info was being returned instead of the current
+    one, producing inconsistent results between the latest events
+    and the modifiers/group returned by this call.
+    
+    Signed-off-by: Carlos Garnacho <carlosg@gnome.org>
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>`
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit 85f9017393c9bb19553e9afcf554673a44a09993
+Author: Ander Conselvan de Oliveira <ander.conselvan-de-oliveira@nokia.com>
+Date:   Tue Feb 8 11:10:10 2011 +0200
+
+    ProcXkbGetXkbByName: fix use of uninitialised bytes valgrind error.
+    
+    ==9999== Syscall param writev(vector[...]) points to uninitialised byte(s)
+    ==9999==    at 0x4AB5154: writev (writev.c:51)
+    ==9999==    by 0x7C7C3: _XSERVTransWritev (Xtrans.c:912)
+    ==9999==    by 0x61C8B: FlushClient (io.c:924)
+    ==9999==    by 0x62423: WriteToClient (io.c:846)
+    ==9999==    by 0xCE39B: XkbSendMap (xkb.c:1408)
+    ==9999==    by 0xD247B: ProcXkbGetKbdByName (xkb.c:5814)
+    ==9999==    by 0x4AB53: Dispatch (dispatch.c:432)
+    ==9999==    by 0x205BF: main (main.c:291)
+    ==9999==  Address 0x557eb68 is 40 bytes inside a block of size 4,096 alloc'd
+    ==9999==    at 0x48334A4: calloc (vg_replace_malloc.c:467)
+    ==9999==    by 0x62567: WriteToClient (io.c:1065)
+    ==9999==    by 0x452EB: ProcEstablishConnection (dispatch.c:3685)
+    ==9999==    by 0x4AB53: Dispatch (dispatch.c:432)
+    ==9999==    by 0x205BF: main (main.c:291)
+    ==9999==  Uninitialised value was created by a stack allocation
+    ==9999==    at 0xD1910: ProcXkbGetKbdByName (xkb.c:5559)
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Oliver McFadden <oliver.mcfadden@nokia.com>
+    Signed-off-by: Ander Conselvan de Oliveira <ander.conselvan-de-oliveira@nokia.com>
+
+commit 8a34d7a8532c7ca013e67307f3baf200167abb92
+Author: Ander Conselvan de Oliveira <ander.conselvan-de-oliveira@nokia.com>
+Date:   Tue Feb 8 11:10:11 2011 +0200
+
+    XkbSendNames: fix use of uninitialised bytes valgrind error.
+    
+    ==537== Syscall param writev(vector[...]) points to uninitialised byte(s)
+    ==537==    at 0x4AB7154: writev (writev.c:51)
+    ==537==    by 0x8935B: _XSERVTransWritev (Xtrans.c:912)
+    ==537==    by 0x6C55F: FlushClient (io.c:924)
+    ==537==    by 0x6CCF3: WriteToClient (io.c:846)
+    ==537==    by 0xD51D3: XkbSendNames (xkb.c:3765)
+    ==537==    by 0xD8183: ProcXkbGetKbdByName (xkb.c:5825)
+    ==537==    by 0x27B7B: Dispatch (dispatch.c:432)
+    ==537==    by 0x205B7: main (main.c:291)
+    ==537==  Address 0x55899f2 is 154 bytes inside a block of size 1,896 alloc'd
+    ==537==    at 0x4834C48: malloc (vg_replace_malloc.c:236)
+    ==537==    by 0xD47AF: XkbSendNames (xkb.c:3642)
+    ==537==    by 0xD8183: ProcXkbGetKbdByName (xkb.c:5825)
+    ==537==    by 0x27B7B: Dispatch (dispatch.c:432)
+    ==537==    by 0x205B7: main (main.c:291)
+    ==537==  Uninitialised value was created by a heap allocation
+    ==537==    at 0x4834C48: malloc (vg_replace_malloc.c:236)
+    ==537==    by 0xD47AF: XkbSendNames (xkb.c:3642)
+    ==537==    by 0xD8183: ProcXkbGetKbdByName (xkb.c:5825)
+    ==537==    by 0x27B7B: Dispatch (dispatch.c:432)
+    ==537==    by 0x205B7: main (main.c:291)
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Oliver McFadden <oliver.mcfadden@nokia.com>
+    Signed-off-by: Ander Conselvan de Oliveira <ander.conselvan-de-oliveira@nokia.com>
+
+commit 87fbef9157a6f1e1318382e368d27942d7ad72ab
+Author: Ander Conselvan de Oliveira <ander.conselvan-de-oliveira@nokia.com>
+Date:   Tue Feb 8 11:10:09 2011 +0200
+
+    ProcRRCreateMode: fix use of uninitialised bytes valgrind error.
+    
+    ==543== Syscall param writev(vector[...]) points to uninitialised byte(s)
+    ==543==    at 0x4AB7154: writev (writev.c:51)
+    ==543==    by 0x8935B: _XSERVTransWritev (Xtrans.c:912)
+    ==543==    by 0x6C55F: FlushClient (io.c:924)
+    ==543==    by 0x6D013: FlushAllOutput (io.c:668)
+    ==543==    by 0x27A83: Dispatch (dispatch.c:453)
+    ==543==    by 0x205B7: main (main.c:291)
+    ==543==  Address 0x556dc8c is 12 bytes inside a block of size 4,096 alloc'd
+    ==543==    at 0x48334A4: calloc (vg_replace_malloc.c:467)
+    ==543==    by 0x6CE37: WriteToClient (io.c:1065)
+    ==543==    by 0x223A7: ProcEstablishConnection (dispatch.c:3685)
+    ==543==    by 0x27B7B: Dispatch (dispatch.c:432)
+    ==543==    by 0x205B7: main (main.c:291)
+    ==543==  Uninitialised value was created by a stack allocation
+    ==543==    at 0xA3350: ProcRRCreateMode (rrmode.c:289)
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Oliver McFadden <oliver.mcfadden@nokia.com>
+    Signed-off-by: Ander Conselvan de Oliveira <ander.conselvan-de-oliveira@nokia.com>
+
+commit 0ef5973860e17c5edc996c923610f7ad88b4dfbe
+Author: Ander Conselvan de Oliveira <ander.conselvan-de-oliveira@nokia.com>
+Date:   Tue Feb 8 11:10:08 2011 +0200
+
+    ProcRRQueryVersion: fix use of uninitialised bytes valgrind error.
+    
+    ==9999== Syscall param writev(vector[...]) points to uninitialised byte(s)
+    ==9999==    at 0x4AB5154: writev (writev.c:51)
+    ==9999==    by 0x7C7C3: _XSERVTransWritev (Xtrans.c:912)
+    ==9999==    by 0x61C8B: FlushClient (io.c:924)
+    ==9999==    by 0x62743: FlushAllOutput (io.c:668)
+    ==9999==    by 0x4AA5B: Dispatch (dispatch.c:453)
+    ==9999==    by 0x205BF: main (main.c:291)
+    ==9999==  Address 0x55711b9 is 1 bytes inside a block of size 4,096 alloc'd
+    ==9999==    at 0x48334A4: calloc (vg_replace_malloc.c:467)
+    ==9999==    by 0x62567: WriteToClient (io.c:1065)
+    ==9999==    by 0x452EB: ProcEstablishConnection (dispatch.c:3685)
+    ==9999==    by 0x4AB53: Dispatch (dispatch.c:432)
+    ==9999==    by 0x205BF: main (main.c:291)
+    ==9999==  Uninitialised value was created by a stack allocation
+    ==9999==    at 0x160E78: ProcRRQueryVersion (rrdispatch.c:37)
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Oliver McFadden <oliver.mcfadden@nokia.com>
+    Signed-off-by: Ander Conselvan de Oliveira <ander.conselvan-de-oliveira@nokia.com>
+
+commit 81daba8ce906bfbbe44cd71d0ff269ad34e2f6b5
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Mon Jan 31 13:53:08 2011 +1000
+
+    Xi: constify XIChangeDeviceProperty()
+    
+    We don't modify "value", make it official.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Chase Douglas <chase.douglas@canonical.com>
+    Signed-off-by: Ander Conselvan de Oliveira <ander.conselvan-de-oliveira@nokia.com>
+
+commit 93cd4b1034e3c8bed32c5acd391eadd7605e10f0
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Thu Jan 20 00:27:00 2011 -0500
+
+    shadow: Remove hw/xfree86/ from includes
+    
+    Reviewed-by: Matt Turner <mattst88@gmail.com>
+    Reviewed-by: Julien Cristau <jcristau@debian.org>
+    Signed-off-by: Adam Jackson <ajax@redhat.com>
+
+commit 0c230728f3af2c4250e93a070c0851a597069447
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Thu Jan 20 00:25:57 2011 -0500
+
+    rootless: Remove hw/xfree86/ from includes
+    
+    Reviewed-by: Matt Turner <mattst88@gmail.com>
+    Reviewed-by: Julien Cristau <jcristau@debian.org>
+    Signed-off-by: Adam Jackson <ajax@redhat.com>
+
+commit 505defd270e49cfbcbe6a04d1de817d305edb3c2
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Thu Jan 20 00:24:20 2011 -0500
+
+    damage: Remove hw/xfree86/ from includes
+    
+    Reviewed-by: Matt Turner <mattst88@gmail.com>
+    Reviewed-by: Julien Cristau <jcristau@debian.org>
+    Signed-off-by: Adam Jackson <ajax@redhat.com>
+
+commit 59d8e3cbdba032c7354c28c86cbd155e9da6447a
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Thu Jan 20 00:23:07 2011 -0500
+
+    fb: Remove hw/xfree86/ from includes
+    
+    Reviewed-by: Matt Turner <mattst88@gmail.com>
+    Reviewed-by: Julien Cristau <jcristau@debian.org>
+    Signed-off-by: Adam Jackson <ajax@redhat.com>
+
+commit 994b7b3dc97f9afa713fe636af45a78002a4366f
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Thu Jan 20 00:17:52 2011 -0500
+
+    xfree86: warning fix
+    
+    Did you know that anonymous enums with function scope will not only
+    override the enum values from global scope, but will be treated as
+    entirely different types?  C's type system just rules.
+    
+    xf86Crtc.c: In function 'handle_detailed_monrec':
+    xf86Crtc.c:1555:33: warning: comparison between 'enum det_monrec_source' and 'enum <anonymous>'
+    xf86Crtc.c:1562:33: warning: comparison between 'enum det_monrec_source' and 'enum <anonymous>'
+    
+    Reviewed-by: Matt Turner <mattst88@gmail.com>
+    Reviewed-by: Julien Cristau <jcristau@debian.org>
+    Signed-off-by: Adam Jackson <ajax@redhat.com>
+
+commit ae16c5796fdb22fb6b2f680fe5123bfd2c89a825
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Thu Jan 20 00:14:11 2011 -0500
+
+    fbdevhw: Remove the non-sysfs hack for mapping from PCI to fbdev
+    
+    It's broken for devices with BARs above 4G, and the sysfs method should
+    work everywhere anyway.  As a pleasant side effect, this fixes some
+    warnings:
+    
+    fbdevhw.c: In function 'fbdev_open_pci':
+    fbdevhw.c:333:4: warning: cast from pointer to integer of different size
+    fbdevhw.c:334:4: warning: cast from pointer to integer of different size
+    fbdevhw.c:336:4: warning: cast from pointer to integer of different size
+    fbdevhw.c:337:4: warning: cast from pointer to integer of different size
+    
+    Reviewed-by: Matt Turner <mattst88@gmail.com>
+    Reviewed-by: Julien Cristau <jcristau@debian.org>
+    Signed-off-by: Adam Jackson <ajax@redhat.com>
+
+commit f1b7c9cead94b520e6b96774d605d63d3f341b50
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Thu Jan 20 00:09:19 2011 -0500
+
+    int10: warning fix
+    
+    helper_exec.c: In function 'pciCfg1in':
+    helper_exec.c:507:4: warning: passing argument 2 of 'pci_device_cfg_read_u32' from incompatible pointer type
+    /usr/include/pciaccess.h:153:5: note: expected 'uint32_t *' but argument is of type 'CARD32 *'
+    
+    Reviewed-by: Matt Turner <mattst88@gmail.com>
+    Reviewed-by: Julien Cristau <jcristau@debian.org>
+    Signed-off-by: Adam Jackson <ajax@redhat.com>
+
+commit be186586e504197623c69637b8122fb814f59429
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Thu Jan 20 00:06:48 2011 -0500
+
+    xf86vidmode: warning fix
+    
+    xf86VidMode.c: In function 'VidModeGetMonitorValue':
+    xf86VidMode.c:637:19: warning: 'ret.i' may be used uninitialized in this function
+    
+    Reviewed-by: Matt Turner <mattst88@gmail.com>
+    Reviewed-by: Julien Cristau <jcristau@debian.org>
+    Signed-off-by: Adam Jackson <ajax@redhat.com>
+
+commit f6e4ace9eabea1bb2a06dd86b6ffb954917a74ce
+Author: Jon TURNEY <jon.turney@dronecode.org.uk>
+Date:   Sun Jul 18 13:24:48 2010 +0100
+
+    Cygwin/X: Fix for Canadian Multilingual Standard keyboard layout handling
+    
+    Add a keycode mapping for VK_OEM_8 as RCtrl, which is issued by Canadian
+    Multilingual Standard layout
+    
+    Signed-off-by: Jon TURNEY <jon.turney@dronecode.org.uk>
+    Reviewed-by: Colin Harrison <colin.harrison@virgin.net>
+
+commit b421f5e5122dbe125a5629969cc657bd966b4261
+Author: Jon TURNEY <jon.turney@dronecode.org.uk>
+Date:   Thu Apr 1 23:10:58 2010 +0100
+
+    Cygwin/X: Ignore MappingNotify events sent to clipboard integration client
+    
+    Ignore MappingNotify events sent to clipboard integration client,
+    xmodmap changes aren't of interest to it, but there is no mechanism
+    to express that disinterest.
+    
+    Signed-off-by: Jon TURNEY <jon.turney@dronecode.org.uk>
+    Reviewed-by: Colin Harrison <colin.harrison@virgin.net>
+
+commit e930aa7bbc7f04a128df8e6fd441aed5123a2eb6
+Author: Jon TURNEY <jon.turney@dronecode.org.uk>
+Date:   Tue Sep 14 16:02:53 2010 +0100
+
+    Cygwin/X: Add Turkish keyboard layouts to keyboard layout mapping table
+    
+    0x0000041f "Turkish Q" => layout tr
+    0x0001041f "Turkish F" => layout tr variant f
+    
+    Signed-off-by: Jon TURNEY <jon.turney@dronecode.org.uk>
+    Reviewed-by: Colin Harrison <colin.harrison@virgin.net>
+
+commit ae99a6f895a3a5b6f71e2dd4874cd4bb0235aff0
+Author: Jon TURNEY <jon.turney@dronecode.org.uk>
+Date:   Sun Jul 18 13:42:29 2010 +0100
+
+    Cygwin/X: Make the keyboard layout detection logging a bit clearer
+    
+    Signed-off-by: Jon TURNEY <jon.turney@dronecode.org.uk>
+    Reviewed-by: Colin Harrison <colin.harrison@virgin.net>
+
+commit 57ca09441ee5ff2a8deb95eaa17a2625a756d912
+Author: Jon TURNEY <jon.turney@dronecode.org.uk>
+Date:   Thu Jul 1 14:54:48 2010 +0100
+
+    Cygwin/X: Update mapping for Canadian keyboard layouts
+    
+    0x00000c0c "Canadian French (legacy)" => layout ca variant fr-legacy
+    0x00001009 "Canadian French" => layout ca variant fr
+    0x00011009 "Canadian Multilingual Standard" => layout ca variant multix
+    
+    Signed-off-by: Yaakov Selkowitz <yselkowitz@users.sourceforge.net>
+    Signed-off-by: Jon TURNEY <jon.turney@dronecode.org.uk>
+    Reviewed-by: Colin Harrison <colin.harrison@virgin.net>
+
+commit be3e5bb50178406e46368be00860331e1b6c4093
+Author: Jon TURNEY <jon.turney@dronecode.org.uk>
+Date:   Wed Apr 14 21:45:29 2010 +0100
+
+    Cygwin/X: Better keycode debugging output
+    
+    Replace useless #if 0/ErrorF/#endif with winDebug
+    
+    Signed-off-by: Jon TURNEY <jon.turney@dronecode.org.uk>
+    Reviewed-by: Colin Harrison <colin.harrison@virgin.net>
+
+commit 81892bf6b7e3730ebd19318183734f55dbaa5d4b
+Author: Jon TURNEY <jon.turney@dronecode.org.uk>
+Date:   Wed Apr 14 21:34:39 2010 +0100
+
+    Cygwin/X: Generate X keycodes for multimedia keys
+    
+    Signed-off-by: Jon TURNEY <jon.turney@dronecode.org.uk>
+    Reviewed-by: Colin Harrison <colin.harrison@virgin.net>
+
+commit 5d020c31351594c104fb46615ce41f256cd8e8b9
+Author: Pauli Nieminen <ext-pauli.nieminen@nokia.com>
+Date:   Fri Jan 14 15:03:28 2011 +0200
+
+    xf86/xv: Only register PostValidateTree hook when there is work to do
+    
+    If none of Xv ports were affected by window tree modifications we don't
+    want scan the port list. To avoid useless scanning of port list
+    PostValidateTree hook is only registered when ClipNotify was called for
+    any port.
+    
+    Signed-off-by: Pauli Nieminen <ext-pauli.nieminen@nokia.com>
+    Reviewed-by: Ville Syrjälä <ville.syrjala@nokia.com>
+
+commit ddf32df5cc2e73b833f6e414276d938fdc38869e
+Author: Pauli Nieminen <ext-pauli.nieminen@nokia.com>
+Date:   Thu Jan 13 20:50:16 2011 +0200
+
+    xf86/xv: Use PostValidateTree to do reput
+    
+    ValidateTree calls first ClipNotify and later might call
+    WindowExposures. To avoid useless double reput ClipNotify delays reput
+    to WindowExposures or PostValidateTree.
+    
+    PostValidatTree checks all ports if there is clip changes. On clip
+    changes reput is done to move or scale the overlay.
+    
+    Signed-off-by: Pauli Nieminen <ext-pauli.nieminen@nokia.com>
+    Reviewed-by: Ville Syrjälä <ville.syrjala@nokia.com>
+
+commit 5678a41f6bc0ef8965bd50a88c5ef01ba7eb8b24
+Author: Pauli Nieminen <ext-pauli.nieminen@nokia.com>
+Date:   Mon Jan 17 16:58:00 2011 +0200
+
+    xf86/xv: Fill color key on expose
+    
+    If window gets exposed but clipboxes doesn't change drivers would avoid
+    color key fill. This makes XResizeWindo&co to lose colorkey if
+    background is painted.
+    
+    To help drivers to avoid filling colorkey for each put server can
+    provide helper function if there is exposed areas. Server can subtract
+    exposed areas from filled region.
+    
+    As a side effect we can avoid useless color key fills if window only
+    moves in screen without background fills.
+    
+    v3:
+    * Change tracking to filled area to account for client initiated clip
+      changes
+    * Make overlaid XvPutImage behavior like textured XvPutImage or PutImage
+    * Make region dynamically allocated only when required.
+    
+    v4:
+    * Simplify new driver interface to reduce duplicate code
+    
+    Signed-off-by: Pauli Nieminen <ext-pauli.nieminen@nokia.com>
+    Reviewed-by: Ville Syrjälä <ville.syrjala@nokia.com>
+
+commit 9b048ca420864e19862f63f4a491a4da0ff9b54f
+Author: Pauli Nieminen <ext-pauli.nieminen@nokia.com>
+Date:   Mon Jan 17 15:07:28 2011 +0200
+
+    xf86/xv: Remove unused variable from XvPortRecPrivate
+    
+    Signed-off-by: Pauli Nieminen <ext-pauli.nieminen@nokia.com>
+    Reviewed-by: Ville Syrjälä <ville.syrjala@nokia.com>
+
+commit 4f8f803280894a8c41691e350b7a34bfd719fe05
+Author: Pauli Nieminen <ext-pauli.nieminen@nokia.com>
+Date:   Thu Jan 13 20:21:09 2011 +0200
+
+    xf86/xv: Remove unused GC pointers
+    
+    Signed-off-by: Pauli Nieminen <ext-pauli.nieminen@nokia.com>
+    Reviewed-by: Ville Syrjälä <ville.syrjala@nokia.com>
+
+commit e012f2312b4bcdf31bb5d622ddd34571f3c12429
+Author: Pauli Nieminen <ext-pauli.nieminen@nokia.com>
+Date:   Thu Jan 13 20:19:18 2011 +0200
+
+    xf86/xv: Remove copy paste code.
+    
+    xf86XVFillKeyHelperDrawable can be used to implement
+    xf86XVFillKeyHelper.
+    
+    V2:
+    * Remove RegionTranslate that clobbered parameter region.
+    
+    Signed-off-by: Pauli Nieminen <ext-pauli.nieminen@nokia.com>
+    Reviewed-by: Ville Syrjälä <ville.syrjala@nokia.com>
+
+commit ea1ffd3e60bdcedbec5a6f28929f8677bf45d450
+Merge: 12b0f7d 53602c3
+Author: Keith Packard <keithp@keithp.com>
+Date:   Wed Feb 2 15:19:55 2011 -0800
+
+    Merge remote branch 'whot/for-keith'
+
+commit 12b0f7df2caa78d68b453aaa91248bb3577fd724
+Author: Evan Broder <ebroder@mokafive.com>
+Date:   Tue Feb 1 16:09:50 2011 -0800
+
+    xfree86/modes: Be sure to only use new EDID for physical output dimensions
+    
+    The EDID processing regards physical dimensions of 0mm x 0mm as
+    invalid. Previously the old values for height and width would be
+    preserved if none of the physical dimension specifications in the new
+    EDID were considered valid.
+    
+    This will come up in particular if first a monitor is connected to an
+    output, and then a projector is connected. Since projectors generally
+    report physical dimensions of 0mm x 0mm, this would result in the
+    projector claiming to have the physical dimensions of the monitor.
+    
+    Signed-off-by: Evan Broder <ebroder@mokafive.com>
+    Reviewed-by: Adam Jackson <ajax@redhat.com>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit 0b15033031d78836582bd1b641c3160c3803a708
+Author: Samuel Thibault <samuel.thibault@ens-lyon.org>
+Date:   Mon Jan 31 23:25:10 2011 +0100
+
+    xserver: enable TLS even if AIGLX is not enabled
+    
+    This aligns the xorg server build with the mesa build, which is needed on
+    systems where aiglx with dri support is not enabled. Else the following error is
+    obtained when trying to load the software raster:
+    
+    (EE) AIGLX error: dlopen of /usr/lib/dri/swrast_dri.so failed (/usr/lib/dri/swrast_dri.so: undefined symbol: _glapi_tls_Context)
+    (EE) GLX: could not load software renderer
+    (II) GLX: no usable GL providers found for screen 0
+    
+    because mesa always enables TLS use in GLX, even if dri is not available.
+    
+    Signed-off-by: Samuel Thibault <samuel.thibault@ens-lyon.org>
+    Signed-off-by: Julien Cristau <jcristau@debian.org>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit 541b25038a5de74411a094570b407c5ae018c2ba
+Author: Maarten Maathuis <madman2003@gmail.com>
+Date:   Sun Jan 30 14:06:16 2011 +0100
+
+    exa/mixed: Exclude frontbuffer from deferred pixmap handling.
+    
+    - Apps like xterm can trigger a lot of fallback rendering.
+    - This can lead to (annoyingly) high latencies, because you
+      have to wait for the block handler.
+    - You need a driver that doesn't directly access the front
+      buffer to trigger this (NV50+ nouveau for example).
+    - Repeatingly doing dmesg on an xterm with a bitmap font
+      will reveal that you never see part of the text.
+    - I have recieved at least one complaint in the past of slow
+      terminal performance, which was related to core font
+      rendering.
+    - This does sacrifice some throughput, roughly 33% slower.
+    
+    Reviewed-by: Michel Dänzer <michel@daenzer.net>
+    Signed-off-by: Maarten Maathuis <madman2003@gmail.com>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit af87f6367ef733d1a4f3cfca4eeb92bfd84c2b6f
+Author: Maarten Maathuis <madman2003@gmail.com>
+Date:   Sun Jan 30 14:06:15 2011 +0100
+
+    exa: Only call driver FinishAccess hook if PrepareAccess hook succeeded.
+    
+    Reviewed-by: Michel Dänzer <michel@daenzer.net>
+    Signed-off-by: Maarten Maathuis <madman2003@gmail.com>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit 648d4fe5172cad33c6f09e05dd3d8d7171ef1a7f
+Author: Maarten Maathuis <madman2003@gmail.com>
+Date:   Sun Jan 30 14:06:14 2011 +0100
+
+    exa/driver: set pExaPixmap->use_gpu_copy to the right value
+    
+    - Not sure if it was causing problems, but you never know.
+    
+    Reviewed-by: Michel Dänzer <michel@daenzer.net>
+    Signed-off-by: Maarten Maathuis <madman2003@gmail.com>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit 246d40b685292fa6393ba22127152137494af2af
+Merge: 70f2d39 8c1f75a
+Author: Keith Packard <keithp@keithp.com>
+Date:   Wed Feb 2 14:51:33 2011 -0800
+
+    Merge remote branch 'jeremyhu/master'
+
+commit 70f2d39fbde38d0baa687f1755b6c4c686f23052
+Merge: 3a91c2d a9d3c43
+Author: Keith Packard <keithp@keithp.com>
+Date:   Wed Feb 2 14:43:19 2011 -0800
+
+    Merge remote branch 'jturney/master'
+
+commit 3a91c2d21c3231e2a011d95c3cfc01785430c1cf
+Merge: ac0a00a 82b1eaa
+Author: Keith Packard <keithp@keithp.com>
+Date:   Wed Feb 2 14:37:00 2011 -0800
+
+    Merge remote branch 'dbn/build-fixes'
+
+commit ac0a00a840a5d8d8374e5db2b849e5959550ca4e
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Thu Jan 20 23:01:03 2011 -0500
+
+    xselinux: Fix GetDrawableContext
+    
+    M_DRAWABLE_PIXMAP is the lookup mask to dixLookupDrawable, and _not_ the
+    type value in the drawable itself.
+    
+    Signed-off-by: Adam Jackson <ajax@redhat.com>
+    Reviewed-by: Eamon Walsh <ewalsh@tycho.nsa.gov>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit 8c1f75a1d4cb5a34b4d10f3f5068bccc4356f31a
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Fri Jan 28 21:13:38 2011 -0800
+
+    XQuartz: Localization Updates
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+
+commit 53602c36217487e0a80880e8328f89ab302d85c8
+Author: Ville Syrjala <syrjala@sci.fi>
+Date:   Mon Jan 24 01:06:49 2011 +0200
+
+    xfree86/dga: Remove DGAIsDgaEvent()
+    
+    DGAIsDgaEvent() is not used anymore.
+    
+    Signed-off-by: Ville Syrjala <syrjala@sci.fi>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit 2081728b7432e949c274e0dbbabc296fa4db17f9
+Author: Ville Syrjala <syrjala@sci.fi>
+Date:   Mon Jan 24 01:06:48 2011 +0200
+
+    xfree86/dga: Only send DGA events for master devices
+    
+    Signed-off-by: Ville Syrjala <syrjala@sci.fi>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit 9f09b62e594321a8e45a33f4f13559827d660ed3
+Author: Ville Syrjala <syrjala@sci.fi>
+Date:   Mon Jan 24 01:06:47 2011 +0200
+
+    xfree86/dga: Remove useless ifdefs
+    
+    Move some variables to the scope where they are used.
+    
+    Signed-off-by: Ville Syrjala <syrjala@sci.fi>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit 5c941c04ca68cdc2b236c524970bc23f91906af4
+Author: Ville Syrjala <syrjala@sci.fi>
+Date:   Mon Jan 24 01:06:46 2011 +0200
+
+    xfree86/dga: DGAProcessKeyboardEvent() forgot ET_Internal
+    
+    Signed-off-by: Ville Syrjala <syrjala@sci.fi>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit ce4e0f660beb097e90110c97d039981702f0b0bd
+Author: Ville Syrjala <syrjala@sci.fi>
+Date:   Mon Jan 24 01:06:45 2011 +0200
+
+    xfree86/dga: Remove DGAMouseX and DGAMouseY
+    
+    Previously some sort of absolute coordinates were sent out in
+    the padding of the DGA2 Motion and Button events. DGAMouseX
+    and DGAMouseY were used to keep track of said coordinates.
+    libXxf86dga doesn't use that data for anything, and at least
+    git history didn't show any past usage either. So let's just
+    remove the last remnants of of this mess.
+    
+    Signed-off-by: Ville Syrjala <syrjala@sci.fi>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit ee8faeadb60f51a36edce19e568600dab7c8b357
+Author: Ville Syrjala <syrjala@sci.fi>
+Date:   Mon Jan 24 01:06:44 2011 +0200
+
+    xfree86/dga: DGA2 events are missing the dx/dy information
+    
+    Copy dx/dy from the internal event to the DGA2 Motion/Button events.
+    Do the same for Key events for the sake of keeping the code consistent.
+    
+    Signed-off-by: Ville Syrjala <syrjala@sci.fi>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit e3fef815cf85cf59256f3edeaa21c1267898b42c
+Author: Ville Syrjala <syrjala@sci.fi>
+Date:   Mon Jan 24 01:06:43 2011 +0200
+
+    xfree86/dga: Make mieq_install Bool
+    
+    mieq_installed is used as a boolean, so why not make it such. Also
+    it's a static variable, so the the explicit zero initialization can
+    be removed.
+    
+    Signed-off-by: Ville Syrjala <syrjala@sci.fi>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit f4cb25c2ed832bf4cfcd4d25198fe5a895430fed
+Author: Ville Syrjala <syrjala@sci.fi>
+Date:   Mon Jan 24 01:06:42 2011 +0200
+
+    xfree86/dga: Remove the ET_DGAEvent handler only if it was installed
+    
+    Remove the handler only if it was installed. Also mark it as
+    uninstalled, otherwise it wouldn't get reinstalled after a
+    server reset.
+    
+    Signed-off-by: Ville Syrjala <syrjala@sci.fi>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit e1547a9f1f6d7991219b7711f4cacc2852dbf88c
+Author: Ville Syrjala <syrjala@sci.fi>
+Date:   Mon Jan 24 01:06:41 2011 +0200
+
+    xfree86/dga: Install the DGA event handler when DGA2 is used
+    
+    The ET_DGAEvent handler is only installed when a client
+    requests relative events via DGA1. Do it also when a client
+    requests DGA2 events.
+    
+    Signed-off-by: Ville Syrjala <syrjala@sci.fi>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit 7b16e8633d5a95167aac0c19e43fcfe38bd4a6a4
+Author: Ville Syrjala <syrjala@sci.fi>
+Date:   Mon Jan 24 01:06:40 2011 +0200
+
+    xfree86/input: Restore DGAStealKeyEvent()
+    
+    DGA key event support was lost in commit
+    8da0ff2d51086666d10ca7330d428e8610a4a0e3. Bring it back.
+    
+    Signed-off-by: Ville Syrjala <syrjala@sci.fi>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit a2c481821997ae14aa5816895ae36db2ca2e4dec
+Author: Ville Syrjala <syrjala@sci.fi>
+Date:   Mon Jan 24 01:06:39 2011 +0200
+
+    include: Fix a copy/paste error in a comment
+    
+    Signed-off-by: Ville Syrjala <syrjala@sci.fi>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit 77af0dc5217fc9c446097d6d487c8ddaf00bdd2a
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Mon Jan 24 10:06:34 2011 +1000
+
+    xfree86: bump input minor ABI
+    
+    The new valuator_mask_free() call requires a minor bump.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit 5927e070b45fbe3fea4b394920ffd6f7d036f1ed
+Author: Erkki Seppälä <erkki.seppala@vincit.fi>
+Date:   Fri Jan 21 15:56:22 2011 +0200
+
+    xkb: Cancel a key's repetition when its autorepeat is disabled.
+    
+    When XkbChangeEnabledControls is called to disable key repetition of a
+    certain key (or keys), currently ongoing repetition of that key was
+    not cancelled. It was cancelled if ChangeKeyboardControl was used to
+    disable key repetition globally.
+    
+    Reviewed-by: Rami Ylimäki <rami.ylimaki@vincit.fi>
+    Reviewed-by: Dirk Wallenstein <halsmit@t-online.de>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit a9d3c43a57cbaf42d9e96ad49cf12bbf1d275fe5
+Author: Jon TURNEY <jon.turney@dronecode.org.uk>
+Date:   Wed Jan 19 15:57:59 2011 +0000
+
+    Fix compilation of xf86bigfont.c
+    
+    xf86bigfont.c: In function 'XFree86BigfontExtensionInit':
+    xf86bigfont.c:146: error: 'ProcXF86BigfontDispatch' undeclared (first use in this function)
+    xf86bigfont.c:147: error: 'SProcXF86BigfontDispatch' undeclared (first use in this function)
+    
+    It seems this has been broken since commit cbd4d5dbb70db62ba1cb79c7b904e6fa11f62d7e
+    "delete pervasively use of DISPATCH_PROC" (2010-09-28), which is a bit worrying as
+    that presumably indicates that no tinderbox is configuring with --enable-xf86bigfont.
+    
+    In a similar fashion to that commit, fix by moving XFree86BigfontExtensionInit()
+    below the definitions of the static dispatch functions it references.
+    
+    Signed-off-by: Jon TURNEY <jon.turney@dronecode.org.uk>
+    Reviewed-by: Julien Cristau <jcristau@debian.org>
+
+commit effaf9459c450f13e35bf263835d3e37d48ff29d
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Sun Jan 23 22:35:34 2011 -0800
+
+    XQuartz: Use the default signal handler
+    
+    This allows better interaction with CrashTracer
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+
+commit 418bb57a3923311338baa8a85c0794a72e15ceeb
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Thu Jan 13 17:12:17 2011 -0800
+
+    XQuartz: Call RRScreenSizeNotify after handling externally-generated XP_EVENT_DISPLAY_CHANGED
+    
+    We get an XP_EVENT_DISPLAY_CHANGED event when our display configuration is
+    changed.  If this change was caused by hotplugging a monitor or Mac Display
+    Preferences changes by the user, we need to call RRScreenSizeNotify in order
+    to ensure new connections get the correct screen size.
+    
+    http://xquartz.macosforge.org/trac/ticket/460
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+
+commit 6f52b10b9e8068e3deafb2bbb64b62175a208c49
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Thu Jan 13 16:08:46 2011 -0800
+
+    XQuartz: Bump version string to 2.6.1
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+
+commit 1cfb96dd6151ebe84a9a26a428005db97e5d5577
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Thu Jan 13 16:08:29 2011 -0800
+
+    XQuartz: Update copyright dates in bundle's plist
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+
+commit be3be7580b6f6fd2f7fa4d4abfe5e1ab19470223
+Merge: 57a1d9b a1d885f
+Author: Keith Packard <keithp@keithp.com>
+Date:   Thu Jan 20 21:21:21 2011 -0800
+
+    Merge remote branch 'ajax/for-keithp'
+
+commit 57a1d9b85331f6fe19d5111f5163139572ffbf02
+Merge: 24ce650 6423769
+Author: Keith Packard <keithp@keithp.com>
+Date:   Thu Jan 20 21:16:24 2011 -0800
+
+    Merge remote branch 'whot/for-keith'
+
+commit 24ce650cf4f0c6fa72faecd38c53d40703e6c959
+Merge: bbdf81a 09fd010
+Author: Keith Packard <keithp@keithp.com>
+Date:   Thu Jan 20 21:11:53 2011 -0800
+
+    Merge remote branch 'jturney/jturney-framebuffer-resize-for-master'
+
+commit bbdf81a056be0ea645da17a642dad5eadef3a906
+Author: Alan Coopersmith <alan.coopersmith@oracle.com>
+Date:   Tue Jan 18 19:26:20 2011 -0800
+
+    Add xorg.conf.d shadow man page pointing to xorg.conf man page
+    
+    Signed-off-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Reviewed-by: Gaetan Nadon <memsize@videotron.ca>
+    Tested-by: Gaetan Nadon <memsize@videotron.ca>
+    Reviewed-by: Dan Nicholson <dbn.lists@gmail.com>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit a1d885fdd67503a442b348626d2eddf6d22419e8
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Wed Jun 23 13:28:55 2010 -0400
+
+    resource: Fix indentation
+    
+    Reviewed-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+    Signed-off-by: Adam Jackson <ajax@redhat.com>
+
+commit cb61cf5c99004ba3c76b504220c6728b5f2d2de6
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Thu Apr 15 18:36:55 2010 -0400
+
+    resource: Remove expectID hack
+    
+    This is clearly meant to short-circuit the (modestly) expensive resource
+    lookup in LegalNewID.  The problem is that long-lived clients will
+    eventually run completely through their XID space and start asking
+    XC-MISC for IDs to reuse.  Once that happens, the comparison against
+    expectID will always be true, and we'll no longer catch XID collisions
+    at all.
+    
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+    Signed-off-by: Adam Jackson <ajax@redhat.com>
+
+commit 3282e3c627f97f079e3a9af756a6b13bd9a5f227
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Thu Apr 15 08:46:28 2010 -0400
+
+    resource: s/NullResource/NULL/g
+    
+    Reviewed-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+    Signed-off-by: Adam Jackson <ajax@redhat.com>
+
+commit f953ae7d8a578d135a6faaf69d9c06eae7c85ede
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Mon Dec 14 14:38:10 2009 -0500
+
+    os: Reduce smart scheduler setup calls
+    
+    We can return from WaitForSomething with no clients ready for any number
+    of reasons.  There's no reason to set up the scheduler timer when this
+    happens.
+    
+    Reviewed-by: Keith Packard <keithp@keithp.com>
+    Signed-off-by: Adam Jackson <ajax@redhat.com>
+
+commit d127075da06239852c1cc745abfe63d0d180d984
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Thu Jan 20 19:03:33 2011 -0500
+
+    xdmxconfig: warning fix
+    
+    xdmxconfig.c: In function ‘dmxConfigCanvasDraw’:
+    xdmxconfig.c:299:23: warning: ‘maxHeight’ may be used uninitialized in this function
+    
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Signed-off-by: Adam Jackson <ajax@redhat.com>
+
+commit 7a08f9abef7219fabdab8d1d49e8d3afb042e36a
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Thu Jan 20 18:59:39 2011 -0500
+
+    dmx: warning fixes
+    
+    dmxinputinit.c: In function ‘dmxBlockHandler’:
+    dmxinputinit.c:610:44: warning: cast from pointer to integer of different size
+    dmxinputinit.c: In function ‘dmxWakeupHandler’:
+    dmxinputinit.c:637:41: warning: cast from pointer to integer of different size
+    dmxinputinit.c: In function ‘dmxInputInit’:
+    dmxinputinit.c:1041:36: warning: cast to pointer from integer of different size
+    
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Signed-off-by: Adam Jackson <ajax@redhat.com>
+
+commit ffd323b7c0212ed9b348e51cd9b36363d7c4d1f2
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Thu Jan 20 18:55:20 2011 -0500
+
+    dmx: warning fix
+    
+    dmxinputinit.c: At top level:
+    dmxinputinit.c:135:29: warning: ‘DMXCommonOth’ defined but not used
+    
+    DMXCommonOth is actually mentioned in a #if 0 block, so delete it and
+    the block that references it.  If anyone needs it, git remembers.
+    
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Signed-off-by: Adam Jackson <ajax@redhat.com>
+
+commit c1fe0b155d0567440228aa5d9e36036f37670e3b
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Thu Jan 20 18:52:57 2011 -0500
+
+    dmx: warning fix
+    
+    dmxgc.c: In function ‘dmxChangeClip’:
+    dmxgc.c:386:5: warning: case label value exceeds maximum value for type
+    dmxgc.c:387:5: warning: case label value exceeds maximum value for type
+    dmxgc.c:388:5: warning: case label value exceeds maximum value for type
+    dmxgc.c:389:5: warning: case label value exceeds maximum value for type
+    
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Signed-off-by: Adam Jackson <ajax@redhat.com>
+
+commit b02e006b2733ea457df41791f6054309e4edf7f6
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Thu Jan 20 18:46:00 2011 -0500
+
+    dmx: warning fixes
+    
+    Dear gcc: I do not care about machines where sizeof(void *) <
+    sizeof(int), and neither should you.
+    
+    dmxextension.c: In function ‘dmxBECreateResources’:
+    dmxextension.c:858:26: warning: cast from pointer to integer of different size
+    dmxextension.c: In function ‘dmxBERestoreRenderPict’:
+    dmxextension.c:1062:29: warning: cast from pointer to integer of different size
+    dmxextension.c: In function ‘dmxBERestoreRenderGlyph’:
+    dmxextension.c:1084:35: warning: cast from pointer to integer of different size
+    dmxextension.c: In function ‘dmxAttachScreen’:
+    dmxextension.c:1277:8: warning: cast to pointer from integer of different size
+    dmxextension.c:1286:34: warning: cast to pointer from integer of different size
+    dmxextension.c:1292:35: warning: cast to pointer from integer of different size
+    dmxextension.c: In function ‘dmxBEDestroyResources’:
+    dmxextension.c:1456:26: warning: cast from pointer to integer of different size
+    dmxextension.c: In function ‘dmxDetachScreen’:
+    dmxextension.c:1599:8: warning: cast to pointer from integer of different size
+    
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Signed-off-by: Adam Jackson <ajax@redhat.com>
+
+commit 64237697994871adfcf4905b5784e75cd7281579
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Thu Jan 13 12:20:38 2011 +1000
+
+    xkb: after making changes to the xkb ctrls, copy them back into kbdfeed.
+    
+    enabled_ctrls_changes nowhere near the usual event or config paths. So this
+    condition always evaluated to false and the memcpy would thus never been
+    hit. As a result, any modification to the XKB struct during
+    XkbUpdateDescActions was not reflected in the kbdfeed ctrls.
+    The flag that is set by XkbUpdateDescActions() if ctrls were changed are in
+    enabled_ctrls.
+    
+    This mainly affected keyboard repeat control as XKB uses the kbdfeed ctrls,
+    not XKB's per_key_repeats, to determine if a key needs to be repeated. Thus,
+    adding a "repeat= False" to the XKB map of any action did not have any
+    effect.
+    
+    Test case:
+    assign Mode_switch to any key that by default repeats, e.g. the menu key.
+    
+        key <COMP> {         [     Mode_switch ] };
+    
+    Then modify the Mode_switch action to not repeat the key.
+    
+        interpret Mode_switch+AnyOfOrNone(all) {
+            virtualModifier= AltGr;
+            useModMapMods=level1;
+            action= SetGroup(group=+1);
+            // Add this line
+            repeat= False;
+        };
+    
+    Though the flags are correctly reflected in the description loaded in the
+    server, the change is not handed back to the kbdfeed struct and XKB will
+    trigger softrepeats of this key.
+    
+    This patch also adds two explanatory comments and an extra check, as this
+    path may be hit before the CtrlProc for the kbdfeed struct is set.
+    
+    Red Hat Bug 537708 <https://bugzilla.redhat.com/show_bug.cgi?id=537708>
+    
+    Also fixes broken auto-repeat of the backspace key in the colemak layout
+    (mapped to CapsLock).
+    
+    X.Org Bug 16318 <http://bugs.freedesktop.org/show_bug.cgi?id=16318>
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Tested-by: Dirk Wallenstein <halsmit@t-online.de>
+    Reviewed-by: Dirk Wallenstein <halsmit@t-online.de>
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+
+commit f1326ed2910bd985fafdb48714b1d6f38116b083
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Thu Jan 13 09:19:28 2011 +1000
+
+    xkb: Replace a few manual bitflips with SetBit & friends.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Dirk Wallenstein <halsmit@t-online.de>
+
+commit 16eb4f2a7b67ee169785973f9e0a3773e13fdea6
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Fri Jan 7 09:53:35 2011 +1000
+
+    Xi: reset remainders when warping the device.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+    Reviewed-by: Chase Douglas <chase.douglas@canonical.com>
+    Reviewed-by: Simon Thum <simon.thum@gmx.de>
+
+commit 09fd010902fad56735b8069b1becb80d85bd6a35
+Author: Jon TURNEY <jon.turney@dronecode.org.uk>
+Date:   Wed Sep 29 22:54:22 2010 +0100
+
+    Cygwin/X: DirectDraw engines shouldn't try to blit if the surface wasn't allocated
+    
+    Fix winShadowUpdateDD(|NL) so we don't try to blit to primary surface if it didn't get allocated
+    
+    (Intel drivers, in particular, seem to like to issue a WM_DISPLAYCHANGE during a suspend/resume
+    cycle, but not allow surface to be allocated right then)
+    
+    Also:
+    Use winReleasePrimarySurfaceShadowDD(|NL) in winFreeFBShadowDD(|NL) rather than open coding it
+    Don't mess about recreating surface if we're going to resize it anyhow
+    
+    Signed-off-by: Jon TURNEY <jon.turney@dronecode.org.uk>
+    Reviewed-by: Colin Harrison <colin.harrison@virgin.net>
+    Tested-by: Colin Harrison <colin.harrison@virgin.net>
+
+commit 625ab9701fd75b879c1dafc05fa979591eea87c0
+Author: Jon TURNEY <jon.turney@dronecode.org.uk>
+Date:   Tue Aug 31 13:45:43 2010 +0100
+
+    Cygwin/X: Simplify and consolidate reporting of the bpp value we are going to use
+    
+    Signed-off-by: Jon TURNEY <jon.turney@dronecode.org.uk>
+    Reviewed-by: Colin Harrison <colin.harrison@virgin.net>
+    Tested-by: Colin Harrison <colin.harrison@virgin.net>
+
+commit 3f7339a7c5d3dcd05909b041865125f4cb6fa29e
+Author: Jon TURNEY <jon.turney@dronecode.org.uk>
+Date:   Tue Aug 31 10:13:01 2010 +0100
+
+    Cygwin/X: Deal with RANDR depth changes correctly in ShadowGDI drawing engine
+    
+    Make ShadowGDI drawing engine only change the size of the screen
+    pixmap/shadow framebuffer on an RANDR change, not the bpp/depth
+    as well.
+    
+    The server requires the screen pixmap's depth to be invariant.
+    
+    Other drawing engines aren't quite as affected by this issue as
+    they won't draw to the display, if it has changed colour depth,
+    but probably still need some attention.
+    
+    Signed-off-by: Jon TURNEY <jon.turney@dronecode.org.uk>
+    Reviewed-by: Colin Harrison <colin.harrison@virgin.net>
+    Tested-by: Colin Harrison <colin.harrison@virgin.net>
+
+commit 8b22f83113fbdc09b932b5ad7e44f629fc15e3b5
+Author: Jon TURNEY <jon.turney@dronecode.org.uk>
+Date:   Mon Aug 30 17:17:57 2010 +0100
+
+    Cygwin/X: Use winUpdateFBPointer() in winshaddd.c rather than duplicating it inline
+    
+    Signed-off-by: Jon TURNEY <jon.turney@dronecode.org.uk>
+    Reviewed-by: Colin Harrison <colin.harrison@virgin.net>
+    Tested-by: Colin Harrison <colin.harrison@virgin.net>
+
+commit 8385c426f86e9955e9e570a46f75bddd3c10ca01
+Author: Jon TURNEY <jon.turney@dronecode.org.uk>
+Date:   Tue Aug 10 21:55:15 2010 +0100
+
+    Cygwin/X: Remove WIN_DIB_MAXIMUM_SIZE check
+    
+    This is only relevant to pre-NT versions of Windows, which are all EOL.
+    
+    Also, it's in the wrong place now as framebuffer can get resized.
+    
+    Signed-off-by: Jon TURNEY <jon.turney@dronecode.org.uk>
+    Reviewed-by: Colin Harrison <colin.harrison@virgin.net>
+    Tested-by: Colin Harrison <colin.harrison@virgin.net>
+
+commit 981ad1f364cf4fe8008c0f3592eb0f73dd14a118
+Author: Jon TURNEY <jon.turney@dronecode.org.uk>
+Date:   Tue Aug 10 16:24:57 2010 +0100
+
+    Cygwin/X: Fix a typo in command line argument validation code
+    
+    Fortunately, these swapped constants are benign as they have the same
+    value, 0
+    
+    Signed-off-by: Jon TURNEY <jon.turney@dronecode.org.uk>
+    Reviewed-by: Colin Harrison <colin.harrison@virgin.net>
+    Tested-by: Colin Harrison <colin.harrison@virgin.net>
+
+commit 5390b494672393506466d8afdb9b146b0e585cc0
+Author: Jon TURNEY <jon.turney@dronecode.org.uk>
+Date:   Tue Aug 10 13:16:13 2010 +0100
+
+    Cygwin/X: Don't turn off -multiplemonitors when all monitors don't have the same pixel format when using shadow GDI engine
+    
+    Don't turn off -multiplemonitors when all monitors don't have the
+    same pixel format and when using shadow GDI engine, just warn that
+    performance may be degraded
+    
+    Signed-off-by: Jon TURNEY <jon.turney@dronecode.org.uk>
+    Reviewed-by: Colin Harrison <colin.harrison@virgin.net>
+    Tested-by: Colin Harrison <colin.harrison@virgin.net>
+
+commit 33106e1e807a828208b306512e78c5e3e93960d3
+Author: Jon TURNEY <jon.turney@dronecode.org.uk>
+Date:   Tue Mar 30 19:49:41 2010 +0100
+
+    Cygwin/X: Generate RANDR change on WM_DISPLAYCHANGE for rootless modes
+    
+    When RANDR resizing is enabled, generate an internal RANDR change when
+    WM_DISPLAYCHANGE occurs in rootless modes for screens which occupy an
+    entire monitor or the virtual desktop.
+    
+    Store the monitor number and use that to handle WM_DISPLAYCHANGE for a
+    screen specified with '-screen @monitor'
+    
+    In rooted mode, WM_DISPLAYCHANGE isn't relevant (except where display
+    depth changes may cause problems). (A maximized screen window will get
+    WM_SIZE to adjust it to the new monitor size)
+    
+    In rooted fullscreen mode, WM_DISPLAYCHANGE shouldn't be seen, as we
+    have the resolution we have selected for the fullscreen session)
+    (Could client randr requests be handled in fullscreen to cause a change
+    of the fullscreen resolution? )
+    
+    Don't bother do a RANDR resize if the dimensions aren't actually changing
+    when WM_DISPLAYCHANGE is sent (should handle WM_DISPLAYCHANGE to size 0x0
+    that the intel driver seems to like to send)
+    
+    Various debug output improvements
+    
+    Also, remove the note that XWin can't handle display mode changes from
+    the man page
+    
+    Signed-off-by: Jon TURNEY <jon.turney@dronecode.org.uk>
+    Reviewed-by: Colin Harrison <colin.harrison@virgin.net>
+    Tested-by: Colin Harrison <colin.harrison@virgin.net>
+
+commit bbc511e80b2a9365f6a1528bc1595772f83be654
+Author: Jon TURNEY <jon.turney@dronecode.org.uk>
+Date:   Mon Feb 15 13:42:04 2010 +0000
+
+    Cygwin/X: Make WM_SIZE use RandR resizing when -resize=randr
+    
+    To avoid recursion, WM_SIZE requests shouldn't generate XRANDR requests
+    when no change is neeeded.
+    
+    We do the actual resize on WM_EXITSIZEMOVE, as resizing occurs in
+    a modal loop, to avoid a backlog of resize events building up as
+    the X server doesn't get a change to process anything until the resize
+    is completed.
+    
+    Signed-off-by: Jon TURNEY <jon.turney@dronecode.org.uk>
+    Reviewed-by: Colin Harrison <colin.harrison@virgin.net>
+    Tested-by: Colin Harrison <colin.harrison@virgin.net>
+
+commit 85c497a8b6c488ef9ea2c6d7b49e6f9b992fb4a2
+Author: Jon TURNEY <jon.turney@dronecode.org.uk>
+Date:   Tue Mar 30 20:48:10 2010 +0100
+
+    Cygwin/X: Implement framebuffer resizing in RANDR extension
+    
+    Implement framebuffer resizing in RANDR extension:
+    
+    Resize the frame buffer, the screen's root window and the native window
+    containing the root window image.
+    
+    Correctly allow for decorations in new native window size when resizing native window
+    to fit the new framebuffer size with AdjustWindowRectEx()
+    
+    Update physical size info for a screen when it is changed by RANDR
+    
+    Forbid client-requested RANDR changes in fullscreen and rootless modes
+    
+    Only resize window on an external RandR request, to avoid recursing on
+    a WM_SIZE requested resize.
+    
+    Also, add prototypes for winRandRInit() and winDoRandRScreenSetSize() to header file
+    
+    Also, update the author list and copyright for winrandr.c
+    
+    Signed-off-by: Jon TURNEY <jon.turney@dronecode.org.uk>
+    Reviewed-by: Colin Harrison <colin.harrison@virgin.net>
+    Tested-by: Colin Harrison <colin.harrison@virgin.net>
+
+commit 873abef315f5d947b864428891381bff539c5869
+Author: Jon TURNEY <jon.turney@dronecode.org.uk>
+Date:   Tue Mar 30 20:07:19 2010 +0100
+
+    Cygwin/X: Add -resize command line option
+    
+    Add -resize command line option to configure how native window sizing frame
+    is used.
+    
+    In additions to the existing fixed and scrollbars modes, add a new mode to
+    allow framebuffer to be resized using native window frame
+    
+    Signed-off-by: Jon TURNEY <jon.turney@dronecode.org.uk>
+    Reviewed-by: Colin Harrison <colin.harrison@virgin.net>
+    Tested-by: Colin Harrison <colin.harrison@virgin.net>
+
+commit 46c57788539d8a5f0246528b4f88ad4ed6d867d1
+Author: Jon TURNEY <jon.turney@dronecode.org.uk>
+Date:   Tue Feb 23 15:44:36 2010 +0000
+
+    Cygwin/X: Move QueryMonitor() out of windprocarg.c
+    
+    Move QueryMonitor() out of windprocarg.c into a new file, winmonitors.c,
+    as we use to use it from other places as well
+    
+    Signed-off-by: Jon TURNEY <jon.turney@dronecode.org.uk>
+    Reviewed-by: Colin Harrison <colin.harrison@virgin.net>
+    Tested-by: Colin Harrison <colin.harrison@virgin.net>
+
+commit 73b02e964787ea9fb2d139dc781c9b2495ccb031
+Author: Jon TURNEY <jon.turney@dronecode.org.uk>
+Date:   Fri Feb 12 12:29:30 2010 +0000
+
+    Cygwin/X: Remove an attempt at detecting if WM_DISPLAYCHANGE affects the X screen
+    
+    Remove an attempt at the rather difficult optimization of detecting
+    if WM_DISPLAYCHANGE affects any of the monitors which intersect the
+    native window for the X screen.
+    
+    We'll always act as if it does, which it probably usually the case.
+    
+    Signed-off-by: Jon TURNEY <jon.turney@dronecode.org.uk>
+    Reviewed-by: Colin Harrison <colin.harrison@virgin.net>
+    Tested-by: Colin Harrison <colin.harrison@virgin.net>
+
+commit a46146af5f6c2d96728c43f0df369ea00bcae017
+Author: Jon TURNEY <jon.turney@dronecode.org.uk>
+Date:   Thu Apr 1 21:00:43 2010 +0100
+
+    Cygwin/X: Rather than storing calculated physical display sizes, calculate them when needed
+    
+    (This stored calculation was wrong if -dpi came after -screen on the command
+    line, anyhow)
+    
+    Signed-off-by: Jon TURNEY <jon.turney@dronecode.org.uk>
+    Reviewed-by: Colin Harrison <colin.harrison@virgin.net>
+    Tested-by: Colin Harrison <colin.harrison@virgin.net>
+
+commit df518001271dbc0c49935350b755f0c0562cdb92
+Author: Jon TURNEY <jon.turney@dronecode.org.uk>
+Date:   Tue Oct 13 14:47:33 2009 +0100
+
+    Cygwin/X: Refactor framebuffer allocation/release in drawing engines
+    
+    Refactor the drawing engines so we can explicitly allocate and release the framebuffer for a screen
+    
+    Move the setting of dwPaddedWidth into the DDNL engine, so it is updated when the framebuffer changes size
+    
+    Signed-off-by: Jon TURNEY <jon.turney@dronecode.org.uk>
+    Reviewed-by: Colin Harrison <colin.harrison@virgin.net>
+    Tested-by: Colin Harrison <colin.harrison@virgin.net>
+
+commit 708d0b9781c6f3f0c0ae7052f45223b1c2524809
+Author: Jon TURNEY <jon.turney@dronecode.org.uk>
+Date:   Tue Oct 13 14:48:17 2009 +0100
+
+    Cygwin/X: Enable building of nativegdi and primaryfb engines to avoid further rusting
+    
+    Some trivial build fixes required
+    
+    Also fill out all function pointers for primaryfb engine
+    
+    Also tidy up the man page section describing drawing engines.
+    
+    Signed-off-by: Jon TURNEY <jon.turney@dronecode.org.uk>
+    Reviewed-by: Colin Harrison <colin.harrison@virgin.net>
+    Tested-by: Colin Harrison <colin.harrison@virgin.net>
+
+commit c6aa4755ec355101a62bef86dbb090262fe806f6
+Author: Alan Coopersmith <alan.coopersmith@oracle.com>
+Date:   Sat Jan 15 12:13:39 2011 -0800
+
+    xkb/ddxLoad.c doesn't need <paths.h> any more
+    
+    Was previously used for _PATH_VARTMP, but that was removed in
+    534fc5140b039a8c98ab715d0a6740d513b41209
+    
+    Signed-off-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Reviewed-by: Julien Cristau <jcristau@debian.org>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit abfea17342da774aa4e3a351a73c8f2af6e6fd28
+Merge: 3611283 e65c3f8
+Author: Keith Packard <keithp@keithp.com>
+Date:   Tue Jan 18 15:19:34 2011 -0800
+
+    Merge remote branch 'ajax/for-keithp'
+
+commit 361128389e5cb0101cbd091ff8de77cf34608f6c
+Merge: 65ceaad d9225b9
+Author: Keith Packard <keithp@keithp.com>
+Date:   Tue Jan 18 15:18:08 2011 -0800
+
+    Merge remote branch 'jcristau/for-keith'
+
+commit 65ceaadbf0fb65f1962cb96d5b87fd1175f85a3b
+Author: Gaetan Nadon <memsize@videotron.ca>
+Date:   Sun Jan 9 20:28:31 2011 -0500
+
+    Xquartz: rename man page directory from doc to man
+    
+    Following the convention makes it easier to locate man pages,
+    user's or developer's documentation and specifications.
+    
+    Reviewed-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Reviewed-by: Rémi Cardona <remi@gentoo.org>
+    Signed-off-by: Gaetan Nadon <memsize@videotron.ca>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit 7ed0d426f616fe9e44ac7091622a798f2043dfe4
+Author: Gaetan Nadon <memsize@videotron.ca>
+Date:   Sun Jan 9 20:28:30 2011 -0500
+
+    xfree86: use sed rather than cpp to perform string substitutions
+    
+    Makefile.am: there are only 4 string substitutions to be done in this file.
+    SED is much simpler than the C pre processor which adds its own
+    strings which must be substituted by sed, still.
+    
+    xorgconf.cpp: replaced __xconfigfile__ with xorg.conf as this file name
+    is hard coded in the xserver configuration and cannot change.
+    Replace XCOMM with # permanently.
+    
+    Delete cpprules.in as it isn't used anywhere else. Should one need
+    cpprules for real cpp work, there is one in Xquartz from which the
+    the old man pages code have been stripped.
+    
+    Fix trailing spaces.
+    
+    Reviewed-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Reviewed-by: Rémi Cardona <remi@gentoo.org>
+    Signed-off-by: Gaetan Nadon <memsize@videotron.ca>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit 885a3330092c13786baa3aaabd728e71962486c4
+Author: Gaetan Nadon <memsize@videotron.ca>
+Date:   Sun Jan 9 20:28:29 2011 -0500
+
+    man: refactor common code in the man pages makefiles
+    
+    Create a manpages.am makefile snippet in the root dir.
+    Each man page makefile includes manpages.am.
+    
+    Now all man pages in xserver are generated the same way
+    using the same method as all of other xorg modules.
+    All ".man.pre" files in git are ".man" now.
+    Links are no longer created between different file types.
+    
+    Reviewed-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Reviewed-by: Rémi Cardona <remi@gentoo.org>
+    Signed-off-by: Gaetan Nadon <memsize@videotron.ca>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit c86f7c2b8eedd3126066a3aff44bc8767eb5e277
+Author: Gaetan Nadon <memsize@videotron.ca>
+Date:   Sun Jan 9 20:28:28 2011 -0500
+
+    Xdmx: build all man pages using XORG_MANPAGE_SECTIONS
+    
+    Use standard directory and makefile.
+    
+    Reviewed-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Reviewed-by: Rémi Cardona <remi@gentoo.org>
+    Signed-off-by: Gaetan Nadon <memsize@videotron.ca>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit 9bd9d550a0d6fb4fe3daacb604658de92e69d99c
+Author: Gaetan Nadon <memsize@videotron.ca>
+Date:   Sun Jan 9 20:28:27 2011 -0500
+
+    exa: build man pages using XORG_MANPAGE_SECTIONS
+    
+    Nothing requires the use of a C preprocessor
+    Using standard file extensions (.man) means no need for .gitignore
+    Use standard directory and makefile
+    Fix trailing whitespaces
+    
+    Reviewed-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Reviewed-by: Rémi Cardona <remi@gentoo.org>
+    Signed-off-by: Gaetan Nadon <memsize@videotron.ca>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit d4b1fd3ff66d1a3e44a85aed34d9a01eee0d37fd
+Author: Gaetan Nadon <memsize@videotron.ca>
+Date:   Sun Jan 9 20:28:26 2011 -0500
+
+    fbdevhw: build man pages using XORG_MANPAGE_SECTIONS
+    
+    Nothing requires the use of a C preprocessor
+    Using standard file extensions (.man) means no need for .gitignore
+    Use standard directory and makefile
+    Fix trailing whitespaces
+    
+    Reviewed-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Reviewed-by: Rémi Cardona <remi@gentoo.org>
+    Signed-off-by: Gaetan Nadon <memsize@videotron.ca>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit b9276cb86b433bc740fe26c2e624d3d5399732f6
+Author: Gaetan Nadon <memsize@videotron.ca>
+Date:   Sun Jan 9 20:27:53 2011 -0500
+
+    XFree86 utils: build utils man pages using XORG_MANPAGE_SECTIONS
+    
+    Nothing requires the use of a C preprocessor
+    Using standard file extensions (.man) means no need for .gitignore
+    Use standard directory and makefile
+    Fix trailing whitespaces
+    
+    Reviewed-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Reviewed-by: Rémi Cardona <remi@gentoo.org>
+    Signed-off-by: Gaetan Nadon <memsize@videotron.ca>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit ac5ffef60e05eb05275913b133786709881e7e7e
+Author: Gaetan Nadon <memsize@videotron.ca>
+Date:   Sun Jan 9 20:27:52 2011 -0500
+
+    Xephyr: build Xephyr man pages using XORG_MANPAGE_SECTIONS
+    
+    Nothing requires the use of a C preprocessor
+    Using standard file extensions (.man) means no need for .gitignore
+    Use standard directory and makefile
+    Fix trailing whitespaces
+    
+    Reviewed-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Reviewed-by: Rémi Cardona <remi@gentoo.org>
+    Signed-off-by: Gaetan Nadon <memsize@videotron.ca>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit 9240cffd659b1c13d66162200c6e384ea1cdbc44
+Author: Gaetan Nadon <memsize@videotron.ca>
+Date:   Sun Jan 9 20:27:51 2011 -0500
+
+    Xvfb: build Xvfb man pages using XORG_MANPAGE_SECTIONS
+    
+    Nothing requires the use of a C preprocessor
+    Using standard file extensions (.man) means no need for .gitignore
+    Use standard directory and makefile
+    Fix trailing whitespaces
+    
+    Reviewed-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Reviewed-by: Rémi Cardona <remi@gentoo.org>
+    Signed-off-by: Gaetan Nadon <memsize@videotron.ca>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit 3f4c71799b3164440624d09b7b631d3d3c0a29ef
+Author: Gaetan Nadon <memsize@videotron.ca>
+Date:   Sun Jan 9 20:27:50 2011 -0500
+
+    XWin: build XWin man pages using XORG_MANPAGE_SECTIONS
+    
+    Nothing requires the use of a C preprocessor
+    Using standard file extensions (.man) means no need for .gitignore
+    Use standard directory and makefile
+    Now can be built easily on any platform in the man directory
+    
+    Reviewed-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Reviewed-by: Rémi Cardona <remi@gentoo.org>
+    Signed-off-by: Gaetan Nadon <memsize@videotron.ca>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit b8492e18a7e5322c4a492f6cf6cfeb5b0221d994
+Author: Gaetan Nadon <memsize@videotron.ca>
+Date:   Sun Jan 9 20:27:49 2011 -0500
+
+    Xnest: build Xnest man pages using XORG_MANPAGE_SECTIONS
+    
+    Nothing requires the use of a C preprocessor
+    Using standard file extensions (.man) means no need for .gitignore
+    Use standard directory and makefile
+    
+    Reviewed-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Reviewed-by: Rémi Cardona <remi@gentoo.org>
+    Signed-off-by: Gaetan Nadon <memsize@videotron.ca>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit 57ca20d26614a0787cdd0db91a2eb8cdb301f2dc
+Author: Gaetan Nadon <memsize@videotron.ca>
+Date:   Sun Jan 9 20:27:48 2011 -0500
+
+    Xquartz: strip the man page code from cpprules.in
+    
+    This is dead code which will not be used in the future.
+    
+    Reviewed-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Reviewed-by: Rémi Cardona <remi@gentoo.org>
+    Signed-off-by: Gaetan Nadon <memsize@videotron.ca>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit c06c46acdc2ead20a6030118fad6092b3da6709f
+Author: Gaetan Nadon <memsize@videotron.ca>
+Date:   Sun Jan 9 20:27:47 2011 -0500
+
+    Xquartz: build Xquartz man pages using XORG_MANPAGE_SECTIONS
+    
+    Nothing requires the use of a C preprocessor
+    Using standard file extensions (.man)
+    Use standard directory and makefile
+    
+    Reviewed-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Reviewed-by: Rémi Cardona <remi@gentoo.org>
+    Signed-off-by: Gaetan Nadon <memsize@videotron.ca>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit a9e85013b1045c7e02891a019bfa8042a219b7f1
+Author: Gaetan Nadon <memsize@videotron.ca>
+Date:   Sun Jan 9 20:27:46 2011 -0500
+
+    man: build Xorg and xorg.conf man pages using XORG_MANPAGE_SECTIONS
+    
+    Nothing requires the use of a C preprocessor
+    Using standard file extensions (.man) means no need for .gitignore
+    Use standard directory and makefile
+    
+    Reviewed-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Reviewed-by: Rémi Cardona <remi@gentoo.org>
+    Signed-off-by: Gaetan Nadon <memsize@videotron.ca>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit dcdd8ea82c0e2f657abdc80a22aa0c01ead07e54
+Author: Gaetan Nadon <memsize@videotron.ca>
+Date:   Sun Jan 9 20:27:45 2011 -0500
+
+    Xorg.man: fix whitespace issues
+    
+    Reviewed-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Reviewed-by: Rémi Cardona <remi@gentoo.org>
+    Signed-off-by: Gaetan Nadon <memsize@videotron.ca>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit d9225b9602c85603ae616a7381c784f5cf5e811c
+Author: Julien Cristau <jcristau@debian.org>
+Date:   Wed Nov 10 22:39:54 2010 +0100
+
+    glx: validate numAttribs field before using it
+    
+    Reviewed-by: Kristian Høgsberg <krh@bitplanet.net>
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+    Signed-off-by: Julien Cristau <jcristau@debian.org>
+
+commit 62319e8381ebd645ae36b25e5fc3c0e9b098387b
+Author: Julien Cristau <jcristau@debian.org>
+Date:   Sun Aug 22 16:20:45 2010 +0100
+
+    glx: swap the request arrays entirely, not just half of them
+    
+    Various glx requests include a list of pairs of attributes.  We were
+    only swapping the first half.
+    
+    Reviewed-by: Kristian Høgsberg <krh@bitplanet.net>
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+    Signed-off-by: Julien Cristau <jcristau@debian.org>
+
+commit 6c69235a9dfc52e4b4e47630ff4bab1a820eb543
+Author: Julien Cristau <jcristau@debian.org>
+Date:   Sun Aug 22 00:50:05 2010 +0100
+
+    glx: check request length before swapping
+    
+    Reviewed-by: Kristian Høgsberg <krh@bitplanet.net>
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+    Signed-off-by: Julien Cristau <jcristau@debian.org>
+
+commit ec9c97c6bf70b523bc500bd3adf62176f1bb33a4
+Author: Julien Cristau <jcristau@debian.org>
+Date:   Sat Jul 3 19:47:55 2010 +0100
+
+    glx: validate request lengths
+    
+    Reviewed-by: Adam Jackson <ajax@redhat.com>
+    Reviewed-by: Kristian Høgsberg <krh@bitplanet.net>
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+    Signed-off-by: Julien Cristau <jcristau@debian.org>
+
+commit 3f0d3f4d97bce75c1828635c322b6560a45a037f
+Author: Julien Cristau <jcristau@debian.org>
+Date:   Sat Jul 3 19:42:26 2010 +0100
+
+    glx: make sure screen is non-negative in validGlxScreen
+    
+    Reviewed-by: Adam Jackson <ajax@redhat.com>
+    Reviewed-by: Kristian Høgsberg <krh@bitplanet.net>
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+    Signed-off-by: Julien Cristau <jcristau@debian.org>
+
+commit 82b1eaa6cad20f39dbf15573bdb3d62acbcd91f9
+Author: Tom Fogal <tfogal@alumni.unh.edu>
+Date:   Wed Dec 22 14:39:48 2010 -0700
+
+    Autodetect TLS support instead of defaulting to disabled.
+    
+    Uses the AX_TLS macro to figure out if the current platform
+    supports TLS.  If it does, enable TLS automagically.  Still
+    respects --enable option, regardless.
+    
+    Signed-off-by: Tom Fogal <tfogal@alumni.unh.edu>
+    Reviewed-by: Dan Nicholson <dbn.lists@gmail.com>
+
+commit 93393411e39fbb0f72cf6c2f79ebde177aa86932
+Author: Tom Fogal <tfogal@alumni.unh.edu>
+Date:   Wed Dec 22 16:03:03 2010 -0700
+
+    Add macro for detecting thread local storage support.
+    
+    This adds an AX_TLS macro which attempts to identify if the
+    underlying compiler/platform supports thread local storage (TLS).
+    The macro comes from the autoconf macro archive.
+    
+    Signed-off-by: Tom Fogal <tfogal@alumni.unh.edu>
+    Reviewed-by: Dan Nicholson <dbn.lists@gmail.com>
+
+commit 60801ff8703ec36995139a6dd7b1fc26ae8854a6
+Author: Dan Nicholson <dbn.lists@gmail.com>
+Date:   Tue Nov 23 11:38:50 2010 -0800
+
+    xfree86: Convert libxf86config to static libtool library
+    
+    In order to use libxf86config in a shared library, all the code must be
+    compiled with -fPIC. Add proper PIC support for libxf86config by turning
+    it into a libtool library. However, since we don't want to guarantee API
+    or ABI stability, make sure it's only built static.
+    
+    Signed-off-by: Dan Nicholson <dbn.lists@gmail.com>
+    Acked-by: Gaetan Nadon <memsize@videotron.ca>
+
+commit 8456625d64bb0013a496f3b56ea3aa20cf7a6142
+Merge: aa30a86 ce74e75
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Fri Jan 7 09:35:07 2011 +1000
+
+    Merge branch 'for-peter' of git://people.freedesktop.org/~daniels/xserver into for-keith
+
+commit aa30a86583c3fc1a83c46e8c7583182d750edcde
+Author: Tomas Carnecky <tom@dbservice.com>
+Date:   Sun Aug 1 21:28:18 2010 +0200
+
+    NO_PANORAMIX preprocessor symbol is nowhere defined
+    
+    Which makes it useless, so remove it.
+    
+    Signed-off-by: Tomas Carnecky <tom@dbservice.com>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit fc6cbee772bafabf7ddd7a75043bd55bb78ad09e
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Thu Jan 6 12:58:00 2011 +1000
+
+    input: add valuator_mask_free() to free a valuator mask.
+    
+    Expecting the caller to free the mask requires us to keep it in a single
+    memory block (which may be an issue lateron), aside from leaving the API
+    asymetrical. Provide valuator_mask_free() to free the memory and reset the
+    mask pointer to NULL.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Fernando Carrijo <fcarrijo@freedesktop.org>
+    Reviewed-by: Chase Douglas <chase.douglas@canonical.com>
+
+commit 4fbadc8b17237f3c7f8c0bf56003d1139c86655e
+Author: Daniel Stone <daniel@fooishbar.org>
+Date:   Thu Jan 6 11:32:26 2011 +1000
+
+    Input: Prevent MD grabs from wandering on to other MDs
+    
+    The code to set sync.other in DeliverGrabbedEvents is supposed to reset
+    sync.other for a paired MD to the grab under consideration, but was
+    rather optimistic in resetting sync.other for _all_ devices.
+    
+    This would fall apart given two sets of MDs (A paired with B, Y paired
+    with Z), where both MDs were in FREEZE_BOTH_NEXT_EVENT due to being
+    called with SyncBoth, where no event had yet triggered the grab.  An
+    event being processed on MD A would result in B, Y and Z all having
+    sync.other set to A's grab, rather than just B.
+    
+    Signed-off-by: Daniel Stone <daniel@fooishbar.org>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit e65c3f8bcc86845f21ac575e2bfb4b21b67d5ebf
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Wed Jan 5 12:04:19 2011 -0500
+
+    dix: Add a Screen method for additional cursor confinement
+    
+    This just reserves the slot in the ABI. Confining cursors to CRTCs will
+    come soon.
+    
+    v2: Just reserve the slot.
+    
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+    Signed-off-by: Adam Jackson <ajax@redhat.com>
+
+commit ce74e7562dcc800306ff92b6d3c5ee885cd4763d
+Author: Daniel Stone <daniel@fooishbar.org>
+Date:   Tue Dec 7 11:48:14 2010 +0000
+
+    Input: Make CheckPassiveGrabsOnWindow return grab, export
+    
+    Change CheckPassiveGrabsOnWindow to return the GrabPtr it used (or NULL
+    if none) rather than a boolean, and export it.  Also add an additional
+    boolean 'activate' parameter; use TRUE for existing behaviour, or FALSE
+    to only find the grab and then return it.
+    
+    This will be used in forthcoming touch patches to find the grabs, rather
+    than open-coding same.
+    
+    Signed-off-by: Daniel Stone <daniel@fooishbar.org>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit eb5aaf5eb819f1287ce40da79edbe07bafb2b5c0
+Author: Daniel Stone <daniel@fooishbar.org>
+Date:   Tue Dec 28 12:15:28 2010 +0000
+
+    Input: Export GetEventMask
+    
+    Make it non-static, add to headers.
+    
+    Signed-off-by: Daniel Stone <daniel@fooishbar.org>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Chase Douglas <chase.douglas@canonical.com>
+
+commit 30c8c7a86310139e79c9698caee21b3bd51936bd
+Author: Daniel Stone <daniel@fooishbar.org>
+Date:   Tue Dec 28 12:13:29 2010 +0000
+
+    Input: Handle grabs with no Xi 1.x equivalent
+    
+    Don't try to search for an Xi 1.x grab in CheckPassiveGrabsOnWindow for
+    events with no Xi 1.x equivalent.
+    
+    Signed-off-by: Daniel Stone <daniel@fooishbar.org>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Chase Douglas <chase.douglas@canonical.com>
+
+commit 690476250f58616d5156317e01ba547497f4331a
+Author: Daniel Stone <daniel@fooishbar.org>
+Date:   Mon Sep 20 15:03:05 2010 +1000
+
+    Input: Pass sprite instead of device to XYToWindow, make non-static
+    
+    XYToWindow calculates the position of the cursor and updates the sprite
+    trace, but does nothing else with the device.  Pass a SpritePtr instead
+    so we can update an alternate focus instead of hardcoding the device's
+    sprite.  Also make this function non-static, so we can use it elsewhere.
+    
+    Signed-off-by: Daniel Stone <daniel@fooishbar.org>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Chase Douglas <chase.douglas@canonical.com>
+
+commit 07a892cd8276f8092de95f1909f2ebec6f5fdf08
+Author: Daniel Stone <daniel@fooishbar.org>
+Date:   Mon Sep 20 15:03:04 2010 +1000
+
+    Input: Pass sprite instead of device to FixUpEventFromWindow
+    
+    Since FixUpEventFromWindow only uses the sprite trace to determine the
+    window stack, pass in a sprite instead of hardcoding the device sprite,
+    so we can deliver to windows other than the one currently containing the
+    sprite.
+    
+    Signed-off-by: Daniel Stone <daniel@fooishbar.org>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Chase Douglas <chase.douglas@canonical.com>
+
+commit 10d6c3ca103ea155488cd2f29052334b5691e680
+Author: Daniel Stone <daniel@fooishbar.org>
+Date:   Mon Dec 27 13:06:03 2010 +0000
+
+    Input: Make RootWindow() take a sprite instead of device
+    
+    GetCurrentRootWindow already works for the device case, although not as
+    an lvalue.
+    
+    Signed-off-by: Daniel Stone <daniel@fooishbar.org>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Chase Douglas <chase.douglas@canonical.com>
+
+commit 23c37ce1fe42e3da0609a566478e947843b05023
+Author: Daniel Stone <daniel@fooishbar.org>
+Date:   Mon Dec 27 12:48:42 2010 +0000
+
+    Input: Export SpriteRec for use in public API
+    
+    Change its definition to be more in line with other structs, so we can
+    use it from input.h.
+    
+    Signed-off-by: Daniel Stone <daniel@fooishbar.org>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Chase Douglas <chase.douglas@canonical.com>
+
+commit 06a103ad1d6a0ef6146c97a8c81dc7de1c0a0083
+Author: Daniel Stone <daniel@fooishbar.org>
+Date:   Tue Dec 28 16:37:48 2010 +0000
+
+    Test: Input: Test up to supported server, not protocol, events
+    
+    When building against a newer inputproto, the server may support fewer
+    than XI_LASTEVENT events.  We already have XI2LASTEVENT for the highest
+    event number supported by the server, so use that instead.
+    
+    Signed-off-by: Daniel Stone <daniel@fooishbar.org>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Chase Douglas <chase.douglas@canonical.com>
+
+commit a083efe8715e8b29c9bd7f4e7bb429a94620bfc4
+Author: Daniel Stone <daniel@fooishbar.org>
+Date:   Tue Dec 28 16:06:29 2010 +0000
+
+    Test: Input: Check flags on DeviceEvent
+    
+    Add initial validation of acceptable flags for XI2 device events, and
+    make sure they're swapped.
+    
+    Signed-off-by: Daniel Stone <daniel@fooishbar.org>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Chase Douglas <chase.douglas@canonical.com>
+
+commit 2592effef5f171af3f01a2b5130d9747403140f6
+Author: Daniel Stone <daniel@fooishbar.org>
+Date:   Tue Dec 28 13:42:06 2010 +0000
+
+    Test: Input: Add helper function for failing EventToCore
+    
+    We have quite a few tests which involve checking that EventToCore fails
+    for specific events, so refactor them into a separate function.
+    
+    Signed-off-by: Daniel Stone <daniel@fooishbar.org>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Chase Douglas <chase.douglas@canonical.com>
+
+commit e1aed88be92c27d76bff1743f35f9915dea9264f
+Author: Daniel Stone <daniel@fooishbar.org>
+Date:   Tue Dec 28 17:00:29 2010 +0000
+
+    Input: Swap flags in DeviceEvents
+    
+    Swap flags for different-endian clients when delivering XI2
+    DeviceEvents.
+    
+    Signed-off-by: Daniel Stone <daniel@fooishbar.org>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Chase Douglas <chase.douglas@canonical.com>
+
+commit 6358a60065eef167d4e5f4afd981ff26deeba80d
+Author: Michel Dänzer <daenzer@vmware.com>
+Date:   Thu Jan 6 09:55:41 2011 +0100
+
+    EXA: Pad size of system memory copy for 1x1 pixmaps (bug #32803).
+    
+    Fixes https://bugs.freedesktop.org/show_bug.cgi?id=32803 .
+    
+    Signed-off-by: Michel Dänzer <daenzer@vmware.com>
+    Reviewed-by: Dave Airlie <airlied@redhat.com>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit f3480286aeb3009623d8d4b0202eadda0049552d
+Author: Ville Syrjälä <ville.syrjala@nokia.com>
+Date:   Wed Jan 5 20:41:09 2011 +0200
+
+    composite: Support updating an arbitrary subtree
+    
+    Rename compUpdateWindow to compPaintWindowToParent and split the child
+    walk to compPaintChildrenToWindow. Calling compPaintChildrenToWindow
+    allows an arbitrary subtree to be updated, instead of having to update
+    all the windows. This will be used to make sure all the descendants are
+    copied to the parent when the parent window contents need to be accessed
+    in IncludeInferios sub-window mode.
+    
+    WindowRec has a new member 'damagedDescendants' that is used to keep
+    track of which subtrees need updating. When a window is damaged,
+    'damagedDescendants' will be set for all the ancestors, and when a
+    subtree is updated, the tree walk can be stopped early if no damaged
+    descendants are present.
+    
+    CompScreenRec no longer needs the 'damaged' member since the root
+    window's 'damagedDescendants' provides the same information.
+    
+    Signed-off-by: Ville Syrjälä <ville.syrjala@nokia.com>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit b89e6dbdfbb50e3b5bc7fcb7eccc397c467c92f8
+Author: Ville Syrjälä <ville.syrjala@nokia.com>
+Date:   Wed Jan 5 20:41:08 2011 +0200
+
+    composite: Add SourceValidate wrapper
+    
+    When SourceValidate is performed on a window with IncludeInferiors
+    sub-window mode, force an immediate update of all the automatically
+    redirected windows, so that the current window contents will be up
+    to date.
+    
+    Signed-off-by: Ville Syrjälä <ville.syrjala@nokia.com>
+    Reviewed-by: Keith Packard <keithp@keithp.com>
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit 84154954db54696d4661eb8d0a6014cdbff3c91f
+Author: Ville Syrjälä <ville.syrjala@nokia.com>
+Date:   Wed Jan 5 20:41:07 2011 +0200
+
+    composite: Add GetImage wrapper
+    
+    When GetImage is performed on a window, force an immediate update of
+    all the automatically redirected windows, so that the current window
+    contents will be up to date.
+    
+    Signed-off-by: Ville Syrjälä <ville.syrjala@nokia.com>
+    Reviewed-by: Keith Packard <keithp@keithp.com>
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit a5dc3531e14589ac473cea482944d2d67517aabd
+Author: Ville Syrjälä <ville.syrjala@nokia.com>
+Date:   Wed Jan 5 20:41:06 2011 +0200
+
+    Revert "composite: Convert compWindowUpdate to use TraverseTree"
+    
+    TraverseTree visits the parent before the children. When performing
+    the automatic redirection updates, the children must be visited before
+    the parent.
+    
+    If there are automatically redirected windows on multiple levels of the
+    tree, updating the parents before the children would cause the parent
+    updates to use stale data for areas covered by the children. Also
+    updating the damaged children would re-damage the parent, which would
+    cause additional walks over the tree.
+    
+    In the worst case with an unbroken chain of automatically redirected
+    subwindows, all of which are damaged, only the leaf window would be
+    properly updated on the first round. Then it's parent would be properly
+    updated on the second round, and so on. And on every round all of the
+    ancestor windows would be updated as well, but with stale data.
+    So with N damaged windows you would end up with (N^2+N)/2 updates,
+    instead of the expected N.
+    
+    This reverts commit 648c8871c92727d7b6b16859f27f12266a06a16e.
+    
+    Signed-off-by: Ville Syrjälä <ville.syrjala@nokia.com>
+    Reviewed-by: Keith Packard <keithp@keithp.com>
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit 0998574699502e6ab14fd8899c2e42961d4df7d0
+Author: Ville Syrjälä <ville.syrjala@nokia.com>
+Date:   Wed Jan 5 20:41:05 2011 +0200
+
+    Call SourceValidate even if src == dst
+    
+    The extra SourceValidate calls from damageCopyArea and damageCopyPlane
+    can be removed.
+    
+    Signed-off-by: Ville Syrjälä <ville.syrjala@nokia.com>
+    Reviewed-by: Keith Packard <keithp@keithp.com>
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit e41e907b3c19908f5316346fa587ced3115478cd
+Author: Ville Syrjälä <ville.syrjala@nokia.com>
+Date:   Wed Jan 5 20:41:04 2011 +0200
+
+    Add subWindowMode parameter to SourceValidate
+    
+    Pass the subWindowMode from the GC/source Picture to SourceValidate.
+    
+    Signed-off-by: Ville Syrjälä <ville.syrjala@nokia.com>
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+    Reviewed-by: Keith Packard <keithp@keithp.com>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit 0dede200c9ac7adbe8b8c16efacc3edc1f183cd9
+Merge: 7714357 2e78145
+Author: Keith Packard <keithp@keithp.com>
+Date:   Wed Jan 5 08:51:46 2011 -0800
+
+    Merge remote branch 'vsyrjala/misc_fixes'
+
+commit 7714357f506782973d25e270f85140b42507ed35
+Merge: 02e18c9 b01dd9d
+Author: Keith Packard <keithp@keithp.com>
+Date:   Wed Jan 5 08:43:18 2011 -0800
+
+    Merge remote branch 'whot/for-keith'
+
+commit 02e18c9fb58c33d340af4573551fb9c7c59e0f43
+Author: James Jones <jajones@nvidia.com>
+Date:   Mon Dec 20 11:05:57 2010 -0800
+
+    X Sync Cleanups
+    
+    Various cleanups identified during review of the
+    X Sync Fence Object patches.
+    
+    -Correctly handle failure of AddResource()
+    
+    -Don't assert when data structures are corrupt.  Instead,
+     use a new helper function to check for counter sync
+     objects when they're expected, and warn if the type is
+     wrong.
+    
+    -Use the default switch label rather than reimplementing
+     it.
+    
+    -Re-introduce cast of result of dixAllocateObjectWithPrivate()
+     to kill an incompatible pointer type warning.
+    
+    -Remove comments claiming protocol updates are needed.  One
+     wasn't true and the other was addressed with a xextproto
+     change.
+    
+    -Return BadFence, not BadCounter from XSyncAwaitFence()
+    
+    Signed-off-by: James Jones <jajones@nvidia.com>
+    Reviewed-by: Keith Packard <keithp@keithp.com>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit 86ca434a1ab766c1519ee7146b48dbfead843524
+Author: Zhao Yakui <yakui.zhao@intel.com>
+Date:   Tue Jan 4 14:08:16 2011 -0500
+
+    edid: Fix incorrect timings for VIC61
+    
+    Reviewed-by: Adam Jackson <ajax@redhat.com>
+    Signed-off-by: Anssi Hannula <anssi.hannula@iki.fi>
+    Signed-off-by: Zhao Yakui <yakui.zhao@intel.com>
+
+commit bb18f277156c08be028a6e12d8987fb1593e9168
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Fri Dec 10 14:24:02 2010 -0500
+
+    x86emu: Fix more mis-decoding of the data prefix
+    
+    cc2c73ddcb4370a7c3ad439cda4da825156c26c9's three-cent titanium tax
+    doesn't go too far enough.  Fix the rest of the call and jmp
+    instructions to handle the data prefix correctly.
+    
+    Reference: Intel 64 and IA-32 Architectures Software Developer's Manual
+    Volume 2A: Instruction Set Reference, A-M
+    
+    http://www.intel.com/Assets/PDF/manual/253666.pdf
+    
+    Reviewed-by: Julien Cristau <jcristau@debian.org>
+    Signed-off-by: Adam Jackson <ajax@redhat.com>
+
+commit 261d0d16af797bb52d4c778e220296d7f2b28e14
+Author: Alan Coopersmith <alan.coopersmith@oracle.com>
+Date:   Thu Dec 30 16:08:48 2010 -0800
+
+    Fix asprintf typo in commit d2c42b10
+    
+    Reported-by: Jerome Carretero <cJ@zougloub.eu>
+    Signed-off-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Reviewed-by: Cyril Brulebois <kibi@debian.org>
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+
+commit c6afe64bad7a27ff8828de499d56776c113df60f
+Author: Daniel Stone <daniel@fooishbar.org>
+Date:   Fri Dec 31 03:15:27 2010 +0000
+
+    XFree86: Linux: AGP: Fix void-pointer-arithmetic warning
+    
+    Cast it to a char *, mimicking the return immediately below it.
+    
+    Signed-off-by: Daniel Stone <daniel@fooishbar.org>
+    Reviewed-by: Mark Kettenis <kettenis@openbsd.org>
+
+commit 2d67ada3c4079a11c52024a9c3d4138becca5171
+Author: Pauli Nieminen <ext-pauli.nieminen@nokia.com>
+Date:   Thu Dec 30 19:19:43 2010 +0200
+
+    os: always check if client is local when connection is accepted
+    
+    LocalClient is used for all DRI2 requests that makes it frequently
+    called function. Querying if connection is local or not takes 10-15us
+    (on ARM) depending on malloc speed.
+    
+    Signed-off-by: Pauli Nieminen <ext-pauli.nieminen@nokia.com>
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+
+commit 617b7d22115ccaaaa7ec69c99885054d33a3bc37
+Author: Pauli Nieminen <ext-pauli.nieminen@nokia.com>
+Date:   Thu Dec 30 19:19:42 2010 +0200
+
+    os: Fix a memory leak
+    
+    Signed-off-by: Pauli Nieminen <ext-pauli.nieminen@nokia.com>
+    Reviewed-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+
+commit 3e1455505addc7e52178fa04399aef2a8522c921
+Author: Pauli Nieminen <ext-pauli.nieminen@nokia.com>
+Date:   Thu Dec 30 19:19:41 2010 +0200
+
+    udev: Fix removing of the wake up handler
+    
+    RemoveBlockAndWakeupHandlers requires caller to pass same block data
+    parameter as for RegisterBlockAndWakeupHandlers.
+    
+    Signed-off-by: Pauli Nieminen <ext-pauli.nieminen@nokia.com>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+
+commit 13ac3deedb532b39f41dcd45d70f9eb4a85c1f58
+Author: Pauli Nieminen <ext-pauli.nieminen@nokia.com>
+Date:   Thu Dec 30 19:19:40 2010 +0200
+
+    mi: Only register sprite block handler when needed
+    
+    miSpriteBlockHandler takes about 10us in arm each time BlockHandlers are
+    called. To eliminate that overhead from xserver side only register the
+    BlockHandler when there actually is any cursor down.
+    
+    Signed-off-by: Pauli Nieminen <ext-pauli.nieminen@nokia.com>
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+
+commit 4f6e3b0f378d7306dbd8c00ef9a7df81e24e5769
+Author: Pauli Nieminen <ext-pauli.nieminen@nokia.com>
+Date:   Thu Dec 30 19:19:39 2010 +0200
+
+    mi: Register sprite damage handler only when required
+    
+    There is no need to have damage handler registered when there isn't any
+    pointer in the screen. This avoids some overhead from damage handling
+    which takes tens of microseconds on arm.
+    
+    Signed-off-by: Pauli Nieminen <ext-pauli.nieminen@nokia.com>
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+
+commit bf48082f30818b96bc623834be3022600371d4fc
+Author: Pauli Nieminen <ext-pauli.nieminen@nokia.com>
+Date:   Thu Dec 30 19:19:38 2010 +0200
+
+    mi: Fix the debug message
+    
+    Signed-off-by: Pauli Nieminen <ext-pauli.nieminen@nokia.com>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+
+commit 8fb43b8bf9fcbe015d4e98c7e09889184d136a1e
+Author: Pauli Nieminen <ext-pauli.nieminen@nokia.com>
+Date:   Thu Dec 30 19:19:37 2010 +0200
+
+    mi: Fix wrapping for sprite screen
+    
+    SCREEN_EPILOGUE should read the current function pointer from screen
+    after calling wrapped function in case the pointer changes.
+    
+    Passing pPriv to macros instead of asking dix each time makes sense when
+    both macros need same pointer.
+    
+    Signed-off-by: Pauli Nieminen <ext-pauli.nieminen@nokia.com>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+
+commit 4be2a6d1b33fac7ceb50ad1de249a1acd5a46ab0
+Author: Pauli Nieminen <ext-pauli.nieminen@nokia.com>
+Date:   Thu Dec 30 19:19:36 2010 +0200
+
+    mi: Add GetSpriteScreen macro to hide dixLookupPrivate
+    
+    Signed-off-by: Pauli Nieminen <ext-pauli.nieminen@nokia.com>
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+
+commit ed8db09b4bff5c4a8d8056808368650e1876547b
+Author: Pauli Nieminen <ext-pauli.nieminen@nokia.com>
+Date:   Thu Dec 30 19:19:35 2010 +0200
+
+    composite: Remove unnecessary variable.
+    
+    We know that there is damage if the dynamic block handler is registered.
+    
+    Signed-off-by: Pauli Nieminen <ext-pauli.nieminen@nokia.com>
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+
+commit c038b8b28e5c436cd31bea7a3bef2c8c9d818b58
+Author: Pauli Nieminen <ext-pauli.nieminen@nokia.com>
+Date:   Thu Dec 30 19:19:34 2010 +0200
+
+    composite: Only register the block handler when it is required
+    
+    Even calling block handler that doesn't do much is costly in arm. It
+    takes a few microseconds each time which adds up to relative high CPU
+    time because it is done 500+ times per second.
+    
+    Simple optimization is to register the block handler only when it is
+    required.
+    
+    Signed-off-by: Pauli Nieminen <ext-pauli.nieminen@nokia.com>
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+
+commit 6d0e9e5d6e1b847961ab52a11aae96981a1cf1c0
+Author: Pauli Nieminen <ext-pauli.nieminen@nokia.com>
+Date:   Thu Dec 30 19:19:33 2010 +0200
+
+    render: Enable animated cursor block handler only when needed
+    
+    Calling BlockHandlers takes some time for each iteration in main loop
+    which adds up quickly over multiple request. To reduce the round-trip
+    costs to xserver BlockHandlers should be registered only when required.
+    
+    AnimCurScreenBlockHandler is the first victim for this optimization.
+    
+    Signed-off-by: Pauli Nieminen <ext-pauli.nieminen@nokia.com>
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+
+commit aa8cea953dc66bcf4cb4d08f2681f9e6cb1bc8c5
+Author: Pauli Nieminen <ext-pauli.nieminen@nokia.com>
+Date:   Thu Dec 30 19:19:32 2010 +0200
+
+    render: Don't filter 0 return from GetTimeInMillis
+    
+    In animate cursor block handler code assumes GetTimeInMillis returns
+    always nonzero value. This isn't true when time wraps around.
+    
+    To prevent any problems in case GetTimeInMillis would return zero use
+    activeDevice variable to track if we have received time.
+    
+    Signed-off-by: Pauli Nieminen <ext-pauli.nieminen@nokia.com>
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+
+commit 91beeee05f88eed10ab0fd97dc625e96cb7763ba
+Author: Daniel Stone <daniel@fooishbar.org>
+Date:   Tue Oct 13 16:27:30 2009 +1100
+
+    DIX: Reset window properties when freeing them
+    
+    This enables us to reliably inspect properties when destroying windows.
+    
+    Signed-off-by: Daniel Stone <daniel@fooishbar.org>
+    Reviewed-by: Fernando Carrijo <fcarrijo@freedesktop.org>
+
+commit 36ebdd361616eedbe4919deae2a4e6f6606ae6b4
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Tue Oct 19 11:59:24 2010 -0400
+
+    linux: warning fix
+    
+    lnx_agp.c: In function ‘xf86DeallocateGARTMemory’:
+    lnx_agp.c:267: warning: cast to pointer from integer of different size
+    
+    Signed-off-by: Adam Jackson <ajax@redhat.com>
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+
+commit 63ccaec2c39f4b5742383472c951ee2cd35c9e14
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Tue Oct 19 11:59:23 2010 -0400
+
+    glx: warning fixes
+    
+    render2.c: In function ‘__glXDisp_Map2d’:
+    render2.c:127: warning: ‘u1’ may be used uninitialized in this function
+    render2.c: In function ‘__glXDisp_Map1d’:
+    render2.c:90: warning: ‘u1’ may be used uninitialized in this function
+    
+    Remove unnecessary test, and change memcpy to memmove as all users were
+    doing overlapping copies.
+    
+    Signed-off-by: Adam Jackson <ajax@redhat.com>
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+
+commit d057e265c862f90e9b6fddff89f40cb82b2a59b1
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Tue Oct 19 11:59:22 2010 -0400
+
+    xcmisc: warning fix
+    
+    xcmisc.c:202: warning: no previous prototype for ‘XCMiscExtensionInit’
+    
+    Signed-off-by: Adam Jackson <ajax@redhat.com>
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+
+commit 67e0bcba4307de5a330e027f4504c9aed4987e5a
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Tue Oct 19 11:59:21 2010 -0400
+
+    dri1: warning fix
+    
+    dri.c: In function ‘DRIScreenInit’:
+    dri.c:434: warning: cast from pointer to integer of different size
+    
+    Signed-off-by: Adam Jackson <ajax@redhat.com>
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+
+commit a298d044f965e5ba91f178c6b599c1df26a958ba
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Tue Oct 19 11:59:20 2010 -0400
+
+    loader: warning fix
+    
+    loadmod.c: In function ‘FreeSubdirs’:
+    loadmod.c:377: warning: passing argument 1 of ‘free’ discards qualifiers
+    from pointer target type
+    /usr/include/stdlib.h:488: note: expected ‘void *’ but argument is of
+    type ‘const char *’
+    
+    Signed-off-by: Adam Jackson <ajax@redhat.com>
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+
+commit ee0b1b564413327c73bb8cdbabb76667ca4a744c
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Tue Oct 19 11:59:18 2010 -0400
+
+    config: warning fixes
+    
+    xf86AutoConfig.c: In function ‘FreeList’:
+    xf86AutoConfig.c:123: warning: passing argument 1 of ‘free’ discards
+    qualifiers from pointer target type
+    /usr/include/stdlib.h:488: note: expected ‘void *’ but argument is of
+    type ‘const char *’
+    
+    Signed-off-by: Adam Jackson <ajax@redhat.com>
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+
+commit 32c85ad4b8fe27fed0c494f69c39e3902ce57b1b
+Author: Daniel Stone <daniel@fooishbar.org>
+Date:   Tue Dec 28 12:40:31 2010 +0000
+
+    GLX: DRI2: Fix mismatched-types warning
+    
+    All the DRI extension types have a base extension type as their first
+    member to avoid exactly these types of warning.
+    
+    Signed-off-by: Daniel Stone <daniel@fooishbar.org>
+    Reviewed-by: Mark Kettenis <kettenis@openbsd.org>
+    Reviewed-by: Cyril Brulebois <kibi@debian.org>
+
+commit 22796cfa4805cc9551e1b3fa1d3e2e1bfae5bad1
+Author: Daniel Stone <daniel@fooishbar.org>
+Date:   Tue Dec 28 12:29:53 2010 +0000
+
+    udev: Add strdups to kill const warnings
+    
+    InputAttributes wants non-const members, and while it appears safe to
+    cast it, just leave it be for the moment.
+    
+    Signed-off-by: Daniel Stone <daniel@fooishbar.org>
+    Reviewed-by: Dan Nicholson <dbn.lists@gmail.com>
+
+commit 03f2eb1e156796afb70118d7f7f60ac61beed026
+Author: Daniel Stone <daniel@fooishbar.org>
+Date:   Fri Dec 17 17:13:34 2010 +0000
+
+    Input: Set client error value for invalid mask bits
+    
+    When we send BadValue back to the client for having invalid mask bits,
+    at least tell them what the (first) invalid bit was.
+    
+    Signed-off-by: Daniel Stone <daniel@fooishbar.org>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit 47818287983b04625661b08ae362e0966cddf3e1
+Author: Chase Douglas <chase.douglas@canonical.com>
+Date:   Fri Dec 17 17:13:30 2010 +0000
+
+    Make EventIsDeliverable non-static
+    
+    Will be used outside dix/events.c in proceeding XI 2.1 MT changes.
+    
+    Signed-off-by: Chase Douglas <chase.douglas@canonical.com>
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit f7d8ade3c5ac44faf7f3ea0d846e35f75b31c9ec
+Author: Daniel Stone <daniel@fooishbar.org>
+Date:   Fri Dec 17 17:13:26 2010 +0000
+
+    Resources: Move rClient to resource.h
+    
+    The definition of rClient was duplicated across three source files, so
+    move it to resource.h.
+    
+    Signed-off-by: Daniel Stone <daniel@fooishbar.org>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit 05e437c2ce230b588362f012c06ead5c6d89c006
+Author: Chase Douglas <chase.douglas@canonical.com>
+Date:   Fri Dec 17 17:13:27 2010 +0000
+
+    Export all valuator_mask_* functions
+    
+    Input drivers may use valuator masks for internal state. Having all the
+    valuator_mask_* functions available will help.
+    
+    Signed-off-by: Chase Douglas <chase.douglas@canonical.com>
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+    
+    Bump ABI_XINPUT_VERSION minor.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit 2e781457d43ec4bf0d633257ac6852cde3b00541
+Author: Ville Syrjälä <ville.syrjala@nokia.com>
+Date:   Thu Dec 16 18:22:13 2010 +0200
+
+    xfree86/modes: Take rotation into account when checking mode size
+    
+    Assume that a mode can be used in either landscape or portrait
+    orientation. I suppose the correct thing to do would be to
+    collect all the supported rotations from the CRTCs that can be used
+    with a specific output, but that information doesn't seem to be
+    readily available when these checks are done. So just assume that
+    either orientation is fine.
+    
+    Signed-off-by: Ville Syrjälä <ville.syrjala@nokia.com>
+    Reviewed-by: Adam Jackson <ajax@redhat.com>
+
+commit 0ce25fd7904c792924c3e0ee6fc21a5f1bec1a68
+Author: Ville Syrjälä <ville.syrjala@nokia.com>
+Date:   Fri Dec 3 17:42:16 2010 +0200
+
+    dri2: Don't page flip when the window size doesn't match the pixmap size
+    
+    If the drawable size doesn't match the pixmap size page flipping should
+    not be allowed.
+    
+    If the window is larger than the pixmap, page flipping might need to
+    reposition the CRTC somewhere in the middle of the pixmap. I didn't
+    spot any code that would handle that at least in the intel driver.
+    
+    Also the root pixmap could then move to some negative screen
+    coordinates. Not sure if all bits of code could handle that. Perhaps
+    when composite is enabled screen_x/y would make it work, but without
+    composite there's no way that it would work AFAICS.
+    
+    Signed-off-by: Ville Syrjälä <ville.syrjala@nokia.com>
+    Reviewed-by: Alex Deucher <alexdeucher@gmail.com>
+
+commit efcb63d0ce43f96d0ac02b6f4a480dfd2374fc84
+Author: Daniel Stone <daniel@fooishbar.org>
+Date:   Thu Dec 23 13:33:00 2010 +0000
+
+    Render: Fix 'comparing between distinct pointer types' warning
+    
+    Add the appropriate casts so that gcc shuts up, even if it doesn't
+    matter.
+    
+    Signed-off-by: Daniel Stone <daniel@fooishbar.org>
+    Reviewed-by: Tiago Vignatti <tiago.vignatti@nokia.com>
+
+commit 469d5bf8b75038631c27edbb0f9cdf7d737fa233
+Author: Daniel Stone <daniel@fooishbar.org>
+Date:   Fri Dec 17 16:48:45 2010 +0000
+
+    mi: Sync: Don't free managed screen private
+    
+    misync allocates space for its screen private with
+    dixRegisterPrivateKey, which means it doesn't have to free it at
+    CloseScreen time; doing so will, in fact, result in a crash.
+    
+    Signed-off-by: Daniel Stone <daniel@fooishbar.org>
+    Reviewed-by: James Jones <jajones@nvidia.com>
+    Acked-by: Tiago Vignatti <tiago.vignatti@nokia.com>
+
+commit 44adb31bfece29260a9bbd9075c9212ebf00d24d
+Author: Daniel Stone <daniel@fooishbar.org>
+Date:   Fri Aug 27 20:36:37 2010 +1000
+
+    GetTimeInMillis: Use CLOCK_MONOTONIC_COARSE where available
+    
+    On some systems, using CLOCK_MONOTONIC forces a readback of HPET or some
+    similarly expensive timer.  CLOCK_MONOTONIC_COARSE can alleviate this,
+    at the cost of negligibly-reduced resolution, so prefer that where we
+    can.
+    
+    Signed-off-by: Daniel Stone <daniel@fooishbar.org>
+    Reviewed-by: Julien Cristau <jcristau@debian.org>
+    Reviewed-by: Tiago Vignatti <tiago.vignatti@nokia.com>
+
+commit b01dd9d33651999b0390bf8ed412b84f6929a13e
+Author: Daniel Stone <daniel@fooishbar.org>
+Date:   Fri Dec 17 17:13:34 2010 +0000
+
+    Input: Set client error value for invalid mask bits
+    
+    When we send BadValue back to the client for having invalid mask bits,
+    at least tell them what the (first) invalid bit was.
+    
+    Signed-off-by: Daniel Stone <daniel@fooishbar.org>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit 495e0142a77152c4cde5c88cdba4103ddc94df2c
+Author: Chase Douglas <chase.douglas@canonical.com>
+Date:   Fri Dec 17 17:13:30 2010 +0000
+
+    Make EventIsDeliverable non-static
+    
+    Will be used outside dix/events.c in proceeding XI 2.1 MT changes.
+    
+    Signed-off-by: Chase Douglas <chase.douglas@canonical.com>
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit 4fbe67beb56e5600c1df789c08725c45b9bef0d4
+Author: Daniel Stone <daniel@fooishbar.org>
+Date:   Fri Dec 17 17:13:26 2010 +0000
+
+    Resources: Move rClient to resource.h
+    
+    The definition of rClient was duplicated across three source files, so
+    move it to resource.h.
+    
+    Signed-off-by: Daniel Stone <daniel@fooishbar.org>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit 871c1e17e527857cd86b5e517d9a18e5041f00fd
+Author: Chase Douglas <chase.douglas@canonical.com>
+Date:   Fri Dec 17 17:13:27 2010 +0000
+
+    Export all valuator_mask_* functions
+    
+    Input drivers may use valuator masks for internal state. Having all the
+    valuator_mask_* functions available will help.
+    
+    Signed-off-by: Chase Douglas <chase.douglas@canonical.com>
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+    
+    Bump ABI_XINPUT_VERSION minor.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit e06fa804009798ea95efa8babaabb0228dfdfe65
+Author: Michel Dänzer <daenzer@vmware.com>
+Date:   Wed Dec 22 11:45:36 2010 +0100
+
+    EXA: Fix crash with fill using 1x1 tile of depth < 8 (bug #24703).
+    
+    Fixes http://bugs.freedesktop.org/show_bug.cgi?id=24703 .
+    
+    Signed-off-by: Michel Dänzer <daenzer@vmware.com>
+    Reviewed-by: Dave Airlie <airlied@redhat.com>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit 56d9c736f0c450bffd43300107689eb6dd1ea70b
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Thu Dec 16 14:26:10 2010 -0500
+
+    xfree86: Convert some xf86BlockSIGIO to OsBlockSignals
+    
+    The DDC1 and int10 code are blocking SIGIO to get some assurance that
+    their usleep() calls take as long as they expect.  That's a good start
+    but you really want to be blocking more than just SIGIO, SIGALRM too at
+    minimum.
+    
+    At this point, except for SIGIO handler setup itself, BlockSIGIO really
+    means "block input events".
+    
+    Reviewed-by: Tiago Vignatti <tiago.vignatti@nokia.com>
+    Signed-off-by: Adam Jackson <ajax@redhat.com>
+
+commit ce13a1dbbfbeee3a3d51d0385817df50944cfdee
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Thu Dec 16 14:03:13 2010 -0500
+
+    xfree86: Remove xf86EnterServerState
+    
+    Back when we had RAC this was a vaguely meaningful thing.  Since then
+    it's been a glorified (and confusing) wrapper around xf86BlockSIGIO.
+    
+    Note that the APM and VT switch code are unusual relative to other code
+    that cares about SIGIO state.  Most callers push a SIGIO disable to
+    create a critical section for the duration of the caller's stack frame,
+    but those two effectively disable SIGIO after their return and re-enable
+    on their next entry.
+    
+    Reviewed-by: Tiago Vignatti <tigo.vignatti@nokia.com>
+    Signed-off-by: Adam Jackson <ajax@redhat.com>
+
+commit a04e74cb480f98bc3dd4def2da6f6752640d9e38
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Wed Dec 15 15:16:33 2010 -0500
+
+    xfree86: Symmetrize xf86AccessEnter and xf86AccessLeave
+    
+    Enter was changing server operating state, Leave wasn't.  Which was
+    wholly redundant, since all callers of Enter would immediately change
+    the operating state to exactly what Enter had just done.
+    
+    Reviewed-by: Tiago Vignatti <tiago.vignatti@nokia.com>
+    Signed-off-by: Adam Jackson <ajax@redhat.com>
+
+commit 7a9062f2f029b4f911ba56f291375fbf5a98ca73
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Tue Dec 14 15:44:16 2010 -0500
+
+    fonts: Fix typo in async ListFonts logic
+    
+    This was introduced in 3ab6cd31cbdf8095b2948034fce5fb645422d8da.  Mea
+    culpa.  This logic is still incorrect [1], but at least it's less
+    incorrect.
+    
+    [1] - https://bugzilla.redhat.com/658587
+    
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+    Signed-off-by: Adam Jackson <ajax@redhat.com>
+
+commit f28e48834e40c7901c2efc72f962c9724e74a531
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Thu Dec 16 13:13:54 2010 -0500
+
+    Remove SCO support
+    
+    This has never been buildable in any modular server release.
+    
+    Reviewed-by: Julien Cristau <jcristau@debian.org>
+    Reviewed-by: Mark Kettenis <kettenis@openbsd.org>
+    Signed-off-by: Adam Jackson <ajax@redhat.com>
+
+commit 040d54fb88f3970e19d0fbf911d6447f592496bd
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Wed Dec 15 14:59:13 2010 -0500
+
+    xfree86: Remove unused xf86inSuspend
+    
+    What is this, I don't even.
+    
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+    Signed-off-by: Adam Jackson <ajax@redhat.com>
+
+commit e7dc253452a1ba64718a08fdc070405b494f53cd
+Merge: d110791 d5b0d58
+Author: Keith Packard <keithp@keithp.com>
+Date:   Mon Dec 20 00:48:45 2010 -0800
+
+    Merge remote branch 'alanc/master'
+
+commit d1107918d4626268803b54033a07405122278e7f
+Author: Tiago Vignatti <tiago.vignatti@nokia.com>
+Date:   Fri Dec 17 16:09:35 2010 +0200
+
+    randr: check for virtual size limits before set crtc
+    
+    Return a error if the screen is configured to an invalid size.
+    
+    Signed-off-by: Tiago Vignatti <tiago.vignatti@nokia.com>
+    Reviewed-by: Adam Jackson <ajax@redhat.com>
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit 4b88c7be8de4149fe3d166bf115775f9e81a1373
+Author: Jörn Horstmann <launchpad@planetxml.de>
+Date:   Mon Dec 6 11:24:02 2010 +1100
+
+    Add EDID quirk for HP Compaq nc8430.
+    
+    Like some other LPL panels, this one reports the vertical size in cm rather
+    than mm.
+    Patch taken from Launchpad bug #380009 <https://launchpad.net/bugs/380009>
+    
+    X.Org Bug 28414 <https://bugs.freedesktop.org/show_bug.cgi?id=28414>
+    
+    Signed-off-by: Christopher James Halse Rogers <christopher.halse.rogers@canonical.com>
+    Reviewed-by: Adam Jackson <ajax@redhat.com>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit a2e67a6412386782cb8b644b86a5744591397d45
+Author: Christopher James Halse Rogers <christopher.halse.rogers@canonical.com>
+Date:   Mon Dec 6 11:24:01 2010 +1100
+
+    IDLETIME: Fix edge-case in IdleTimeBlockHandler
+    
+    Ensure that if we're called exactly on the threshold of a
+    NegativeTransition trigger that we reshedule to pick up
+    an idle time over the threshold.
+    
+    Signed-off-by: Christopher James Halse Rogers <christopher.halse.rogers@canonical.com>
+    Reviewed-by: Adam Jackson <ajax@redhat.com>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit b55bf248581dc66321b24b29f199f6dc8d02db1b
+Author: Christopher James Halse Rogers <christopher.halse.rogers@canonical.com>
+Date:   Mon Dec 6 11:24:00 2010 +1100
+
+    Xext: Fix edge case with {Positive, Negative}Transition triggers.
+    
+    The {Positive,Negative}Transition triggers only fire when the counter
+    goes from strictly {below,above} the threshold.  If
+    SyncComputeBracketValues gets called exactly at this threshold we may update
+    the bracket values so that the counter is not updated past the threshold.
+    
+    Signed-off-by: Christopher James Halse Rogers <christopher.halse.rogers@canonical.com>
+    Reviewed-by: Adam Jackson <ajax@redhat.com>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit d5b0d58573ffb90ea70273cd013102168fd2a18a
+Author: Alan Coopersmith <alan.coopersmith@oracle.com>
+Date:   Thu Dec 16 22:29:37 2010 -0800
+
+    Bug 32436 - hw/xfree86/parser/Makefile.am TOP_SRCDIR should be top_srcdir
+    
+    https://bugs.freedesktop.org/show_bug.cgi?id=32436
+    Fix typo introduced in 2416255f7e3fd9190a9 that breaks builds when
+    configured --enable-install-libxf86config
+    
+    Signed-off-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Reviewed-by: Julien Cristau <jcristau@debian.org>
+    Tested-by: Simon Thum <simon.thum@gmx.de>
+
+commit 058b889fde47b4c32534f11ed651bf1749d1dbb2
+Author: David Barksdale <david.barksdale@adcedosolutions.com>
+Date:   Mon Dec 13 18:35:20 2010 -0800
+
+    Bug 21827: faulty sdksyms.c generated by the awk script in sdksyms.sh
+    
+    https://bugs.freedesktop.org/show_bug.cgi?id=21827
+    
+    Tested-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Signed-off-by: David Barksdale <david.barksdale@adcedosolutions.com>
+    Signed-off-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+
+commit 1324b0ca9f8a7fdaf03b374c75eb3c9df407c2f1
+Author: Colin Harrison <colin.harrison@virgin.net>
+Date:   Fri Dec 10 00:08:24 2010 +0000
+
+    Typo in xserver Xvasprintf()
+    
+    I needed this patch in the wrapper around vsnprintf() in os/xprintf.c
+    (MinGW for Windows build) to correct various crashes.
+    
+    Reviewed-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+
+commit f1542f1d716723cba7c323849086585635121893
+Merge: 9716d31 8a8fdd7
+Author: Keith Packard <keithp@keithp.com>
+Date:   Tue Dec 14 15:04:12 2010 -0800
+
+    Merge remote branch 'whot/for-keith'
+
+commit 9716d3124799c6db0d1c782aa72c72f972d5a158
+Merge: 03ea0b7 f641e4b
+Author: Keith Packard <keithp@keithp.com>
+Date:   Tue Dec 14 15:01:36 2010 -0800
+
+    Merge remote branch 'jeremyhu/master'
+
+commit 03ea0b7726487b96df73936518da73d023e51334
+Author: Gaetan Nadon <memsize@videotron.ca>
+Date:   Tue Dec 7 16:31:55 2010 -0500
+
+    docs: replace BUILLDOCS with existing ENABLE_DEVEL_DOCS
+    
+    Use the util-macros AM Conditionals to control generation of developers
+    documents. This is used throughout xorg modules.
+    
+    The doxygen generated docs are now also managed by --enable-devel-docs.
+    
+    Remove --enable-builddocs as this was last use for BUILDDOCS
+    
+    	*** From the RELEASE NOTES ***
+    
+     New configure options for documentation in modules
+     --------------------------------------------------
+     As many more modules now contain documentation to be converted from DocBook XML to text,
+     HTML, PostScript, and/or PDF formats, new standard options have been added to the configure
+     macros to control the build of these in the modules.
+     --with-xmlto=yes|no
+                         Enables or disables use of the xmlto [https://fedorahosted.org/
+                         xmlto/] command to translate DocBook XML to other formats.
+                         All DocBook XML conversions require use of this command.
+     --with-fop=yes|no
+                         Enables or disables use of the Apache fop [http://
+                         xmlgraphics.apache.org/fop/] command to translate DocBook
+                         XML to PostScript and PDF formats.
+     --enable-docs=yes|no
+                         Enables or disables the build and installation of all
+                         documentation except traditional man pages or those covered
+                         by the --enable-devel-docs and --enable-specs options.
+     --enable-devel-docs=yes|no
+                         Enables or disables the build and installation of documentation
+                         for developers of the X.Org software modules.
+     --enable-specs=yes|no
+                         Enables or disables the build and installation of the formal
+                         specification documents for protocols and APIs.
+    
+    Reviewed-by: Tiago Vignatti <tiago.vignatti@nokia.com>
+    Signed-off-by: Gaetan Nadon <memsize@videotron.ca>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit c78c71c3a872665e426a0a4b82f17007bd8c12cd
+Author: Gaetan Nadon <memsize@videotron.ca>
+Date:   Tue Dec 7 16:31:54 2010 -0500
+
+    hw/dmx/doc: DIST_SUBDIRS not required when using AM_CONDITIONAL
+    
+    The makefile can be simplyfied as Automake handle this automatically.
+    All directories in SUBDIRS are visited for dist purposes.
+    
+    www.gnu.org/software/automake/manual/automake.html#SUBDIRS-vs-DIST_005fSUBDIRS
+    
+    Reviewed-by: Tiago Vignatti <tiago.vignatti@nokia.com>
+    Signed-off-by: Gaetan Nadon <memsize@videotron.ca>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit 8a8fdd762ad89c350854943311ec4aadc50245fa
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Mon Dec 13 11:28:30 2010 +1000
+
+    xfree86: always report the input options before initialising the device.
+    
+    After collecting the driver's default options, report the list of options
+    set for the device before calling PreInit(). This helps with debugging those
+    cases where options are not merged correctly.
+    
+    xf86OptionListReport reports with verbosity 5, higher than the default
+    verbosity so this won't generate logspam in the default case.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Dan Nicholson <dbn.lists@gmail.com>
+    Reviewed-by: Simon Thum <simon.thum@gmx.de>
+
+commit 9db9e964f6ca553dcbd3b7b037745d9581eaa065
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Fri Dec 10 13:23:13 2010 +1000
+
+    xfree86: swap the order to-be-merged lists in xf86CollectInputOptions.
+    
+    Current order causes the user-configured option list to be overwritten with
+    the default list supplied by the driver. Swap around so we overwrite the
+    driver's default values instead.
+    
+    This only affected options supplied by the driver such as XkbLayout in the
+    case of evdev.
+    
+    Reported-by: Sebastian Glita <glseba@yahoo.com>
+    Reported-by: Simon Thum <simon.thum@gmx.de>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Simon Thum <simon.thum@gmx.de>
+    Reviewed-by: Dan Nicholson <dbn.lists@gmail.com>
+    Tested-by: Sebastian Glita <glseba@yahoo.com>
+
+commit 0d440a1c6e219cd39dbddd2b7e813c6431aac6ea
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Wed Dec 8 14:52:19 2010 +1000
+
+    dix: allow for button-only input devices (#21457)
+    
+    Add a few checks for the existence of a valuator class on the device to
+    avoid null-pointer dereferences for button events from devices without a
+    valuator class.
+    
+    X.Org Bug 21457 <http://bugs.freedesktop.org/show_bug.cgi?id=21457>
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Chase Douglas <chase.douglas@canonical.com>
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+
+commit f641e4b34aa91ecda29e546b8b975e72ce037ed0
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Wed Dec 8 22:58:12 2010 -0800
+
+    XQuartz GL: Add $(GL_CFLAGS) to CFLAGS
+    
+    This fixes a build failure I found on tinderbox.
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+
+commit 9cf055892dd413932e54b43cc2dfea70bafd525f
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Wed Dec 8 14:43:51 2010 +1000
+
+    xfree86: don't set movement flags for non-valuator events.
+    
+    If a device doesn't send valuators, don't try to move its position.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Chase Douglas <chase.douglas@canonical.com>
+
+commit aba8133c9c5a50753c388d76407868ac69f4134b
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Wed Dec 8 14:02:17 2010 +1000
+
+    dix: clear up an overly convoluted if statement.
+    
+    No functional changes, just improves readability. This statement had things
+    added to/removed from it for a few server releases while the input event
+    queue was revamped. What made sense once is now mainly confusing.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Chase Douglas <chase.douglas@canonical.com>
+
+commit 883039e07b0c0ef23c7fc4ba3455b41173c7a7fc
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Wed Dec 8 13:27:41 2010 -0800
+
+    XQuartz: Just NSBeep() for XBell()
+    
+    The CoreAudio path uses deprecated API and has reported crashes that
+    aren't worth fixing (4e8bf12b13690afa6d9fee0e339d3819ef16fb3f fixed
+    one and introduced another).  NSBeep() does the job just fine.
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+
+commit 2c70b650b342378898064cf27e2f95c4b2e53d24
+Author: Jon TURNEY <jon.turney@dronecode.org.uk>
+Date:   Wed Dec 8 18:54:30 2010 +0000
+
+    Fix Xwin build after af0f9f91
+    
+    Fix damage to XWIN_LIBS in commit af0f9f913398d34a885c3fb4e8d40c1a7e2b3ee9
+    "Move some sync code to miext", which broke the XWin build
+    
+    Signed-off-by: Jon TURNEY <jon.turney@dronecode.org.uk>
+    Reviewed-by: Colin Harrison <colin.harrison at virgin.net>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit 519d243f0c8e3c80226701f71d2cfa62e42dbff7
+Merge: 9f9c732 446482e
+Author: Keith Packard <keithp@keithp.com>
+Date:   Tue Dec 7 13:39:58 2010 -0800
+
+    Merge remote branch 'alanc/master'
+
+commit 446482efaa3d266266e2a143492a3ec0523622bd
+Author: Alan Coopersmith <alan.coopersmith@oracle.com>
+Date:   Sun Nov 28 09:41:17 2010 -0800
+
+    Convert cvt code to use XNFasprintf()
+    
+    Requires linking xprintf.c into standalone cvt utility
+    
+    Signed-off-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Reviewed-by: Mikhail Gusarov <dottedmag@dottedmag.net>
+    Reviewed-by: Julien Cristau <jcristau@debian.org>
+
+commit d2c42b102707db6c1ca9dccc4de9210a43650cb1
+Author: Alan Coopersmith <alan.coopersmith@oracle.com>
+Date:   Sat Nov 27 23:10:46 2010 -0800
+
+    Replace alloc+strcpy+strcat with asprintf() & XNFasprintf() calls
+    
+    Signed-off-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Reviewed-by: Mikhail Gusarov <dottedmag@dottedmag.net>
+
+commit 3a9bb93dd178084f4ff1abcea331ca5a62f88ce6
+Author: Alan Coopersmith <alan.coopersmith@oracle.com>
+Date:   Sat Nov 27 22:38:27 2010 -0800
+
+    Convert alloc+sprintf pairs into asprintf() & XNFasprintf() calls
+    
+    Signed-off-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Reviewed-by: Mikhail Gusarov <dottedmag@dottedmag.net>
+
+commit 2416255f7e3fd9190a9e01bda57c992932de4bd9
+Author: Alan Coopersmith <alan.coopersmith@oracle.com>
+Date:   Sat Nov 27 22:36:44 2010 -0800
+
+    Convert hw/xfree86/parser code to use asprintf() calls
+    
+    Requires linking xprintf.c into libxf86config for those who build it.
+    
+    Signed-off-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Reviewed-by: Mikhail Gusarov <dottedmag@dottedmag.net>
+
+commit 03e8bfa1d122f7dea905d48c93cfd54afd991dfd
+Author: Alan Coopersmith <alan.coopersmith@oracle.com>
+Date:   Sat Nov 27 20:09:04 2010 -0800
+
+    Convert existing Xprintf style calls to asprintf style
+    
+    Signed-off-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Reviewed-by: Jeremy Huddleston <jeremyhu@apple.com>
+    Reviewed-by: Mikhail Gusarov <dottedmag@dottedmag.net>
+
+commit c95c1d338fdb62dbe3dba934b97324fa778b7fce
+Author: Alan Coopersmith <alan.coopersmith@oracle.com>
+Date:   Sat Nov 27 18:43:12 2010 -0800
+
+    Add asprintf() implementation for platforms without it
+    
+    Provides a portable implementation of this common allocating sprintf()
+    API found in many, but not yet all, of the platforms we support.
+    If the platform provides vasprintf() we simply wrap it, otherwise we
+    implement it - either way callers can use it regardless of platform.
+    
+    Since not all platforms guarantee to NULL out the return pointer on
+    failure, we don't either, and require callers to check the return
+    value for -1.
+    
+    The old Xprintf() API is deprecated, but left for compatibility for now.
+    
+    The new API is added in a new header so that it can be used in parts of
+    the server such as hw/xfree86/parser that don't include all the server
+    headers.
+    
+    Signed-off-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Reviewed-by: Mikhail Gusarov <dottedmag@dottedmag.net>
+
+commit 2db6951763115a4a5dfac53d1a8f78ac33f91235
+Author: Alan Coopersmith <alan.coopersmith@oracle.com>
+Date:   Fri Dec 3 16:32:01 2010 -0800
+
+    Sun's copyrights now belong to Oracle
+    
+    Signed-off-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Reviewed-by: Mikhail Gusarov <dottedmag@dottedmag.net>
+
+commit f06e8a61d6ed8f3054878167bffee619f852aad9
+Author: Alan Coopersmith <alan.coopersmith@oracle.com>
+Date:   Tue Nov 30 16:34:38 2010 -0800
+
+    Move inclusion of panoramiX headers to top of render.c
+    
+    Fixes compiler error from Sun compilers due to _X_EXPORT declaration
+    being included after the unlabeled version:
+    
+    "../Xext/panoramiXsrv.h", line 29: redeclaration must have the same or more restrictive linker scoping: XRT_PICTURE
+    
+    Signed-off-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit 9f9c732311ef0cc198e5ec44d02412eb7e8c3f3a
+Author: Cyril Brulebois <kibi@debian.org>
+Date:   Fri Nov 12 21:35:25 2010 +0100
+
+    dix: Fix logic for displaying deprecation warning only once.
+    
+    As pointed out by Jamey Sharp (again), the logic is faulty: --warn is
+    always going to be false. Replace it with warn-- accordingly, so that
+    there's (at least, but also only) one warning showing up.
+    
+    Reviewed-by: Jamey Sharp <jamey@minilop.net>
+    Signed-off-by: Cyril Brulebois <kibi@debian.org>
+
+commit a937803c1f671ef29332e5fe8c190d8b48239912
+Author: Cyril Brulebois <kibi@debian.org>
+Date:   Fri Nov 12 21:29:26 2010 +0100
+
+    dix: Simplify deprecated *Lookup* wrappers around dixLookup*.
+    
+    As pointed out by Jamey Sharp: “the result pointer is already guaranteed
+    to be NULL if the return value is not Success”, so get rid of the
+    variable used to catch the return value, and used in a ternary operation
+    to decide whether to return the pointer or NULL. Always return the
+    result pointer instead.
+    
+    Reviewed-by: Jamey Sharp <jamey@minilop.net>
+    Signed-off-by: Cyril Brulebois <kibi@debian.org>
+
+commit 73fbc4a4a7997b3ee1c779d8f394114270bcb20d
+Author: Cyril Brulebois <kibi@debian.org>
+Date:   Fri Nov 12 12:04:11 2010 +0100
+
+    Replace SecurityLookupIDByClass() with dixLookupResourceByClass().
+    
+    This patch has been prepared with the following Coccinelle semantic patch:
+    
+    @@
+    expression a, b, c, d;
+    identifier r;
+    type t;
+    @@
+    -r = (t) SecurityLookupIDByClass(a, b, c, d);
+    +dixLookupResourceByClass((pointer*) &r, b, c, a, d);
+    
+    The only occurrence not matching directly was processed after separating
+    declaration of pXinDraw and call to SecurityLookupIDByClass().
+    
+    Reviewed-by: Jamey Sharp <jamey@minilop.net>
+    Signed-off-by: Cyril Brulebois <kibi@debian.org>
+
+commit 6e8b34b7048bc9e49ef52b81e2de1b518a05890e
+Author: Cyril Brulebois <kibi@debian.org>
+Date:   Fri Nov 12 11:36:36 2010 +0100
+
+    Replace SecurityLookupIDByType() with dixLookupResourceByType(), take 2.
+    
+    These occurrences are a bit harder to catch through a semantic patch,
+    so process them “manually”.
+    
+    Reviewed-by: Jamey Sharp <jamey@minilop.net>
+    Signed-off-by: Cyril Brulebois <kibi@debian.org>
+
+commit ac04c1377a42ab6803adf551756653fd8e1a694b
+Author: Cyril Brulebois <kibi@debian.org>
+Date:   Fri Nov 12 11:36:31 2010 +0100
+
+    Replace SecurityLookupIDByType() with dixLookupResourceByType(), take 1.
+    
+    This patch has been prepared with the following Coccinelle semantic patch:
+    
+    @@
+    expression a, b, c, d;
+    identifier r;
+    @@
+    -r = SecurityLookupIDByType(a, b, c, d);
+    +dixLookupResourceByType((pointer*) &r, b, c, a, d);
+    
+    Reviewed-by: Jamey Sharp <jamey@minilop.net>
+    Signed-off-by: Cyril Brulebois <kibi@debian.org>
+
+commit 28b4c02d7463ffe5c29f803f5656c5ecfc040185
+Author: Cyril Brulebois <kibi@debian.org>
+Date:   Thu Nov 11 18:36:45 2010 +0100
+
+    Enable silent rules for cat and echo.
+    
+    One gets this:
+    |   GEN    lf3-xaaBitmap.c
+    |   GEN    lf3-xaaBitmap.c
+    |   GEN    lf3-xaaBitmap.c
+    |   GEN    lf3-xaaBitmap.c
+    |   CC     lf3-xaaBitmap.lo
+    
+    instead of this:
+    | echo "#define LSBFIRST" > l3-xaaBitmap.c
+    | echo "#define TRIPLE_BITS" >> l3-xaaBitmap.c
+    | echo '#include "../../../../hw/xfree86/xaa/xaaBitmap.c"' >> l3-xaaBitmap.c
+    |   CC     l3-xaaBitmap.lo
+    
+    Occurrences found using:
+    | git grep -E '(cat|echo)' -- '*Makefile.am'
+    
+    Reviewed-by: Gaetan Nadon <memsize@videotron.ca>
+    Signed-off-by: Cyril Brulebois <kibi@debian.org>
+
+commit 838b9582280030a159878af566126cb0a523ec29
+Author: Cyril Brulebois <kibi@debian.org>
+Date:   Thu Nov 11 15:40:13 2010 +0100
+
+    Replace LookupIDByType() with dixLookupResourceByType(), take 2.
+    
+    These occurrences are a bit harder to catch through a semantic patch,
+    so process them “manually”.
+    
+    Reviewed-by: Jamey Sharp <jamey@minilop.net>
+    Signed-off-by: Cyril Brulebois <kibi@debian.org>
+
+commit ffb93533fd8067c7383aef5e0018a197af59b46c
+Author: Cyril Brulebois <kibi@debian.org>
+Date:   Thu Nov 11 15:30:15 2010 +0100
+
+    Replace LookupIDByType() with dixLookupResourceByType(), take 1.
+    
+    This patch has been prepared with the following Coccinelle semantic patch:
+    
+    @@
+    expression x, y;
+    type t;
+    identifier r;
+    @@
+    -r = (t) LookupIDByType(x, y);
+    +dixLookupResourceByType((pointer*)&r, x, y, NullClient, DixUnknownAccess);
+    
+    @@
+    expression x, y;
+    type t;
+    identifier r;
+    @@
+    -t r = (t) LookupIDByType(x, y);
+    +t r;
+    +dixLookupResourceByType((pointer*)&r, x, y, NullClient, DixUnknownAccess);
+    
+    Reviewed-by: Jamey Sharp <jamey@minilop.net>
+    Signed-off-by: Cyril Brulebois <kibi@debian.org>
+
+commit d1b45b0fd54efb952f9ff435a516c1bfd85ca186
+Author: Cyril Brulebois <kibi@debian.org>
+Date:   Thu Nov 11 11:35:47 2010 +0100
+
+    Fix missing <string.h> include.
+    
+    The following happens otherwise (with -Wall -Werror):
+    | In file included from /usr/include/X11/Xfuncs.h:47,
+    |                  from ../../include/misc.h:112,
+    |                  from ../../include/screenint.h:52,
+    |                  from ../../include/scrnintstr.h:52,
+    |                  from ../../dix/cursor.c:58:
+    | /usr/include/string.h:534: error: conflicting types for ‘xstrcasecmp’
+    | ../../include/os.h:488: note: previous declaration of ‘xstrcasecmp’ was here
+    | /usr/include/string.h:538: error: conflicting types for ‘xstrncasecmp’
+    | ../../include/os.h:493: note: previous declaration of ‘xstrncasecmp’ was here
+    
+    Reviewed-by: Julien Cristau <jcristau@debian.org>
+    Signed-off-by: Cyril Brulebois <kibi@debian.org>
+
+commit 780754050bc9cb1489f92a2a890ab5665e3e6358
+Author: Cyril Brulebois <kibi@debian.org>
+Date:   Fri Nov 12 12:18:59 2010 +0100
+
+    Fix GLX_LIBS vs. DMX_LIBS order.
+    
+    If glxproxy needs symbols which aren't pulled in by dmx itself, glxproxy
+    fails to link because of undefined references.
+    
+    Signed-off-by: Cyril Brulebois <kibi@debian.org>
+    Reviewed-by: Julien Cristau <jcristau@debian.org>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
 commit 14983286c489ea1ec6ba4fadbeaec5c2d2ee34e1
 Author: Keith Packard <keithp@keithp.com>
 Date:   Mon Dec 6 20:45:35 2010 -0800
