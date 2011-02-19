@@ -7,6 +7,10 @@ xorg-server (2:1.9.4-3) UNRELEASED; urgency=low
     - xserver-xorg-core.postrm.in: Rename as xserver-xorg-core.postrm,
       handling upgrades from 1.5 is no longer needed, only keep the logs
       removal and the #DEBHELPER# placeholder.
+  * Move remaining xsfbs bits to debian/rules:
+    - Create/clean stampdir/.
+    - Use quilt.make, $(QUILT_STAMPFN), unpatch.
+    - Define SOURCE_NAME and SOURCE_VERSION.
 
  -- Cyril Brulebois <kibi@debian.org>  Sat, 19 Feb 2011 17:37:18 +0100
 
