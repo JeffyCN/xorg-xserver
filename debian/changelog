@@ -2,6 +2,8 @@ xorg-server (2:1.9.4-3) UNRELEASED; urgency=low
 
   * Maintainer script clean-up:
     - xserver-xorg-core.preinst.in: Remove, 1.5 is long gone.
+    - xserver-xorg-core.postinst.in: Remove, 1.5 is long gone, and 1.7.4
+      was between lenny and squeeze.
 
  -- Cyril Brulebois <kibi@debian.org>  Sat, 19 Feb 2011 17:37:18 +0100
 
