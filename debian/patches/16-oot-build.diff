@@ -1,0 +1,31 @@
+Without abs_builddir or builddir, out-of-tree building seems to fail
+since symlinks aren't created. Using builddir didn't seem to work, while
+abs_builddir did the trick. Stick to that until further investigation.
+
+--- a/hw/dmx/doc/Makefile.am
++++ b/hw/dmx/doc/Makefile.am
+@@ -27,7 +27,7 @@ include $(top_srcdir)/doc/xml/xmlrules-n
+ 
+ if HAVE_DOXYGEN
+ 
+-DOXYGEN_SRC=doxygen.head doxygen.foot doxygen.css doxygen.conf
++DOXYGEN_SRC=$(abs_builddir)/doxygen.head $(abs_builddir)/doxygen.foot $(abs_builddir)/doxygen.css $(srcdir)/doxygen.conf
+ 
+ all-local: html/annotated.html
+ 
+@@ -254,12 +254,12 @@ EXTRA_DIST = \
+ 	html/usb-private_8h.html \
+ 	html/usb-private_8h_source.html
+ 
+-$(builddir)/doxygen.head:
++$(abs_builddir)/doxygen.head:
+ 	$(LN_S) $(srcdir)/doxygen.head $@
+ 
+-$(builddir)/doxygen.foot:
++$(abs_builddir)/doxygen.foot:
+ 	$(LN_S) $(srcdir)/doxygen.foot $@
+ 
+-$(builddir)doxygen.css:
++$(abs_builddir)/doxygen.css:
+ 	$(LN_S) $(srcdir)/doxygen.css $@
+ 

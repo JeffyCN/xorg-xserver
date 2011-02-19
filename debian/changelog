@@ -17,6 +17,7 @@ xorg-server (2:1.9.99.902-1) UNRELEASED; urgency=low
   * Bump serverminver again, since ABI_XINPUT_VERSION was bumped from 12.0
     to 12.2.
   * Update debian/copyright from upstream COPYING.
+  * Add patch to work around out-of-tree issues: 16-oot-build.diff
 
  -- Christopher James Halse Rogers <raof@ubuntu.com>  Wed, 19 Jan 2011 10:28:16 +1100
 
