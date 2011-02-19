@@ -1,3 +1,10 @@
+xorg-server (2:1.9.4-3) UNRELEASED; urgency=low
+
+  * Maintainer script clean-up:
+    - xserver-xorg-core.preinst.in: Remove, 1.5 is long gone.
+
+ -- Cyril Brulebois <kibi@debian.org>  Sat, 19 Feb 2011 17:37:18 +0100
+
 xorg-server (2:1.9.4-2) unstable; urgency=low
 
   * Put an end to the dependency hell! Now that we have proper
