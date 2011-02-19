@@ -1,3 +1,10 @@
+xorg-server (2:1.9.99.902-2) UNRELEASED; urgency=low
+
+  * Bump dependency on x11proto-randr-dev, needed since xorg-server.pc
+    pulls a newer randrproto version.
+
+ -- Cyril Brulebois <kibi@debian.org>  Sat, 19 Feb 2011 16:56:06 +0100
+
 xorg-server (2:1.9.99.902-1) experimental; urgency=low
 
   [ Christopher James Halse Rogers ]
