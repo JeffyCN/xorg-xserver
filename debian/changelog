@@ -1,4 +1,4 @@
-xorg-server (2:1.9.4-3) UNRELEASED; urgency=low
+xorg-server (2:1.9.4-3) unstable; urgency=low
 
   * Maintainer script clean-up:
     - xserver-xorg-core.preinst.in: Remove, 1.5 is long gone.
@@ -16,7 +16,7 @@ xorg-server (2:1.9.4-3) UNRELEASED; urgency=low
   * Add patch: 20-update-gpu-pitch.diff (from upstream bug 33929), fixing
     issues with the radeon driver (Closes: #613957).
 
- -- Cyril Brulebois <kibi@debian.org>  Sat, 19 Feb 2011 17:37:18 +0100
+ -- Cyril Brulebois <kibi@debian.org>  Sun, 20 Feb 2011 05:35:50 +0100
 
 xorg-server (2:1.9.4-2) unstable; urgency=low
 
