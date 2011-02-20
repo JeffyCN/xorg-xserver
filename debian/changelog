@@ -2,6 +2,7 @@ xorg-server (2:1.9.99.902-2) UNRELEASED; urgency=low
 
   * Bump dependency on x11proto-randr-dev, needed since xorg-server.pc
     pulls a newer randrproto version.
+  * Merge from debian-unstable (picking packaging updates from 2:1.9.4-3).
 
  -- Cyril Brulebois <kibi@debian.org>  Sat, 19 Feb 2011 16:56:06 +0100
 
@@ -28,7 +29,27 @@ xorg-server (2:1.9.99.902-1) experimental; urgency=low
 
  -- Cyril Brulebois <kibi@debian.org>  Sat, 19 Feb 2011 15:29:54 +0100
 
-xorg-server (2:1.9.4-2) UNRELEASED; urgency=low
+xorg-server (2:1.9.4-3) unstable; urgency=low
+
+  * Maintainer script clean-up:
+    - xserver-xorg-core.preinst.in: Remove, 1.5 is long gone.
+    - xserver-xorg-core.postinst.in: Remove, 1.5 is long gone, and 1.7.4
+      was between lenny and squeeze.
+    - xserver-xorg-core.postrm.in: Rename as xserver-xorg-core.postrm,
+      handling upgrades from 1.5 is no longer needed, only keep the logs
+      removal and the #DEBHELPER# placeholder.
+  * Move remaining xsfbs bits to debian/rules:
+    - Create/clean stampdir/.
+    - Use quilt.make, $(QUILT_STAMPFN), unpatch.
+    - Define SOURCE_NAME and SOURCE_VERSION.
+  * Remove debian/xsfbs accordingly.
+  * Remove reference to xsfbs in README.Debian accordingly.
+  * Add patch: 20-update-gpu-pitch.diff (from upstream bug 33929), fixing
+    issues with the radeon driver (Closes: #613957).
+
+ -- Cyril Brulebois <kibi@debian.org>  Sun, 20 Feb 2011 05:35:50 +0100
+
+xorg-server (2:1.9.4-2) unstable; urgency=low
 
   * Put an end to the dependency hell! Now that we have proper
     dependencies between drivers and the server, remove xserver-xorg from
@@ -41,10 +62,12 @@ xorg-server (2:1.9.4-2) UNRELEASED; urgency=low
   * bug script: Report KMS configuration files and their contents.
   * bug script: Keep only one lspci call (with proper filtering), which
     makes PCI IDs come back.
+  * bug script: Report libGL-related diversions.
   * Stop providing xorg-input-abi-11.0 and xorg-video-abi-8.0 now that
     drivers have reached unstable.
+  * Merge server-1.9-branch up to 0a4b0de9af.
 
- -- Cyril Brulebois <kibi@debian.org>  Wed, 09 Feb 2011 08:57:02 +0100
+ -- Cyril Brulebois <kibi@debian.org>  Wed, 16 Feb 2011 23:17:07 +0100
 
 xorg-server (2:1.9.4-1) unstable; urgency=low
 

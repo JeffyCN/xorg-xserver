@@ -7,7 +7,14 @@
 # Uncomment this to turn on verbose mode.
 #export DH_VERBOSE=1
 
-include debian/xsfbs/xsfbs.mk
+# Set up the $(STAMP_DIR) directory, and use it for quilt' stamp:
+STAMP_DIR     := stampdir
+QUILT_STAMPFN := $(STAMP_DIR)/patch
+$(STAMP_DIR)/stampdir:
+	mkdir $(STAMP_DIR)
+	>$@
+
+include /usr/share/quilt/quilt.make
 
 CFLAGS = -Wall -g
 ifneq (,$(filter noopt,$(DEB_BUILD_OPTIONS)))
@@ -77,7 +84,9 @@ INSTALL=/usr/bin/install
 
 VENDOR = $(shell lsb_release -i -s)
 
-BUILDER=$(shell dpkg-parsechangelog | awk -F': ' '/^Maintainer: / {print $$2}')
+SOURCE_NAME    :=  xorg-server
+SOURCE_VERSION := $(shell dpkg-parsechangelog | awk -F': ' '/^Version: / {print $$2}')
+BUILDER        := $(shell dpkg-parsechangelog | awk -F': ' '/^Maintainer: / {print $$2}')
 
 # disable-static is so we don't get libfoo.a for modules.  now if only we could
 # kill the .las.
@@ -168,7 +177,7 @@ confflags_udeb = \
 	--with-sha1=nettle \
 	$(void)
 
-$(STAMP_DIR)/autoreconf: $(STAMP_DIR)/patch
+$(STAMP_DIR)/autoreconf: $(STAMP_DIR)/stampdir $(QUILT_STAMPFN)
 	dh_testdir
 	autoreconf -vfi
 	>$@
@@ -205,10 +214,11 @@ build: $(STAMP_DIR)/build-udeb
 build: $(STAMP_DIR)/tests-udeb
 endif
 
-clean: xsfclean abibumpcheck
+clean: unpatch abibumpcheck
 	dh_testdir
 	dh_testroot
 
+	rm -rf $(STAMP_DIR)
 	rm -f config.cache config.log config.status
 	rm -f */config.cache */config.log */config.status
 	rm -f conftest* */conftest*
