@@ -43,7 +43,7 @@ xorg-server (2:1.9.4-3) unstable; urgency=low
     - Use quilt.make, $(QUILT_STAMPFN), unpatch.
     - Define SOURCE_NAME and SOURCE_VERSION.
   * Remove debian/xsfbs accordingly.
-  * Remove reference to xsfbs in README.Debian accordingly.
+  * Remove reference to xsfbs in README.source accordingly.
   * Add patch: 20-update-gpu-pitch.diff (from upstream bug 33929), fixing
     issues with the radeon driver (Closes: #613957).
 
