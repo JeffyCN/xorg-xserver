@@ -13,6 +13,8 @@ xorg-server (2:1.9.4-3) UNRELEASED; urgency=low
     - Define SOURCE_NAME and SOURCE_VERSION.
   * Remove debian/xsfbs accordingly.
   * Remove reference to xsfbs in README.Debian accordingly.
+  * Add patch: 20-update-gpu-pitch.diff (from upstream bug 33929), fixing
+    issues with the radeon driver (Closes: #613957).
 
  -- Cyril Brulebois <kibi@debian.org>  Sat, 19 Feb 2011 17:37:18 +0100
 
