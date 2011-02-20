@@ -5,6 +5,10 @@ xorg-server (2:1.9.99.902-2) UNRELEASED; urgency=low
   * Merge from debian-unstable (picking packaging updates from 2:1.9.4-3).
   * Mention some basic checks to perform when updating to a new upstream
     release, in README.source: ABI bumps and SDK_REQUIRED_MODULES updates.
+  * Accordingly:
+    - Bump the x11proto-xext-dev dependency.
+    - Don't bump the x11proto-kb-dev dependency (even etch had a
+      sufficient version).
 
  -- Cyril Brulebois <kibi@debian.org>  Sat, 19 Feb 2011 16:56:06 +0100
 
