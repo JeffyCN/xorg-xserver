@@ -61,4 +61,6 @@ Updating xorg-server to a new upstream release
 * We have to keep track of the SDK_REQUIRED_MODULES variable in
   configure.ac. It is used to determine xorg-server.pc's dependencies
   so xserver-xorg-dev's dependencies have to be adjusted when this
-  variable changes.
+  variable changes. This variable is set to a list of modules, but is
+  updated a few times. It's probably a good idea to use:
+    git grep SDK_REQUIRED_MODULES= -- configure.ac
