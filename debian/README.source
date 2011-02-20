@@ -47,3 +47,18 @@ are involved:
   case, it appears directly in the .diff.gz.
 * Otherwise, the patch is added to debian/patches/ which is managed
   with quilt as documented in /usr/share/doc/quilt/README.source.
+
+----------------------------------------------
+Updating xorg-server to a new upstream release
+----------------------------------------------
+
+* The abibumpcheck target helps us notice any ABI bump:
+  - A major ABI bump means drivers have to be rebuilt.
+  - A minor ABI bump means the version in serverminver has to be
+    bumped.
+  Reference documentation about dependencies is available at:
+    http://pkg-xorg.alioth.debian.org/reference/dependencies.html
+* We have to keep track of the SDK_REQUIRED_MODULES variable in
+  configure.ac. It is used to determine xorg-server.pc's dependencies
+  so xserver-xorg-dev's dependencies have to be adjusted when this
+  variable changes.
