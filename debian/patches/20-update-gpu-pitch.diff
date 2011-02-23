@@ -1,8 +1,6 @@
-diff --git a/exa/exa_mixed.c b/exa/exa_mixed.c
-index 606f1e1..fd1afb2 100644
 --- a/exa/exa_mixed.c
 +++ b/exa/exa_mixed.c
-@@ -175,8 +175,10 @@ exaModifyPixmapHeader_mixed(PixmapPtr pPixmap, int width, int height, int depth,
+@@ -175,8 +175,10 @@ exaModifyPixmapHeader_mixed(PixmapPtr pP
  	depth != pPixmap->drawable.depth ||
  	bitsPerPixel != pPixmap->drawable.bitsPerPixel) {
  	if (pExaPixmap->driverPriv) {
@@ -15,7 +13,7 @@ index 606f1e1..fd1afb2 100644
  
              exaSetAccelBlock(pExaScr, pExaPixmap,
                               width, height, bitsPerPixel);
-@@ -187,8 +189,7 @@ exaModifyPixmapHeader_mixed(PixmapPtr pPixmap, int width, int height, int depth,
+@@ -187,8 +189,7 @@ exaModifyPixmapHeader_mixed(PixmapPtr pP
  	if (has_gpu_copy && pExaPixmap->sys_ptr) {
  	    free(pExaPixmap->sys_ptr);
  	    pExaPixmap->sys_ptr = NULL;

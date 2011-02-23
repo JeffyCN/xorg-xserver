@@ -21,11 +21,9 @@ Signed-off-by: Cyril Brulebois <kibi@debian.org>
  hw/xfree86/common/xf86sbusBus.c |    2 +-
  1 files changed, 1 insertions(+), 1 deletions(-)
 
-diff --git a/hw/xfree86/common/xf86sbusBus.c b/hw/xfree86/common/xf86sbusBus.c
-index 8cfac84..181c6ab 100644
 --- a/hw/xfree86/common/xf86sbusBus.c
 +++ b/hw/xfree86/common/xf86sbusBus.c
-@@ -709,6 +709,6 @@ xf86SbusConfigureNewDev(void *busData, sbusDevicePtr sBus, GDevRec *GDev)
+@@ -709,6 +709,6 @@ xf86SbusConfigureNewDev(void *busData, s
          XNFasprintf(&GDev->busID, "SBUS:%s", promPath);
          free(promPath);
      } else {
@@ -33,6 +31,3 @@ index 8cfac84..181c6ab 100644
 +        XNFasprintf(&GDev->busID, "SBUS:fb%d", sBus->fbNum);
      }
  }
--- 
-1.7.4.1
-

@@ -12,7 +12,7 @@ Also, don't treat DRI setup failure as an error for nouveau.
 
 --- a/glx/glxdri.c
 +++ b/glx/glxdri.c
-@@ -979,6 +979,7 @@ __glXDRIscreenProbe(ScreenPtr pScreen)
+@@ -978,6 +978,7 @@ __glXDRIscreenProbe(ScreenPtr pScreen)
      const __DRIconfig **driConfigs;
      const __DRIextension **extensions;
      int i;
@@ -20,7 +20,7 @@ Also, don't treat DRI setup failure as an error for nouveau.
  
      if (!xf86LoaderCheckSymbol("DRIQueryDirectRenderingCapable") ||
  	!DRIQueryDirectRenderingCapable(pScreen, &isCapable) ||
-@@ -1058,7 +1059,9 @@ __glXDRIscreenProbe(ScreenPtr pScreen)
+@@ -1057,7 +1058,9 @@ __glXDRIscreenProbe(ScreenPtr pScreen)
  
      screen->driver = dlopen(filename, RTLD_LAZY | RTLD_LOCAL);
      if (screen->driver == NULL) {
@@ -31,7 +31,7 @@ Also, don't treat DRI setup failure as an error for nouveau.
  		   filename, dlerror());
          goto handle_error;
      }
-@@ -1196,7 +1199,7 @@ __glXDRIscreenProbe(ScreenPtr pScreen)
+@@ -1193,7 +1196,7 @@ __glXDRIscreenProbe(ScreenPtr pScreen)
  
      free(screen);
  
@@ -42,7 +42,7 @@ Also, don't treat DRI setup failure as an error for nouveau.
  }
 --- a/glx/glxdri2.c
 +++ b/glx/glxdri2.c
-@@ -709,6 +709,7 @@ __glXDRIscreenProbe(ScreenPtr pScreen)
+@@ -708,6 +708,7 @@ __glXDRIscreenProbe(ScreenPtr pScreen)
      const __DRIextension **extensions;
      const __DRIconfig **driConfigs;
      int i;
@@ -50,7 +50,7 @@ Also, don't treat DRI setup failure as an error for nouveau.
  
      screen = calloc(1, sizeof *screen);
      if (screen == NULL)
-@@ -735,7 +736,9 @@ __glXDRIscreenProbe(ScreenPtr pScreen)
+@@ -734,7 +735,9 @@ __glXDRIscreenProbe(ScreenPtr pScreen)
  
      screen->driver = dlopen(filename, RTLD_LAZY | RTLD_LOCAL);
      if (screen->driver == NULL) {
@@ -61,7 +61,7 @@ Also, don't treat DRI setup failure as an error for nouveau.
  		   filename, dlerror());
          goto handle_error;
      }
-@@ -829,7 +832,7 @@ __glXDRIscreenProbe(ScreenPtr pScreen)
+@@ -826,7 +829,7 @@ __glXDRIscreenProbe(ScreenPtr pScreen)
  
      free(screen);
  
@@ -72,7 +72,7 @@ Also, don't treat DRI setup failure as an error for nouveau.
  }
 --- a/hw/xfree86/common/xf86pciBus.c
 +++ b/hw/xfree86/common/xf86pciBus.c
-@@ -1118,7 +1118,24 @@ videoPtrToDriverList(struct pci_device *
+@@ -1123,7 +1123,24 @@ videoPtrToDriverList(struct pci_device *
  	    break;
  	case 0x102b:		    driverList[0] = "mga";	break;
  	case 0x10c8:		    driverList[0] = "neomagic"; break;

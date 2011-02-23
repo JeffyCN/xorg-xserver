@@ -3,6 +3,7 @@ xorg-server (2:1.9.99.902-3) UNRELEASED; urgency=low
   * Merge from master up to 93a7399370.
   * New patch: 17-fix-ftbfs-on-sparc.diff; let's try it for real before
     asking for its being merged upstream.
+  * Refresh all patches.
 
  -- Cyril Brulebois <kibi@debian.org>  Wed, 23 Feb 2011 12:42:18 +0100
 

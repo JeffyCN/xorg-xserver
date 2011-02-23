@@ -10,7 +10,7 @@ Signed-off-by: Julien Cristau <jcristau@debian.org>
 ---
 --- a/configure.ac
 +++ b/configure.ac
-@@ -1360,7 +1360,7 @@ CORE_INCS='-I$(top_srcdir)/include -I$(t
+@@ -1356,7 +1356,7 @@ CORE_INCS='-I$(top_srcdir)/include -I$(t
  
  # SHA1 hashing
  AC_ARG_WITH([sha1],
@@ -19,7 +19,7 @@ Signed-off-by: Julien Cristau <jcristau@debian.org>
                              [choose SHA1 implementation])])
  AC_CHECK_FUNC([SHA1Init], [HAVE_SHA1_IN_LIBC=yes])
  if test "x$with_sha1" = x && test "x$HAVE_SHA1_IN_LIBC" = xyes; then
-@@ -1443,6 +1443,16 @@ if test "x$with_sha1" = xlibcrypto; then
+@@ -1439,6 +1439,16 @@ if test "x$with_sha1" = xlibcrypto; then
  		SHA1_CFLAGS="$OPENSSL_CFLAGS"
  	fi
  fi
