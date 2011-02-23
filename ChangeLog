@@ -1,3 +1,48 @@
+commit 93a73993708b1345c86ec3ec06b02ed236595673
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Mon Feb 21 15:40:40 2011 +1000
+
+    test: write some event → XI1 conversion tests.
+    
+    Don't test everything, but hey, life is short and I'm trying to have one.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Keith Packard <keithp@keithp.com>
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+
+commit 4cdf1013771bc86fe2f6d9223bc4a46753bc918f
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Mon Feb 21 15:32:57 2011 +1000
+
+    dix: a valuator number of 0 is valid (#34510)
+    
+    For all but motion and proximity events, having no valuators is ok.
+    Regression from 1.9, keyboard events are not converted to protocol events.
+    
+    X.Org Bug 34510 <http://bugs.freedesktop.org/show_bug.cgi?id=34510>
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Keith Packard <keithp@keithp.com>
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+    Tested-by: Timo Aaltonen <timo.aaltonen@canonical.com>
+
+commit b4ef34d4664e0eaac7211f7a22a2025958aa1527
+Author: Maarten Maathuis <madman2003@gmail.com>
+Date:   Sun Feb 20 11:59:41 2011 +0100
+
+    Revert "exa/mixed: Exclude frontbuffer from deferred pixmap handling."
+    
+    This reverts commit 541b25038a5de74411a094570b407c5ae018c2ba.
+    
+    - It turns out that the high latency was a driver problem.
+    - catting a large amount of text turns out to look prettier when the
+      throughput is lower, but it's not worth the loss for a minor
+      improvement that may not even exist on someone else's computer.
+    
+    Reviewed-by: Michel Dänzer <michel@daenzer.net>
+    Signed-off-by: Maarten Maathuis <madman2003@gmail.com>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
 commit 443d75446bcbe7d97a23860a1e2d46c0b7e7cb26
 Author: Keith Packard <keithp@keithp.com>
 Date:   Fri Feb 18 14:46:33 2011 -0800
