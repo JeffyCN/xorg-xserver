@@ -7,6 +7,7 @@ xorg-server (2:1.9.99.903-1) UNRELEASED; urgency=low
   * Replace patch fixing out-of-tree-build:
     - 16-oot-build.diff (dirty local hack).
     + 16-construct-paths-in-doxygen.conf.diff (from upstream).
+  * Bump video ABI version, and serverminver accordingly.
 
  -- Cyril Brulebois <kibi@debian.org>  Fri, 25 Feb 2011 12:37:33 +0100
 
