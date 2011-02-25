@@ -1,4 +1,4 @@
-xorg-server (2:1.9.99.903-1) UNRELEASED; urgency=low
+xorg-server (2:1.9.99.903-1) experimental; urgency=low
 
   * New upstream release candidate (1.10 rc3).
   * Remove patch: 17-fix-ftbfs-on-sparc.diff (merged upstream).
@@ -10,7 +10,7 @@ xorg-server (2:1.9.99.903-1) UNRELEASED; urgency=low
       without the gitignore hunk to get patching working).
   * Bump video ABI version, and serverminver accordingly.
 
- -- Cyril Brulebois <kibi@debian.org>  Fri, 25 Feb 2011 12:37:33 +0100
+ -- Cyril Brulebois <kibi@debian.org>  Fri, 25 Feb 2011 15:22:39 +0100
 
 xorg-server (2:1.9.99.902-3) experimental; urgency=low
 
