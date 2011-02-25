@@ -3,6 +3,7 @@ xorg-server (2:1.9.99.903-1) UNRELEASED; urgency=low
   * New upstream release candidate (1.10 rc3).
   * Remove patch: 17-fix-ftbfs-on-sparc.diff (merged upstream).
   * Remove patch: 20-update-gpu-pitch.diff (merged upstream).
+  * Refresh patch: 07-xfree86-fix-build-with-xv-disabled.diff
 
  -- Cyril Brulebois <kibi@debian.org>  Fri, 25 Feb 2011 12:37:33 +0100
 
