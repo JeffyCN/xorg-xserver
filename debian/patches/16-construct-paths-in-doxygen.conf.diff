@@ -9,9 +9,11 @@ files can be found when users have a separate build directory (as with
 distcheck).
 
 Signed-off-by: Dan Nicholson <dbn.lists@gmail.com>
+
+[removed the hw/dmx/doc/.gitignore hunk, so that patching works.]
+Signed-off-by: Cyril Brulebois <kibi@debian.org>
 ---
  configure.ac               |    1 +
- hw/dmx/doc/.gitignore      |    1 +
  hw/dmx/doc/Makefile.am     |    2 +-
  hw/dmx/doc/doxygen.conf    | 1053 --------------------------------------------
  hw/dmx/doc/doxygen.conf.in | 1053 ++++++++++++++++++++++++++++++++++++++++++++
@@ -31,15 +33,6 @@ index f3b2939..fcaf23f 100644
  hw/dmx/examples/Makefile
  hw/dmx/input/Makefile
  hw/dmx/glxProxy/Makefile
-diff --git a/hw/dmx/doc/.gitignore b/hw/dmx/doc/.gitignore
-index 6bdd862..92c1150 100644
---- a/hw/dmx/doc/.gitignore
-+++ b/hw/dmx/doc/.gitignore
-@@ -8,3 +8,4 @@ scaled.html
- scaled.pdf
- scaled.ps
- scaled.txt
-+doxygen.conf
 diff --git a/hw/dmx/doc/Makefile.am b/hw/dmx/doc/Makefile.am
 index 4bbc8bf..838b6f2 100644
 --- a/hw/dmx/doc/Makefile.am

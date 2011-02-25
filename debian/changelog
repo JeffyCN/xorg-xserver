@@ -6,7 +6,8 @@ xorg-server (2:1.9.99.903-1) UNRELEASED; urgency=low
   * Refresh patch: 07-xfree86-fix-build-with-xv-disabled.diff
   * Replace patch fixing out-of-tree-build:
     - 16-oot-build.diff (dirty local hack).
-    + 16-construct-paths-in-doxygen.conf.diff (from upstream).
+    + 16-construct-paths-in-doxygen.conf.diff (from upstream,
+      without the gitignore hunk to get patching working).
   * Bump video ABI version, and serverminver accordingly.
 
  -- Cyril Brulebois <kibi@debian.org>  Fri, 25 Feb 2011 12:37:33 +0100
