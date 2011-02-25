@@ -1,3 +1,9 @@
+xorg-server (2:1.9.99.903-1) UNRELEASED; urgency=low
+
+  * New upstream release candidate (1.10 rc3).
+
+ -- Cyril Brulebois <kibi@debian.org>  Fri, 25 Feb 2011 12:37:33 +0100
+
 xorg-server (2:1.9.99.902-3) experimental; urgency=low
 
   * Merge from master up to 93a7399370.

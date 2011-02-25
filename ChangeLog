@@ -1,3 +1,410 @@
+commit 780a77acce1dd369549ece802b3e2c4006058dfe
+Author: Keith Packard <keithp@keithp.com>
+Date:   Thu Feb 24 20:45:46 2011 -0800
+
+    Version bumped to 1.9.99.903 (1.10 RC3)
+    
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit 229b055bdbc53370944401649234e8a38183f4fb
+Merge: 6178959 b17fc99
+Author: Keith Packard <keithp@keithp.com>
+Date:   Thu Feb 24 19:44:35 2011 -0800
+
+    Merge remote branch 'jeremyhu/master'
+
+commit 6178959e3dd6482a4317de6eb14eb19ca7329b9c
+Author: Keith Packard <keithp@keithp.com>
+Date:   Thu Feb 24 19:42:02 2011 -0800
+
+    xfree86: Bump video ABI to 10.0
+    
+    RandR 1.4 revert changed things
+    
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit 31704510f448706524b7b7085cc4ff0ada7bfe7e
+Author: Michel Dänzer <daenzer@vmware.com>
+Date:   Thu Feb 24 12:17:57 2011 +0100
+
+    EXA/mixed: ModifyPixmapHeader pitch fixes. (bug #33929)
+    
+    If there's a GPU copy and a non-zero devKind was passed in, set the GPU copy
+    pitch to that instead of to a possibly bogus value derived from the new width.
+    This is e.g. used by the radeon driver's drmmode_xf86crtc_resize hook, fixes
+    https://bugs.freedesktop.org/show_bug.cgi?id=33929 .
+    
+    On the other hand, the system memory copy doesn't need the pitch to be aligned
+    beyond the PixmapBytePad of the width.
+    
+    Signed-off-by: Michel Dänzer <daenzer@vmware.com>
+    Acked-by: Cyril Brulebois <kibi@debian.org>
+    Tested-by: Cyril Brulebois <kibi@debian.org>
+    Reported-by: Thierry Vignaud <thierry.vignaud@gmail.com>
+    Tested-by: Thierry Vignaud <thierry.vignaud@gmail.com>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit b17fc99cb9ca9ff0a3592f783a906cdcc35da748
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Thu Feb 24 19:24:35 2011 -0800
+
+    XQuartz: Localization Updates
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+
+commit 59850630fefe5e4f0430d7e2e106937fdf1e7ffb
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Thu Feb 24 19:18:35 2011 -0800
+
+    XQuartz: Add LSApplicationCategoryType key to Info.plist
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+
+commit 83861595782aaa05907f9cf7b236d50261d404d9
+Merge: a1cc0e5 4102a00
+Author: Keith Packard <keithp@keithp.com>
+Date:   Thu Feb 24 18:59:07 2011 -0800
+
+    Merge remote branch 'kibi/master'
+
+commit a1cc0e52b0e8ca40bc1218de553424b2bcb760ef
+Author: Alexandr Shadchin <alexandr.shadchin@gmail.com>
+Date:   Tue Nov 30 21:17:19 2010 +0500
+
+    Removing unused code
+    
+    In OpenBSD removed support PCCONS in 2002 year
+    http://marc.info/?l=openbsd-cvs&m=102435816424294&w=2
+    
+    Signed-off-by: Alexandr Shadchin <Alexandr.Shadchin@gmail.com>
+    Reviewed-by: Matthieu Herrb <matthieu.herrb@laas.fr>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit 365ad68fb9f7029550505b7c276a808050cada9c
+Merge: 0801afb 720c895
+Author: Keith Packard <keithp@keithp.com>
+Date:   Thu Feb 24 18:49:40 2011 -0800
+
+    Merge remote branch 'ajax/for-keithp'
+
+commit 0801afbd7c2c644c672b37f8463f1a0cbadebd2e
+Author: Erkki Seppälä <erkki.seppala@vincit.fi>
+Date:   Thu Feb 10 15:35:14 2011 +0200
+
+    record: avoid crash when calling RecordFlushReplyBuffer recursively
+    
+    RecordFlushReplyBuffer can call itself recursively through
+    WriteClient->CallCallbacks->_CallCallbacks->RecordFlushAllContexts
+    when the recording client's buffer cannot be completely emptied in one
+    WriteClient. When a such a recursion occurs, it will not be broken out
+    of which results in segmentation fault when the stack is exhausted.
+    
+    This patch adds a counter (a flag, really) that guards against this
+    situation, to break out of the recursion.
+    
+    One alternative to this change would be to change _CallCallbacks to
+    check the corresponding counter before the callback loop, but that
+    might affect existing behavior, which may be relied upon.
+    
+    Reviewed-by: Rami Ylimäki <rami.ylimaki@vincit.fi>
+    Signed-off-by: Erkki Seppälä <erkki.seppala@vincit.fi>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit b833f9b924ddc043244c0a026547c438f1c4d4df
+Author: Keith Packard <keithp@keithp.com>
+Date:   Wed Feb 23 11:18:35 2011 -0800
+
+    Revert "Replace huge argument list in xf86CrtcSetModeTransform with struct"
+    
+    This reverts commit 8b35118c03590a7ad3786d3284bafb3f40fcb8cc.
+
+commit 7030c82648930cea7ef8a2ea49d8138078920d4d
+Author: Keith Packard <keithp@keithp.com>
+Date:   Wed Feb 23 11:18:16 2011 -0800
+
+    Revert "Require RandR protocol version 1.4 or newer"
+    
+    This reverts commit c8bc25fd7629df10f2825b7cc713b031ae78f223.
+
+commit a91d33917befd6719bb7f01007bc253a2aefb0bb
+Author: Keith Packard <keithp@keithp.com>
+Date:   Wed Feb 23 11:18:12 2011 -0800
+
+    Revert "randr: Add sprite position transforms"
+    
+    This reverts commit 66294afcab7b7a82f7dd897767e46c48a94b8ee8.
+
+commit 3d4ee25a1e2e0ed2463ceaabea8f5a284a6ddd60
+Author: Keith Packard <keithp@keithp.com>
+Date:   Wed Feb 23 11:18:08 2011 -0800
+
+    Revert "randr: Implement RRSetCrtcConfigs"
+    
+    This reverts commit d94a035ea9eb3167fc4f35b2d9f0d53f8807014c.
+
+commit 8b0e651f7d09a7f35c87a4d0a6e2053cae93b516
+Author: Keith Packard <keithp@keithp.com>
+Date:   Wed Feb 23 11:18:05 2011 -0800
+
+    Revert "hw/xfree86/modes: Add optional driver API for RRSetCrtcConfigs"
+    
+    This reverts commit 86c489c319c705f710bee3897fe27600ce15008e.
+
+commit 9e8c20b0d49783d6b9334d4c11c4e6e3ba273524
+Author: Keith Packard <keithp@keithp.com>
+Date:   Wed Feb 23 11:17:42 2011 -0800
+
+    Revert "randr: Add per-crtc pixmaps"
+    
+    This reverts commit 82612045e11f2b882ae132e184a9629f43f1c424.
+
+commit 9f47780ecdc7693f756587a758ec0141e75cb1eb
+Author: Keith Packard <keithp@keithp.com>
+Date:   Wed Feb 23 11:17:36 2011 -0800
+
+    Revert "randr: Hook up the new RandR 1.4 functionality"
+    
+    This reverts commit afb6ebf1d5829346c40fe1053c9f50afe926e6c6.
+
+commit 793a242c89fccdbf1a2557ba33da1da2cb4ff8c4
+Author: Keith Packard <keithp@keithp.com>
+Date:   Wed Feb 23 11:17:33 2011 -0800
+
+    Revert "DIX is responsible for ref counting scanout pixmaps."
+    
+    This reverts commit 96b4d4787bf82edd9d06eb9a6e94bc45412c7df2.
+
+commit 7b7cd3f121b3904ad851155f853ce87a0e00d002
+Author: Keith Packard <keithp@keithp.com>
+Date:   Wed Feb 23 11:17:29 2011 -0800
+
+    Revert "Set sprite transforms from RRSetCrtcConfigs"
+    
+    This reverts commit a88d70fb20a2bc3152b84adff4380857e6cfadf5.
+
+commit fd9331f6eb39a28da7de4867b2e3a460f667d514
+Author: Keith Packard <keithp@keithp.com>
+Date:   Wed Feb 23 11:17:24 2011 -0800
+
+    Revert "Separate out screen size and screen pixmap sizes in RRScreenSizeSet"
+    
+    This reverts commit 752c368421c1c824752cf467fba9318d75d2ca2c.
+
+commit 4d91e7a63161cdde9af53aedb3fe3e53dbe3049e
+Author: Keith Packard <keithp@keithp.com>
+Date:   Wed Feb 23 11:17:20 2011 -0800
+
+    Revert "ProcRRSetCrtcConfigs uses 'configs' without being initialized"
+    
+    This reverts commit b0f4bd61f0caf80f3be9a176f1f7a707bc6628d8.
+
+commit 00d0b235cfbfb162ddd58c088d2ed03e55a9c5cb
+Author: Keith Packard <keithp@keithp.com>
+Date:   Wed Feb 23 11:16:48 2011 -0800
+
+    Revert "randr: handle RRSetCrtcConfigs request with zero configs"
+    
+    This reverts commit 0d01b66df9081ef48843b3bad81c56bb2cd1ae69.
+
+commit 720c895db9327bbdc32215a67236303d2ceafad4
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Wed Feb 23 13:36:20 2011 -0500
+
+    Add mode field to ConstrainCursorHarder
+    
+    For Pointer Barriers, the movement mode is important and must be passed
+    through.
+    
+    Reviewed-by: Adam Jackson <ajax@redhat.com>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit a16e282200f84233041e5a565c6363a5a78be525
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Mon Feb 8 15:40:22 2010 -0500
+
+    xfree86: Fix the sdk headers to be multilib-safe
+    
+    Use _LP64 (verified on gcc and sun compilers) instead of _XSERVER64 in
+    internal header usage, and always define _XSERVER64 for modules if _LP64
+    is defined.  Prevents differing xorg-server.h between 32 and 64 bit
+    packages.
+    
+    Reviewed-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Signed-off-by: Adam Jackson <ajax@redhat.com>
+
+commit dc498b433f36af5d2de3065e7c64cdb575385d81
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Mon Feb 8 15:23:04 2010 -0500
+
+    xfree86: If the driver found modes on an output, don't add more
+    
+    Inferring modes from sync ranges is only valid if the monitor says it's
+    valid.  If the monitor says it's valid, then we'll have already added
+    those modes during EDID block parse.  If it doesn't, then we should
+    believe it.
+    
+    If there's no EDID for an output, but sync ranges from the config, we'll
+    still add default modes as normal.
+    
+    Reviewed-by: Alex Deucher <alexdeucher@gmail.com>
+    Signed-off-by: Adam Jackson <ajax@redhat.com>
+
+commit 303977fbcf9c641b7e19dfde192cef585f5b455c
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Tue Feb 8 14:52:49 2011 -0500
+
+    glxproxy: warning fix
+    
+    glxvendor.c: In function ‘__glXVForwardPipe0WithReply’:
+    glxvendor.c:205:10: warning: ‘be_buf’ may be used uninitialized in this function
+    
+    Reviewed-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Signed-off-by: Adam Jackson <ajax@redhat.com>
+
+commit 405ad0610d6e2f4606768294b655ac52aee9ae58
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Tue Feb 8 14:51:47 2011 -0500
+
+    glxproxy: warning fix
+    
+    glxvendor.c: In function ‘__glXVForwardAllWithReply’:
+    glxvendor.c:284:10: warning: ‘be_buf’ may be used uninitialized in this function
+    glxvendor.c:285:10: warning: ‘be_buf_size’ may be used uninitialized in this function
+    
+    Reviewed-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Signed-off-by: Adam Jackson <ajax@redhat.com>
+
+commit a4cd2e0da6415ec1b3b182579bebbe2a41f29d30
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Tue Feb 8 14:47:05 2011 -0500
+
+    glxproxy: warning fix
+    
+    glxsingle.c: In function ‘__glXForwardPipe0WithReply’:
+    glxsingle.c:218:10: warning: ‘be_buf’ may be used uninitialized in this function
+    
+    Reviewed-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Signed-off-by: Adam Jackson <ajax@redhat.com>
+
+commit f928caca6e60215bc9ab423acae5542dfabc9bec
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Tue Feb 8 14:45:31 2011 -0500
+
+    glxproxy: warning fix
+    
+    glxsingle.c: In function ‘__glXForwardAllWithReply’:
+    glxsingle.c:300:10: warning: ‘be_buf’ may be used uninitialized in this function
+    glxsingle.c:301:10: warning: ‘be_buf_size’ may be used uninitialized in this function
+    
+    Reviewed-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Signed-off-by: Adam Jackson <ajax@redhat.com>
+
+commit dad2712c9328e113db4de768a12a8dafa6c177e9
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Tue Feb 8 14:44:03 2011 -0500
+
+    glxproxy: warning fix
+    
+    glxsingle.c: In function ‘__glXDisp_ReadPixels’:
+    glxsingle.c:760:11: warning: ‘buf’ may be used uninitialized in this function
+    
+    Reviewed-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Signed-off-by: Adam Jackson <ajax@redhat.com>
+
+commit 4270157bac645550e2c0afe89479c0bfe9d53447
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Tue Feb 8 14:38:23 2011 -0500
+
+    glxproxy: warning fix
+    
+    render2swap.c:264:13: warning: ‘swapArray’ defined but not used
+    
+    Reviewed-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Signed-off-by: Adam Jackson <ajax@redhat.com>
+
+commit 5d0910b4fdf99e3239635a01eb2709c32d0e5bb9
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Tue Feb 8 14:32:54 2011 -0500
+
+    glxproxy: warning fix
+    
+    glxcmds.c: In function ‘CreateGLXPixmap’:
+    glxcmds.c:1663:20: warning: comparison between pointer and integer
+    glxcmds.c:1663:38: warning: comparison between pointer and integer
+    
+    Reviewed-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Signed-off-by: Adam Jackson <ajax@redhat.com>
+
+commit e1b5d3e5e7f157ab769c40ad2efdc1281c25a03a
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Tue Feb 8 14:18:53 2011 -0500
+
+    glxproxy: warning fix
+    
+    glxcmds.c: In function ‘CreateGLXPixmap’:
+    glxcmds.c:1641:22: warning: ‘pGlxScreen’ may be used uninitialized in this function
+    
+    Reviewed-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Signed-off-by: Adam Jackson <ajax@redhat.com>
+
+commit 3b9de273a94fb68de51238c20c3182396aa41b84
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Tue Feb 8 14:07:20 2011 -0500
+
+    glxproxy: warning fix
+    
+    glxcmds.c: In function ‘CreateContext.clone.6’:
+    glxcmds.c:105:19: warning: ‘be_fbconfigId’ may be used uninitialized in this function
+    glxcmds.c:104:14: warning: ‘be_vid’ may be used uninitialized in this function
+    
+    Reviewed-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Signed-off-by: Adam Jackson <ajax@redhat.com>
+
+commit 767b93e783a981b4fc926299a85a1a18387e693a
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Tue Feb 8 14:02:37 2011 -0500
+
+    glxproxy: warning fix
+    
+    glxcmds.c: In function ‘__glXGetDrawableAttributes’:
+    glxcmds.c:3295:8: warning: ‘screen’ may be used uninitialized in this function
+    glxcmds.c:3298:8: warning: ‘attribs_size’ may be used uninitialized in this function
+    
+    Reviewed-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Signed-off-by: Adam Jackson <ajax@redhat.com>
+
+commit a391089186cd1063d807bf14a9651e6861b248de
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Tue Feb 8 13:55:23 2011 -0500
+
+    glxproxy: warning fix
+    
+    glxcmds.c: In function ‘__glXChangeDrawableAttributes’:
+    glxcmds.c:3464:8: warning: ‘screen’ may be used uninitialized in this function
+    
+    Reviewed-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Signed-off-by: Adam Jackson <ajax@redhat.com>
+
+commit 4102a00962f568b1d34cf72ad524e1cc705b0b1c
+Author: Cyril Brulebois <kibi@debian.org>
+Date:   Wed Feb 23 14:44:23 2011 +0100
+
+    xfree86: Fix undefined reference to `XNFsprintf' on sparc.
+    
+    Build failure on sparc:
+    | copying selected object files to avoid basename conflicts...
+    |   CCLD   Xorg
+    | ./.libs/libxorg.a(xf86sbusBus.o): In function `xf86SbusConfigureNewDev':
+    | […]/hw/xfree86/common/xf86sbusBus.c:712: undefined reference to `XNFsprintf'
+    | collect2: ld returned 1 exit status
+    
+    Fix typo introduced in:
+      3a9bb93dd178084f4ff1abcea331ca5a62f88ce6
+    
+    Reviewed-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Apologized-for-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Signed-off-by: Cyril Brulebois <kibi@debian.org>
+
 commit 93a73993708b1345c86ec3ec06b02ed236595673
 Author: Peter Hutterer <peter.hutterer@who-t.net>
 Date:   Mon Feb 21 15:40:40 2011 +1000
