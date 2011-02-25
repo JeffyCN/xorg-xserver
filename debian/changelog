@@ -1,3 +1,10 @@
+xorg-server (2:1.9.99.903-2) UNRELEASED; urgency=low
+
+  * Relax build-dep and dep on x11proto-randr-dev since the XRandR 1.4
+    bits were finally reverted upstream.
+
+ -- Cyril Brulebois <kibi@debian.org>  Fri, 25 Feb 2011 16:15:45 +0100
+
 xorg-server (2:1.9.99.903-1) experimental; urgency=low
 
   * New upstream release candidate (1.10 rc3).
