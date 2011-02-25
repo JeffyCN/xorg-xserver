@@ -6,4 +6,3 @@
 #13_debian_add_xkbpath_env_variable.diff
 15-nouveau.diff
 16-oot-build.diff
-20-update-gpu-pitch.diff
