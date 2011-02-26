@@ -3,6 +3,8 @@ xorg-server (2:1.10.0-1) UNRELEASED; urgency=low
   * New upstream release.
   * Relax build-dep and dep on x11proto-randr-dev since the XRandR 1.4
     bits were finally reverted upstream.
+  * Remove patch: 16-construct-paths-in-doxygen.conf.diff (merged
+    upstream).
 
  -- Cyril Brulebois <kibi@debian.org>  Fri, 25 Feb 2011 16:15:45 +0100
 
