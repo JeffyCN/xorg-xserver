@@ -1,3 +1,96 @@
+commit f3d19c0cf3327cceb90f7378f5d8fc0c3e327400
+Author: Keith Packard <keithp@keithp.com>
+Date:   Fri Feb 25 21:22:23 2011 -0800
+
+    Version bumped to 1.10
+    
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit 678f5396c91b3d0c7572ed579b0a4fb62b2b4655
+Author: Keith Packard <keithp@keithp.com>
+Date:   Fri Feb 25 21:10:21 2011 -0800
+
+    input: Ensure Valuator axes are aligned as needed
+    
+    Let the compiler figure out the correct alignment for the axes data
+    for a valuator by using a union to force double alignment of the
+    initial ValuatorClassRec structure in the allocation.
+    
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+    Tested-by: Julien Cristau <jcristau@debian.org>
+    Reviewed-by: Julien Cristau <jcristau@debian.org>
+
+commit dc8f52e77f51b6fa8908d9611c3f7e3cfbbaf2d1
+Author: Keith Packard <keithp@keithp.com>
+Date:   Fri Feb 25 16:38:27 2011 -0800
+
+    hw/dmx/doc: Add explicit dependency for all doxygen output files
+    
+    Instead of listing one of the doxygen output files and depending on
+    sequential execution to ensure that the other files were present
+    before make checked for them, create explicit dependencies so that
+    make will not check for the additional files until after doxygen has
+    been run.
+    
+    This allows parallel make to work correctly in this directory.
+    
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+    Tested-by: Kristian Høgsberg <krh@bitplanet.net>
+
+commit fd4d9c75c265add8d6cc74afb341c9c4f2ec1073
+Author: Keith Packard <keithp@keithp.com>
+Date:   Fri Feb 25 10:54:50 2011 -0800
+
+    hw/xwin: Look for gl spec files in $(srcdir) or .
+    
+    Tarballs include the downloaded gl spec files, which will end up in
+    $(srcdir). But, git-based builds will not have them at all and will
+    need to download them from opengl.org. They'll land in in the build
+    directory instead of $(srcdir), and so we need to allow them to be in
+    either place.
+    
+    This change checks for the files in $(srcdir), linking them to . if
+    present. Otherwise, it downloads them from opengl.org.
+    
+    A suggested better solution is to have Mesa install these files somewhere.
+    
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+    Tested-by: Kristian Høgsberg <krh@bitplanet.net>
+
+commit 6b951dec69103ca76d6d4a61b1a2f67a52d013b9
+Author: Dan Nicholson <dbn.lists@gmail.com>
+Date:   Sun Feb 20 09:51:15 2011 -0800
+
+    dmx: Construct paths in doxygen.conf to fix VPATH builds
+    
+    The paths in doxygen.conf assumed that srcdir=builddir and broke
+    otherwise. Use autoconf to fill in the paths to the srcdir so that the
+    files can be found when users have a separate build directory (as with
+    distcheck).
+    
+    Signed-off-by: Dan Nicholson <dbn.lists@gmail.com>
+    Tested-by: Cyril Brulebois <kibi@debian.org>
+    Reviewed-by: Gaetan Nadon <memsize@videotron.ca>
+    Tested-by: Sedat Dilek <sedat.dilek@gmail.com>
+
+commit 61ce915bf78570b7c8d53c118700ef7274bbdfb7
+Author: Dan Nicholson <dbn.lists@gmail.com>
+Date:   Tue Feb 15 06:03:28 2011 -0800
+
+    xfree86: Allow sdksyms.dep to be included portably
+    
+    Non-GNU makes don't deal with the sinclude or -include variants that
+    allow Makefile stubs to be created and then included during the build.
+    Instead, create an empty file at the end of configure so that the
+    regular include statement can be included. This is how automake handles
+    automatic source dependencies.
+    
+    In order to trick automake into not processing the include statement, a
+    variable is used.
+    
+    Signed-off-by: Dan Nicholson <dbn.lists@gmail.com>
+    Tested-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+
 commit 780a77acce1dd369549ece802b3e2c4006058dfe
 Author: Keith Packard <keithp@keithp.com>
 Date:   Thu Feb 24 20:45:46 2011 -0800
