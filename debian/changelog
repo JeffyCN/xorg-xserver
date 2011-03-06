@@ -5,6 +5,8 @@ xorg-server (2:1.10.0-1) UNRELEASED; urgency=low
     bits were finally reverted upstream.
   * Remove patch: 16-construct-paths-in-doxygen.conf.diff (merged
     upstream).
+  * Pass --enable-xcsecurity to the main build to restore the XC-SECURITY
+    extension, thanks to Stefan Fritsch's report (Closes: #599657).
 
  -- Cyril Brulebois <kibi@debian.org>  Fri, 25 Feb 2011 16:15:45 +0100
 
