@@ -1224,7 +1224,8 @@ checkCoreInputDevices(serverLayoutPtr servlayoutp, Bool implicitLayout)
             devs[count - 1] = xnfalloc(sizeof(InputInfoRec));
 	    *devs[count - 1] = Pointer;
 	    devs[count - 1]->options =
-				xf86addNewOption(NULL, xnfstrdup("CorePointer"), NULL);
+				xf86addNewOption(devs[count -1]->options,
+				    xnfstrdup("CorePointer"), NULL);
 	    devs[count] = NULL;
 	    servlayoutp->inputs = devs;
 	}
@@ -1364,7 +1365,8 @@ checkCoreInputDevices(serverLayoutPtr servlayoutp, Bool implicitLayout)
             devs[count - 1] = xnfalloc(sizeof(InputInfoRec));
 	    *devs[count - 1] = Keyboard;
 	    devs[count - 1]->options =
-				xf86addNewOption(NULL, xnfstrdup("CoreKeyboard"), NULL);
+				xf86addNewOption(devs[count - 1]->options,
+				    xnfstrdup("CoreKeyboard"), NULL);
 	    devs[count] = NULL;
 	    servlayoutp->inputs = devs;
 	}
@@ -1785,9 +1787,11 @@ configScreen(confScreenPtr screenp, XF86ConfScreenPtr conf_screen, int scrnum,
     XF86ConfDisplayPtr dispptr;
     XF86ConfAdaptorLinkPtr conf_adaptor;
     Bool defaultMonitor = FALSE;
+    XF86ConfScreenRec local_conf_screen;
 
     if (!conf_screen) {
-        conf_screen = xnfcalloc(1, sizeof(XF86ConfScreenRec));
+        memset(&local_conf_screen, 0, sizeof(local_conf_screen));
+        conf_screen = &local_conf_screen;
         conf_screen->scrn_identifier = "Default Screen Section";
         xf86Msg(X_DEFAULT, "No screen section available. Using defaults.\n");
     }

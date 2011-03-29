@@ -26,8 +26,8 @@ dnl
 dnl Process this file with autoconf to create configure.
 
 AC_PREREQ(2.57)
-AC_INIT([xorg-server], 1.10.0, [https://bugs.freedesktop.org/enter_bug.cgi?product=xorg], xorg-server)
-RELEASE_DATE="2011-2-25"
+AC_INIT([xorg-server], 1.10.0.901, [https://bugs.freedesktop.org/enter_bug.cgi?product=xorg], xorg-server)
+RELEASE_DATE="2011-03-29"
 AC_CONFIG_SRCDIR([Makefile.am])
 AM_INIT_AUTOMAKE([foreign dist-bzip2])
 AM_MAINTAINER_MODE
@@ -599,7 +599,10 @@ AC_ARG_ENABLE(aiglx,          AS_HELP_STRING([--enable-aiglx], [Build accelerate
                                 [AIGLX=yes])
 AX_TLS
 AC_ARG_ENABLE(glx-tls,        AS_HELP_STRING([--enable-glx-tls], [Build GLX with TLS support (default: auto)]),
-                                [GLX_USE_TLS=$enableval],
+                                [GLX_USE_TLS=$enableval
+                                 if test "x$GLX_USE_TLS" = "xyes" && test "${ac_cv_tls}" = "none" ; then
+                                   AC_MSG_ERROR([GLX with TLS support requested, but the compiler does not support it.])
+                                 fi],
                                 [GLX_USE_TLS=no
                                  if test "${ac_cv_tls}" != "none" ; then
                                    GLX_USE_TLS=yes
@@ -1923,7 +1926,7 @@ if test "x$XQUARTZ" = xyes; then
 
 	AC_CHECK_LIB([Xplugin],[xp_init],[:])
 
-	CFLAGS="${CFLAGS} -DROOTLESS_SAFEALPHA -DNO_ALLOCA"
+	CFLAGS="${CFLAGS} -DROOTLESS_WORKAROUND -DROOTLESS_SAFEALPHA -DNO_ALLOCA"
 
 	PKG_CHECK_MODULES(XPBPROXY, $APPLEWMPROTO $LIBAPPLEWM xfixes x11)
 

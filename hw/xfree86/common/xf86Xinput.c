@@ -775,6 +775,8 @@ xf86NewInputDevice(InputInfoPtr pInfo, DeviceIntPtr *pdev, BOOL enable)
         goto unwind;
     }
 
+    xf86Msg(X_INFO, "Using input driver '%s' for '%s'\n", drv->driverName, pInfo->name);
+
     if (!drv->PreInit) {
         xf86Msg(X_ERROR,
                 "Input driver `%s' has no PreInit function (ignoring)\n",
@@ -817,15 +819,18 @@ xf86NewInputDevice(InputInfoPtr pInfo, DeviceIntPtr *pdev, BOOL enable)
     /* Enable it if it's properly initialised and we're currently in the VT */
     if (enable && dev->inited && dev->startup && xf86Screens[0]->vtSema)
     {
+        OsBlockSignals();
         EnableDevice(dev, TRUE);
         if (!dev->enabled)
         {
+            OsReleaseSignals();
             xf86Msg(X_ERROR, "Couldn't init device \"%s\"\n", pInfo->name);
             rval = BadMatch;
             goto unwind;
         }
         /* send enter/leave event, update sprite window */
         CheckMotion(NULL, dev);
+        OsReleaseSignals();
     }
 
     *pdev = dev;

@@ -197,10 +197,10 @@ device_added(struct udev_device *udev_device)
 
  unwind:
     free(config_info);
-    while (!dev && (tmpo = options)) {
+    while ((tmpo = options)) {
         options = tmpo->next;
-        free(tmpo->key);
-        free(tmpo->value);
+        free(tmpo->key);        /* NULL if dev != NULL */
+        free(tmpo->value);      /* NULL if dev != NULL */
         free(tmpo);
     }
 
@@ -255,6 +255,10 @@ wakeup_handler(pointer data, int err, pointer read_mask)
                 device_added(udev_device);
             else if (!strcmp(action, "remove"))
                 device_removed(udev_device);
+            else if (!strcmp(action, "change")) {
+                device_removed(udev_device);
+                device_added(udev_device);
+            }
         }
         udev_device_unref(udev_device);
     }
