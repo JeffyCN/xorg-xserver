@@ -1,6 +1,6 @@
-xorg-server (2:1.10.0.901-1) UNRELEASED; urgency=low
+xorg-server (2:1.10.0.901-1) experimental; urgency=low
 
-  * New upstream release.
+  * New upstream release (1.10.1 rc1).
   * Relax build-dep and dep on x11proto-randr-dev since the XRandR 1.4
     bits were finally reverted upstream.
   * Remove patch: 16-construct-paths-in-doxygen.conf.diff (merged
@@ -8,7 +8,7 @@ xorg-server (2:1.10.0.901-1) UNRELEASED; urgency=low
   * Pass --enable-xcsecurity to the main build to restore the XC-SECURITY
     extension, thanks to Stefan Fritsch's report (Closes: #599657).
 
- -- Cyril Brulebois <kibi@debian.org>  Wed, 30 Mar 2011 01:42:22 +0200
+ -- Cyril Brulebois <kibi@debian.org>  Wed, 30 Mar 2011 02:22:56 +0200
 
 xorg-server (2:1.9.99.903-1) experimental; urgency=low
 
