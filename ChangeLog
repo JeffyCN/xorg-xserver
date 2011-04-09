@@ -1,3 +1,849 @@
+commit ec6e1e45627de2bb851f135df0507a360d0d99e6
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Fri Apr 8 16:36:32 2011 -0700
+
+    configure.ac: Version bumped to 1.10.0.902 (1.10.1 RC2)
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+
+commit 7379f7a7717a431ba4f8cf371aad9838aec7bec6
+Author: Chase Douglas <chase.douglas@canonical.com>
+Date:   Wed Apr 6 14:51:45 2011 -0400
+
+    Fix unset valuator handling for XI 1.x valuator events again
+    
+    Set the valuator values for unset masked absolute valuators in the
+    internal device event. This ensures the values will always be correct in
+    getValuatorEvents even if the device has been removed.
+    
+    Signed-off-by: Chase Douglas <chase.douglas@canonical.com>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    (cherry picked from commit b28a1af55cf1ad2a882cc8cd73b77341dec7ff5a)
+
+commit 89142b356b3119d7b7012df075fc7698ec38e769
+Author: Chase Douglas <chase.douglas@canonical.com>
+Date:   Thu Mar 31 11:29:01 2011 -0400
+
+    Don't report old relative values in getValuatorEvents
+    
+    Relative valuator values should not be reported in any future events. If
+    a relative valuator value is not set in an internal event, set the value
+    to 0 for XI 1.x valuator events sent over the wire.
+    
+    Signed-off-by: Chase Douglas <chase.douglas@canonical.com>
+    Reviewed-by: Simon Thum <simon.thum@gmx.de>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    (cherry picked from commit f40103cee1d591387359f401a5a7c21f4105aeb4)
+
+commit f1a8f8afc7424346dbe3360eaa5fd95d458de2e0
+Author: Chase Douglas <chase.douglas@canonical.com>
+Date:   Mon Mar 28 16:04:48 2011 -0400
+
+    Handle non continuous valuator data in getValuatorEvents
+    
+    This allows for masked valuators to be handled properly in XI 1.x
+    events. Any unset valuators in the device event are set to the last
+    known value when transmitted on the wire through XI 1.x valuator events.
+    
+    Fixes https://bugs.launchpad.net/ubuntu/+source/xorg-server/+bug/736500
+    
+    Signed-off-by: Chase Douglas <chase.douglas@canonical.com>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    (cherry picked from commit 8199eac443d2c22d313cb23e39d5e607a8cc7f99)
+
+commit a9c90ebe3357546fbd12430ca31623d419e77212
+Author: Chase Douglas <chase.douglas@canonical.com>
+Date:   Mon Mar 28 16:04:47 2011 -0400
+
+    Clean up getValuatorEvents using array loop logic
+    
+    Signed-off-by: Chase Douglas <chase.douglas@canonical.com>
+    Reviewed-by: Jamey Sharp <jamey@minilop.net>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    (cherry picked from commit ac00ab77d5a00cfd198958aa1afaa4c3ccc6d7bc)
+
+commit 1f51fe4f748b2997e466863d8387bd6791b32931
+Author: Matthieu Herrb <matthieu.herrb@laas.fr>
+Date:   Fri Apr 1 22:55:57 2011 +0200
+
+    Xi: fix querydevice request swapping
+    
+    WriteReplyToClient() swaps rep.length, so it can't be used
+    on return of WriteReplyToClient(). So save it's value for later
+    use.
+    
+    Signed-off-by: Matthieu Herrb <matthieu.herrb@laas.fr>
+    Reviewed-by: Julien Cristau <jcristau@debian.org>
+    (cherry picked from commit 266ea63bc3e052b753c5484fa08dcc4fb67c8952)
+
+commit 2f12adb2c914732ae3a328b759d272d8bbbb55a6
+Author: Matthieu Herrb <matthieu.herrb@laas.fr>
+Date:   Fri Apr 1 22:54:54 2011 +0200
+
+    Xext: fix test on extension number for the swapped case.
+    
+    Signed-off-by: Matthieu Herrb <matthieu.herrb@laas.fr>
+    Reviewed-by: Julien Cristau <jcristau@debian.org>
+    (cherry picked from commit 552c78592c5e5f52fe16e2429f77c63adf398247)
+
+commit e08a7df54da8aeb343412ed9dda250207dc749f4
+Author: Matthieu Herrb <matthieu.herrb@laas.fr>
+Date:   Fri Apr 1 22:53:40 2011 +0200
+
+    Xi: add XI_Focus{In,Out} to swapped events.
+    
+    Signed-off-by: Matthieu Herrb <matthieu.herrb@laas.fr>
+    Reviewed-by: Julien Cristau <jcristau@debian.org>
+    (cherry picked from commit a074e6b6754d6c2706b2b5de54e22cbffc5b1a17)
+
+commit 69ee0f68b7bbd8007d91b8485a4c6684c552a9dd
+Author: Matthieu Herrb <matthieu.herrb@laas.fr>
+Date:   Fri Apr 1 22:51:48 2011 +0200
+
+    Xi: take XI2 requests into account also for the swapping case.
+    
+    Signed-off-by: Matthieu Herrb <matthieu.herrb@laas.fr>
+    Reviewed-by: Julien Cristau <jcristau@debian.org>
+    (cherry picked from commit 81257377a2d011ce47fba5822df0f7918dea1d72)
+
+commit 0a54ec5099bd04ebdce3f683ecb0f8cf4da025d9
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Tue Mar 15 13:20:03 2011 +1000
+
+    man: list the drivers that are ignored when hotplugging (#35209)
+    
+    X.Org Bug 35209 <http://bugs.freedesktop.org/show_bug.cgi?id=35209>
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Cyril Brulebois <kibi@debian.org>
+    Reviewed-by: Julien Cristau <jcristau@debian.org>
+    (cherry picked from commit 6f46ae3c69c48f389560af1491ed1729ba45866f)
+
+commit e9ba0539de1c4dfb946e1885cd64b3fc45bc2dbe
+Author: Daniel Stone <daniel@fooishbar.org>
+Date:   Tue Feb 22 13:43:28 2011 +0000
+
+    Input: Don't freeze unrelated devices in DeliverGrabbedEvent
+    
+    When delivering an event to a device grabbed with SyncBoth,
+    DeliverGrabbedEvent walks the device tree looking for associated devices
+    to freeze them.  Unfortunately, it froze all devices instead of just the
+    paired device, and the previous fix in 4fbadc8b17237f3c would still break
+    if the same client had a non-SyncBoth grab on another unrelated master
+    device.
+    
+    Fix this by completely ignoring devices that aren't our paired device.
+    
+    Signed-off-by: Daniel Stone <daniel@fooishbar.org>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    (cherry picked from commit b636893137da1695e235e3a9354bfd9243fdddc2)
+
+commit ff066dc75b6b8eb3f957d00f57011197a588cec6
+Author: Bryce Harrington <bryce@canonical.com>
+Date:   Wed Feb 16 16:55:57 2011 -0800
+
+    Check for OOM condition in XISendDeviceHierarchyEvent
+    
+    When system is out of memory, calloc can fail returning a NULL pointer.
+    Check for this before dereferencing it, and bail out if it fails.
+    
+    Ref.: https://bugs.launchpad.net/ubuntu/+source/xorg-server/+bug/720445
+    
+    Signed-off-by: Bryce Harrington <bryce@canonical.com>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    (cherry picked from commit 649269d40667cfb387cb5286dd3519dd68f7dd80)
+
+commit 1a2fab98104468b5f17d54c206213af5b0226bfd
+Author: Simon Thum <simon.thum@gmx.de>
+Date:   Sun Feb 6 19:13:00 2011 +0100
+
+    xfree86: allow to check for options without warnings in the log
+    
+    This allows set_percent_option in synaptics to work as described,
+    and should generally enable to check option syntax without log spam.
+    
+    Signed-off-by: Simon Thum <simon.thum@gmx.de>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    (cherry picked from commit 38ffeec0c89e83afc62579dec221c325d667cc1e)
+
+commit 677aeef14b322615c67c3871e9b29638a9b341c4
+Author: Simon Thum <simon.thum@gmx.de>
+Date:   Sun Feb 6 19:07:19 2011 +0100
+
+    fix percent options parsing
+    
+    Signed-off-by: Simon Thum <simon.thum@gmx.de>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    (cherry picked from commit 2fbccc881bfab4bdc5b97f74a7e5bcec7fdeae20)
+
+commit 8da04cb0d94462a2bdfe3003e3c460cecbecb6f6
+Author: Daniel Stone <daniel@fooishbar.org>
+Date:   Tue Feb 15 11:27:59 2011 +0000
+
+    Input: Actually send Xi 1.x DeviceStateNotify events
+    
+    When a client has selected for Xi 1.x DeviceStateNotify events, they
+    should receive them when a DeviceFocusIn event is generated.  The code
+    to do this was there, but an incorrect test meant they were never being
+    sent.
+    
+    The "type" passed in is the XI2 type, the XI1 type is in event.type.
+    
+    Signed-off-by: Daniel Stone <daniel@fooishbar.org>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    (cherry picked from commit 737562257e8ee30b1c438e5160a61fbb26ca609e)
+
+commit 9c803d2fe06163157edf84ed8e0563db20ec4a73
+Author: Alan Coopersmith <alan.coopersmith@oracle.com>
+Date:   Sun Feb 13 21:36:04 2011 -0800
+
+    XkbAddGeomProperty: Fix checks for malloc failure
+    
+    Check the variable we just tried to malloc, not the string we're copying
+    and already checked for NULL at the beginning of the function.
+    
+    Signed-off-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+    (cherry picked from commit 682865c460945e1299f943561140f46439e2b4cb)
+
+commit 81fbb96c54f78a7cd96433294ee003c7ef6a772a
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Fri Feb 25 11:08:19 2011 +1000
+
+    dix: release all buttons and keys before reattaching a device (#34182)
+    
+    Testcase:
+      xinput float <keyboard name>
+    
+    results in the keyboard's enter key being repeated as the device is detached
+    while the key is still physically down. To avoid this, release all keys and
+    buttons before reattaching the device.
+    
+    X.Org Bug 34182 <http://bugs.freedesktop.org/show_bug.cgi?id=34182>
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Fernando Carrijo <fcarrijo@freedesktop.org>
+    (cherry picked from commit 9d23459415b84606ee4f38bb2d19054c432c8552)
+
+commit 49afcc76a1c799e18931cc762431975c5c059437
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Mon Apr 4 09:38:35 2011 -0700
+
+    XQuartz: Bump bundle version to 2.6.2
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+
+commit 3d59f005cfc83f81f2847d94108f66f824cd926b
+Author: Tiago Vignatti <tiago.vignatti@nokia.com>
+Date:   Mon Mar 28 20:24:52 2011 +0300
+
+    xfree86: loader: fix memory leaks in LoaderListDirs
+    
+    Signed-off-by: Tiago Vignatti <tiago.vignatti@nokia.com>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Nicolas Peninguy <nico@lostgeeks.org>
+
+commit 77fcfd0e94c200ee383cf9d03383cde947eef6fd
+Author: Tiago Vignatti <tiago.vignatti@nokia.com>
+Date:   Tue Mar 29 18:22:50 2011 +0300
+
+    render: fix memory leaks in ProcRenderCompositeGlyphs
+    
+    Signed-off-by: Tiago Vignatti <tiago.vignatti@nokia.com>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Nicolas Peninguy <nico@lostgeeks.org>
+    Reviewed-by: Soren Sandmann <ssp@redhat.com>
+
+commit 066dbbaafdef9777c9c7e08cf32ac127437b7bb0
+Author: Tiago Vignatti <tiago.vignatti@nokia.com>
+Date:   Tue Mar 29 17:17:40 2011 +0300
+
+    xkb: fix fd leak in XkbDDXListComponent
+    
+    Signed-off-by: Tiago Vignatti <tiago.vignatti@nokia.com>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Nicolas Peninguy <nico@lostgeeks.org>
+
+commit aac8fb98fdd4f1100b6f48e7d35b765b99819cb9
+Author: Tiago Vignatti <tiago.vignatti@nokia.com>
+Date:   Tue Mar 29 16:54:14 2011 +0300
+
+    dix: fix memory leak in ProcListExtensions
+    
+    Signed-off-by: Tiago Vignatti <tiago.vignatti@nokia.com>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Nicolas Peninguy <nico@lostgeeks.org>
+
+commit a50fc25bf34adcf4ad1db8b62aa6eee6ccbdd68c
+Author: Tiago Vignatti <tiago.vignatti@nokia.com>
+Date:   Tue Mar 29 16:48:21 2011 +0300
+
+    mi: fix memory leak in miZeroLine
+    
+    Signed-off-by: Tiago Vignatti <tiago.vignatti@nokia.com>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Nicolas Peninguy <nico@lostgeeks.org>
+
+commit 04328d1dbb7085f5f694669c4ead8643c3a102e3
+Author: Tiago Vignatti <tiago.vignatti@nokia.com>
+Date:   Mon Mar 28 20:13:11 2011 +0300
+
+    xi: fix memory leak in AddExtensionClient
+    
+    Signed-off-by: Tiago Vignatti <tiago.vignatti@nokia.com>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Nicolas Peninguy <nico@lostgeeks.org>
+
+commit 4805b4be1527b5599a96880bfe616ba764944a73
+Author: Tiago Vignatti <tiago.vignatti@nokia.com>
+Date:   Mon Mar 28 20:09:04 2011 +0300
+
+    dix: fix memory leak in AllocShared
+    
+    Signed-off-by: Tiago Vignatti <tiago.vignatti@nokia.com>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Nicolas Peninguy <nico@lostgeeks.org>
+
+commit e884c5bf10e9412a1b4621bf5541b4f722024927
+Author: Tiago Vignatti <tiago.vignatti@nokia.com>
+Date:   Mon Mar 28 20:07:06 2011 +0300
+
+    dix: fix memory leak in AllocPseudo
+    
+    Signed-off-by: Tiago Vignatti <tiago.vignatti@nokia.com>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Nicolas Peninguy <nico@lostgeeks.org>
+
+commit 15d67a32a1f3cd2cdb68f0aea7c4d45ba31c4627
+Author: Tiago Vignatti <tiago.vignatti@nokia.com>
+Date:   Mon Mar 28 19:21:28 2011 +0300
+
+    os: fix memory and fd leaks in Popen
+    
+    Signed-off-by: Tiago Vignatti <tiago.vignatti@nokia.com>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Nicolas Peninguy <nico@lostgeeks.org>
+
+commit 39831373e2cd51f28c079f5283e2be3f481f67a5
+Author: Tiago Vignatti <tiago.vignatti@nokia.com>
+Date:   Mon Mar 28 19:19:57 2011 +0300
+
+    os: use DebugF for debugging
+    
+    Signed-off-by: Tiago Vignatti <tiago.vignatti@nokia.com>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Nicolas Peninguy <nico@lostgeeks.org>
+
+commit 3fe4ce84eb1a16b7966bf97dd172349ba9dbaf9a
+Author: Tiago Vignatti <tiago.vignatti@nokia.com>
+Date:   Tue Mar 29 20:04:24 2011 +0300
+
+    xfree86: fix memory leak in xf86LoadModules
+    
+    Signed-off-by: Tiago Vignatti <tiago.vignatti@nokia.com>
+    Signed-off-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Reviewed-by: Nicolas Peninguy <nico@lostgeeks.org>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit 23abddc6c9762aac1ce17531602e71fcbfb73ebf
+Author: Tiago Vignatti <tiago.vignatti@nokia.com>
+Date:   Tue Mar 29 19:51:23 2011 +0300
+
+    xfree86: fix bad free configInputDevices
+    
+    introduced in 93ca526892c0d22afa05cce6496198c652043a19.
+    
+    Signed-off-by: Tiago Vignatti <tiago.vignatti@nokia.com>
+    Reviewed-by: Dan Nicholson <dbn.lists@gmail.com>
+    Reviewed-by: Nicolas Peninguy <nico@lostgeeks.org>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit 0111d02b3b69df30ba38bf72fa08c0d594594efe
+Author: Tiago Vignatti <tiago.vignatti@nokia.com>
+Date:   Tue Mar 29 19:49:32 2011 +0300
+
+    xfree86: fix memory leaks in configLayout
+    
+    Signed-off-by: Tiago Vignatti <tiago.vignatti@nokia.com>
+    Reviewed-by: Nicolas Peninguy <nico@lostgeeks.org>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit 7a666aa00bc987a3bfee50d2686a3295ae95b495
+Author: Tiago Vignatti <tiago.vignatti@nokia.com>
+Date:   Fri Mar 25 22:21:21 2011 +0200
+
+    xfree86: fix memory leak in xf86ConfigFbEntity
+    
+    Signed-off-by: Tiago Vignatti <tiago.vignatti@nokia.com>
+    Reviewed-by: Nicolas Peninguy <nico@lostgeeks.org>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit 5273d0f959d29965f71e0552620bca954e2ae9fc
+Author: Tiago Vignatti <tiago.vignatti@nokia.com>
+Date:   Fri Mar 25 22:10:55 2011 +0200
+
+    fb: fix memory leak in fbOverlayFinishScreenInit
+    
+    Signed-off-by: Tiago Vignatti <tiago.vignatti@nokia.com>
+    Reviewed-by: Nicolas Peninguy <nico@lostgeeks.org>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit dc86d4fe64b3c7f2f3fae7f7dc16383f807965dd
+Author: Tiago Vignatti <tiago.vignatti@nokia.com>
+Date:   Fri Mar 25 22:07:44 2011 +0200
+
+    Xi: fix memory leak in ProcXGetSelectedExtensionEvents
+    
+    Signed-off-by: Tiago Vignatti <tiago.vignatti@nokia.com>
+    Reviewed-by: Nicolas Peninguy <nico@lostgeeks.org>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit 8894aaf72b4fd76a22a465b21f53b82af5bb3b4b
+Author: Tiago Vignatti <tiago.vignatti@nokia.com>
+Date:   Fri Mar 25 22:07:31 2011 +0200
+
+    dix: fix memory leak in SetDefaultFontPath
+    
+    Signed-off-by: Tiago Vignatti <tiago.vignatti@nokia.com>
+    Reviewed-by: Nicolas Peninguy <nico@lostgeeks.org>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit afb2bffafe5f9a18b08be312089f6f7f61fb5b7f
+Author: Tiago Vignatti <tiago.vignatti@nokia.com>
+Date:   Fri Mar 25 21:33:15 2011 +0200
+
+    mi: fix memory leak in miFillUniqueSpanGroup
+    
+    Signed-off-by: Tiago Vignatti <tiago.vignatti@nokia.com>
+    Reviewed-by: Nicolas Peninguy <nico@lostgeeks.org>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit 9956bd76e14586dd8c61c4415979f57e1e431647
+Author: Tiago Vignatti <tiago.vignatti@nokia.com>
+Date:   Fri Mar 25 19:27:17 2011 +0200
+
+    xi: fix memory leak in ProcXIQueryDevice
+    
+    Signed-off-by: Tiago Vignatti <tiago.vignatti@nokia.com>
+    Reviewed-by: Nicolas Peninguy <nico@lostgeeks.org>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit c072663f37f492544791a1b60057cf0a894b8e3f
+Author: Tiago Vignatti <tiago.vignatti@nokia.com>
+Date:   Fri Mar 25 19:21:03 2011 +0200
+
+    mi: fix memory leak in miInitVisuals
+    
+    Free the pointers inside miInitVisuals, so the callers of this function
+    (fboverlay.c and fbscreen.c) don't need to worry with deallocation in the case
+    of failure.
+    
+    Signed-off-by: Tiago Vignatti <tiago.vignatti@nokia.com>
+    Reviewed-by: Nicolas Peninguy <nico@lostgeeks.org>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit a071e924481a7f1f839ba9341e40c296a3a60d7d
+Author: Tiago Vignatti <tiago.vignatti@nokia.com>
+Date:   Fri Mar 25 18:56:02 2011 +0200
+
+    xfree86: dri2: fix memory leak and free resources properly
+    
+    Signed-off-by: Tiago Vignatti <tiago.vignatti@nokia.com>
+    Reviewed-by: Nicolas Peninguy <nico@lostgeeks.org>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit e1eff6bd9a16116a04e36400060f75ee39c7dc1e
+Author: Tiago Vignatti <tiago.vignatti@nokia.com>
+Date:   Fri Mar 25 18:24:34 2011 +0200
+
+    xorg: remove unused pointer values all over the server
+    
+    Signed-off-by: Tiago Vignatti <tiago.vignatti@nokia.com>
+    Reviewed-by: Nicolas Peninguy <nico@lostgeeks.org>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit 85d611a3a4b286032289e7e5ea65aa280c8b4f59
+Author: Tiago Vignatti <tiago.vignatti@nokia.com>
+Date:   Wed Mar 23 18:08:29 2011 +0200
+
+    dix: remove unused macro
+    
+    Signed-off-by: Tiago Vignatti <tiago.vignatti@nokia.com>
+    Reviewed-by: Nicolas Peninguy <nico@lostgeeks.org>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit de8a057c321dd67c41bb62e8df88e88be2fb89cb
+Author: Tiago Vignatti <tiago.vignatti@nokia.com>
+Date:   Wed Mar 23 18:06:51 2011 +0200
+
+    dix: remove unused debug code
+    
+    Signed-off-by: Tiago Vignatti <tiago.vignatti@nokia.com>
+    Reviewed-by: Mikhail Gusarov <dottedmag@dottedmag.net>
+    Reviewed-by: Nicolas Peninguy <nico@lostgeeks.org>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit c75637877372c74ae20fdd8f51c5fd68a629f4ac
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Mon Mar 28 23:32:06 2011 -0700
+
+    configure.ac: 1.10.0.901 (1.10.1 RC1)
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+
+commit d3992dbe586f873a089fca25846ca08a85708352
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Mon Mar 28 23:31:18 2011 -0700
+
+    hw/dmx/doc: Update list of doxygen-generated files
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+
+commit c5602d16399b5abb9d67365144134728a27e1cc5
+Author: Erkki Seppälä <erkki.seppala@vincit.fi>
+Date:   Fri Mar 18 16:35:36 2011 +0200
+
+    config: handle device change event properly
+    
+    wakeup_handler in udev.c wasn't dealing with udev change events.
+    There are situations when a device can gain its input capabilities
+    after it has been added to the system and therefore the change events
+    must be handled as well.
+    
+    The change is handled as a consecutive device removal and addition.
+    
+    Signed-off-by: Erkki Seppälä <erkki.seppala@vincit.fi>
+    Signed-off-by: Stefan Kost <Stefan.Kost@nokia.com>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    (cherry picked from commit 6243332782f2d286d49f1dec8a628b0a403665fd)
+
+commit a07c07dc6c921ffb9a729f5224c9de8ff237bf54
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Fri Mar 18 11:06:57 2011 +1000
+
+    xfree86: print out which driver is about to be used.
+    
+    Makes reading the log file a lot easier for those that don't magically
+    recognise the log spew by the individual drivers.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Dan Nicholson <dbn.lists@gmail.com>
+    (cherry picked from commit fad10cb38ef2433c82f8a43d3b7d64e323728060)
+
+commit 4edf97ad4f99a78d2131bef54a8692c3a35b1c97
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Tue Mar 22 19:01:48 2011 -0700
+
+    GLX: Support TLS with better portability
+    
+    AX_TLS detects when toolchains support __thread or __declspec(thread),
+    but existing code assumed __thread.
+    
+    This also adds a check to configure.ac to error out if TLS is requested
+    but unsupported.
+    
+    Found-by: Tinderbox
+    http://tinderbox.x.org/builds/2011-03-22-0007
+    
+    Regression-from: 82b1eaa6cad20f39dbf15573bdb3d62acbcd91f9
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+    Reviewed-by: Tom Fogal <tfogal@alumni.unh.edu>
+    Reviewed-by: Dan Nicholson <dbn.lists@gmail.com>
+    (cherry picked from commit c55baebf4ebf1887262cc16899eb297b9f284f6e)
+
+commit b8e8579df592c050dfab2dc45f5004b67dbb965e
+Author: Rami Ylimäki <rami.ylimaki@vincit.fi>
+Date:   Wed Mar 9 15:45:40 2011 +0200
+
+    xkb: Initialize pad bytes sent in replies of geometry requests.
+    
+    Valgrind complains about uninitialized data being written to clients.
+    
+    Reviewed-by: Erkki Seppälä <erkki.seppala@vincit.fi>
+    Signed-off-by: Rami Ylimäki <rami.ylimaki@vincit.fi>
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    (cherry picked from commit dc9ce695a69ca0787f58f8d160212a7a41acb703)
+
+commit e22497eddc54967e892fbe99f2c4239b4504daf6
+Author: Rami Ylimäki <rami.ylimaki@vincit.fi>
+Date:   Fri Mar 11 14:30:49 2011 +0200
+
+    xkb: Release XKB component names when compiling keymap.
+    
+    Reviewed-by: Erkki Seppälä <erkki.seppala@vincit.fi>
+    Signed-off-by: Rami Ylimäki <rami.ylimaki@vincit.fi>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    (cherry picked from commit 5c47f8beac7f87680c6f7331483b9cf94a1dbc86)
+
+commit a96fd08b406b9955ff0d5c02f4a50f4fb2acf40e
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Tue Mar 8 14:41:21 2011 +1000
+
+    Xi: fix XI2 passive grab reply length calculation
+    
+    If modifiers failed, the reply length was 4 bytes too short.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Julien Cristau <jcristau@debian.org>
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+    (cherry picked from commit 33fee13361e745e1db29e250b08622c83046d488)
+
+commit 09f6d85b5bb49406f015ec667bb6efb3e710ced2
+Author: Julien Cristau <jcristau@debian.org>
+Date:   Mon Mar 7 18:55:19 2011 +0100
+
+    Xi: fix length checks for swapped clients
+    
+    ChangeDeviceProperty and XIChangeProperty are followed by some data, so
+    use REQUEST_AT_LEAST_SIZE instead of REQUEST_SIZE_MATCH.
+    
+    X.Org bug#35082 <https://bugs.freedesktop.org/show_bug.cgi?id=35082>
+    
+    Reported-by: Markus Fleschutz <markus.fleschutz@x-software.com>
+    Signed-off-by: Julien Cristau <jcristau@debian.org>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    (cherry picked from commit eb8141b6edd8b477c0ba796be71e985c35520a9b)
+
+commit d1caa195abc648560f81356c40f08e7630544db9
+Author: Rami Ylimäki <rami.ylimaki@vincit.fi>
+Date:   Fri Mar 4 17:55:33 2011 +0200
+
+    config: Ensure that stolen option list elements are released.
+    
+    NewInputDeviceRequest steals the contents of option list elements but
+    doesn't use the elements themselves for anything. Therefore the list
+    elements need to be released always.
+    
+    Signed-off-by: Rami Ylimäki <rami.ylimaki@vincit.fi>
+    Reviewed-by: Erkki Seppälä <erkki.seppala@vincit.fi>
+    Reviewed-by: Adam Jackson <ajax@redhat.com>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    (cherry picked from commit 4114533db6704324fc26f28a444415e325ace8e0)
+
+commit 241de6d72bdda9c925e22538aba4f91643ae0897
+Author: Rami Ylimäki <rami.ylimaki@vincit.fi>
+Date:   Fri Mar 4 17:55:32 2011 +0200
+
+    dix: Release input device config info when the device disconnects.
+    
+    Signed-off-by: Rami Ylimäki <rami.ylimaki@vincit.fi>
+    Reviewed-by: Erkki Seppälä <erkki.seppala@vincit.fi>
+    Reviewed-by: Adam Jackson <ajax@redhat.com>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    (cherry picked from commit 8d30aff4aa708b9b885d492602ced7493a96a4df)
+
+commit 6a8313aee3ef06d92d8eba9ed77a963b5c5a9e7a
+Author: Rami Ylimäki <rami.ylimaki@vincit.fi>
+Date:   Fri Mar 4 17:55:31 2011 +0200
+
+    xkb: Ensure that XKB device private won't leak on device disconnect.
+    
+    Signed-off-by: Rami Ylimäki <rami.ylimaki@vincit.fi>
+    Reviewed-by: Erkki Seppälä <erkki.seppala@vincit.fi>
+    Reviewed-by: Adam Jackson <ajax@redhat.com>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    (cherry picked from commit 40e56d34538f4663426db50893c231a2b5d760dc)
+
+commit ee23ecc22ecac744ae2933f417f8a10dec938c94
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Thu Mar 3 14:15:55 2011 +1000
+
+    xfree86: block signals between EnableDevice and first CheckMotion()
+    
+    Devices usually enable SIGIO processing in EnableDevice. CheckMotion
+    initialises the pointer sprite, sends Enter/Leave events, etc. This leaves
+    us with a small window where events may be processed without the sprite or
+    pointer position (as seen from the protocol) is valid.
+    Block signals during this window.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+    (cherry picked from commit 18413f55089623123537c1499b02aa95ca2014d2)
+
+commit aef58ce5ba2d4a9140bb4d2860304ae64aa713da
+Author: Erkki Seppälä <erkki.seppala@vincit.fi>
+Date:   Tue Mar 8 13:29:41 2011 -0500
+
+    xfree86/common: Remove a configScreen leak when conf_screen is NULL
+    
+    configScreen used a dynamically allocated buffer for XF86ConfScreenRec
+    when conf_screen argument was NULL. This pointer was never stored
+    anywhere, nor was it released, so this patch makes the function use
+    automatically allocated storage in that situation.
+    
+    [ajax: minor grammar fix]
+    Reviewed-by: Adam Jackson <ajax@redhat.com>
+    Reviewed-by: Rami Ylimäki <rami.ylimaki@vincit.fi>
+    Signed-off-by: Erkki Seppälä <erkki.seppala@vincit.fi>
+    (cherry picked from commit a19771e4337d1c4600550314bbc42a1495a023ff)
+
+commit efe69b45557368191fbb38555acb06736b09b6cb
+Author: Matthieu Herrb <matthieu.herrb@laas.fr>
+Date:   Sun Feb 27 20:16:03 2011 +0100
+
+    Don't clobber input device options from xorg.conf
+    
+    Since commit b8d9c5ff removed commonOptions, we now
+    need to append the "Core{Keyboard,Pointer}" options to
+    the existing list.
+    
+    Fixes passing options to devices confirured in xorg.conf
+    on systems where autoaddevices is false.
+    
+    Signed-off-by: Matthieu Herrb <matthieu.herrb@laas.fr>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    (cherry picked from commit 00779932de861bf7ac8c625802f1afed75d01b6f)
+
+commit fe90f0f270eeb229b43056b63dec886ffbfe9066
+Author: Erkki Seppälä <erkki.seppala@vincit.fi>
+Date:   Thu Mar 10 11:40:40 2011 +0200
+
+    xfree86/modes: Fixed memory leak in xf86InitialConfiguration
+    
+    There were two memory leaks in the function: one was the lack of free
+    for "enabled", the other was the full lack of releasing anything when
+    configuration was too small. The first issue was fixed by adding the
+    missing free, the other was addressed by replacing the duplicate
+    memory releasing sequences with one that is gotoed into.
+    
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Rami Ylimäki <rami.ylimaki@vincit.fi>
+    Signed-off-by: Erkki Seppälä <erkki.seppala@vincit.fi>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+    (cherry picked from commit d3adf2d9350bee4125107e2ea1ed0c51bb736562)
+
+commit f6e8ac4ed1fc7687c7d312fc6a10499afbac2b31
+Author: Keith Packard <keithp@keithp.com>
+Date:   Sat Feb 26 10:31:50 2011 -0800
+
+    loader: Don't distribute sdksyms.c and make it depend on the config
+    
+    sdksyms.c is constructed by processing header files with the C
+    preprocessor. Its contents will vary depending on the precise
+    configuration options, and so must depend on the config header
+    files.
+    
+    We have one header file which is always changed when any config option
+    is modified called do-not-use-config.h (which may want a different
+    name at some point), so make sdksyms.c depend on that file.
+    
+    Also, we don't want to ship this file; it always needs to be
+    built. So, include it in the nodist_libloader_la_SOURCES list to
+    prevent it from being added to the tarball.
+    
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+    Reviewed-by: Dan Nicholson <dbn.lists@gmail.com>
+    (cherry picked from commit 628d16a92a7fa556fbb70bf4a4adf57ec05c190b)
+
+commit 0ab680f08208afe51ad6ddc1018b7d6f8b851840
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Thu Feb 24 16:06:34 2011 -0500
+
+    vbe: Fix malloc size bug
+    
+    v2: Slightly more obvious sizing math.
+    
+    ==14882== Invalid write of size 2
+    ==14882==    at 0x6750267: VBEGetVBEInfo (vbe.c:400)
+    ==14882==    by 0x6142064: ??? (in /usr/lib64/xorg/modules/drivers/vesa_drv.so)
+    ==14882==    by 0x471895: InitOutput (xf86Init.c:519)
+    ==14882==    by 0x422778: main (main.c:205)
+    ==14882==  Address 0x4f32fa8 is 72 bytes inside a block of size 73 alloc'd
+    ==14882==    at 0x4A0640D: malloc (vg_replace_malloc.c:236)
+    ==14882==    by 0x675024B: VBEGetVBEInfo (vbe.c:398)
+    ==14882==    by 0x6142064: ??? (in /usr/lib64/xorg/modules/drivers/vesa_drv.so)
+    ==14882==    by 0x471895: InitOutput (xf86Init.c:519)
+    ==14882==    by 0x422778: main (main.c:205)
+    
+    Reviewed-by: Mark Kettenis <kettenis@openbsd.org>
+    Reviewed-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Signed-off-by: Adam Jackson <ajax@redhat.com>
+    (cherry picked from commit d8caa782009abf4dc17b945e325e83fda299a534)
+
+commit 35503964af4e6d3359e93f8d7c084dedee513385
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Tue Mar 1 20:02:46 2011 -0800
+
+    XQuartz: pbproxy: Protect against possible collision between Cocoa and X11 Cursor types
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+    (cherry picked from commit 69a9171dbbafd6a7db702d48770d28fb54717545)
+
+commit 14cb04f989132f2c2fc44cfdaceb17a5dfe63d1d
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Sun Feb 27 16:18:27 2011 -0800
+
+    XQuartz: Don't use deprecated CoreGraphics API on SL and Lion
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+    (cherry picked from commit 0343aed1f082baf4bfbd730c1c3582f1410b8741)
+
+commit edcf115800fef79d956c8e3d3e3c46a30cf77538
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Sun Feb 27 15:49:10 2011 -0800
+
+    Revert "rootless: Remove ROOTLESS_WORKAROUND"
+    
+    Christof Wolf has reported a regression that seems to be caused by
+    this change, so reverting the change in the 1.9 branch.  We'll
+    investigate a proper fix in master for 1.10.
+    
+    This reverts commit c89f0521044083a11d538ebfeaabee6fc7fb9a03.
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+    (cherry picked from commit de32d4dcf57c10fc100c1b33630127947a8c8460)
+
+commit 436deac7bc6517f1943af3efa7420e94596958ab
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Tue Feb 8 11:38:35 2011 -0800
+
+    XQuartz: RandR: Add RandR modes for the primary display in multi-monitor configs
+    
+    We now support using RandR to set the resolution of the primary display (and
+    place a shielding window on other displays) in multi-monitor configurations.
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+    (cherry picked from commit 8cf3348e90846f5b04236479042228fb98ac8f70)
+
+commit c78d39316183d35549bc57a834042a90e24491fb
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Tue Feb 8 12:26:35 2011 -0800
+
+    XQuartz: RandR: Provide an alert box when entering a RandR mode for the first time.
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+    (cherry picked from commit 968652983f8e6ae6889b48e15f4098ff6ad4a15a)
+
+commit b16bba0865862f86c70d98a85b4d2b625239eff8
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Tue Feb 8 11:37:52 2011 -0800
+
+    XQuartz: RandR: Capture the display when switching modes with RandR
+    
+    This will prevent native windows from resizing as we change resolutions.
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+    (cherry picked from commit 13578b852b7631f99cf1fd5e2e5469edc5aae369)
+
 commit f3d19c0cf3327cceb90f7378f5d8fc0c3e327400
 Author: Keith Packard <keithp@keithp.com>
 Date:   Fri Feb 25 21:22:23 2011 -0800

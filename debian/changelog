@@ -1,3 +1,9 @@
+xorg-server (2:1.10.0.902-1) UNRELEASED; urgency=low
+
+  * New upstream release (1.10.1 rc2).
+
+ -- Cyril Brulebois <kibi@debian.org>  Sat, 09 Apr 2011 03:34:54 +0200
+
 xorg-server (2:1.10.0.901-1) experimental; urgency=low
 
   * New upstream release (1.10.1 rc1).
