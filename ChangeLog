@@ -1,3 +1,22 @@
+commit a73311f8304193f9245fb077f173bf1e1d52e040
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Fri Apr 15 17:58:57 2011 -0700
+
+    configure.ac: Bump verison to 1.10.1
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+
+commit 55f85d6cc28d737314f12958aac49d61b9476657
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Thu Apr 14 15:24:07 2011 -0700
+
+    Revert "dix: release all buttons and keys before reattaching a device (#34182)"
+    
+    This patch introduced a regression, reverting for the 1.10.1 release. See
+    https://bugs.freedesktop.org/show_bug.cgi?id=36146
+    
+    This reverts commit 81fbb96c54f78a7cd96433294ee003c7ef6a772a.
+
 commit ec6e1e45627de2bb851f135df0507a360d0d99e6
 Author: Jeremy Huddleston <jeremyhu@apple.com>
 Date:   Fri Apr 8 16:36:32 2011 -0700
