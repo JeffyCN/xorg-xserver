@@ -1,8 +1,9 @@
-xorg-server (2:1.10.1-2) UNRELEASED; urgency=low
+xorg-server (2:1.10.1-2) unstable; urgency=low
 
   * Build xserver-xorg-core-udeb on hurd-i386.  Thanks, Samuel Thibault!
+  * Upload to unstable.
 
- -- Julien Cristau <jcristau@debian.org>  Tue, 26 Apr 2011 13:24:04 +0200
+ -- Julien Cristau <jcristau@debian.org>  Thu, 28 Apr 2011 13:28:58 +0200
 
 xorg-server (2:1.10.1-1) experimental; urgency=low
 
