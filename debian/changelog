@@ -1,3 +1,9 @@
+xorg-server (2:1.10.1.901-1) UNRELEASED; urgency=low
+
+  * New upstream release (1.10.2 rc1).
+
+ -- Cyril Brulebois <kibi@debian.org>  Sat, 07 May 2011 13:22:35 +0200
+
 xorg-server (2:1.10.1-2) unstable; urgency=low
 
   * Build xserver-xorg-core-udeb on hurd-i386.  Thanks, Samuel Thibault!

@@ -1,3 +1,343 @@
+commit 164ef01bd55a1d2c31620e9868f4cc3d032223a6
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Fri May 6 15:43:04 2011 -0700
+
+    configure.ac: Version bumped to 1.10.1.901
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+
+commit c52a93c5398e439e6e1d9e8ee20c6c1cf28dd5de
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Fri Apr 29 11:06:18 2011 -0700
+
+    XQuartz: Fix incorrect typedefs with XPLUGIN_VERSION < 4
+    
+    Ok, this time for sure... how many brown bags can I fit over my face?
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+    (cherry picked from commit 0fc7ec6dd504aa03e1a1b18c60942c0c8c8b701b)
+
+commit 7688d6d317f809028394ea6c5ffa31424e853796
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Fri Apr 15 13:01:37 2011 -0400
+
+    glx: Make --disable-dri not disable AIGLX
+    
+    Either the DRI1 or DRI2 loaders are sufficient.
+    
+    Reviewed-by: Ian Romanick <ian.d.romanick@intel.com>
+    Signed-off-by: Adam Jackson <ajax@redhat.com>
+    (cherry picked from commit 001b6b8b70734db1fa2f68e45c1db8337ba9f662)
+
+commit e67afcdb9a6a634d6903da3f272aed7dab0e91b3
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Fri Apr 15 12:57:05 2011 -0400
+
+    glx: Use 0 rather than garbage for unknown INTEL_swap_event types
+    
+    Otherwise the garbage you return could well be numerically identical to
+    one of the swap type tokens, and apps which rely on us to tell the truth
+    would be in trouble.
+    
+    Reviewed-by: Jesse Barnes <jbarnes@virtuousgeek.org>
+    Signed-off-by: Adam Jackson <ajax@redhat.com>
+    (cherry picked from commit f8540b9dcc1fba886be5c4ce7ea0d74952cb48c4)
+
+commit b5093063b5d76ff31519a2daf85ea32808f1afe6
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Mon Mar 28 12:30:09 2011 -0400
+
+    glx: Fix lifetime tracking for pixmaps
+    
+    GLX pixmaps take a reference on the underlying pixmap; X and GLX pixmap
+    IDs can be destroyed in either order with no error.  Only windows need
+    to be tracked under both XIDs.
+    
+    Fixes piglit/glx-pixmap-life.
+    
+    Reviewed-by: Michel Dänzer <michel@daenzer.net>
+    Signed-off-by: Adam Jackson <ajax@redhat.com>
+    (cherry picked from commit 6a433b67ca15fd1ea58334e607f867554f227451)
+
+commit 618dc75a05faf3bb390c152af3059a311f21e406
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Mon Mar 21 11:59:29 2011 -0400
+
+    glx: Reimplement context tags
+    
+    This would let you do a constant-time context lookup, but if that's your
+    performance problem you have two problems.  Just use the context's XID
+    as the tag value instead.
+    
+    In order to do this, we have to defer destroying a context until it
+    actually goes unreferenced, as you're allowed to mention a context tag
+    after you've (ostensibly) destroyed the context, as long as it's still
+    your current context.  Thus, change DestroyContext to merely mark the
+    context as dead if it's a current context, and call down to actual
+    resource destruction (and XID reclamation) in StopUsingContext.
+    
+    Also, stop trying to delete context state from DrawableGone.  This was
+    always broken, as GLX does not say that contexts are destroyed when
+    their drawables are destroyed.  But with the above change to defer
+    context destruction, this would trigger a server crash on client exit as
+    we'd free the context state twice.
+    
+    Reviewed-by: Eric Anholt <eric@anholt.net>
+    Signed-off-by: Adam Jackson <ajax@redhat.com>
+    (cherry picked from commit a48dadc98a28c969741979b70b7a639f24f4cbbd)
+
+commit c7d9a07d52ce8a6259d6693d68290826b9618a86
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Mon Mar 7 14:53:28 2011 -0500
+
+    glx: Fix _glapi_add_dispatch
+    
+    We never need to generate stubs, because those conditions can't happen
+    in the server.  Yank that code out, but keep the bookkeeping for which
+    extension functions are registered so the DRI driver doesn't get
+    confused.
+    
+    As a pleasant bonus, we're now friendlier for environments like selinux
+    that make runtime code generation difficult, and we're portable to more
+    arches since we don't have to port the assembly stubs.
+    
+    Fixes the following clutter conformance tests (indirect rendering,
+    llvmpipe driver):
+    
+        test-cogl-backface-culling
+        test-cogl-materials
+        test-cogl-readpixels
+        test-cogl-texture-mipmaps
+        test-cogl-texture-get-set-data
+        test-cogl-viewport
+        test-cogl-offscreen
+    
+    Reviewed-by: Dave Airlie <airlied@redhat.com>
+    Signed-off-by: Adam Jackson <ajax@redhat.com>
+    (cherry picked from commit 30d6947cee714385cf62a40ea6fa6d2e68388c78)
+
+commit 888a29674c51ff8c6ce74f5f78289ba88cda160a
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Wed Mar 2 13:21:39 2011 -0500
+
+    glx: Lobotomize _glapi_get_proc_address
+    
+    This isn't a meaningful thing in the indirect glx loader, so just warn
+    if it ever happens and move on.
+    
+    But also, mark it PUBLIC, so if the driver does ever call it we merely
+    warn instead of aborting because ld.so can't find the symbol.
+    
+    Reviewed-by: Dave Airlie <airlied@redhat.com>
+    Signed-off-by: Adam Jackson <ajax@redhat.com>
+    (cherry picked from commit 17d9e374721d6c8ee3f7f9cdc882f80127bdb57f)
+
+commit 00d1569918d0dca2cf2a5e2e320da7b427e1f69f
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Wed Mar 2 12:30:22 2011 -0500
+
+    glx: Remove noop dispatch table
+    
+    We can never hit this, because the indirect GLX dispatch code always
+    forces a current context and checks that it's non-NULL before calling
+    into the dispatch table.  If it's _not_ null, then _glapi_set_context
+    will call into the driver, which is responsible for calling
+    _glapi_set_dispatch to make sure the dispatch table is non-NULL.
+    
+    Also remove _glapi_set_warning_func and friends, since we can no longer
+    call them even from dead code.
+    
+    Reviewed-by: Dave Airlie <airlied@redhat.com>
+    Signed-off-by: Adam Jackson <ajax@redhat.com>
+    (cherry picked from commit b0c665ac0fe6840dda581e4d0d0b76c703d62a7b)
+
+commit 522443dbf9edf618a158b8241afde5ab35f571f8
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Thu Mar 10 10:47:40 2011 -0500
+
+    glx: Add texbuffer2 support to swrast
+    
+    Reviewed-by: Julien Cristau <jcristau@debian.org>
+    Signed-off-by: Adam Jackson <ajax@redhat.com>
+    (cherry picked from commit 1ad9f01c31742157934a791e6141d10520d13e8a)
+
+commit 353ccf4d8eabcf046824d418fd59b417bc7e7851
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Wed Mar 2 12:12:35 2011 -0500
+
+    glx: Remove unused _glapi_get_proc_name
+    
+    Reviewed-by: Julien Cristau <jcristau@debian.org>
+    Signed-off-by: Adam Jackson <ajax@redhat.com>
+    (cherry picked from commit b73ebe65cd071a063417ac9c38513a6742e32428)
+
+commit 1c7afece23bfef90fd7c2184bd4c097a84b32e83
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Wed Mar 2 11:52:27 2011 -0500
+
+    glx: Simplify _glapi_check_multithread
+    
+    We can guarantee that the X server does not call DRI driver services
+    from multiple threads, so _glapi_check_multithread need never do
+    anything special.  As a result, ThreadSafe is always false, so remove it
+    and simplify expressions where it appeared to match.
+    
+    Reviewed-by: Julien Cristau <jcristau@debian.org>
+    Signed-off-by: Adam Jackson <ajax@redhat.com>
+    (cherry picked from commit 4377288abdbaac8506d8643b440c300ba03182fe)
+
+commit 5285e71fc54b83fb8168433519ac9280d64553fe
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Wed Mar 2 10:20:02 2011 -0500
+
+    glx: Remove unused _glapi_get_proc_offset and friends
+    
+    Reviewed-by: Julien Cristau <jcristau@debian.org>
+    Signed-off-by: Adam Jackson <ajax@redhat.com>
+    (cherry picked from commit a5fdd1aa06c7c8ecefeafafc4a778fc816ad41a4)
+
+commit be3f41d1ec5413d0ad05ef18e145714201d602aa
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Wed Apr 20 13:14:11 2011 +1000
+
+    dix: fix typo in direction calculation
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+    Reviewed-by: Jamey Sharp <jamey@minilop.net>
+    Reviewed-by: Simon Thum <simon.thum@gmx.de>
+    (cherry picked from commit 8c528c667da7c7fba0ba07973a06b2d4613fbf70)
+
+commit d2c9f331d2d58a396d8d6f067120b0eee041e321
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Wed Mar 9 10:44:48 2011 +1000
+
+    Xi: don't swap the status byte in the XIPassiveGrab replies
+    
+    Reported-by: Julien Cristau <jcristau@debian.org>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+    (cherry picked from commit 60b08e013dd1e971f82e5bc8708d3f120c217497)
+
+commit 0de1802c998d105a61dbb643e38600d2748eb520
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Wed Mar 9 10:07:19 2011 +1000
+
+    Xi: exit with error value if CheckGrabValues failed.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Jeremy Huddleston <jeremyhu@apple.com>
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+    (cherry picked from commit a3f37f3698880aec508b5ecfb88daf39360610aa)
+
+commit e3887c8fa36eba2c7fdc5684f4c744156fc9a9e5
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Wed Mar 9 09:54:12 2011 +1000
+
+    Xi: fix reply swapping function check for XIPassiveGrabDevice
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Jeremy Huddleston <jeremyhu@apple.com>
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+    (cherry picked from commit f4d9ff73b161d84d3fcacc5834fa714c113c7a10)
+
+commit ea55d0d504805674ac06b589d673ed9884575846
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Wed Mar 9 09:53:47 2011 +1000
+
+    Xi: return the bad device ID if a passive grab fails with BadDevice.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Jeremy Huddleston <jeremyhu@apple.com>
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+    (cherry picked from commit 2a49ffa3c94819e9f28dd939f23ee8a675258172)
+
+commit d6328c6bfe49958f68abbb6ddbc1f1514de6831f
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Tue Apr 12 10:17:07 2011 +1000
+
+    Xi: fix valuator alignment in DeepCopyDeviceClasses (#36119)
+    
+    commit 678f5396c91b3d0c7572ed579b0a4fb62b2b4655 only fixed the
+    initialization, not the copy. After a slave device change, the valuator
+    were out of alignment again.
+    
+    X.Org Bug 36119 <http://bugs.freedesktop.org/show_bug.cgi?id=36119>
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Jeremy Huddleston <jeremyhu@apple.com>
+    (cherry picked from commit 419a27b5219a739f2fbd50cc96a1b54c469e4a88)
+
+commit b4455b119cb55cc5f61add0c25863afe8cb06484
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Wed Apr 27 22:12:59 2011 -0700
+
+    XQuartz: BuildFix to build correctly with XPLUGIN_VERSION < 4
+    
+    This fixes a regression introduced by d79cc14a51f3e8d4d2f66aad055092672cab1526
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+    (cherry picked from commit 0f284f0f42f26a242eb3153787f2e98b6b88dff8)
+
+commit 11847e2ab410fa7f47cb3d41ce6c2b64200e7dc7
+Author: Emanuele Giaquinta <emanuele.giaquinta@gmail.com>
+Date:   Mon Apr 25 10:38:17 2011 -0700
+
+    XQuartz: pbproxy: LP64: Fix itteration through XGetWindowProperty where sizeof(long) != 4
+    
+    http://xquartz.macosforge.org/trac/ticket/476
+    
+    Signed-off-by: Emanuele Giaquinta <emanuele.giaquinta@gmail.com>
+    Reviewed-by: Jeremy Huddleston <jeremyhu@apple.com>
+    (cherry picked from commit 72ed7551f494c61283a7ac3d7b570eac39cc9786)
+
+commit 3319b415f73cfbd6907c37b5dae40036057cc34e
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Fri Apr 22 12:05:32 2011 -0700
+
+    XQuartz: Fix compilation warnings with XPLUGIN_VERSION >= 4
+    
+    xprAppleWM.c:143: warning: initialization from incompatible pointer type
+    xprAppleWM.c:144: warning: initialization from incompatible pointer type
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+    (cherry picked from commit d79cc14a51f3e8d4d2f66aad055092672cab1526)
+
+commit 1939043a34c47d2cff63aac3909f31f08aa6ab84
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Sat Apr 23 23:25:39 2011 -0700
+
+    rootless: Fix a typo in RootlessGlyphs which resulted in a garbage value
+    
+    Found by clang static analyzer
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+    (cherry picked from commit 4944de24849a109c65f1b353bc12e44e90a1211d)
+
+commit 5db125883f7d7d4501b0e7c720ffd38f2b92a538
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Thu Apr 21 15:19:12 2011 -0700
+
+    XQuartz: Fix prototypes for thread functions
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+    (cherry picked from commit 3960115dbc83ec1eb8d9c8e90466af3fa0b32abd)
+
+commit f3e33fb1edcbda2d0dab66f0adc2c5d08bf860af
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Thu Apr 21 15:11:52 2011 -0700
+
+    XQuartz: Make the DarwinProcessFDAdditionQueue_thread wait 3 seconds to allow xinitrc to catch up
+    
+    Previously, we weren't always waiting the full three seconds.  This should
+    be better, but is still sub-optimal.  We really want to start processing
+    these once a WM has been started.
+    
+    http://xquartz.macosforge.org/trac/ticket/416
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+    (cherry picked from commit 7524dbd06113ec081eaa882aa54e03553ccf96aa)
+
 commit a73311f8304193f9245fb077f173bf1e1d52e040
 Author: Jeremy Huddleston <jeremyhu@apple.com>
 Date:   Fri Apr 15 17:58:57 2011 -0700
