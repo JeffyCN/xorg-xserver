@@ -41,7 +41,6 @@ glapi_sources =					\
 	indirect_table.c			\
 	dispatch.h				\
 	glapitable.h				\
-	glapitemp.h				\
 	glapi.c					\
 	glapi.h					\
 	glapioffsets.h				\
@@ -50,9 +49,12 @@ glapi_sources =					\
 	glthread.h
 
 libglxdri_la_SOURCES = \
-        glxdri.c \
         extension_string.c \
         extension_string.h
+
+if DRI
+libglxdri_la_SOURCES += glxdri.c
+endif
 
 if DRI2_AIGLX
 libglxdri_la_SOURCES += glxdri2.c
