@@ -69,7 +69,9 @@ config_backend = --disable-config-dbus
 ifeq ($(DEB_HOST_ARCH_OS), linux)
 	config_backend += --enable-config-udev --disable-config-hal
 else ifeq ($(DEB_HOST_ARCH_OS), kfreebsd)
-	config_backend += --disable-config-udev --enable-config-hal
+	config_backend += --disable-config-udev
+	config_backend_main += --enable-config-hal
+	config_backend_udeb += --disable-config-hal
 else # hurd
 	config_backend += --disable-config-udev --disable-config-hal
 endif
@@ -146,6 +148,7 @@ confflags_main = \
 	$(build_xfbdev) \
 	--with-sha1=libgcrypt \
 	--enable-xcsecurity \
+	$(config_backend_main) \
 	$(void)
 
 confflags_udeb = \
@@ -176,6 +179,7 @@ confflags_udeb = \
 	--disable-xephyr \
 	--disable-xfbdev \
 	--with-sha1=nettle \
+	$(config_backend_udeb) \
 	$(void)
 
 $(STAMP_DIR)/autoreconf: $(STAMP_DIR)/stampdir $(QUILT_STAMPFN)
