@@ -1,3 +1,181 @@
+commit d784fd09dc277610d5f4e98d577c4fdcd9215f9c
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Sat May 28 16:59:05 2011 -0700
+
+    configure.ac: Bump version to 1.10.2
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+
+commit 398114c1489fbfc9fe487de38ff4a4176755eee6
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Sun May 22 10:18:36 2011 -0700
+
+    XQuartz: Don't crash if CG increases our display resolution
+    
+    miPaintWindow would cause fbFill() to overwrite pScreen's pixmap which was
+    sized for the old resolution.
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+    (cherry picked from commit 1fb501ad1521cfedaa5cf3052d45a924ef1866cf)
+
+commit dc6efd99887c90bb14e066e46b69ca5ba19b6a09
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Sun May 22 09:32:57 2011 -0700
+
+    XQuartz: RandR: Don't crash if X11 is launched while there are no attached displays
+    
+    If CG reports no displays when launching, we could crash in RandR.  Instead, just
+    provide a fake 800x600 display until we are notified about displays being attached.
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+    (cherry picked from commit 60af79e35ee8546a99d15a1358aac3deabfa22be)
+
+commit 1a665a8abd0ce1dbc50a1d889f11d5b74c78539e
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Fri May 20 22:59:27 2011 -0700
+
+    configure.ac: Bump version to 1.10.1.902 (1.10.2 RC2)
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+
+commit 52e27b446a69b4b196d7e59d4e92aaa073c83dae
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Mon May 16 21:07:13 2011 -0700
+
+    XQuartz: Bump bundle version to 2.6.3
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+
+commit b4cb37d7255746f2ddf0ceb3334fc698cd818410
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Sat May 14 18:33:57 2011 -0700
+
+    XQuartz: RandR: Avoid over-releasing if we are unable to determine the current display mode.
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+    (cherry picked from commit 384eb45b944a4386eae74a5503423c13b5f2a659)
+
+commit 69e3527e257af2aae82449bf0e0e7846ccd1ce0c
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Sat May 14 16:11:32 2011 -0700
+
+    XQuartz: Don't call mieqEnqueue during server shutdown
+    
+    Found-by: GuardMalloc
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+    (cherry picked from commit 25191648b8db87735a99243697f73036255c1eb6)
+
+commit 0a61aca1ed036b17cab48725eb6ab4d860c9aad8
+Author: Alan Coopersmith <alan.coopersmith@oracle.com>
+Date:   Tue Apr 19 19:02:54 2011 -0700
+
+    Clean up memory better when GetVisualInfo fails in ProcDbeGetVisualInfo
+    
+    Use calloc to initialize pScrVisInfo array so we don't have to check
+    which ones were already initialized when freeing them all.
+    
+    On failure, set rc if necessary, and jump to code at end that already
+    frees all the necessary allocations and return rc.
+    
+    Fixes parfait reported error:
+    Error: Memory leak (CWE 401)
+       Memory leak of pointer 'pScrVisInfo' allocated with malloc((count * 16))
+            at line 724 of dbe/dbe.c in function 'ProcDbeGetVisualInfo'.
+              'pScrVisInfo' allocated at line 693 with malloc((count * 16)).
+              pScrVisInfo leaks when rc != 0 at line 710
+                  and j >= i at line 716.
+    
+    [ This bug was found by the Parfait 0.3.7 bug checking tool.
+      For more information see http://labs.oracle.com/projects/parfait/ ]
+    
+    Signed-off-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Reviewed-by: Jeremy Huddleston <jeremyhu@apple.com>
+    (cherry picked from commit 043c1758652259fd12b88ae37720fe6e93eda76b)
+
+commit 5be7451367901c13a697ecefcb634920cd156cb7
+Author: Alan Coopersmith <alan.coopersmith@oracle.com>
+Date:   Tue Apr 19 18:53:22 2011 -0700
+
+    Only free pContext once when AddResource fails in ProcRecordCreateContext
+    
+    Since RecordDeleteContext frees its argument, don't fall through to free
+    it again.
+    
+    Error: Double free (CWE 415)
+       Double free of pointer 'malloc(1072)' defined by malloc
+            at line 1964 of record/record.c in function 'ProcRecordCreateContext'.
+              Previously freed at line 1960 with RecordDeleteContext.
+              'malloc(1072)' was allocated at line 1926 with malloc.
+    
+    [ This bug was found by the Parfait 0.3.7 bug checking tool.
+      For more information see http://labs.oracle.com/projects/parfait/ ]
+    
+    Signed-off-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Reviewed-by: Jeremy Huddleston <jeremyhu@apple.com>
+    (cherry picked from commit dadb0791ebfd05cd3bb82d4addf0fbc21aad6fbb)
+
+commit ee69c1aa7c1066b2019bf916230332c60a837ecb
+Author: Alan Coopersmith <alan.coopersmith@oracle.com>
+Date:   Fri Mar 11 15:43:14 2011 -0800
+
+    Make xorg.conf.example rule compatible with Solaris make
+    
+    Solaris make won't substitute $< in explicit rules, only implicit ones
+    
+    Signed-off-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Reviewed-by: Gaetan Nadon <memsize@videotron.ca>
+    (cherry picked from commit 8d229c4cf9e5bde78373ef3dd32708817ac97152)
+
+commit 189d44e7d216cc7b13f3e5a22689f2841a08b421
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Tue May 10 23:42:46 2011 -0700
+
+    XQuartz: Don't call into CoreFoundation after fork() and before exec()
+    
+    After fork()ing, we should just limit ourselves to setting up
+    the environment, file descriptors, and exec()ing.
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+    (cherry picked from commit  c89a6f824eaf647d2b182f79fbd78f5bd1c3a27f)
+
+commit 277e18894492fdf6e5446bb90e8503c9cbc28b3b
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Sat Apr 23 20:49:27 2011 -0700
+
+    os: Silence warnings when building with clang
+    
+    access.c:1492:20: error: equality comparison with extraneous parentheses [-Werror,-Wparentheses]
+            if ((host->family == FamilyServerInterpreted)) {
+                 ~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~
+    access.c:1492:20: note: use '=' to turn this equality comparison into an assignment
+            if ((host->family == FamilyServerInterpreted)) {
+                              ^~
+                              =
+    access.c:1492:20: note: remove extraneous parentheses around the comparison to silence this warning
+            if ((host->family == FamilyServerInterpreted)) {
+                ~             ^                         ~
+    
+    In file included from xstrans.c:8:
+    In file included from /usr/X11/include/X11/Xtrans/transport.c:62:
+    /usr/X11/include/X11/Xtrans/Xtranssock.c:262:5: error: implicit declaration of function 'ErrorF' is invalid in C99
+          [-Werror,-Wimplicit-function-declaration]
+        PRMSG (3,"SocketSelectFamily(%s)\n", family, 0, 0);
+        ^
+    
+    log.c:180:29: error: format string is not a string literal [-Werror,-Wformat-nonliteral]
+            if (asprintf(&logFileName, fname, display) == -1)
+                                       ^~~~~
+    log.c:190:26: error: format string is not a string literal [-Werror,-Wformat-nonliteral]
+                    if ((asprintf(&suffix, backup, display) == -1) ||
+                                           ^~~~~~
+    log.c:382:25: error: format string is not a string literal [-Werror,-Wformat-nonliteral]
+            LogVWrite(verb, tmpBuf, args);
+                            ^~~~~~
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+    Reviewed-by: Jamey Sharp <jamey@minilop.net>
+    (cherry picked from commit c524f8bb768f886d413839bc22184098394c2559)
+
 commit 164ef01bd55a1d2c31620e9868f4cc3d032223a6
 Author: Jeremy Huddleston <jeremyhu@apple.com>
 Date:   Fri May 6 15:43:04 2011 -0700
