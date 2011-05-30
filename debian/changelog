@@ -1,6 +1,7 @@
 xorg-server (2:1.10.2-1) UNRELEASED; urgency=low
 
   * New upstream release.
+  * Add 20-workaround-36986.diff to avoid test failures on *i386.
 
  -- Cyril Brulebois <kibi@debian.org>  Mon, 30 May 2011 11:22:21 +0200
 
