@@ -10,6 +10,7 @@ xorg-server (2:1.10.99.1-1) UNRELEASED; urgency=low
   * Refresh 20-workaround-36986.diff.
   * Bump pixman build-dep/dep to 0.21.8.
   * Bump xutils-dev build-dep for new macros.
+  * Drop libglib2.0-dev build-dep, no longer needed for unit tests.
 
  -- Cyril Brulebois <kibi@debian.org>  Tue, 31 May 2011 13:52:04 +0200
 
