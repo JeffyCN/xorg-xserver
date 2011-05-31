@@ -1,0 +1,8 @@
+## Patches with a number < 100 are applied in debian.
+## Ubuntu patches start with 100.
+001_fedora_extramodes.patch
+02_Add-libnettle-as-option-for-sha1.diff
+07-xfree86-fix-build-with-xv-disabled.diff
+#13_debian_add_xkbpath_env_variable.diff
+15-nouveau.diff
+20-workaround-36986.diff
