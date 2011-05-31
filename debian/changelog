@@ -1,3 +1,11 @@
+xorg-server (2:1.10.99.1-1) UNRELEASED; urgency=low
+
+  * New upstream snapshot. The version string is Debian-specific, and
+    should sort nicely before 1.10.99.901, which should be the first
+    release candidate for 1.11.
+
+ -- Cyril Brulebois <kibi@debian.org>  Tue, 31 May 2011 13:52:04 +0200
+
 xorg-server (2:1.10.2-1) unstable; urgency=low
 
   * New upstream release.
