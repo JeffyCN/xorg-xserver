@@ -9,67 +9,14 @@ Also, don't treat DRI setup failure as an error for nouveau.
  glx/glxdri2.c                      |    7 +++++--
  hw/xfree86/common/xf86AutoConfig.c |   19 ++++++++++++++++++-
  3 files changed, 28 insertions(+), 5 deletions(-)
+---
+v2: Adapt the (II) part for nouveau after the move from glx/glxdri*.c to
+    glx/glxdricommon.c; the callers will still report (EE) after that
+    when mentioning the fallback to software rendering (since the error
+    case can be triggered in many various ways).
 
---- a/glx/glxdri.c
-+++ b/glx/glxdri.c
-@@ -978,6 +978,7 @@ __glXDRIscreenProbe(ScreenPtr pScreen)
-     const __DRIconfig **driConfigs;
-     const __DRIextension **extensions;
-     int i;
-+    int from = X_ERROR;
- 
-     if (!xf86LoaderCheckSymbol("DRIQueryDirectRenderingCapable") ||
- 	!DRIQueryDirectRenderingCapable(pScreen, &isCapable) ||
-@@ -1057,7 +1058,9 @@ __glXDRIscreenProbe(ScreenPtr pScreen)
- 
-     screen->driver = dlopen(filename, RTLD_LAZY | RTLD_LOCAL);
-     if (screen->driver == NULL) {
--	LogMessage(X_ERROR, "AIGLX error: dlopen of %s failed (%s)\n",
-+	if (!strcmp(driverName, "nouveau"))
-+	    from = X_INFO;
-+	LogMessage(from, "AIGLX error: dlopen of %s failed (%s)\n",
- 		   filename, dlerror());
-         goto handle_error;
-     }
-@@ -1193,7 +1196,7 @@ __glXDRIscreenProbe(ScreenPtr pScreen)
- 
-     free(screen);
- 
--    LogMessage(X_ERROR, "AIGLX: reverting to software rendering\n");
-+    LogMessage(from, "AIGLX: reverting to software rendering\n");
- 
-     return NULL;
- }
---- a/glx/glxdri2.c
-+++ b/glx/glxdri2.c
-@@ -708,6 +708,7 @@ __glXDRIscreenProbe(ScreenPtr pScreen)
-     const __DRIextension **extensions;
-     const __DRIconfig **driConfigs;
-     int i;
-+    int from = X_ERROR;
- 
-     screen = calloc(1, sizeof *screen);
-     if (screen == NULL)
-@@ -734,7 +735,9 @@ __glXDRIscreenProbe(ScreenPtr pScreen)
- 
-     screen->driver = dlopen(filename, RTLD_LAZY | RTLD_LOCAL);
-     if (screen->driver == NULL) {
--	LogMessage(X_ERROR, "AIGLX error: dlopen of %s failed (%s)\n",
-+	if (!strcmp(driverName, "nouveau"))
-+	    from = X_INFO;
-+	LogMessage(from, "AIGLX error: dlopen of %s failed (%s)\n",
- 		   filename, dlerror());
-         goto handle_error;
-     }
-@@ -826,7 +829,7 @@ __glXDRIscreenProbe(ScreenPtr pScreen)
- 
-     free(screen);
- 
--    LogMessage(X_ERROR, "AIGLX: reverting to software rendering\n");
-+    LogMessage(from, "AIGLX: reverting to software rendering\n");
- 
-     return NULL;
- }
+Signed-off-by: Cyril Brulebois <kibi@debian.org>
+
 --- a/hw/xfree86/common/xf86pciBus.c
 +++ b/hw/xfree86/common/xf86pciBus.c
 @@ -1123,7 +1123,24 @@ videoPtrToDriverList(struct pci_device *
@@ -98,3 +45,24 @@ Also, don't treat DRI setup failure as an error for nouveau.
  	case 0x1106:		    driverList[0] = "openchrome"; break;
          case 0x1b36:		    driverList[0] = "qxl"; break;
  	case 0x1163:		    driverList[0] = "rendition"; break;
+--- a/glx/glxdricommon.c
++++ b/glx/glxdricommon.c
+@@ -217,6 +217,7 @@ glxProbeDriver(const char *driverName,
+     void *driver;
+     char filename[PATH_MAX];
+     const __DRIextension **extensions;
++    int from = X_ERROR;
+ 
+     snprintf(filename, sizeof filename, "%s/%s_dri.so",
+              dri_driver_path, driverName);
+@@ -248,7 +249,9 @@ glxProbeDriver(const char *driverName,
+     }
+ 
+     if (*coreExt == NULL || *renderExt == NULL) {
+-	LogMessage(X_ERROR,
++	if (!strcmp(driverName, "nouveau"))
++	    from = X_INFO;
++	LogMessage(from,
+ 		   "AIGLX error: %s does not export required DRI extension\n",
+ 		   driverName);
+ 	goto cleanup_failure;
