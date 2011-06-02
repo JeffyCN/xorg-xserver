@@ -1,8 +1,6 @@
-xorg-server (2:1.10.99.1-1) UNRELEASED; urgency=low
+xorg-server (2:1.10.99.901-1) UNRELEASED; urgency=low
 
-  * New upstream snapshot. The version string is Debian-specific, and
-    should sort nicely before 1.10.99.901, which should be the first
-    release candidate for 1.11.
+  * New upstream release candidate.
   * Bump serverminver, as well as input and video ABI.
   * Adapt 15-nouveau.diff to cope with the glxdricommon-ification of
     GLX probing. Nouveau users might still see an error (EE) mentioning

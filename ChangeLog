@@ -1,3 +1,81 @@
+commit db228d3d07a6d831f53e4c05c878327ad4d045eb
+Author: Keith Packard <keithp@keithp.com>
+Date:   Wed Jun 1 11:20:10 2011 -0700
+
+    Version bumped to 1.10.99.901 (1.11 RC1)
+    
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit 0643c056512d10be8db223d18d6563292d57e916
+Merge: a2e6cfc d45f5b2
+Author: Keith Packard <keithp@keithp.com>
+Date:   Tue May 31 23:45:07 2011 -0700
+
+    Merge remote-tracking branch 'ajax/xserver-next'
+
+commit a2e6cfc18aec1c0027b51572b03ec9f2ab074b56
+Merge: bc04065 8d84fd2
+Author: Keith Packard <keithp@keithp.com>
+Date:   Tue May 31 23:42:52 2011 -0700
+
+    Merge remote-tracking branch 'sandmann/for-keithp'
+
+commit d45f5b2493bc0a2882bf972849b5c9c50cd533ca
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Wed May 25 05:54:35 2011 -0400
+
+    fixes: Add support for pointer barriers
+    
+    Implements pointer barriers as specified by version 5 of the XFIXES
+    protocol. Barriers are axis-aligned, zero-width lines that block pointer
+    movement for relative input devices. Barriers may block motion in either
+    the positive or negative direction, or both.
+    
+    v3:
+    - Fix off-by-one in version_requests array
+    - Port to non-glib test harness
+    - Fix review notes from Søren Sandmann Pedersen, add tests to match
+    
+    Co-authored-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Tested-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Signed-off-by: Adam Jackson <ajax@redhat.com>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit bc04065b5ce277f3ac3491ff221a60ef3c7605cf
+Author: Alan Coopersmith <alan.coopersmith@oracle.com>
+Date:   Fri May 20 19:24:34 2011 -0700
+
+    "privates.h", line 198: warning: void function cannot return value
+    
+    Providing an argument to return in a function with void return type
+    is not allowed by the C standard, and makes the Sun compilers unhappy.
+    (They actually flag it as an error, unless using a new enough version
+     to be able to downgrade it to a warning with "-features=extensions".)
+    
+    Signed-off-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Reviewed-by: Jeremy Huddleston <jeremyhu@apple.com>
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+    Reviewed-by: Cyril Brulebois <kibi@debian.org>
+
+commit eadf5021794782fde861d471ed408675f4926b89
+Author: Alan Coopersmith <alan.coopersmith@oracle.com>
+Date:   Mon May 2 19:48:42 2011 -0700
+
+    Use XORG_STRICT_OPTION from util-macros 1.14 to set -Werror flags
+    
+    Signed-off-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Reviewed-by: Jeremy Huddleston <jeremyhu@apple.com>
+
+commit 9275b1fb6f82a6971c4177ddd3d5a859a8f24119
+Author: Alan Coopersmith <alan.coopersmith@oracle.com>
+Date:   Mon May 2 19:47:44 2011 -0700
+
+    Use XORG_COMPILER_BRAND from util-macros 1.14 to check for SUNCC
+    
+    Signed-off-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Jeremy Huddleston <jeremyhu@apple.com>
+
 commit 4621bb270a36d35d4ab67f1d7fb47674683dfc5b
 Author: Peter Hutterer <peter.hutterer@who-t.net>
 Date:   Wed May 18 15:00:54 2011 +1000
@@ -25,6 +103,22 @@ Date:   Mon Jan 31 14:43:01 2011 +1000
     
     Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
     Acked-by: Dan Nicholson <dbn.lists@gmail.com>
+
+commit 8d84fd2566f8466b6152724df7eefc73780df093
+Author: Søren Sandmann Pedersen <ssp@redhat.com>
+Date:   Wed May 25 12:14:05 2011 -0400
+
+    Don't call pixman_disable_out_of_bounds_workaround() anymore
+    
+    Pixman used to have a workaround for a bug in old X servers, and this
+    function was used to disable that workaround in servers known to be
+    fixed.
+    
+    Since 0.22, which the X server depends on, the workaround doesn't
+    exist anymore, so there is no point disabling it.
+    
+    Reviewed-by: Cyril Brulebois <kibi at debian.org>
+    Signed-off-by: Soren Sandmann <sandmann@cs.au.dk>
 
 commit b6c7b9b2f39e970cedb6bc1e073f901e28cb0fa3
 Author: Aaron Plattner <aplattner@nvidia.com>
