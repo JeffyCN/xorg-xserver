@@ -23,7 +23,7 @@ Build-Depends:
  x11proto-composite-dev (>= 1:0.4),
  x11proto-core-dev (>= 7.0.17),
  x11proto-damage-dev (>= 1.1),
- x11proto-fixes-dev (>= 1:4.1),
+ x11proto-fixes-dev (>= 1:5.0),
  x11proto-kb-dev (>= 1.0.3),
  x11proto-xinerama-dev,
  x11proto-randr-dev (>= 1.2.99.3),
