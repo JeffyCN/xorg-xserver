@@ -15,6 +15,11 @@ xorg-server (2:1.10.99.901+git20110731-1) UNRELEASED; urgency=low
   [ Julien Cristau ]
   * Update to git HEAD.
   * Bump xproto, dri2proto and glproto build-dependencies.
+  * Merge packaging changes from the 1.10.x branch:
+    + Bump libgl1-mesa-dri versioned Recommends to 7.10.2-4, to lower the
+      odds of having a server built against multiarched mesa, installed
+      along a pre-multiarch mesa. The Breaks in mesa packages take care of
+      the other way round already.
 
  -- Cyril Brulebois <kibi@debian.org>  Tue, 31 May 2011 13:52:04 +0200
 

@@ -89,7 +89,7 @@ Depends:
  udev (>= 149) [linux-any],
  ${shlibs:Depends},
  ${misc:Depends},
-Recommends: libgl1-mesa-dri (>= 7.1~rc1)
+Recommends: libgl1-mesa-dri (>= 7.10.2-4)
 Suggests: xfonts-100dpi | xfonts-75dpi, xfonts-scalable
 Breaks:
  xserver-xorg-video,
