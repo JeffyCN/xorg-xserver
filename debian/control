@@ -110,6 +110,8 @@ Breaks:
  xserver-xorg-input-tslib (<= 0.0.6-3),
  xserver-xorg-input-vmmouse (<= 1:12.6.5-4),
  xserver-xorg-input-wacom (<= 0.10.5+20100415-1),
+ libgl1-mesa-dri (<< 7.10.2-4),
+ libgl1-mesa-dri-experimental (<< 7.10.2-4),
 Provides:
  ${videoabi},
  ${inputabi},

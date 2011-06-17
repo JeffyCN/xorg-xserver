@@ -20,6 +20,9 @@ xorg-server (2:1.10.99.901+git20110731-1) UNRELEASED; urgency=low
       odds of having a server built against multiarched mesa, installed
       along a pre-multiarch mesa. The Breaks in mesa packages take care of
       the other way round already.
+    + And since the server's binNMU managed to migrate to testing way too
+      early, add a Breaks against pre-multiarch libgl1-mesa-dri and
+      libgl1-mesa-dri-experimental.
 
  -- Cyril Brulebois <kibi@debian.org>  Tue, 31 May 2011 13:52:04 +0200
 
