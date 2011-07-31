@@ -1,3 +1,1934 @@
+commit 08dfff92e8d0c2b1726634392c147f6634d1706d
+Author: Aaron Plattner <aplattner@nvidia.com>
+Date:   Fri Jul 29 16:12:06 2011 -0700
+
+    randr: Compare all the bytes in RRPostPendingProperties
+    
+    RRPostPendingProperties tries to compare the pending and current
+    property values to decide whether they're actually changing.  However,
+    it does this using a memcmp that passes in pending_value->size as the
+    number of bytes.  This is actually the number of elements, where each
+    element is (pending_value->format / 8) bytes long.  This causes the
+    pending value to not be propagated if the first pending_value->size
+    bytes are the same and only the end of it is changing.
+    
+    Fix this by computing the total number of bytes to compare in the
+    memcmp.
+    
+    Signed-off-by: Aaron Plattner <aplattner@nvidia.com>
+    Reviewed-by: Keith Packard <keithp@keithp.com>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit b8f61c11c94708d4f17720a55945dee4621315a4
+Merge: 5596f10 f51e42f
+Author: Keith Packard <keithp@keithp.com>
+Date:   Fri Jul 29 14:58:58 2011 -0700
+
+    Merge remote-tracking branch 'whot/for-keith'
+
+commit f51e42f583073bde0bc8131887cb7220636c8855
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Wed Jul 20 13:09:05 2011 +1000
+
+    Terminate the log with one last message.
+    
+    Instead of just closing the log when everything is done, put one more
+    message in stating that we're actually terminating. Users or scripts that
+    look at the Xorg.log will then know that a) the server has terminated
+    properly and b) why the server terminated (to some degree, given that most
+    real-world errors will be caused by AbortServer()).
+    
+    Acked-by: Gaetan Nadon <memsize@videotron.ca>
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+    Tested-by: Jeremy Huddleston <jeremyhu@apple.com>
+    Reviewed-by: Jeremy Huddleston <jeremyhu@apple.com>
+    Tested-by: Jon TURNEY <jon.turney@dronecode.org.uk>
+    Reviewed-by: Jon TURNEY <jon.turney@dronecode.org.uk>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit 01de08c7d2c00eef238adba6665896ea3cd7d511
+Author: Julien Cristau <jcristau@debian.org>
+Date:   Tue Jul 26 20:40:38 2011 +0200
+
+    configure: set default xkb rules to evdev on Linux
+    
+    If config/udev was enabled, this would default to base, which means that
+    after regen the devices would get the wrong rules, and hilarity would
+    ensue.
+    
+    It's probably safe to default to evdev unconditionally on Linux by now.
+    
+    Reported-by: Bastian Blank <waldi@debian.org>
+    Signed-off-by: Julien Cristau <jcristau@debian.org>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit 3798dd379c1ecf325f9907128fb66d20372f6876
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Wed Jul 20 09:00:18 2011 +1000
+
+    Initialize the fd to -1 for xorg.conf input devices.
+    
+    For hotplugged devices, xf86AllocateInput does that for us but the xorg.conf
+    path is different. Since not all drivers reset the fd during PreInit but may
+    still call close(pInfo->fd) in all cases, this can terminate the logging
+    early.
+    
+    Reproducible: add a wacom driver InputDevice section with no Option Device.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+
+commit f2a6735cfc07789cca81852b24a85578f200d83d
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Mon Jul 4 12:34:32 2011 +1000
+
+    xfree86: NULL option values are technically valid, don't strdup them
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+
+commit f0d7e9db28c374a3db359bcb63a7ce79fd84b541
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Mon Jul 4 14:14:39 2011 +1000
+
+    xfree86: duplicate xorg.conf device information before xf86NewInputDevice
+    
+    xf86ConfigLayout.inputs contains the information from the xorg.conf
+    file. Passing this into xf86NewInputDevice means the device will get
+    cleaned up on exit and the pointers in xf86ConfigLayout.inputs are left
+    dangling. In the second server generation, this results in a server
+    crash.
+    
+    Also, rename pDev to pInfo. pDev is pretty much reserved for DeviceIntPtr
+    types.
+    
+    Reproducible: AutoAddDevices off and xorg.conf input sections, trigger
+    server regeneration.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+
+commit 8ffddbcf72170e246826ee0f39f18989a29fa218
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Mon Jun 27 16:30:28 2011 +1000
+
+    xfree86: Remove devices that failed to enable on startup
+    
+    Devices that succeeded during PreInit and DEVICE_INIT but failed in
+    DEVICE_ON would be deleted through xf86DeleteInput but not removed from the
+    list of input devices (and not turned off). The result was a double free on
+    server shutdown.
+    
+    Fix this by calling RemoveDevice if EnableDevice fails.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+
+commit 6cea28fe4b7a4a22ad270d8c71403db84a9bfb2c
+Author: Lennart Poettering <lennart@poettering.net>
+Date:   Mon Jul 18 21:18:27 2011 +0200
+
+    config: don't fail if a device vanished by the time we managed to look at it
+    
+    The nature of hotplug is that a device we enumerated might already be
+    gone by the time we look at it, so don't assume otherwise.
+    
+    Signed-off-by: Lennart Poettering <lennart@poettering.net>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit f13de9ca1b7c4dd0dd5c08037c6bd53f88ac30f5
+Author: Lennart Poettering <lennart@poettering.net>
+Date:   Mon Jul 18 21:17:49 2011 +0200
+
+    config: limit the kernel subsystems we look for devices in
+    
+    Don't enumerate/monitor all devices of the system (since that can be
+    quite a few), but limit our search to devices from the "input"
+    subsystem, as well as the "tty" subsystem (to cover Wacom tablets).
+    
+    This should make X start up a bit faster and reduce the number of
+    unnecessary wake-ups of the X server.
+    
+    Signed-off-by: Lennart Poettering <lennart@poettering.net>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit 882e3c2680c339ad7aa0d664e0b0f02b8a05b11d
+Author: Lennart Poettering <lennart@poettering.net>
+Date:   Mon Jul 18 21:17:10 2011 +0200
+
+    config: process udev "changed" and "add" events in the same code paths
+    
+    udev gives no guarantee that before each "changed" event for a device
+    there's an "add" event, or that before each "remove" is an "add", or
+    that before each "add" there was no "add" already and so on. Users can
+    trigger these events at any time with "udevadm trigger", and netlink is
+    a lossy transport, hence the events can come in unexpected ordering.
+    
+    With other words: regardless which event is generated, the X server must
+    not choke on it and make the best of it, hence make sure that if we get
+    an "add" event for an existing device we don't add the device a second
+    time.
+    
+    Signed-off-by: Lennart Poettering <lennart@poettering.net>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit 5596f10cce58295d8af73646352b314ecb3ddfca
+Author: Jon TURNEY <jon.turney@dronecode.org.uk>
+Date:   Sat Jul 9 13:21:04 2011 +0100
+
+    Remove hw/xwin/xlaunch
+    
+    Signed-off-by: Jon TURNEY <jon.turney@dronecode.org.uk>
+    Reviewed-by: Colin Harrison <colin.harrison@virgin.net>
+
+commit 73864a87aacbce85b520ccaa6e360b82c0e99716
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Tue Jul 19 20:03:48 2011 -0700
+
+    XQuartz: Localization updates
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+
+commit d2463df84d3a160b2dd1e706b02985e1817784e3
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Tue Jul 19 20:02:33 2011 -0700
+
+    XQuartz: Add english NIB changes for scroll_in_device_direction
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+
+commit e36e7ad6314ca5fcd3292b8022f0a618d567d72b
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Tue Jul 19 20:01:11 2011 -0700
+
+    XQuartz: Add GUI controls to toggle scroll_in_device_direction
+    
+    Also cleaned up the wording for fullscreen_menu.
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+
+commit ac43984215faf464fd48bd006cac1c6539603cea
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Tue Jul 19 20:00:27 2011 -0700
+
+    XQuartz: Add a scroll_in_device_direction preference
+    
+    This preference allows users to override the related option in Mac OS X's
+    Mouse/Trackpad preferences.  This effectively lets the user determine
+    which "context" all of X11 fits into for context-based scrolling until
+    such API exists within X11 itself to pass along to X11 clients.
+    
+    This is applicable to Mav OS X 10.7+
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+
+commit ec95a9c829b8e37529aa828c05fbaabc45cffe42
+Author: George Staplin <gstaplin@apple.com>
+Date:   Wed Mar 4 02:03:52 2009 -0700
+
+    XQuartz: Add diagnostic error checking to xp_destroy_surface.
+    
+    This occurred to me in hindsight after the last commit.  If the
+    original developer had done this, we would have noticed the
+    problem sooner.
+    (cherry picked from commit aa0a57996f3e7d16238f69976958c2526821388b)
+
+commit 4fe7df265324f63025686efe9d32342e3cef40d3
+Author: George Staplin <gstaplin@apple.com>
+Date:   Wed Mar 4 01:39:58 2009 -0700
+
+    XQuartz: Fix a memory leak with surfaces that a new test found.
+    
+    xp_destroy_surface was called with a surface id of 0, due to some
+    premature cleanup that set it to 0.  This means the surfaces
+    weren't being destroyed until the window was.
+    
+    The code that did that was: pDRIDrawablePriv->sid = 0;
+    
+    In long running applications this leak may or may not have been
+    harmful.  With the old libGL the surfaces weren't destroyed until
+    the context was destroyed or a new context created.  In the new
+    libGL they are reference counted, and released much sooner, so we
+    ran into a resource leak more noticeably with some tests.
+    
+    Make the Apple DRI code dispatch events to the client(s) for
+    destroyed surfaces, when a resource is destroyed.  This seems to
+    work in my tests, however this clearly wasn't working for a while,
+    so bugs may result in the future if it enables some new (unexpected)
+    side effects.
+    
+    Also add a few helpful comments to aid in understanding the code
+    in the future.
+    
+    Tested with the test suite, Pymol, and various Mesa demos.
+    (cherry picked from commit bede83eb19a1629396fcd5a46441f8476a8fcd1b)
+
+commit 0ebe45a717faa6464d3b1ab73e30570518ee4798
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Tue Jul 19 19:42:44 2011 -0700
+
+    XQuartz: DRI: Dead code removal
+    
+    Also add some comments that weren't merged in from server-1.4-apple's
+    99babae1326485c27eb9253db83afdd6aef9e362
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+
+commit 88ad050f3c2f9f11bafb56a8cf777518795295a9
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Mon Jul 18 22:54:21 2011 -0700
+
+    XQuartz: Add some sanity checking and a fallback for the bundle id.
+    
+    This way we'll print an error and still mostly work rather than crashing if
+    someone installs XQuartz.app incorrectly or tries running the server within
+    the build system rather than the installed system.
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+
+commit 89bfa0c633f3096cca6f983bca1507d3f4b902a8
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Fri Jul 15 10:39:39 2011 -0700
+
+    XQuartz: DarwinEQFini doesn't return Bool
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+
+commit 82f5521a6d91ebcd2a4400f6c221ad625edc99a1
+Author: Daniel Stone <daniel@fooishbar.org>
+Date:   Wed Jul 13 12:08:04 2011 +0100
+
+    XKB: Work around broken interps from old xkbcomp
+    
+    Bugfix for broken xkbcomp: if we encounter an XFree86Private action with
+    Any+AnyOfOrNone(All), then we skip the interp as broken.  Versions of
+    xkbcomp below 1.2.2 had a bug where they would interpret a symbol that
+    couldn't be found in an interpret as Any.  So, an
+    XF86LogWindowTree+AnyOfOrNone(All) interp that triggered the PrWins
+    action would make every key without an action trigger PrWins if libX11
+    didn't yet know about the XF86LogWindowTree keysym.  None too useful.
+    
+    We only do this for XFree86 actions, as the current XKB dataset relies
+    on Any+AnyOfOrNone(All) -> SetMods for Ctrl in particular.
+    
+    See xkbcomp commits 2a473b906943ffd807ad81960c47530ee7ae9a60 and
+    3caab5aa37decb7b5dc1642a0452efc3e1f5100e for more details.
+    
+    Signed-off-by: Daniel Stone <daniel@fooishbar.org>
+    Acked-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit c177a5bcaa170d24a784540460906cc04ac5c752
+Author: Daniel Stone <daniel@fooishbar.org>
+Date:   Wed Jul 13 12:08:03 2011 +0100
+
+    Fix non-Composite builds in PrintWindowTree
+    
+    The previous patch accidentally introduced a hard dependency on
+    Composite.  Sorry, OS X.
+    
+    Signed-off-by: Daniel Stone <daniel@fooishbar.org>
+    Reported-by: Jeremy Huddleston <jeremyhu@apple.com>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit 01dbf2514aa0cc8c40a876a24e3cb0737c41da19
+Merge: 5a801af af0fbc3
+Author: Keith Packard <keithp@keithp.com>
+Date:   Wed Jul 13 11:44:15 2011 -0700
+
+    Merge remote-tracking branch 'jturney/master'
+
+commit 5a801af689fce9dfe84453bbc2b029cb4782de83
+Author: Gaetan Nadon <memsize@videotron.ca>
+Date:   Tue Jul 12 19:50:05 2011 -0400
+
+    XWinrc: replace hard coded section number with __filemansuffix__
+    
+    Reviewed-by: Cyril Brulebois <kibi@debian.org>
+    Signed-off-by: Gaetan Nadon <memsize@videotron.ca>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit af0fbc37e35ddaabf12a8d7abc79ea11958ec8ac
+Author: Gaetan Nadon <memsize@videotron.ca>
+Date:   Thu Jun 23 07:45:13 2011 -0400
+
+    XWinrc: replace hard coded section number with __filemansuffix__
+    
+    Reviewed-by: Cyril Brulebois <kibi@debian.org>
+    Signed-off-by: Gaetan Nadon <memsize@videotron.ca>
+    Signed-off-by: Jon TURNEY <jon.turney@dronecode.org.uk>
+
+commit 42bc198775a78b328612427c4c8ed4d17e005ae9
+Author: Jon TURNEY <jon.turney@dronecode.org.uk>
+Date:   Mon Jan 24 18:29:41 2011 +0000
+
+    glx: Remove a few lingering traces of __GLXscreen.GLXVersion
+    
+    The GLXversion member of the __GLXscreen struct
+    is just cruft since commit ad5c0d9efa47476ed5cf75c82265c73919e468b4,
+    when we started returning the minimum GLX version supported by all
+    of the screens on the display, rather than the maximum version supported
+    by the server.
+    
+    Reviewed-by: Jeremy Huddleston <jeremyhu@apple.com>
+    Signed-off-by: Jon TURNEY <jon.turney@dronecode.org.uk>
+
+commit 005e68ba59782b60dd5c44a06c75b1fa5e8d70d8
+Author: Jon TURNEY <jon.turney@dronecode.org.uk>
+Date:   Thu Jan 20 16:21:04 2011 +0000
+
+    hw/xwin: Add -wgl option to XWin manpage
+    
+    Document the -[no]wgl options in the XWin manpage
+    
+    Reviewed-by: Colin Harrison <colin.harrison@virgin.net>
+    Signed-off-by: Jon TURNEY <jon.turney@dronecode.org.uk>
+
+commit d62726019e4b7bfac8a23d0d733677b141047d66
+Author: Jon TURNEY <jon.turney@dronecode.org.uk>
+Date:   Tue Nov 2 11:38:53 2010 +0000
+
+    hw/xwin: Add items to WGL AIGLX todo
+    
+    Reviewed-by: Colin Harrison <colin.harrison@virgin.net>
+    Signed-off-by: Jon TURNEY <jon.turney@dronecode.org.uk>
+
+commit 276735ef5d12e79fe051996f100c5730c1e69334
+Author: Jon TURNEY <jon.turney@dronecode.org.uk>
+Date:   Mon Oct 11 16:22:49 2010 +0100
+
+    hw/xwin: Report Window XIDs in Window debug messages
+    
+    Report Window XIDs in Window create/destroy/reparent debug messages
+    
+    It's actually quite useful if you are trying to corrolate those events
+    with what a client is doing...
+    
+    Reviewed-by: Colin Harrison <colin.harrison@virgin.net>
+    Signed-off-by: Jon TURNEY <jon.turney@dronecode.org.uk>
+
+commit b0b54338e2f8aed6e6a683ebddd2a2acbefabecd
+Author: Jon TURNEY <jon.turney@dronecode.org.uk>
+Date:   Mon Oct 11 16:25:03 2010 +0100
+
+    hw/xwin: Add a flag to track which windows have been drawn to using WGL.
+    
+    Reviewed-by: Colin Harrison <colin.harrison@virgin.net>
+    Signed-off-by: Jon TURNEY <jon.turney@dronecode.org.uk>
+
+commit 98c6d91a48f460fdbca93700ab637eadf946fb0e
+Author: Colin Harrison <colin.harrison@virgin.net>
+Date:   Thu Mar 24 20:39:51 2011 +0000
+
+    hw/xwin/glx: Fix some warnings in generated wrapper code
+    
+    Add a suitable cast to the generated code for glWinSetupDispatchTable()
+    so it doesn't generate screeds of warnings
+    
+    Reviewed-by: Jon TURNEY <jon.turney@dronecode.org.uk>
+    Signed-off-by: Jon TURNEY <jon.turney@dronecode.org.uk>
+
+commit b67e80c84e4af54007aa1bd1e4a97a4d1b3d3765
+Author: Jon TURNEY <jon.turney@dronecode.org.uk>
+Date:   Mon Jan 24 18:41:05 2011 +0000
+
+    hw/xwin/glx: Handle failure to get any fbconfigs more gracefully.
+    
+    Handle failure to get any useful pixel formats for GLX fbconfigs
+    more gracefully:  If we didn't get any useful pixel formats from
+    wglGetPixelFormatAttribivARB(), fall back to using DescribePixelFormat().
+    If that doesn't give us any useful pixel formats, fallback to software
+    rendering.
+    
+    This works around a problem with Intel 845G drivers, where
+    wglGetPixelFormatAttribivARB() doesn't seem to work as we expect it to...
+    
+    Reviewed-by: Colin Harrison <colin.harrison@virgin.net>
+    Signed-off-by: Jon TURNEY <jon.turney@dronecode.org.uk>
+
+commit 9915b169237e3b2d817bd3d4455f3c01dd7dd2b5
+Author: Jon TURNEY <jon.turney@dronecode.org.uk>
+Date:   Mon Nov 1 19:53:42 2010 +0000
+
+    hw/xwin/glx: Don't spam log with wglwrap symbol resolution status at startup
+    
+    ... instead just log if an attempt is made to call a wrapper for
+    a function which didn't resolve
+    
+    Reviewed-by: Colin Harrison <colin.harrison@virgin.net>
+    Signed-off-by: Jon TURNEY <jon.turney@dronecode.org.uk>
+
+commit 8216316867f07819b8e8b377f2633fbf8876abf7
+Author: Jon TURNEY <jon.turney@dronecode.org.uk>
+Date:   Sat Oct 30 17:23:52 2010 +0100
+
+    hw/xwin/glx: Better handling of SetPixelFormat() failure
+    
+    Propagate and report the failure if SetPixelFormat() fails
+    
+    Reviewed-by: Colin Harrison <colin.harrison@virgin.net>
+    Signed-off-by: Jon TURNEY <jon.turney@dronecode.org.uk>
+
+commit eecc8e06eb4bdfd4354144206d990cd9ccb69721
+Author: Jon TURNEY <jon.turney@dronecode.org.uk>
+Date:   Sat Oct 30 17:22:33 2010 +0100
+
+    hw/xwin/glx: Improvements to glxWinErrorMessage() reporting in WGL GLX provider
+    
+    Request the message using languageID 0 (best effort), rather than only using language neutral messages
+    Always report the numeric error code.
+    Trim any trailing \r from FormatMessage() output
+    
+    Reviewed-by: Colin Harrison <colin.harrison@virgin.net>
+    Signed-off-by: Jon TURNEY <jon.turney@dronecode.org.uk>
+
+commit 3873be16d050ab12fc78f1e7f0c36c2ac88d0a98
+Author: Jon TURNEY <jon.turney@dronecode.org.uk>
+Date:   Mon Oct 11 16:21:40 2010 +0100
+
+    hw/xwin/glx: Fix fbconfig dumper formatting for 3 digit index numbers
+    
+    Some graphics hardware supports hundreds of pixel formats, so adjust
+    formatting in fbconfig dumper for 3 digit index numbers
+    
+    Also report the PFD_SUPPORT_DIRECTDRAW, PFD_DIRECT3D_ACCELERATED and
+    PFD_SUPPORT_COMPOSITION flags introduced with aero
+    
+    Reviewed-by: Colin Harrison <colin.harrison@virgin.net>
+    Signed-off-by: Jon TURNEY <jon.turney@dronecode.org.uk>
+
+commit d4096abb591353405417e53816e5c46e904e7b25
+Merge: 61f87a7 87d4f90
+Author: Keith Packard <keithp@keithp.com>
+Date:   Fri Jul 1 15:45:45 2011 -0700
+
+    Merge remote-tracking branch 'whot/for-keith'
+
+commit 87d4f90bfcb509471ac9e7886e14a92b33223fd7
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Mon Jun 27 09:10:42 2011 +1000
+
+    input: free the EQ allocated memory on shutdown (#38634)
+    
+    mieqFini() already does the right thing, but it needs to be called by the
+    various DDXs and the XTest Extension.
+    
+    X.Org Bug 38634 <http://bugs.freedesktop.org/show_bug.cgi?id=38634>
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Jon TURNEY <jon.turney@dronecode.org.uk>
+    Acked-by: Jeremy Huddleston <jeremyhu@apple.com>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit e084ac30b37c36016bb0dbb1b79e60a7799aee02
+Author: Daniel Stone <daniel@fooishbar.org>
+Date:   Wed Mar 2 14:52:42 2011 +0000
+
+    Input: Reset SD remainder when copying co-ords from MD
+    
+    In updateSlaveDeviceCoords, pDev->last.valuators was being copied from
+    the master, but pDev->last.remainder wasn't.  Make sure we copy both, to
+    avoid minor inconsistencies.
+    
+    Signed-off-by: Daniel Stone <daniel@fooishbar.org>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit 23a783278963919778d017965542e0f983814e37
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Fri Jun 24 11:02:23 2011 +1000
+
+    input: add POINTER_NORAW to avoid generation of raw events (#30068)
+    
+    RawEvents are supposed to be events coming from the driver. When warping the
+    pointer, this should not generate a raw event.
+    
+    X.Org Bug 30068 <http://bugs.freedesktop.org/show_bug.cgi?id=30068>
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit 9444e40d77508d545e3c0a8123f61950c22d89fa
+Author: Daniel Stone <daniel@fooishbar.org>
+Date:   Tue Mar 1 11:11:22 2011 +0000
+
+    Test: Input: Only ever set up to MAX_VALUATORS valuators
+    
+    Previously, the input tests were working up to sizeof(mask) * 8, which
+    could be more than the arrays; the latter only being sized as
+    MAX_VALUATORS.
+    
+    Hypothetically, if you were switching the stored valuator values to
+    double instead of uint32_t, and you attempted to set the 39th member of
+    a MAX_VALUATORS-sized (36) array, you'd probably end up smashing
+    ev->key_repeat into oblivion and then tripping the check for invalid
+    flags because you haven't yet put XIPointerEmulated into the valid flags
+    for XI_Motion.  Probably.
+    
+    Signed-off-by: Daniel Stone <daniel@fooishbar.org>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit 1e65a01cf73f1fbdfe0d63eaecea412cf8472cb4
+Author: Daniel Stone <daniel@fooishbar.org>
+Date:   Fri Jun 17 16:28:05 2011 +0100
+
+    Test: Ensure libxservertest gets relinked when necessary
+    
+    Similar to how we link Xorg, make sure that whenever any of the
+    component libraries changes, we relink libxservertest and the tests.
+    Not much use testing anything other than the actual source in your tree.
+    
+    Signed-off-by: Daniel Stone <daniel@fooishbar.org>
+    Reviewed-by: Dan Nicholson <dbn.lists@gmail.com>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit 0f41d6c851df76d0423d9c37ad809d3440906944
+Author: Daniel Stone <daniel@fooishbar.org>
+Date:   Fri Jun 17 13:20:19 2011 +0100
+
+    KDrive: Remove useless miPointerUpdateSprite call
+    
+    miPointerUpdateSprite is already called from mieqProcessInputEvents, so
+    calling it by hand immediately after isn't massively helpful.
+    
+    Signed-off-by: Daniel Stone <daniel@fooishbar.org>
+    Reviewed-by: Cyril Brulebois <kibi@debian.org>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit 57b767d2927e5c2e561a431be4e604df65423422
+Author: Daniel Stone <daniel@fooishbar.org>
+Date:   Fri Jun 17 13:19:46 2011 +0100
+
+    DMX: Remove useless miPointerUpdateSprite call
+    
+    miPointerUpdateSprite is already called from mieqProcessInputEvents, so
+    calling it by hand immediately after isn't massively helpful.
+    
+    Signed-off-by: Daniel Stone <daniel@fooishbar.org>
+    Reviewed-by: Cyril Brulebois <kibi@debian.org>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit cf398755c0ca1e031514862b670956e7b9ace5ef
+Author: Daniel Stone <daniel@fooishbar.org>
+Date:   Fri Jun 17 15:29:44 2011 +0100
+
+    XWin: Remove executable bit from headers
+    
+    Headers don't really need to be mode 0755.
+    
+    Signed-off-by: Daniel Stone <daniel@fooishbar.org>
+    Reviewed-by: Cyril Brulebois <kibi@debian.org>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit 7d2543a3cb3089241982ce4f8984fd723d5312a1
+Author: Daniel Stone <daniel@fooishbar.org>
+Date:   Wed Dec 29 12:03:01 2010 +0000
+
+    XKB: Add debug key actions for grabs & window tree
+    
+    Add four new private XKB actions for debugging:
+        * PrGrbs: print active grabs to the log file
+        * Ungrab: ungrab all currently active grabs
+        * ClsGrb: kill clients with active grabs
+        * PrWins: dump the current window tree to the log file
+    
+    To use these, you need to modify your XKB maps, e.g. the following to
+    have Ctrl+Alt+(F9-F12) mapped to the above:
+     - compat/xfree86:
+        interpret XF86LogGrabInfo {
+            action = Private(type=0x86, data="PrGrbs");
+        };
+        interpret XF86Ungrab {
+            action = Private(type=0x86, data="Ungrab");
+        }
+        interpret XF86ClearGrab {
+            action = Private(type=0x86, data="ClsGrb");
+        }
+        interpret XF86LogWindowTree {
+            action = Private(type=0x86, data="PrWins");
+        }
+    
+     - symbols/pc:
+        key <FK09> {        type="CTRL+ALT", [ Return, XF86LogGrabInfo      ]   };
+        key <FK10> {        type="CTRL+ALT", [ Return, XF86Ungrab           ]   };
+        key <FK11> {        type="CTRL+ALT", [ Return, XF86ClearGrab        ]   };
+        key <FK12> {        type="CTRL+ALT", [ Return, XF86LogWindowTree    ]   };
+    
+    At the moment, this only works if the grabbing client continues to call
+    AllowEvents, as the server does no event processing at all when a device
+    is frozen.
+    
+    Signed-off-by: Daniel Stone <daniel@fooishbar.org>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit ddf735fd4e9658bb5610f5e911f3b4055d5acf89
+Author: Daniel Stone <daniel@fooishbar.org>
+Date:   Tue Oct 13 19:56:57 2009 +1100
+
+    DIX: Make PrintWindowTree actually useful
+    
+    Rewrite PrintWindowTree to make it actually tell you what you want to
+    know.
+    
+    Signed-off-by: Daniel Stone <daniel@fooishbar.org>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit b27d61e4433a2a0140ed8a6128e4427451e37fec
+Author: Matěj Cepl <mcepl@redhat.com>
+Date:   Fri Jun 17 15:26:17 2011 +0100
+
+    Fix UTF-8 encoding
+    
+    Report to find out all non-UTF-8 files created by
+    
+    cat extensions |xargs -I XXXX find . -name \*.XXXX |while read FILE ; do
+        if ( iconv -f utf8 -t ucs2 $FILE >/dev/null 2>/dev/null ) ; then
+            /bin/true
+        else
+            echo $FILE
+        fi
+    done >>report
+    
+    Signed-off-by: Matěj Cepl <mcepl@redhat.com>
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+    
+    [Daniel: git am failed for me, so I redid it.  The method listed in the
+             commit message also failed, so I just used file/grep/iconv.  The
+             results are the same though.]
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit 2ee85d954c8f3a6affbd9b1b745594ff12e8b670
+Author: Scott James Remnant <scott@netsplit.com>
+Date:   Tue Jun 14 16:36:07 2011 -0700
+
+    dix: avoid calling deleted block and wakeup handlers
+    
+    BlockHandler and WakeupHandlers may be removed within a different
+    BlockHandler or WakeupHandler, especially since config/udev uses
+    these and removes devices.
+    
+    Calling the deleted handlers and passing potentially freed data
+    can result in the X server segfaulting after device removal, or
+    events that result in device removal such as undocking or suspend/
+    resume.
+    
+    Signed-off-by: Scott James Remnant <scott@netsplit.com>
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit b573cdd40ee49fae299fe2e7cbd02159ae8ae617
+Author: Marcin Slusarz <marcin.slusarz@gmail.com>
+Date:   Tue Jun 7 21:22:15 2011 +0200
+
+    dri2: restore Screen->ConfigNotify on close
+    
+    ConfigNotify is set by DRI2ScreenInit, but not restored to
+    previous state on close. Fix it.
+    (I'm preparing a patch for xf86-video-nouveau which detects GPU lockup
+    after dri2 init and it needs to reinitialize dri2)
+    
+    Signed-off-by: Marcin Slusarz <marcin.slusarz@gmail.com>
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit 61f87a75f2bcda939a1778d39be8cfa5c886e6d8
+Merge: 0d2153a 72d9143
+Author: Keith Packard <keithp@keithp.com>
+Date:   Wed Jun 29 20:14:51 2011 -0700
+
+    Merge remote-tracking branch 'jturney/master'
+
+commit 0d2153a46cc72d5f2e6a9081a3cf153aa3eb7787
+Merge: b631c39 932513e
+Author: Keith Packard <keithp@keithp.com>
+Date:   Wed Jun 29 20:08:32 2011 -0700
+
+    Merge remote-tracking branch 'jbarnes/master'
+
+commit b631c39a21c8d74fd00b8932df342d6921cce8f4
+Author: Gaetan Nadon <memsize@videotron.ca>
+Date:   Thu Jun 23 13:37:45 2011 -0400
+
+    Remove unused check for PERL program
+    
+    Unable to find any use of the PERL Automake variable.
+    It was used in hw/xfree86/scanpci around 2005.
+    Should it ever be needed, use XORG_WITH_PERL macro.
+    
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+    Signed-off-by: Gaetan Nadon <memsize@videotron.ca>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit d5ca33ca2dd08e8436439da926d2dedaabc268fa
+Merge: 38d55f0 4edf49d
+Author: Keith Packard <keithp@keithp.com>
+Date:   Wed Jun 29 18:54:33 2011 -0700
+
+    Merge remote-tracking branch 'kibi/master'
+
+commit 72d914335c9ad0e0f4a34b9f7e2901b830c499bf
+Author: Yaakov Selkowitz <yselkowitz@users.sourceforge.net>
+Date:   Tue Mar 23 04:34:22 2010 -0500
+
+    Cygwin/X: Left-justify website link in About box
+    
+    Left-justify website link in About box.  This is a cosmetic fix to make
+    the About box display correctly when Windows is configured with a
+    non-default DPI value
+    
+    Signed-off-by: Yaakov Selkowitz <yselkowitz@users.sourceforge.net>
+    Reviewed-by: Jon TURNEY <jon.turney@dronecode.org.uk>
+    Reviewed-by: Colin Harrison <colin.harrison@virgin.net>
+    Tested-by: Colin Harrison <colin.harrison@virgin.net>
+
+commit e78628406f0428454983db1c51a8c828bf5684e5
+Author: Jon TURNEY <jon.turney@dronecode.org.uk>
+Date:   Thu Aug 12 15:00:01 2010 +0100
+
+    Cygwin/X: Preserve client area size and position on Windows window style change
+    
+    When the style changes, adjust the window size so the client area remains the same.
+    
+    Otherwise the window size may change when sizing is reflected from Windows to X, and
+    some windows are drawn expecting them to be exactly the requested size (e.g. the
+    gmplayer control window)
+    
+    Use DeferWindowPos to delay the resize to preserve client area on WM_STYLECHANGING
+    until after the style change has actually happened in WM_STYLECHANGED
+    
+    As a consquence of this, we need to be more careful to create windows with exactly
+    the requested placement and client area initially, so the client area matches what
+    the X client requested
+    
+    Also synchronize the X windows idea of the placement of a window which Windows is
+    allowed to place
+    
+    Signed-off-by: Jon TURNEY <jon.turney@dronecode.org.uk>
+    Reviewed-by: Colin Harrison <colin.harrison@virgin.net>
+    Tested-by: Colin Harrison <colin.harrison@virgin.net>
+
+commit 1d7f3a0031b4ae7d8aa984799ffa578788061ce4
+Author: Jon TURNEY <jon.turney@dronecode.org.uk>
+Date:   Sat Nov 7 19:34:12 2009 +0000
+
+    glx: Move GLX extension string utility functions
+    
+    Move GLX extension string utility functions from the DRI1 convenience library
+    into the GLX extension convenience library, so other DDX which don't have DRI
+    can use them.
+    
+    This is probably also needed if anyone actually tries to build an Xorg DDX
+    with only DRI2 support...
+    
+    Signed-off-by: Jon TURNEY <jon.turney@dronecode.org.uk>
+    Reviewed-by: Kristian Høgsberg <krh@bitplanet.net>
+
+commit 932513e23b5fe1793cc38eabe02df82e1cc6e4d9
+Author: Jesse Barnes <jbarnes@virtuousgeek.org>
+Date:   Thu May 5 13:11:46 2011 -0700
+
+    DRI2/GLX: use new swap event types
+    
+    Use the new event types so we can pass a valid SBC value to clients.
+    Fix up the completion calls to use CARD32 instead of CARD64 to match
+    the new field size.
+    
+    Reviewed-by: Jeremy Huddleston <jeremyhu@apple.com>
+    Reviewed-by: Ian Romanick <ian.d.romanick@intel.com>
+    Signed-off-by: Jesse Barnes <jbarnes@virtuousgeek.org>
+
+commit a3cb7d097a281252cebbc3c65c67149e106482ac
+Author: Jesse Barnes <jbarnes@virtuousgeek.org>
+Date:   Tue May 3 10:36:44 2011 -0700
+
+    GLX/DRI2: pass drawable correctly for indirect swap events
+    
+    Pass the right drawable pointer as data to the swap complete function.
+    
+    Signed-off-by: Jesse Barnes <jbarnes@virtuousgeek.org>
+
+commit 3e8270b869ebf788778d5d56107f6d47c7c050d0
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Tue Apr 12 15:30:25 2011 -0400
+
+    glx: Fix fbconfigs with no corresponding visual
+    
+    There are, in general, more fbconfig depths than visual depths.
+    fbconfigs need not support Window rendering, however any that do must
+    have an associated visual ID (which we got right), and any that do not
+    must not claim GLX_WINDOW_BIT in GLX_DRAWABLE_TYPE (which we got
+    wrong).
+    
+    Fixes piglit/glx-fbconfig-sanity, assuming you have a sufficiently
+    recent piglit, as that test formerly wrongly required pixmap-capable
+    fbconfigs to have a visual.
+    
+    v2: Additional check for fbconfigs that didn't have GLX_WINDOW_BIT in
+        the first place, from previous patch by Jon TURNEY; also, also clear
+        ->visualID.
+    
+    Reviewed-by: Jon TURNEY <jon.turney@dronecode.org.uk>
+    Signed-off-by: Adam Jackson <ajax@redhat.com>
+
+commit 38d55f06cfbf4b05fee0aef8f97f90e835beaacb
+Author: Jon TURNEY <jon.turney@dronecode.org.uk>
+Date:   Mon Jun 27 15:06:16 2011 +0100
+
+    Guard use of backtrace() with HAVE_BACKTRACE
+    
+    Guard the use of backtrace() with HAVE_BACKTRACE, since we already
+    have the autoconf machinery for setting that.
+    
+    For the moment, assume dladdr() is available when backtrace() is
+    
+    Signed-off-by: Jon TURNEY <jon.turney@dronecode.org.uk>
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+
+commit bea57392c724f439987832b422941ae897953e4a
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Sat Jun 25 11:29:53 2011 -0700
+
+    XQuartz: Fix Makefile dependencies
+    
+    automake generates _DEPENDENCIES from _LIBADD, but it strips out variables.
+    This resulted in not relinking if some components were rebuilt (like
+    libdix, libos, etc).
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+
+commit c8b80a82d97d92d445c1c0af6dba42c9de7c56cd
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Tue Jun 21 21:14:46 2011 -0700
+
+    XQuartz: Make a call to activateIgnoringOtherApps in our NSApplicationActivatedEventType handler
+    
+    In addition, this change will not call into the X11 activation unless an X11
+    window was active when we deactivated.  We can't rely on the event and current
+    key windows because the key window will be nil until activated, and the event
+    will only reference the window if the window was clicked (whereas it will be
+    nil if we activated via dock or cmd-tab).
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+
+commit 9d568450b1319e9057319ebb37e76003bcba447d
+Author: Keith Packard <keithp@keithp.com>
+Date:   Tue Jun 28 09:33:25 2011 -0700
+
+    Create sdksyms.dep in the right place at configure time
+    
+    sdksyms moved from hw/xfree86/loader to hw/xfree86, so the
+    configure-time create of sdksyms.dep needs to reflect that
+    change. Otherwise, make might be confused by a missing file and (more
+    importantly to me) hw/xfree86/loader/sdksyms.dep will be left around
+    after 'make clean' causing 'make distcheck' to fail.
+
+commit f968f4ace9410d827fb6b68c4e38ea9516641309
+Merge: 4dbed26 163441f
+Author: Keith Packard <keithp@keithp.com>
+Date:   Tue Jun 28 09:10:14 2011 -0700
+
+    Merge remote-tracking branch 'dbn/no-libxorg'
+
+commit 4dbed2625431a92e20bede7b8cef847b5d5d99ba
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Mon Jun 27 14:45:18 2011 +1000
+
+    xfree86: Only log the serial bytes if debug is on.
+    
+    Introduced in e3f296d91dfe6b827195e1d387e1a04aa73b85c3, when the ifdef DEBUG
+    around the whole block was removed, but only two of the three ErrorF
+    switched to DebugF.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit 163441fe531a77f7fa54bfa59c5ab49c78f44306
+Author: Dan Nicholson <dbn.lists@gmail.com>
+Date:   Tue Jun 14 20:03:06 2011 -0700
+
+    xfree86: Remove libxorg convenience library to speed up build
+    
+    libxorg.la served to collect all the Xorg convenience libraries into one
+    massive archive to link into Xorg. This made things easy for symbol
+    resolution, but it tremendously slowed down the build since each change
+    caused libxorg.la to be rebuilt. This is an extremely slow process of
+    extracting all the objects from the sub-libraries and recombining them.
+    
+    Instead, the archives are linked directly into Xorg. The order of the
+    libraries had to be tweaked a bit to make symbols resolve correctly with
+    the lower level code moving later in the link command.
+    
+    As a side effect, since the dtrace objects are now being linked
+    directly into Xorg, we don't need the SPECIAL_DTRACE_OBJECTS hack to
+    add them twice.
+    
+    Signed-off-by: Dan Nicholson <dbn.lists@gmail.com>
+    Tested-by: Jamey Sharp <jamey@minilop.net>
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+    Tested-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit 6259b30111f568ec3d1b32dc6382bce46d8e6ccc
+Author: Dan Nicholson <dbn.lists@gmail.com>
+Date:   Tue Jun 14 19:47:02 2011 -0700
+
+    xfree86: Move sdksyms generation to ddx toplevel
+    
+    The symbols in sdksyms.c cover the entire source tree. In order to make
+    them resolve when libxorg.la goes away, move the objects from libloader
+    to Xorg. Unfortunately, this means sdksyms needs to get built again for
+    the test code.
+    
+    Signed-off-by: Dan Nicholson <dbn.lists@gmail.com>
+    Tested-by: Jamey Sharp <jamey@minilop.net>
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+    Tested-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit 7d5c8a12cbc295b3e33e1b60bd7330e2bc93a966
+Author: Dan Nicholson <dbn.lists@gmail.com>
+Date:   Tue Jun 14 17:21:48 2011 -0700
+
+    Don't use empty source files
+    
+    When an empty _SOURCES variable is declared, automake will recognize that
+    only linking is needed.
+    
+    Signed-off-by: Dan Nicholson <dbn.lists@gmail.com>
+    Tested-by: Jamey Sharp <jamey@minilop.net>
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+    Tested-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit 8ac651552bb70ba36238f430adab2f7a7f24db6e
+Merge: 945b2ff 47b6ba3
+Author: Keith Packard <keithp@keithp.com>
+Date:   Wed Jun 22 11:03:37 2011 -0700
+
+    Merge remote-tracking branch 'alanc/master'
+
+commit 945b2ff8141c58344fc9558ee3853fad3e86134b
+Author: Gaetan Nadon <memsize@videotron.ca>
+Date:   Wed Jun 8 15:18:12 2011 -0400
+
+    docbook.am: --path is also required for xsltproc
+    
+    The XSLT processor also needs to know about the entities defined
+    in xserver.ent. It removes error messages.
+    
+    Reviewed-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Signed-off-by: Gaetan Nadon <memsize@videotron.ca>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit 6326b0f0746ded410672ad0270d1c8a0e9cb59f9
+Author: Gaetan Nadon <memsize@videotron.ca>
+Date:   Wed Jun 8 15:17:59 2011 -0400
+
+    Update .gitignore as new tests have been added
+    
+    Refactor to follow the pattern one Makefile, one .gitignore
+    where needed.
+    
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Signed-off-by: Gaetan Nadon <memsize@videotron.ca>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit 47b6ba3204d650393a7255ce2af27b8c018bb586
+Author: Alan Coopersmith <alan.coopersmith@oracle.com>
+Date:   Mon Jun 20 22:17:03 2011 -0700
+
+    Add xkeyboard-config to See Also of man pages referencing xkb
+    
+    Signed-off-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit cfbe471b586282aea89f7b4802c051f22301bf59
+Author: Alan Coopersmith <alan.coopersmith@oracle.com>
+Date:   Mon Jun 20 22:06:00 2011 -0700
+
+    Xdmx.man: convert section references to substituted forms
+    
+    Signed-off-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Reviewed-by: Gaetan Nadon <memsize@videotron.ca>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit c3278f3c1786e66019a39e2612761f74782a48ee
+Author: Alan Coopersmith <alan.coopersmith@oracle.com>
+Date:   Sat Jun 11 10:56:08 2011 -0700
+
+    Xdmx.man: additional updates to modernize XKB information
+    
+    Signed-off-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Reviewed-by: Matthieu Herrb <matthieu.herrb@laas.fr>
+    Reviewed-by: Gaetan Nadon <memsize@videotron.ca>
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+
+commit 19e37067131175219eca7d2b11c2ee59af280575
+Author: Alan Coopersmith <alan.coopersmith@oracle.com>
+Date:   Sat Jun 11 10:41:48 2011 -0700
+
+    Xdmx.man: Show actual configured XKB defaults instead of old hardcoded values
+    
+    Passed through from configure.ac via manpages.am
+    
+    Signed-off-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Reviewed-by: Matthieu Herrb <matthieu.herrb@laas.fr>
+    Reviewed-by: Gaetan Nadon <memsize@videotron.ca>
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+
+commit acf2173b321749c42d29d858d3521a4d506c732e
+Author: Gaetan Nadon <memsize@videotron.ca>
+Date:   Thu Jun 16 20:12:03 2011 -0400
+
+    Install xml versions of specs even if HAVE_XMLTO is false
+    
+    DocBook/XML input source is also a useful output format that can be viewed
+    with an XML viewer or editor and by some O/S help system.
+    
+    Acked-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Signed-off-by: Gaetan Nadon <memsize@videotron.ca>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit 44890b3e266116ae71bfca2590e5fd9cdfbdb69b
+Author: Gaetan Nadon <memsize@videotron.ca>
+Date:   Thu Jun 16 20:11:52 2011 -0400
+
+    Install target dbs alongside generated documents
+    
+    This matches a change in xorg-sgml-docs whereby the masterdb will look for
+    the target dbs into the same location as the generated documents.
+    
+    The target dbs are now installed alongside the generated documents.
+    Previously they are installed in $prefix/sgml/X11/dbs alongside masterdb which
+    has the potential of installing outside the package prefix and cause
+    distcheck to fail when user does not have write permission in this package.
+    
+    Requires XORG_CHECK_SGML_DOCTOOLS(1.8) which was released 2011-06-11
+    
+    Reviewed-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Signed-off-by: Gaetan Nadon <memsize@videotron.ca>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit a42ef6c940604172e54de110b7d989cb2208f7ef
+Author: Rob Clark <robdclark@gmail.com>
+Date:   Tue Jun 14 11:45:38 2011 -0500
+
+    EXA: fix typo
+    
+    The incorrect drawable deltas were applied if dst was a redirected
+    window.  Resulting in a bogus region passed to prepare_access_reg().
+    
+    Signed-off-by: Rob Clark <rob@ti.com>
+    Reviewed-by: Michel Dänzer <michel@daenzer.net>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit 4edf49d032028aa4b9887d02b926b0c372c4451d
+Author: Cyril Brulebois <kibi@debian.org>
+Date:   Tue May 24 18:33:18 2011 +0200
+
+    dmx/examples: Fix missing key_click_percent assignment.
+    
+    Thanks to gcc's -Wunused-but-set-variable, stop ignoring the percent
+    parameter, and add it to the XKeyboardControl structure before the
+    XChangeKeyboardControl call.
+    
+    This warning goes away accordingly:
+    |   CC     xbell-xbell.o
+    | xbell.c: In function ‘main’:
+    | xbell.c:74:22: warning: variable ‘percent’ set but not used [-Wunused-but-set-variable]
+    
+    Reviewed-by: Jeremy Huddleston <jeremyhu@apple.com>
+    Signed-off-by: Cyril Brulebois <kibi@debian.org>
+
+commit 33dad2b74e3489c8a6b5fa574172d6cd2b6de037
+Author: Cyril Brulebois <kibi@debian.org>
+Date:   Tue May 24 18:33:17 2011 +0200
+
+    hw/dmx: Stop using variables for text widgets.
+    
+    They are unused in the sense they're not getting any callback set up, so
+    there's no point in storing them into variables. Keep the initial
+    alignment of the parameters to try and reduce the diff noise.
+    
+    Those warnings go away accordingly:
+    |   CC     xdmxconfig-xdmxconfig.o
+    | xdmxconfig.c: In function ‘main’:
+    | xdmxconfig.c:881:29: warning: variable ‘quittext’ set but not used [-Wunused-but-set-variable]
+    | xdmxconfig.c:880:53: warning: variable ‘abouttext’ set but not used [-Wunused-but-set-variable]
+    
+    Reviewed-by: Jeremy Huddleston <jeremyhu@apple.com>
+    Signed-off-by: Cyril Brulebois <kibi@debian.org>
+
+commit 34a9f2a90d34a2ab7ecf56d329e75e8da569f939
+Author: Cyril Brulebois <kibi@debian.org>
+Date:   Tue May 24 18:33:17 2011 +0200
+
+    xfixes: Remove unused variable.
+    
+    The last use of pScreen in ProcXFixesSetPictureClipRegion was removed in
+    aa7096ca6f108e399d9916639cf20c57f9776305 so remove it entirely.
+    
+    Reviewed-by: Jeremy Huddleston <jeremyhu@apple.com>
+    Signed-off-by: Cyril Brulebois <kibi@debian.org>
+
+commit ad0d0833d45ea24d7af1f724b9905133fe3b065f
+Author: Cyril Brulebois <kibi@debian.org>
+Date:   Tue May 24 18:33:17 2011 +0200
+
+    xfixes: Mark some variables as unused.
+    
+    Calling Unwrap() is just a way of performing an assignment while keeping a
+    backup of the original value. In the CursorCloseScreen function, the backup
+    value doesn't seem to be useful, but Unwrap() is used anyway (probably to stay
+    in line with other functions). As a consequence, mark those variables as unused.
+    
+    The following warnings go away accordingly:
+    |   CC     cursor.lo
+    | cursor.c: In function 'CursorCloseScreen':
+    | cursor.c:186:26: warning: variable 'display_proc' set but not used [-Wunused-but-set-variable]
+    | cursor.c:185:24: warning: variable 'close_proc' set but not used [-Wunused-but-set-variable]
+    
+    Reviewed-by: Jeremy Huddleston <jeremyhu@apple.com>
+    Signed-off-by: Cyril Brulebois <kibi@debian.org>
+
+commit f41ac25d932ef34ab912201ab5ce65f85f2ff171
+Author: Cyril Brulebois <kibi@debian.org>
+Date:   Tue May 24 18:33:17 2011 +0200
+
+    miext: Mark some variables as unused.
+    
+    There's no use for the values set through the various macro calls
+    (fbGetDrawable and fbGetDrawablePixmap), so mark those variables as unused.
+    
+    The following warnings go away accordingly:
+    |   CC     shpacked.lo
+    | shpacked.c: In function 'shadowUpdatePacked':
+    | shpacked.c:55:19: warning: variable 'shaYoff' set but not used [-Wunused-but-set-variable]
+    | shpacked.c:55:10: warning: variable 'shaXoff' set but not used [-Wunused-but-set-variable]
+    |   CC     shplanar8.lo
+    | shplanar8.c: In function 'shadowUpdatePlanar4x8':
+    | shplanar8.c:105:19: warning: variable 'shaYoff' set but not used [-Wunused-but-set-variable]
+    | shplanar8.c:105:10: warning: variable 'shaXoff' set but not used [-Wunused-but-set-variable]
+    |   CC     shplanar.lo
+    | shplanar.c: In function 'shadowUpdatePlanar4':
+    | shplanar.c:101:19: warning: variable 'shaYoff' set but not used [-Wunused-but-set-variable]
+    | shplanar.c:101:10: warning: variable 'shaXoff' set but not used [-Wunused-but-set-variable]
+    |   CC     shrot16pack_180.lo
+    | In file included from shrot16pack_180.c:31:0:
+    | shrotpack.h: In function 'shadowUpdateRotate16_180':
+    | shrotpack.h:109:19: warning: variable 'shaYoff' set but not used [-Wunused-but-set-variable]
+    | shrotpack.h:109:10: warning: variable 'shaXoff' set but not used [-Wunused-but-set-variable]
+    |   CC     shrot16pack_270.lo
+    | In file included from shrot16pack_270.c:31:0:
+    | shrotpack.h: In function 'shadowUpdateRotate16_270':
+    | shrotpack.h:109:19: warning: variable 'shaYoff' set but not used [-Wunused-but-set-variable]
+    | shrotpack.h:109:10: warning: variable 'shaXoff' set but not used [-Wunused-but-set-variable]
+    |   CC     shrot16pack_270YX.lo
+    | In file included from shrot16pack_270YX.c:31:0:
+    | shrotpackYX.h: In function 'shadowUpdateRotate16_270YX':
+    | shrotpackYX.h:72:19: warning: variable 'shaYoff' set but not used [-Wunused-but-set-variable]
+    | shrotpackYX.h:72:10: warning: variable 'shaXoff' set but not used [-Wunused-but-set-variable]
+    |   CC     shrot16pack_90.lo
+    | In file included from shrot16pack_90.c:31:0:
+    | shrotpack.h: In function 'shadowUpdateRotate16_90':
+    | shrotpack.h:109:19: warning: variable 'shaYoff' set but not used [-Wunused-but-set-variable]
+    | shrotpack.h:109:10: warning: variable 'shaXoff' set but not used [-Wunused-but-set-variable]
+    |   CC     shrot16pack_90YX.lo
+    | In file included from shrot16pack_90YX.c:31:0:
+    | shrotpackYX.h: In function 'shadowUpdateRotate16_90YX':
+    | shrotpackYX.h:72:19: warning: variable 'shaYoff' set but not used [-Wunused-but-set-variable]
+    | shrotpackYX.h:72:10: warning: variable 'shaXoff' set but not used [-Wunused-but-set-variable]
+    |   CC     shrot16pack.lo
+    | In file included from shrot16pack.c:30:0:
+    | shrotpack.h: In function 'shadowUpdateRotate16':
+    | shrotpack.h:109:19: warning: variable 'shaYoff' set but not used [-Wunused-but-set-variable]
+    | shrotpack.h:109:10: warning: variable 'shaXoff' set but not used [-Wunused-but-set-variable]
+    |   CC     shrot32pack_180.lo
+    | In file included from shrot32pack_180.c:31:0:
+    | shrotpack.h: In function 'shadowUpdateRotate32_180':
+    | shrotpack.h:109:19: warning: variable 'shaYoff' set but not used [-Wunused-but-set-variable]
+    | shrotpack.h:109:10: warning: variable 'shaXoff' set but not used [-Wunused-but-set-variable]
+    |   CC     shrot32pack_270.lo
+    | In file included from shrot32pack_270.c:31:0:
+    | shrotpack.h: In function 'shadowUpdateRotate32_270':
+    | shrotpack.h:109:19: warning: variable 'shaYoff' set but not used [-Wunused-but-set-variable]
+    | shrotpack.h:109:10: warning: variable 'shaXoff' set but not used [-Wunused-but-set-variable]
+    |   CC     shrot32pack_90.lo
+    | In file included from shrot32pack_90.c:31:0:
+    | shrotpack.h: In function 'shadowUpdateRotate32_90':
+    | shrotpack.h:109:19: warning: variable 'shaYoff' set but not used [-Wunused-but-set-variable]
+    | shrotpack.h:109:10: warning: variable 'shaXoff' set but not used [-Wunused-but-set-variable]
+    |   CC     shrot32pack.lo
+    | In file included from shrot32pack.c:30:0:
+    | shrotpack.h: In function 'shadowUpdateRotate32':
+    | shrotpack.h:109:19: warning: variable 'shaYoff' set but not used [-Wunused-but-set-variable]
+    | shrotpack.h:109:10: warning: variable 'shaXoff' set but not used [-Wunused-but-set-variable]
+    |   CC     shrot8pack_180.lo
+    | In file included from shrot8pack_180.c:31:0:
+    | shrotpack.h: In function 'shadowUpdateRotate8_180':
+    | shrotpack.h:109:19: warning: variable 'shaYoff' set but not used [-Wunused-but-set-variable]
+    | shrotpack.h:109:10: warning: variable 'shaXoff' set but not used [-Wunused-but-set-variable]
+    |   CC     shrot8pack_270.lo
+    | In file included from shrot8pack_270.c:31:0:
+    | shrotpack.h: In function 'shadowUpdateRotate8_270':
+    | shrotpack.h:109:19: warning: variable 'shaYoff' set but not used [-Wunused-but-set-variable]
+    | shrotpack.h:109:10: warning: variable 'shaXoff' set but not used [-Wunused-but-set-variable]
+    |   CC     shrot8pack_90.lo
+    | In file included from shrot8pack_90.c:31:0:
+    | shrotpack.h: In function 'shadowUpdateRotate8_90':
+    | shrotpack.h:109:19: warning: variable 'shaYoff' set but not used [-Wunused-but-set-variable]
+    | shrotpack.h:109:10: warning: variable 'shaXoff' set but not used [-Wunused-but-set-variable]
+    |   CC     shrot8pack.lo
+    | In file included from shrot8pack.c:30:0:
+    | shrotpack.h: In function 'shadowUpdateRotate8':
+    | shrotpack.h:109:19: warning: variable 'shaYoff' set but not used [-Wunused-but-set-variable]
+    | shrotpack.h:109:10: warning: variable 'shaXoff' set but not used [-Wunused-but-set-variable]
+    |   CC     shrotate.lo
+    | shrotate.c: In function 'shadowUpdateRotatePacked':
+    | shrotate.c:62:19: warning: variable 'shaYoff' set but not used [-Wunused-but-set-variable]
+    | shrotate.c:62:10: warning: variable 'shaXoff' set but not used [-Wunused-but-set-variable]
+    |   CC     shpacked.lo
+    | shpacked.c: In function 'shadowUpdatePacked':
+    | shpacked.c:55:19: warning: variable 'shaYoff' set but not used [-Wunused-but-set-variable]
+    | shpacked.c:55:10: warning: variable 'shaXoff' set but not used [-Wunused-but-set-variable]
+    |   CC     shplanar8.lo
+    | shplanar8.c: In function 'shadowUpdatePlanar4x8':
+    | shplanar8.c:105:19: warning: variable 'shaYoff' set but not used [-Wunused-but-set-variable]
+    | shplanar8.c:105:10: warning: variable 'shaXoff' set but not used [-Wunused-but-set-variable]
+    |   CC     shplanar.lo
+    | shplanar.c: In function 'shadowUpdatePlanar4':
+    | shplanar.c:101:19: warning: variable 'shaYoff' set but not used [-Wunused-but-set-variable]
+    | shplanar.c:101:10: warning: variable 'shaXoff' set but not used [-Wunused-but-set-variable]
+    |   CC     shrot16pack_180.lo
+    | In file included from shrot16pack_180.c:31:0:
+    | shrotpack.h: In function 'shadowUpdateRotate16_180':
+    | shrotpack.h:109:19: warning: variable 'shaYoff' set but not used [-Wunused-but-set-variable]
+    | shrotpack.h:109:10: warning: variable 'shaXoff' set but not used [-Wunused-but-set-variable]
+    |   CC     shrot16pack_270.lo
+    | In file included from shrot16pack_270.c:31:0:
+    | shrotpack.h: In function 'shadowUpdateRotate16_270':
+    | shrotpack.h:109:19: warning: variable 'shaYoff' set but not used [-Wunused-but-set-variable]
+    | shrotpack.h:109:10: warning: variable 'shaXoff' set but not used [-Wunused-but-set-variable]
+    |   CC     shrot16pack_270YX.lo
+    | In file included from shrot16pack_270YX.c:31:0:
+    | shrotpackYX.h: In function 'shadowUpdateRotate16_270YX':
+    | shrotpackYX.h:72:19: warning: variable 'shaYoff' set but not used [-Wunused-but-set-variable]
+    | shrotpackYX.h:72:10: warning: variable 'shaXoff' set but not used [-Wunused-but-set-variable]
+    |   CC     shrot16pack_90.lo
+    | In file included from shrot16pack_90.c:31:0:
+    | shrotpack.h: In function 'shadowUpdateRotate16_90':
+    | shrotpack.h:109:19: warning: variable 'shaYoff' set but not used [-Wunused-but-set-variable]
+    | shrotpack.h:109:10: warning: variable 'shaXoff' set but not used [-Wunused-but-set-variable]
+    |   CC     shrot16pack_90YX.lo
+    | In file included from shrot16pack_90YX.c:31:0:
+    | shrotpackYX.h: In function 'shadowUpdateRotate16_90YX':
+    | shrotpackYX.h:72:19: warning: variable 'shaYoff' set but not used [-Wunused-but-set-variable]
+    | shrotpackYX.h:72:10: warning: variable 'shaXoff' set but not used [-Wunused-but-set-variable]
+    |   CC     shrot16pack.lo
+    | In file included from shrot16pack.c:30:0:
+    | shrotpack.h: In function 'shadowUpdateRotate16':
+    | shrotpack.h:109:19: warning: variable 'shaYoff' set but not used [-Wunused-but-set-variable]
+    | shrotpack.h:109:10: warning: variable 'shaXoff' set but not used [-Wunused-but-set-variable]
+    |   CC     shrot32pack_180.lo
+    | In file included from shrot32pack_180.c:31:0:
+    | shrotpack.h: In function 'shadowUpdateRotate32_180':
+    | shrotpack.h:109:19: warning: variable 'shaYoff' set but not used [-Wunused-but-set-variable]
+    | shrotpack.h:109:10: warning: variable 'shaXoff' set but not used [-Wunused-but-set-variable]
+    |   CC     shrot32pack_270.lo
+    | In file included from shrot32pack_270.c:31:0:
+    | shrotpack.h: In function 'shadowUpdateRotate32_270':
+    | shrotpack.h:109:19: warning: variable 'shaYoff' set but not used [-Wunused-but-set-variable]
+    | shrotpack.h:109:10: warning: variable 'shaXoff' set but not used [-Wunused-but-set-variable]
+    |   CC     shrot32pack_90.lo
+    | In file included from shrot32pack_90.c:31:0:
+    | shrotpack.h: In function 'shadowUpdateRotate32_90':
+    | shrotpack.h:109:19: warning: variable 'shaYoff' set but not used [-Wunused-but-set-variable]
+    | shrotpack.h:109:10: warning: variable 'shaXoff' set but not used [-Wunused-but-set-variable]
+    |   CC     shrot32pack.lo
+    | In file included from shrot32pack.c:30:0:
+    | shrotpack.h: In function 'shadowUpdateRotate32':
+    | shrotpack.h:109:19: warning: variable 'shaYoff' set but not used [-Wunused-but-set-variable]
+    | shrotpack.h:109:10: warning: variable 'shaXoff' set but not used [-Wunused-but-set-variable]
+    |   CC     shrot8pack_180.lo
+    | In file included from shrot8pack_180.c:31:0:
+    | shrotpack.h: In function 'shadowUpdateRotate8_180':
+    | shrotpack.h:109:19: warning: variable 'shaYoff' set but not used [-Wunused-but-set-variable]
+    | shrotpack.h:109:10: warning: variable 'shaXoff' set but not used [-Wunused-but-set-variable]
+    |   CC     shrot8pack_270.lo
+    | In file included from shrot8pack_270.c:31:0:
+    | shrotpack.h: In function 'shadowUpdateRotate8_270':
+    | shrotpack.h:109:19: warning: variable 'shaYoff' set but not used [-Wunused-but-set-variable]
+    | shrotpack.h:109:10: warning: variable 'shaXoff' set but not used [-Wunused-but-set-variable]
+    |   CC     shrot8pack_90.lo
+    | In file included from shrot8pack_90.c:31:0:
+    | shrotpack.h: In function 'shadowUpdateRotate8_90':
+    | shrotpack.h:109:19: warning: variable 'shaYoff' set but not used [-Wunused-but-set-variable]
+    | shrotpack.h:109:10: warning: variable 'shaXoff' set but not used [-Wunused-but-set-variable]
+    |   CC     shrot8pack.lo
+    | In file included from shrot8pack.c:30:0:
+    | shrotpack.h: In function 'shadowUpdateRotate8':
+    | shrotpack.h:109:19: warning: variable 'shaYoff' set but not used [-Wunused-but-set-variable]
+    | shrotpack.h:109:10: warning: variable 'shaXoff' set but not used [-Wunused-but-set-variable]
+    |   CC     shrotate.lo
+    | shrotate.c:62:19: warning: variable 'shaYoff' set but not used [-Wunused-but-set-variable]
+    | shrotate.c:62:10: warning: variable 'shaXoff' set but not used [-Wunused-but-set-variable]
+    
+    Reviewed-by: Jeremy Huddleston <jeremyhu@apple.com>
+    Signed-off-by: Cyril Brulebois <kibi@debian.org>
+
+commit fe6f489d21d77aacf0a073883625619018d764b3
+Author: Cyril Brulebois <kibi@debian.org>
+Date:   Tue May 24 18:33:17 2011 +0200
+
+    fb: Mark some variables as unused.
+    
+    There's no use for the values set through the various macro calls
+    (fbGetDrawable and fbGetDrawablePixmap), so mark those variables as unused.
+    
+    The following warnings go away accordingly:
+    |   CC     libfb_la-fb24_32.lo
+    | fb24_32.c: In function 'fb24_32ReformatTile':
+    | fb24_32.c:544:19: warning: variable 'newYoff' set but not used [-Wunused-but-set-variable]
+    | fb24_32.c:544:10: warning: variable 'newXoff' set but not used [-Wunused-but-set-variable]
+    | fb24_32.c:543:19: warning: variable 'oldYoff' set but not used [-Wunused-but-set-variable]
+    | fb24_32.c:543:10: warning: variable 'oldXoff' set but not used [-Wunused-but-set-variable]
+    |   CC     libfb_la-fbfill.lo
+    | fbfill.c: In function 'fbFill':
+    | fbfill.c:72:21: warning: variable 'stipYoff' set but not used [-Wunused-but-set-variable]
+    | fbfill.c:72:11: warning: variable 'stipXoff' set but not used [-Wunused-but-set-variable]
+    | fbfill.c:100:21: warning: variable 'stipYoff' set but not used [-Wunused-but-set-variable]
+    | fbfill.c:100:11: warning: variable 'stipXoff' set but not used [-Wunused-but-set-variable]
+    | fbfill.c:142:20: warning: variable 'tileYoff' set but not used [-Wunused-but-set-variable]
+    | fbfill.c:142:10: warning: variable 'tileXoff' set but not used [-Wunused-but-set-variable]
+    |   CC     libfb_la-fbgc.lo
+    | fbgc.c: In function 'fbPadPixmap':
+    | fbgc.c:92:19: warning: variable 'yOff' set but not used [-Wunused-but-set-variable]
+    | fbgc.c:92:13: warning: variable 'xOff' set but not used [-Wunused-but-set-variable]
+    | fbgc.c: In function 'fbCanEvenStipple':
+    | fbgc.c:166:23: warning: variable 'stipYoff' set but not used [-Wunused-but-set-variable]
+    | fbgc.c:166:13: warning: variable 'stipXoff' set but not used [-Wunused-but-set-variable]
+    |   CC     libfb_la-fbpush.lo
+    | fbpush.c: In function 'fbPushPixels':
+    | fbpush.c:238:20: warning: variable 'stipYoff' set but not used [-Wunused-but-set-variable]
+    | fbpush.c:238:10: warning: variable 'stipXoff' set but not used [-Wunused-but-set-variable]
+    
+    Reviewed-by: Jeremy Huddleston <jeremyhu@apple.com>
+    Signed-off-by: Cyril Brulebois <kibi@debian.org>
+
+commit 8da16898d9de5da1f80b789f0b371070968285f8
+Author: Cyril Brulebois <kibi@debian.org>
+Date:   Tue May 24 18:33:17 2011 +0200
+
+    fb: Simplify logic, get rid of set but unused variable.
+    
+    wrapped is only useful is FB_ACCESS_WRAPPER is set; simplify the logic
+    accordingly, and only set it when that's defined.
+    
+    The following warning goes away accordingly:
+    |   CC     libfb_la-fbarc.lo
+    | fbarc.c: In function 'fbPolyArc':
+    | fbarc.c:71:11: warning: variable 'wrapped' set but not used [-Wunused-but-set-variable]
+    
+    Reviewed-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Reviewed-by: Jeremy Huddleston <jeremyhu@apple.com>
+    Signed-off-by: Cyril Brulebois <kibi@debian.org>
+
+commit 9a8bfc2c06f0a9206b64ae01a783cf5513f021a6
+Author: Cyril Brulebois <kibi@debian.org>
+Date:   Tue May 24 18:33:16 2011 +0200
+
+    configure: Bump dependency on xproto.
+    
+    Bumping this dependency means some additional macros can be used, like
+    _X_UNUSED.
+    
+    Reviewed-by: Jeremy Huddleston <jeremyhu@apple.com>
+    Signed-off-by: Cyril Brulebois <kibi@debian.org>
+
+commit 9da5aa09d70e26dd4d2ef878a21317dae7bf24de
+Author: Cyril Brulebois <kibi@debian.org>
+Date:   Tue May 24 18:33:11 2011 +0200
+
+    Xext: Fix buggy checks.
+    
+    XvMCScreenKey is defined as XvMCScreenKeyRec's address, so will never be
+    NULL. Use the check proposed by Alan Coopersmith and Jeremy Huddleston
+    instead.
+    
+    Those warnings go away accordingly:
+    |   CC     xvmc.lo
+    | xvmc.c: In function 'ProcXvMCListSubpictureTypes':
+    | xvmc.c:490:22: warning: the comparison will always evaluate as 'false' for the address of 'XvMCScreenKeyRec' will never be NULL [-Waddress]
+    | xvmc.c: In function 'XvMCExtensionInit':
+    | xvmc.c:671:21: warning: the comparison will always evaluate as 'false' for the address of 'XvMCScreenKeyRec' will never be NULL [-Waddress]
+    | xvmc.c: In function 'XvMCFindXvImage':
+    | xvmc.c:749:22: warning: the comparison will always evaluate as 'false' for the address of 'XvMCScreenKeyRec' will never be NULL [-Waddress]
+    
+    Reviewed-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Signed-off-by: Cyril Brulebois <kibi@debian.org>
+
+commit 778309fd0ef6b586468c1a3b569e3548503459ee
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Tue Jun 14 13:23:00 2011 -0700
+
+    XQuartz: GLX: Fix a -Wformat-security compilation warning
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+
+commit 34e2598f0ad247071bd6a4312d9014d6e3b2305a
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Tue Jun 14 11:18:50 2011 -0700
+
+    XQuartz: GLX: Use _glapi_create_table_from_handle to create out dispatch table
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+
+commit ecec578e35f91a2cbc5d07bc8d45241af7bb585f
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Tue Jun 14 12:51:04 2011 -0700
+
+    glx: Add _glapi_create_table_from_handle
+    
+    _glapi_create_table_from_handle was recently added to mesa to ease creation of
+    a _glapi_table.  This commit brings this API over to xserver for use in
+    XQuartz (next commit).
+    
+    The API was generated with scripts from current mesa followed by various
+    script-foo to remove entries that are not in the server and add those which
+    are still in the server but not in mesa (CullParameterdvEXT and
+    CullParameterfvEXT)
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+    Reviewed-by: Adam Jackson <ajax@redhat.com>
+
+commit c3df4df40761760b281a21f63336ca955670f7bc
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Sun Jun 5 21:59:13 2011 -0400
+
+    XQuartz: Add missing include for <pthread.h>
+    
+    BuildFix for Leopard and earlier.
+    
+    https://trac.macports.org/ticket/29717
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+
+commit 08a7246f43c9f18079219a1c982bed558722f545
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Fri May 27 14:21:39 2011 +1000
+
+    dix: rename ProcessRawEvents to dix/events.c:DeliverRawEvent
+    
+    No functional changes, prep work for future changes.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Cyril Brulebois <kibi@debian.org>
+    Reviewed-by: Jeremy Huddleston <jeremyhu@apple.com>
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+
+commit 0aa45c5c53e2e7ba0723f5a12c1a5f5d4baab933
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Fri May 27 14:19:45 2011 +1000
+
+    Xi: use temporary variable for filter.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Jeremy Huddleston <jeremyhu@apple.com>
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+
+commit a1beae635caf81ec31a8998687df0ae92b505fda
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Fri May 27 12:14:32 2011 +1000
+
+    dix: split DeliverEventToWindowMask up a bit more.
+    
+    Move out the actual event delivery, it needs to be used from elsewhere.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Jeremy Huddleston <jeremyhu@apple.com>
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+
+commit 58e4831ed68c2fbc219c7250e9837e76a73a6432
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Fri May 27 11:43:50 2011 +1000
+
+    dix: rename DeliverEventsToClients to DeliverEventsToWindowMask
+    
+    To avoid confusion with a future patch and it better describes what this
+    does anyway - delivering events to all clients that have the event mask on
+    the window.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Jeremy Huddleston <jeremyhu@apple.com>
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+
+commit 37a53f15b0dfa1b25f7e3e826c7c945453398ac5
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Fri May 27 11:40:56 2011 +1000
+
+    dix: split client list retrieval out of DeliverEventToClients
+    
+    No functional change, but "other" was renamed to "clients".
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Jeremy Huddleston <jeremyhu@apple.com>
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+
+commit 02d11af01211da55e9d93fe0e1851a0c6fe57472
+Merge: bf9fd0a ab0df72
+Author: Keith Packard <keithp@keithp.com>
+Date:   Tue Jun 7 12:31:15 2011 -0700
+
+    Merge remote-tracking branch 'kibi/master'
+
+commit bf9fd0a83eef771ee018438f05e2d9f20b43539b
+Merge: 21eec36 0d14056
+Author: Keith Packard <keithp@keithp.com>
+Date:   Tue Jun 7 07:45:22 2011 -0700
+
+    Merge remote-tracking branch 'whot/for-keith'
+
+commit 0d140567ba2b5bf364265dba07de519f691c67a1
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Tue Jun 7 10:42:50 2011 +1000
+
+    dix: fix crashers with floating device.
+    
+    dc57f89959e549403f8488eb9f23425bd7118b22 accidentally reversed the
+    conditions.
+    
+    in dix/events.c we try to detach floating devices. This leads to a
+    NULL-dereference on GetMaster()->id.
+    
+    in dix/getevents.c we try to get the master device for the floating slave
+    and dereference it.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Jeremy Huddleston <jeremyhu@apple.com>
+
+commit 21eec367d0d9c142458f973062e17add4f693033
+Author: Nicolas Kaiser <nikai@nikai.net>
+Date:   Mon Jun 6 16:53:41 2011 +0200
+
+    randr: void function cannot return value
+    
+    Providing an argument to return in a function with void return type
+    is not allowed by the C standard, and makes the Sun compilers unhappy.
+    
+    Signed-off-by: Nicolas Kaiser <nikai@nikai.net>
+    Reviewed-by: Jeremy Huddleston <jeremyhu@apple.com>
+    Reviewed-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit ab0df72cd33f011cc48736cfbfce9bbe9c359a80
+Author: Cyril Brulebois <kibi@debian.org>
+Date:   Sun Jun 5 03:21:18 2011 +0200
+
+    xkb: Fix case checks for Latin 4.
+    
+    That one was missing _XkbKSLower:
+      XK_kra: U+0138 LATIN SMALL LETTER KRA
+    
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+    Signed-off-by: Cyril Brulebois <kibi@debian.org>
+
+commit 9eb6e34c2dd09af714400ce6a1063477d7a64776
+Author: Cyril Brulebois <kibi@debian.org>
+Date:   Sun Jun 5 03:12:44 2011 +0200
+
+    xkb: Fix case checks for Latin 2.
+    
+    Those ones were getting _XkbKSLower for no reasons:
+      XK_ogonek: U+02DB OGONEK
+      XK_doubleacute: U+02DD DOUBLE ACUTE ACCENT
+    
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+    Signed-off-by: Cyril Brulebois <kibi@debian.org>
+
+commit 2b88189863579eb377bca617465bb76b05fbdebd
+Author: Cyril Brulebois <kibi@debian.org>
+Date:   Sun Jun 5 03:03:47 2011 +0200
+
+    xkb: Fix case checks for Latin 1.
+    
+    That one was missing _XkbKSLower:
+      XK_ssharp: U+00DF LATIN SMALL LETTER SHARP S
+    
+    That one was getting _XkbKSLower for no reasons:
+      XK_division: U+00F7 DIVISION SIGN
+    
+    For reference, XK_multiply was already excluded from the _XkbKSUpper
+    check, it's no big surprise XK_division has to be excluded from the
+    _XkbKSLower check.
+    
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+    Signed-off-by: Cyril Brulebois <kibi@debian.org>
+
+commit feab04397de2684568dedaaaa8f299cac9f44f8b
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Fri Jun 3 02:50:40 2011 -0400
+
+    XQuartz: AIGLX: Remove unnecessary includes in indirect.c
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+
+commit 3fa5d27e46ea8af55dcaaad7a99973c38bd11967
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Thu Jun 2 20:04:04 2011 -0700
+
+    XQuartz: AIGLX: Setup dispatch table based on runtime capabilities rather than buildtime
+    
+    This will allow XQuartz built on older systems to pickup capabilities on
+    newer systems and prevent runtime failures when building on newer systems and
+    running on older ones.
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+
+commit dd5d91fc954450e99d53862900ef4fa6320ff382
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Fri Jun 3 02:34:28 2011 -0400
+
+    XQuartz: Remove explicit link against libGL
+    
+    This was indented to force a link against OpenGL.framework's libGL, but it
+    actually resulted in linking against mesa's libGL due to the ordering of -L
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+
+commit 5115c2c7216fc10acb8a26deb904ad15ef18ce8a
+Author: Cyril Brulebois <kibi@debian.org>
+Date:   Fri Jun 3 18:09:51 2011 +0200
+
+    Xephyr: Mention Xserver's options are also accepted.
+    
+    Originally reported in the Debian BTS:
+      http://bugs.debian.org/582650
+    
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Signed-off-by: Jari Aalto <jari.aalto@cante.net>
+    Signed-off-by: Cyril Brulebois <kibi@debian.org>
+
+commit 408ed1576dbcf93f4bd27bd3b66917b1bba2226b
+Author: Cyril Brulebois <kibi@debian.org>
+Date:   Fri Jun 3 18:09:48 2011 +0200
+
+    xkb: Fix case checks for Latin 8.
+    
+    Spotted by -Wlogical-op:
+    |   CC     xkbfmisc.lo
+    | xkbfmisc.c: In function '_XkbKSCheckCase':
+    | xkbfmisc.c:104:3: warning: logical 'and' of mutually exclusive tests is always false [-Wlogical-op]
+    | xkbfmisc.c:118:3: warning: logical 'and' of mutually exclusive tests is always false [-Wlogical-op]
+    
+    A quick look at the keysymdef.h file (from xproto) suggests the
+    implementor chose to use interval checks to determine the case, but
+    since lines weren't sorted by codepoints, checks were quite wrong.
+    
+    Implement _XkbKSUpper/_XkbKSLower checks based on a grep for
+    CAPITAL/SMALL (respectively) on the Latin 8 part of the said file.
+    
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+    Signed-off-by: Cyril Brulebois <kibi@debian.org>
+
+commit d9bda34d0df576d155e1d682d5e2a382b8e1ffda
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Wed Jun 1 10:24:43 2011 +1000
+
+    test: fix memset size for WindowRec (#37801)
+    
+    X.Org Bug 37801 <http://bugs.freedesktop.org/show_bug.cgi?id=37801>
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Jeremy Huddleston <jeremyhu@apple.com>
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+    Reviewed-by: Cyril Brulebois <kibi@debian.org>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit bfd8422e8877acf02155ca0bd7fbd2416b029720
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Fri May 27 12:24:21 2011 +1000
+
+    Xi: use __func__ instead of function name.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Cyril Brulebois <kibi@debian.org>
+
+commit c042a267c40d35b4fb947f4bafdfeb541dd9d772
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Fri May 27 10:10:48 2011 +1000
+
+    dix: use xi2_get_type instead of manual typecast
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Jeremy Huddleston <jeremyhu@apple.com>
+
+commit b75cdb5bf76303162e947173e8ee68253a861272
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Tue May 31 10:51:19 2011 +1000
+
+    dix: drop x/y back into the right valuators after transformation.
+    
+    If the matrix is used for rotation, the coordinates affected may change.
+    e.g. a valuator mask of (x, nil) becomes [x, lasty] and is rotated to
+    [lasty, x]. Since the second value was unset, we would not drop x back into
+    the mask, resulting in a loss of movement.
+    
+    Thus, drop any value that changed after applying the matrix into the
+    valuators. Thus, the example above becomes
+    (x, nil) → [x, lasty] → [lasty, x] → (lasty, x)
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Simon Thum <simon.thum@gmx.de>
+
+commit fe4b818700453b76d9f46749dac5d12540b91e63
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Tue May 31 10:23:57 2011 +1000
+
+    dix: don't pass x/y to transformAbsolute
+    
+    We passed in the mask, but didn't do anything with it. Move the logic to
+    take the axes out of the valuator masks into transformAbsolute.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Simon Thum <simon.thum@gmx.de>
+
+commit 62f1bf96e1ea27e1eff137cb9333f3dd3b014dd0
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Wed Jun 1 10:22:44 2011 +1000
+
+    test: fix memset size for WindowRec (#37801)
+    
+    X.Org Bug 37801 <http://bugs.freedesktop.org/show_bug.cgi?id=37801>
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Jeremy Huddleston <jeremyhu@apple.com>
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+    Reviewed-by: Cyril Brulebois <kibi@debian.org>
+
+commit f94898928dfaf8df648bc3eea7d304826b7ac1b8
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Tue May 31 14:48:33 2011 +1000
+
+    dix: fix an error message.
+    
+    event type, not device type.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit 8ef0974874f322e3ce2f3e6be4ab3c7e73a7b380
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Thu May 19 14:50:17 2011 +1000
+
+    test: don't test for double alignment on i386. (#36986)
+    
+    i386 is one of the few architectures that doesn't need double alignment.
+    
+    X.Org Bug 36986 <http://bugs.freedesktop.org/show_bug.cgi?id=36986>
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit 48b4b778f61daaa161483b510ab520f3fcb84925
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Wed Jun 1 21:55:06 2011 -0700
+
+    XQuartz: xpbproxy: Correct NSUInteger format strings
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+
+commit 971193b2750b98b28597ba194ed388e79b3489b6
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Wed Jun 1 21:18:03 2011 -0700
+
+    XQuartz: ASL: Use xpbproxy subsystem for logging xpbproxy messages
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+
+commit 7dfd65705ccd3c6e2458d6892282520fe5ed8a6b
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Wed Jun 1 21:06:53 2011 -0700
+
+    XQuartz: ASL: Use GLXAqua subsystem for logging GLXAqua messages
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+
+commit 19020b23efa15d72349bd833aebddcc64780a615
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Wed Jun 1 21:06:08 2011 -0700
+
+    XQuartz: ASL: Use xpr subsystem for logging xpr messages
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+
+commit a66400f8dba9b7c5b65f9d26996fff677c42d866
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Wed Jun 1 20:45:58 2011 -0700
+
+    XQuartz: ASL: Update logging to support differnet levels and subsystems
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+
+commit c0077b41b4c8bb08129db97a2a01d0af55d13fa4
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Wed Jun 1 20:54:27 2011 -0700
+
+    XQuartz: Add a semicolon after DEBUG_LOG
+    
+    Don't rely on the macro to provide it
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+
+commit fbc8aae8e9b5c7b175073f02e79d7ff1d1363a31
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Sun May 29 01:20:44 2011 -0700
+
+    XQuartz: Move -lXplugin to LDFLAGS from LDADD
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+
+commit 38df706c6b8a339c4267cae7be0881c4362f36da
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Tue May 31 13:01:05 2011 -0700
+
+    XQuartz: GLX: Create a new dispatch table rather than modifying the existing one
+    
+    Fixes regression introduced by b0c665ac0fe6840dda581e4d0d0b76c703d62a7b
+    
+    0   X11.bin                       	0x0000000100118293 __glXAquaScreenCreateContext + 684
+    1   X11.bin                       	0x00000001001315b0 DoCreateContext + 163
+    2   X11.bin                       	0x000000010013509f __glXDispatch + 211
+    3   X11.bin                       	0x00000001000c7dad Dispatch + 785
+    4   X11.bin                       	0x00000001000b97e5 dix_main + 1022
+    5   X11.bin                       	0x00000001000122bc server_thread + 50
+    6   libSystem.B.dylib             	0x00007fff836554f6 _pthread_start + 331
+    7   libSystem.B.dylib             	0x00007fff836553a9 thread_start + 13
+    
+    http://lists.apple.com/archives/X11-users/2011/May/msg00045.html
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+    Reviewed-by: Adam Jackson <ajax@redhat.com>
+
+commit c5b72fd350bbdfd1facd0ddd5085f238c4cf252a
+Author: Marko Macek <Marko.Macek@gmx.net>
+Date:   Sat May 21 13:30:59 2011 +0100
+
+    DIX: Set backgroundState correctly for root window
+    
+    When we change the root window's background to None, and we've run with
+    -wr or -br for a forced solid background, make sure we also change the
+    background state to BackgroundPixel, so we don't try to lookup either
+    pScreen->whitePixel or pScreen->blackPixel as a pixmap.
+    
+    Signed-off-by: Marko Macek <Marko.Macek@gmx.net>
+    Reviewed-by: Walter Harms <wharms@bfs.de>
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
 commit db228d3d07a6d831f53e4c05c878327ad4d045eb
 Author: Keith Packard <keithp@keithp.com>
 Date:   Wed Jun 1 11:20:10 2011 -0700

@@ -1,5 +1,6 @@
-xorg-server (2:1.10.99.901-1) UNRELEASED; urgency=low
+xorg-server (2:1.10.99.901+git20110731-1) UNRELEASED; urgency=low
 
+  [ Cyril Brulebois ]
   * New upstream release candidate.
   * Bump serverminver, as well as input and video ABI.
   * Adapt 15-nouveau.diff to cope with the glxdricommon-ification of
@@ -10,6 +11,9 @@ xorg-server (2:1.10.99.901-1) UNRELEASED; urgency=low
   * Bump xutils-dev build-dep for new macros.
   * Drop libglib2.0-dev build-dep, no longer needed for unit tests.
   * Bump x11proto-fixes-dev build-dep for pointer barriers support.
+
+  [ Julien Cristau ]
+  * Update to git HEAD.
 
  -- Cyril Brulebois <kibi@debian.org>  Tue, 31 May 2011 13:52:04 +0200
 
