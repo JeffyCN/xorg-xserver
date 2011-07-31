@@ -110,7 +110,10 @@ winCreateWindowMultiWindow (WindowPtr pWin)
   pWinPriv->hWnd = NULL;
   pWinPriv->pScreenPriv = winGetScreenPriv(pWin->drawable.pScreen);
   pWinPriv->fXKilled = FALSE;
- 
+#ifdef XWIN_GLX_WINDOWS
+  pWinPriv->fWglUsed = FALSE;
+#endif
+
   return fResult;
 }
 
@@ -372,9 +375,8 @@ winReparentWindowMultiWindow (WindowPtr pWin, WindowPtr pPriorParent)
   ScreenPtr		pScreen = pWin->drawable.pScreen;
   winScreenPriv(pScreen);
 
-#if CYGMULTIWINDOW_DEBUG
-  ErrorF ("winReparentMultiWindow - pWin: %08x\n", pWin);
-#endif
+  winDebug("winReparentMultiWindow - pWin:%08x XID:0x%x, reparent from pWin:%08x XID:0x%x to pWin:%08x XID:0x%x\n",
+           pWin, pWin->drawable.id, pPriorParent, pPriorParent->drawable.id, pWin->parent, pWin->parent->drawable.id);
 
   WIN_UNWRAP(ReparentWindow);
   if (pScreen->ReparentWindow) 
@@ -493,12 +495,12 @@ winCreateWindowsWindow (WindowPtr pWin)
   winPrivScreenPtr	pScreenPriv = pWinPriv->pScreenPriv;
   WinXSizeHints         hints;
   WindowPtr		pDaddy;
+  DWORD dwStyle, dwExStyle;
+  RECT rc;
 
   winInitMultiWindowClass();
 
-#if CYGMULTIWINDOW_DEBUG
-  ErrorF ("winCreateWindowsWindow - pWin: %08x\n", pWin);
-#endif
+  winDebug("winCreateWindowsTopLevelWindow - pWin:%08x XID:0x%x \n", pWin, pWin->drawable.id);
 
   iX = pWin->drawable.x + GetSystemMetrics (SM_XVIRTUALSCREEN);
   iY = pWin->drawable.y + GetSystemMetrics (SM_YVIRTUALSCREEN);
@@ -516,6 +518,8 @@ winCreateWindowsWindow (WindowPtr pWin)
       if ((iY < GetSystemMetrics (SM_YVIRTUALSCREEN)) || (iY > GetSystemMetrics (SM_CYVIRTUALSCREEN)))
         iY = CW_USEDEFAULT;
     }
+
+  winDebug("winCreateWindowsWindow - %dx%d @ %dx%d\n", iWidth, iHeight, iX, iY);
 
   if (winMultiWindowGetTransientFor (pWin, &pDaddy))
     {
@@ -538,16 +542,35 @@ winCreateWindowsWindow (WindowPtr pWin)
       }
     }
 
-  /* Create the window */
-  /* Make it OVERLAPPED in create call since WS_POPUP doesn't support */
+  /* Make it WS_OVERLAPPED in create call since WS_POPUP doesn't support */
   /* CW_USEDEFAULT, change back to popup after creation */
-  hWnd = CreateWindowExA (WS_EX_TOOLWINDOW,	/* Extended styles */
+  dwStyle = WS_OVERLAPPEDWINDOW | WS_CLIPCHILDREN | WS_CLIPSIBLINGS;
+  dwExStyle = WS_EX_TOOLWINDOW;
+
+  /*
+     Calculate the window coordinates containing the requested client area,
+     being careful to preseve CW_USEDEFAULT
+  */
+  rc.top = (iY != CW_USEDEFAULT) ? iY : 0;
+  rc.left = (iX != CW_USEDEFAULT) ? iX : 0;
+  rc.bottom = rc.top + iHeight;
+  rc.right = rc.left + iWidth;
+  AdjustWindowRectEx(&rc, dwStyle, FALSE, dwExStyle);
+  if (iY != CW_USEDEFAULT) iY = rc.top;
+  if (iX != CW_USEDEFAULT) iX = rc.left;
+  iHeight = rc.bottom - rc.top;
+  iWidth = rc.right - rc.left;
+
+  winDebug("winCreateWindowsWindow - %dx%d @ %dx%d\n", iWidth, iHeight, iX, iY);
+
+  /* Create the window */
+  hWnd = CreateWindowExA (dwExStyle,		/* Extended styles */
 			  WINDOW_CLASS_X,	/* Class name */
 			  WINDOW_TITLE_X,	/* Window name */
-			  WS_OVERLAPPEDWINDOW | WS_CLIPCHILDREN | WS_CLIPSIBLINGS,
+			  dwStyle,		/* Styles */
 			  iX,			/* Horizontal position */
 			  iY,			/* Vertical position */
-			  iWidth,		/* Right edge */ 
+			  iWidth,		/* Right edge */
 			  iHeight,		/* Bottom edge */
 			  hFore,		/* Null or Parent window if transient*/
 			  (HMENU) NULL,		/* No menu */
@@ -569,6 +592,10 @@ winCreateWindowsWindow (WindowPtr pWin)
   SetWindowLongPtr(hWnd, GWL_STYLE, WS_POPUP | WS_CLIPCHILDREN | WS_CLIPSIBLINGS);
   SetWindowPos (hWnd, 0, 0, 0, 0, 0,
 		SWP_FRAMECHANGED | SWP_NOZORDER | SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE);
+
+  /* Adjust the X window to match the window placement we actually got... */
+  winAdjustXWindow (pWin, hWnd);
+
   /* Make sure it gets the proper system menu for a WS_POPUP, too */
   GetSystemMenu (hWnd, TRUE);
 
@@ -599,9 +626,7 @@ winDestroyWindowsWindow (WindowPtr pWin)
   HICON hIcon;
   HICON hIconSm;
 
-#if CYGMULTIWINDOW_DEBUG
-  ErrorF ("winDestroyWindowsWindow\n");
-#endif
+  winDebug("winDestroyWindowsWindow - pWin:%08x XID:0x%x \n", pWin, pWin->drawable.id);
 
   /* Bail out if the Windows window handle is invalid */
   if (pWinPriv->hWnd == NULL)
@@ -625,6 +650,11 @@ winDestroyWindowsWindow (WindowPtr pWin)
   winDestroyIcon(hIcon);
   winDestroyIcon(hIconSm);
 
+#ifdef XWIN_GLX_WINDOWS
+  /* No longer note WGL used on this window */
+  pWinPriv->fWglUsed = FALSE;
+#endif
+
   /* Process all messages on our queue */
   while (PeekMessage (&msg, NULL, 0, 0, PM_REMOVE))
     {
@@ -636,9 +666,7 @@ winDestroyWindowsWindow (WindowPtr pWin)
 
   winInDestroyWindowsWindow = oldstate;
 
-#if CYGMULTIWINDOW_DEBUG
-  ErrorF ("-winDestroyWindowsWindow\n");
-#endif
+  winDebug("winDestroyWindowsWindow - done\n");
 }
 
 

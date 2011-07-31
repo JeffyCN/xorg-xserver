@@ -108,21 +108,22 @@ InitInput(int argc, char *argv[])
 void
 CloseInput(void)
 {
+  mieqFini();
 }
 
 /*
  * DDX - specific abort routine.  Called by AbortServer().
  */
-void AbortDDX(void)
+void AbortDDX(enum ExitCode error)
 {
   xnestDoFullGeneration = True;
   xnestCloseDisplay();
 }
 
 /* Called by GiveUp(). */
-void ddxGiveUp(void)
+void ddxGiveUp(enum ExitCode error)
 {
-  AbortDDX();
+  AbortDDX(error);
 }
 
 #ifdef __APPLE__

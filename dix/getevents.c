@@ -320,6 +320,8 @@ updateSlaveDeviceCoords(DeviceIntPtr master, DeviceIntPtr pDev)
      * position of the pointer */
     pDev->last.valuators[0] = master->last.valuators[0];
     pDev->last.valuators[1] = master->last.valuators[1];
+    pDev->last.remainder[0] = master->last.remainder[0];
+    pDev->last.remainder[1] = master->last.remainder[1];
 
     if (!pDev->valuator)
         return;
@@ -339,14 +341,19 @@ updateSlaveDeviceCoords(DeviceIntPtr master, DeviceIntPtr pDev)
     if ((lastSlave = master->last.slave) && lastSlave->valuator) {
         for (i = 2; i < pDev->valuator->numAxes; i++) {
             if (i >= lastSlave->valuator->numAxes)
+            {
                 pDev->last.valuators[i] = 0;
+                pDev->last.remainder[i] = 0;
+            }
             else
+            {
                 pDev->last.valuators[i] =
                     rescaleValuatorAxis(pDev->last.valuators[i],
                             pDev->last.remainder[i],
                             &pDev->last.remainder[i],
                             lastSlave->valuator->axes + i,
                             pDev->valuator->axes + i, 0);
+            }
         }
     }
 
@@ -864,7 +871,7 @@ positionSprite(DeviceIntPtr dev, int mode,
      * to the current screen. */
     miPointerSetPosition(dev, mode, screenx, screeny);
 
-    if(!IsMaster(dev) || !IsFloating(dev)) {
+    if(!IsMaster(dev) && !IsFloating(dev)) {
         DeviceIntPtr master = GetMaster(dev, MASTER_POINTER);
         master->last.valuators[0] = *screenx;
         master->last.valuators[1] = *screeny;
@@ -911,7 +918,7 @@ updateHistory(DeviceIntPtr dev, ValuatorMask *mask, CARD32 ms)
         return;
 
     updateMotionHistory(dev, ms, mask, dev->last.valuators);
-    if(!IsMaster(dev) || !IsFloating(dev))
+    if(!IsMaster(dev) && !IsFloating(dev))
     {
         DeviceIntPtr master = GetMaster(dev, MASTER_POINTER);
         updateMotionHistory(master, ms, mask, dev->last.valuators);
@@ -1052,15 +1059,37 @@ FreeEventList(InternalEvent *list, int num_events)
     free(list);
 }
 
+/**
+ * Transform vector x/y according to matrix m and drop the rounded coords
+ * back into x/y.
+ */
 static void
-transformAbsolute(DeviceIntPtr dev, ValuatorMask *mask, int *x, int *y)
+transform(struct pixman_f_transform *m, int *x, int *y)
 {
     struct pixman_f_vector p = {.v = {*x, *y, 1}};
-
-    pixman_f_transform_point(&dev->transform, &p);
+    pixman_f_transform_point(m, &p);
 
     *x = lround(p.v[0]);
     *y = lround(p.v[1]);
+}
+
+static void
+transformAbsolute(DeviceIntPtr dev, ValuatorMask *mask)
+{
+    int x, y, ox, oy;
+
+    ox = x = valuator_mask_isset(mask, 0) ? valuator_mask_get(mask, 0) :
+                                            dev->last.valuators[0];
+    oy = y = valuator_mask_isset(mask, 1) ? valuator_mask_get(mask, 1) :
+                                            dev->last.valuators[1];
+
+    transform(&dev->transform, &x, &y);
+
+    if (valuator_mask_isset(mask, 0) || ox != x)
+        valuator_mask_set(mask, 0, x);
+
+    if (valuator_mask_isset(mask, 1) || oy != y)
+        valuator_mask_set(mask, 1, y);
 }
 
 /**
@@ -1142,14 +1171,17 @@ GetPointerEvents(InternalEvent *events, DeviceIntPtr pDev, int type, int buttons
 
     events = UpdateFromMaster(events, pDev, DEVCHANGE_POINTER_EVENT, &num_events);
 
-    raw = &events->raw_event;
-    events++;
-    num_events++;
-
     valuator_mask_copy(&mask, mask_in);
 
-    init_raw(pDev, raw, ms, type, buttons);
-    set_raw_valuators(raw, &mask, raw->valuators.data_raw);
+    if ((flags & POINTER_NORAW) == 0)
+    {
+	raw = &events->raw_event;
+	events++;
+	num_events++;
+
+	init_raw(pDev, raw, ms, type, buttons);
+	set_raw_valuators(raw, &mask, raw->valuators.data_raw);
+    }
 
     if (flags & POINTER_ABSOLUTE)
     {
@@ -1175,16 +1207,7 @@ GetPointerEvents(InternalEvent *events, DeviceIntPtr pDev, int type, int buttons
             }
         }
 
-        x = (valuator_mask_isset(&mask, 0) ? valuator_mask_get(&mask, 0) :
-             pDev->last.valuators[0]);
-        y = (valuator_mask_isset(&mask, 1) ? valuator_mask_get(&mask, 1) :
-             pDev->last.valuators[1]);
-        transformAbsolute(pDev, &mask, &x, &y);
-        if (valuator_mask_isset(&mask, 0))
-            valuator_mask_set(&mask, 0, x);
-        if (valuator_mask_isset(&mask, 1))
-            valuator_mask_set(&mask, 1, y);
-
+        transformAbsolute(pDev, &mask);
         moveAbsolute(pDev, &x, &y, &mask);
     } else {
         if (flags & POINTER_ACCELERATE) {
@@ -1197,7 +1220,8 @@ GetPointerEvents(InternalEvent *events, DeviceIntPtr pDev, int type, int buttons
         moveRelative(pDev, &x, &y, &mask);
     }
 
-    set_raw_valuators(raw, &mask, raw->valuators.data);
+    if ((flags & POINTER_NORAW) == 0)
+	set_raw_valuators(raw, &mask, raw->valuators.data);
 
     positionSprite(pDev, (flags & POINTER_ABSOLUTE) ? Absolute : Relative,
                    &x, &y, x_frac, y_frac, scr, &cx, &cy, &cx_frac, &cy_frac);

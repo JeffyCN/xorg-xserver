@@ -49,6 +49,8 @@
 #include <unistd.h>
 #include <AvailabilityMacros.h>
 
+#include <pthread.h>
+
 #include <Xplugin.h>
 
 // pbproxy/pbproxy.h
@@ -76,6 +78,11 @@ static TISInputSourceRef last_key_layout;
 #else
 static KeyboardLayoutRef last_key_layout;
 #endif
+
+/* This preference is only tested on Lion or later as it's not relevant to
+ * earlier OS versions.
+ */
+Bool XQuartzScrollInDeviceDirection = FALSE;
 
 extern int darwinFakeButtons;
 
@@ -188,7 +195,7 @@ static void message_kit_thread (SEL selector, NSObject *arg) {
 
 - (void) activateX:(OSX_BOOL)state {
     size_t i;
-    DEBUG_LOG("state=%d, _x_active=%d, \n", state, _x_active)
+    DEBUG_LOG("state=%d, _x_active=%d, \n", state, _x_active);
     if (state) {
         if(bgMouseLocationUpdated) {
             DarwinSendPointerEvents(darwinPointer, MotionNotify, 0, bgMouseLocation.x, bgMouseLocation.y, 0.0, 0.0, 0.0);
@@ -336,18 +343,21 @@ static void message_kit_thread (SEL selector, NSObject *arg) {
             
         case NSAppKitDefined:
             switch ([e subtype]) {
+                static BOOL x_was_active = NO;
+
                 case NSApplicationActivatedEventType:
                     for_x = NO;
-                    if ([self modalWindow] == nil) {
+                    if ([e window] == nil && x_was_active) {
                         BOOL order_all_windows = YES, workspaces, ok;
                         for_appkit = NO;
-                        
-                        /* FIXME: hack to avoid having to pass the event to appkit,
-                         which would cause it to raise one of its windows. */
+
+                        /* FIXME: This is a hack to avoid passing the event to AppKit which
+                         *        would result in it raising one of its windows.
+                         */
                         _appFlags._active = YES;
-                        
-                        [self activateX:YES];
-                        
+
+                        X11ApplicationSetFrontProcess();
+
                         /* Get the Spaces preference for SwitchOnActivate */
                         (void)CFPreferencesAppSynchronize(CFSTR("com.apple.dock"));
                         workspaces = CFPreferencesGetAppBooleanValue(CFSTR("workspaces"), CFSTR("com.apple.dock"), &ok);
@@ -368,8 +378,9 @@ static void message_kit_thread (SEL selector, NSObject *arg) {
                          *       If there are no active windows, and there are minimized windows, we should
                          *       be restoring one of them.
                          */
-                        if ([e data2] & 0x10) // 0x10 is set when we use cmd-tab or the dock icon
+                        if ([e data2] & 0x10) { // 0x10 (bfCPSOrderAllWindowsForward) is set when we use cmd-tab or the dock icon
                             DarwinSendDDXEvent(kXquartzBringAllToFront, 1, order_all_windows);
+                        }
                     }
                     break;
                     
@@ -379,7 +390,10 @@ static void message_kit_thread (SEL selector, NSObject *arg) {
                     
                 case NSApplicationDeactivatedEventType:
                     for_x = NO;
-                    [self activateX:NO];
+
+                    x_was_active = _x_active;
+                    if(_x_active)
+                        [self activateX:NO];
                     break;
             }
             break;
@@ -778,6 +792,9 @@ static NSMutableArray * cfarray_to_nsarray (CFArrayRef in) {
     
     noTestExtensions = ![self prefs_get_boolean:@PREFS_TEST_EXTENSIONS
                                         default:FALSE];
+    
+    XQuartzScrollInDeviceDirection = [self prefs_get_boolean:@PREFS_SCROLL_IN_DEV_DIRECTION
+                                                     default:XQuartzScrollInDeviceDirection];
 
 #if XQUARTZ_SPARKLE
     NSURL *url =  [self prefs_copy_url:@PREFS_UPDATE_FEED default:nil];
@@ -994,6 +1011,11 @@ void X11ApplicationMain (int argc, char **argv, char **envp) {
     init_ports ();
     
     app_prefs_domain_cfstr = (CFStringRef)[[NSBundle mainBundle] bundleIdentifier];
+
+    if (app_prefs_domain_cfstr == NULL) {
+        ErrorF("X11ApplicationMain: Unable to determine bundle identifier.  Your installation of XQuartz may be broken.\n");
+        app_prefs_domain_cfstr = @BUNDLE_ID_PREFIX".X11";
+    }
 
     [NSApp read_defaults];
     [NSBundle loadNibNamed:@"main" owner:NSApp];
@@ -1325,20 +1347,30 @@ static const char *untrusted_str(NSEvent *e) {
             break;
             
 		case NSScrollWheel:
+            {
+                float deltaX = [e deltaX];
+                float deltaY = [e deltaY];
 #if !defined(XPLUGIN_VERSION) || XPLUGIN_VERSION == 0
-            /* If we're in the background, we need to send a MotionNotify event
-             * first, since we aren't getting them on background mouse motion
-             */
-            if(!XQuartzServerVisible && noTestExtensions) {
-                bgMouseLocationUpdated = FALSE;
-                DarwinSendPointerEvents(darwinPointer, MotionNotify, 0, location.x,
-                                        location.y, pressure, tilt.x, tilt.y);
-            }
+                /* If we're in the background, we need to send a MotionNotify event
+                * first, since we aren't getting them on background mouse motion
+                */
+                if(!XQuartzServerVisible && noTestExtensions) {
+                    bgMouseLocationUpdated = FALSE;
+                    DarwinSendPointerEvents(darwinPointer, MotionNotify, 0, location.x,
+                                            location.y, pressure, tilt.x, tilt.y);
+                }
 #endif
-			DarwinSendScrollEvents([e deltaX], [e deltaY], location.x, location.y,
-                                   pressure, tilt.x, tilt.y);
-            break;
-            
+#if MAC_OS_X_VERSION_MAX_ALLOWED >= 1070
+                // TODO: Change 1117 to NSAppKitVersionNumber10_7 when it is defined
+                if(NSAppKitVersionNumber >= 1117 && XQuartzScrollInDeviceDirection && [e isDirectionInvertedFromDevice]) {
+                    deltaX *= -1;
+                    deltaY *= -1;
+                }
+#endif
+                DarwinSendScrollEvents(deltaX, deltaY, location.x, location.y,
+                                       pressure, tilt.x, tilt.y);
+                break;
+            }
         case NSKeyDown: case NSKeyUp:
             {
                 /* XKB clobbers our keymap at startup, so we need to force it on the first keypress.

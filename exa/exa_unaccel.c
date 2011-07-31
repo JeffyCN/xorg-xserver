@@ -1,6 +1,6 @@
 /*
  *
- * Copyright © 1999 Keith Packard
+ * Copyright Â© 1999 Keith Packard
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
  * documentation for any purpose is hereby granted without fee, provided that
@@ -143,7 +143,7 @@ ExaCheckCopyNtoN (DrawablePtr pSrc, DrawablePtr pDst,  GCPtr pGC,
 	RegionInitBoxes (&reg, pbox, nbox)) {
 	PixmapPtr pPixmap = exaGetDrawablePixmap(pDst);
 
-	exaGetDrawableDeltas(pSrc, pPixmap, &xoff, &yoff);
+	exaGetDrawableDeltas(pDst, pPixmap, &xoff, &yoff);
 	RegionTranslate(&reg, xoff, yoff);
 	pExaScr->prepare_access_reg(pPixmap, EXA_PREPARE_DEST, &reg);
 	RegionUninit(&reg);

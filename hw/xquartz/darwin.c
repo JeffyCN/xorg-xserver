@@ -79,7 +79,7 @@
 
 aslclient aslc;
 
-void debug_asl (const char *file, const char *function, int line, const char *fmt, ...) {
+void xq_asl_log (int level, const char *subsystem, const char *file, const char *function, int line, const char *fmt, ...) {
     va_list args;
     aslmsg msg = asl_new(ASL_TYPE_MSG);
 
@@ -93,10 +93,12 @@ void debug_asl (const char *file, const char *function, int line, const char *fm
             asl_set(msg, "Line", _line);
             free(_line);
         }
+        if(subsystem)
+            asl_set(msg, "Subsystem", subsystem);
     }
 
     va_start(args, fmt);
-    asl_vlog(aslc, msg, ASL_LEVEL_DEBUG, fmt, args);
+    asl_vlog(aslc, msg, level, fmt, args);
     va_end(args);
 
     if(msg)
@@ -503,6 +505,10 @@ void InitInput( int argc, char **argv )
     QuartzInitInput(argc, argv);
 }
 
+void CloseInput(void)
+{
+    DarwinEQFini();
+}
 
 /*
  * DarwinAdjustScreenOrigins
@@ -760,9 +766,9 @@ void ddxUseMsg( void )
  * ddxGiveUp --
  *      Device dependent cleanup. Called by dix before normal server death.
  */
-void ddxGiveUp( void )
+void ddxGiveUp( enum ExitCode error )
 {
-    ErrorF( "Quitting Xquartz\n" );
+    LogClose(error);
 }
 
 
@@ -773,7 +779,7 @@ void ddxGiveUp( void )
  *      are closed.
  */
 _X_NORETURN
-void AbortDDX( void ) {
+void AbortDDX( enum ExitCode error ) {
     ErrorF( "   AbortDDX\n" );
     OsAbort();
 }

@@ -38,7 +38,7 @@ m4_ifndef([XORG_MACROS_VERSION],
 XORG_MACROS_VERSION(1.14)
 XORG_DEFAULT_OPTIONS
 XORG_WITH_DOXYGEN(1.6.1)
-XORG_CHECK_SGML_DOCTOOLS(1.7)
+XORG_CHECK_SGML_DOCTOOLS(1.8)
 XORG_ENABLE_DOCS
 XORG_ENABLE_DEVEL_DOCS
 XORG_WITH_XMLTO(0.0.20)
@@ -774,18 +774,18 @@ RECORDPROTO="recordproto >= 1.13.99.1"
 SCRNSAVERPROTO="scrnsaverproto >= 1.1"
 RESOURCEPROTO="resourceproto"
 DRIPROTO="xf86driproto >= 2.1.0"
-DRI2PROTO="dri2proto >= 2.3"
+DRI2PROTO="dri2proto >= 2.6"
 XINERAMAPROTO="xineramaproto"
 BIGFONTPROTO="xf86bigfontproto >= 1.2.0"
 DGAPROTO="xf86dgaproto >= 2.0.99.1"
-GLPROTO="glproto >= 1.4.10"
+GLPROTO="glproto >= 1.4.14"
 DMXPROTO="dmxproto >= 2.2.99.1"
 VIDMODEPROTO="xf86vidmodeproto >= 2.2.99.1"
 WINDOWSWMPROTO="windowswmproto"
 APPLEWMPROTO="applewmproto >= 1.4"
 
 dnl Core modules for most extensions, et al.
-SDK_REQUIRED_MODULES="[xproto >= 7.0.17] [randrproto >= 1.2.99.3] [renderproto >= 0.11] [xextproto >= 7.1.99] [inputproto >= 1.9.99.902] [kbproto >= 1.0.3] fontsproto"
+SDK_REQUIRED_MODULES="[xproto >= 7.0.22] [randrproto >= 1.2.99.3] [renderproto >= 0.11] [xextproto >= 7.1.99] [inputproto >= 1.9.99.902] [kbproto >= 1.0.3] fontsproto"
 # Make SDK_REQUIRED_MODULES available for inclusion in xorg-server.pc
 AC_SUBST(SDK_REQUIRED_MODULES)
 
@@ -1187,11 +1187,7 @@ if test "x$XKB_DFLT_RULES" = x; then
     case $host_os in
     linux*)
         dnl doesn't take AutoAddDevices into account, but whatever.
-        if test "x$CONFIG_HAL" = xyes; then
-            XKB_DFLT_RULES="evdev"
-        else
-            XKB_DFLT_RULES="base"
-        fi
+        XKB_DFLT_RULES="evdev"
         ;;
     *)
         XKB_DFLT_RULES="base"
@@ -1203,6 +1199,11 @@ AC_DEFINE_UNQUOTED(XKB_DFLT_MODEL, ["$XKB_DFLT_MODEL"], [Default XKB model])
 AC_DEFINE_UNQUOTED(XKB_DFLT_LAYOUT, ["$XKB_DFLT_LAYOUT"], [Default XKB layout])
 AC_DEFINE_UNQUOTED(XKB_DFLT_VARIANT, ["$XKB_DFLT_VARIANT"], [Default XKB variant])
 AC_DEFINE_UNQUOTED(XKB_DFLT_OPTIONS, ["$XKB_DFLT_OPTIONS"], [Default XKB options])
+AC_SUBST([XKB_DFLT_RULES])
+AC_SUBST([XKB_DFLT_MODEL])
+AC_SUBST([XKB_DFLT_LAYOUT])
+AC_SUBST([XKB_DFLT_VARIANT])
+AC_SUBST([XKB_DFLT_OPTIONS])
 
 XKB_LIB='$(top_builddir)/xkb/libxkb.la'
 XKB_STUB_LIB='$(top_builddir)/xkb/libxkbstubs.la'
@@ -1730,14 +1731,6 @@ if test "x$XORG" = xyes; then
 	AC_SUBST([XORG_INCS])
 	AC_SUBST([XORG_OS])
 	AC_SUBST([XORG_OS_SUBDIR])
-
-	AC_PATH_PROG(PERL, perl, no)
-	dnl unlikely as this may be ...
-	if test "x$PERL" = xno; then
-		AC_MSG_ERROR([Perl is required to build the XFree86/Xorg DDX.])
-	fi
-	AC_SUBST(PERL)
-
 	AC_SUBST([XORG_CFLAGS])
 
 	dnl these only go in xorg-config.h
@@ -1884,8 +1877,8 @@ if test "x$XQUARTZ" = xyes; then
 	AC_DEFINE(XQUARTZ,1,[Have Quartz])
 	AC_DEFINE(ROOTLESS,1,[Build Rootless code])
 
-	DARWIN_LIBS="$MI_LIB $OS_LIB $DIX_LIB $MAIN_LIB $FB_LIB $FIXES_LIB $XEXT_LIB $DBE_LIB $RECORD_LIB $RANDR_LIB $RENDER_LIB $DAMAGE_LIB $MIEXT_SYNC_LIB $MIEXT_DAMAGE_LIB $MIEXT_SHADOW_LIB $XI_LIB $XKB_LIB $XKB_STUB_LIB $XPSTUBS_LIB"
-	AC_SUBST([DARWIN_LIBS])
+	XQUARTZ_LIBS="$MAIN_LIB $FB_LIB $FIXES_LIB $XEXT_LIB $DBE_LIB $RECORD_LIB $RANDR_LIB $RENDER_LIB $DAMAGE_LIB $MIEXT_SYNC_LIB $MIEXT_DAMAGE_LIB $MIEXT_SHADOW_LIB $XI_LIB $XKB_LIB $XKB_STUB_LIB $XPSTUBS_LIB"
+	AC_SUBST([XQUARTZ_LIBS])
 
 	AC_CHECK_LIB([Xplugin],[xp_init],[:])
 
@@ -2139,7 +2132,7 @@ AC_SUBST([libdir])
 AC_SUBST([exec_prefix])
 AC_SUBST([prefix])
 
-AC_CONFIG_COMMANDS([sdksyms], [touch hw/xfree86/loader/sdksyms.dep])
+AC_CONFIG_COMMANDS([sdksyms], [touch hw/xfree86/sdksyms.dep])
 
 AC_OUTPUT([
 Makefile
