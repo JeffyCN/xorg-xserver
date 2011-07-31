@@ -1,4 +1,4 @@
-xorg-server (2:1.10.99.901+git20110731-1) UNRELEASED; urgency=low
+xorg-server (2:1.10.99.901+git20110731-1) experimental; urgency=low
 
   [ Cyril Brulebois ]
   * New upstream release candidate.
@@ -30,7 +30,7 @@ xorg-server (2:1.10.99.901+git20110731-1) UNRELEASED; urgency=low
   * Drop obsolete 20-workaround-36986.diff.
   * Fix patch stamp dependency.
 
- -- Cyril Brulebois <kibi@debian.org>  Tue, 31 May 2011 13:52:04 +0200
+ -- Julien Cristau <jcristau@debian.org>  Sun, 31 Jul 2011 22:15:07 +0200
 
 xorg-server (2:1.10.2-1) unstable; urgency=low
 
