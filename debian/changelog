@@ -5,7 +5,10 @@ xorg-server (2:1.11.0-1) UNRELEASED; urgency=low
     virtual package again.
 
   [ Cyril Brulebois ]
-  * New upstream release.
+  * New upstream release:
+    - Fix assertion failure when calling dixSetPrivate (Closes: #632549).
+      Thanks, Mohammed Sameer!
+    - Fix memcpy abuse in the fb layer (Closes: #626682).
 
  -- Julien Cristau <jcristau@debian.org>  Mon, 01 Aug 2011 01:18:39 +0200
 
