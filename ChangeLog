@@ -1,3 +1,164 @@
+commit 0caeef6146bee5fb1827ab25db191685dde9d4b4
+Author: Keith Packard <keithp@keithp.com>
+Date:   Fri Aug 26 16:46:13 2011 -0700
+
+    Version bumped to 1.11
+    
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit e32cc0b4c85c78cd8743a6e1680dcc79054b57ce
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Thu Apr 21 16:37:11 2011 -0400
+
+    fb: Fix memcpy abuse
+    
+    The memcpy fast path implicitly assumes that the copy walks
+    left-to-right.  That's not something memcpy guarantees, and newer glibc
+    on some processors will indeed break that assumption.  Since we walk a
+    line at a time, check the source and destination against the width of
+    the blit to determine whether we can be sloppy enough to allow memcpy.
+    (Having done this, we can remove the check for !reverse as well.)
+    
+    On an Intel Core i7-2630QM with an NVIDIA GeForce GTX 460M running in
+    NoAccel, the broken code and various fixes for -copywinwin{10,100,500}
+    gives (edited to fit in 80 columns):
+    
+    1: Disable the fastpath entirely
+    2: Replace memcpy with memmove
+    3: This fix
+    4: The code before this fix
+    
+      1            2                 3                 4           Operation
+    ------   ---------------   ---------------   ---------------   ------------
+    258000   269000 (  1.04)   544000 (  2.11)   552000 (  2.14)   Copy 10x10
+     21300    23000 (  1.08)    43700 (  2.05)    47100 (  2.21)   Copy 100x100
+       960      962 (  1.00)     1990 (  2.09)     1990 (  2.07)   Copy 500x500
+    
+    So it's a modest performance hit, but correctness demands it, and it's
+    probably worth keeping the 2x speedup from having the fast path in the
+    first place.
+    
+    Signed-off-by: Adam Jackson <ajax@redhat.com>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit ac2c307f4716ebd3e955c004ceec9f4c029401a0
+Author: Pelle Johansson <pelle@morth.org>
+Date:   Sun Aug 14 17:44:40 2011 -0700
+
+    XQuartz: Initialize darwin pointer valuators
+    
+    This fixes a regression introduced by: 633b81e8ba09cc6a1ea8b43f323874fda2cf0bde
+    
+    http://xquartz.macosforge.org/trac/ticket/498
+    
+    Signed-off-by: Pelle Johansson <pelle@morth.org>
+    Reviewed-by: Jeremy Huddleston <jeremyhu@apple.com>
+
+commit 4020cab88f5cf3164fc83cf912f94f288aa5a45d
+Author: Michel Dänzer <michel.daenzer@amd.com>
+Date:   Wed Aug 10 11:36:16 2011 +0200
+
+    EXA/mixed: Update sys_pitch in MPH even when there's no system memory copy.
+    
+    Otherwise sys_pitch will be stale when a system memory copy is allocated.
+    
+    Fixes https://bugs.freedesktop.org/show_bug.cgi?id=38322 and a crash when
+    unlocking the screen with xscreensaver, reported by Janne Huttunen.
+    
+    Signed-off-by: Michel Dänzer <michel.daenzer@amd.com>
+    Tested-by: Janne Huttunen <jahuttun@gmail.com>
+    Tested-by: Jan Kriho <Erbureth@gmail.com>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit a1dec7cd6adabaf8770dc3b21b0df30ce2f0bc8d
+Author: Julien Cristau <jcristau@debian.org>
+Date:   Thu Jul 7 19:18:03 2011 +0200
+
+    Xephyr/dri: register screen and window privates on init
+    
+    Fixes assertion failure when calling dixSetPrivate
+    Debian bug#632549 <http://bugs.debian.org/632549>
+    
+    Reported-and-tested-by: Mohammed Sameer <msameer@foolab.org>
+    Signed-off-by: Julien Cristau <jcristau@debian.org>
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit 39bc81b60ddc9e495ff3b9bb3c3a6c39e547b43a
+Author: Keith Packard <keithp@keithp.com>
+Date:   Wed Aug 3 20:57:03 2011 -0700
+
+    Version bumped to 1.10.99.902 (1.11 RC2)
+    
+    At the close of the 1.11 non-critical fixes window.
+    
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit 9504caf1c3243e3ab2eb7126bc2bb876a8f89918
+Author: Ville Syrjälä <ville.syrjala@nokia.com>
+Date:   Fri May 6 18:19:34 2011 +0300
+
+    composite: Inhibit window background paint with manual subwindow redirection
+    
+    The composite extension spec says that window background painting
+    should be inhibited when the subwindow redirection mode is set to
+    manual.
+    
+    This eliminates the ugly flashing effect when compiz unredirects a
+    fullscreen window.
+    
+    Signed-off-by: Ville Syrjälä <ville.syrjala@nokia.com>
+    Reviewed-by: Owen Taylor <otaylor@fishsoup.net>
+    Reviewed-by: Keith Packard <keithp@keithp.com>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit f1d75f3b742231c4c09f13d7a22ed920014cb5ef
+Author: Pierre-Loup A. Griffais <pgriffais@nvidia.com>
+Date:   Thu Jul 28 15:17:59 2011 -0700
+
+    Revert "composite: Don't backfill non-MapWindow allocations"
+    
+    This reverts commit db8840600e8e21356241eb87395031388d9b54d2.
+    
+    It was an optimization for the resize case, but 193ecc8b453b22 made
+    it so that no backfilling takes place on resize if left in.
+    
+    Signed-off-by: Pierre-Loup A. Griffais <pgriffais@nvidia.com>
+    Reviewed-by: Adam Jackson <ajax@redhat.com>
+    
+    Conflicts:
+    
+    	composite/compalloc.c
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit e87adcc9e024982fdad974de2876b00cf974dab8
+Author: Julien Cristau <jcristau@debian.org>
+Date:   Sun Jul 31 21:14:59 2011 +0200
+
+    Xquartz: include new localization files in the tarball
+    
+    Signed-off-by: Julien Cristau <jcristau@debian.org>
+    Reviewed-by: Jeremy Huddleston <jeremyhu@apple.com>
+
+commit a1bb5062c72667b2f10b56925c61888acc89e3e4
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Thu Jul 21 10:33:58 2011 -0700
+
+    XQuartz: xpr: Don't FatalError if xp_unlock_window fails
+    
+    We added the FatalError in 5d1d9d9ae39fab2ee2ac085f9776f82768828dc8 but
+    it caused a regression http://xquartz.macosforge.org/trac/ticket/482
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+
+commit c319f7b5b3ee651636cdfd165588f0dc972a22a4
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Wed Jul 20 00:16:42 2011 -0700
+
+    XQuartz: Use CFSTR to avoid implicit cast warning of NSString * to CFStringRef
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+
 commit 08dfff92e8d0c2b1726634392c147f6634d1706d
 Author: Aaron Plattner <aplattner@nvidia.com>
 Date:   Fri Jul 29 16:12:06 2011 -0700

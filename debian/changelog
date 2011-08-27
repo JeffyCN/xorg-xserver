@@ -1,7 +1,11 @@
-xorg-server (2:1.10.99.901+git20110731-2) UNRELEASED; urgency=low
+xorg-server (2:1.11.0-1) UNRELEASED; urgency=low
 
+  [ Julien Cristau ]
   * Make xvfb, xnest, xserver-xephyr and xserver-xfbdev provide the xserver
     virtual package again.
+
+  [ Cyril Brulebois ]
+  * New upstream release.
 
  -- Julien Cristau <jcristau@debian.org>  Mon, 01 Aug 2011 01:18:39 +0200
 
