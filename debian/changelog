@@ -1,4 +1,4 @@
-xorg-server (2:1.11.0-1) UNRELEASED; urgency=low
+xorg-server (2:1.11.0-1) unstable; urgency=low
 
   [ Julien Cristau ]
   * Make xvfb, xnest, xserver-xephyr and xserver-xfbdev provide the xserver
@@ -10,7 +10,7 @@ xorg-server (2:1.11.0-1) UNRELEASED; urgency=low
       Thanks, Mohammed Sameer!
     - Fix memcpy abuse in the fb layer (Closes: #626682).
 
- -- Julien Cristau <jcristau@debian.org>  Mon, 01 Aug 2011 01:18:39 +0200
+ -- Cyril Brulebois <kibi@debian.org>  Sun, 28 Aug 2011 12:53:06 +0200
 
 xorg-server (2:1.10.99.901+git20110731-1) experimental; urgency=low
 
