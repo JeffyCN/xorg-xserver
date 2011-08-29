@@ -1,3 +1,9 @@
+xorg-server (2:1.11.0-2) UNRELEASED; urgency=low
+
+  * Bump glproto dependency for xserver-xorg-dev (Closes: #639651).
+
+ -- Cyril Brulebois <kibi@Fallonne>  Mon, 29 Aug 2011 13:18:50 +0200
+
 xorg-server (2:1.11.0-1) unstable; urgency=low
 
   [ Julien Cristau ]
