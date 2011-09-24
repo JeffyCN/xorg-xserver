@@ -1,8 +1,15 @@
-xorg-server (2:1.11.0-2) UNRELEASED; urgency=low
+xorg-server (2:1.11.1-1) UNRELEASED; urgency=low
 
+  [ Cyril Brulebois ]
   * Bump glproto dependency for xserver-xorg-dev (Closes: #639651).
 
- -- Cyril Brulebois <kibi@Fallonne>  Mon, 29 Aug 2011 13:18:50 +0200
+  [ Julien Cristau ]
+  * New upstream bugfix release
+    - belatedly bump extension ABI major
+    - add missing fbFoo → wfbFoo renames for libwfb.so, fixing issues with the
+      nvidia driver (closes: #641344)
+
+ -- Julien Cristau <jcristau@debian.org>  Sat, 24 Sep 2011 10:13:15 +0200
 
 xorg-server (2:1.11.0-1) unstable; urgency=low
 

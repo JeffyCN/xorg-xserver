@@ -1,3 +1,66 @@
+commit aabd25bd0bd5f30e4ebbf1d48ef800b3ed2abcbe
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Sat Sep 24 00:06:32 2011 -0700
+
+    configure.ac: Version bumped to 1.11.1
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+
+commit 89881051664209b5b2e2c4a7c2dd25f085581d43
+Author: Aaron Plattner <aplattner@nvidia.com>
+Date:   Wed Sep 14 15:25:06 2011 -0700
+
+    fb: Rename wfbTriangles and wfbTrapezoids
+    
+    These symbols were not renamed when they were added to libfb:
+    
+     # nm -D libwfb.so | grep ' fb'
+     0000000000028d00 T fbTrapezoids
+     0000000000028d60 T fbTriangles
+    
+    This causes corruption and/or crashes on wfb-ful drivers like nvidia:
+    
+     Program received signal SIGABRT, Aborted.
+     0x00007fd67f3a0405 in *__GI_raise (sig=<optimized out>) at ../nptl/sysdeps/unix/sysv/linux/raise.c:64
+     64      ../nptl/sysdeps/unix/sysv/linux/raise.c: No such file or directory.
+         in ../nptl/sysdeps/unix/sysv/linux/raise.c
+     (gdb) bt
+     #0  0x00007fd67f3a0405 in *__GI_raise (sig=<optimized out>) at ../nptl/sysdeps/unix/sysv/linux/raise.c:64
+     #1  0x00007fd67f3a3680 in *__GI_abort () at abort.c:92
+     #2  0x00007fd67f3995b1 in *__GI___assert_fail (assertion=0x7fd679ecb804 "key->initialized", file=<optimized out>, line=116, function=0x7fd679ecbbc0 "dixGetPrivateAddr")
+         at assert.c:81
+     #3  0x00007fd679ec55b6 in ?? () from /usr/lib/xorg/modules/libfb.so
+     #4  0x00007fd679eca9ef in ?? () from /usr/lib/xorg/modules/libfb.so
+     #5  0x00007fd679ecae20 in fbTriangles () from /usr/lib/xorg/modules/libfb.so
+     #6  0x00007fd67a58fc55 in ?? () from /usr/lib/xorg/modules/drivers/nvidia_drv.so
+     #7  0x00000000004f38d1 in ?? ()
+     #8  0x0000000000437ae9 in ?? ()
+     #9  0x0000000000426eaa in ?? ()
+     #10 0x00007fd67f38cead in __libc_start_main (main=<optimized out>, argc=<optimized out>, ubp_av=<optimized out>, init=<optimized out>, fini=<optimized out>,
+         rtld_fini=<optimized out>, stack_end=0x7fff99860d78) at libc-start.c:228
+     #11 0x000000000042719d in _start ()
+    
+    Signed-off-by: Aaron Plattner <aplattner@nvidia.com>
+    Reviewed-by: Jeremy Huddleston <jeremyhu@apple.com>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+    (cherry picked from commit 03d032991da21bf866ca30dcbb6b7f9f99df441a)
+
+commit 4ad271d06c5aa42721c0e2e01e17e34a39825c65
+Author: Aaron Plattner <aplattner@nvidia.com>
+Date:   Mon Aug 29 20:44:18 2011 -0700
+
+    xfree86: Bump extension ABI version to 6.0
+    
+    The video driver ABI was bumped to 11.0 in commit
+    0de7cec90738a7a5020150309866bb0e23b6f479 because of a change to the
+    size of ATOM in commit 51f353d0a0d116af16d7d9590cadef6c56328746.  This
+    also affects extension modules, so the extension ABI version should
+    have been bumped too.
+    
+    Signed-off-by: Aaron Plattner <aplattner@nvidia.com>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
 commit 0caeef6146bee5fb1827ab25db191685dde9d4b4
 Author: Keith Packard <keithp@keithp.com>
 Date:   Fri Aug 26 16:46:13 2011 -0700
