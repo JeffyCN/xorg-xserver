@@ -16,18 +16,25 @@ $(STAMP_DIR)/stampdir:
 
 include /usr/share/quilt/quilt.make
 
+# we don't have a good way to check for dpkg-dev version, so use presence of
+# buildflags.mk as a substitute.
+ifneq (,$(wildcard /usr/share/dpkg/buildflags.mk))
+vars = $(shell DEB_CPPFLAGS_APPEND="-DPRE_RELEASE=0" dpkg-buildflags --export=configure)
+else
 CFLAGS = -Wall -g
 ifneq (,$(filter noopt,$(DEB_BUILD_OPTIONS)))
 	CFLAGS += -O0
 else
 	CFLAGS += -O2
 endif
+CPPFLAGS = -DPRE_RELEASE=0
+vars = CFLAGS="$(CFLAGS)" CPPFLAGS="$(CPPFLAGS)"
+endif
+
 ifneq (,$(filter parallel=%,$(DEB_BUILD_OPTIONS)))
 	NUMJOBS = $(patsubst parallel=%,%,$(filter parallel=%,$(DEB_BUILD_OPTIONS)))
 	MAKEFLAGS += -j$(NUMJOBS)
 endif
-
-CPPFLAGS += -DPRE_RELEASE=0
 
 DEB_HOST_ARCH      ?= $(shell dpkg-architecture -qDEB_HOST_ARCH)
 DEB_HOST_GNU_TYPE  ?= $(shell dpkg-architecture -qDEB_HOST_GNU_TYPE)
@@ -201,8 +208,7 @@ $(STAMP_DIR)/configure-%: $(STAMP_DIR)/autoreconf
 	  --localstatedir=/var \
 	  $(confflags) \
 	  $(confflags_$*) \
-	  CFLAGS="$(CFLAGS)" \
-	  CPPFLAGS="$(CPPFLAGS)"
+	  $(vars)
 	>$@
 
 $(STAMP_DIR)/build-%: $(STAMP_DIR)/configure-%
