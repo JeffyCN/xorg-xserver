@@ -19,7 +19,7 @@ include /usr/share/quilt/quilt.make
 # we don't have a good way to check for dpkg-dev version, so use presence of
 # buildflags.mk as a substitute.
 ifneq (,$(wildcard /usr/share/dpkg/buildflags.mk))
-vars = $(shell DEB_CPPFLAGS_APPEND="-DPRE_RELEASE=0" dpkg-buildflags --export=configure)
+vars = $(shell DEB_BUILD_MAINT_OPTIONS="hardening=+pie" DEB_LDFLAGS_APPEND="-Wl,-Bsymbolic" DEB_CPPFLAGS_APPEND="-DPRE_RELEASE=0" dpkg-buildflags --export=configure)
 else
 CFLAGS = -Wall -g
 ifneq (,$(filter noopt,$(DEB_BUILD_OPTIONS)))
