@@ -1,3 +1,220 @@
+commit 374be44d13bc8f04a2413b6d5b2006e73d5a8f53
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Fri Oct 14 16:29:54 2011 -0700
+
+    configure.ac: Bump to 1.11.1.901 (1.11.2 RC1)
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+
+commit bbe6a69da398dba93679c23c3c50f9916cb562ca
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Fri Jul 29 16:33:54 2011 +1000
+
+    dix: don't XWarpPointer through the last slave anymore (#38313)
+    
+    This line was introduced pre-1.6 to fix Bug 19297. The effect of warping
+    through the VCP then was that if a device had custom valuator ranges, the
+    warp position would be wrong. The better device for this effect is the the
+    XTest device.
+    
+    This fixes a server crash where the lastSlave is a pointer device without
+    valuators (Bug 38313#0).
+    
+    And while we're at it, make sure the Xinerama code-path does the same.
+    
+    X.Org Bug 38313 <http://bugs.freedesktop.org/show_bug.cgi?id=38313>
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+    (cherry picked from commit 2bfb802839688ecf328119c4c6979390fc60348d)
+
+commit 2e28ff155ffc30707d42d885d5f6fc891bc82252
+Author: Nobuhiro Iwamatsu <iwamatsu@nigauri.org>
+Date:   Tue Aug 9 11:00:34 2011 +0900
+
+    Disable check of double-aligned in test/input.c on Renesas SH
+    
+    Renesas SH is not aligned at size of double.
+    When structure has double value, It is aligned in 4byte (long).
+    
+    Signed-off-by: Nobuhiro Iwamatsu <iwamatsu@nigauri.org>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    (cherry picked from commit b29ce0726d55ec41cfbce0814e21b0217ef64efe)
+
+commit 79ac611d3121801c34f111c91b5ace5769719695
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Mon Aug 1 14:12:41 2011 +1000
+
+    dix: don't use the pointer as modifier device in UngrabKey.
+    
+    Modifier device is always the keyboard.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+    (cherry picked from commit 8c5a4d6fbecf79f2dc4f2d836d741203b2d5e856)
+
+commit 843737b4f979fed3a6d74cdfc7047ce5ca886639
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Thu Jul 28 15:56:08 2011 +1000
+
+    dix: ignore devices when adding passive core grabs to list (#39545)
+    
+    Passive core grabs are mostly device-independent. In an MPX scenario, they
+    may change to reflect whichever master pair activated the grab last. For
+    adding new grabs to the list, ignore the device for core grabs to return
+    failures when trying to set the same grab combo twice on a window.
+    
+    X.Org Bug 39545 <http://bugs.freedesktop.org/show_bug.cgi?id=39545>
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+    (cherry picked from commit 09496996accfdaf7bc01097a25db400912004d97)
+
+commit cb9c1d6d6cb25f55b1e4ac382e5af72a044e06aa
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Thu Jul 28 15:43:10 2011 +1000
+
+    dix: avoid using the VCP as modifier device
+    
+    Core grabs may change device when they're activated to reflect the master
+    they apply to. If the device is a keyboard, modifierDevice is erroneously
+    set to the Virtual Core Pointer.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+    (cherry picked from commit 80c37048539daa1d257d127d66502bde45c97c85)
+
+commit ef5c31430c891cf44148ea31058ed4cfb9bec21a
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Wed Jul 20 16:21:28 2011 +1000
+
+    config: fix a log message
+    
+    PRODUCT was taken from the parent, hence ppath.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+    (cherry picked from commit e684e816acb617b4dc66a68e2b0ba8f80399170a)
+
+commit ec8ee3a9f76cc94d6fa4e7245c1a8fb68a42783c
+Author: Peter Harris <pharris@opentext.com>
+Date:   Fri Sep 2 18:45:16 2011 -0400
+
+    xkb: add missing swaps for xkbGetDeviceInfoReply
+    
+    Caught during review of e095369bf.
+    
+    Signed-off-by: Peter Harris <pharris@opentext.com>
+    Reviewed-by-by: Matt Turner <mattst88@gmail.com>
+    Signed-off-by: Matt Turner <mattst88@gmail.com>
+    (cherry picked from commit c90903b4f7a826ae6826a8dd0a901c8362500e46)
+    
+    Conflicts:
+    
+    	xkb/xkb.c
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit 603ad6608a0dbe2fb1bdc4bcd8b4117f2b0bc8b2
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Tue Oct 4 21:40:03 2011 -0700
+
+    XQuartz: pbproxy: Add missing AM_OBJCFLAGS
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+    (cherry picked from commit fae7ed62ad476114bd37b566202cf6b6546c0a1f)
+
+commit 65469f5ea98074ab27ce0a2d482157b9d5c2cbc7
+Author: vdb@picaros.org <vdb@picaros.org>
+Date:   Sat Sep 17 18:55:47 2011 +0200
+
+    Fix a rare memory leak
+    
+    Signed-off-by: Servaas Vandenberghe <vdb@picaros.org>
+    Reviewed-by: Jeremy Huddleston <jeremyhu@apple.com>
+    (cherry picked from commit e4cddf509e1729e8ff40354275b65455111ad2bd)
+
+commit bec15eb73a17fb47963ff6b747ea504f7dc05deb
+Author: Kirill Elagin <kirelagin@gmail.com>
+Date:   Tue Oct 4 23:02:20 2011 +0400
+
+    Fix server crash due to invalid images
+    
+    See https://bugs.freedesktop.org/show_bug.cgi?id=39383
+    
+    Signed-off-by: Kirill Elagin <kirelagin@gmail.com>
+    Reviewed-by: Jeremy Huddleston <jeremyhu@apple.com>
+    (cherry picked from commit 53611213396479abfdce0f7752681572e0d26d78)
+
+commit b45e22675364915c32560c26404cf30d77ab68aa
+Author: Alan Hourihane <alanh@vmware.com>
+Date:   Tue Oct 4 19:42:46 2011 -0700
+
+    dixfonts: Don't overwrite local c variable until new_closure is safely initialized.
+    
+    Signed-off-by: Alan Hourihane <alanh@vmware.com>
+    Reviewed-by: Jeremy Huddleston <jeremyhu@apple.com>
+    (cherry picked from commit 7a33c5b934382b5554f41ab1502514e91c9bc52e)
+
+commit e9ae33316012ffe9acfeeb7303ab3392c2ca2a2b
+Author: Sam Spilsbury <sam.spilsbury@canonical.com>
+Date:   Wed Sep 14 09:58:34 2011 +0800
+
+    Remove the SendEvent bit (0x80) before doing range checks on event type.
+    
+    Some extension libraries may set this bit before converting the event to
+    wire protocol and as such range checking the event will cause an invalid
+    BadValue error to result. As the documentation suggests the the bit
+    should be "forced on", remove it before doing range checks and continue
+    to force it on in the server.
+    
+    Reviewed-by: Jamey Sharp <jamey@minilop.net>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    (cherry picked from commit 2d2dce558d24eeea0eb011ec9ebaa6c5c2273c39)
+
+commit 347f5610ca023fb31485aa19c20607af8bf9c834
+Author: Carlos Garnacho <carlosg@gnome.org>
+Date:   Wed Aug 31 00:46:52 2011 +0200
+
+    Xi: Fix passive XI2 ungrabs on XIAll[Master]Devices
+    
+    The corresponding DeviceIntPtr wasn't being gotten properly,
+    resulting in BadDevice from dixLookupDevice().
+    
+    Signed-off-by: Carlos Garnacho <carlosg@gnome.org>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    (cherry picked from commit f52d5cd374563544dafe29587411f345e31bbdf8)
+
+commit 7b74bb67528033bf2d2a1714a801c38e7822642e
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Tue Sep 20 20:39:06 2011 -0700
+
+    XQuartz: Use set_front_process rather than X11ApplicationSetFrontProcess since we're already in the AppKit thread
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+    (cherry picked from commit 38e9e28ba2fbffee52ad9889ef6d4e94c7af3e10)
+
+commit bd6ea85209e5ab80375d4ec9994d10a89fd1374a
+Author: Jamey Sharp <jamey@minilop.net>
+Date:   Tue Sep 14 18:35:21 2010 -0700
+
+    Fix pixmap double-frees on error paths.
+    
+    If AddResource fails, it will automatically free the object that was
+    passed to it by calling the appropriate deleteFunc; and of course
+    FreeResource also calls the deleteFunc. In both cases it's wrong to call
+    the destroy hook manually.
+    
+    Commit by Jamey Sharp and Josh Triplett.
+    
+    Signed-off-by: Jamey Sharp <jamey@minilop.net>
+    Signed-off-by: Josh Triplett <josh@joshtriplett.org>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Aaron Plattner <aplattner@nvidia.com>
+    (cherry picked from commit 0f380a5005f800572773cd4667ce43c7459cc467)
+
 commit aabd25bd0bd5f30e4ebbf1d48ef800b3ed2abcbe
 Author: Jeremy Huddleston <jeremyhu@apple.com>
 Date:   Sat Sep 24 00:06:32 2011 -0700
