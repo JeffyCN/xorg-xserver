@@ -1,4 +1,4 @@
-xorg-server (2:1.11.1.901-1) UNRELEASED; urgency=low
+xorg-server (2:1.11.1.901-1) unstable; urgency=low
 
   * New upstream release candidate (1.11.2 RC1)
     + Disable check of double-aligned in test/input.c on Renesas SH
@@ -10,7 +10,7 @@ xorg-server (2:1.11.1.901-1) UNRELEASED; urgency=low
   * Drop dh_testroot from clean target.
   * Add dummy build-{arch,indep} targets depending on build.
 
- -- Julien Cristau <jcristau@debian.org>  Sat, 15 Oct 2011 18:21:06 +0200
+ -- Julien Cristau <jcristau@debian.org>  Sat, 15 Oct 2011 19:05:41 +0200
 
 xorg-server (2:1.11.1-1) unstable; urgency=high
 
