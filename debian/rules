@@ -230,7 +230,6 @@ endif
 
 clean: unpatch abibumpcheck
 	dh_testdir
-	dh_testroot
 
 	rm -rf $(STAMP_DIR)
 	rm -f config.cache config.log config.status

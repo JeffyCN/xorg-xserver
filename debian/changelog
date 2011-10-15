@@ -4,6 +4,7 @@ xorg-server (2:1.11.1-2) UNRELEASED; urgency=low
   * Enable PIE with DEB_BUILD_MAINT_OPTIONS, but add -Bsymbolic to LDFLAGS to
     reduce performance loss from PIE.
   * Pass --disable-silent-rules to configure.
+  * Drop dh_testroot from clean target.
 
  -- Julien Cristau <jcristau@debian.org>  Sat, 01 Oct 2011 00:31:58 +0200
 
