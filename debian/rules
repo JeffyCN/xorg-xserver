@@ -227,6 +227,8 @@ ifeq ($(udeb), yes)
 build: $(STAMP_DIR)/build-udeb
 build: $(STAMP_DIR)/tests-udeb
 endif
+build-arch: build
+build-indep: build
 
 clean: unpatch abibumpcheck
 	dh_testdir
