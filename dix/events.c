@@ -3351,16 +3351,21 @@ XineramaWarpPointer(ClientPtr client)
 {
     WindowPtr	dest = NULL;
     int		x, y, rc;
-    SpritePtr   pSprite = PickPointer(client)->spriteInfo->sprite;
+    DeviceIntPtr dev;
+    SpritePtr   pSprite;
 
     REQUEST(xWarpPointerReq);
-
 
     if (stuff->dstWid != None) {
 	rc = dixLookupWindow(&dest, stuff->dstWid, client, DixReadAccess);
 	if (rc != Success)
 	    return rc;
     }
+
+    /* Post through the XTest device */
+    dev = PickPointer(client);
+    dev = GetXTestDevice(dev);
+    pSprite = dev->spriteInfo->sprite;
     x = pSprite->hotPhys.x;
     y = pSprite->hotPhys.y;
 
@@ -3410,9 +3415,9 @@ XineramaWarpPointer(ClientPtr client)
     else if (y >= pSprite->physLimits.y2)
 	y = pSprite->physLimits.y2 - 1;
     if (pSprite->hotShape)
-	ConfineToShape(PickPointer(client), pSprite->hotShape, &x, &y);
+	ConfineToShape(dev, pSprite->hotShape, &x, &y);
 
-    XineramaSetCursorPosition(PickPointer(client), x, y, TRUE);
+    XineramaSetCursorPosition(dev, x, y, TRUE);
 
     return Success;
 }
@@ -3430,7 +3435,7 @@ ProcWarpPointer(ClientPtr client)
     WindowPtr	dest = NULL;
     int		x, y, rc;
     ScreenPtr	newScreen;
-    DeviceIntPtr dev, tmp;
+    DeviceIntPtr dev, tmp, xtest_dev = NULL;
     SpritePtr   pSprite;
 
     REQUEST(xWarpPointerReq);
@@ -3443,11 +3448,13 @@ ProcWarpPointer(ClientPtr client)
 	    rc = XaceHook(XACE_DEVICE_ACCESS, client, dev, DixWriteAccess);
 	    if (rc != Success)
 		return rc;
+            if (IsXTestDevice(tmp, dev))
+                xtest_dev = tmp;
 	}
     }
 
-    if (dev->lastSlave)
-        dev = dev->lastSlave;
+    /* Use the XTest device to actually move the pointer */
+    dev = xtest_dev;
     pSprite = dev->spriteInfo->sprite;
 
 #ifdef PANORAMIX
@@ -3678,7 +3685,7 @@ CheckPassiveGrabsOnWindow(
             if (tempGrab.type < GenericEvent)
             {
                 grab->device = device;
-                grab->modifierDevice = GetPairedDevice(device);
+                grab->modifierDevice = GetMaster(device, MASTER_KEYBOARD);
             }
 
             for (other = inputInfo.devices; other; other = other->next)
@@ -5224,6 +5231,8 @@ CloseDownEvents(void)
     InputEventList = NULL;
 }
 
+#define SEND_EVENT_BIT 0x80
+
 /**
  * Server-side protocol handling for SendEvent request.
  *
@@ -5240,6 +5249,16 @@ ProcSendEvent(ClientPtr client)
     REQUEST(xSendEventReq);
 
     REQUEST_SIZE_MATCH(xSendEventReq);
+
+    /* libXext and other extension libraries may set the bit indicating
+     * that this event came from a SendEvent request so remove it
+     * since otherwise the event type may fail the range checks
+     * and cause an invalid BadValue error to be returned.
+     *
+     * This is safe to do since we later add the SendEvent bit (0x80)
+     * back in once we send the event to the client */
+
+    stuff->event.u.u.type &= ~(SEND_EVENT_BIT);
 
     /* The client's event type must be a core event type or one defined by an
 	extension. */
@@ -5298,7 +5317,7 @@ ProcSendEvent(ClientPtr client)
 	client->errorValue = stuff->propagate;
 	return BadValue;
     }
-    stuff->event.u.u.type |= 0x80;
+    stuff->event.u.u.type |= SEND_EVENT_BIT;
     if (stuff->propagate)
     {
 	for (;pWin; pWin = pWin->parent)
@@ -5360,7 +5379,7 @@ ProcUngrabKey(ClientPtr client)
     tempGrab.window = pWin;
     tempGrab.modifiersDetail.exact = stuff->modifiers;
     tempGrab.modifiersDetail.pMask = NULL;
-    tempGrab.modifierDevice = GetPairedDevice(keybd);
+    tempGrab.modifierDevice = keybd;
     tempGrab.type = KeyPress;
     tempGrab.grabtype = GRABTYPE_CORE;
     tempGrab.detail.exact = stuff->key;
