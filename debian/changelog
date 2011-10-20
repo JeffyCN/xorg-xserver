@@ -1,8 +1,9 @@
-xorg-server (2:1.11.1.901-2) UNRELEASED; urgency=low
+xorg-server (2:1.11.1.901-2) UNRELEASED; urgency=high
 
   * Merge from upstream to get CVEs fixed:
     - Fix CVE-2011-4028: File disclosure vulnerability.
     - Fix CVE-2011-4029: File permission change vulnerability.
+  * Set urgency to “high” accordingly.
 
  -- Cyril Brulebois <kibi@debian.org>  Thu, 20 Oct 2011 14:57:18 +0200
 
