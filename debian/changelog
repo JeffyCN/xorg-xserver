@@ -3,6 +3,7 @@ xorg-server (2:1.11.1.902-2) UNRELEASED; urgency=low
   * Add some lintian overrides:
     - xserver-xorg-core: breaks-without-version against virtual packages
       is perfectly OK.
+  * Don't forget to ship xorg.conf.d(5) in xserver-xorg-core.
 
  -- Cyril Brulebois <kibi@debian.org>  Wed, 02 Nov 2011 11:40:46 +0100
 
