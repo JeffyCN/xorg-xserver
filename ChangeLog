@@ -1,3 +1,174 @@
+commit 0bffe6b38cdf6b21d9ec9b0abf0092d4d4eaef86
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Fri Oct 28 18:32:28 2011 -0700
+
+    configure.ac: Bump to 1.11.1.902 (1.11.2 RC2)
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+
+commit a1d638da0d12c82c944bfecb996903210879f426
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Tue Oct 25 23:53:43 2011 -0700
+
+    XWin: windowswm: Correct byte swapping in event notifications
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+    Reviewed-by: Jon TURNEY <jon.turney@dronecode.org.uk>
+    (cherry picked from commit 286fa9bf9b4ffb0f9dbd3f1cae46ddcb27ee9318)
+
+commit 0715469f1cb150261b51867df75892d26916ea05
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Tue Oct 25 23:49:33 2011 -0700
+
+    XQuartz: appledri: Correct byte swapping in event notifications
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+    (cherry picked from commit dc054fefc586c5b404fe0f949dbd456e5267c647)
+
+commit bc2600466eea2af2d6a81fe1592d908565995cb2
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Tue Oct 25 23:48:16 2011 -0700
+
+    XQuartz: applewm: Correct byte swapping in event notifications
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+    (cherry picked from commit d5fee2b638fabeb8bec31a24e57d5c2a232d0893)
+
+commit 7be5492bcfab540676d6f849b85ad3db64a5ada0
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Fri Oct 21 10:27:16 2011 -0700
+
+    XQuartz: appledri: Allow byte swapped requests
+    
+    Even though it's only valid when local, it is possible for a local
+    client and the server to not match endianness, such as when running
+    a ppc application under Rosetta.
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+    (cherry picked from commit 1c8bda798b4480bab0f0da6f531e4770c7a1f771)
+
+commit 0ad049706d2fa8ff2758c42bdd412fb62bb1e86a
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Thu Oct 20 22:34:44 2011 -0700
+
+    XQuartz: appledri: Fix byte swapping in replies
+    
+    Even though it's only valid when local, it is possible for a local
+    client and the server to not match endianness, such as when running
+    a ppc application under Rosetta.
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+    Reviewed-by: Jamey Sharp <jamey@minilop.net>
+    (cherry picked from commit 14205ade0c750191bf43fba8bd55c65dba912cf4)
+    
+    Conflicts:
+    
+    	hw/xquartz/xpr/appledri.c
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+
+commit 3b931c92764fc4e6417f1f38a67114b8c7442fc2
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Thu Oct 20 22:23:07 2011 -0700
+
+    XQuartz: appledri: Set the correct reply length for XAppleDRICreatePixmap
+    
+    http://xquartz.macosforge.org/trac/ticket/508
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+    Reviewed-by: Jamey Sharp <jamey@minilop.net>
+    (cherry picked from commit 2ba0ac202ad64eb4a555715980ba538de19c9fd7)
+
+commit f22a41416b9795c778deeae6406cd33d18f13fa3
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Sun Oct 16 02:12:38 2011 -0700
+
+    Xnest: Match the host's keymap
+    
+    This was a regression.
+    
+    Introduced by: 08363c5830bdea34012dcd954b45ccfdc79a3a7e and
+                   32db27a7f867b503c2840ca7b815e96d10be9210
+    Masked by: 1e69fd4a60147287b31e53bfc61543fb17bb82c8
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+    Reviewed-by: Jamey Sharp <jamey@minilop.net>
+    (cherry picked from commit 83fef4235db86343477b4ec9858c6ba35e1aa7d9)
+
+commit 82445286d56fdac36f21ec5eed436646bda768dd
+Author: Tomáš Trnka <tomastrnka@gmx.com>
+Date:   Tue Oct 11 09:11:18 2011 +0200
+
+    Fix drain_console unregistration
+    
+    Bug introduced by 9dca441670d261a9a9fb6108960ed48f3d58fb7f
+    xfree86: add a hook to replace the new console handler.
+    
+    console_handler was not being set, making the server eat up CPU spinning
+    in WaitForSomething selecting consoleFd over and over again, every time
+    trying to unregister drain_console without success due to
+    console_handler being NULL.
+    
+    Let's just fix the unregistration in xf86SetConsoleHandler() and use that.
+    
+    But wait, there could be a catch: If some driver replaced the handler using
+    xf86SetConsoleHandler(), the unregistration in xf86CloseConsole will unregister
+    that one. I don't understand Xorg well enough to know whether this poses a
+    problem (could mess up driver deinit somehow or something like that). As it is,
+    xf86SetConsoleHandler() doesn't offer any way to prevent this (i.e. check which
+    handler is currently registered).
+    
+    I had been using it for two days on my machine that previously hit 100% CPU
+    several times a day. That has now gone away without any new problems appearing.
+    
+    Signed-off-by: Tomas Trnka <tomastrnka@gmx.com>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    (cherry picked from commit 323869f3298cbbfe864af9404a8aed1bf7995d79)
+
+commit c8c5ed998aac2c91dbec1f86af3395e08ddab373
+Author: Jesse Barnes <jbarnes@virtuousgeek.org>
+Date:   Thu Oct 13 12:01:10 2011 -0700
+
+    crtc: match full preferred modes if possible when choosing an initial config
+    
+    It's fairly common to have multiple, identical monitors plugged in.  In
+    that case, it's preferable to run the monitor's preferred mode on each
+    output, rather than just matching the width & height and end up with
+    different timings or refresh rates.
+    
+    Signed-off-by: Jesse Barnes <jbarnes@virtuousgeek.org>
+    Reviewed-by: Keith Packard <keithp@keithp.com>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+    (cherry picked from commit 3e145d3d67b472cb5d74cb8078b614160c4722b7)
+
+commit d780c6f6301ed2263b21ac7d327a1b2e8d3e76df
+Author: Ville Syrjala <syrjala@sci.fi>
+Date:   Sun Oct 9 01:11:04 2011 +0300
+
+    composite: Update borderClip in compAllocPixmap()
+    
+    Previously the parent constrained borderClip was copied over
+    when compRedirectWindow() is called. That is insufficient eg. in
+    case the window was already redirected, but not yet realized. So
+    copy the borderClip over in compAllocPixmap() instead.
+    
+    Example:
+    Window 1 is below an automatically redirect window 2. Window 2 is
+    unmapped and moved outside the extents of window 1. Window 2 is
+    then mapped again, and MarkOverlappedWindows() uses the up to
+    date borderSize of window 2 to mark windows, which leaves
+    window 1 unmarked. Then exposures are calculated using the stale
+    borderClip of window 2, which causes the window below window 2,
+    to be exposed through an apparent hole in window 1.
+    
+    Fixes: https://bugs.freedesktop.org/show_bug.cgi?id=22566
+    
+    Signed-off-by: Ville Syrjala <syrjala@sci.fi>
+    Reviewed-by: Keith Packard <keithp@keithp.com>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+    (cherry picked from commit a5266dcb3a60587e1877f90c18552baf60b597a0)
+
 commit 12f65819ffb04103f170ecd7e281348de618fc4c
 Author: Matthieu Herrb <matthieu.herrb@laas.fr>
 Date:   Mon Oct 17 22:27:35 2011 +0200
