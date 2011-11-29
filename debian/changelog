@@ -1,4 +1,4 @@
-xorg-server (2:1.11.2.901-1) UNRELEASED; urgency=low
+xorg-server (2:1.11.2.901-1) unstable; urgency=low
 
   * New upstream release candidate (1.11.3 RC1):
     - As usual: Fixes for various crashes and correctness issues.
@@ -10,7 +10,7 @@ xorg-server (2:1.11.2.901-1) UNRELEASED; urgency=low
       is perfectly OK.
   * Don't forget to ship xorg.conf.d(5) in xserver-xorg-core.
 
- -- Cyril Brulebois <kibi@debian.org>  Tue, 29 Nov 2011 15:28:29 +0100
+ -- Cyril Brulebois <kibi@debian.org>  Tue, 29 Nov 2011 17:04:09 +0100
 
 xorg-server (2:1.11.1.902-1) unstable; urgency=low
 
