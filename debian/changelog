@@ -4,6 +4,7 @@ xorg-server (2:1.11.2.901-1) UNRELEASED; urgency=low
     - As usual: Fixes for various crashes and correctness issues.
     - In particular: Fix for crash when starting a game (in wine) twice
       (Closes: #637448).
+    - Also: Fix crashes with server regeneration (Closes: #649420).
   * Add some lintian overrides:
     - xserver-xorg-core: breaks-without-version against virtual packages
       is perfectly OK.
