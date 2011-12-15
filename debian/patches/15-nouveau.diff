@@ -1,0 +1,68 @@
+From a685b5cf34532cef96fc9b05f735088ac0c0c7ad Mon Sep 17 00:00:00 2001
+From: Fedora X Ninjas <x@fedoraproject.org>
+Date: Tue, 16 Feb 2010 11:38:17 +1000
+Subject: [PATCH 08/17] autoconfig: select nouveau by default for NVIDIA GPUs
+
+Also, don't treat DRI setup failure as an error for nouveau.
+---
+ glx/glxdri.c                       |    7 +++++--
+ glx/glxdri2.c                      |    7 +++++--
+ hw/xfree86/common/xf86AutoConfig.c |   19 ++++++++++++++++++-
+ 3 files changed, 28 insertions(+), 5 deletions(-)
+---
+v2: Adapt the (II) part for nouveau after the move from glx/glxdri*.c to
+    glx/glxdricommon.c; the callers will still report (EE) after that
+    when mentioning the fallback to software rendering (since the error
+    case can be triggered in many various ways).
+
+Signed-off-by: Cyril Brulebois <kibi@debian.org>
+
+--- a/hw/xfree86/common/xf86pciBus.c
++++ b/hw/xfree86/common/xf86pciBus.c
+@@ -1123,7 +1123,24 @@ videoPtrToDriverList(struct pci_device *
+ 	    break;
+ 	case 0x102b:		    driverList[0] = "mga";	break;
+ 	case 0x10c8:		    driverList[0] = "neomagic"; break;
+-	case 0x10de: case 0x12d2:   driverList[0] = "nv";	break;
++	case 0x10de: case 0x12d2:
++	    switch (dev->device_id) {
++	    /* NV1 */
++	    case 0x0008:
++	    case 0x0009:
++		driverList[0] = "vesa";
++		break;
++	    /* NV3 */
++	    case 0x0018:
++	    case 0x0019:
++		driverList[0] = "nv";
++		break;
++	    default:
++		driverList[0] = "nouveau";
++		driverList[1] = "nv";
++		break;
++	    }
++	    break;
+ 	case 0x1106:		    driverList[0] = "openchrome"; break;
+         case 0x1b36:		    driverList[0] = "qxl"; break;
+ 	case 0x1163:		    driverList[0] = "rendition"; break;
+--- a/glx/glxdricommon.c
++++ b/glx/glxdricommon.c
+@@ -217,6 +217,7 @@ glxProbeDriver(const char *driverName,
+     void *driver;
+     char filename[PATH_MAX];
+     const __DRIextension **extensions;
++    int from = X_ERROR;
+ 
+     snprintf(filename, sizeof filename, "%s/%s_dri.so",
+              dri_driver_path, driverName);
+@@ -248,7 +249,9 @@ glxProbeDriver(const char *driverName,
+     }
+ 
+     if (*coreExt == NULL || *renderExt == NULL) {
+-	LogMessage(X_ERROR,
++	if (!strcmp(driverName, "nouveau"))
++	    from = X_INFO;
++	LogMessage(from,
+ 		   "AIGLX error: %s does not export required DRI extension\n",
+ 		   driverName);
+ 	goto cleanup_failure;
