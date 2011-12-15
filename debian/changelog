@@ -1,3 +1,9 @@
+xorg-server (2:1.11.99.1-1) UNRELEASED; urgency=low
+
+  * New upstream release snapshot (on the way to 1.12).
+
+ -- Cyril Brulebois <kibi@debian.org>  Thu, 15 Dec 2011 17:39:25 +0100
+
 xorg-server (2:1.11.2.901-1) unstable; urgency=low
 
   * New upstream release candidate (1.11.3 RC1):

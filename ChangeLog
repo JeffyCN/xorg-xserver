@@ -1,12 +1,226 @@
-commit 4689c84a07f87d35492feeae2bc59642c31b6eb3
-Author: Jeremy Huddleston <jeremyhu@apple.com>
-Date:   Mon Nov 28 00:07:29 2011 -0800
+commit 5952efa903d57ac69070f1477ce46223a2a7893c
+Author: Keith Packard <keithp@keithp.com>
+Date:   Sun Nov 20 13:07:33 2011 -0800
 
-    configure.ac: 1.11.2.901 (1.11.3 RC1)
+    Bump version to 1.11.99.1 (1.12 development release 1)
+    
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit 795fbe3e6e440f023e52c452106f4c266c13d36c
+Author: Keith Packard <keithp@keithp.com>
+Date:   Sun Nov 20 13:33:12 2011 -0800
+
+    Add 'optionstr.h' to include/Makefile.am
+    
+    This makes sure it gets distributed
+    
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit 328074890eeb111950e984c6f618311983600b20
+Author: dtakahashi42 <dtakahashi42@gmail.com>
+Date:   Fri Nov 18 11:30:22 2011 -0800
+
+    rootless: Fix a server crash when choosing a color with the gimp color wheel
+    
+    https://trac.macports.org/ticket/30927
     
     Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+    Reviewed-by: Jeremy Huddleston <jeremyhu@apple.com>
 
-commit e2661ddbc5d1b2edb1ab514a761f8c0b66e69736
+commit 58864146fbdf1820d04825838691e84784ef91bc
+Author: Ross Burton <ross@linux.intel.com>
+Date:   Wed Sep 28 11:46:02 2011 +0100
+
+    edid: Add quirk for Acer Aspire One 110
+    
+    At least one revision of the AAO reports a 190x110mm maximum size but a
+    451x113mm mode.
+    
+    X.Org Bug 41141 <https://bugs.freedesktop.org/show_bug.cgi?id=41141>
+    
+    Signed-off-by: Ross Burton <ross@linux.intel.com>
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+    Reviewed-by: Jeremy Huddleston <jeremyhu@apple.com>
+
+commit 34b0e4eee911f8b09a3682a7f1b4c8598ef48b8d
+Author: Chris Wilson <chris@chris-wilson.co.uk>
+Date:   Thu Aug 25 16:04:04 2011 +0100
+
+    dri2: Register the DRI2DrawableType after server regeneration
+    
+    The Resource database is reset upon regeneration and so the dri2 module
+    needs to re-register its RESTYPE for the drawable or else it will
+    clobber the next unsuspecting user of the database. Fortunately, DRI2 is
+    loaded late in the initialisation sequence and was last up until
+    xf86-video-intel started using the Resource database to track
+    outstanding swaps...
+    
+    Signed-off-by: Chris Wilson <chris@chris-wilson.co.uk>
+    Reviewed-by: Jeremy Huddleston <jeremyhu@apple.com>
+    Tested-by: Paulo Zanoni <paulo.r.zanoni@intel.com>
+
+commit bfa1a0dd190ed88020d60eba3bb04681c8e83a68
+Author: Chris Wilson <chris@chris-wilson.co.uk>
+Date:   Mon Jan 24 11:17:03 2011 +0000
+
+    DRI2: Avoid a NULL pointer dereference
+    
+    Bugzilla:  https://bugs.freedesktop.org/show_bug.cgi?id=41211
+    
+    Signed-off-by: Chris Wilson <chris@chris-wilson.co.uk>
+    Reviewed-by: Jeremy Huddleston <jeremyhu@apple.com>
+
+commit eeb21a133b982f71de739baf62e53c8a68f5d495
+Author: Chris Wilson <chris@chris-wilson.co.uk>
+Date:   Mon Jan 24 11:17:03 2011 +0000
+
+    VidMode: prevent crash with no modes
+    
+    Bugzilla:  https://bugs.freedesktop.org/show_bug.cgi?id=17431
+    
+    Signed-off-by: Chris Wilson <chris@chris-wilson.co.uk>
+    Reviewed-by: Jeremy Huddleston <jeremyhu@apple.com>
+
+commit c1bb8f43b9290c2b18a9f0ac59773ff8f1eb974f
+Author: Rami Ylimäki <rami.ylimaki@vincit.fi>
+Date:   Tue Oct 4 12:25:26 2011 +0300
+
+    record: Prevent out of bounds access when recording a reply.
+    
+    Any pad bytes in replies are written to the client from a zeroed
+    array. However, record extension tries to incorrectly access the pad
+    bytes from the end of reply data.
+    
+    Signed-off-by: Rami Ylimäki <rami.ylimaki@vincit.fi>
+    Reviewed-by: Erkki Seppälä <erkki.seppala@vincit.fi>
+
+commit 1f5baa924a5907978f564372265d9830ac72a077
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Sun Oct 30 20:26:42 2011 -0700
+
+    xfree86: Deprecate the use of xf86PciInfo.h
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+    Reviewed-by: Tormod Volden <debian.tormod@gmail.com>
+
+commit eb3377ffb8a7baa26c9831e56ed782d48b28fa71
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Tue Nov 1 14:59:15 2011 -0700
+
+    xfree86: Fix powerpc build with -Werror=int-to-pointer-cast -Werror=pointer-to-int-cast
+    
+    memType is a uint64_t on powerpc. Using memType only really makes
+    sense for *physical* addresses, which can be 64-bit for 32-bit
+    systems running on 64-bit hardware.
+    
+    However, unmapVidMem() only deals with *virtual* addresses, which
+    are guaranteed to fit into an uintptr_t.
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+    Reviewed-by: Mark Kettenis <kettenis@openbsd.org>
+
+commit a551f126cc4af7a476d9c8fd0cb309d5aa600d54
+Author: Pierre-Loup A. Griffais <pgriffais@nvidia.com>
+Date:   Fri Nov 4 23:26:25 2011 -0700
+
+    xfree86: Fix RandR rotation across server generations
+    
+    245cb8e94fd1599 fixed xf86RotateDestroy() to actually run its teardown
+    code, causing the Damage object to properly be re-allocated after a
+    server regeneration. However the block that does that still thinks the
+    Rotate layer BlockHandler is wrapped from the last generation, meaning
+    the shadow pixmap is never re-allocated and the Damage object is never
+    re-registered, causing a blank screen, and potentially a driver crash
+    on the next teardown after the server asks it to free a 0x0 Pixmap.
+    
+    Signed-off-by: Pierre-Loup A. Griffais <pgriffais@nvidia.com>
+    Reviewed-by: Aaron Plattner <aplattner@nvidia.com>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit bfa2a1857a1efda7f171f10e855d200ca0dbcc1a
+Merge: f0d50cc e7cb8f8
+Author: Keith Packard <keithp@keithp.com>
+Date:   Mon Nov 14 09:07:06 2011 -0800
+
+    Merge remote-tracking branch 'whot/for-keith'
+
+commit e7cb8f802adf6fc22e7a930c0dfc5c1076781c96
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Wed Nov 9 15:31:57 2011 +1000
+
+    Xext: remove unused variable 'n'
+    
+    xselinux_ext.c: In function 'SELinuxSendItemsToClient':
+    xselinux_ext.c:340:16: warning: unused variable 'n' [-Wunused-variable]
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Julien Cristau <jcristau@debian.org>
+
+commit bb4aa1f263ad38c175bfda3b7e6c325260ce3f28
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Wed Nov 9 15:31:10 2011 +1000
+
+    Xext: don't swap CARD8 in SProcSELinuxQueryVersion
+    
+    xselinux_ext.c: In function 'SELinuxSendItemsToClient':
+    xselinux_ext.c:340:16: warning: unused variable 'n' [-Wunused-variable]
+    xselinux_ext.c: In function 'SProcSELinuxQueryVersion':
+    xselinux_ext.c:532:62: error: call to 'wrong_size' declared with attribute
+    error: wrong sized variable passed to swap
+    xselinux_ext.c:533:62: error: call to 'wrong_size' declared with attribute
+    error: wrong sized variable passed to swap
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Julien Cristau <jcristau@debian.org>
+
+commit 35ec24cf245e5ef676e98a0bf7c77296a3f1ff63
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Mon Aug 1 14:14:02 2011 +1000
+
+    input: replace remaining GetPairedDevice() with GetMaster()
+    
+    Wherever it's obvious which device we need (keyboard or pointer), use
+    GetMaster() instead of GetPairedDevice(). It is more reliable in actually
+    getting the device type we want.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+
+commit fc16917ad6f0d2722bfb5c5eeca955dd3bc4125a
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Fri Apr 15 13:32:10 2011 +1000
+
+    include: export GetProximityEvents and QueueProximityEvents
+    
+    This is mainly needed for consistency with GetPointerEvents and friend.
+    No-one seems to actually need this function from outside the usual DDXs.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Jeremy Huddleston <jeremyhu@apple.com>
+
+commit 11840595a1be9f2df7390bcc708cc176e60d3ef2
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Thu Nov 3 08:58:58 2011 +1000
+
+    dix: Don't let a driver without a ProximityClassRec post events
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Jeremy Huddleston <jeremyhu@apple.com>
+
+commit 22715e465b415b3351b83b8279a4f44157f63199
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Thu Oct 27 11:03:39 2011 +1000
+
+    Xi: allow passive keygrabs on the XIAll(Master)Devices fake devices
+    
+    They don't have a KeyClassRec, but we must still allow passive grabs on
+    them.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Tested-by: Bastien Nocera <hadess@hadess.net>
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+
+commit f0d50cc6651dce3a8a3cd3fb84210aa92b139763
 Author: Derek Buitenhuis <derek.buitenhuis@gmail.com>
 Date:   Sun Nov 6 12:20:51 2011 -0500
 
@@ -35,158 +249,232 @@ Date:   Sun Nov 6 12:20:51 2011 -0500
     Signed-off-by: Derek Buitenhuis <derek.buitenhuis@gmail.com>
     Reviewed-by: Adam Jackson <ajax@redhat.com>
     Signed-off-by: Keith Packard <keithp@keithp.com>
-    (cherry picked from commit f0d50cc6651dce3a8a3cd3fb84210aa92b139763)
 
-commit 2e3406fc6737539210e29ac0b2821848e6d1f069
-Author: Jeremy Huddleston <jeremyhu@apple.com>
-Date:   Mon Nov 7 22:14:30 2011 +0000
+commit c643c2b7bf480f5c27ff8606bda087f8bff3b154
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Tue Nov 1 12:17:50 2011 +1000
 
-    dmx: Build fix for -Werror=implicit-function-declaration
+    xfree86: duplicate name and driver from pInfo for NewInputDeviceRequest
     
-    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
-    Reviewed-by: Alan Coopersmith <alan.coopersmith@oracle.com>
-    Signed-off-by: Alan Coopersmith <alan.coopersmith@oracle.com>
-    (cherry picked from commit f405dfffe7d5db81d398615a80acbeba7e014ada)
+    xorg.conf devices had the name and driver set in the DDX's InputInfoPtr list
+    but not in the option list for those devices. That information was lost when
+    passing the options into NewInputDeviceRequest. NIDR then refused to start
+    the devices.
+    
+    Introduced in xorg-server-1.11.0-250-ge4cd24e
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Tested-by: James Cloos <cloos@jhcloos.com>
 
-commit b440fc9c1bb10f8c227120e6d9e58101108d71bb
-Author: dtakahashi42 <dtakahashi42@gmail.com>
-Date:   Fri Nov 18 11:30:22 2011 -0800
+commit 9cc44b955b27de33348d6a20bebc9704930ee18e
+Author: Rui Matos <tiagomatos@gmail.com>
+Date:   Tue Nov 1 21:32:36 2011 +0000
 
-    rootless: Fix a server crash when choosing a color with the gimp color wheel
+    randr: Make the RRConstrainCursorHarder logic the same as miPointerSetPosition
     
-    https://trac.macports.org/ticket/30927
+    The constraining logic in RRConstrainCursorHarder allows the cursor to reach
+    crtc positions of x = width and y = height while the constraining code in
+    miPointerSetPosition only allows it to reach x = width - 1 and y = height - 1
+    for the analogous screen case.
     
-    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
-    Reviewed-by: Jeremy Huddleston <jeremyhu@apple.com>
-    (cherry picked from commit 328074890eeb111950e984c6f618311983600b20)
-
-commit 40c1287f36517f0afd62306e306f6a68120d9a59
-Author: Ross Burton <ross@linux.intel.com>
-Date:   Wed Sep 28 11:46:02 2011 +0100
-
-    edid: Add quirk for Acer Aspire One 110
+    This patch makes the former's logic equivalent to the latter's which allows
+    applications to benefit from Fitts's law. E.g. a maximized application
+    adjacent to a crtc border wouldn't get pointer events if the user moved the
+    pointer all the way until it's contained.
     
-    At least one revision of the AAO reports a 190x110mm maximum size but a
-    451x113mm mode.
-    
-    X.Org Bug 41141 <https://bugs.freedesktop.org/show_bug.cgi?id=41141>
-    
-    Signed-off-by: Ross Burton <ross@linux.intel.com>
+    Signed-off-by: Rui Matos <tiagomatos@gmail.com>
     Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit 548c6fe044068ffba9b5306dc6b11f2ba22782a4
+Merge: 3881b0b ffe8ec8
+Author: Keith Packard <keithp@keithp.com>
+Date:   Wed Nov 2 21:35:31 2011 -0700
+
+    Merge remote-tracking branch 'jturney/master'
+
+commit 3881b0bf1ce11a62473650bdf6ee01a1762f6f91
+Author: Gaetan Nadon <memsize@videotron.ca>
+Date:   Tue Nov 1 07:17:07 2011 -0400
+
+    mi: remove deprecated miPointerAbsoluteCursor from design doc
+    
+    Function was removed from the code by commit f5409aa026
+    
     Reviewed-by: Jeremy Huddleston <jeremyhu@apple.com>
-    (cherry picked from commit 58864146fbdf1820d04825838691e84784ef91bc)
+    Signed-off-by: Gaetan Nadon <memsize@videotron.ca>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
 
-commit 7972e2dade58158bb98f5b7dc5f873b9fb3446de
-Author: Chris Wilson <chris@chris-wilson.co.uk>
-Date:   Thu Aug 25 16:04:04 2011 +0100
+commit d91aa0e6601bdf3e2cfa57b3412ab14ac486edc4
+Merge: 8df3a9c 401150d
+Author: Keith Packard <keithp@keithp.com>
+Date:   Wed Nov 2 21:20:07 2011 -0700
 
-    dri2: Register the DRI2DrawableType after server regeneration
+    Merge remote-tracking branch 'whot/two-screen-coordinates'
+
+commit 8df3a9ca5abbd56eb2013fa65250d21a8f18865b
+Merge: 8329afa ef89548
+Author: Keith Packard <keithp@keithp.com>
+Date:   Wed Nov 2 21:18:16 2011 -0700
+
+    Merge remote-tracking branch 'koba/reviewed'
+
+commit ffe8ec86db2655b2c83e5ae61521898140c855ac
+Author: Colin Harrison <colin.harrison@virgin.net>
+Date:   Sat Oct 8 15:05:22 2011 +0100
+
+    hw/xwin: Fix a typo in ddraw.h
     
-    The Resource database is reset upon regeneration and so the dri2 module
-    needs to re-register its RESTYPE for the drawable or else it will
-    clobber the next unsuspecting user of the database. Fortunately, DRI2 is
-    loaded late in the initialisation sequence and was last up until
-    xf86-video-intel started using the Resource database to track
-    outstanding swaps...
+    Fix a (fortunately benign) typo in ddraw.h
     
-    Signed-off-by: Chris Wilson <chris@chris-wilson.co.uk>
+    Signed-off-by: Jon TURNEY <jon.turney@dronecode.org.uk>
+
+commit 48fda3c52b41157313b7fd56d9f3fa3ad4166ed7
+Author: Yaakov Selkowitz <yselkowitz@users.sourceforge.net>
+Date:   Thu Feb 18 20:37:00 2010 -0600
+
+    hw/xwin: Revert "Fix bug #5735, Serious flaw in CygwinX clipboard"
+    
+    This commit wreaks havoc with other programs which manage the clipboard,
+    such as MS Office Clipboard or Win32 VNC viewers:
+    
+    http://sourceware.org/bugzilla/show_bug.cgi?id=9910
+    
+    This reverts commit 70ddd0f39d5118db72a1a4e473cbfb502f1ed9ec.
+    
+    Signed-off-by: Yaakov Selkowitz <yselkowitz@users.sourceforge.net>
+    Signed-off-by: Jon TURNEY <jon.turney@dronecode.org.uk>
+    Reviewed-by: Jon TURNEY <jon.turney@dronecode.org.uk>
+    Reviewed-by: Colin Harrison <colin.harrison@virgin.net>
+
+commit 3ead1d810b0e157078db39712e02ea6dc85216d8
+Author: Jon TURNEY <jon.turney@dronecode.org.uk>
+Date:   Sun Jul 3 19:10:52 2011 +0100
+
+    hw/xwin: Stop pretending we work on NT4
+    
+    We already link directly to some functions not available in NT4, so stop
+    pretending we will work on NT4 and link directly to EnumDisplayMonitors()
+    and SHGetFolderPath()
+    
+    Also remove mentions of NT4 & Win95 from error messages
+    
+    Signed-off-by: Jon TURNEY <jon.turney@dronecode.org.uk>
+    Reviewed-by: Colin Harrison <colin.harrison@virgin.net>
+
+commit f6529a05a2f087cb57a7fe84f226fef3780728d0
+Author: Colin Harrison <colin.harrison@virgin.net>
+Date:   Sat Oct 8 14:39:07 2011 +0100
+
+    Xming: Always remove temporary file used when invoking xkbcomp on Win32
+    
+    When built for native Win32, pipe() & fork() aren't available, so we
+    use a tempoary file and system() to invoke xkbcomp
+    
+    Ensure the temporary file is always removed. It was only being removed
+    on most errors, not on success :S
+    
+    Also fix a couple of warnings which occur when built with WIN32 defined
+    
+    Signed-off-by: Jon TURNEY <jon.turney@dronecode.org.uk>
+    Reviewed-by: Jon TURNEY <jon.turney@dronecode.org.uk>
+
+commit ee1985386700288af1a8b1789dcad0d7d9c97393
+Author: Jon TURNEY <jon.turney@dronecode.org.uk>
+Date:   Sat Apr 16 23:28:45 2011 +0100
+
+    hw/xwin: Link directly to TrackMouseEvent()
+    
+    TrackMouseEvent has existed in user32 since at least NT4, so
+    don't bother with jumping through all the ancient compatibility hoops
+    of finding if _TrackMouseEvent() exists in comctl32 so it can check
+    if TrackMouseEvent() exists in user32 to see if it needs to emulate
+    it...
+    
+    Signed-off-by: Jon TURNEY <jon.turney@dronecode.org.uk>
+    Reviewed-by: Colin Harrison <colin.harrison@virgin.net>
+
+commit e2e6fab1efa6895256ac0ed4d5b054a88ad18077
+Author: Jon TURNEY <jon.turney@dronecode.org.uk>
+Date:   Tue Mar 23 04:45:37 2010 -0500
+
+    Cygwin/X: Make default DPI match native DPI
+    
+    Make the default DPI match the current Windows DPI setting. If that
+    setting can't be retrieved, change the fallback DPI value from 75 dpi
+    to 96 dpi.
+    
+    Mark the application as dpiAware in the manifest, which prevents
+    dpi virtualization for high (>96) dpi values on Vista and later.
+    
+    Signed-off-by: Jon TURNEY <jon.turney@dronecode.org.uk>
+    Signed-off-by: Yaakov Selkowitz <yselkowitz@users.sourceforge.net>
+    Reviewed-by: Colin Harrison <colin.harrison@virgin.net>
+
+commit 8329afa59dd5ea3adf7adebdb2111a9bccbb126b
+Author: Aaron Plattner <aplattner@nvidia.com>
+Date:   Mon Oct 31 15:01:12 2011 -0700
+
+    dix: Reinstate GetImage window size check
+    
+    Commit 587c3a2d1961834558193e8e14e8e381a077a253 fixed DoGetImage to
+    check windows against their backing drawables, rather than against the
+    screen dimensions, to prevent reading outside the bounds of redirected
+    windows' backing pixmaps (see bug #22804).  Unfortunately, while
+    making that change I also removed the check that the rectangle is
+    contained within the bounds of the source window, which is a violation
+    of the specification:
+    
+        If the drawable is a window, the window must be viewable, and it
+        must be the case that, if there were no inferiors or overlapping
+        windows, the specified rectangle of the window would be fully
+        visible on the screen *and wholly contained within the outside
+        edges of the window* (or a Match error results). Note that the
+        borders of the window can be included and read with this request.
+    
+        (emphasis mine)
+    
+    Reinstate the window dimension check, to return BadMatch if the
+    GetImage request falls outside the bounds of the window.
+    
+    Fixes X Test Suite test XGetImage-15:
+    
+        400|0 15 1 11:05:41|IC Start
+        200|0 15 11:05:41|TP Start
+        520|0 15 00005146 1 1|VSW5TESTSUITE PURPOSE 15
+        520|0 15 00005146 1 2|Assertion XGetImage-15.(A)
+        520|0 15 00005146 1 3|When the drawable is a window and the window is viewable
+        520|0 15 00005146 1 4|and it is not the case that given there were no inferiors or
+        520|0 15 00005146 1 5|overlapping windows the specified rectangle of the window
+        520|0 15 00005146 1 6|would be fully visible on the screen and wholly contained
+        520|0 15 00005146 1 7|within the outside edges of the window, then a BadMatch
+        520|0 15 00005146 1 8|error occurs.
+        520|0 15 00005146 1 9|METH: Create window which is not fully visible on the screen.
+        520|0 15 00005146 1 10|METH: Call XMapWindow to make sure the window is viewable.
+        520|0 15 00005146 1 11|METH: Call XGetImage with rectangle extending beyond edge of screen.
+        520|0 15 00005146 1 12|METH: Verify XGetImage return value is null.
+        520|0 15 00005146 1 13|METH: Verify that BadMatch error occurred.
+        520|0 15 00005146 1 14|METH: Create window which is fully visible on the screen.
+        520|0 15 00005146 1 15|METH: Call XMapWindow to make sure the window is viewable.
+        520|0 15 00005146 1 16|METH: Call XGetImage with rectangle extending beyond edge of window.
+        520|0 15 00005146 1 17|METH: Verify XGetImage return value is null.
+        520|0 15 00005146 1 18|METH: Verify that BadMatch error occurred.
+        520|0 15 00005146 1 19|REPORT: Got Success, Expecting BadMatch
+        520|0 15 00005146 1 20|REPORT: Null image not returned.
+        220|0 15 1 11:05:41|FAIL
+    
+    Signed-off-by: Aaron Plattner <aplattner@nvidia.com>
     Reviewed-by: Jeremy Huddleston <jeremyhu@apple.com>
-    Tested-by: Paulo Zanoni <paulo.r.zanoni@intel.com>
-    (cherry picked from commit 34b0e4eee911f8b09a3682a7f1b4c8598ef48b8d)
+    Signed-off-by: Keith Packard <keithp@keithp.com>
 
-commit 73beaf9033d9a44e7a7c654f296624c7265eeb6d
-Author: Chris Wilson <chris@chris-wilson.co.uk>
-Date:   Mon Jan 24 11:17:03 2011 +0000
+commit 132545ff576cc69ed63f5a08127151fe550de4c3
+Merge: d0c6732 d7c44a7
+Author: Keith Packard <keithp@keithp.com>
+Date:   Sun Oct 30 16:57:58 2011 -0700
 
-    DRI2: Avoid a NULL pointer dereference
-    
-    Bugzilla:  https://bugs.freedesktop.org/show_bug.cgi?id=41211
-    
-    Signed-off-by: Chris Wilson <chris@chris-wilson.co.uk>
-    Reviewed-by: Jeremy Huddleston <jeremyhu@apple.com>
-    (cherry picked from commit bfa1a0dd190ed88020d60eba3bb04681c8e83a68)
+    Merge remote-tracking branch 'whot/for-keith'
 
-commit 6105fcaa3592cb6d0d5f22d9b850986d0bc4d241
-Author: Chris Wilson <chris@chris-wilson.co.uk>
-Date:   Mon Jan 24 11:17:03 2011 +0000
-
-    VidMode: prevent crash with no modes
-    
-    Bugzilla:  https://bugs.freedesktop.org/show_bug.cgi?id=17431
-    
-    Signed-off-by: Chris Wilson <chris@chris-wilson.co.uk>
-    Reviewed-by: Jeremy Huddleston <jeremyhu@apple.com>
-    (cherry picked from commit eeb21a133b982f71de739baf62e53c8a68f5d495)
-
-commit d113b2911573f3685dc644c6fdd1979aa880b99f
-Author: Rami Ylimäki <rami.ylimaki@vincit.fi>
-Date:   Tue Oct 4 12:25:26 2011 +0300
-
-    record: Prevent out of bounds access when recording a reply.
-    
-    Any pad bytes in replies are written to the client from a zeroed
-    array. However, record extension tries to incorrectly access the pad
-    bytes from the end of reply data.
-    
-    Signed-off-by: Rami Ylimäki <rami.ylimaki@vincit.fi>
-    Reviewed-by: Erkki Seppälä <erkki.seppala@vincit.fi>
-    (cherry picked from commit c1bb8f43b9290c2b18a9f0ac59773ff8f1eb974f)
-
-commit 4dc5b6ea9f4932070c37b7c5393d468d00803712
-Author: Jeremy Huddleston <jeremyhu@apple.com>
-Date:   Tue Nov 1 14:59:15 2011 -0700
-
-    xfree86: Fix powerpc build with -Werror=int-to-pointer-cast -Werror=pointer-to-int-cast
-    
-    memType is a uint64_t on powerpc. Using memType only really makes
-    sense for *physical* addresses, which can be 64-bit for 32-bit
-    systems running on 64-bit hardware.
-    
-    However, unmapVidMem() only deals with *virtual* addresses, which
-    are guaranteed to fit into an uintptr_t.
-    
-    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
-    Reviewed-by: Mark Kettenis <kettenis@openbsd.org>
-    (cherry picked from commit eb3377ffb8a7baa26c9831e56ed782d48b28fa71)
-
-commit a1925f08790083a5c00f9f4ba766cbb8749240f3
-Author: Peter Hutterer <peter.hutterer@who-t.net>
-Date:   Fri Apr 15 13:32:10 2011 +1000
-
-    include: export GetProximityEvents and QueueProximityEvents
-    
-    This is mainly needed for consistency with GetPointerEvents and friend.
-    No-one seems to actually need this function from outside the usual DDXs.
-    
-    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
-    Reviewed-by: Jeremy Huddleston <jeremyhu@apple.com>
-    (cherry picked from commit fc16917ad6f0d2722bfb5c5eeca955dd3bc4125a)
-
-commit a6a21f84bbdd4e3c6218f7b4c04a2d947a784f9f
-Author: Peter Hutterer <peter.hutterer@who-t.net>
-Date:   Thu Nov 3 08:58:58 2011 +1000
-
-    dix: Don't let a driver without a ProximityClassRec post events
-    
-    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
-    Reviewed-by: Jeremy Huddleston <jeremyhu@apple.com>
-    (cherry picked from commit 11840595a1be9f2df7390bcc708cc176e60d3ef2)
-
-commit 2f2d871ccdfb256831ae487c5916054a3d29d126
-Author: Peter Hutterer <peter.hutterer@who-t.net>
-Date:   Thu Oct 27 11:03:39 2011 +1000
-
-    Xi: allow passive keygrabs on the XIAll(Master)Devices fake devices
-    
-    They don't have a KeyClassRec, but we must still allow passive grabs on
-    them.
-    
-    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
-    Tested-by: Bastien Nocera <hadess@hadess.net>
-    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
-    (cherry picked from commit 22715e465b415b3351b83b8279a4f44157f63199)
-
-commit 34bb83b9df20ff63dbb147ed661f39efb8bae8e4
+commit d7c44a7c9760449bef263413ad3b20f19b1dc95a
 Author: Peter Hutterer <peter.hutterer@who-t.net>
 Date:   Mon Oct 24 12:00:32 2011 +1000
 
@@ -205,9 +493,418 @@ Date:   Mon Oct 24 12:00:32 2011 +1000
     
     Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
     Reviewed-by: Julien Cristau <jcristau@debian.org>
-    (cherry picked from commit d7c44a7c9760449bef263413ad3b20f19b1dc95a)
 
-commit 97f2ae60fc0cc755abd8b88df826fcb1a20464fe
+commit 820d9040f50a8440741b3aefbc069a3ad81e824e
+Author: Servaas Vandenberghe <vdb@picaros.org>
+Date:   Wed Aug 31 07:06:49 2011 +0200
+
+    xfree86: fix potential buffer overflow
+    
+    The patch below fixes a potential buffer overflow in xf86addComment().
+    This occurs if  curlen > 0 && eol_seen == 0 && iscomment == 0 , as
+    follows from the code:
+    
+    char *xf86addComment(char *cur, char *add)
+    
+    <...>
+    
+            len = strlen(add);
+            endnewline = add[len - 1] == '\n';
+            len +=  1 + iscomment + (!hasnewline) + (!endnewline) + eol_seen;
+    
+            if ((str = realloc(cur, len + curlen)) == NULL)
+                    return cur;
+    
+            cur = str;
+    
+            if (eol_seen || (curlen && !hasnewline))
+                    cur[curlen++] = '\n';
+            if (!iscomment)
+                    cur[curlen++] = '#';
+            strcpy(cur + curlen, add);
+            if (!endnewline)
+                    strcat(cur, "\n");
+    
+    Signed-off-by: Servaas Vandenberghe <vdb@picaros.org>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+    
+    [whot: added buffer overflow test case]
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit 63e87b8639eb8e0b4e32e5d3a09099d31a03bbcd
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Tue Oct 25 11:49:26 2011 +1000
+
+    xfree86: reduce calls to input_option_get_key/value
+    
+    No functional changes.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Dan Nicholson <dbn.lists@gmail.com>
+
+commit d0c6732a99c9a7e40752b9ba7898a01c325103fa
+Author: Anssi Hannula <anssi.hannula@iki.fi>
+Date:   Wed Apr 20 14:34:52 2011 +0300
+
+    xfree86: add nouveau as the first automatic driver for NVIDIA hardware
+    
+    Add nouveau as the first driver on linux for NVIDIA hardware when
+    driver autoconfiguration is done, as it is more capable than nv.
+    
+    nv is also kept in the list as it is more widely supported and because
+    some old cards are not supported by nouveau.
+    
+    Signed-off-by: Anssi Hannula <anssi.hannula@iki.fi>
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+    Reviewed-by: Cyril Brulebois <kibi@debian.org>
+    Reviewed-by: Jeremy Huddleston <jeremyhu@apple.com>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit ef895484c8a43d447d9d3ea7d4226936cc5f92cc
+Author: Alexandr Shadchin <Alexandr.Shadchin@gmail.com>
+Date:   Tue Oct 4 10:46:00 2011 +0600
+
+    bsd: alpha_video: Remove unused variables
+    
+    Signed-off-by: Alexandr Shadchin <Alexandr.Shadchin@gmail.com>
+    Reviewed-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+
+commit fea7c7a8c070ec17ec03e4cb193834b6ca72fb72
+Author: Alexandr Shadchin <Alexandr.Shadchin@gmail.com>
+Date:   Mon Oct 3 23:03:31 2011 +0600
+
+    bsd: alpha_video: Simplify #include
+    
+    Signed-off-by: Alexandr Shadchin <Alexandr.Shadchin@gmail.com>
+    Reviewed-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+
+commit 93a3a28f2c1e95ea7fae6cf1c2fb50b30eae9c33
+Author: Alexandr Shadchin <Alexandr.Shadchin@gmail.com>
+Date:   Tue Oct 4 00:45:09 2011 +0600
+
+    bsd: alpha_video: Function sethae() need only for FreeBSD
+    
+    Return value sethae() is becoming void because no caller used it. Also old
+    msb_set static checked by each caller is replaced by the p.hae static checked
+    in sethae() when it's called.
+    
+    Signed-off-by: Alexandr Shadchin <Alexandr.Shadchin@gmail.com>
+    Reviewed-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+
+commit 05b41e2dc60a0aefc685a33260e5d8e09580908b
+Author: Alexandr Shadchin <Alexandr.Shadchin@gmail.com>
+Date:   Tue Oct 4 17:20:13 2011 +0600
+
+    Move check definition MAP_FAILED in xf86_OSlib.h
+    
+    Also remove odd definition MAP_FAILED.
+    
+    Signed-off-by: Alexandr Shadchin <Alexandr.Shadchin@gmail.com>
+    Reviewed-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+
+commit af56e502f5ddf1d2d495b633734cadcb023b7c36
+Author: Alexandr Shadchin <Alexandr.Shadchin@gmail.com>
+Date:   Tue Oct 4 16:49:22 2011 +0600
+
+    Remove odd definition DEV_MEM
+    
+    DEV_MEM defined in xf86_OSlib.h
+    
+    Signed-off-by: Alexandr Shadchin <Alexandr.Shadchin@gmail.com>
+    Reviewed-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+
+commit 0481e9d3d1e0dbc05099184128de5cd6f13445f7
+Author: Alexandr Shadchin <Alexandr.Shadchin@gmail.com>
+Date:   Tue Oct 4 15:09:45 2011 +0600
+
+    Remove BSDi support
+    
+    Signed-off-by: Alexandr Shadchin <Alexandr.Shadchin@gmail.com>
+    Reviewed-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+
+commit 8838a86fd325cb7f262a582d22ccdaa8a8f1a534
+Author: Alexandr Shadchin <Alexandr.Shadchin@gmail.com>
+Date:   Tue Oct 4 14:57:20 2011 +0600
+
+    Remove unused VT_SYSREQ_DEFAULT
+    
+    Signed-off-by: Alexandr Shadchin <Alexandr.Shadchin@gmail.com>
+    Reviewed-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+
+commit 91131037a2d2e07079de5d222d8a8c95300750cc
+Author: Alexandr Shadchin <alexandr.shadchin@gmail.com>
+Date:   Sat Oct 29 00:14:32 2011 +0600
+
+    Fix position _X_EXPORT
+    
+    Signed-off-by: Alexandr Shadchin <Alexandr.Shadchin@gmail.com>
+    Reviewed-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit 219bcec73d3554c57b87f28812ab06a66b739b19
+Author: Alexandr Shadchin <alexandr.shadchin@gmail.com>
+Date:   Sat Oct 29 00:14:31 2011 +0600
+
+    bsd: Remove odd message about -sharevts
+    
+    This is missing in commit 'xfree86: move -novtswitch & -sharevts argument
+    handling up to common layer'
+    
+    Signed-off-by: Alexandr Shadchin <Alexandr.Shadchin@gmail.com>
+    Reviewed-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit 005ab41986b0bb6a4e626aee7a7a542247f422e7
+Author: Dave Airlie <airlied@redhat.com>
+Date:   Thu Oct 27 08:38:45 2011 +1000
+
+    test: fix two more failing FP3232 tests
+    
+    And put a comment in to explain why we're testing for a frac between .3 and
+    .6. We can't directly compare the frac since the floating/fixed point
+    conversion loses precision.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit 286fa9bf9b4ffb0f9dbd3f1cae46ddcb27ee9318
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Tue Oct 25 23:53:43 2011 -0700
+
+    XWin: windowswm: Correct byte swapping in event notifications
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+    Reviewed-by: Jon TURNEY <jon.turney@dronecode.org.uk>
+
+commit dc054fefc586c5b404fe0f949dbd456e5267c647
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Tue Oct 25 23:49:33 2011 -0700
+
+    XQuartz: appledri: Correct byte swapping in event notifications
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+
+commit d5fee2b638fabeb8bec31a24e57d5c2a232d0893
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Tue Oct 25 23:48:16 2011 -0700
+
+    XQuartz: applewm: Correct byte swapping in event notifications
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+
+commit 5701ab4a441eb113abd0851b0d71b82d12112854
+Merge: 7d50211 a41214b
+Author: Keith Packard <keithp@keithp.com>
+Date:   Mon Oct 24 22:09:00 2011 -0700
+
+    Merge remote-tracking branch 'whot/for-keith'
+
+commit a41214bc9a0f326c6dc129e4a6382efb8b826862
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Tue Oct 25 12:57:07 2011 +1000
+
+    kdrive: check for null memory, fix OOB
+    
+    If key/value allocation failed, don't bother adding another InputOption. And
+    make sure the memory allocated is large enough for the trailing \0
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Jeremy Huddleston <jeremyhu@apple.com>
+
+commit ffe20acedb3cdc4811eb52f8fc540ba6af7339fa
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Thu Oct 20 16:42:20 2011 +1000
+
+    Use new FP1616/FP3232 conversion functions
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Jeremy Huddleston <jeremyhu@apple.com>
+
+commit 7500d841f4c709ae0edc6420332096d3b9ef9fcc
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Thu Oct 20 16:49:28 2011 +1000
+
+    test: fix test with new double -> fp3232 conversion functions
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Tested-by: Dave Airlie <airlied@redhat.com>
+    Reviewed-by: Dave Airlie <airlied@redhat.com>
+
+commit 4bb5d8fae4f9a70f12591315f0b267a2ea826a0c
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Wed Oct 19 13:17:51 2011 +1000
+
+    Xi: send DeviceChangedEvents when the scroll valuators change value
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+
+commit 1f4af6c12fb5d4c19f4eac3df768517c9132cc88
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Wed Oct 19 12:28:37 2011 +1000
+
+    dix: accept a NULL master for CreateClassesChangedEvent
+    
+    If a floating device changes, the master is NULL but we must still create a
+    DCE for it.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+
+commit d77dec6971e4a0b306c8dbd5adf627908d7972cb
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Wed Oct 19 12:11:16 2011 +1000
+
+    Xi: ensure the deviceid for DeviceChangedEvents is always the right one
+    
+    If we're sending the event for a given device, make sure the deviceid is
+    that of the device.
+    This allows callers to use the same DCE for slave and master without having
+    to fiddle the DCE's internal fields.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+
+commit e9dee21fa3213bfe87b2b728a38eb41d3ba0e664
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Tue Oct 18 17:47:59 2011 +1000
+
+    dix: pass the flags into the CreateClassesChangedEvent
+    
+    No effective functional changes, prep work for future patches.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+
+commit fcdd2587a17437b643b4592aa7f65d11c05a4cd8
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Tue Oct 18 17:41:29 2011 +1000
+
+    dix: drop unused argument from XISendDeviceChangedEvent
+    
+    Instead of device and master (and just using master), drop the master
+    argument and let the callers pass in the device the event is to be sent for.
+    
+    No effective functional changes.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+
+commit 8473e441b0f832775153281bc3df5e2d4feb2b36
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Tue Oct 18 17:11:27 2011 +1000
+
+    dix: add ScrollInfo to DeviceChangedEvents
+    
+    3304bbff9b4ed63f1a47410a5320a136420ba2c6 added smooth scrolling support for
+    pointer events and for XIQueryDevice but didn't add the matching parts to
+    XIDeviceChangedEvents.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+
+commit e3f6a76dd480717eae4b17ad8e2ff707de2ffe4c
+Author: Andreas Wettstein <wettstein509@solnet.ch>
+Date:   Thu Aug 11 16:33:33 2011 +1000
+
+    xkb: Support noLock and noUnlock flags for LockMods
+    
+    These flags are required by the XKB spec section 6.3.
+    
+    Signed-off-by: Andreas Wettstein <wettstein509@solnet.ch>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit 6f33593dc087d367d899d1cb6e6e30b282d922e2
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Fri Oct 21 09:09:55 2011 +1000
+
+    xfree86 doc: replace driver "keyboard" with "kbd"
+    
+    We've deprecated keyboard a long time ago
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+
+commit e4cd24e717ef1059804b3f6bb483810b708cd56a
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Fri Aug 5 14:48:02 2011 +1000
+
+    xfree86: use NewInputDeviceRequest for xorg.conf devices too
+    
+    Only use one init path for input devices - through NIDR.
+    
+    This requires that inp_driver and inp_identifier from the
+    XF86ConfInputRec are copied over into the options for NIDR to see them.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+
+commit 1ecc427a39d41e723912492b846512fd0ad9af2d
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Wed Aug 10 14:37:41 2011 +1000
+
+    dix: move #if statement to stop compiler warning
+    
+    ptrveloc.c: In function 'QueryTrackers':
+    ptrveloc.c:598:34: warning: variable 'used_offset' set but not used
+    [-Wunused-but-set-variable]
+    
+    used_offset is used, but only in the debugging code. Move the #if statement
+    to ignore that warning.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+
+commit f9067c1dd8ce9058eb48a20dfae52bc8cf3a1e55
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Fri Aug 5 14:05:58 2011 +1000
+
+    xfree86: Fix a comment, the old function doesn't exist anymore
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+
+commit aeab26e9e1751e1e3514798fa53e9bd604b0d254
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Wed Aug 10 15:58:34 2011 +1000
+
+    xfree86: use xf86AddNewOption instead of xf86addNewOption
+    
+    The former strdups for us. If the strdup fails we miss out on the
+    CorePointer option (default on anyway) and we're likely to fall over soon
+    anyway, so let's pretend this is the same behaviour.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+
+commit c39c8d34282b82d73c3c69a16cf0c2816256d85b
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Wed Aug 10 14:38:58 2011 +1000
+
+    input: switch InputOption to use XF86OptionRec storage.
+    
+    Use the same struct for both InputOption and XF86OptionRec so we don't need
+    to convert to and fro the two in the config backends.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Dan Nicholson <dbn.lists@gmail.com>
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+
+commit 16ac78a53c1edeae183db8672104587b306cfe13
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Tue Oct 25 11:40:58 2011 +1000
+
+    kdrive: switch to new InputOption API.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Keith Packard <keithp@keithp.com>
+
+commit 7d50211ab57a35910d79fc3f67ae89aff91fa995
 Author: Christopher Yeleighton <giecrilj@stegny.2a.pl>
 Date:   Mon Oct 24 18:47:06 2011 -0700
 
@@ -220,9 +917,15 @@ Date:   Mon Oct 24 18:47:06 2011 -0700
     Signed-off-by: Alan Coopersmith <alan.coopersmith@oracle.com>
     Reviewed-by: Jeremy Huddleston <jeremyhu@apple.com>
     Signed-off-by: Keith Packard <keithp@keithp.com>
-    (cherry picked from commit 7d50211ab57a35910d79fc3f67ae89aff91fa995)
 
-commit 89626304ea1ad316c5b7145a40f09377148cff21
+commit d9d3a01ffca5e2de650d098231e16205781804c5
+Merge: 17416e8 fb55f8f
+Author: Keith Packard <keithp@keithp.com>
+Date:   Mon Oct 24 18:12:23 2011 -0700
+
+    Merge remote-tracking branch 'jeremyhu/master'
+
+commit 17416e88dcfcc584fe5f87580d5d2b719b3521c3
 Author: Dave Airlie <airlied@redhat.com>
 Date:   Thu Oct 20 14:43:01 2011 +0100
 
@@ -247,65 +950,16 @@ Date:   Thu Oct 20 14:43:01 2011 +0100
     Signed-off-by: Dave Airlie <airlied@redhat.com>
     Reviewed-by: Keith Packard <keithp@keithp.com>
     Signed-off-by: Keith Packard <keithp@keithp.com>
-    (cherry picked from commit 17416e88dcfcc584fe5f87580d5d2b719b3521c3)
 
-commit c68a84e73d1ebb2f75cdc4c3d8576a15b31ab3f7
+commit fb55f8f790f69f30b0ab18648c337bde9d41f5ff
 Author: Jeremy Huddleston <jeremyhu@apple.com>
-Date:   Fri Nov 4 10:24:08 2011 -0700
+Date:   Mon Oct 24 16:45:36 2011 -0700
 
-    configure.ac: Bump to 1.11.2
+    XQuartz: Fix the filename of our log file
     
     Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
 
-commit 2d6760f591a4138b2f4a32220e6a5aa855c123ca
-Author: Jeremy Huddleston <jeremyhu@apple.com>
-Date:   Thu Nov 3 15:01:35 2011 -0700
-
-    Revert "dix: don't XWarpPointer through the last slave anymore (#38313)"
-    
-    This reverts commit bbe6a69da398dba93679c23c3c50f9916cb562ca.
-    
-    This commit caused a regression.
-    
-    See: http://xquartz.macosforge.org/trac/ticket/517#comment:10
-
-commit 0bffe6b38cdf6b21d9ec9b0abf0092d4d4eaef86
-Author: Jeremy Huddleston <jeremyhu@apple.com>
-Date:   Fri Oct 28 18:32:28 2011 -0700
-
-    configure.ac: Bump to 1.11.1.902 (1.11.2 RC2)
-    
-    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
-
-commit a1d638da0d12c82c944bfecb996903210879f426
-Author: Jeremy Huddleston <jeremyhu@apple.com>
-Date:   Tue Oct 25 23:53:43 2011 -0700
-
-    XWin: windowswm: Correct byte swapping in event notifications
-    
-    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
-    Reviewed-by: Jon TURNEY <jon.turney@dronecode.org.uk>
-    (cherry picked from commit 286fa9bf9b4ffb0f9dbd3f1cae46ddcb27ee9318)
-
-commit 0715469f1cb150261b51867df75892d26916ea05
-Author: Jeremy Huddleston <jeremyhu@apple.com>
-Date:   Tue Oct 25 23:49:33 2011 -0700
-
-    XQuartz: appledri: Correct byte swapping in event notifications
-    
-    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
-    (cherry picked from commit dc054fefc586c5b404fe0f949dbd456e5267c647)
-
-commit bc2600466eea2af2d6a81fe1592d908565995cb2
-Author: Jeremy Huddleston <jeremyhu@apple.com>
-Date:   Tue Oct 25 23:48:16 2011 -0700
-
-    XQuartz: applewm: Correct byte swapping in event notifications
-    
-    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
-    (cherry picked from commit d5fee2b638fabeb8bec31a24e57d5c2a232d0893)
-
-commit 7be5492bcfab540676d6f849b85ad3db64a5ada0
+commit 1c8bda798b4480bab0f0da6f531e4770c7a1f771
 Author: Jeremy Huddleston <jeremyhu@apple.com>
 Date:   Fri Oct 21 10:27:16 2011 -0700
 
@@ -316,9 +970,8 @@ Date:   Fri Oct 21 10:27:16 2011 -0700
     a ppc application under Rosetta.
     
     Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
-    (cherry picked from commit 1c8bda798b4480bab0f0da6f531e4770c7a1f771)
 
-commit 0ad049706d2fa8ff2758c42bdd412fb62bb1e86a
+commit 14205ade0c750191bf43fba8bd55c65dba912cf4
 Author: Jeremy Huddleston <jeremyhu@apple.com>
 Date:   Thu Oct 20 22:34:44 2011 -0700
 
@@ -330,15 +983,8 @@ Date:   Thu Oct 20 22:34:44 2011 -0700
     
     Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
     Reviewed-by: Jamey Sharp <jamey@minilop.net>
-    (cherry picked from commit 14205ade0c750191bf43fba8bd55c65dba912cf4)
-    
-    Conflicts:
-    
-    	hw/xquartz/xpr/appledri.c
-    
-    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
 
-commit 3b931c92764fc4e6417f1f38a67114b8c7442fc2
+commit 2ba0ac202ad64eb4a555715980ba538de19c9fd7
 Author: Jeremy Huddleston <jeremyhu@apple.com>
 Date:   Thu Oct 20 22:23:07 2011 -0700
 
@@ -348,9 +994,17 @@ Date:   Thu Oct 20 22:23:07 2011 -0700
     
     Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
     Reviewed-by: Jamey Sharp <jamey@minilop.net>
-    (cherry picked from commit 2ba0ac202ad64eb4a555715980ba538de19c9fd7)
 
-commit f22a41416b9795c778deeae6406cd33d18f13fa3
+commit e4f257748b51d041275a64b8be408729ea05fbb5
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Thu Oct 20 11:35:54 2011 -0700
+
+    XQuartz: appledri: Change whitespace in appledristr.h to match mesa
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+    Reviewed-by: Jamey Sharp <jamey@minilop.net>
+
+commit 83fef4235db86343477b4ec9858c6ba35e1aa7d9
 Author: Jeremy Huddleston <jeremyhu@apple.com>
 Date:   Sun Oct 16 02:12:38 2011 -0700
 
@@ -364,9 +1018,281 @@ Date:   Sun Oct 16 02:12:38 2011 -0700
     
     Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
     Reviewed-by: Jamey Sharp <jamey@minilop.net>
-    (cherry picked from commit 83fef4235db86343477b4ec9858c6ba35e1aa7d9)
 
-commit 82445286d56fdac36f21ec5eed436646bda768dd
+commit 4597ac6fe0580323860080dae2576733acc49757
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Mon Oct 17 23:45:32 2011 -0700
+
+    test: Add unit test for mieq
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit ad450d76e468cd62406c4f09e71e131f7ff4555c
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Mon Oct 17 21:16:37 2011 -0700
+
+    mieq: Reserve some space in EQ for release and other special events
+    
+    The last 64 events in the event queue will be reserved for release
+    events in order to help return the system to a cleaner state when
+    it comes back from a soft wedge.
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit 7d153f25be678acf500236ae422b33d17e6cb7a6
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Sat Oct 15 22:51:30 2011 -0700
+
+    mieq: Provide better adaptability and diagnostics during mieq overflow
+    
+    This patch changes from a static length event queue (512) to one that
+    starts at 128 and grows to 4096 as it overflows, logging each time it
+    grows.
+    
+    This change also allows for multiple backtraces to be printed when the
+    server is wedged rather than just one.  This increased sampling should
+    help identify the true hog in cases where one backtrace might be
+    insufficient.
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit 09eaa1f6f19f9a85a3cb74a18ac898162db451df
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Sat Oct 30 14:55:06 2010 -0700
+
+    configure.ac: Add -fno-strict-aliasing to CFLAGS
+    
+    This should force the server to have -fno-strict-aliasing even once it
+    is removed from the warning flags.
+    
+    See: https://bugs.freedesktop.org/show_bug.cgi?id=31238
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+    Reviewed-by: Gaetan Nadon <memsize@videotron.ca>
+
+commit a046d649e4c7e4d28f350382dcdd293e92a59aad
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Wed Oct 5 15:02:52 2011 -0700
+
+    test: Silence some debug lines from the input unit tests
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit 8db554d2d830953de3c6d0cbf58e23d53d89009f
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Thu Oct 20 14:28:56 2011 -0700
+
+    Xnest: Fix DestroyNotify handler
+    
+    This partially reverts the unwanted changes that crept into
+    c13a48e74ec89eafa9b529a87253a631ef02f2e2
+    
+    Reported-by: Julien Cristau <jcristau@debian.org>
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+    Reviewed-by: Julien Cristau <jcristau@debian.org>
+
+commit ff61592441916b83aeb778c74352bb5b26247f84
+Merge: af3f64f 525d417
+Author: Keith Packard <keithp@keithp.com>
+Date:   Wed Oct 19 19:14:32 2011 -0700
+
+    Merge remote-tracking branch 'aplattner/for-master'
+
+commit af3f64fb77c13180e513ee99d1fd9a1b624fd8ea
+Merge: 15bbdc1 df0dd36
+Author: Keith Packard <keithp@keithp.com>
+Date:   Wed Oct 19 17:33:07 2011 -0700
+
+    Merge remote-tracking branch 'hramrach/pull'
+
+commit 15bbdc103b34b6b374815698946e6c409421a644
+Merge: a5266dc 323869f
+Author: Keith Packard <keithp@keithp.com>
+Date:   Wed Oct 19 17:26:50 2011 -0700
+
+    Merge remote-tracking branch 'whot/for-keith'
+
+commit a5266dcb3a60587e1877f90c18552baf60b597a0
+Author: Ville Syrjala <syrjala@sci.fi>
+Date:   Sun Oct 9 01:11:04 2011 +0300
+
+    composite: Update borderClip in compAllocPixmap()
+    
+    Previously the parent constrained borderClip was copied over
+    when compRedirectWindow() is called. That is insufficient eg. in
+    case the window was already redirected, but not yet realized. So
+    copy the borderClip over in compAllocPixmap() instead.
+    
+    Example:
+    Window 1 is below an automatically redirect window 2. Window 2 is
+    unmapped and moved outside the extents of window 1. Window 2 is
+    then mapped again, and MarkOverlappedWindows() uses the up to
+    date borderSize of window 2 to mark windows, which leaves
+    window 1 unmarked. Then exposures are calculated using the stale
+    borderClip of window 2, which causes the window below window 2,
+    to be exposed through an apparent hole in window 1.
+    
+    Fixes: https://bugs.freedesktop.org/show_bug.cgi?id=22566
+    
+    Signed-off-by: Ville Syrjala <syrjala@sci.fi>
+    Reviewed-by: Keith Packard <keithp@keithp.com>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit e4787ec20b1b9d30fe00f17b60eb0898190bf77d
+Author: Gaetan Nadon <memsize@videotron.ca>
+Date:   Mon Oct 17 15:08:14 2011 -0400
+
+    XWinrc.man: fix warning: tab character in unquoted macro argument #35054
+    
+    Spaces or tabs do not affect the text output layout.
+    
+    Reviewed-by: Jeremy Huddleston <jeremyhu@apple.com>
+    Signed-off-by: Gaetan Nadon <memsize@videotron.ca>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit 321873f8045139edd47b526a765f8b1c66f53cd4
+Author: Gaetan Nadon <memsize@videotron.ca>
+Date:   Mon Oct 17 15:08:13 2011 -0400
+
+    xorg.conf.man: fix 382: warning: missing `)' (got `R') #35054
+    
+    http://www.gnu.org/software/groff/manual/html_node/Man-usage.html
+    
+    Reviewed-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Signed-off-by: Gaetan Nadon <memsize@videotron.ca>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit 3e145d3d67b472cb5d74cb8078b614160c4722b7
+Author: Jesse Barnes <jbarnes@virtuousgeek.org>
+Date:   Thu Oct 13 12:01:10 2011 -0700
+
+    crtc: match full preferred modes if possible when choosing an initial config
+    
+    It's fairly common to have multiple, identical monitors plugged in.  In
+    that case, it's preferable to run the monitor's preferred mode on each
+    output, rather than just matching the width & height and end up with
+    different timings or refresh rates.
+    
+    Signed-off-by: Jesse Barnes <jbarnes@virtuousgeek.org>
+    Reviewed-by: Keith Packard <keithp@keithp.com>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit 525d4172b246e13b8122e059e3b22866e00561d9
+Author: Chris Wilson <chris@chris-wilson.co.uk>
+Date:   Sun Sep 4 09:34:08 2011 -0700
+
+    render: export TriStrip and TriFan to the drivers
+    
+    Rather than perform an intermediate copy and expand the strip and the
+    fan into a triangle list (thereby tripling the number of edges that the
+    driver needs to process), allow the backend to hook directly into the
+    appropriate Composite function.
+    
+    In order to extend the PictureScreen, without needlessly bumping the
+    ABI, we move the existing copy implementations to mipict.c and assign
+    those by default. To notify the ddx that the new entry points are
+    available, we introduce PICTURE_SCREEN_VERSION.
+    
+    Signed-off-by: Chris Wilson <chris@chris-wilson.co.uk>
+    Reviewed-by: Aaron Plattner <aplattner@nvidia.com>
+
+commit 9b26e6bc8d2cdf5bac3025796855ccf05972358f
+Author: Luc Verhaegen <libv@skynet.be>
+Date:   Tue Aug 23 15:19:59 2011 -0700
+
+    randr: stop clients from deleting immutable output properties
+    
+    Immutable in randr means that clients are not able to alter the
+    property itself, they are only allowed to alter the property value.
+    This logically means that the property then should not be deleted
+    by the client either.
+    
+    Signed-off-by: Luc Verhaegen <libv@skynet.be>
+    Reviewed-by: Rami Ylimäki <rami.ylimaki@vincit.fi>
+    Reviewed-by: Aaron Plattner <aplattner@nvidia.com>
+    Signed-off-by: Aaron Plattner <aplattner@nvidia.com>
+
+commit c8413362049cee8c30e0a9d67f78f9ebefe8e71f
+Merge: 64d2d1b b67581c
+Author: Keith Packard <keithp@keithp.com>
+Date:   Tue Oct 18 07:45:24 2011 -0700
+
+    Merge remote-tracking branch 'herrb/master'
+
+commit b67581cf825940fdf52bf2e0af4330e695d724a4
+Author: Matthieu Herrb <matthieu.herrb@laas.fr>
+Date:   Mon Oct 17 22:27:35 2011 +0200
+
+    Fix CVE-2011-4029: File permission change vulnerability.
+    
+    Use fchmod() to change permissions of the lock file instead
+    of chmod(), thus avoid the race that can be exploited to set
+    a symbolic link to any file or directory in the system.
+    
+    Signed-off-by: Matthieu Herrb <matthieu.herrb@laas.fr>
+    Reviewed-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+
+commit 6ba44b91e37622ef8c146d8f2ac92d708a18ed34
+Author: Matthieu Herrb <matthieu.herrb@laas.fr>
+Date:   Mon Oct 17 22:26:12 2011 +0200
+
+    Fix CVE-2011-4028: File disclosure vulnerability.
+    
+    use O_NOFOLLOW to open the existing lock file, so symbolic links
+    aren't followed, thus avoid revealing if it point to an existing
+    file.
+    
+    Signed-off-by: Matthieu Herrb <matthieu.herrb@laas.fr>
+    Reviewed-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+
+commit df0dd36deea0c756819825113e825059ddd19243
+Author: Michal Suchanek <hramrach@centrum.cz>
+Date:   Sat Oct 8 14:26:24 2011 +0200
+
+    Do not uselessly reload modules in DuplicateModule
+    
+    The function does not initialize the module so it has no business
+    loading it. If some user of DuplicateModule expects a module actually
+    loaded they should use LoadModule.
+    
+    Signed-off-by: Michal Suchanek <hramrach@centrum.cz>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit 24d435163eb5fbd9b73cd8ba13a9b3cdbbe8a1df
+Author: Michal Suchanek <hramrach@centrum.cz>
+Date:   Sat Oct 8 14:19:34 2011 +0200
+
+    Use UnloadModuleOrDriver for UnloadSubModule.
+    
+    Signed-off-by: Michal Suchanek <hramrach@centrum.cz>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit 0d4bb5442ceb8e8e4a8de6cfc4203cae469eee72
+Author: Michal Suchanek <hramrach@centrum.cz>
+Date:   Sat Oct 8 14:13:33 2011 +0200
+
+    Unload submodules.
+    
+    Signed-off-by: Michal Suchanek <hramrach@centrum.cz>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit b04aff76ac2eb461c71b85525a00e25efb8bf267
+Author: Michal Suchanek <hramrach@centrum.cz>
+Date:   Thu Oct 13 17:14:53 2011 +0200
+
+    Document -background none option
+    
+    Document option introduced in commit 8976e97.
+    
+    Signed-off-by: Michal Suchanek <hramrach@centrum.cz>
+    Reviewed-by: Jeremy Huddleston <jeremyhu@apple.com>
+    Reviewed-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+
+commit 323869f3298cbbfe864af9404a8aed1bf7995d79
 Author: Tomáš Trnka <tomastrnka@gmx.com>
 Date:   Tue Oct 11 09:11:18 2011 +0200
 
@@ -395,207 +1321,736 @@ Date:   Tue Oct 11 09:11:18 2011 +0200
     Signed-off-by: Tomas Trnka <tomastrnka@gmx.com>
     Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
     Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
-    (cherry picked from commit 323869f3298cbbfe864af9404a8aed1bf7995d79)
 
-commit c8c5ed998aac2c91dbec1f86af3395e08ddab373
-Author: Jesse Barnes <jbarnes@virtuousgeek.org>
-Date:   Thu Oct 13 12:01:10 2011 -0700
+commit 2cb63180fa9b54f763e7e92e433943e3e73741f3
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Wed Oct 5 12:08:31 2011 +1000
 
-    crtc: match full preferred modes if possible when choosing an initial config
+    dix: mark motion events as emulated if we're scrolling from button press
     
-    It's fairly common to have multiple, identical monitors plugged in.  In
-    that case, it's preferable to run the monitor's preferred mode on each
-    output, rather than just matching the width & height and end up with
-    different timings or refresh rates.
+    The protocol requires that the emulated event is marked as such. So if a
+    driver with smooth scrolling axis sends legacy button events, the motion
+    event must be marked as emulated.
     
-    Signed-off-by: Jesse Barnes <jbarnes@virtuousgeek.org>
-    Reviewed-by: Keith Packard <keithp@keithp.com>
-    Signed-off-by: Keith Packard <keithp@keithp.com>
-    (cherry picked from commit 3e145d3d67b472cb5d74cb8078b614160c4722b7)
+    Pass the real type to emulate_scroll_button_events and create the events
+    accordingly. For real button press or relase events, only that event must be
+    generated since a release event will follow or a press event has already
+    occured, respectively. (This fixes a bug where we'd get two release events
+    for each legacy button event)
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
 
-commit d780c6f6301ed2263b21ac7d327a1b2e8d3e76df
-Author: Ville Syrjala <syrjala@sci.fi>
-Date:   Sun Oct 9 01:11:04 2011 +0300
+commit 82c60232c07f50774ccc0198950f64c9338057a5
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Fri Sep 30 10:59:47 2011 +1000
 
-    composite: Update borderClip in compAllocPixmap()
+    dix: add valuator_mask_fetch_double()
     
-    Previously the parent constrained borderClip was copied over
-    when compRedirectWindow() is called. That is insufficient eg. in
-    case the window was already redirected, but not yet realized. So
-    copy the borderClip over in compAllocPixmap() instead.
+    Using this call simplifies callers that don't know if the mask bit is set.
     
-    Example:
-    Window 1 is below an automatically redirect window 2. Window 2 is
-    unmapped and moved outside the extents of window 1. Window 2 is
-    then mapped again, and MarkOverlappedWindows() uses the up to
-    date borderSize of window 2 to mark windows, which leaves
-    window 1 unmarked. Then exposures are calculated using the stale
-    borderClip of window 2, which causes the window below window 2,
-    to be exposed through an apparent hole in window 1.
+    Before:
+      if (valuator_mask_isset(mask, valnum))
+        value = valuator_mask_get_double(mask, valnum));
+      else
+        value = someothervalue;
     
-    Fixes: https://bugs.freedesktop.org/show_bug.cgi?id=22566
+    Now:
+     if (!valuator_mask_fetch_double(mask, valnum, &value))
+        value = someothervalue;
     
-    Signed-off-by: Ville Syrjala <syrjala@sci.fi>
-    Reviewed-by: Keith Packard <keithp@keithp.com>
-    Signed-off-by: Keith Packard <keithp@keithp.com>
-    (cherry picked from commit a5266dcb3a60587e1877f90c18552baf60b597a0)
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Chase Douglas <chase.douglas@canonical.com>
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
 
-commit 12f65819ffb04103f170ecd7e281348de618fc4c
-Author: Matthieu Herrb <matthieu.herrb@laas.fr>
-Date:   Mon Oct 17 22:27:35 2011 +0200
+commit 64d2d1bef14c7ec7156bb3aae64eff69f9f7be54
+Merge: fb84be4 679c84b
+Author: Keith Packard <keithp@keithp.com>
+Date:   Mon Oct 17 14:36:34 2011 -0700
 
-    Fix CVE-2011-4029: File permission change vulnerability.
-    
-    Use fchmod() to change permissions of the lock file instead
-    of chmod(), thus avoid the race that can be exploited to set
-    a symbolic link to any file or directory in the system.
-    
-    Signed-off-by: Matthieu Herrb <matthieu.herrb@laas.fr>
-    Reviewed-by: Alan Coopersmith <alan.coopersmith@oracle.com>
-    (cherry picked from commit b67581cf825940fdf52bf2e0af4330e695d724a4)
+    Merge remote-tracking branch 'jeremyhu/master'
 
-commit f80d23357874db19bc124dee70239fb182977883
-Author: Matthieu Herrb <matthieu.herrb@laas.fr>
-Date:   Mon Oct 17 22:26:12 2011 +0200
+commit fb84be47db7cdaff406792c08e34670e8e0cbda9
+Merge: fae7ed6 32b289e
+Author: Keith Packard <keithp@keithp.com>
+Date:   Mon Oct 17 13:50:25 2011 -0700
 
-    Fix CVE-2011-4028: File disclosure vulnerability.
-    
-    use O_NOFOLLOW to open the existing lock file, so symbolic links
-    aren't followed, thus avoid revealing if it point to an existing
-    file.
-    
-    Signed-off-by: Matthieu Herrb <matthieu.herrb@laas.fr>
-    Reviewed-by: Alan Coopersmith <alan.coopersmith@oracle.com>
-    (cherry picked from commit 6ba44b91e37622ef8c146d8f2ac92d708a18ed34)
+    Merge remote-tracking branch 'whot/next'
 
-commit 374be44d13bc8f04a2413b6d5b2006e73d5a8f53
+commit 679c84bce9b03c17aa35fa69058e7e46267dbc7b
 Author: Jeremy Huddleston <jeremyhu@apple.com>
-Date:   Fri Oct 14 16:29:54 2011 -0700
+Date:   Sat Sep 24 00:01:11 2011 -0700
 
-    configure.ac: Bump to 1.11.1.901 (1.11.2 RC1)
+    Bump ABI_VIDEODRV_VERSION to 12
+    
+    The ABI changed in the previous series of changes, so bump the ABI version for
+    the next release.
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+    Reviewed-by: Jamey Sharp <jamey@minilop.net>
+
+commit a89cdcee4ebab6bbfa9ace94e1988a94cfb67087
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Sun Oct 9 02:59:12 2011 -0700
+
+    xfree86: Deprecate xf86MapVidMem and friends
+    
+    Drivers should transition over to using libpciaccess's instead.
     
     Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
 
-commit bbe6a69da398dba93679c23c3c50f9916cb562ca
-Author: Peter Hutterer <peter.hutterer@who-t.net>
-Date:   Fri Jul 29 16:33:54 2011 +1000
+commit 41d903918a5721e53ed694880eab44170f9717cc
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Wed Sep 14 13:45:18 2011 -0500
 
-    dix: don't XWarpPointer through the last slave anymore (#38313)
+    xorg-server.pc.in: Remove libpciaccess and pixman-1 from Requires
     
-    This line was introduced pre-1.6 to fix Bug 19297. The effect of warping
-    through the VCP then was that if a device had custom valuator ranges, the
-    warp position would be wrong. The better device for this effect is the the
-    XTest device.
+    Every module building against xorg-server does not *Require* pixman nor
+    libpciaccess.  If such modules need pixman or pciaccess, they should be
+    depending on them directly rather than inheriting a dependency from
+    xorg-server.  To do this, they should use PKG_CHECK_MODULES in configure.ac
+    to check for pixman-1 or pciaccess and include the apporpriate _LIBS variable
+    to the appropriate _LDFLAGS variable in Makefile.am
     
-    This fixes a server crash where the lastSlave is a pointer device without
-    valuators (Bug 38313#0).
+    This also moves pixman-1 to Requires.private, so CPPFLAGS is set right to
+    to satisfy include dependencies but avoid linking needlessly.
     
-    And while we're at it, make sure the Xinerama code-path does the same.
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+    Reviewed-by: Gaetan Nadon <memsize@videotron.ca>
+
+commit 40d338e9f723c4b3d63516aa62fdcded4d8af75e
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Wed Sep 14 10:37:38 2011 -0500
+
+    darwin: configure: Force some irrelevant options to off on darwin
     
-    X.Org Bug 38313 <http://bugs.freedesktop.org/show_bug.cgi?id=38313>
+    This removes the need to pass the following to configure on darwin:
+    --disable-pciaccess -disable-int10-module --disable-vbe --disable-vgahw --disable-libdrm
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+    Reviewed-by: Jamey Sharp <jamey@minilop.net>
+
+commit 43d730c0e4b1a00b29843c0660dcc7c60da6725d
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Wed Sep 14 15:42:19 2011 -0500
+
+    xfree86: Link modules with -module
+    
+    This makes a difference on darwin (and apparently nowhere else)
+    
+    https://www.gnu.org/s/libtool/manual/libtool.html#Modules-for-libltdl
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+    Reviewed-by: Jamey Sharp <jamey@minilop.net>
+    Reviewed-by: Gaetan Nadon <memsize@videotron.ca>
+
+commit f7edc00a2af83764910ff89514a046dc5ce2ff9e
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Wed Sep 14 12:14:56 2011 -0500
+
+    xfree86: fbdevhw: Remove unused include of pciaccess.h
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+    Reviewed-by: Jamey Sharp <jamey@minilop.net>
+
+commit 6817050f3196d460ba03a62da23fb46ffd5a0f97
+Author: Tiago Vignatti <tiago.vignatti@nokia.com>
+Date:   Tue Jun 1 13:05:47 2010 +0300
+
+    configure: wrap PCI code with macro and set it at build time
+    
+    --disable-pciaccess, used together with --disable-module-int10, can be used to
+    disable all pci code inside the server.
+    
+    Note that XSERVER_LIBPCIACCESS was previously used only in the driver side and
+    now it defines also whether the library is used inside the server. Also,
+    XORG_BUS_PCI automake variable is introduced to track PCI code needs.
+    
+    Signed-off-by: Tiago Vignatti <tiago.vignatti@nokia.com>
+    Reviewed-by: Mikhail Gusarov <dottedmag@dottedmag.net>
+    Reviewed-by: Jeremy Huddleston <jeremyhu@apple.com>
+    Tested-by: Jeremy Huddleston <jeremyhu@apple.com>
+
+commit 5c12399b6c3a8def2df1bdde1d5d4d8d9e31fd84
+Author: Tiago Vignatti <tiago.vignatti@nokia.com>
+Date:   Mon May 31 19:27:07 2010 +0300
+
+    configure: make PCI configuration more sane
+    
+    No semantical changes. Just moved code around, grouping PCI related stuff in a
+    single chunk.
+    
+    Signed-off-by: Tiago Vignatti <tiago.vignatti@nokia.com>
+    Reviewed-by: Mikhail Gusarov <dottedmag@dottedmag.net>
+    Reviewed-by: Jeremy Huddleston <jeremyhu@apple.com>
+    Tested-by: Jeremy Huddleston <jeremyhu@apple.com>
+
+commit a319e9e697faa0faa241e0e9baf0bc41efdcdf8f
+Author: Tiago Vignatti <tiago.vignatti@nokia.com>
+Date:   Mon May 31 18:50:50 2010 +0300
+
+    configure: change PCI function checking by a meaningful version of the library
+    
+    People that don't want VGA arbiter active can go to the library and enable the
+    stubs there.
+    
+    Signed-off-by: Tiago Vignatti <tiago.vignatti@nokia.com>
+    Reviewed-by: Mikhail Gusarov <dottedmag@dottedmag.net>
+    Reviewed-by: Jeremy Huddleston <jeremyhu@apple.com>
+    Tested-by: Jeremy Huddleston <jeremyhu@apple.com>
+    Reviewed-by: Jamey Sharp <jamey@minilop.net>
+
+commit b3ca84430d98f5338b9b1bc817c3656efb71cff1
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Tue Sep 13 15:32:16 2011 -0500
+
+    xfree86: Work around issue where ar may be told to make an archive with no contents
+    
+    Automake:
+    
+     "Be careful when selecting library components conditionally. Because building
+     an empty library is not portable, you should ensure that any library
+     always contains at least one object."
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+    Reviewed-by: Gaetan Nadon <memsize@videotron.ca>
+
+commit e8bafb9d8c7d7a7077e163ecfac6174356989bbf
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Tue Sep 13 15:38:45 2011 -0500
+
+    xfree86: Add stubs for os-support to help adding new architecture support
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+    Reviewed-by: Jamey Sharp <jamey@minilop.net>
+    Reviewed-by: Gaetan Nadon <memsize@videotron.ca>
+
+commit 342f3eac8460fc48cfad1f1d7be939d671e6e1cd
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Tue May 10 19:00:02 2011 -0400
+
+    int10: Port internal users off xf86MapVidMem
+    
+    This API is apparently semi-deprecated even by XFree86 standards, and
+    there are only four drivers left using it.  Let's start chopping it off.
+    
+    Reviewed-by: Jeremy Huddleston <jeremyhu@apple.com>
+    Tested-by: Jeremy Huddleston <jeremyhu@apple.com>
+    Signed-off-by: Adam Jackson <ajax@redhat.com>
+
+commit 7757b8092474c4f4ec04f4ebd1272236416154c3
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Tue May 10 17:34:23 2011 -0400
+
+    pci: Remove xf86MapDomainMemory
+    
+    This is slightly draconian, but that API is just awful.  In all but
+    one case in the callers it's used to get a map of some legacy VGA
+    memory, and it would be cleaner for the caller to just call
+    pci_device_map_legacy.
+    
+    The sole exception is in the vesa driver, which uses it to avoid having
+    to look up which device the BAR belongs to.  That's similarly trivial to
+    fix.
+    
+    Having done that, Linux's PCI layer is now very small indeed.
+    
+    Reviewed-by: Jeremy Huddleston <jeremyhu@apple.com>
+    Tested-by: Jeremy Huddleston <jeremyhu@apple.com>
+    Signed-off-by: Adam Jackson <ajax@redhat.com>
+
+commit 6f5041d0b8e11e761d6403f1f8f8bb2ba2a9626d
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Tue May 10 18:04:10 2011 -0400
+
+    int10: Use pciaccess rom fetch for !PC machines
+    
+    ... instead of rolling our own, badly.
+    
+    Reviewed-by: Jeremy Huddleston <jeremyhu@apple.com>
+    Tested-by: Jeremy Huddleston <jeremyhu@apple.com>
+    Signed-off-by: Adam Jackson <ajax@redhat.com>
+    Reviewed-by: Jamey Sharp <jamey@minilop.net>
+
+commit 492ed3e53b0ee6746bd4b597978fd866d4a89ef6
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Tue May 10 16:41:08 2011 -0400
+
+    pci: Deprecate the PCITAG type
+    
+    It is kept around to help drivers through the API transition and will be
+    removed at some point in the future.
+    
+    Reviewed-by: Jeremy Huddleston <jeremyhu@apple.com>
+    Tested-by: Jeremy Huddleston <jeremyhu@apple.com>
+    Signed-off-by: Adam Jackson <ajax@redhat.com>
+    Reviewed-by: Jamey Sharp <jamey@minilop.net>
+
+commit a248fa3a33cb015942386d52b7faa8558e592a51
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Fri Jan 7 17:20:15 2011 -0500
+
+    xfree86: Remove unused bios_devmem.c
+    
+    Reviewed-by: Jeremy Huddleston <jeremyhu@apple.com>
+    Tested-by: Jeremy Huddleston <jeremyhu@apple.com>
+    Signed-off-by: Adam Jackson <ajax@redhat.com>
+    Reviewed-by: Jamey Sharp <jamey@minilop.net>
+
+commit aa0bfb0f133481c57762012e8e30c05ffa151423
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Fri Jan 7 16:57:15 2011 -0500
+
+    linux: Remove ia64 domain I/O support code
+    
+    pciaccess handles this now.
+    
+    Reviewed-by: Jeremy Huddleston <jeremyhu@apple.com>
+    Tested-by: Jeremy Huddleston <jeremyhu@apple.com>
+    Signed-off-by: Adam Jackson <ajax@redhat.com>
+    Reviewed-by: Jamey Sharp <jamey@minilop.net>
+
+commit 95b6935637628ffa511f39004e90c75aa75141c4
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Fri Oct 16 16:09:56 2009 -0400
+
+    linux: Remove pre-2.6 PCI interface support
+    
+    If you haven't ported 2.6 to your architecture in the intervening seven
+    years, you can keep running older servers.
+    
+    Reviewed-by: Jeremy Huddleston <jeremyhu@apple.com>
+    Tested-by: Jeremy Huddleston <jeremyhu@apple.com>
+    Signed-off-by: Adam Jackson <ajax@redhat.com>
+    Reviewed-by: Jamey Sharp <jamey@minilop.net>
+
+commit 769f583783d17ffa3398bc8529f61e0f08b35530
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Fri Oct 16 14:05:54 2009 -0400
+
+    bus: remove some dead struct fields
+    
+    Reviewed-by: Jeremy Huddleston <jeremyhu@apple.com>
+    Tested-by: Jeremy Huddleston <jeremyhu@apple.com>
+    Signed-off-by: Adam Jackson <ajax@redhat.com>
+    Reviewed-by: Jamey Sharp <jamey@minilop.net>
+
+commit dd72b3c1f1df57215329aa5ba9e9bb9ad0a65086
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Mon Sep 20 11:42:11 2010 -0400
+
+    linux: Use pci_device_get_parent_bridge instead of open-coding it
+    
+    Reviewed-by: Jeremy Huddleston <jeremyhu@apple.com>
+    Tested-by: Jeremy Huddleston <jeremyhu@apple.com>
+    Signed-off-by: Adam Jackson <ajax@redhat.com>
+    Reviewed-by: Jamey Sharp <jamey@minilop.net>
+
+commit 858fbbb40d7c69540cd1fb5315cebf811c6e7b3f
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Fri Sep 16 13:33:04 2011 -0400
+
+    pci: Port xf86MapLegacyIO to pciaccess
+    
+    Per-domain I/O is now something drivers must manually request, and must
+    keep track of within their own state rather than in the ScrnInfoRec.
+    It's not really possible to split that into two steps without an
+    additional intermediate ABI break, so don't even try.  Drivers that want
+    source compatibility should ifdef on the presence of xf86UnmapLegacyIO.
+    
+    As a fringe benefit, domain-aware I/O is now OS-independent, relying
+    only on support in pciaccess.  Simplify OS PCI setup to reflect this.
+    
+    The IOADDRESS type is kept around to help drivers through the API
+    transition and will be removed at some point in the future.
+    
+    Reviewed-by: Jeremy Huddleston <jeremyhu@apple.com>
+    Tested-by: Jeremy Huddleston <jeremyhu@apple.com>
+    Signed-off-by: Adam Jackson <ajax@redhat.com>
+    Reviewed-by: Jamey Sharp <jamey@minilop.net>
+
+commit 6d9efdce0d06df6b85f0681bea306c0b1e851502
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Tue Sep 20 18:12:29 2011 -0400
+
+    vgahw: Port to pciaccess IO space routines
+    
+    Reviewed-by: Jeremy Huddleston <jeremyhu@apple.com>
+    Tested-by: Jeremy Huddleston <jeremyhu@apple.com>
+    Signed-off-by: Adam Jackson <ajax@redhat.com>
+    Reviewed-by: Jamey Sharp <jamey@minilop.net>
+
+commit 4bd6579188e718654c35f95623fd4772f9e0ef06
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Thu Sep 22 13:45:57 2011 -0400
+
+    vgahw: Don't default to standard (port space) access routines
+    
+    In fact, don't default to anything; drivers must explicitly say which
+    kind they want, and they are strongly encouraged to do MMIO if possible.
+    This is an ABI change in that drivers that don't will crash, but drivers
+    that are explicit will work with both old and new servers.
+    
+    Reviewed-by: Jeremy Huddleston <jeremyhu@apple.com>
+    Tested-by: Jeremy Huddleston <jeremyhu@apple.com>
+    Signed-off-by: Adam Jackson <ajax@redhat.com>
+    Reviewed-by: Jamey Sharp <jamey@minilop.net>
+
+commit 30fb334d218f8c1d809f88054b9fe8f5f556bb62
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Thu Sep 22 13:44:53 2011 -0400
+
+    vgahw: Remove IO domain setup
+    
+    Reviewed-by: Jeremy Huddleston <jeremyhu@apple.com>
+    Tested-by: Jeremy Huddleston <jeremyhu@apple.com>
+    Signed-off-by: Adam Jackson <ajax@redhat.com>
+    Reviewed-by: Jamey Sharp <jamey@minilop.net>
+
+commit 51a5558beb71bddeff9352ef4f43269a8a22317d
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Sat Sep 18 08:24:19 2010 -0400
+
+    int10: Port to pciaccess' legacy IO API
+    
+    Reviewed-by: Jeremy Huddleston <jeremyhu@apple.com>
+    Tested-by: Jeremy Huddleston <jeremyhu@apple.com>
+    Signed-off-by: Adam Jackson <ajax@redhat.com>
+    Reviewed-by: Jamey Sharp <jamey@minilop.net>
+
+commit c0b63ff88a6dc20f86141aa1a1ed5a9384aa63aa
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Sat Sep 18 08:05:11 2010 -0400
+
+    xfree86: Move xf86GetClocks to vgahw
+    
+    This is really a vga-specific hack anyway.  The only modern driver that
+    uses it is trident, but it's already loaded vgahw by the time it would
+    call xf86GetClocks.
+    
+    Reviewed-by: Jeremy Huddleston <jeremyhu@apple.com>
+    Tested-by: Jeremy Huddleston <jeremyhu@apple.com>
+    Signed-off-by: Adam Jackson <ajax@redhat.com>
+    Reviewed-by: Jamey Sharp <jamey@minilop.net>
+
+commit 1433103a49b97e356da0f20aa65046cdb2f5ece6
+Author: Dave Airlie <airlied@redhat.com>
+Date:   Wed Oct 12 09:59:38 2011 +0100
+
+    test: fix input test
+    
+    The test was memsetting the wrong thing, this fixes make check in my tinderbox.
+    
+    Signed-off-by: Dave Airlie <airlied@redhat.com>
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+    Reviewed-by: Jeremy Huddleston <jeremyhu@apple.com>
+
+commit f9c6903d4a90b59c328f4fa05d2be9e0ce1c5189
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Wed Oct 5 15:02:52 2011 -0700
+
+    dix: add utility functions for double to/fro FP1616/FP3232 conversion
+    
+    Co-authored-by: Jeremy Huddleston <jeremyhu@apple.com>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Jeremy Huddleston <jeremyhu@apple.com>
+    Reviewed-by: Mark Kettenis <kettenis@openbsd.org>
+
+commit 401150d7dcad08be7c1f07e076f810cd61e2105c
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Tue Oct 4 11:41:17 2011 +1000
+
+    input: change pointer screen crossing behaviour for multiple ScreenRecs
+    
+    miPointerSetPosition traditionally took coordinates on a per-screen basis,
+    triggering a screen switch when these went out-of-bounds. For absolute
+    devices, this prevented screen crossing in the negative x/y direction.
+    
+    This patch changes the event generation patch to handle screen coordinates
+    in a desktop range (i.e. all screens together). Screen switches are
+    triggered when these coordinates are not on the current screen.
+    
+    This unifies the pointer behaviour of single ScreenRec multihead and
+    multiple ScreenRecs multihead in that the cursor by default moves about the
+    whole screen rather than be confined to one single screen. The
+    transformation matrix may then be used to actually confine the cursor to the
+    screen again.
+    
+    Note: fill_pointer_events has to deal with several different coordinate
+    systems. Make sure you read the comment before trying to understand the code.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit 6bd0eff40fae1e5d8fed28751851eb5b932d131b
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Wed Oct 12 15:53:57 2011 +1000
+
+    dix: extend rescaleValuatorAxis to take a minimum default
+    
+    Allow rescaling to non-zero based axis ranges as default (for when screen
+    offsets are non-zero). Currently unused.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit 8bebb4b4896d8b6ba3309b5b28fce883bb9f8a96
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Wed Sep 7 14:04:10 2011 +1000
+
+    Store desktop dimensions in screenInfo.
+    
+    For Zaphod mode screen crossing handling we need to know the size of all
+    screens together (i.e. the whole desktop size). Store that in the screenInfo to
+    have it readily available in events.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit 9cbfa4739a51e4cc6b8094833928bf8678f63876
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Tue Sep 6 15:55:19 2011 +1000
+
+    xfree86: remove xf86XInputSetScreen
+    
+    Keeping track of which screen the pointer within the input driver is
+    obsolete now. To bind to a screen, use the transformation matrix instead.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Jamey Sharp <jamey@minilop.net>
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+
+commit 09dbfcb0ad7b6c8bac94502f2801e82f2a2ef435
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Tue Oct 11 17:37:44 2011 -0700
+
+    os: Remove Error()
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit db30615bcb3b872475e7d40eeee8cdda5b723078
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Mon Oct 10 12:16:31 2011 -0700
+
+    Xephyr: Remove socket and its lock file on exit
+    
+    https://bugs.freedesktop.org/show_bug.cgi?id=11484
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+    Reviewed-by: Mikhail Gusarov <dottedmag@dottedmag.net>
+
+commit c13a48e74ec89eafa9b529a87253a631ef02f2e2
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Mon Oct 10 12:09:39 2011 -0700
+
+    Xnest: Remove socket and its lock file on exit
+    
+    https://bugs.freedesktop.org/show_bug.cgi?id=11484
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+    Reviewed-by: Mikhail Gusarov <dottedmag@dottedmag.net>
+
+commit 32b289e46cc2d5ec32ff0c4ba5bbfbf602afb388
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Mon Oct 3 13:58:01 2011 +1000
+
+    dix: move MD last.valuator update into fill_pointer_events
+    
+    Don't update the MD where it's not expected, positionSprite should really
+    just do that - position the sprite.
     
     Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
     Reviewed-by: Daniel Stone <daniel@fooishbar.org>
-    (cherry picked from commit 2bfb802839688ecf328119c4c6979390fc60348d)
 
-commit 2e28ff155ffc30707d42d885d5f6fc891bc82252
-Author: Nobuhiro Iwamatsu <iwamatsu@nigauri.org>
-Date:   Tue Aug 9 11:00:34 2011 +0900
+commit 3b36fd1b49030ead44358945f62e5abe7f4609ce
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Mon Oct 3 13:10:53 2011 +1000
 
-    Disable check of double-aligned in test/input.c on Renesas SH
+    mi: switch miPointerSetPosition to take doubles
     
-    Renesas SH is not aligned at size of double.
-    When structure has double value, It is aligned in 4byte (long).
+    Don't switch between doubles and ints in the caller, instead take doubles in
+    miPointerSetPosition and do the conversion there. For full feature we should
+    change everything down from here for doubles too.
     
-    Signed-off-by: Nobuhiro Iwamatsu <iwamatsu@nigauri.org>
+    Functional change: previously we'd restore the remainder regardless of
+    screen switching/confinement (despite what the comment said). Now,
+    screen changing or cursor constraints will cause the remainder be clipped
+    off. This should happen for cursor constraints but arguably not for screen
+    crossing.
+    
+    This also corrects a currently wrong comment about miPointerSetPosition's
+    input coordinates.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+
+commit 81cfe44b1ed0de84ad1941fe2ca74bebef3fc58d
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Mon Oct 3 12:49:49 2011 +1000
+
+    mi: return the screen from miPointerSetPosition
+    
+    miPointerSetPosition may switch screens. Always return the screen the sprite
+    is on instead of relying on callers to call miPointerGetScreen().
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Jamey Sharp <jamey@minilop.net>
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+
+commit 88dfe5366d9855e0ebf8bbff74967b793ede57d1
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Mon Oct 3 12:37:28 2011 +1000
+
+    dix: drop screen argument from positionSprite
+    
+    We can just get this in the function, no effective functional changes.
+    
+    Also return the screen to the caller. Though we don't use it yet, we will in
+    a follow-up patch.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Jamey Sharp <jamey@minilop.net>
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+
+commit 967bc25da221a69c8fc390253465145ce534fcb9
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Mon Oct 3 11:42:08 2011 +1000
+
+    dix: move screen- to device coordinate scaling to separate function
+    
+    No functional changes.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Jamey Sharp <jamey@minilop.net>
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+
+commit b059e06e19ac9417ceeb8be58c1c91b159291865
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Mon Aug 29 12:36:26 2011 +1000
+
+    dix: don't allow keyboard devices to submit motion or button events.
+    
+    GPE unconditionally dereferences pDev->valuator if a mask is present. This
+    shouldn't really happen but if it does, don't crash, just ignore the events
+    with an error.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Jamey Sharp <jamey@minilop.net>
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+
+commit bccff533184a051b614a26304ce77ad30bede5e0
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Mon Oct 3 12:19:21 2011 +1000
+
+    dix: moveRelative modifies parameter in-place, say so.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Jamey Sharp <jamey@minilop.net>
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+
+commit b966362ccf0fe6fdd44f4d778d47e3677f55f11b
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Mon Oct 3 12:18:20 2011 +1000
+
+    dix: rename moveAbsolute to clipAbsolute
+    
+    Let's be honest about what it does.
+    
+    moveRelative accumulates delta _and_ clips in some cases, so that one can
+    keep it's name.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Jamey Sharp <jamey@minilop.net>
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+
+commit 959d18c3765e447897a8cfd358e9ee645df595d9
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Fri Sep 30 10:50:51 2011 +1000
+
+    dix: fix missing verb in comment
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Jamey Sharp <jamey@minilop.net>
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+
+commit 7074ec87bdf81699df172619aea7aae1ad4ec3c6
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Fri Sep 30 10:47:00 2011 +1000
+
+    dix: document transformAbsolute
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Jamey Sharp <jamey@minilop.net>
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+
+commit f4ca19ce3ab91a9c8ad9de60f7dc95466f21f589
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Fri Jul 29 10:56:44 2011 +1000
+
+    dix: copy the source ID into the RawEvent (#34240)
+    
+    X.Org Bug 34240 <http://bugs.freedesktop.org/show_bug.cgi?id=34240>
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+
+commit 8b29addc30163bb7ba74c74351f312aac02f049a
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Sun Oct 9 04:00:41 2011 -0700
+
+    loader: when creating sdksyms.c only include shmint.h if MITSHM is enabled #29109
+    
+    https://bugs.freedesktop.org/show_bug.cgi?id=29109
+    
+    When configured with --disable-mitshm the symbols declared in shmint.h
+    do not exist. By guarding the include with '#ifdef MITSHM' these
+    symbols are skipped when generating sdksyms.c with --disable-mitshm.
+    
+    Signed-off-by: Michael Olbrich <m.olbrich@pengutronix.de>
+    Reviewed-by: Jeremy Huddleston <jeremyhu@apple.com>
+
+commit eabd5532fb589bd0550344ebd23c9765e591aadf
+Author: Julien Cristau <jcristau@debian.org>
+Date:   Sun Oct 9 17:06:14 2011 -0700
+
+    xfree86: fix build with xv disabled
+    
+    https://bugs.freedesktop.org/show_bug.cgi?id=29111
+    
+    Signed-off-by: Julien Cristau <jcristau@debian.org>
+    Tested-by: Cyril Brulebois <kibi@debian.org>
+    Reviewed-by: Cyril Brulebois <kibi@debian.org>
+
+commit c53380be804852045722203c993379813d97f6d7
+Author: Ville Skyttä <ville.skytta@iki.fi>
+Date:   Sun Mar 6 10:18:30 2011 +0200
+
+    Man page syntax and spelling fixes.
+    
+    Signed-off-by: Ville Skyttä <ville.skytta@iki.fi>
+    Reviewed-by: Jeremy Huddleston <jeremyhu@apple.com>
+
+commit 765ef69295ddc473640c96f1b4f54e0b8bfc670e
+Author: Max Schwarz <max.schwarz@online.de>
+Date:   Tue Oct 4 22:06:08 2011 +0200
+
+    dix: fix inverted handling of legacy scroll button events
+    
+    This bug led to inverted scrolling axes with drivers that support smooth
+    scrolling axes but send legacy button events.
+    
+    Signed-off-by: Max Schwarz <Max@x-quadraht.de>
     Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
     Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
-    (cherry picked from commit b29ce0726d55ec41cfbce0814e21b0217ef64efe)
 
-commit 79ac611d3121801c34f111c91b5ace5769719695
-Author: Peter Hutterer <peter.hutterer@who-t.net>
-Date:   Mon Aug 1 14:12:41 2011 +1000
-
-    dix: don't use the pointer as modifier device in UngrabKey.
-    
-    Modifier device is always the keyboard.
-    
-    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
-    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
-    (cherry picked from commit 8c5a4d6fbecf79f2dc4f2d836d741203b2d5e856)
-
-commit 843737b4f979fed3a6d74cdfc7047ce5ca886639
-Author: Peter Hutterer <peter.hutterer@who-t.net>
-Date:   Thu Jul 28 15:56:08 2011 +1000
-
-    dix: ignore devices when adding passive core grabs to list (#39545)
-    
-    Passive core grabs are mostly device-independent. In an MPX scenario, they
-    may change to reflect whichever master pair activated the grab last. For
-    adding new grabs to the list, ignore the device for core grabs to return
-    failures when trying to set the same grab combo twice on a window.
-    
-    X.Org Bug 39545 <http://bugs.freedesktop.org/show_bug.cgi?id=39545>
-    
-    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
-    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
-    (cherry picked from commit 09496996accfdaf7bc01097a25db400912004d97)
-
-commit cb9c1d6d6cb25f55b1e4ac382e5af72a044e06aa
-Author: Peter Hutterer <peter.hutterer@who-t.net>
-Date:   Thu Jul 28 15:43:10 2011 +1000
-
-    dix: avoid using the VCP as modifier device
-    
-    Core grabs may change device when they're activated to reflect the master
-    they apply to. If the device is a keyboard, modifierDevice is erroneously
-    set to the Virtual Core Pointer.
-    
-    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
-    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
-    (cherry picked from commit 80c37048539daa1d257d127d66502bde45c97c85)
-
-commit ef5c31430c891cf44148ea31058ed4cfb9bec21a
-Author: Peter Hutterer <peter.hutterer@who-t.net>
-Date:   Wed Jul 20 16:21:28 2011 +1000
-
-    config: fix a log message
-    
-    PRODUCT was taken from the parent, hence ppath.
-    
-    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
-    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
-    (cherry picked from commit e684e816acb617b4dc66a68e2b0ba8f80399170a)
-
-commit ec8ee3a9f76cc94d6fa4e7245c1a8fb68a42783c
-Author: Peter Harris <pharris@opentext.com>
-Date:   Fri Sep 2 18:45:16 2011 -0400
-
-    xkb: add missing swaps for xkbGetDeviceInfoReply
-    
-    Caught during review of e095369bf.
-    
-    Signed-off-by: Peter Harris <pharris@opentext.com>
-    Reviewed-by-by: Matt Turner <mattst88@gmail.com>
-    Signed-off-by: Matt Turner <mattst88@gmail.com>
-    (cherry picked from commit c90903b4f7a826ae6826a8dd0a901c8362500e46)
-    
-    Conflicts:
-    
-    	xkb/xkb.c
-    
-    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
-
-commit 603ad6608a0dbe2fb1bdc4bcd8b4117f2b0bc8b2
+commit fae7ed62ad476114bd37b566202cf6b6546c0a1f
 Author: Jeremy Huddleston <jeremyhu@apple.com>
 Date:   Tue Oct 4 21:40:03 2011 -0700
 
     XQuartz: pbproxy: Add missing AM_OBJCFLAGS
     
     Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
-    (cherry picked from commit fae7ed62ad476114bd37b566202cf6b6546c0a1f)
 
-commit 65469f5ea98074ab27ce0a2d482157b9d5c2cbc7
+commit e4cddf509e1729e8ff40354275b65455111ad2bd
 Author: vdb@picaros.org <vdb@picaros.org>
 Date:   Sat Sep 17 18:55:47 2011 +0200
 
@@ -603,9 +2058,8 @@ Date:   Sat Sep 17 18:55:47 2011 +0200
     
     Signed-off-by: Servaas Vandenberghe <vdb@picaros.org>
     Reviewed-by: Jeremy Huddleston <jeremyhu@apple.com>
-    (cherry picked from commit e4cddf509e1729e8ff40354275b65455111ad2bd)
 
-commit bec15eb73a17fb47963ff6b747ea504f7dc05deb
+commit 53611213396479abfdce0f7752681572e0d26d78
 Author: Kirill Elagin <kirelagin@gmail.com>
 Date:   Tue Oct 4 23:02:20 2011 +0400
 
@@ -615,9 +2069,8 @@ Date:   Tue Oct 4 23:02:20 2011 +0400
     
     Signed-off-by: Kirill Elagin <kirelagin@gmail.com>
     Reviewed-by: Jeremy Huddleston <jeremyhu@apple.com>
-    (cherry picked from commit 53611213396479abfdce0f7752681572e0d26d78)
 
-commit b45e22675364915c32560c26404cf30d77ab68aa
+commit 7a33c5b934382b5554f41ab1502514e91c9bc52e
 Author: Alan Hourihane <alanh@vmware.com>
 Date:   Tue Oct 4 19:42:46 2011 -0700
 
@@ -625,9 +2078,1055 @@ Date:   Tue Oct 4 19:42:46 2011 -0700
     
     Signed-off-by: Alan Hourihane <alanh@vmware.com>
     Reviewed-by: Jeremy Huddleston <jeremyhu@apple.com>
-    (cherry picked from commit 7a33c5b934382b5554f41ab1502514e91c9bc52e)
 
-commit e9ae33316012ffe9acfeeb7303ab3392c2ca2a2b
+commit 911e7368bf9c00d327e994a6f7a1d8d8f9b83c72
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Tue Aug 30 16:58:04 2011 -0400
+
+    Move pointOnScreen to inpututils.c
+    
+    We need this from other files too.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+
+commit d0a7cd759d4741a1ae118d579c90704410cde244
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Fri Sep 2 09:53:02 2011 +1000
+
+    dix: NewCurrentScreen must work on pointers where possible
+    
+    When a screen switch is triggered by PointerKeys, the device for
+    NewCurrentScreen is the keyboard. Submitting pointer events for this
+    keyboard (without valuators) has no effect as GPE ignores the event.
+    
+    Force the dequeuing through the XTest device attached to this device.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+
+commit 535b3789be3a7b43b5d9026e2b5150521d91e32b
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Wed Aug 31 14:15:02 2011 +1000
+
+    dix: warn about keyboard events with valuator masks
+    
+    We don't actually handle the mask correctly. They're clipped and dropped
+    into the event but that's about it. I don't think we did since 1.4, let's
+    warn the user if this happens.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+
+commit 9537afb13f2750d22350b7441570332ae60e4860
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Tue Aug 30 13:37:31 2011 +1000
+
+    dix: fill out root_x/y for keyboard events
+    
+    Switching screens relies on rootx/y to be set to the correct value. Note:
+    though we technically take a mask for GetKeyboardEvents we don't actually
+    handle it properly to move the pointer as required (and generate motion
+    events if needed).
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+
+commit 6378d0233d21088b6429755627b4253859892c72
+Merge: 6e965d8 98b2306
+Author: Keith Packard <keithp@keithp.com>
+Date:   Mon Oct 3 13:56:06 2011 -0700
+
+    Merge remote-tracking branch 'herrb/master'
+
+commit 6e965d8a185087a55b2100b817e18f05b3ce5a00
+Merge: 466e4b3 ac5881d
+Author: Keith Packard <keithp@keithp.com>
+Date:   Mon Oct 3 13:47:49 2011 -0700
+
+    Merge remote-tracking branch 'koba/reviewed'
+
+commit 466e4b3f174bdd7a69a76eb06e6c3e3344b8adc2
+Author: Gaetan Nadon <memsize@videotron.ca>
+Date:   Fri Sep 30 07:21:57 2011 -0400
+
+    Xserver-spec: use appropriate copyright markup
+    
+    Use docbook copyright markup for year and holder.
+    
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Signed-off-by: Gaetan Nadon <memsize@videotron.ca>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit 62940bf38f70e3d9fb80521de40d6361548a0ea5
+Author: Gaetan Nadon <memsize@videotron.ca>
+Date:   Fri Sep 30 07:21:56 2011 -0400
+
+    Xserver-spec: re-order markup to follow outpout order
+    
+    No content change, no layout/ordering change.
+    It is easier to find <title> at the top.
+    
+    Reviewed-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Signed-off-by: Gaetan Nadon <memsize@videotron.ca>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit 365bc2f5b132ac76a1f827923a99a75b33b158ac
+Author: Gaetan Nadon <memsize@videotron.ca>
+Date:   Fri Sep 30 07:21:55 2011 -0400
+
+    Xserver-spec: add release information
+    
+    It has been added in all docs (X Version 11, Release 7.6)
+    
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Signed-off-by: Gaetan Nadon <memsize@videotron.ca>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit ee3e26079e120bf9914cc27871d50501b35e75df
+Author: Gaetan Nadon <memsize@videotron.ca>
+Date:   Fri Sep 30 07:16:34 2011 -0400
+
+    ddxDesign: drop the url in the coporate authors list
+    
+    It was such an eyesore once rendered in html.
+    Now it looks like other authors.
+    
+    Reviewed-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Signed-off-by: Gaetan Nadon <memsize@videotron.ca>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit 0ed71b48c0c7bd65cd05eda6c06b9c29b4e3f607
+Author: Gaetan Nadon <memsize@videotron.ca>
+Date:   Fri Sep 30 07:16:33 2011 -0400
+
+    ddxDesign: remove server version from the document title
+    
+    Such version information is already written in the appropriate location
+    
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Signed-off-by: Gaetan Nadon <memsize@videotron.ca>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit 83ec3bf1aa72848421660c44c4503fec655f5924
+Author: Gaetan Nadon <memsize@videotron.ca>
+Date:   Fri Sep 30 07:16:32 2011 -0400
+
+    ddx-Design: add X Version and Release information
+    
+    Acked-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Signed-off-by: Gaetan Nadon <memsize@videotron.ca>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit 2f09f6e3f610e585aeb5bd1023323a909d1ba20d
+Author: Gaetan Nadon <memsize@videotron.ca>
+Date:   Thu Sep 29 07:53:16 2011 -0400
+
+    Xinput: use appropriate copyright markup for a multi licensed doc
+    
+    Removed a duplicate paragraph.
+    
+    Acked-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Signed-off-by: Gaetan Nadon <memsize@videotron.ca>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit 597348e969bf78dc2de4cf9bae7b76c110144266
+Author: Gaetan Nadon <memsize@videotron.ca>
+Date:   Thu Sep 29 07:53:15 2011 -0400
+
+    Xinput: replace hard coded X11 version with X server version
+    
+    Which is more useful.
+    
+    Reviewed-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Signed-off-by: Gaetan Nadon <memsize@videotron.ca>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit fad04dd9701aa76249a0bab31676103debb84307
+Author: Lennart Poettering <lennart@poettering.net>
+Date:   Tue Sep 27 18:04:06 2011 +0100
+
+    udev: make use of udev_enumerate_add_match_tag() only when it is available
+    
+    udev_enumerate_add_match_tag() and udev_monitor_filter_add_match_tag()
+    are mostly optimizations, hence simply skip these calls if they are not
+    available in the installed version of libudev.
+    
+    This should fix the build on older versions of udev.
+    
+    [airlied: fixes tinderbox failures on RHEL6]
+    
+    Signed-off-by: Lennart Poettering <lennart@poettering.net>
+    Reviewed-by: Dave Airlie <airlied@redhat.com>
+    Tested-by: Dave Airlie <airlied@redhat.com>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit 77743f877d573cdf70fcb5cb5897250f668ebf9b
+Author: Jamey Sharp <jamey@minilop.net>
+Date:   Mon Sep 26 22:38:44 2011 -0700
+
+    kdrive: Fix build for opaque InputOption structure.
+    
+    Commit 05284a03f9002b03a66ae355b34790ec02b726f0 missed fixing up
+    kdrive's use of the old non-opaque structure.
+    
+    Signed-off-by: Jamey Sharp <jamey@minilop.net>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit 9a55b3661b4172f9a32cd6fefb254e06edb1a88a
+Merge: cf11ca3 84bb020
+Author: Keith Packard <keithp@keithp.com>
+Date:   Mon Oct 3 11:49:23 2011 -0700
+
+    Merge remote-tracking branch 'alanc/master'
+
+commit cf11ca360c2ded5ca309faa9d039160947387bb8
+Merge: 463dd87 6eae9fa
+Author: Keith Packard <keithp@keithp.com>
+Date:   Mon Oct 3 11:44:59 2011 -0700
+
+    Merge remote-tracking branch 'jeremyhu/for-keith'
+
+commit 463dd87062edaa974cb8c7163328a53197f237e1
+Author: Pauli Nieminen <pauli.nieminen@linux.intel.com>
+Date:   Thu Sep 22 18:38:53 2011 +0300
+
+    xf86/modes: Fix shadow rotation crashing when screen pixmap changes
+    
+    Driver may change screen pixmaps after page flipping that would then
+    make damage lose track of the root pixmap.
+    
+    Using root window for shadow damages fixes the problem because
+    SetWindowPixmap is implemented in shadow code.
+    
+    Signed-off-by: Pauli Nieminen <pauli.nieminen@linux.intel.com>
+    Reviewed-by: Keith Packard <keithp@keithp.com>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit f5d50b46ddeb039ab6564141f61261e94ee67637
+Merge: 57cd32e 524e544
+Author: Keith Packard <keithp@keithp.com>
+Date:   Mon Oct 3 11:36:28 2011 -0700
+
+    Merge remote-tracking branch 'whot/next'
+
+commit 57cd32e93425597317b4b7722859155419836e4c
+Author: Aaron Plattner <aplattner@nvidia.com>
+Date:   Thu Aug 25 15:41:55 2011 -0700
+
+    xfree86/modes: Make cursor position transform a helper function
+    
+    When the driver can handle the crtc transform in hardware, it sets
+    crtc->driverIsPerformingTransform, which turns off both the shadow
+    layer and the cursor's position-transforming code.  However, some
+    drivers actually do require the cursor position to still be
+    transformed in these cases.  Move the cursor position transform into a
+    helper function that can be called by such drivers.
+    
+    Signed-off-by: Aaron Plattner <aplattner@nvidia.com>
+
+commit 245cb8e94fd15990e1b7d6622added460f104dba
+Author: Aaron Plattner <aplattner@nvidia.com>
+Date:   Thu Aug 25 10:19:48 2011 -0700
+
+    xfree86/modes: Let the driver handle the transform
+    
+    If a driver can use hardware to handle the crtc transform, then
+    there's no need for the server's shadow layer to do it.  Add a crtc
+    flag that lets the driver indicate that it is handling the transform.
+    If it's set, consider the transformed size of the screen but don't
+    actually enable the shadow layer.  Also stop adjusting the cursor
+    image and position.
+    
+    Signed-off-by: Aaron Plattner <aplattner@nvidia.com>
+
+commit e089737fb13868bd3a72b7ac4799d502d188f03e
+Author: Keith Packard <keithp@keithp.com>
+Date:   Mon Oct 3 11:23:16 2011 -0700
+
+    Add AC_LANG_SOURCE wrappers around configure.ac code fragments
+    
+    Current autoconf versions are very unhappy when code fragments are not
+    wrapped in AC_LANG_SOURCE macros, generating errors like:
+    
+    configure.ac:723: warning: AC_LANG_CONFTEST: no AC_LANG_SOURCE call detected in body
+    ../../lib/autoconf/lang.m4:194: AC_LANG_CONFTEST is expanded from...
+    ../../lib/autoconf/general.m4:2662: _AC_LINK_IFELSE is expanded from...
+    ../../lib/autoconf/general.m4:2679: AC_LINK_IFELSE is expanded from...
+    ../../lib/m4sugar/m4sh.m4:606: AS_IF is expanded from...
+    ../../lib/autoconf/general.m4:2032: AC_CACHE_VAL is expanded from...
+    ../../lib/autoconf/general.m4:2053: AC_CACHE_CHECK is expanded from...
+    configure.ac:723: the top level
+    
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit 6eae9fa28445b6cfa09061b338242df5116aafe8
+Author: Matt Turner <mattst88@gmail.com>
+Date:   Wed Sep 28 17:27:45 2011 -0400
+
+    Remove incorrect & in swap_uint32
+    
+    Caused by commit 893e86a4, and hidden by the (char *) cast.
+    
+    Signed-off-by: Matt Turner <mattst88@gmail.com>
+    Reviewed-by: Jeremy Huddleston <jeremyhu@apple.com>
+    Reviewed-by: Jamey Sharp <jamey@minilop.net>
+    Reviewed-by: Aaron Plattner <aplattner@nvidia.com>
+    Tested-by: Aaron Plattner <aplattner@nvidia.com>
+
+commit 524e5445c0b6df5247d4aac5368470bb89ef4080
+Author: Alan Coopersmith <alan.coopersmith@oracle.com>
+Date:   Sat Oct 1 08:43:52 2011 -0700
+
+    Add #include "inpututils.h" to xkbAccessX.c for init_device_event
+    
+    Fixes Sun compiler warning:
+    "xkbAccessX.c", line 128: warning: implicit function declaration: init_device_event
+    
+    Signed-off-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Reviewed-by: Jamey Sharp <jamey@minilop.net>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit 98b230669f591bf5b8b8764db3b287d91857ee9e
+Author: Matthieu Herrb <matthieu.herrb@laas.fr>
+Date:   Sun Jul 31 20:43:39 2011 +0200
+
+    sdksyms.sh may not be executable.
+    
+    Use $(SHELL) to run it. Someone may want to build out of a source tree
+    in a filesystem with the noexec mount flag set.
+    
+    Signed-off-by: Matthieu Herrb <matthieu.herrb@laas.fr>
+    Reviewed-by: Gaetan Nadon <memsize@videotron.ca>
+    Reviewed-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+
+commit f54852edc35a2831a4cd91906188101ea19904e1
+Author: Matthieu Herrb <matthieu.herrb@laas.fr>
+Date:   Sun Sep 18 12:46:52 2011 +0200
+
+    Add a 'wscons' autoconf mechanism to configure input devices on BSD.
+    
+    This does not really handle hotplug (it's handled inside the kernel,
+    by the 'mux' devices), but uses the wscons console driver
+    configuration to figure out the keyboard layout and the list of
+    pointing devices found by the kernel.
+    
+    Signed-off-by: Matthieu Herrb <matthieu.herrb@laas.fr>
+    Acked-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit f32c827d513c44f07e1d0fbcc0c96cef18c9a4d9
+Author: Max Schwarz <Max@x-quadraht.de>
+Date:   Sun Sep 25 20:44:26 2011 +0200
+
+    Input: Fix frac calculation on [Raw]DeviceEvent conversion
+    
+    (1UL << 32) evaluates to 0 (at least here), so do the
+    fraction calculation in two steps as in libXi. Fractions on xXIRawEvent
+    were not multiplied at all, which also gave 0 as result.
+    
+    Signed-off-by: Max Schwarz <Max@x-quadraht.de>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit 4c6bc0e76599dbe5ede2e1f48c9936a0e996b638
+Merge: 057cc92 3304bbf
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Fri Sep 30 09:24:56 2011 +1000
+
+    Merge branch 'smooth-scrolling' into next
+
+commit 3304bbff9b4ed63f1a47410a5320a136420ba2c6
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Tue Feb 15 18:49:58 2011 +0000
+
+    Input: Add smooth-scrolling support to GetPointerEvents
+    
+    For scroll wheel support, we used to send buttons 4/5 and 6/7 for
+    horizontal/vertical positive/negative scroll events.  For touchpads, we
+    really want more fine-grained scroll values.  GetPointerEvents now
+    accepts both old-school scroll button presses, and new-style scroll axis
+    events, while emitting both types of events to support both old and new
+    clients.
+    
+    This works with the new XIScrollClass to mark axes as scrolling axes.
+    Drivers mark any valuators that send scroll events with SetScrollValuator.
+    (Currently missing: the XIDeviceChangeEvent being sent when a driver changes
+    a scroll axis at run-time. This can be added later.)
+    
+    Note: the SCROLL_TYPE enums are intentionally different values to the XI2
+    proto values to avoid copy/overlapping range bugs.
+    
+    Co-authored-by: Daniel Stone <daniel@fooishbar.org>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+
+commit ac5881d6d0bcf4bcc66a5d6ddde4eca950db1a5b
+Author: Alexandr Shadchin <Alexandr.Shadchin@gmail.com>
+Date:   Thu Sep 15 23:05:24 2011 +0600
+
+    Remove unused vtSysreq
+    
+    Signed-off-by: Alexandr Shadchin <Alexandr.Shadchin@gmail.com>
+    Reviewed-by: Jamey Sharp <jamey@minilop.net>
+    Tested-by: Matthieu Herrb <matthieu.herrb@laas.fr>
+
+commit 0be1640dbbdd072f26d937de2e49f5ed58d54ef9
+Author: Alexandr Shadchin <Alexandr.Shadchin@gmail.com>
+Date:   Sat Aug 27 02:02:36 2011 +0600
+
+    bsd: ioctl KDENABIO/KDDISABIO do not matter for OpenBSD
+    
+    Signed-off-by: Alexandr Shadchin <Alexandr.Shadchin@gmail.com>
+    Tested-by: Matthieu Herrb <matthieu.herrb@laas.fr>
+
+commit 91042b98afdc6cecc746e101a88f79e56db1c0d0
+Author: Alexandr Shadchin <Alexandr.Shadchin@gmail.com>
+Date:   Sat Aug 27 00:47:34 2011 +0600
+
+    bsd: OpenBSD and NetBSD not need extra headers in PCVT_SUPPORT
+    
+    Signed-off-by: Alexandr Shadchin <Alexandr.Shadchin@gmail.com>
+    Tested-by: Matthieu Herrb <matthieu.herrb@laas.fr>
+
+commit 86eaa9bbe4ed59f89d6509d5e13211ab7f5a8038
+Author: Alexandr Shadchin <Alexandr.Shadchin@gmail.com>
+Date:   Sat Aug 27 01:03:28 2011 +0600
+
+    bsd: Some clean up
+    
+    OpenBSD and NetBSD does not support syscons
+    
+    Signed-off-by: Alexandr Shadchin <Alexandr.Shadchin@gmail.com>
+    Tested-by: Matthieu Herrb <matthieu.herrb@laas.fr>
+
+commit dc864770d47fc1e4ec993e37a59e5aecb5b0a85e
+Author: Alexandr Shadchin <Alexandr.Shadchin@gmail.com>
+Date:   Fri Aug 26 22:40:19 2011 +0600
+
+    bsd: Remove dead code
+    
+    Since OsInit closes stdin before the xfree86 DDX opens the
+    console, fstat on stdin will always fail, so it's safe to delete
+    code that attempts it.
+    
+    Signed-off-by: Alexandr Shadchin <Alexandr.Shadchin@gmail.com>
+    Reviewed-by: Jamey Sharp <jamey@minilop.net>
+    Tested-by: Matthieu Herrb <matthieu.herrb@laas.fr>
+
+commit cbb842666fa7ff26bbdd1e89a7f41b835a677c5e
+Author: Alexandr Shadchin <Alexandr.Shadchin@gmail.com>
+Date:   Fri Aug 26 21:42:41 2011 +0600
+
+    bsd: Variable devConsoleFd need only if defined PCCONS_SUPPORT
+    
+    Signed-off-by: Alexandr Shadchin <Alexandr.Shadchin@gmail.com>
+    Reviewed-by: Jamey Sharp <jamey@minilop.net>
+    Tested-by: Matthieu Herrb <matthieu.herrb@laas.fr>
+
+commit 38bd1e123d959e0a13514ec415afc8bfb5a170f2
+Author: Alexandr Shadchin <Alexandr.Shadchin@gmail.com>
+Date:   Fri Aug 26 18:54:01 2011 +0600
+
+    bsd: Replacement screenFd on consoleFd because they are equivalent
+    
+    Signed-off-by: Alexandr Shadchin <Alexandr.Shadchin@gmail.com>
+    Reviewed-by: Jamey Sharp <jamey@minilop.net>
+    Tested-by: Matthieu Herrb <matthieu.herrb@laas.fr>
+
+commit f015351c73bb24ce4172911c3e95d67922de42ab
+Author: Alexandr Shadchin <Alexandr.Shadchin@gmail.com>
+Date:   Fri Aug 26 18:27:02 2011 +0600
+
+    bsd: Remove unused macros KBD_FD
+    
+    Signed-off-by: Alexandr Shadchin <Alexandr.Shadchin@gmail.com>
+    Reviewed-by: Jamey Sharp <jamey@minilop.net>
+    Reviewed-by: Jeremy Huddleston <jeremyhu@apple.com>
+    Tested-by: Matthieu Herrb <matthieu.herrb@laas.fr>
+
+commit 057cc92ebfeebe81b7d01ff2c6aa2c066c8d1a64
+Merge: afb1fe6 52c9b59
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Thu Sep 29 14:18:35 2011 +1000
+
+    Merge branch 'raw-events' into next
+    
+    Conflicts:
+    	configure.ac
+    	dix/events.c
+
+commit 52c9b59a9fed6abfeca775a7a04133cee18eac0b
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Mon May 30 09:47:06 2011 +1000
+
+    dix: use 'rc' for return code in DeliverRawEvent
+    
+    Reported-by: Walter Harms <wharms@bfs.de>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Cyril Brulebois <kibi@debian.org>
+    Reviewed-by: Jeremy Huddleston <jeremyhu@apple.com>
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+
+commit b6b1f1b514bf14ddf6b265b8d4551f892ded0dd2
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Wed May 11 13:56:08 2011 +1000
+
+    input: deliver raw events unconditionally for XI 2.1 clients.
+    
+    Deliver raw events regardless whether there is a grab on or not for clients
+    supporting 2.1 or later.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Jeremy Huddleston <jeremyhu@apple.com>
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+
+commit 16244fba001826190445302f56784f5de9c59c01
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Thu Jun 2 13:50:13 2011 +1000
+
+    Support (and require) XI 2.1
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Jeremy Huddleston <jeremyhu@apple.com>
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+
+commit 54e05d80a122bac57920fce1704c0f57492b849c
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Fri May 27 14:21:39 2011 +1000
+
+    dix: rename ProcessRawEvents to dix/events.c:DeliverRawEvent
+    
+    No functional changes, prep work for future changes.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Cyril Brulebois <kibi@debian.org>
+    Reviewed-by: Jeremy Huddleston <jeremyhu@apple.com>
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+
+commit c48133f133c64d356a1208f185619bfdf7e9a5f2
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Fri May 27 14:19:45 2011 +1000
+
+    Xi: use temporary variable for filter.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Jeremy Huddleston <jeremyhu@apple.com>
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+
+commit ac0850e86f22191091a1eb07237cae9de49ee00d
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Fri May 27 12:14:32 2011 +1000
+
+    dix: split DeliverEventToWindowMask up a bit more.
+    
+    Move out the actual event delivery, it needs to be used from elsewhere.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Jeremy Huddleston <jeremyhu@apple.com>
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+
+commit 5ea2fb389fce235366e9fce83d20abdc8874f4e2
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Fri May 27 11:43:50 2011 +1000
+
+    dix: rename DeliverEventsToClients to DeliverEventsToWindowMask
+    
+    To avoid confusion with a future patch and it better describes what this
+    does anyway - delivering events to all clients that have the event mask on
+    the window.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Jeremy Huddleston <jeremyhu@apple.com>
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+
+commit 016413dae947fe4e8e918f728c87354fa4928275
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Fri May 27 11:40:56 2011 +1000
+
+    dix: split client list retrieval out of DeliverEventToClients
+    
+    No functional change, but "other" was renamed to "clients".
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Jeremy Huddleston <jeremyhu@apple.com>
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+
+commit 537c5f631d1f8d526e63355b7d88cb1fb2793492
+Author: Cyril Brulebois <kibi@debian.org>
+Date:   Sun Jun 5 03:21:18 2011 +0200
+
+    xkb: Fix case checks for Latin 4.
+    
+    That one was missing _XkbKSLower:
+      XK_kra: U+0138 LATIN SMALL LETTER KRA
+    
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+    Signed-off-by: Cyril Brulebois <kibi@debian.org>
+
+commit 0b56a7f0ad01d3a86cdd7a14d5e567a00a3553f6
+Author: Cyril Brulebois <kibi@debian.org>
+Date:   Sun Jun 5 03:12:44 2011 +0200
+
+    xkb: Fix case checks for Latin 2.
+    
+    Those ones were getting _XkbKSLower for no reasons:
+      XK_ogonek: U+02DB OGONEK
+      XK_doubleacute: U+02DD DOUBLE ACUTE ACCENT
+    
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+    Signed-off-by: Cyril Brulebois <kibi@debian.org>
+
+commit 512a9750c197437889ff7f26a8d2bd242e030745
+Author: Cyril Brulebois <kibi@debian.org>
+Date:   Sun Jun 5 03:03:47 2011 +0200
+
+    xkb: Fix case checks for Latin 1.
+    
+    That one was missing _XkbKSLower:
+      XK_ssharp: U+00DF LATIN SMALL LETTER SHARP S
+    
+    That one was getting _XkbKSLower for no reasons:
+      XK_division: U+00F7 DIVISION SIGN
+    
+    For reference, XK_multiply was already excluded from the _XkbKSUpper
+    check, it's no big surprise XK_division has to be excluded from the
+    _XkbKSLower check.
+    
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+    Signed-off-by: Cyril Brulebois <kibi@debian.org>
+
+commit 635a1f50bc65512ec491fe71b9dfa8cf9118e2c2
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Fri Sep 23 12:04:39 2011 +1000
+
+    input: allow for max < min for relative axes on  InitValuatorAxisStruct
+    
+    Relative axes are initialized with 0, -1 but so far this never had any
+    effect as all users of this function (for relative axes) just set it to the
+    defaults anyway.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+
+commit 8d1a414cca51e7f8a93470c5aa2e998f5ca1bc9a
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Fri Sep 23 12:03:48 2011 +1000
+
+    input: switch InitValuatorAxisStruct to return Bool
+    
+    Return errors instead of silently ignoring them.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+
+commit 5ac1f885f5c106b970835de36e13a9a7ea413df4
+Author: Daniel Stone <daniel@fooishbar.org>
+Date:   Tue Feb 15 19:44:53 2011 +0000
+
+    Input: Add POINTER_EMULATED flag to GetPointerEvents
+    
+    POINTER_EMULATED merely sets XIPointerEmulated in the generated
+    DeviceEvent.
+    
+    Signed-off-by: Daniel Stone <daniel@fooishbar.org>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit 78d8d6dd7f31cb903d5c8baf64181795736f33ed
+Author: Daniel Stone <daniel@fooishbar.org>
+Date:   Tue Feb 15 14:23:25 2011 +0000
+
+    Input: Add vertical and horizontal scroll axes
+    
+    To be used for smooth scrolling with future driver APIs, replacing
+    Rel Vert Wheel and Rel Horiz Wheel axes, which have not been used in any
+    open driver to date.
+    
+    Combined with double-granularity ValuatorMasks, these axes allow for
+    fine-grained scroll data to be sent to clients.  Future commits allow
+    drivers to post these scroll axes to
+    QueuePointerEvents/GetPointerEvents, which take care of emulating legacy
+    scroll button events.
+    
+    Signed-off-by: Daniel Stone <daniel@fooishbar.org>
+
+commit d8e42decbad4abe13265f4c546a0c561905d018f
+Author: Daniel Stone <daniel@fooishbar.org>
+Date:   Tue Feb 15 18:54:14 2011 +0000
+
+    Input: Split GetPointerEvents body into a helper function
+    
+    For smooth-scrolling support, we want GetPointerEvents to generate
+    multiple events, so split the body of the function out into a helper
+    function in order to call it multiple times.
+    
+    Signed-off-by: Daniel Stone <daniel@fooishbar.org>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit bc8aad2376207b5ca9c74effae67fb8183222d2e
+Author: Daniel Stone <daniel@fooishbar.org>
+Date:   Thu Mar 3 19:48:15 2011 +0000
+
+    Input: Set last valuators in GetPointerEvents only
+    
+    Previously, various pieces of code, including acceleration, used to drop
+    the values into DeviceIntRec::last.valuators.  Remove all this and only
+    do it in GetPointerEvents after all transformation, acceleration and
+    clipping, so we're guaranteed to always have the correct values.
+    
+    Signed-off-by: Daniel Stone <daniel@fooishbar.org>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit 94c19a0a72403fc522e3d05eeb57f35e111a2562
+Author: Daniel Stone <daniel@fooishbar.org>
+Date:   Thu Mar 3 15:46:45 2011 +0000
+
+    Input: Convert DeviceIntRec::last to use doubles
+    
+    Change the last real user of a split integer/fractional co-ordinate
+    system, DeviceIntRec's last->{valuators,remainder} to just have one set
+    of doubles.
+    
+    Signed-off-by: Daniel Stone <daniel@fooishbar.org>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit 2d9beeb2174661d0a0732403ad4e49e9ff56718d
+Author: Daniel Stone <daniel@fooishbar.org>
+Date:   Thu Mar 3 15:36:55 2011 +0000
+
+    Input: Make DeviceEvent use doubles internally
+    
+    Change the DeviceEvent InternalEvent to use doubles for its valuators,
+    instead of data and data_frac.
+    
+    Signed-off-by: Daniel Stone <daniel@fooishbar.org>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit 626f487b97c99b48bf1d8c8ef4367a686639c3e6
+Author: Daniel Stone <daniel@fooishbar.org>
+Date:   Thu Mar 3 15:06:45 2011 +0000
+
+    Input: Make RawDeviceEvent use doubles internally
+    
+    Change RawDeviceEvent to use doubles for valuators internally, rather
+    than data(_raw) and data(_raw)_frac.
+    
+    Signed-off-by: Daniel Stone <daniel@fooishbar.org>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit 3b7fb0f68dc0d40c968c2cfc9bb74b1d0fb48bc8
+Author: Daniel Stone <daniel@fooishbar.org>
+Date:   Wed Mar 2 17:18:48 2011 +0000
+
+    Input: Modify mask in-place in positionSprite
+    
+    Instead of taking pointers to x and y values to modify in
+    positionSprite, just modify the mask (as well as dev->last) in place.
+    
+    Signed-off-by: Daniel Stone <daniel@fooishbar.org>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit 629a575261c08ca67324fea4c975636a1a95dc75
+Author: Daniel Stone <daniel@fooishbar.org>
+Date:   Wed Mar 2 17:04:57 2011 +0000
+
+    Input: Convert positionSprite and GetPointerEvents to double
+    
+    Use doubles internally in both of these functions, eliminating most of
+    the remaining int co-ordinate usage.
+    
+    Signed-off-by: Daniel Stone <daniel@fooishbar.org>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit 51437995a5041a8c53c33b508b1607c78a5fa463
+Author: Daniel Stone <daniel@fooishbar.org>
+Date:   Wed Mar 2 16:50:55 2011 +0000
+
+    Input: Don't call positionSprite for non-pointer devices
+    
+    If the device doesn't have any valuators, or if it has less than two of
+    them, don't bother calling positionSprite.  Users with one-dimensional
+    pointing devices may be upset.
+    
+    Signed-off-by: Daniel Stone <daniel@fooishbar.org>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit 4c364a312daf2b743a0a60b9907f671804a1b1b6
+Author: Daniel Stone <daniel@fooishbar.org>
+Date:   Wed Mar 2 16:49:53 2011 +0000
+
+    Input: Convert rescaleValuatorAxis to double
+    
+    Instead of passing fractional pointers around everywhere, just pass
+    doubles instead.  Much easier.
+    
+    Signed-off-by: Daniel Stone <daniel@fooishbar.org>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit 5680fa41ea3373651f7017898a307e97cf29b0d3
+Author: Daniel Stone <daniel@fooishbar.org>
+Date:   Wed Mar 2 16:30:30 2011 +0000
+
+    Input: Remove x and y from moveAbsolute/moveRelative
+    
+    Both these functions modify the mask and
+    pDev->last.{valuators,remainder} in-place now, so there's no need to
+    pass in pointers to local x and y values.
+    
+    Signed-off-by: Daniel Stone <daniel@fooishbar.org>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit 0882b788da97c75e464eb352dac1d83c938a148e
+Author: Daniel Stone <daniel@fooishbar.org>
+Date:   Wed Mar 2 16:27:31 2011 +0000
+
+    Input: Convert acceleration code to using ValuatorMask
+    
+    Instead of passing a set of int* to the acceleration code, pass it a
+    mask instead, which avoids an unfortunate loss of precision.
+    
+    Signed-off-by: Daniel Stone <daniel@fooishbar.org>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Simon Thum <simon.thum@gmx.de>
+
+commit 2b8f1d07bd42c9d3db3dbacfe6a1335e47236a6c
+Author: Daniel Stone <daniel@fooishbar.org>
+Date:   Wed Mar 2 15:37:53 2011 +0000
+
+    Input: Widen pointer acceleration types to double
+    
+    This widens almost all of the float-using code in ptrveloc.[ch] to
+    doubles, other than values coming from properties which are specified to
+    be floats by the property API.
+    
+    Bumps input API to v14 as this changes the AccelScheme signature, as
+    used by xf86-input-synaptics.
+    
+    Signed-off-by: Daniel Stone <daniel@fooishbar.org>
+
+commit 8a4a4e1b8a33899653d68a21bb7ff0557a576338
+Author: Daniel Stone <daniel@fooishbar.org>
+Date:   Thu Jun 9 15:26:55 2011 +0100
+
+    Input: Use trunc instead of lrintf in acceleration code
+    
+    For compatibility with all the rest of the input code.
+    
+    Signed-off-by: Daniel Stone <daniel@fooishbar.org>
+    Reviewed-by: Simon Thum <simon.thum@gmx.de>
+
+commit e1df51421bc392d57f88c831fe0661871a8aa769
+Author: Daniel Stone <daniel@fooishbar.org>
+Date:   Wed Mar 2 13:34:32 2011 +0000
+
+    Input: Set fractional member in set_raw_valuators
+    
+    RawDeviceEvents have space for fractional valuator members, so might as
+    well start using them.
+    
+    Signed-off-by: Daniel Stone <daniel@fooishbar.org>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit cdf202250ef616f3b261db70da30e421ea59a630
+Author: Daniel Stone <daniel@fooishbar.org>
+Date:   Wed Mar 2 14:50:29 2011 +0000
+
+    Input: Convert transformAbsolute to work on doubles
+    
+    Change transformAbsolute to use doubles internally.
+    
+    Signed-off-by: Daniel Stone <daniel@fooishbar.org>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit 3463078f9697fad0ee11837d80e88889fc6a28a4
+Author: Daniel Stone <daniel@fooishbar.org>
+Date:   Wed Mar 2 13:29:24 2011 +0000
+
+    Input: Convert clipAxis, moveAbsolute and moveRelative to double
+    
+    Change all these three to use doubles internally, though the outputs of
+    moveAbsolute and moveRelative are still truncated to int.
+    
+    Signed-off-by: Daniel Stone <daniel@fooishbar.org>
+
+commit 4e52cc0ef48145134cd58d357fb7289e6f8bb709
+Author: Daniel Stone <daniel@fooishbar.org>
+Date:   Wed Mar 2 13:20:37 2011 +0000
+
+    Input: Prepare moveRelative for conversion to double
+    
+    Shuffle some code around in moveRelative to make the conversion to
+    double easier later.
+    
+    Signed-off-by: Daniel Stone <daniel@fooishbar.org>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit 80fdf9ca33a8f50f98a4b1a3279e66b040353b80
+Author: Daniel Stone <daniel@fooishbar.org>
+Date:   Wed Mar 2 13:19:00 2011 +0000
+
+    Input: Prepare moveAbsolute for conversion to double
+    
+    Shuffle some code around to make moving to double easier later.
+    
+    Signed-off-by: Daniel Stone <daniel@fooishbar.org>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit 6a6b4eb05c7822860e2362fa9b8441fc67055e27
+Author: Daniel Stone <daniel@fooishbar.org>
+Date:   Wed Mar 2 17:22:59 2011 +0000
+
+    Input: Store clipped absolute axes in the mask
+    
+    Change moveAbsolute to be more symmetric with moveRelative by storing a
+    clipped axis value back in the mask, rather than just in
+    dev->last.valuators.
+    
+    Signed-off-by: Daniel Stone <daniel@fooishbar.org>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit 7e919ef5bfa94d51a06eefb150ab947bdbfb6885
+Author: Daniel Stone <daniel@fooishbar.org>
+Date:   Wed Feb 23 17:28:18 2011 +0000
+
+    Input: Add double-precision valuator_mask API
+    
+    Add API for valuator_mask that accepts and returns doubles, rather than
+    ints.  No double API is provided for set_range at the moment.
+    
+    Signed-off-by: Daniel Stone <daniel@fooishbar.org>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit 79d4deb76d5612b75ef26b4549b7ade3a656687d
+Author: Daniel Stone <daniel@fooishbar.org>
+Date:   Wed Feb 23 14:31:01 2011 +0000
+
+    Input: Convert ValuatorMask to double-precision internally
+    
+    Switch the ValuatorMask struct to using doubles instead of ints for the
+    actual values.  Preserve the old int API, and (attempt to) round towards
+    zero for values we return.
+    
+    Signed-off-by: Daniel Stone <daniel@fooishbar.org>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit 60a766a96f9ec97adf6d0273f70ec23f313a11c6
+Author: Daniel Stone <daniel@fooishbar.org>
+Date:   Thu Jun 9 16:02:47 2011 +0100
+
+    Input: Add flags to RawDeviceEvent
+    
+    Add a flags member which will be copied wholesale into the resultant
+    xXIRawEvent.
+    
+    Signed-off-by: Daniel Stone <daniel@fooishbar.org>
+
+commit 5d62c32981dbe9630bed32567b55008b536c81c5
+Author: Daniel Stone <daniel@fooishbar.org>
+Date:   Mon Dec 27 13:24:35 2010 +0000
+
+    Input: Add flags to DeviceEvent
+    
+    Add a flags member which will be copied wholesale into the resultant
+    xXIDeviceEvent.
+    
+    Signed-off-by: Daniel Stone <daniel@fooishbar.org>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Chase Douglas <chase.douglas@canonical.com>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit 38e9e28ba2fbffee52ad9889ef6d4e94c7af3e10
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Tue Sep 20 20:39:06 2011 -0700
+
+    XQuartz: Use set_front_process rather than X11ApplicationSetFrontProcess since we're already in the AppKit thread
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+
+commit 206b30ebc608d29a91cc18665d89e887cac4dba3
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Thu Sep 22 18:55:19 2011 -0700
+
+    Address regressions from e8ff555b95ba and d206d52f657c to work with other compilers
+    
+    1) The error attribute appeared in gcc-4.3
+    2) The return type of __builtin_constant_p is int
+    3) Sun Studio 12.0 and later builtin support for __builtin_constant_p
+    
+    Found by Tinderbox.
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+    Reviewed-by: Matt Turner <mattst88@gmail.com>
+    Reviewed-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Reviewed-by: Aaron Plattner <aplattner@nvidia.com>
+
+commit afb1fe695d197187a301c19863a128a65389b15c
+Merge: 7fb4bef c7163fd
+Author: Keith Packard <keithp@keithp.com>
+Date:   Mon Sep 26 20:24:15 2011 -0700
+
+    Merge remote-tracking branch 'whot/next'
+
+commit c7163fdd302f706a3d67f0fdf93eeb3396bb3332
+Author: vdb@picaros.org <vdb@picaros.org>
+Date:   Wed Aug 31 07:23:01 2011 +0200
+
+    xfree86: .BI style: monitor section in xorg.conf man page
+    
+    The xorg.conf manual uses the following convention in most of its
+    sections:
+    
+    bold = text to be copied literally to the config file,
+    italic = a symbolic name to be substituted by a true value.
+    
+    Some configuration keywords seem to have been changed into generic
+    options.  Prepending Option to the manual entry swapped the
+    bold-italic logic.  This patch restores the convention in the monitor
+    section and consists of
+    
+    -.BI "Option " "\*qPreferredMode\*q  " \*qstring\*q
+    +.BI "Option \*qPreferredMode\*q \*q" name \*q
+    
+    modifications.
+    
+    Plus a few minor changes (Modes → Mode) and a typo fix.
+    
+    Signed-off-by: Servaas Vandenberghe
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit 4b4caecb7d2c8e0b7e4fedc95fba2a728bbc25e6
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Tue Sep 6 09:33:43 2011 +1000
+
+    xfree86: expose Option "TransformationMatrix"
+    
+    Recent changes to the server change the default absolute input device
+    behaviour on zaphods to span the whole desktop too. Since these setups
+    usually use an xorg.conf, allow the transformation matrix to be specified in
+    the config as well.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Simon Thum <simon.thum@gmx.de>
+
+commit cf51424a34fb2b567a867338ab44f83b5c43251c
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Tue Sep 6 09:39:01 2011 +1000
+
+    xfree86: use subheader for Pointer Acceleration parts in xorg.conf(5)
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit 9125952b407090b040bffb3d752288293137cf77
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Mon Sep 5 15:43:14 2011 +1000
+
+    xfree86: fix comment typo
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit 2d2dce558d24eeea0eb011ec9ebaa6c5c2273c39
 Author: Sam Spilsbury <sam.spilsbury@canonical.com>
 Date:   Wed Sep 14 09:58:34 2011 +0800
 
@@ -641,9 +3140,8 @@ Date:   Wed Sep 14 09:58:34 2011 +0800
     
     Reviewed-by: Jamey Sharp <jamey@minilop.net>
     Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
-    (cherry picked from commit 2d2dce558d24eeea0eb011ec9ebaa6c5c2273c39)
 
-commit 347f5610ca023fb31485aa19c20607af8bf9c834
+commit f52d5cd374563544dafe29587411f345e31bbdf8
 Author: Carlos Garnacho <carlosg@gnome.org>
 Date:   Wed Aug 31 00:46:52 2011 +0200
 
@@ -655,45 +3153,224 @@ Date:   Wed Aug 31 00:46:52 2011 +0200
     Signed-off-by: Carlos Garnacho <carlosg@gnome.org>
     Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
     Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
-    (cherry picked from commit f52d5cd374563544dafe29587411f345e31bbdf8)
 
-commit 7b74bb67528033bf2d2a1714a801c38e7822642e
-Author: Jeremy Huddleston <jeremyhu@apple.com>
-Date:   Tue Sep 20 20:39:06 2011 -0700
+commit 24823f1ab0f16e0815ef44340894537dc4babf6a
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Wed Aug 3 16:01:28 2011 +1000
 
-    XQuartz: Use set_front_process rather than X11ApplicationSetFrontProcess since we're already in the AppKit thread
+    xfree86: switch options from pointer to XF86OptionPtr
     
-    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
-    (cherry picked from commit 38e9e28ba2fbffee52ad9889ef6d4e94c7af3e10)
-
-commit bd6ea85209e5ab80375d4ec9994d10a89fd1374a
-Author: Jamey Sharp <jamey@minilop.net>
-Date:   Tue Sep 14 18:35:21 2010 -0700
-
-    Fix pixmap double-frees on error paths.
+    In all cases, the pointer was simply type-cast anyway. Let's get some
+    compile-time type safety going, how about that.
     
-    If AddResource fails, it will automatically free the object that was
-    passed to it by calling the appropriate deleteFunc; and of course
-    FreeResource also calls the deleteFunc. In both cases it's wrong to call
-    the destroy hook manually.
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Dan Nicholson <dbn.lists@gmail.com>
     
-    Commit by Jamey Sharp and Josh Triplett.
+    Squashed in:
+    xfree86: Move definition of xf86OptionPtr into separate header file
     
-    Signed-off-by: Jamey Sharp <jamey@minilop.net>
-    Signed-off-by: Josh Triplett <josh@joshtriplett.org>
-    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
-    Reviewed-by: Aaron Plattner <aplattner@nvidia.com>
-    (cherry picked from commit 0f380a5005f800572773cd4667ce43c7459cc467)
-
-commit aabd25bd0bd5f30e4ebbf1d48ef800b3ed2abcbe
-Author: Jeremy Huddleston <jeremyhu@apple.com>
-Date:   Sat Sep 24 00:06:32 2011 -0700
-
-    configure.ac: Version bumped to 1.11.1
+    The pile of spaghettis that is the xfree86 include dependencies make it
+    rather hard to have a single typedef somewhere that's not interfering with
+    everything else or drags in a whole bunch of other includes.
     
-    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+    Move the xf86OptionRec and GenericListRec declarations into a separate
+    header.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Alan Coopersmith <alan.coopersmith@oracle.com>
 
-commit 89881051664209b5b2e2c4a7c2dd25f085581d43
+commit 84bb0207f6db433a8d387d933393357da87ca23e
+Author: Gaetan Nadon <memsize@videotron.ca>
+Date:   Fri Sep 23 20:03:03 2011 -0400
+
+    dix and os: gitignore dix.O and os.O
+    
+    Reviewed-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Signed-off-by: Gaetan Nadon <memsize@videotron.ca>
+    Signed-off-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+
+commit 3d41939d0349569dcfd2aef9b846c739d0ba0060
+Author: Alan Coopersmith <alan.coopersmith@oracle.com>
+Date:   Thu Sep 22 17:41:38 2011 -0700
+
+    Unconditionally #include <stdint.h>
+    
+    The more recent inclusions of this file haven't been checking for
+    HAVE_STDINT_H, so might as well make the older ones consistent.
+    
+    Signed-off-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Reviewed-by: Jeremy Huddleston <jeremyhu@apple.com>
+    Reviewed-by: Jamey Sharp <jamey@minilop.net>
+
+commit 46d5ae5b551cc926331324073f2686b47e8aea07
+Author: Gaetan Nadon <memsize@videotron.ca>
+Date:   Fri Sep 23 09:38:25 2011 -0400
+
+    dtrace: fix typo in title
+    
+    The word provider should be capitalized.
+    
+    Reviewed-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Signed-off-by: Gaetan Nadon <memsize@videotron.ca>
+    Signed-off-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+
+commit 6cae6224994e3252b3b7c7608f983ce73e0206fc
+Author: Gaetan Nadon <memsize@videotron.ca>
+Date:   Fri Sep 23 09:38:24 2011 -0400
+
+    dtrace: use docbook copyright markup for copyright holder
+    
+    No content change to copyright text.
+    
+    Reviewed-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Signed-off-by: Gaetan Nadon <memsize@videotron.ca>
+    Signed-off-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+
+commit 58d3d46d6cc0d7a81db6bad61d158f3b9af8af71
+Author: Alan Coopersmith <alan.coopersmith@oracle.com>
+Date:   Thu Sep 1 16:48:37 2011 -0700
+
+    Assign ids to more tags in Xserver-Dtrace.xml
+    
+    Keeps xsltproc from adding random-number id tags to html output so that
+    it's easier to see real changes vs. different random numbers.
+    
+    Signed-off-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Reviewed-by: Matt Dew <marcoz@osource.org>
+
+commit 7fb4bef0394a5d09680985d34bce8252b61493cb
+Merge: 98f4940 c90903b
+Author: Keith Packard <keithp@keithp.com>
+Date:   Wed Sep 21 14:34:27 2011 -0700
+
+    Merge remote-tracking branch 'mattst88/for-keith'
+
+commit 98f4940093dc90c3366d3e4d3ddceacbaee299dc
+Merge: b018b81 c8eacae
+Author: Keith Packard <keithp@keithp.com>
+Date:   Wed Sep 21 14:30:19 2011 -0700
+
+    Merge remote-tracking branch 'alanc/master'
+
+commit b018b815333b256b5e06dd6251b2e539f09f89fa
+Merge: 03d0329 0f380a5
+Author: Keith Packard <keithp@keithp.com>
+Date:   Wed Sep 21 14:17:14 2011 -0700
+
+    Merge remote-tracking branch 'jamey/reviewed'
+
+commit c90903b4f7a826ae6826a8dd0a901c8362500e46
+Author: Peter Harris <pharris@opentext.com>
+Date:   Fri Sep 2 18:45:16 2011 -0400
+
+    xkb: add missing swaps for xkbGetDeviceInfoReply
+    
+    Caught during review of e095369bf.
+    
+    Signed-off-by: Peter Harris <pharris@opentext.com>
+    Reviewed-by-by: Matt Turner <mattst88@gmail.com>
+    Signed-off-by: Matt Turner <mattst88@gmail.com>
+
+commit d206d52f657cb63a0f6ba8b62d788c1812b57c81
+Author: Matt Turner <mattst88@gmail.com>
+Date:   Tue Aug 16 19:19:24 2011 -0400
+
+    Use __builtin_constant_p to determine if we can use lswapl
+    
+    If the address of the swapped memory location is known at compile time,
+    we can check its alignment at no runtime cost and use lswapl instead.
+    
+               text   data    bss      dec     hex  filename
+    before: 1872820  52136  78040  2002996  1e9034  hw/xfree86/Xorg
+    after:  1864396  52136  78040  1994572  1e6f4c  hw/xfree86/Xorg
+    
+    bswap instructions: 131 ->  308 (used in lswapl)
+    rol instructions:   943 -> 1174 (used in lswaps)
+    
+    Reviewed-by: Peter Harris <pharris@opentext.com>
+    Signed-off-by: Matt Turner <mattst88@gmail.com>
+
+commit 889b700e7760ced38bcf5f3aff2d31d3d9a058d7
+Author: Matt Turner <mattst88@gmail.com>
+Date:   Tue Aug 16 19:12:21 2011 -0400
+
+    Use lswap{l,s} in cpswap{l,s}
+    
+    Should be safe since cpswap isn't used on pointers.
+    
+               text   data    bss      dec     hex  filename
+    before: 1875588  52136  78040  2005764  1e9b04  hw/xfree86/Xorg
+    after:  1872820  52136  78040  2002996  1e9034  hw/xfree86/Xorg
+    
+    bswap instructions:   5 -> 131 (used in lswapl)
+    rol instructions:   811 -> 943 (used in lswaps)
+    
+    Reviewed-by: Peter Harris <pharris@opentext.com>
+    Signed-off-by: Matt Turner <mattst88@gmail.com>
+
+commit a2f0ff5f73db204a9d61e65148b28f6acc5121df
+Author: Matt Turner <mattst88@gmail.com>
+Date:   Tue Aug 16 19:30:20 2011 -0400
+
+    Make lswap{l,s} inline functions
+    
+               text   data    bss      dec     hex  filename
+    before: 1875668  52136  78040  2005844  1e9b54  hw/xfree86/Xorg
+    after:  1875588  52136  78040  2005764  1e9b04  hw/xfree86/Xorg
+    
+    Reviewed-by: Peter Harris <pharris@opentext.com>
+    Signed-off-by: Matt Turner <mattst88@gmail.com>
+
+commit e8ff555b95baab66cc7d060c1e7f9fdd49d3802f
+Author: Matt Turner <mattst88@gmail.com>
+Date:   Tue Aug 16 19:07:24 2011 -0400
+
+    Add type checking to swap macros
+    
+    The original macros are retained (instead of replacing them with inline
+    functions) because of implicit type promotion. That is, an int16 passed
+    to an inline function taking int32 would be implicitly promoted to int32
+    without a warning.
+    
+    Reviewed-by: Peter Harris <pharris@opentext.com>
+    Signed-off-by: Matt Turner <mattst88@gmail.com>
+
+commit 893e86a49e3e381cff48a9e86dc2d9b3d5431d95
+Author: Matt Turner <mattst88@gmail.com>
+Date:   Tue Aug 16 19:03:26 2011 -0400
+
+    Introduce swap_uint{16,32} functions, used in swap{l,s}
+    
+    Reviewed-by: Peter Harris <pharris@opentext.com>
+    Signed-off-by: Matt Turner <mattst88@gmail.com>
+
+commit 54770c980cd2b91a8377f975a58ed69def5cfa42
+Author: Matt Turner <mattst88@gmail.com>
+Date:   Tue Aug 16 16:59:07 2011 -0400
+
+    Cast char* buffers to swap functions
+    
+    Reviewed-by: Peter Harris <pharris@opentext.com>
+    Signed-off-by: Matt Turner <mattst88@gmail.com>
+
+commit 9edcae78c46286baff42e74bfe26f6ae4d00fe01
+Author: Matt Turner <mattst88@gmail.com>
+Date:   Wed Sep 21 17:14:16 2011 -0400
+
+    Use correct swap{l,s} (or none at all for CARD8)
+    
+    Swapping the wrong size was never caught because swap{l,s} are macros.
+    
+    It's clear in the case of Xext/xres.c, that the author believed
+    client_major/minor to be CARD16 from looking at the code in the first
+    hunk.
+    
+    v2: dmx.c fixes from Keith.
+    
+    Reviewed-by: Peter Harris <pharris@opentext.com>
+    Signed-off-by: Matt Turner <mattst88@gmail.com>
+
+commit 03d032991da21bf866ca30dcbb6b7f9f99df441a
 Author: Aaron Plattner <aplattner@nvidia.com>
 Date:   Wed Sep 14 15:25:06 2011 -0700
 
@@ -730,7 +3407,187 @@ Date:   Wed Sep 14 15:25:06 2011 -0700
     Signed-off-by: Aaron Plattner <aplattner@nvidia.com>
     Reviewed-by: Jeremy Huddleston <jeremyhu@apple.com>
     Signed-off-by: Keith Packard <keithp@keithp.com>
-    (cherry picked from commit 03d032991da21bf866ca30dcbb6b7f9f99df441a)
+
+commit 2c7c520cfe0df30f4bc3adba59d9c62582823bf8
+Author: Matt Turner <mattst88@gmail.com>
+Date:   Thu Aug 4 15:35:41 2011 -0400
+
+    Use internal temp variable for swap macros
+    
+    Also, fix whitespace, mainly around
+    	swaps(&rep.sequenceNumber)
+    
+    Reviewed-by: Peter Harris <pharris@opentext.com>
+    Signed-off-by: Matt Turner <mattst88@gmail.com>
+
+commit c10bad3d3e8ff1b90014770fd470f9c67263e46f
+Author: Matt Turner <mattst88@gmail.com>
+Date:   Wed Apr 27 19:29:06 2011 -0400
+
+    Silence printf format warnings in helper_exec.c
+    
+    Reviewed-by: Jeremy Huddleston <jeremyhu@apple.com>
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+    Signed-off-by: Matt Turner <mattst88@gmail.com>
+
+commit 9eab5b3443a1926a29385948acc6c5e0843465ea
+Author: Matt Turner <mattst88@gmail.com>
+Date:   Wed Apr 27 18:25:27 2011 -0400
+
+    Replace Fabs() macro with fabs() function
+    
+    gcc generates better code with fabs() anyway.
+    
+    Reviewed-by: Jeremy Huddleston <jeremyhu@apple.com>
+    Tested-by: Jeremy Huddleston <jeremyhu@apple.com>
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+    Signed-off-by: Matt Turner <mattst88@gmail.com>
+
+commit 40a47bd628f525d2d8bd3ca76554089a6e9d2a1d
+Author: Matt Turner <mattst88@gmail.com>
+Date:   Wed Apr 27 14:19:41 2011 -0400
+
+    Remove unnecessary #undefs of [f]abs and old comments
+    
+    Reviewed-by: Jeremy Huddleston <jeremyhu@apple.com>
+    Tested-by: Jeremy Huddleston <jeremyhu@apple.com>
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+    Signed-off-by: Matt Turner <mattst88@gmail.com>
+
+commit 079a7585e44d25a0a9fb6662c6382dfbe8f6cd3c
+Author: Gaetan Nadon <memsize@videotron.ca>
+Date:   Thu Sep 15 20:12:41 2011 -0400
+
+    devbook.am: maintenance update from docbook.am
+    
+    The developer docs are generated from a subset of docbook.am
+    which is sometimes updated.
+    
+    The one difference for xserver is the embedded css style in the HEAD element.
+    
+    Reviewed-by: Jeremy Huddleston <jeremyhu@apple.com>
+    Signed-off-by: Gaetan Nadon <memsize@videotron.ca>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit 82c55b5a99a1bacf2bc11bbd9d58f6f2c6c07286
+Author: Gaetan Nadon <memsize@videotron.ca>
+Date:   Thu Sep 15 20:12:40 2011 -0400
+
+    docbook.am: embed css styles inside the HTML HEAD element
+    
+    Rather than referring to the external xorg.css stylesheet, embed the content
+    of the file in the html output produced. This is accomplished by using
+    version 1.10 of xorg-xhtml.xsl.
+    
+    This makes the whole html docs tree much more relocatable.
+    In addition, it eliminates xorg.css as a runtime file which makes
+    xorg-sgml-doctools a build time only package.
+    
+    Reviewed-by: Jeremy Huddleston <jeremyhu@apple.com>
+    Signed-off-by: Gaetan Nadon <memsize@videotron.ca>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit 1602444e05cc59afe32c085c0cedb85e3268cd98
+Author: Gaetan Nadon <memsize@videotron.ca>
+Date:   Thu Sep 15 20:12:39 2011 -0400
+
+    docbook.am: global maintenance update - entities, images and olinking
+    
+    Adding support in libX11 for html chunking caused a reorg of docbook.am
+    as well as the xorg-sgml-doctools masterdb for olinking.
+    The parameter img.src.path is added for pdf images.
+    A searchpath to the root builddir is added for local entities, if present.
+    This feature was initiated by xserver module and made available to all.
+    
+    The docbook.am makefile hides all the details and is identical for
+    all 22 modules having DocBook documentation. It is included by a thin
+    Makefile.am which requires no docbook knowledge.
+    
+    Reviewed-by: Jeremy Huddleston <jeremyhu@apple.com>
+    Signed-off-by: Gaetan Nadon <memsize@videotron.ca>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit 871d65790ec2ac0fd6d5105c2d599f63a86fcaf1
+Author: Pauli Nieminen <ext-pauli.nieminen@nokia.com>
+Date:   Mon Nov 1 16:02:11 2010 +0200
+
+    DRI2: Allow DDX to validate swap_limit changes
+    
+    DDX can now implement validation for swap_limit changes to prevent
+    configurations that are not support in driver.
+    
+    Signed-off-by: Pauli Nieminen <ext-pauli.nieminen@nokia.com>
+    CC: Mario Kleiner <mario.kleiner@tuebingen.mpg.de>
+    Reviewed-by: Mario Kleiner <mario.kleiner@tuebingen.mpg.de>
+    Reviewed-by: Jesse Barnes <jbarnes@virtuousgeek.org>
+
+commit b435e2aac1b3fbb97d0275de73a1e36d16f170c0
+Author: Pauli Nieminen <ext-pauli.nieminen@nokia.com>
+Date:   Mon Nov 1 16:22:00 2010 +0200
+
+    DRI2: Expose API to set drawable swap limit.
+    
+    This allows ddx to set swap_limit if there is more than one back
+    buffer for drawable. Setting swap_limit has to also check if change
+    affects a client that is blocked.
+    
+    This can be used to implement N-buffering in driver with minimal
+    logic in allocation and selecting next back.
+    
+    Signed-off-by: Pauli Nieminen <ext-pauli.nieminen@nokia.com>
+    Reviewed-by: Jesse Barnes <jbarnes@virtuousgeek.org>
+    Reviewed-by: Francisco Jerez <currojerez@riseup.net>
+    Reviewed-by: Mario Kleiner <mario.kleiner@tuebingen.mpg.de>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit 86f8da0aa7612558e6563f5de0d9f9793854053f
+Author: Pauli Nieminen <ext-pauli.nieminen@nokia.com>
+Date:   Mon Nov 1 16:21:59 2010 +0200
+
+    DRI2: Add ReuseBufferNotify hook
+    
+    ReuseBufferNotify hook is called whenever old buffer is reused in DRI2
+    code.
+    
+    Driver can use this hook to rewrite the buffer name if hardware requires
+    shared buffers. Shared buffer might be some hardware limited resources like
+    framebuffer that is preallocated in boot.
+    
+    Signed-off-by: Pauli Nieminen <ext-pauli.nieminen@nokia.com>
+    Reviewed-by: Jesse Barnes <jbarnes@virtuousgeek.org>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit 2f47433fef2cf63063e069ead9003891d135e87f
+Author: vdb@picaros.org <vdb@picaros.org>
+Date:   Wed Sep 7 17:47:56 2011 +0200
+
+    print DisplayMode type bits
+    
+    Dear,
+    
+    A patch I posted on xorg-devel was reviewed and is ready for
+    inclusion in xserver.  Would you be willing to apply the patch so that
+    it finds its way into the master branch ?
+    
+    Thank you, Servaas Vandenberghe.
+    
+    http://lists.x.org/archives/xorg-devel/2011-August/024769.html
+    http://lists.x.org/archives/xorg-devel/2011-August/024777.html
+    
+    This patch adds printing of the DisplayMode type bits to
+    xf86PrintModeline().  It helps to trace the modeline origin and to
+    understand the initial configured modeline.
+    
+    Reviewed-by: Alex Deucher <alexander.deucher at amd.com>
+    Signed-off-by: Servaas Vandenberghe
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit c92c83523ede8bc361526ac93d09d089fbbdae08
+Merge: 4ad271d 24b2b43
+Author: Keith Packard <keithp@keithp.com>
+Date:   Wed Sep 21 13:32:06 2011 -0700
+
+    Merge remote-tracking branch 'kibi/master'
 
 commit 4ad271d06c5aa42721c0e2e01e17e34a39825c65
 Author: Aaron Plattner <aplattner@nvidia.com>
@@ -748,6 +3605,329 @@ Date:   Mon Aug 29 20:44:18 2011 -0700
     Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
     Signed-off-by: Keith Packard <keithp@keithp.com>
 
+commit c8eacae4f833a0bd81907ba2b4cfaa80c08e037f
+Author: Alan Coopersmith <alan.coopersmith@oracle.com>
+Date:   Thu Aug 25 21:46:16 2011 -0700
+
+    Space & style cleanup of hw/xfree86/i2c/fi1236.c
+    
+    Fortunately, the massive decrease in the cost of whitespace in the past
+    decade has allowed us to be much more generous with it, and much more
+    consistent in its application, even for code like this that clearly no
+    one has ever tried to read.
+    
+    Signed-off-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Reviewed-by: Jamey Sharp <jamey@minilop.net>
+
+commit c46215c100e964665580211a5d5893558ca9374f
+Author: Alan Coopersmith <alan.coopersmith@oracle.com>
+Date:   Wed Aug 10 11:17:46 2011 -0700
+
+    Cross-reference cvt(1) & gtf(1) man pages
+    
+    Signed-off-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Reviewed-by: Julien Cristau <jcristau@debian.org>
+
+commit 1526f1caf396fefc5f09eaff884d5b92aac44997
+Author: Alan Coopersmith <alan.coopersmith@oracle.com>
+Date:   Tue May 31 19:54:33 2011 -0700
+
+    Remove unused ClientStateAuthenticating
+    
+    Appears to be leftover from the Kerberos code deleted in 2007
+    (commit dfbe32b5b828cc4e3da36a0e2e6ad641164eaa5e).
+    Nothing left ever set clientState to ClientStateAuthenticating
+    
+    Skipped over 1 to preserve existing enum numbering.
+    
+    Signed-off-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Reviewed-by: Julien Cristau <jcristau@debian.org>
+
+commit 0f380a5005f800572773cd4667ce43c7459cc467
+Author: Jamey Sharp <jamey@minilop.net>
+Date:   Tue Sep 14 18:35:21 2010 -0700
+
+    Fix pixmap double-frees on error paths.
+    
+    If AddResource fails, it will automatically free the object that was
+    passed to it by calling the appropriate deleteFunc; and of course
+    FreeResource also calls the deleteFunc. In both cases it's wrong to call
+    the destroy hook manually.
+    
+    Commit by Jamey Sharp and Josh Triplett.
+    
+    Signed-off-by: Jamey Sharp <jamey@minilop.net>
+    Signed-off-by: Josh Triplett <josh@joshtriplett.org>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Aaron Plattner <aplattner@nvidia.com>
+
+commit 8f69c935f6d06ad92fd0e8d9fcb3cde86cd258f5
+Author: Jamey Sharp <jamey@minilop.net>
+Date:   Fri Sep 17 02:27:59 2010 +0200
+
+    Eliminate MAXSCREENS-sized CursorScreenKey array.
+    
+    Use new per-screen privates API instead.
+    
+    Commit by Jamey Sharp and Josh Triplett.
+    
+    Signed-off-by: Jamey Sharp <jamey@minilop.net>
+    Signed-off-by: Josh Triplett <josh@joshtriplett.org>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit c96a43888ceae72bf89c66de911120c0b6b7a71a
+Author: Jamey Sharp <jamey@minilop.net>
+Date:   Sat Jul 10 09:28:47 2010 -0700
+
+    Revert "Bug #6924: Restore the ABI for DrawableRec and ColormapRec to the state"
+    
+    This reverts commit bc0c56c407117d1545e20d21f7d30eb3472d618b since we're
+    breaking ABI anyway.
+    
+    Conflicts:
+    
+    	ChangeLog
+    	dix/colormap.c
+    	dix/pixmap.c
+    	dix/window.c
+    	include/pixmapstr.h
+    
+    Signed-off-by: Jamey Sharp <jamey@minilop.net>
+    Reviewed-by: Aaron Plattner <aplattner@nvidia.com>
+
+commit 13ac1ba480ee3e89163825cd2777f9a6e9dcbc9f
+Author: Alan Coopersmith <alan.coopersmith@oracle.com>
+Date:   Tue May 31 19:42:48 2011 -0700
+
+    Remove unused ClientStateCheckingSecurity & ClientStateCheckedSecurity
+    
+    Appear to be leftovers from the XC-QUERY-SECURITY code deleted in 2007
+    (commit 375864cb74cced40ae688078b1f7750998972535).
+    Nothing left ever set clientState to ClientStateCheckingSecurity.
+    
+    Signed-off-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Reviewed-by: Julien Cristau <jcristau@debian.org>
+
+commit 78f946c297081d39d312e05928146c78f59fedcb
+Author: Alan Coopersmith <alan.coopersmith@oracle.com>
+Date:   Thu May 19 23:26:31 2011 -0700
+
+    sun_init.c: Implement novtswitch & sharevts for Solaris
+    
+    Signed-off-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Reviewed-by: John Martin <john.m.martin@oracle.com>
+
+commit 87cc83474d9890d14d9bc60926a97bd0d5b059af
+Author: Jamey Sharp <jamey@minilop.net>
+Date:   Sun Sep 18 20:47:04 2011 -0500
+
+    Replace XmuSnprintf with snprintf.
+    
+    Alan Coopersmith explains:
+    
+    	XmuSnprintf() can be replaced by snprintf() now. (It was a
+    	implementation X provided for it's libraries to use in the days
+    	before all platforms we cared about had snprintf in libc.)
+    
+    Reported-by: walter harms <wharms@bfs.de>
+    Signed-off-by: Jamey Sharp <jamey@minilop.net>
+    Reviewed-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+
+commit df4eeb1256c7c5e7a3f88f10da2915c7a07a8db8
+Author: Jamey Sharp <jamey@minilop.net>
+Date:   Tue Jun 8 13:58:04 2010 -0700
+
+    xnest: Delete unused nClipRects GC-private field.
+    
+    This field was never read at any time in the git history.
+    
+    Signed-off-by: Jamey Sharp <jamey@minilop.net>
+    Reviewed-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+
+commit 53a4744b69ab76ecabdde5dabfb56830570c0f4e
+Author: Jamey Sharp <jamey@minilop.net>
+Date:   Sat Sep 18 01:23:12 2010 +0200
+
+    XineramaInitData ignores its argument. Quit passing one.
+    
+    Also fix up XineramaInitData's caller, XineramaReinitData.
+    
+    Commit by Jamey Sharp and Josh Triplett.
+    
+    Signed-off-by: Jamey Sharp <jamey@minilop.net>
+    Signed-off-by: Josh Triplett <josh@joshtriplett.org>
+    Reviewed-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+
+commit b85c10a35d44ad695797d0d19757e5f62eab4b98
+Author: Jamey Sharp <jamey@minilop.net>
+Date:   Tue May 25 16:23:31 2010 -0700
+
+    dmx: Fix some "no previous prototype" warnings by making functions static.
+    
+    Signed-off-by: Jamey Sharp <jamey@minilop.net>
+    Reviewed-by: Matt Turner <mattst88@gmail.com>
+
+commit d423012e776a81a197cde86be5c6bd471a593c39
+Author: Jamey Sharp <jamey@minilop.net>
+Date:   Fri May 21 14:21:52 2010 -0700
+
+    dmx: Fix a non-constant printf format string warning.
+    
+    Signed-off-by: Jamey Sharp <jamey@minilop.net>
+    Reviewed-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+
+commit 7e127f12a24acb8f43055af0a9be1ec585bbed36
+Author: Alan Coopersmith <alan.coopersmith@oracle.com>
+Date:   Thu May 19 23:22:27 2011 -0700
+
+    sun_init.c: Move vt switches to a switch_to helper function like lnx_init.c
+    
+    Signed-off-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Reviewed-by: Julien Cristau <jcristau@debian.org>
+
+commit a00dc6af6e84d0bee3f69d8df89d7f68cb535d35
+Author: Alan Coopersmith <alan.coopersmith@oracle.com>
+Date:   Thu May 19 22:43:56 2011 -0700
+
+    Xorg.man: Add -novtswitch and -sharevts options
+    
+    Signed-off-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Reviewed-by: Julien Cristau <jcristau@debian.org>
+
+commit 93abda6bddf770dbfc3d4d0ada61ea84a7b7b9be
+Author: Alan Coopersmith <alan.coopersmith@oracle.com>
+Date:   Thu May 19 22:39:09 2011 -0700
+
+    xfree86: move -novtswitch & -sharevts argument handling up to common layer
+    
+    Stop duplicating in each os-support variant before it gets replicated
+    even further.
+    
+    Signed-off-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Reviewed-by: Julien Cristau <jcristau@debian.org>
+    Reviewed-by: Alexandr Shadchin <Alexandr.Shadchin@gmail.com>
+
+commit d8d99e14b1241fd8c099d69b8d0ed0817585fe8d
+Author: Jamey Sharp <jamey@minilop.net>
+Date:   Wed Sep 14 09:52:58 2011 -0500
+
+    configure.ac: Remove unreachable check for VM86 headers.
+    
+    "configure --with-int10" is not a valid configuration, and the check for
+    sys/vm86.h and sys/io.h is not used. Delete it.
+    
+    Signed-off-by: Jamey Sharp <jamey@minilop.net>
+    Reviewed-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Reviewed-by: Gaetan Nadon <memsize@videotron.ca>
+
+commit 94b2eea86319934316bdb013f6f3940685a88a2f
+Author: Jamey Sharp <jamey@minilop.net>
+Date:   Wed Sep 14 11:23:03 2011 -0500
+
+    int10: Delete #if 0'd implementation that's older than our git history.
+    
+    Throughout the xserver git history, the generic portion of the int10
+    module has always used other methods for reading the video BIOS. For
+    some time now it's been purely libpciaccess based. This commented-out
+    use of xf86ReadBIOS is entirely superfluous.
+    
+    Signed-off-by: Jamey Sharp <jamey@minilop.net>
+    Reviewed-by: Jeremy Huddleston <jeremyhu@apple.com>
+
+commit 6ad7bb69eebd5e5b4068bd9aa0b9a7168f075006
+Author: Jamey Sharp <jamey@minilop.net>
+Date:   Tue Sep 13 17:45:19 2011 -0500
+
+    Remove PC98 support.
+    
+    Gaetan Nadon wrote:
+    
+        Alan Coopersmith wrote:
+    
+        "I think we recently dropped PC98 support from the X server, so I'd
+        be okay with dropping the documentation now".
+    
+    Let's make them be right, shall we?
+    
+    Signed-off-by: Jamey Sharp <jamey@minilop.net>
+    Reviewed-by: Jeremy Huddleston <jeremyhu@apple.com>
+    Acked-by: Gaetan Nadon <memsize@videotron.ca>
+    Acked-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+
+commit 9eb22ebf46b77c15e53017a37c7ef605521dc164
+Author: Jamey Sharp <jamey@minilop.net>
+Date:   Tue Sep 13 16:30:06 2011 -0500
+
+    configure.ac: XORG_OS is not used, so delete it.
+    
+    Signed-off-by: Jamey Sharp <jamey@minilop.net>
+    Reviewed-by: Jeremy Huddleston <jeremyhu@apple.com>
+    Reviewed-by: Gaetan Nadon <memsize@videotron.ca>
+
+commit 76636f30f7cf2344f4038c59bf292db19be33d53
+Author: Jamey Sharp <jamey@minilop.net>
+Date:   Tue Sep 13 13:10:10 2011 -0500
+
+    configure.ac: Remove unused XORG_OS_PCI variable.
+    
+    This is the last mention after ccfaf82367c9d057fd8314ce36b47f0a8eb696b6
+    quit using the variable.
+    
+    Signed-off-by: Jamey Sharp <jamey@minilop.net>
+    Reviewed-by: Jeremy Huddleston <jeremyhu@apple.com>
+    Reviewed-by: Gaetan Nadon <memsize@videotron.ca>
+    
+    Tiago Vignatti posted an identical patch in June 2010, which I only
+    noticed after getting the above reviews. His patch was:
+    
+    Signed-off-by: Tiago Vignatti <tiago.vignatti@nokia.com>
+    Reviewed-by: Mikhail Gusarov <dottedmag@dottedmag.net>
+
+commit 60b4bd181bbdc794c7f3547f67df916132aa111e
+Author: Jamey Sharp <jamey@minilop.net>
+Date:   Tue Sep 13 14:31:24 2011 -0500
+
+    x86emu: There is no NO_INLINE implementation of unaligned access here.
+    
+    Patch produced with:
+    	unifdef -UNO_INLINE -B
+    
+    This change isn't relevant to the similar code in
+    hw/xfree86/common/compiler.h, because x86emu is expected to someday move
+    out of xserver entirely and so should not depend on any xserver headers.
+    Also, some platforms apparently do have NO_INLINE versions of
+    compiler.h.
+    
+    Signed-off-by: Jamey Sharp <jamey@minilop.net>
+    Reviewed-by: Jeremy Huddleston <jeremyhu@apple.com>
+    Reviewed-by: Matt Turner <mattst88@gmail.com>
+
+commit 24b2b43e85c1e3f3d242ccab8793bf4ef83cfac4
+Author: Cyril Brulebois <kibi@debian.org>
+Date:   Sun Jun 5 14:53:08 2011 +0200
+
+    render: Replace __inline with inline.
+    
+    Also remove traces from the past.
+    
+    Reviewed-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Signed-off-by: Cyril Brulebois <kibi@debian.org>
+
+commit 9f01249d7f81514a38c44dff2a4a4612dbf97cae
+Author: Cyril Brulebois <kibi@debian.org>
+Date:   Sun Jun 5 15:10:56 2011 +0200
+
+    configure.ac: Fix help string for mitshm.
+    
+    Pasting from ./configure --help's output, one would get:
+    | configure: WARNING: unrecognized options: --disable-shm
+    
+    Fix the help string to include the previously missing “mit” bits.
+    
+    Reviewed-by: Gaetan Nadon <memsize@videotron.ca>
+    Reviewed-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Signed-off-by: Cyril Brulebois <kibi@debian.org>
+
 commit 0caeef6146bee5fb1827ab25db191685dde9d4b4
 Author: Keith Packard <keithp@keithp.com>
 Date:   Fri Aug 26 16:46:13 2011 -0700
@@ -755,6 +3935,528 @@ Date:   Fri Aug 26 16:46:13 2011 -0700
     Version bumped to 1.11
     
     Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit 05284a03f9002b03a66ae355b34790ec02b726f0
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Thu Aug 4 14:45:46 2011 +1000
+
+    input: make InputOption opaque, provide interface functions.
+    
+    InputOptions is not switched to use struct list for a future patch to unify
+    it with the XF86OptionRec.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Dan Nicholson <dbn.lists@gmail.com>
+
+commit fcafe825751bef99f4c0b36250ca6f15f127502f
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Mon Aug 8 15:21:46 2011 +1000
+
+    Add null-terminated list interface.
+    
+    This is a set of macros to provide a struct list-alike interface for classic
+    linked lists such as the XF86OptionRec or the DeviceIntRec. The typical
+    format for these is to have a "struct foo *next" pointer in each struct foo
+    and walk through those. These macros provide a few basic functions to add to,
+    remove from and iterate through these lists.
+    
+    While struct list is in some ways more flexible, switching legacy code to
+    use struct list is not alway viable. These macros at least reduce the amount
+    of open-coded lists.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+
+commit 79ca7c0b5786a02a80a1c40ed475e928da7c82b3
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Fri Aug 12 15:55:48 2011 +1000
+
+    xfree86: comment typo fix
+    
+    in synch → in sync
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit 2bfb802839688ecf328119c4c6979390fc60348d
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Fri Jul 29 16:33:54 2011 +1000
+
+    dix: don't XWarpPointer through the last slave anymore (#38313)
+    
+    This line was introduced pre-1.6 to fix Bug 19297. The effect of warping
+    through the VCP then was that if a device had custom valuator ranges, the
+    warp position would be wrong. The better device for this effect is the the
+    XTest device.
+    
+    This fixes a server crash where the lastSlave is a pointer device without
+    valuators (Bug 38313#0).
+    
+    And while we're at it, make sure the Xinerama code-path does the same.
+    
+    X.Org Bug 38313 <http://bugs.freedesktop.org/show_bug.cgi?id=38313>
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+
+commit b29ce0726d55ec41cfbce0814e21b0217ef64efe
+Author: Nobuhiro Iwamatsu <iwamatsu@nigauri.org>
+Date:   Tue Aug 9 11:00:34 2011 +0900
+
+    Disable check of double-aligned in test/input.c on Renesas SH
+    
+    Renesas SH is not aligned at size of double.
+    When structure has double value, It is aligned in 4byte (long).
+    
+    Signed-off-by: Nobuhiro Iwamatsu <iwamatsu@nigauri.org>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit 3be379f5076566edaf92c27df5a4d447bcf5d015
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Thu Aug 11 10:59:07 2011 +1000
+
+    dix: use helper functions in EventIsDeliverable
+    
+    Proximity events don't have an XI2 type and caused error messages in the
+    log when trying to get the event filter. Use this opportunity to
+    clean up the code, instead of manually setting the fields that
+    GetEventFilter requires use EventTo(XI2|XI|Core) instead.
+    
+    Co-Authored-by: Keith Packard <keithp@keithp.com>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Keith Packard <keithp@keithp.com>
+
+commit 799879797505a5e891ccaec2bea73fd838c94b7a
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Thu Aug 11 10:57:05 2011 +1000
+
+    dix: abstract XI2 filter mask lookup
+    
+    Don't access the xi2mask bytes directly or calculate the offsets manually,
+    use a few helper functions instead. XI2 masks are a bit weird in the event
+    handling code since they slot onto the legacy code. For core/XI 1.x events,
+    the event mask is a CARD32. That mask is used together with the event filter
+    (also 32 bit) to determine if event delivery should be attempted.
+    XI2 masks are of arbitrary size and their mask is simply the byte of the
+    mask that contains the event mask. Likewise, the filter is a single byte
+    matching that mask. Provide helper functions get these bytes and masks in
+    the right order instead of accessing them manually.
+    
+    EventIsDeliverable should be part of this cleanup patch but it will be
+    gutted with the next patch.
+    
+    Co-Authored-by: Keith Packard <keithp@keithp.com>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Keith Packard <keithp@keithp.com>
+
+commit 8c5a4d6fbecf79f2dc4f2d836d741203b2d5e856
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Mon Aug 1 14:12:41 2011 +1000
+
+    dix: don't use the pointer as modifier device in UngrabKey.
+    
+    Modifier device is always the keyboard.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+
+commit 3a077f246e9ac07a37c1b01c3d321e0f5ceb4153
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Wed Aug 3 15:07:23 2011 +1000
+
+    input: provide a single function to init DeviceEvents to 0
+    
+    getevents.c already had that function, but XKB was manually initializing it,
+    causing bugs when the event structure was updated in one place but not the
+    other.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit 4b376ddeb4f3c9d9d279ffd2946d88edd5af4cfc
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Mon Aug 1 14:20:53 2011 +1000
+
+    dix: fix compiler warnings ("foo" set but not used)
+    
+    devices.c: In function 'AttachDevice':
+    devices.c:2409:18: warning: variable 'oldmaster' set but not used
+    [-Wunused-but-set-variable]
+    
+    events.c: In function 'ConfineToShape':
+    events.c:683:15: warning: variable 'pSprite' set but not used
+    [-Wunused-but-set-variable]
+    
+    events.c: In function 'ProcGrabPointer':
+    events.c:4759:15: warning: variable 'time' set but not used
+    [-Wunused-but-set-variable]
+    
+    getevents.c: In function 'GetMotionHistory':
+    getevents.c:425:9: warning: variable 'dflt' set but not used
+    [-Wunused-but-set-variable]
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+
+commit 6fd2adc179141310e45a56ee90ef5b5f6115a1f6
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Mon Aug 1 14:27:54 2011 +1000
+
+    mi: fix compiler warnings ("foo" set but not used)
+    
+    misprite.c: In function 'miSpriteSaveUnderCursor':
+    misprite.c:940:12: warning: variable 'y' set but not used
+    [-Wunused-but-set-variable]
+    misprite.c:940:9: warning: variable 'x' set but not used
+    [-Wunused-but-set-variable]
+    
+    mivaltree.c: In function 'miComputeClips':
+    mivaltree.c:226:10: warning: variable 'resized' set but not used
+    [-Wunused-but-set-variable]
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+
+commit 484cef5b29ef82402a15e155b3b8505b1e4a6830
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Tue Aug 2 09:21:00 2011 +1000
+
+    Xi: silence compiler warnings (set but not used)
+    
+    exevents.c: In function 'UpdateDeviceState':
+    exevents.c:719:9: warning: variable 'bit' set but not used
+    [-Wunused-but-set-variable]
+    
+    exevents.c: In function 'ProcessOtherEvent':
+    exevents.c:889:22: warning: variable 'v' set but not used
+    [-Wunused-but-set-variable]
+    exevents.c:888:17: warning: variable 'k' set but not used
+    [-Wunused-but-set-variable]
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+
+commit 98fe735ea1d756711019c3d90ed6abd9c06abebf
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Mon Aug 1 13:52:13 2011 +1000
+
+    dix: add KEYBOARD_OR_FLOAT and POINTER_OR_FLOAT to GetMaster()
+    
+    GetMaster() currently requires an attached slave device as parameter,
+    resuling in many calls being IsFloating(dev) ? dev : GetMaster(...);
+    
+    Add two new parameters so GetMaster can be called unconditionally to get the
+    right device.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+
+commit dbbe5735d1451bb32f43bce90f0bcfeff46f9743
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Tue Aug 2 08:54:00 2011 +1000
+
+    test: add a test for GetMaster() behaviour
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+
+commit b3c76b0c53ac42b70d12849da18465e8467e474c
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Mon Aug 1 11:54:17 2011 +1000
+
+    mi: fix comment typo, whitespace in miPointerSetPosition
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+
+commit c9562bed0d5e26b7e3e55e26cf1ddc5086d61cc6
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Mon Aug 1 09:52:38 2011 +1000
+
+    dix: rename mieqSwitchScreen argument fromDix → set_dequeue_screen, document
+    
+    fromDIX is neither exactly true nor particularly helpful in understanding
+    what this parameter triggers. Rename to set_dequeue_screen, because that's
+    exactly what happens.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+
+commit 09496996accfdaf7bc01097a25db400912004d97
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Thu Jul 28 15:56:08 2011 +1000
+
+    dix: ignore devices when adding passive core grabs to list (#39545)
+    
+    Passive core grabs are mostly device-independent. In an MPX scenario, they
+    may change to reflect whichever master pair activated the grab last. For
+    adding new grabs to the list, ignore the device for core grabs to return
+    failures when trying to set the same grab combo twice on a window.
+    
+    X.Org Bug 39545 <http://bugs.freedesktop.org/show_bug.cgi?id=39545>
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+
+commit 80c37048539daa1d257d127d66502bde45c97c85
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Thu Jul 28 15:43:10 2011 +1000
+
+    dix: avoid using the VCP as modifier device
+    
+    Core grabs may change device when they're activated to reflect the master
+    they apply to. If the device is a keyboard, modifierDevice is erroneously
+    set to the Virtual Core Pointer.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+
+commit 20a61845d3c93c337bf3331a6bac30cf66c2a293
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Tue Aug 9 11:21:06 2011 +1000
+
+    config: use add_option for '_source' too
+    
+    _source was being allocated manually, with all other options added to that
+    list through add_option. Skip the manual part, allocate the first option
+    _source with add_option too.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+
+commit d33652dad8838ab0a9175ca4613a3161ebc5676f
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Tue Aug 9 11:20:31 2011 +1000
+
+    config: return the new InputOption from add_option.
+    
+    Change add_option to return the new InputOption on success, or NULL
+    failure. This way we can at least check for errors in callers.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+
+commit e684e816acb617b4dc66a68e2b0ba8f80399170a
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Wed Jul 20 16:21:28 2011 +1000
+
+    config: fix a log message
+    
+    PRODUCT was taken from the parent, hence ppath.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+
+commit 1357cd725143c1a35e32f15df658de111b151692
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Fri Jul 8 16:13:45 2011 +1000
+
+    Revert "Attempt to add the 'mouse' driver in more situations."
+    
+    This reverts commit 43d9edd31e31b33b9da4a50d8ab05004881c8d5a.
+    
+    This commit was introduced in the 1.2 cycle when hotplugging was less than
+    ideal (i.e. it didn't exist). From the commit message:
+    
+        Always add a mouse driver instance configured to send core events, unless
+        a core pointer already exists using either the mouse or void drivers.  This
+        handles the laptop case where the config file only specifies, say,
+        synaptics, which causes the touchpad to work but not the pointing stick.
+        We don't double-instantiate the mouse driver to avoid the mouse moving twice
+        as fast, and we skip this logic when the user asked for a void core pointer
+        since that probably means they want to run with no pointer at all.
+    
+    To get this case above, a user would need to disable hotplugging _and_ have a
+    xorg.conf that only references one device. This is possible, but not a use-case
+    we should worry about too much now.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+
+commit 159b03e13760920274b573a2bccdbf6a79f059e7
+Author: Lennart Poettering <lennart@poettering.net>
+Date:   Mon Jul 18 21:19:23 2011 +0200
+
+    config: add udev/systemd multi-seat support
+    
+    Add support for multi-seat-aware input device hotplugging. This
+    implements the multi-seat scheme explained here:
+    
+    http://www.freedesktop.org/wiki/Software/systemd/multiseat
+    
+    This introduces a new X server switch "-seat" which allows configuration
+    of the seat to enumerate hotplugging devices on. If specified the value
+    of this parameter will also be exported as root window property
+    Xorg_Seat.
+    
+    To properly support input hotplugging devices need to be tagged in udev
+    according to the seat they are on. Untagged devices are assumed to be on
+    the default seat "seat0". If no "-seat" parameter is passed only devices
+    on "seat0" are used. This means that the new scheme is perfectly
+    compatible with existing setups which have no tagged input devices.
+    
+    Note that the -seat switch takes a completely generic identifier, and
+    that it has no effect on non-Linux systems. In fact, on other OSes a
+    completely different identifier scheme for seats could be used but still
+    be exposed with the Xorg_Seat and -seat.
+    
+    I tried to follow the coding style of the surrounding code blocks if
+    there was any one could follow.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit 95772598b57f6054fbf88683fa0a492c77605790
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Fri Jul 8 16:10:07 2011 +1000
+
+    xfree86: use xf86AllocateInput for implicit devices too
+    
+    Slowly merging the vastly different code-paths.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+
+commit fa8f4652819b692faaf2789cf32d7fa99fbb34aa
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Mon Jul 4 15:02:20 2011 +1000
+
+    xfree86: factor out adding/removing a device from the input device array
+    
+    No functional changes, just readability improvements. This also gets rid of
+    the count variable. Count was just used for resizing the null-terminated
+    list. Since we're not in a time-critical path here at all we can afford to
+    loop the list multiple times instead of keeping an extra variable around.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+
+commit 5b5477c05f691205064ca4d8034f8dd47ab975b7
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Mon Jul 4 14:14:11 2011 +1000
+
+    xfree86: update comment for InitInput
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+
+commit 7354f607833c69626d8692bc5176b18ea1cf6263
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Mon Jul 4 14:26:13 2011 +1000
+
+    xfree86: nest loops instead of 0x1 pointers.
+    
+    If we find the core device, move all other device pointers forward right
+    then and there. The break will jump out of the top loop.
+    
+    They had a special on braces today, so I added some for readability (and
+    fixed up tab vs space indentation.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+
+commit 5669aa2d24dff9ab276e5f74a09f97ec77b90e75
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Mon Jul 4 14:05:30 2011 +1000
+
+    xfree86: improve readability of synthesized device.
+    
+    No functional changes.
+    
+    The options we assign are the ones from the Pointer/Keyboard device so we
+    might as well use those readable names instead of dev[count-1]->options.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+
+commit 5aa826cdd1f2e768bedf23d399703a5d0b6302be
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Mon Jul 4 13:52:11 2011 +1000
+
+    test: add a option duplication test
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+
+commit 4527e2b776cfcdac2b189b5439b9a3d0b6433077
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Mon Jul 4 13:46:24 2011 +1000
+
+    xfree86: when implicitly choosing a core device, set the option to a value
+    
+    Devices are core pointers/keyboards by default now anyway, but let's set the
+    option to some value instead of just NULL.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+
+commit 44d53728a6a533fc0a6e0a10269d1cc99e9dad32
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Mon Jul 4 13:44:44 2011 +1000
+
+    xfree86: don't warn about duplicate core devices
+    
+    It doesn't matter. All devices are core pointer devices by default now
+    anyway.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+
+commit 033f53c223dc12a91f00e10a69f87a4f2a7adb6b
+Author: Daniel Kurtz <djkurtz@chromium.org>
+Date:   Mon Aug 8 15:09:48 2011 +0800
+
+    xf86Helper: use LogHdrMessageVerb in xf86VDrvMsgVerb
+    
+    LogHdrMessageVerb allows passing a parameterized header to insert in a log
+    message between MessageType and the formatted message body string.
+    
+    Signed-off-by: Daniel Kurtz <djkurtz@chromium.org>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit cd8ee3e5cb29b9cd6402d2fbc71463c6b04b6077
+Author: Daniel Kurtz <djkurtz@chromium.org>
+Date:   Mon Aug 8 15:09:47 2011 +0800
+
+    xf86Helper: use LogHdrMessageVerb in xf86VIDrvMsgVerb
+    
+    LogHdrMessageVerb allows passing a parameterized header to insert in a log
+    message between MessageType and the formatted message body string.
+    
+    Signed-off-by: Daniel Kurtz <djkurtz@chromium.org>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit b31d104fc09a7241856ff8d226be11ec562beac3
+Author: Daniel Kurtz <djkurtz@chromium.org>
+Date:   Mon Aug 8 15:09:46 2011 +0800
+
+    os/log: Add LogVHdrMessageVerb and friends
+    
+    LogVHdrMessageVerb allows a custom header to be inserted in a log message,
+    between the Log system's MessageType string, and a formatted variable
+    message body. The custom header can itself be a formatted variable string.
+    
+    These functions can be used, for example, by driver abstraction layers to
+    format specific driver messages in a standard format, but do it in a way
+    that is efficient, obeys the log-layers verbosity settings, and is safe
+    to use in signal handlers (because they don't call malloc), even for
+    types besides X_NONE.
+    
+    Signed-off-by: Daniel Kurtz <djkurtz@chromium.org>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit b82f934db661c59d7397ce180d08cf8f8f7118b1
+Author: Daniel Kurtz <djkurtz@chromium.org>
+Date:   Mon Aug 8 15:09:45 2011 +0800
+
+    os/log: Pull LogMessageTypeVerbString out of LogVMessageVerb
+    
+    Also, optimize how the type and format strings are combined.
+    
+    Signed-off-by: Daniel Kurtz <djkurtz@chromium.org>
+    Reviewed-by: Guillem Jover <guillem@hadrons.org>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
 
 commit e32cc0b4c85c78cd8743a6e1680dcc79054b57ce
 Author: Adam Jackson <ajax@redhat.com>
