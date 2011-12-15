@@ -1,4 +1,4 @@
-xorg-server (2:1.11.99.1-1) UNRELEASED; urgency=low
+xorg-server (2:1.11.99.1-1) experimental; urgency=low
 
   * New upstream release snapshot (on the way to 1.12).
   * Bump libpciaccess-dev, x11proto-input-dev build-deps.
@@ -10,7 +10,7 @@ xorg-server (2:1.11.99.1-1) UNRELEASED; urgency=low
     - 07-xfree86-fix-build-with-xv-disabled.diff
     - 15-nouveau.diff
 
- -- Cyril Brulebois <kibi@debian.org>  Thu, 15 Dec 2011 17:39:25 +0100
+ -- Cyril Brulebois <kibi@debian.org>  Thu, 15 Dec 2011 18:49:10 +0100
 
 xorg-server (2:1.11.2.901-1) unstable; urgency=low
 
