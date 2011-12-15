@@ -1,6 +1,7 @@
 xorg-server (2:1.11.99.1-1) UNRELEASED; urgency=low
 
   * New upstream release snapshot (on the way to 1.12).
+  * Bump libpciaccess-dev, x11proto-input-dev build-deps.
 
  -- Cyril Brulebois <kibi@debian.org>  Thu, 15 Dec 2011 17:39:25 +0100
 
