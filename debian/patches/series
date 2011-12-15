@@ -3,4 +3,3 @@
 001_fedora_extramodes.patch
 02_Add-libnettle-as-option-for-sha1.diff
 #13_debian_add_xkbpath_env_variable.diff
-15-nouveau.diff
