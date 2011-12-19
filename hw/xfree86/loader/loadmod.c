@@ -437,14 +437,11 @@ FindModule(const char *module, const char *dirname, const char **subdirlist,
 	   PatternPtr patterns)
 {
     char buf[PATH_MAX + 1];
-    char *dirpath = NULL;
     char *name = NULL;
-    int dirlen;
     const char **subdirs = NULL;
     const char **s;
 
-    dirpath = (char *)dirname;
-    if (strlen(dirpath) > PATH_MAX)
+    if (strlen(dirname) > PATH_MAX)
 	return NULL;
     
     subdirs = InitSubdirs(subdirlist);
@@ -452,17 +449,15 @@ FindModule(const char *module, const char *dirname, const char **subdirlist,
 	return NULL;
 
     for (s = subdirs; *s; s++) {
-	if ((dirlen = strlen(dirpath) + strlen(*s)) > PATH_MAX)
+	if ((strlen(dirname) + strlen(*s)) > PATH_MAX)
 	    continue;
-	strcpy(buf, dirpath);
+	strcpy(buf, dirname);
 	strcat(buf, *s);
         if ((name = FindModuleInSubdir(buf, module)))
             break;
     }
 
     FreeSubdirs(subdirs);
-    if (dirpath != dirname)
-	free(dirpath);
 
     return name;
 }
@@ -916,7 +911,7 @@ doLoadModule(const char *module, const char *path, const char **subdirlist,
 	goto LoadModule_fail;
     }
     ret->handle = LoaderOpen(found, errmaj, errmin);
-    if (ret->handle < 0)
+    if (ret->handle == NULL)
 	goto LoadModule_fail;
     ret->path = strdup(found);
 

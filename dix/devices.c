@@ -73,6 +73,7 @@ SOFTWARE.
 #include "dixevents.h"
 #include "mipointer.h"
 #include "eventstr.h"
+#include "dixgrabs.h"
 
 #include <X11/extensions/XI.h>
 #include <X11/extensions/XI2.h>
@@ -273,6 +274,8 @@ AddInputDevice(ClientPtr client, DeviceProc deviceProc, Bool autoStart)
     dev->deviceGrab.grabTime = currentTime;
     dev->deviceGrab.ActivateGrab = ActivateKeyboardGrab;
     dev->deviceGrab.DeactivateGrab = DeactivateKeyboardGrab;
+    dev->deviceGrab.activeGrab = AllocGrab();
+    dev->deviceGrab.sync.event = calloc(1, sizeof(DeviceEvent));
 
     XkbSetExtension(dev, ProcessKeyboardEvent);
 
@@ -941,6 +944,7 @@ CloseDevice(DeviceIntPtr dev)
         }
     }
 
+    FreeGrab(dev->deviceGrab.activeGrab);
     free(dev->deviceGrab.sync.event);
     free(dev->config_info);     /* Allocated in xf86ActivateDevice. */
     free(dev->last.scroll);
@@ -2554,7 +2558,7 @@ GetMaster(DeviceIntPtr dev, int which)
  * the value for master.
  */
 int
-AllocDevicePair (ClientPtr client, char* name,
+AllocDevicePair (ClientPtr client, const char* name,
                  DeviceIntPtr* ptr,
                  DeviceIntPtr* keybd,
                  DeviceProc ptr_proc,

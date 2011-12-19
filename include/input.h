@@ -57,6 +57,7 @@ SOFTWARE.
 #include "xkbrules.h"
 #include "events.h"
 #include "list.h"
+#include <X11/extensions/XI2.h>
 
 #define DEVICE_INIT	0
 #define DEVICE_ON	1
@@ -100,6 +101,12 @@ SOFTWARE.
 #ifndef RevertToFollowKeyboard
 #define RevertToFollowKeyboard	3
 #endif
+
+enum InputLevel {
+    CORE,
+    XI,
+    XI2,
+};
 
 typedef unsigned long Leds;
 typedef struct _OtherClients *OtherClientsPtr;
@@ -205,6 +212,7 @@ extern _X_EXPORT KeybdCtrl	defaultKeyboardControl;
 extern _X_EXPORT PtrCtrl	defaultPointerControl;
 
 typedef struct _InputOption InputOption;
+typedef struct _XI2Mask XI2Mask;
 
 typedef struct _InputAttributes {
     char                *product;
@@ -505,7 +513,7 @@ extern _X_EXPORT DeviceIntPtr GetPairedDevice(DeviceIntPtr kbd);
 extern DeviceIntPtr GetMaster(DeviceIntPtr dev, int type);
 
 extern _X_EXPORT int AllocDevicePair(ClientPtr client,
-                             char* name,
+                             const char* name,
                              DeviceIntPtr* ptr,
                              DeviceIntPtr* keybd,
                              DeviceProc ptr_proc,
@@ -521,7 +529,7 @@ extern _X_EXPORT int generate_modkeymap(ClientPtr client, DeviceIntPtr dev,
 extern int change_modmap(ClientPtr client, DeviceIntPtr dev, KeyCode *map,
                          int max_keys_per_mod);
 extern int AllocXTestDevice(ClientPtr client,
-                             char* name,
+                             const char* name,
                              DeviceIntPtr* ptr,
                              DeviceIntPtr* keybd,
                              DeviceIntPtr master_ptr,
@@ -535,15 +543,17 @@ extern _X_EXPORT void FreeInputAttributes(InputAttributes *attrs);
 /* misc event helpers */
 extern Mask GetEventMask(DeviceIntPtr dev, xEvent* ev, InputClientsPtr clients);
 extern Mask GetEventFilter(DeviceIntPtr dev, xEvent *event);
-extern Mask GetWindowXI2Mask(DeviceIntPtr dev, WindowPtr win, xEvent* ev);
+extern Bool WindowXI2MaskIsset(DeviceIntPtr dev, WindowPtr win, xEvent* ev);
+extern int GetXI2MaskByte(XI2Mask *mask, DeviceIntPtr dev, int event_type);
 void FixUpEventFromWindow(SpritePtr pSprite,
                           xEvent *xE,
                           WindowPtr pWin,
                           Window child,
                           Bool calcChild);
 extern WindowPtr XYToWindow(SpritePtr pSprite, int x, int y);
-extern int EventIsDeliverable(DeviceIntPtr dev, InternalEvent* event,
-                              WindowPtr win);
+extern int EventIsDeliverable(DeviceIntPtr dev, int evtype, WindowPtr win);
+extern Bool ActivatePassiveGrab(DeviceIntPtr dev, GrabPtr grab,
+                                InternalEvent *ev);
 /**
  * Masks specifying the type of event to deliver for an InternalEvent; used
  * by EventIsDeliverable.
@@ -555,6 +565,13 @@ extern int EventIsDeliverable(DeviceIntPtr dev, InternalEvent* event,
 #define EVENT_DONT_PROPAGATE_MASK     (1 << 2) /**< DontPropagate mask set */
 #define EVENT_XI2_MASK                (1 << 3) /**< XI2 mask set on window */
 /* @} */
+
+enum EventDeliveryState {
+    EVENT_DELIVERED,     /**< Event has been delivered to a client  */
+    EVENT_NOT_DELIVERED, /**< Event was not delivered to any client */
+    EVENT_SKIP,          /**< Event can be discarded by the caller  */
+    EVENT_REJECTED,      /**< Event was rejected for delivery to the client */
+};
 
 /* Implemented by the DDX. */
 extern _X_EXPORT int NewInputDeviceRequest(

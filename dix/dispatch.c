@@ -337,8 +337,6 @@ DisableLimitedSchedulingLatency(void)
 	SmartScheduleLatencyLimited = 0;
 }
 
-#define MAJOROP ((xReq *)client->requestBuffer)->reqType
-
 void
 Dispatch(void)
 {
@@ -419,21 +417,28 @@ Dispatch(void)
 	        }
 
 		client->sequence++;
+		client->majorOp = ((xReq *)client->requestBuffer)->reqType;
+		client->minorOp = 0;
+		if (client->majorOp >= EXTENSION_BASE) {
+		    ExtensionEntry *ext = GetExtensionEntry(client->majorOp);
+		    if (ext)
+			client->minorOp = ext->MinorOpcode(client);
+		}
 #ifdef XSERVER_DTRACE
-		XSERVER_REQUEST_START(LookupMajorName(MAJOROP), MAJOROP,
+		XSERVER_REQUEST_START(LookupMajorName(client->majorOp), client->majorOp,
 			      ((xReq *)client->requestBuffer)->length,
 			      client->index, client->requestBuffer);
 #endif
 		if (result > (maxBigRequestSize << 2))
 		    result = BadLength;
 		else {
-		    result = XaceHookDispatch(client, MAJOROP);
+		    result = XaceHookDispatch(client, client->majorOp);
 		    if (result == Success)
-			result = (* client->requestVector[MAJOROP])(client);
+			result = (* client->requestVector[client->majorOp])(client);
 		    XaceHookAuditEnd(client, result);
 		}
 #ifdef XSERVER_DTRACE
-		XSERVER_REQUEST_DONE(LookupMajorName(MAJOROP), MAJOROP,
+		XSERVER_REQUEST_DONE(LookupMajorName(client->majorOp), client->majorOp,
 			      client->sequence, client->index, result);
 #endif
 
@@ -444,8 +449,8 @@ Dispatch(void)
 		}
 		else if (result != Success)
 		{
-		    SendErrorToClient(client, MAJOROP,
-				      MinorOpcodeOfRequest(client),
+		    SendErrorToClient(client, client->majorOp,
+				      client->minorOp,
 				      client->errorValue, result);
 		    break;
 		}
@@ -465,8 +470,6 @@ Dispatch(void)
     dispatchException &= ~DE_RESET;
     SmartScheduleLatencyLimited = 0;
 }
-
-#undef MAJOROP
 
 static int  VendorRelease = VENDOR_RELEASE;
 static char *VendorString = VENDOR_NAME;
@@ -3597,7 +3600,7 @@ ProcInitialConnection(ClientPtr client)
 }
 
 static int
-SendConnSetup(ClientPtr client, char *reason)
+SendConnSetup(ClientPtr client, const char *reason)
 {
     xWindowRoot *root;
     int i;
@@ -3696,7 +3699,8 @@ SendConnSetup(ClientPtr client, char *reason)
 int
 ProcEstablishConnection(ClientPtr client)
 {
-    char *reason, *auth_proto, *auth_string;
+    const char *reason;
+    char *auth_proto, *auth_string;
     xConnClientPrefix *prefix;
     REQUEST(xReq);
 

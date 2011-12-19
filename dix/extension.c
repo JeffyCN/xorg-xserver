@@ -61,7 +61,6 @@ SOFTWARE.
 #include "registry.h"
 #include "xace.h"
 
-#define LAST_EVENT  128
 #define LAST_ERROR 255
 
 static ExtensionEntry **extensions = (ExtensionEntry **)NULL;
@@ -71,7 +70,7 @@ static int lastError = FirstExtensionError;
 static unsigned int NumExtensions = 0;
 
 ExtensionEntry *
-AddExtension(char *name, int NumEvents, int NumErrors, 
+AddExtension(const char *name, int NumEvents, int NumErrors,
 	     int (*MainProc)(ClientPtr c1), 
 	     int (*SwappedMainProc)(ClientPtr c2), 
 	     void (*CloseDownProc)(ExtensionEntry *e), 
@@ -82,7 +81,7 @@ AddExtension(char *name, int NumEvents, int NumErrors,
 
     if (!MainProc || !SwappedMainProc || !MinorOpcodeProc)
         return((ExtensionEntry *) NULL);
-    if ((lastEvent + NumEvents > LAST_EVENT) || 
+    if ((lastEvent + NumEvents > MAXEVENTS) || 
 	        (unsigned)(lastError + NumErrors > LAST_ERROR)) {
         LogMessage(X_ERROR, "Not enabling extension %s: maximum number of "
                    "events or errors exceeded.\n", name);
@@ -151,7 +150,7 @@ AddExtension(char *name, int NumEvents, int NumErrors,
     return ext;
 }
 
-Bool AddExtensionAlias(char *alias, ExtensionEntry *ext)
+Bool AddExtensionAlias(const char *alias, ExtensionEntry *ext)
 {
     char *name;
     char **aliases;
@@ -172,7 +171,7 @@ Bool AddExtensionAlias(char *alias, ExtensionEntry *ext)
 }
 
 static int
-FindExtension(char *extname, int len)
+FindExtension(const char *extname, int len)
 {
     int i, j;
 
@@ -201,7 +200,7 @@ CheckExtension(const char *extname)
 {
     int n;
 
-    n = FindExtension((char*)extname, strlen(extname));
+    n = FindExtension(extname, strlen(extname));
     if (n != -1)
 	return extensions[n];
     else
@@ -226,20 +225,6 @@ unsigned short
 StandardMinorOpcode(ClientPtr client)
 {
     return ((xReq *)client->requestBuffer)->data;
-}
-
-unsigned short
-MinorOpcodeOfRequest(ClientPtr client)
-{
-    unsigned char major;
-
-    major = ((xReq *)client->requestBuffer)->reqType;
-    if (major < EXTENSION_BASE)
-	return 0;
-    major -= EXTENSION_BASE;
-    if (major >= NumExtensions)
-	return 0;
-    return (*extensions[major]->MinorOpcode)(client);
 }
 
 void

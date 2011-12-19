@@ -128,7 +128,7 @@ static char rpc_error[MAXNETNAMELEN+50];
 
 _X_HIDDEN XID
 SecureRPCCheck (unsigned short data_length, const char *data,
-    ClientPtr client, char **reason)
+    ClientPtr client, const char **reason)
 {
     char *fullname;
     
@@ -137,13 +137,14 @@ SecureRPCCheck (unsigned short data_length, const char *data,
     } else {
 	fullname = authdes_ezdecode(data, data_length);
 	if (fullname == (char *)0) {
-	    sprintf(rpc_error, "Unable to authenticate secure RPC client (why=%d)", why);
+	    snprintf(rpc_error, sizeof(rpc_error),
+		     "Unable to authenticate secure RPC client (why=%d)", why);
 	    *reason = rpc_error;
 	} else {
 	    if (ForEachHostInFamily (FamilyNetname, CheckNetName, fullname))
 		return rpc_id;
-	    sprintf(rpc_error, "Principal \"%s\" is not authorized to connect",
-			fullname);
+	    snprintf(rpc_error, sizeof(rpc_error),
+		     "Principal \"%s\" is not authorized to connect", fullname);
 	    *reason = rpc_error;
 	}
     }

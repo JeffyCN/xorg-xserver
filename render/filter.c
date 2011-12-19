@@ -47,7 +47,7 @@ static int  nfilterNames;
  */
 
 int
-PictureGetFilterId (char *filter, int len, Bool makeit)
+PictureGetFilterId (const char *filter, int len, Bool makeit)
 {
     int	    i;
     char    *name;
@@ -56,7 +56,8 @@ PictureGetFilterId (char *filter, int len, Bool makeit)
     if (len < 0)
 	len = strlen (filter);
     for (i = 0; i < nfilterNames; i++)
-	if (!CompareISOLatin1Lowered ((unsigned char *) filterNames[i], -1, (unsigned char *) filter, len))
+	if (!CompareISOLatin1Lowered ((const unsigned char *) filterNames[i], -1,
+				      (const unsigned char *) filter, len))
 	    return i;
     if (!makeit)
 	return -1;
@@ -125,7 +126,7 @@ PictureFreeFilterIds (void)
 
 int
 PictureAddFilter (ScreenPtr			    pScreen,
-		  char				    *filter,
+		  const char			    *filter,
 		  PictFilterValidateParamsProcPtr   ValidateParams,
 		  int				    width,
 		  int				    height)
@@ -160,7 +161,7 @@ PictureAddFilter (ScreenPtr			    pScreen,
 }
 
 Bool
-PictureSetFilterAlias (ScreenPtr pScreen, char *filter, char *alias)
+PictureSetFilterAlias (ScreenPtr pScreen, const char *filter, const char *alias)
 {
     PictureScreenPtr    ps = GetPictureScreen(pScreen);
     int			filter_id = PictureGetFilterId (filter, -1, FALSE);

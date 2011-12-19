@@ -98,8 +98,6 @@ fbdevHWFreeRec(ScrnInfoPtr pScrn)
 {
 	if (fbdevHWPrivateIndex < 0)
 		return;
-	if (FBDEVHWPTR(pScrn) == NULL)
-		return;
 	free(FBDEVHWPTR(pScrn));
 	FBDEVHWPTRLVAL(pScrn) = NULL;
 }
@@ -265,20 +263,20 @@ fbdev_open_pci(struct pci_device * pPci, char **namep)
     int	fd, i;
 
     for (i = 0; i < 8; i++) {
-	sprintf(filename, 
+	snprintf(filename, sizeof(filename),
 		"/sys/bus/pci/devices/%04x:%02x:%02x.%d/graphics/fb%d",
 		pPci->domain, pPci->bus, pPci->dev, pPci->func, i);
 
 	fd = open(filename, O_RDONLY, 0);
         if (fd < 0) {
-            sprintf(filename,
+            snprintf(filename, sizeof(filename),
                     "/sys/bus/pci/devices/%04x:%02x:%02x.%d/graphics:fb%d",
                     pPci->domain, pPci->bus, pPci->dev, pPci->func, i);
             fd = open(filename, O_RDONLY, 0);
         }
 	if (fd >= 0) {
 	    close(fd);
-	    sprintf(filename, "/dev/fb%d", i);
+	    snprintf(filename, sizeof(filename), "/dev/fb%d", i);
 
 	    fd = open(filename, O_RDWR, 0);
 	    if (fd != -1) {
@@ -508,20 +506,22 @@ fbdevHWSetVideoModes(ScrnInfoPtr pScrn)
 	pScrn->virtualY = pScrn->display->virtualY;
 
 	for (modename = pScrn->display->modes; *modename != NULL; modename++) {
-		for (mode = pScrn->monitor->Modes; mode != NULL; mode = mode->next)
-			if (0 == strcmp(mode->name,*modename))
-				break;
+		for (mode = pScrn->monitor->Modes; mode != NULL; mode = mode->next) {
+			if (0 == strcmp(mode->name,*modename)) {
+				if (fbdevHWSetMode(pScrn, mode, TRUE))
+					break;
+
+				xf86DrvMsg(pScrn->scrnIndex, X_INFO,
+					   "\tmode \"%s\" test failed\n", *modename);
+			}
+		}
+
 		if (NULL == mode) {
 			xf86DrvMsg(pScrn->scrnIndex, X_INFO,
 				   "\tmode \"%s\" not found\n", *modename);
 			continue;
 		}
 
-		if (!fbdevHWSetMode(pScrn, mode, TRUE)) {
-			xf86DrvMsg(pScrn->scrnIndex, X_INFO,
-				   "\tmode \"%s\" test failed\n", *modename);
-			continue;
-		}
 		xf86DrvMsg(pScrn->scrnIndex, X_INFO,
 			   "\tmode \"%s\" ok\n", *modename);
 

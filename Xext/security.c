@@ -62,7 +62,7 @@ typedef struct {
 } SecurityStateRec;
 
 /* Extensions that untrusted clients shouldn't have access to */
-static char *SecurityTrustedExtensions[] = {
+static const char *SecurityTrustedExtensions[] = {
     "XC-MISC",
     "BIG-REQUESTS",
     "XpExtension",
@@ -97,8 +97,8 @@ static const Mask SecurityClientMask = DixGetAttrAccess;
  *	Writes the message to the log file if security logging is on.
  */
 
-static void
-SecurityAudit(char *format, ...)
+static void _X_ATTRIBUTE_PRINTF(1,2)
+SecurityAudit(const char *format, ...)
 {
     va_list args;
 
@@ -148,9 +148,7 @@ SecurityLabelInitial(void)
 static _X_INLINE const char *
 SecurityLookupRequestName(ClientPtr client)
 {
-    int major = ((xReq *)client->requestBuffer)->reqType;
-    int minor = MinorOpcodeOfRequest(client);
-    return LookupRequestName(major, minor);
+    return LookupRequestName(client->majorOp, client->minorOp);
 }
 
 
@@ -173,7 +171,8 @@ SecurityDeleteAuthorization(
 {
     SecurityAuthorizationPtr pAuth = (SecurityAuthorizationPtr)value;
     unsigned short name_len, data_len;
-    char *name, *data;
+    const char *name;
+    char *data;
     int status;
     int i;
     OtherClientsPtr pEventClient;

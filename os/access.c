@@ -106,7 +106,7 @@ SOFTWARE.
 #include <netinet/in.h>
 #endif /* TCPCONN || STREAMSCONN */
 
-#ifdef HAS_GETPEERUCRED
+#ifdef HAVE_GETPEERUCRED
 # include <ucred.h>
 # ifdef sun
 #  include <zone.h>
@@ -146,7 +146,7 @@ SOFTWARE.
 #endif
 #endif
 
-#ifdef HAS_GETIFADDRS
+#ifdef HAVE_GETIFADDRS
 #include <ifaddrs.h>
 #endif
 
@@ -176,12 +176,10 @@ SOFTWARE.
 
 Bool defeatAccessControl = FALSE;
 
-#define acmp(a1, a2, len) memcmp((char *)(a1), (char *)(a2), len)
-#define acopy(a1, a2, len) memmove((char *)(a2), (char *)(a1), len)
 #define addrEqual(fam, address, length, host) \
 			 ((fam) == (host)->family &&\
 			  (length) == (host)->len &&\
-			  !acmp (address, (host)->addr, length))
+			  !memcmp (address, (host)->addr, length))
 
 static int ConvertAddr(struct sockaddr * /*saddr*/,
 		       int * /*len*/,
@@ -371,13 +369,13 @@ DefineSelf (int fd)
 	switch (hp->h_addrtype) {
 	case AF_INET:
 	    inetaddr = (struct sockaddr_in *) (&(saddr.sa));
-	    acopy ( hp->h_addr, &(inetaddr->sin_addr), hp->h_length);
+	    memcpy ( &(inetaddr->sin_addr), hp->h_addr, hp->h_length);
 	    len = sizeof(saddr.sa);
 	    break;
 #if defined(IPv6) && defined(AF_INET6)
 	case AF_INET6:
 	    inet6addr = (struct sockaddr_in6 *) (&(saddr.sa));
-	    acopy ( hp->h_addr, &(inet6addr->sin6_addr), hp->h_length);
+	    memcpy ( &(inet6addr->sin6_addr), hp->h_addr, hp->h_length);
 	    len = sizeof(saddr.in6);
 	    break;
 #endif
@@ -398,7 +396,7 @@ DefineSelf (int fd)
 		{
 		    host->family = family;
 		    host->len = len;
-		    acopy ( addr, host->addr, len);
+		    memcpy ( host->addr, addr, len);
 		    host->next = selfhosts;
 		    selfhosts = host;
 		}
@@ -448,7 +446,7 @@ DefineLocalHost:
 	{
 	    host->family = FamilyLocalHost;
 	    host->len = 0;
-	    acopy("", host->addr, 0);
+	    /* Nothing to store in host->addr */
 	    host->next = selfhosts;
 	    selfhosts = host;
 	}
@@ -495,7 +493,7 @@ in6_fillscopeid(struct sockaddr_in6 *sin6)
 void
 DefineSelf (int fd)
 {
-#ifndef HAS_GETIFADDRS
+#ifndef HAVE_GETIFADDRS
     char 		*cp, *cplim;
 # ifdef USE_SIOCGLIFCONF
     struct sockaddr_storage buf[16];
@@ -510,7 +508,7 @@ DefineSelf (int fd)
     register struct ifreq *ifr;
 # endif
     void *		bufptr = buf;   
-#else /* HAS_GETIFADDRS */
+#else /* HAVE_GETIFADDRS */
     struct ifaddrs *	ifap, *ifr;
 #endif
     int 		len;
@@ -518,7 +516,7 @@ DefineSelf (int fd)
     int 		family;
     register HOST 	*host;
     
-#ifndef HAS_GETIFADDRS
+#ifndef HAVE_GETIFADDRS
 
     len = sizeof(buf);
 
@@ -528,7 +526,7 @@ DefineSelf (int fd)
     ifn.lifn_family = AF_UNSPEC;
     ifn.lifn_flags = 0;
     if (ioctl (fd, SIOCGLIFNUM, (char *) &ifn) < 0)
-        Error ("Getting interface count");    
+        ErrorF ("Getting interface count: %s\n", strerror(errno));
     if (len < (ifn.lifn_count * sizeof(struct lifreq))) {
 	len = ifn.lifn_count * sizeof(struct lifreq);
 	bufptr = malloc(len);
@@ -558,7 +556,7 @@ DefineSelf (int fd)
 #endif
 
     if (ifioctl (fd, IFC_IOCTL_REQ, (pointer) &ifc) < 0)
-        Error ("Getting interface configuration (4)");
+        ErrorF ("Getting interface configuration (4): %s\n", strerror(errno));
 
     cplim = (char *) IFC_IFC_REQ + IFC_IFC_LEN;
     
@@ -585,7 +583,7 @@ DefineSelf (int fd)
 	{
 	    host->family = family;
 	    host->len = len;
-	    acopy(addr, host->addr, len);
+	    memcpy(host->addr, addr, len);
 	    host->next = selfhosts;
 	    selfhosts = host;
 	}
@@ -689,7 +687,7 @@ DefineSelf (int fd)
     }
     if (bufptr != buf)
         free(bufptr);    
-#else /* HAS_GETIFADDRS */
+#else /* HAVE_GETIFADDRS */
     if (getifaddrs(&ifap) < 0) {
 	ErrorF("Warning: getifaddrs returns %s\n", strerror(errno));
 	return;
@@ -717,7 +715,7 @@ DefineSelf (int fd)
 	if (host != NULL) {
 	    host->family = family;
 	    host->len = len;
-	    acopy(addr, host->addr, len);
+	    memcpy(host->addr, addr, len);
 	    host->next = selfhosts;
 	    selfhosts = host;
 	}
@@ -777,7 +775,7 @@ DefineSelf (int fd)
 		
     } /* for */
     freeifaddrs(ifap);
-#endif /* HAS_GETIFADDRS */
+#endif /* HAVE_GETIFADDRS */
 
     /*
      * add something of FamilyLocalHost
@@ -792,13 +790,13 @@ DefineSelf (int fd)
 	{
 	    host->family = FamilyLocalHost;
 	    host->len = 0;
-	    acopy("", host->addr, 0);
+	    /* Nothing to store in host->addr */
 	    host->next = selfhosts;
 	    selfhosts = host;
 	}
     }
 }
-#endif /* hpux && !HAS_IFREQ */
+#endif /* hpux && !HAVE_IFREQ */
 
 #ifdef XDMCP
 void
@@ -821,7 +819,7 @@ AugmentSelf(pointer from, int len)
 	return;
     host->family = family;
     host->len = len;
-    acopy(addr, host->addr, len);
+    memcpy(host->addr, addr, len);
     host->next = selfhosts;
     selfhosts = host;
 }
@@ -1091,14 +1089,14 @@ LocalClientCred(ClientPtr client, int *pUid, int *pGid)
 int
 GetLocalClientCreds(ClientPtr client, LocalClientCredRec **lccp)
 {
-#if defined(HAS_GETPEEREID) || defined(HAS_GETPEERUCRED) || defined(SO_PEERCRED)
+#if defined(HAVE_GETPEEREID) || defined(HAVE_GETPEERUCRED) || defined(SO_PEERCRED)
     int fd;
     XtransConnInfo ci;
     LocalClientCredRec *lcc;
-#ifdef HAS_GETPEEREID
+#ifdef HAVE_GETPEEREID
     uid_t uid;
     gid_t gid;
-#elif defined(HAS_GETPEERUCRED)
+#elif defined(HAVE_GETPEERUCRED)
     ucred_t *peercred = NULL;
     const gid_t *gids;
 #elif defined(SO_PEERCRED)
@@ -1109,7 +1107,7 @@ GetLocalClientCreds(ClientPtr client, LocalClientCredRec **lccp)
     if (client == NULL)
 	return -1;
     ci = ((OsCommPtr)client->osPrivate)->trans_conn;
-#if !(defined(sun) && defined(HAS_GETPEERUCRED))
+#if !(defined(sun) && defined(HAVE_GETPEERUCRED))
     /* Most implementations can only determine peer credentials for Unix 
      * domain sockets - Solaris getpeerucred can work with a bit more, so 
      * we just let it tell us if the connection type is supported or not
@@ -1125,7 +1123,7 @@ GetLocalClientCreds(ClientPtr client, LocalClientCredRec **lccp)
     lcc = *lccp;
         
     fd = _XSERVTransGetConnectionNumber(ci);
-#ifdef HAS_GETPEEREID
+#ifdef HAVE_GETPEEREID
     if (getpeereid(fd, &uid, &gid) == -1) {
 	FreeLocalClientCreds(lcc);
 	return -1;
@@ -1134,7 +1132,7 @@ GetLocalClientCreds(ClientPtr client, LocalClientCredRec **lccp)
     lcc->egid = gid;
     lcc->fieldsSet = LCC_UID_SET | LCC_GID_SET;
     return 0;
-#elif defined(HAS_GETPEERUCRED)
+#elif defined(HAVE_GETPEERUCRED)
     if (getpeerucred(fd, &peercred) < 0) {
 	FreeLocalClientCreds(lcc);
     	return -1;
@@ -1306,7 +1304,7 @@ NewHost (int		family,
 	return FALSE;
     host->family = family;
     host->len = len;
-    acopy(addr, host->addr, len);
+    memcpy(host->addr, addr, len);
     host->next = validhosts;
     validhosts = host;
     return TRUE;
@@ -1400,7 +1398,7 @@ GetHosts (
 	    ((xHostEntry *)ptr)->family = host->family;
 	    ((xHostEntry *)ptr)->length = len;
 	    ptr += sizeof(xHostEntry);
-	    acopy (host->addr, ptr, len);
+	    memcpy (ptr, host->addr, len);
 	    ptr += pad_to_int32(len);
         }
     } else {
@@ -1756,15 +1754,14 @@ siHostnameAddrMatch(int family, pointer addr, int len,
 	if (siAddrLen >= sizeof(hostname)) 
 	    return FALSE;
 
-	strncpy(hostname, siAddr, siAddrLen);
-	hostname[siAddrLen] = '\0';
+	strlcpy(hostname, siAddr, siAddrLen + 1);
 
 	if (getaddrinfo(hostname, NULL, NULL, &addresses) == 0) {
 	    for (a = addresses ; a != NULL ; a = a->ai_next) {
 		hostaddrlen = a->ai_addrlen;
 		f = ConvertAddr(a->ai_addr,&hostaddrlen,&hostaddr);
 		if ((f == family) && (len == hostaddrlen) &&
-		  (acmp (addr, hostaddr, len) == 0) ) {
+		  (memcmp (addr, hostaddr, len) == 0) ) {
 		    res = TRUE;
 		    break;
 		}
@@ -1786,8 +1783,7 @@ siHostnameAddrMatch(int family, pointer addr, int len,
 	if (siAddrLen >= sizeof(hostname)) 
 	    return FALSE;
 
-	strncpy(hostname, siAddr, siAddrLen);
-	hostname[siAddrLen] = '\0';
+	strlcpy(hostname, siAddr, siAddrLen + 1);
 
 	if ((hp = _XGethostbyname(hostname, hparams)) != NULL) {
 #ifdef h_addr				/* new 4.3bsd version of gethostent */
@@ -1800,12 +1796,12 @@ siHostnameAddrMatch(int family, pointer addr, int len,
 		struct  sockaddr_in  sin;
 
     		sin.sin_family = hp->h_addrtype;
-		acopy ( *addrlist, &(sin.sin_addr), hp->h_length);
+		memcpy ( &(sin.sin_addr), *addrlist, hp->h_length);
 		hostaddrlen = sizeof(sin);
     		f = ConvertAddr ((struct sockaddr *)&sin, 
 		  &hostaddrlen, &hostaddr);
 		if ((f == family) && (len == hostaddrlen) &&
-		  (acmp (addr, hostaddr, len) == 0) ) {
+		  (memcmp (addr, hostaddr, len) == 0) ) {
 		    res = TRUE;
 		    break;
 		}

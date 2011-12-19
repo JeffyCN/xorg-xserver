@@ -25,9 +25,9 @@ dnl          an unwitting cast of miscellaneous others
 dnl
 dnl Process this file with autoconf to create configure.
 
-AC_PREREQ(2.57)
-AC_INIT([xorg-server], 1.11.99.1, [https://bugs.freedesktop.org/enter_bug.cgi?product=xorg], xorg-server)
-RELEASE_DATE="2011-11-20"
+AC_PREREQ(2.60)
+AC_INIT([xorg-server], 1.11.99.2, [https://bugs.freedesktop.org/enter_bug.cgi?product=xorg], xorg-server)
+RELEASE_DATE="2011-12-17"
 AC_CONFIG_SRCDIR([Makefile.am])
 AM_INIT_AUTOMAKE([foreign dist-bzip2])
 AM_MAINTAINER_MODE
@@ -45,7 +45,7 @@ XORG_WITH_XMLTO(0.0.20)
 XORG_WITH_FOP
 XORG_WITH_XSLTPROC
 XORG_ENABLE_UNIT_TESTS
-XORG_LD_WRAP
+XORG_LD_WRAP([optional])
 
 m4_ifndef([XORG_FONT_MACROS_VERSION], [m4_fatal([must install fontutil 1.1 or later before running autoconf/autogen])])
 XORG_FONT_MACROS_VERSION(1.1)
@@ -76,7 +76,6 @@ AC_PROG_LN_S
 AC_LIBTOOL_WIN32_DLL
 AC_DISABLE_STATIC
 AC_PROG_LIBTOOL
-AC_PROG_MAKE_SET
 PKG_PROG_PKG_CONFIG
 AC_PROG_LEX
 AC_PROG_YACC
@@ -213,32 +212,14 @@ AC_CHECK_FUNC([dlopen], [],
 AC_SUBST(DLOPEN_LIBS)
 
 dnl Checks for library functions.
-AC_FUNC_VPRINTF
-AC_CHECK_FUNCS([geteuid getuid link memmove memset mkstemp strchr strrchr \
-		strtol getopt getopt_long vsnprintf walkcontext backtrace \
-		getisax getzoneid shmctl64 strcasestr ffs vasprintf])
-AC_FUNC_ALLOCA
-dnl Old HAS_* names used in os/*.c.
-AC_CHECK_FUNC([getdtablesize],
-	AC_DEFINE(HAS_GETDTABLESIZE, 1, [Have the 'getdtablesize' function.]))
-AC_CHECK_FUNC([getifaddrs],
-	AC_DEFINE(HAS_GETIFADDRS, 1, [Have the 'getifaddrs' function.]))
-AC_CHECK_FUNC([getpeereid],
-	AC_DEFINE(HAS_GETPEEREID, 1, [Have the 'getpeereid' function.]))
-AC_CHECK_FUNC([getpeerucred],
-	AC_DEFINE(HAS_GETPEERUCRED, 1, [Have the 'getpeerucred' function.]))
-AC_CHECK_FUNC([strlcat], HAVE_STRLCAT=yes, HAVE_STRLCAT=no)
-AM_CONDITIONAL(NEED_STRLCAT, [test x$HAVE_STRLCAT = xno])	
-AC_CHECK_FUNC([strlcpy], AC_DEFINE(HAS_STRLCPY, 1, [Have the 'strlcpy' function]))
+AC_CHECK_FUNCS([backtrace ffs geteuid getuid issetugid getresuid \
+	getdtablesize getifaddrs getpeereid getpeerucred getzoneid \
+	mmap shmctl64 strncasecmp vasprintf vsnprintf walkcontext])
+AC_REPLACE_FUNCS([strcasecmp strcasestr strlcat strlcpy strndup])
 
-AM_CONDITIONAL(NEED_VSNPRINTF, [test x$HAVE_VSNPRINTF = xno])
-
-dnl Check for mmap support for Xvfb
-AC_CHECK_FUNC([mmap], AC_DEFINE(HAS_MMAP, 1, [Have the 'mmap' function.]))
-
-dnl Find the math libary
+dnl Find the math libary, then check for cbrt function in it.
 AC_CHECK_LIB(m, sqrt)
-AC_CHECK_LIB(m, cbrt, AC_DEFINE(HAVE_CBRT, 1, [Have the 'cbrt' function]))
+AC_CHECK_FUNCS([cbrt])
 
 AC_CHECK_HEADERS([ndbm.h dbm.h rpcsvc/dbm.h])
 
@@ -790,6 +771,20 @@ VIDMODEPROTO="xf86vidmodeproto >= 2.2.99.1"
 WINDOWSWMPROTO="windowswmproto"
 APPLEWMPROTO="applewmproto >= 1.4"
 
+dnl Required modules
+XPROTO="xproto >= 7.0.22"
+RANDRPROTO="randrproto >= 1.2.99.3"
+RENDERPROTO="renderproto >= 0.11"
+XEXTPROTO="xextproto >= 7.1.99"
+INPUTPROTO="inputproto >= 2.0.99.1"
+KBPROTO="kbproto >= 1.0.3"
+FONTSPROTO="fontsproto"
+FIXESPROTO="fixesproto >= 5.0"
+DAMAGEPROTO="damageproto >= 1.1"
+XCMISCPROTO="xcmiscproto >= 1.2.0"
+BIGREQSPROTO="bigreqsproto >= 1.1.0"
+XTRANS="xtrans >= 1.2.2"
+
 dnl List of libraries that require a specific version
 LIBAPPLEWM="applewm >= 1.4"
 LIBDMX="dmx >= 1.0.99.1"
@@ -812,11 +807,11 @@ PKG_CHECK_MODULES(PIXMAN, $LIBPIXMAN)
 REQUIRED_LIBS="$REQUIRED_LIBS $LIBPIXMAN $LIBXFONT xau"
 
 dnl Core modules for most extensions, et al.
-SDK_REQUIRED_MODULES="[xproto >= 7.0.22] [randrproto >= 1.2.99.3] [renderproto >= 0.11] [xextproto >= 7.1.99] [inputproto >= 2.0.99.1] [kbproto >= 1.0.3] fontsproto $LIBPIXMAN"
+SDK_REQUIRED_MODULES="$XPROTO $RANDRPROTO $RENDERPROTO $XEXTPROTO $INPUTPROTO $KBPROTO $FONTSPROTO $LIBPIXMAN"
 # Make SDK_REQUIRED_MODULES available for inclusion in xorg-server.pc
 AC_SUBST(SDK_REQUIRED_MODULES)
 
-REQUIRED_MODULES="[fixesproto >= 5.0] [damageproto >= 1.1] [xcmiscproto >= 1.2.0] [xtrans >= 1.2.2] [bigreqsproto >= 1.1.0] $SDK_REQUIRED_MODULES"
+REQUIRED_MODULES="$FIXESPROTO $DAMAGEPROTO $XCMISCPROTO $XTRANS $BIGREQSPROTO $SDK_REQUIRED_MODULES"
 
 if test "x$CONFIG_UDEV" = xyes &&
  { test "x$CONFIG_DBUS_API" = xyes || test "x$CONFIG_HAL" = xyes; }; then
@@ -1239,13 +1234,6 @@ XKB_LIB='$(top_builddir)/xkb/libxkb.la'
 XKB_STUB_LIB='$(top_builddir)/xkb/libxkbstubs.la'
 REQUIRED_MODULES="$REQUIRED_MODULES xkbfile"
 
-AC_CHECK_FUNC(strcasecmp, [], AC_DEFINE([NEED_STRCASECMP], 1,
-                                        [Do not have 'strcasecmp'.]))
-AC_CHECK_FUNC(strncasecmp, [], AC_DEFINE([NEED_STRNCASECMP], 1,
-                                        [Do not have 'strncasecmp'.]))
-AC_CHECK_FUNC(strcasestr, [], AC_DEFINE([NEED_STRCASESTR], 1,
-                                       [Do not have 'strcasestr'.]))
-
 PKG_CHECK_MODULES([XDMCP], [xdmcp], [have_libxdmcp="yes"], [have_libxdmcp="no"])
 if test "x$have_libxdmcp" = xyes; then
 	AC_CHECK_LIB(Xdmcp, XdmcpWrap, [have_xdmcpwrap="yes"], [have_xdmcpwrap="no"], [$XDMCP_LIBS])
@@ -1556,7 +1544,8 @@ if test "x$XORG" = xyes; then
 	    fi
 	    if test x$have_visibility != xno; then
 		save_CFLAGS="$CFLAGS"
-		CFLAGS="$CFLAGS $VISIBILITY_CFLAGS"
+		proto_inc=`$PKG_CONFIG --cflags xproto`
+		CFLAGS="$CFLAGS $VISIBILITY_CFLAGS $proto_inc"
 		AC_TRY_COMPILE(
 		    [#include <X11/Xfuncproto.h>
 		     extern _X_HIDDEN int hidden_int;

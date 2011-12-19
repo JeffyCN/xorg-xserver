@@ -148,7 +148,7 @@ static void dix_check_grab_values(void)
 
     memset(&client, 0, sizeof(client));
 
-    param.grabtype = GRABTYPE_CORE;
+    param.grabtype = CORE;
     param.this_device_mode = GrabModeSync;
     param.other_devices_mode = GrabModeSync;
     param.modifiers = AnyModifier;
@@ -531,22 +531,22 @@ static void dix_grab_matching(void)
     memset(&b, 0, sizeof(b));
 
     /* different grabtypes must fail */
-    a.grabtype = GRABTYPE_CORE;
-    b.grabtype = GRABTYPE_XI2;
+    a.grabtype = CORE;
+    b.grabtype = XI2;
     rc = GrabMatchesSecond(&a, &b, FALSE);
     assert(rc == FALSE);
     rc = GrabMatchesSecond(&b, &a, FALSE);
     assert(rc == FALSE);
 
-    a.grabtype = GRABTYPE_XI;
-    b.grabtype = GRABTYPE_XI2;
+    a.grabtype = XI;
+    b.grabtype = XI2;
     rc = GrabMatchesSecond(&a, &b, FALSE);
     assert(rc == FALSE);
     rc = GrabMatchesSecond(&b, &a, FALSE);
     assert(rc == FALSE);
 
-    a.grabtype = GRABTYPE_XI;
-    b.grabtype = GRABTYPE_CORE;
+    a.grabtype = XI;
+    b.grabtype = CORE;
     rc = GrabMatchesSecond(&a, &b, FALSE);
     assert(rc == FALSE);
     rc = GrabMatchesSecond(&b, &a, FALSE);
@@ -568,8 +568,8 @@ static void dix_grab_matching(void)
 
     inputInfo.all_devices = &xi_all_devices;
     inputInfo.all_master_devices = &xi_all_master_devices;
-    a.grabtype = GRABTYPE_XI2;
-    b.grabtype = GRABTYPE_XI2;
+    a.grabtype = XI2;
+    b.grabtype = XI2;
     a.device = &dev1;
     b.device = &dev2;
 
@@ -598,8 +598,8 @@ static void dix_grab_matching(void)
     assert(rc == FALSE);
 
     /* ignoreDevice FALSE must fail for different devices for CORE and XI */
-    a.grabtype = GRABTYPE_XI;
-    b.grabtype = GRABTYPE_XI;
+    a.grabtype = XI;
+    b.grabtype = XI;
     a.device = &dev1;
     b.device = &dev2;
     a.modifierDevice = &dev1;
@@ -607,8 +607,8 @@ static void dix_grab_matching(void)
     rc = GrabMatchesSecond(&a, &b, FALSE);
     assert(rc == FALSE);
 
-    a.grabtype = GRABTYPE_CORE;
-    b.grabtype = GRABTYPE_CORE;
+    a.grabtype = CORE;
+    b.grabtype = CORE;
     a.device = &dev1;
     b.device = &dev2;
     a.modifierDevice = &dev1;
@@ -618,8 +618,8 @@ static void dix_grab_matching(void)
 
     /* ignoreDevice FALSE must fail for different modifier devices for CORE
      * and XI */
-    a.grabtype = GRABTYPE_XI;
-    b.grabtype = GRABTYPE_XI;
+    a.grabtype = XI;
+    b.grabtype = XI;
     a.device = &dev1;
     b.device = &dev1;
     a.modifierDevice = &dev1;
@@ -627,8 +627,8 @@ static void dix_grab_matching(void)
     rc = GrabMatchesSecond(&a, &b, FALSE);
     assert(rc == FALSE);
 
-    a.grabtype = GRABTYPE_CORE;
-    b.grabtype = GRABTYPE_CORE;
+    a.grabtype = CORE;
+    b.grabtype = CORE;
     a.device = &dev1;
     b.device = &dev1;
     a.modifierDevice = &dev1;
@@ -637,8 +637,8 @@ static void dix_grab_matching(void)
     assert(rc == FALSE);
 
     /* different event type must fail */
-    a.grabtype = GRABTYPE_XI2;
-    b.grabtype = GRABTYPE_XI2;
+    a.grabtype = XI2;
+    b.grabtype = XI2;
     a.device = &dev1;
     b.device = &dev1;
     a.modifierDevice = &dev1;
@@ -650,8 +650,8 @@ static void dix_grab_matching(void)
     rc = GrabMatchesSecond(&a, &b, TRUE);
     assert(rc == FALSE);
 
-    a.grabtype = GRABTYPE_CORE;
-    b.grabtype = GRABTYPE_CORE;
+    a.grabtype = CORE;
+    b.grabtype = CORE;
     a.device = &dev1;
     b.device = &dev1;
     a.modifierDevice = &dev1;
@@ -663,8 +663,8 @@ static void dix_grab_matching(void)
     rc = GrabMatchesSecond(&a, &b, TRUE);
     assert(rc == FALSE);
 
-    a.grabtype = GRABTYPE_XI;
-    b.grabtype = GRABTYPE_XI;
+    a.grabtype = XI;
+    b.grabtype = XI;
     a.device = &dev1;
     b.device = &dev1;
     a.modifierDevice = &dev1;
@@ -677,8 +677,8 @@ static void dix_grab_matching(void)
     assert(rc == FALSE);
 
     /* different modifiers must fail */
-    a.grabtype = GRABTYPE_XI2;
-    b.grabtype = GRABTYPE_XI2;
+    a.grabtype = XI2;
+    b.grabtype = XI2;
     a.device = &dev1;
     b.device = &dev1;
     a.modifierDevice = &dev1;
@@ -692,23 +692,23 @@ static void dix_grab_matching(void)
     rc = GrabMatchesSecond(&b, &a, FALSE);
     assert(rc == FALSE);
 
-    a.grabtype = GRABTYPE_CORE;
-    b.grabtype = GRABTYPE_CORE;
+    a.grabtype = CORE;
+    b.grabtype = CORE;
     rc = GrabMatchesSecond(&a, &b, FALSE);
     assert(rc == FALSE);
     rc = GrabMatchesSecond(&b, &a, FALSE);
     assert(rc == FALSE);
 
-    a.grabtype = GRABTYPE_XI;
-    b.grabtype = GRABTYPE_XI;
+    a.grabtype = XI;
+    b.grabtype = XI;
     rc = GrabMatchesSecond(&a, &b, FALSE);
     assert(rc == FALSE);
     rc = GrabMatchesSecond(&b, &a, FALSE);
     assert(rc == FALSE);
 
     /* AnyModifier must fail for XI2 */
-    a.grabtype = GRABTYPE_XI2;
-    b.grabtype = GRABTYPE_XI2;
+    a.grabtype = XI2;
+    b.grabtype = XI2;
     a.modifiersDetail.exact = AnyModifier;
     b.modifiersDetail.exact = 1;
     rc = GrabMatchesSecond(&a, &b, FALSE);
@@ -717,8 +717,8 @@ static void dix_grab_matching(void)
     assert(rc == FALSE);
 
     /* XIAnyModifier must fail for CORE and XI */
-    a.grabtype = GRABTYPE_XI;
-    b.grabtype = GRABTYPE_XI;
+    a.grabtype = XI;
+    b.grabtype = XI;
     a.modifiersDetail.exact = XIAnyModifier;
     b.modifiersDetail.exact = 1;
     rc = GrabMatchesSecond(&a, &b, FALSE);
@@ -726,8 +726,8 @@ static void dix_grab_matching(void)
     rc = GrabMatchesSecond(&b, &a, FALSE);
     assert(rc == FALSE);
 
-    a.grabtype = GRABTYPE_CORE;
-    b.grabtype = GRABTYPE_CORE;
+    a.grabtype = CORE;
+    b.grabtype = CORE;
     a.modifiersDetail.exact = XIAnyModifier;
     b.modifiersDetail.exact = 1;
     rc = GrabMatchesSecond(&a, &b, FALSE);
@@ -736,8 +736,8 @@ static void dix_grab_matching(void)
     assert(rc == FALSE);
 
     /* different detail must fail */
-    a.grabtype = GRABTYPE_XI2;
-    b.grabtype = GRABTYPE_XI2;
+    a.grabtype = XI2;
+    b.grabtype = XI2;
     a.detail.exact = 1;
     b.detail.exact = 2;
     a.modifiersDetail.exact = 1;
@@ -747,23 +747,23 @@ static void dix_grab_matching(void)
     rc = GrabMatchesSecond(&b, &a, FALSE);
     assert(rc == FALSE);
 
-    a.grabtype = GRABTYPE_XI;
-    b.grabtype = GRABTYPE_XI;
+    a.grabtype = XI;
+    b.grabtype = XI;
     rc = GrabMatchesSecond(&a, &b, FALSE);
     assert(rc == FALSE);
     rc = GrabMatchesSecond(&b, &a, FALSE);
     assert(rc == FALSE);
 
-    a.grabtype = GRABTYPE_CORE;
-    b.grabtype = GRABTYPE_CORE;
+    a.grabtype = CORE;
+    b.grabtype = CORE;
     rc = GrabMatchesSecond(&a, &b, FALSE);
     assert(rc == FALSE);
     rc = GrabMatchesSecond(&b, &a, FALSE);
     assert(rc == FALSE);
 
     /* detail of AnyModifier must fail */
-    a.grabtype = GRABTYPE_XI2;
-    b.grabtype = GRABTYPE_XI2;
+    a.grabtype = XI2;
+    b.grabtype = XI2;
     a.detail.exact = AnyModifier;
     b.detail.exact = 1;
     a.modifiersDetail.exact = 1;
@@ -773,23 +773,23 @@ static void dix_grab_matching(void)
     rc = GrabMatchesSecond(&b, &a, FALSE);
     assert(rc == FALSE);
 
-    a.grabtype = GRABTYPE_CORE;
-    b.grabtype = GRABTYPE_CORE;
+    a.grabtype = CORE;
+    b.grabtype = CORE;
     rc = GrabMatchesSecond(&a, &b, FALSE);
     assert(rc == FALSE);
     rc = GrabMatchesSecond(&b, &a, FALSE);
     assert(rc == FALSE);
 
-    a.grabtype = GRABTYPE_XI;
-    b.grabtype = GRABTYPE_XI;
+    a.grabtype = XI;
+    b.grabtype = XI;
     rc = GrabMatchesSecond(&a, &b, FALSE);
     assert(rc == FALSE);
     rc = GrabMatchesSecond(&b, &a, FALSE);
     assert(rc == FALSE);
 
     /* detail of XIAnyModifier must fail */
-    a.grabtype = GRABTYPE_XI2;
-    b.grabtype = GRABTYPE_XI2;
+    a.grabtype = XI2;
+    b.grabtype = XI2;
     a.detail.exact = XIAnyModifier;
     b.detail.exact = 1;
     a.modifiersDetail.exact = 1;
@@ -799,23 +799,23 @@ static void dix_grab_matching(void)
     rc = GrabMatchesSecond(&b, &a, FALSE);
     assert(rc == FALSE);
 
-    a.grabtype = GRABTYPE_CORE;
-    b.grabtype = GRABTYPE_CORE;
+    a.grabtype = CORE;
+    b.grabtype = CORE;
     rc = GrabMatchesSecond(&a, &b, FALSE);
     assert(rc == FALSE);
     rc = GrabMatchesSecond(&b, &a, FALSE);
     assert(rc == FALSE);
 
-    a.grabtype = GRABTYPE_XI;
-    b.grabtype = GRABTYPE_XI;
+    a.grabtype = XI;
+    b.grabtype = XI;
     rc = GrabMatchesSecond(&a, &b, FALSE);
     assert(rc == FALSE);
     rc = GrabMatchesSecond(&b, &a, FALSE);
     assert(rc == FALSE);
 
     /* XIAnyModifier or AnyModifer must succeed */
-    a.grabtype = GRABTYPE_XI2;
-    b.grabtype = GRABTYPE_XI2;
+    a.grabtype = XI2;
+    b.grabtype = XI2;
     a.detail.exact = 1;
     b.detail.exact = 1;
     a.modifiersDetail.exact = XIAnyModifier;
@@ -825,8 +825,8 @@ static void dix_grab_matching(void)
     rc = GrabMatchesSecond(&b, &a, FALSE);
     assert(rc == TRUE);
 
-    a.grabtype = GRABTYPE_CORE;
-    b.grabtype = GRABTYPE_CORE;
+    a.grabtype = CORE;
+    b.grabtype = CORE;
     a.detail.exact = 1;
     b.detail.exact = 1;
     a.modifiersDetail.exact = AnyModifier;
@@ -836,8 +836,8 @@ static void dix_grab_matching(void)
     rc = GrabMatchesSecond(&b, &a, FALSE);
     assert(rc == TRUE);
 
-    a.grabtype = GRABTYPE_XI;
-    b.grabtype = GRABTYPE_XI;
+    a.grabtype = XI;
+    b.grabtype = XI;
     a.detail.exact = 1;
     b.detail.exact = 1;
     a.modifiersDetail.exact = AnyModifier;
@@ -848,8 +848,8 @@ static void dix_grab_matching(void)
     assert(rc == TRUE);
 
     /* AnyKey or XIAnyKeycode must succeed */
-    a.grabtype = GRABTYPE_XI2;
-    b.grabtype = GRABTYPE_XI2;
+    a.grabtype = XI2;
+    b.grabtype = XI2;
     a.detail.exact = XIAnyKeycode;
     b.detail.exact = 1;
     a.modifiersDetail.exact = 1;
@@ -859,8 +859,8 @@ static void dix_grab_matching(void)
     rc = GrabMatchesSecond(&b, &a, FALSE);
     assert(rc == TRUE);
 
-    a.grabtype = GRABTYPE_CORE;
-    b.grabtype = GRABTYPE_CORE;
+    a.grabtype = CORE;
+    b.grabtype = CORE;
     a.detail.exact = AnyKey;
     b.detail.exact = 1;
     a.modifiersDetail.exact = 1;
@@ -870,8 +870,8 @@ static void dix_grab_matching(void)
     rc = GrabMatchesSecond(&b, &a, FALSE);
     assert(rc == TRUE);
 
-    a.grabtype = GRABTYPE_XI;
-    b.grabtype = GRABTYPE_XI;
+    a.grabtype = XI;
+    b.grabtype = XI;
     a.detail.exact = AnyKey;
     b.detail.exact = 1;
     a.modifiersDetail.exact = 1;
@@ -1674,8 +1674,75 @@ mieq_test(void) {
     mieqFini();
 }
 
+/* Simple check that we're replaying events in-order */
+static void
+process_input_proc(InternalEvent *ev, DeviceIntPtr device)
+{
+    static int last_evtype = -1;
+
+    if (ev->any.header == 0xac)
+        last_evtype = -1;
+
+    assert(ev->any.type == ++last_evtype);
+}
+
+static void
+dix_enqueue_events(void) {
+#define NEVENTS 5
+    DeviceIntRec dev;
+    InternalEvent ev[NEVENTS];
+    SpriteInfoRec spriteInfo;
+    SpriteRec sprite;
+    QdEventPtr qe;
+    int i;
+
+    memset(&dev, 0, sizeof(dev));
+    dev.public.processInputProc = process_input_proc;
+
+    memset(&spriteInfo, 0, sizeof(spriteInfo));
+    memset(&sprite, 0, sizeof(sprite));
+    dev.spriteInfo = &spriteInfo;
+    spriteInfo.sprite = &sprite;
+
+    InitEvents();
+    assert(list_is_empty(&syncEvents.pending));
+
+    /* this way PlayReleasedEvents really runs through all events in the
+     * queue */
+    inputInfo.devices = &dev;
+
+    /* to reset process_input_proc */
+    ev[0].any.header = 0xac;
+
+    for (i = 0; i < NEVENTS; i++)
+    {
+        ev[i].any.length = sizeof(*ev);
+        ev[i].any.type = i;
+        EnqueueEvent(&ev[i], &dev);
+        assert(!list_is_empty(&syncEvents.pending));
+        qe = list_last_entry(&syncEvents.pending, QdEventRec, next);
+        assert(memcmp(qe->event, &ev[i], ev[i].any.length) == 0);
+        qe = list_first_entry(&syncEvents.pending, QdEventRec, next);
+        assert(memcmp(qe->event, &ev[0], ev[i].any.length) == 0);
+    }
+
+    /* calls process_input_proc */
+    dev.deviceGrab.sync.frozen = 1;
+    PlayReleasedEvents();
+    assert(!list_is_empty(&syncEvents.pending));
+
+
+    dev.deviceGrab.sync.frozen = 0;
+    PlayReleasedEvents();
+    assert(list_is_empty(&syncEvents.pending));
+
+    inputInfo.devices = NULL;
+}
+
+
 int main(int argc, char** argv)
 {
+    dix_enqueue_events();
     dix_double_fp_conversion();
     dix_input_valuator_masks();
     dix_input_attributes();

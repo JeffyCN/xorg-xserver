@@ -89,6 +89,8 @@ OF THIS SOFTWARE.
 #define MAXFORMATS	8
 #define MAXDEVICES	40 /* input devices */
 
+/* 128 event opcodes for core + extension events, excluding GE */
+#define MAXEVENTS       128
 #define EXTENSION_EVENT_BASE 64
 #define EXTENSION_BASE 128
 
@@ -269,7 +271,7 @@ static inline void wrong_size(void)
 }
 #endif
 
-#if !(defined(__GNUC__) || (defined(__SUNPRO_C) && (__SUNPRO_C < 0x590)))
+#if !(defined(__GNUC__) || (defined(__SUNPRO_C) && (__SUNPRO_C >= 0x590)))
 static inline int __builtin_constant_p(int x)
 {
 	return 0;
@@ -358,5 +360,19 @@ typedef struct _CharInfo *CharInfoPtr; /* also in fonts/include/font.h */
 
 extern _X_EXPORT unsigned long globalSerialNumber;
 extern _X_EXPORT unsigned long serverGeneration;
+
+/* Don't use this directly, use BUG_WARN or BUG_WARN_MSG instead */
+#define __BUG_WARN_MSG(cond, with_msg, ...)                                \
+          do { if (cond) {                                                \
+              ErrorF("BUG: triggered 'if (" #cond ")'\nBUG: %s:%d in %s()\n",     \
+                      __FILE__, __LINE__, __func__);                      \
+              if (with_msg) ErrorF(__VA_ARGS__);                          \
+              xorg_backtrace();                                           \
+          } } while(0)
+
+#define BUG_WARN_MSG(cond, msg, ...)                                      \
+          __BUG_WARN_MSG(cond, 1, msg, __VA_ARGS__)
+
+#define BUG_WARN(cond)  __BUG_WARN_MSG(cond, 0, NULL)
 
 #endif /* MISC_H */

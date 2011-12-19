@@ -160,7 +160,7 @@ xf86parseFlagsSection (void)
 			break;
 
 		case EOF_TOKEN:
-			Error (UNEXPECTED_EOF_MSG, NULL);
+			Error (UNEXPECTED_EOF_MSG);
 			break;
 		default:
 			Error (INVALID_KEYWORD_MSG, xf86tokenString ());
@@ -330,7 +330,7 @@ xf86findOption (XF86OptionPtr list, const char *name)
  * returned.  If the option is not found, a NULL is returned.
  */
 
-char *
+const char *
 xf86findOptionValue (XF86OptionPtr list, const char *name)
 {
 	XF86OptionPtr p = xf86findOption (list, name);
@@ -440,7 +440,7 @@ xf86parseOption(XF86OptionPtr head)
 	int token;
 
 	if ((token = xf86getSubToken(&comment)) != STRING) {
-		xf86parseError(BAD_OPTION_MSG, NULL);
+		xf86parseError(BAD_OPTION_MSG);
 		free(comment);
 		return head;
 	}

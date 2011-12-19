@@ -60,7 +60,7 @@
 #define X_INCLUDE_NETDB_H
 #include <X11/Xos_r.h>
 
-static char *defaultDisplayClass = COMPILEDDISPLAYCLASS;
+static const char *defaultDisplayClass = COMPILEDDISPLAYCLASS;
 
 static int		    xdmcpSocket, sessionSocket;
 static xdmcp_states	    state;
@@ -479,7 +479,7 @@ XdmcpRegisterConnection (
 	    if (SOCKADDR_FAMILY(FromAddress) == AF_INET6) {
 		fromAddr = &((struct sockaddr_in6 *)&FromAddress)->sin6_addr;
 	    } else if ((SOCKADDR_FAMILY(FromAddress) == AF_INET) &&
-	      IN6_IS_ADDR_V4MAPPED((struct in6_addr *) address)) {
+	      IN6_IS_ADDR_V4MAPPED((const struct in6_addr *) address)) {
 		fromAddr = &((struct sockaddr_in *)&FromAddress)->sin_addr;
 		regAddr = &((struct sockaddr_in6 *)&address)->sin6_addr.s6_addr[12];
 		regAddrlen = sizeof(struct in_addr);
@@ -1489,7 +1489,7 @@ get_addr_by_name(
     if (port == 0) {
 	pport = NULL;
     } else if (port > 0 && port < 65535) {
-	sprintf(portstr, "%d", port);
+	snprintf(portstr, sizeof(portstr), "%d", port);
     } else {
 	FatalError("Xserver: port out of range: %d\n", port);
     }
@@ -1593,7 +1593,7 @@ get_fromaddr_by_name(
 static int
 get_mcast_options(int argc, char **argv, int i)
 {
-    char *address = XDM_DEFAULT_MCAST_ADDR6;
+    const char *address = XDM_DEFAULT_MCAST_ADDR6;
     int hopcount = 1;
     struct addrinfo hints;
     char portstr[6];
@@ -1612,7 +1612,7 @@ get_mcast_options(int argc, char **argv, int i)
     }
 
     if (xdm_udp_port > 0 && xdm_udp_port < 65535) {
-	sprintf(portstr, "%d", xdm_udp_port);
+	snprintf(portstr, sizeof(portstr), "%d", xdm_udp_port);
     } else {
 	FatalError("Xserver: port out of range: %d\n", xdm_udp_port);
     }

@@ -127,7 +127,7 @@ extern _X_EXPORT void CloseWellKnownConnections(void);
 
 extern _X_EXPORT XID AuthorizationIDOfClient(ClientPtr /*client*/);
 
-extern _X_EXPORT char *ClientAuthorized(
+extern _X_EXPORT const char *ClientAuthorized(
     ClientPtr /*client*/,
     unsigned int /*proto_n*/,
     char* /*auth_proto*/,
@@ -307,10 +307,10 @@ extern _X_EXPORT void OsReleaseSignals (void);
 extern _X_EXPORT void OsAbort (void) _X_NORETURN;
 
 #if !defined(WIN32)
-extern _X_EXPORT int System(char *);
-extern _X_EXPORT pointer Popen(char *, char *);
+extern _X_EXPORT int System(const char *);
+extern _X_EXPORT pointer Popen(const char *, const char *);
 extern _X_EXPORT int Pclose(pointer);
-extern _X_EXPORT pointer Fopen(char *, char *);
+extern _X_EXPORT pointer Fopen(const char *, const char *);
 extern _X_EXPORT int Fclose(pointer);
 #else
 #define System(a) system(a)
@@ -405,7 +405,7 @@ extern _X_EXPORT void InitAuthorization(char * /*filename*/);
 extern _X_EXPORT int AuthorizationFromID (
 	XID 		id,
 	unsigned short	*name_lenp,
-	char		**namep,
+	const char	**namep,
 	unsigned short	*data_lenp,
 	char		**datap);
 
@@ -415,7 +415,7 @@ extern _X_EXPORT XID CheckAuthorization(
     unsigned int /*datalength*/,
     const char * /*data*/,
     ClientPtr /*client*/,
-    char ** /*reason*/
+    const char ** /*reason*/
 );
 
 extern _X_EXPORT void ResetAuthorization(void);
@@ -472,24 +472,28 @@ extern _X_EXPORT void ddxGiveUp(enum ExitCode error);
 extern _X_EXPORT int TimeSinceLastInputEvent(void);
 
 /* strcasecmp.c */
-#if NEED_STRCASECMP
+#ifndef HAVE_STRCASECMP
 #define strcasecmp xstrcasecmp
 extern _X_EXPORT int xstrcasecmp(const char *s1, const char *s2);
 #endif
 
-#if NEED_STRNCASECMP
+#ifndef HAVE_STRNCASECMP
 #define strncasecmp xstrncasecmp
 extern _X_EXPORT int xstrncasecmp(const char *s1, const char *s2, size_t n);
 #endif
 
-#if NEED_STRCASESTR
+#ifndef HAVE_STRCASESTR
 #define strcasestr xstrcasestr
 extern _X_EXPORT char *xstrcasestr(const char *s, const char *find);
 #endif
 
-#ifndef HAS_STRLCPY
+#ifndef HAVE_STRLCPY
 extern _X_EXPORT size_t strlcpy(char *dst, const char *src, size_t siz);
 extern _X_EXPORT size_t strlcat(char *dst, const char *src, size_t siz);
+#endif
+
+#ifndef HAVE_STRNDUP
+extern _X_EXPORT char * strndup(const char *str, size_t n);
 #endif
 
 /* Logging. */

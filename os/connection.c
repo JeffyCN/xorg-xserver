@@ -114,7 +114,7 @@ SOFTWARE.
 #define Pid_t pid_t
 
 
-#ifdef HAS_GETPEERUCRED
+#ifdef HAVE_GETPEERUCRED
 # include <ucred.h>
 # include <zone.h>
 #endif
@@ -122,7 +122,7 @@ SOFTWARE.
 #ifdef XSERVER_DTRACE
 # include <sys/types.h>
 typedef const char *string;
-# ifndef HAS_GETPEERUCRED
+# ifndef HAVE_GETPEERUCRED
 #  define zoneid_t int
 # endif
 # include "../dix/Xserver-dtrace.h"
@@ -282,7 +282,7 @@ InitConnectionLimits(void)
     lastfdesc = sysconf(_SC_OPEN_MAX) - 1;
 #endif
 
-#ifdef HAS_GETDTABLESIZE
+#ifdef HAVE_GETDTABLESIZE
     if (lastfdesc < 0)
 	lastfdesc = getdtablesize() - 1;
 #endif
@@ -386,7 +386,7 @@ CreateWellKnownSockets(void)
 
     FD_ZERO (&WellKnownConnections);
 
-    sprintf (port, "%d", atoi (display));
+    snprintf (port, sizeof(port), "%d", atoi (display));
 
     if ((_XSERVTransMakeAllCOTSServerListeners (port, &partial,
 	&ListenTransCount, &ListenTransConns) >= 0) &&
@@ -499,7 +499,6 @@ AuthAudit (ClientPtr client, Bool letin,
     unsigned int proto_n, char *auth_proto, int auth_id)
 {
     char addr[128];
-    char *out = addr;
     char client_uid_string[64];
     LocalClientCredRec *lcc;
 #ifdef XSERVER_DTRACE
@@ -508,7 +507,7 @@ AuthAudit (ClientPtr client, Bool letin,
 #endif
 
     if (!len)
-        strcpy(out, "local host");
+        strlcpy(addr, "local host", sizeof(addr));
     else
 	switch (saddr->sa_family)
 	{
@@ -516,11 +515,11 @@ AuthAudit (ClientPtr client, Bool letin,
 #if defined(UNIXCONN) || defined(LOCALCONN)
 	case AF_UNIX:
 #endif
-	    strcpy(out, "local host");
+	    strlcpy(addr, "local host", sizeof(addr));
 	    break;
 #if defined(TCPCONN) || defined(STREAMSCONN)
 	case AF_INET:
-	    sprintf(out, "IP %s",
+	    snprintf(addr, sizeof(addr), "IP %s",
 		inet_ntoa(((struct sockaddr_in *) saddr)->sin_addr));
 	    break;
 #if defined(IPv6) && defined(AF_INET6)
@@ -528,13 +527,13 @@ AuthAudit (ClientPtr client, Bool letin,
 	    char ipaddr[INET6_ADDRSTRLEN];
 	    inet_ntop(AF_INET6, &((struct sockaddr_in6 *) saddr)->sin6_addr,
 	      ipaddr, sizeof(ipaddr));
-	    sprintf(out, "IP %s", ipaddr);
+	    snprintf(addr, sizeof(addr), "IP %s", ipaddr);
 	}
 	    break;
 #endif
 #endif
 	default:
-	    strcpy(out, "unknown address");
+	    strlcpy(addr, "unknown address", sizeof(addr));
 	}
 
     if (GetLocalClientCreds(client, &lcc) != -1) {
@@ -630,7 +629,7 @@ AuthorizationIDOfClient(ClientPtr client)
  *
  *****************************************************************/
 
-char *
+const char *
 ClientAuthorized(ClientPtr client, 
     unsigned int proto_n, char *auth_proto, 
     unsigned int string_n, char *auth_string)
@@ -640,7 +639,7 @@ ClientAuthorized(ClientPtr client,
     int 		family;
     int			fromlen;
     XID	 		auth_id;
-    char	 	*reason = NULL;
+    const char	 	*reason = NULL;
     XtransConnInfo	trans_conn;
 
     priv = (OsCommPtr)client->osPrivate;
@@ -1267,7 +1266,7 @@ void ListenOnOpenFD(int fd, int noxauth) {
         strcpy(port, display_env);
     } else {
         /* Just some default so things don't break and die. */
-        sprintf(port, ":%d", atoi(display));
+        snprintf(port, sizeof(port), ":%d", atoi(display));
     }
 
     /* Make our XtransConnInfo

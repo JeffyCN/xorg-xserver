@@ -704,6 +704,55 @@ ChangeMasterDeviceClasses(DeviceIntPtr device, DeviceChangedEvent *dce)
 }
 
 /**
+ * Add state and motionMask to the filter for this event. The protocol
+ * supports some extra masks for motion when a button is down:
+ * ButtonXMotionMask and the DeviceButtonMotionMask to trigger only when at
+ * least one button (or that specific button is down). These masks need to
+ * be added to the filters for core/XI motion events.
+ *
+ * @param device The device to update the mask for
+ * @param state The current button state mask
+ * @param motion_mask The motion mask (DeviceButtonMotionMask or 0)
+ */
+static void
+UpdateDeviceMotionMask(DeviceIntPtr device, unsigned short state,
+                       Mask motion_mask)
+{
+    Mask mask;
+
+    mask = DevicePointerMotionMask | state | motion_mask;
+    SetMaskForEvent(device->id, mask, DeviceMotionNotify);
+    mask = PointerMotionMask | state | motion_mask;
+    SetMaskForEvent(device->id, mask, MotionNotify);
+}
+
+static void
+IncreaseButtonCount(DeviceIntPtr dev, int key, CARD8 *buttons_down,
+                    Mask *motion_mask, unsigned short *state)
+{
+    if (dev->valuator)
+        dev->valuator->motionHintWindow = NullWindow;
+
+    (*buttons_down)++;
+    *motion_mask = DeviceButtonMotionMask;
+    if (dev->button->map[key] <= 5)
+        *state |= (Button1Mask >> 1) << dev->button->map[key];
+}
+
+static void
+DecreaseButtonCount(DeviceIntPtr dev, int key, CARD8 *buttons_down,
+                    Mask *motion_mask, unsigned short *state)
+{
+    if (dev->valuator)
+        dev->valuator->motionHintWindow = NullWindow;
+
+    if (*buttons_down >= 1 && !--(*buttons_down))
+        *motion_mask = 0;
+    if (dev->button->map[key] <= 5)
+        *state &= ~((Button1Mask >> 1) << dev->button->map[key]);
+}
+
+/**
  * Update the device state according to the data in the event.
  *
  * return values are
@@ -801,7 +850,6 @@ UpdateDeviceState(DeviceIntPtr device, DeviceEvent* event)
 	    device->valuator->motionHintWindow = NullWindow;
 	set_key_up(device, key, KEY_PROCESSED);
     } else if (event->type == ET_ButtonPress) {
-        Mask mask;
         if (!b)
             return DONT_PROCESS;
 
@@ -809,22 +857,13 @@ UpdateDeviceState(DeviceIntPtr device, DeviceEvent* event)
             return DONT_PROCESS;
 
         set_button_down(device, key, BUTTON_PROCESSED);
-	if (device->valuator)
-	    device->valuator->motionHintWindow = NullWindow;
+
         if (!b->map[key])
             return DONT_PROCESS;
-        b->buttonsDown++;
-	b->motionMask = DeviceButtonMotionMask;
-        if (b->map[key] <= 5)
-	    b->state |= (Button1Mask >> 1) << b->map[key];
 
-        /* Add state and motionMask to the filter for this event */
-        mask = DevicePointerMotionMask | b->state | b->motionMask;
-        SetMaskForEvent(device->id, mask, DeviceMotionNotify);
-        mask = PointerMotionMask | b->state | b->motionMask;
-        SetMaskForEvent(device->id, mask, MotionNotify);
+        IncreaseButtonCount(device, key, &b->buttonsDown, &b->motionMask, &b->state);
+        UpdateDeviceMotionMask(device, b->state, b->motionMask);
     } else if (event->type == ET_ButtonRelease) {
-        Mask mask;
         if (!b)
             return DONT_PROCESS;
 
@@ -850,20 +889,11 @@ UpdateDeviceState(DeviceIntPtr device, DeviceEvent* event)
             }
         }
         set_button_up(device, key, BUTTON_PROCESSED);
-	if (device->valuator)
-	    device->valuator->motionHintWindow = NullWindow;
         if (!b->map[key])
             return DONT_PROCESS;
-        if (b->buttonsDown >= 1 && !--b->buttonsDown)
-	    b->motionMask = 0;
-	if (b->map[key] <= 5)
-	    b->state &= ~((Button1Mask >> 1) << b->map[key]);
 
-        /* Add state and motionMask to the filter for this event */
-        mask = DevicePointerMotionMask | b->state | b->motionMask;
-        SetMaskForEvent(device->id, mask, DeviceMotionNotify);
-        mask = PointerMotionMask | b->state | b->motionMask;
-        SetMaskForEvent(device->id, mask, MotionNotify);
+        DecreaseButtonCount(device, key, &b->buttonsDown, &b->motionMask, &b->state);
+        UpdateDeviceMotionMask(device,  b->state, b->motionMask);
     } else if (event->type == ET_ProximityIn)
 	device->proximity->in_proximity = TRUE;
     else if (event->type == ET_ProximityOut)
@@ -885,7 +915,7 @@ ProcessOtherEvent(InternalEvent *ev, DeviceIntPtr device)
     int key = 0, rootX, rootY;
     ButtonClassPtr b;
     int ret = 0;
-    int state, i;
+    int corestate;
     DeviceIntPtr mouse = NULL, kbd = NULL;
     DeviceEvent *event = &ev->device_event;
 
@@ -915,33 +945,8 @@ ProcessOtherEvent(InternalEvent *ev, DeviceIntPtr device)
             mouse = NULL;
     }
 
-    /* State needs to be assembled BEFORE the device is updated. */
-    state = (kbd && kbd->key) ? XkbStateFieldFromRec(&kbd->key->xkbInfo->state) : 0;
-    state |= (mouse && mouse->button) ? (mouse->button->state) : 0;
-
-    for (i = 0; mouse && mouse->button && i < mouse->button->numButtons; i++)
-        if (BitIsOn(mouse->button->down, i))
-            SetBit(event->buttons, i);
-
-    if (kbd && kbd->key)
-    {
-        XkbStatePtr state;
-        /* we need the state before the event happens */
-        if (event->type == ET_KeyPress || event->type == ET_KeyRelease)
-            state = &kbd->key->xkbInfo->prev_state;
-        else
-            state = &kbd->key->xkbInfo->state;
-
-        event->mods.base = state->base_mods;
-        event->mods.latched = state->latched_mods;
-        event->mods.locked = state->locked_mods;
-        event->mods.effective = state->mods;
-
-        event->group.base = state->base_group;
-        event->group.latched = state->latched_group;
-        event->group.locked = state->locked_group;
-        event->group.effective = state->group;
-    }
+    corestate = event_get_corestate(mouse, kbd);
+    event_set_state(mouse, kbd, event);
 
     ret = UpdateDeviceState(device, event);
     if (ret == DONT_PROCESS)
@@ -965,7 +970,7 @@ ProcessOtherEvent(InternalEvent *ev, DeviceIntPtr device)
             event->root_x = rootX;
             event->root_y = rootY;
             NoticeEventTime((InternalEvent*)event);
-            event->corestate = state;
+            event->corestate = corestate;
             key = event->detail.key;
             break;
         default:
@@ -996,17 +1001,13 @@ ProcessOtherEvent(InternalEvent *ev, DeviceIntPtr device)
         case ET_KeyRelease:
             if (grab && device->deviceGrab.fromPassiveGrab &&
                 (key == device->deviceGrab.activatingKey) &&
-                (device->deviceGrab.grab->type == KeyPress ||
-                 device->deviceGrab.grab->type == DeviceKeyPress ||
-                 device->deviceGrab.grab->type == XI_KeyPress))
+                GrabIsKeyboardGrab(device->deviceGrab.grab))
                 deactivateDeviceGrab = TRUE;
             break;
         case ET_ButtonPress:
-            event->detail.button = b->map[key];
-            if (!event->detail.button) { /* there's no button 0 */
-                event->detail.button = key;
+            if (b->map[key] == 0) /* there's no button 0 */
                 return;
-            }
+            event->detail.button = b->map[key];
             if (!grab && CheckDeviceGrabs(device, event, 0))
             {
                 /* if a passive grab was activated, the event has been sent
@@ -1015,16 +1016,12 @@ ProcessOtherEvent(InternalEvent *ev, DeviceIntPtr device)
             }
             break;
         case ET_ButtonRelease:
-            event->detail.button = b->map[key];
-            if (!event->detail.button) { /* there's no button 0 */
-                event->detail.button = key;
+            if (b->map[key] == 0) /* there's no button 0 */
                 return;
-            }
+            event->detail.button = b->map[key];
             if (grab && !b->buttonsDown &&
                 device->deviceGrab.fromPassiveGrab &&
-                (device->deviceGrab.grab->type == ButtonPress ||
-                 device->deviceGrab.grab->type == DeviceButtonPress ||
-                 device->deviceGrab.grab->type == XI_ButtonPress))
+                GrabIsPointerGrab(device->deviceGrab.grab))
                 deactivateDeviceGrab = TRUE;
         default:
             break;
@@ -1033,7 +1030,7 @@ ProcessOtherEvent(InternalEvent *ev, DeviceIntPtr device)
 
     if (grab)
         DeliverGrabbedEvent((InternalEvent*)event, device, deactivateDeviceGrab);
-    else if (device->focus && !IsPointerEvent((InternalEvent*)ev))
+    else if (device->focus && !IsPointerEvent(ev))
         DeliverFocusedEvent(device, (InternalEvent*)event,
                             GetSpriteWindow(device));
     else
@@ -1392,9 +1389,9 @@ DeviceFocusEvent(DeviceIntPtr dev, int type, int mode, int detail,
 int
 CheckGrabValues(ClientPtr client, GrabParameters* param)
 {
-    if (param->grabtype != GRABTYPE_CORE &&
-        param->grabtype != GRABTYPE_XI &&
-        param->grabtype != GRABTYPE_XI2)
+    if (param->grabtype != CORE &&
+        param->grabtype != XI &&
+        param->grabtype != XI2)
     {
         ErrorF("[Xi] grabtype is invalid. This is a bug.\n");
         return BadImplementation;
@@ -1411,7 +1408,7 @@ CheckGrabValues(ClientPtr client, GrabParameters* param)
 	return BadValue;
     }
 
-    if (param->grabtype != GRABTYPE_XI2 && (param->modifiers != AnyModifier) &&
+    if (param->grabtype != XI2 && (param->modifiers != AnyModifier) &&
         (param->modifiers & ~AllModifiersMask)) {
 	client->errorValue = param->modifiers;
 	return BadValue;
@@ -1426,7 +1423,7 @@ CheckGrabValues(ClientPtr client, GrabParameters* param)
 
 int
 GrabButton(ClientPtr client, DeviceIntPtr dev, DeviceIntPtr modifier_device,
-           int button, GrabParameters *param, GrabType grabtype,
+           int button, GrabParameters *param, enum InputLevel grabtype,
 	   GrabMask *mask)
 {
     WindowPtr pWin, confineTo;
@@ -1466,9 +1463,9 @@ GrabButton(ClientPtr client, DeviceIntPtr dev, DeviceIntPtr modifier_device,
     if (rc != Success)
 	return rc;
 
-    if (grabtype == GRABTYPE_XI)
+    if (grabtype == XI)
         type = DeviceButtonPress;
-    else if (grabtype == GRABTYPE_XI2)
+    else if (grabtype == XI2)
         type = XI_ButtonPress;
 
     grab = CreateGrab(client->index, dev, modifier_device, pWin, grabtype,
@@ -1479,12 +1476,12 @@ GrabButton(ClientPtr client, DeviceIntPtr dev, DeviceIntPtr modifier_device,
 }
 
 /**
- * Grab the given key. If grabtype is GRABTYPE_XI, the key is a keycode. If
- * grabtype is GRABTYPE_XI2, the key is a keysym.
+ * Grab the given key. If grabtype is XI, the key is a keycode. If
+ * grabtype is XI2, the key is a keysym.
  */
 int
 GrabKey(ClientPtr client, DeviceIntPtr dev, DeviceIntPtr modifier_device,
-        int key, GrabParameters *param, GrabType grabtype, GrabMask *mask)
+        int key, GrabParameters *param, enum InputLevel grabtype, GrabMask *mask)
 {
     WindowPtr pWin;
     GrabPtr grab;
@@ -1497,7 +1494,7 @@ GrabKey(ClientPtr client, DeviceIntPtr dev, DeviceIntPtr modifier_device,
         return rc;
     if ((dev->id != XIAllDevices && dev->id != XIAllMasterDevices) && k == NULL)
 	return BadMatch;
-    if (grabtype == GRABTYPE_XI)
+    if (grabtype == XI)
     {
         if ((key > k->xkbInfo->desc->max_key_code ||
                     key < k->xkbInfo->desc->min_key_code)
@@ -1506,7 +1503,7 @@ GrabKey(ClientPtr client, DeviceIntPtr dev, DeviceIntPtr modifier_device,
             return BadValue;
         }
         type = DeviceKeyPress;
-    } else if (grabtype == GRABTYPE_XI2)
+    } else if (grabtype == XI2)
         type = XI_KeyPress;
 
     rc = dixLookupWindow(&pWin, param->grabWindow, client, DixSetAttrAccess);
@@ -1561,7 +1558,7 @@ GrabWindow(ClientPtr client, DeviceIntPtr dev, int type,
     if (rc != Success)
 	return rc;
 
-    grab = CreateGrab(client->index, dev, dev, pWin, GRABTYPE_XI2,
+    grab = CreateGrab(client->index, dev, dev, pWin, XI2,
                       mask, param, (type == XIGrabtypeEnter) ? XI_Enter : XI_FocusIn,
                       0, NULL, cursor);
 
@@ -1628,6 +1625,20 @@ SelectForWindow(DeviceIntPtr dev, WindowPtr pWin, ClientPtr client,
     return Success;
 }
 
+static void
+FreeInputClient(InputClientsPtr *other)
+{
+    xi2mask_free(&(*other)->xi2mask);
+    free(*other);
+    *other = NULL;
+}
+
+static InputClientsPtr
+AllocInputClient(void)
+{
+    return calloc(1, sizeof(InputClients));
+}
+
 int
 AddExtensionClient(WindowPtr pWin, ClientPtr client, Mask mask, int mskidx)
 {
@@ -1635,11 +1646,14 @@ AddExtensionClient(WindowPtr pWin, ClientPtr client, Mask mask, int mskidx)
 
     if (!pWin->optional && !MakeWindowOptional(pWin))
 	return BadAlloc;
-    others = calloc(1, sizeof(InputClients));
+    others = AllocInputClient();
     if (!others)
 	return BadAlloc;
     if (!pWin->optional->inputMasks && !MakeInputMasks(pWin))
 	goto bail;
+    others->xi2mask = xi2mask_new();
+    if (!others->xi2mask)
+        goto bail;
     others->mask[mskidx] = mask;
     others->resource = FakeClientID(client->index);
     others->next = pWin->optional->inputMasks->inputClients;
@@ -1649,7 +1663,7 @@ AddExtensionClient(WindowPtr pWin, ClientPtr client, Mask mask, int mskidx)
     return Success;
 
 bail:
-    free(others);
+    FreeInputClient(&others);
     return BadAlloc;
 }
 
@@ -1661,8 +1675,22 @@ MakeInputMasks(WindowPtr pWin)
     imasks = calloc(1, sizeof(struct _OtherInputMasks));
     if (!imasks)
 	return FALSE;
+    imasks->xi2mask = xi2mask_new();
+    if (!imasks->xi2mask)
+    {
+        free(imasks);
+        return FALSE;
+    }
     pWin->optional->inputMasks = imasks;
     return TRUE;
+}
+
+static void
+FreeInputMask(OtherInputMasks **imask)
+{
+    xi2mask_free(&(*imask)->xi2mask);
+    free(*imask);
+    *imask = NULL;
 }
 
 void
@@ -1671,20 +1699,17 @@ RecalculateDeviceDeliverableEvents(WindowPtr pWin)
     InputClientsPtr others;
     struct _OtherInputMasks *inputMasks;	/* default: NULL */
     WindowPtr pChild, tmp;
-    int i, j;
+    int i;
 
     pChild = pWin;
     while (1) {
 	if ((inputMasks = wOtherInputMasks(pChild)) != 0) {
-            for (i = 0; i < EMASKSIZE; i++)
-                memset(inputMasks->xi2mask[i], 0, sizeof(inputMasks->xi2mask[i]));
+            xi2mask_zero(inputMasks->xi2mask, -1);
 	    for (others = inputMasks->inputClients; others;
 		 others = others->next) {
 		for (i = 0; i < EMASKSIZE; i++)
 		    inputMasks->inputEvents[i] |= others->mask[i];
-                for (i = 0; i < EMASKSIZE; i++)
-                    for (j = 0; j < XI2MASKSIZE; j++)
-                        inputMasks->xi2mask[i][j] |= others->xi2mask[i][j];
+                xi2mask_merge(inputMasks->xi2mask, others->xi2mask);
 	    }
 	    for (i = 0; i < EMASKSIZE; i++)
 		inputMasks->deliverableEvents[i] = inputMasks->inputEvents[i];
@@ -1721,14 +1746,15 @@ InputClientGone(WindowPtr pWin, XID id)
 	if (other->resource == id) {
 	    if (prev) {
 		prev->next = other->next;
-		free(other);
+		FreeInputClient(&other);
 	    } else if (!(other->next)) {
 		if (ShouldFreeInputMasks(pWin, TRUE)) {
-		    wOtherInputMasks(pWin)->inputClients = other->next;
-		    free(wOtherInputMasks(pWin));
+		    OtherInputMasks *mask = wOtherInputMasks(pWin);
+		    mask->inputClients = other->next;
+		    FreeInputMask(&mask);
 		    pWin->optional->inputMasks = (OtherInputMasks *) NULL;
 		    CheckWindowOptionalNeed(pWin);
-		    free(other);
+		    FreeInputClient(&other);
 		} else {
 		    other->resource = FakeClientID(0);
 		    if (!AddResource(other->resource, RT_INPUTCLIENT,
@@ -1737,7 +1763,7 @@ InputClientGone(WindowPtr pWin, XID id)
 		}
 	    } else {
 		wOtherInputMasks(pWin)->inputClients = other->next;
-		free(other);
+		FreeInputClient(&other);
 	    }
 	    RecalculateDeviceDeliverableEvents(pWin);
 	    return Success;
@@ -2003,20 +2029,25 @@ CheckDeviceGrabAndHintWindow(WindowPtr pWin, int type,
 	dev->valuator->motionHintWindow = pWin;
     else if ((type == DeviceButtonPress) && (!grab) &&
 	     (deliveryMask & DeviceButtonGrabMask)) {
-	GrabRec tempGrab;
+	GrabPtr tempGrab;
 
-	tempGrab.device = dev;
-	tempGrab.resource = client->clientAsMask;
-	tempGrab.window = pWin;
-	tempGrab.ownerEvents =
+	tempGrab = AllocGrab();
+	if (!tempGrab)
+	    return;
+
+	tempGrab->device = dev;
+	tempGrab->resource = client->clientAsMask;
+	tempGrab->window = pWin;
+	tempGrab->ownerEvents =
 	    (deliveryMask & DeviceOwnerGrabButtonMask) ? TRUE : FALSE;
-	tempGrab.eventMask = deliveryMask;
-	tempGrab.keyboardMode = GrabModeAsync;
-	tempGrab.pointerMode = GrabModeAsync;
-	tempGrab.confineTo = NullWindow;
-	tempGrab.cursor = NullCursor;
-        tempGrab.next = NULL;
-	(*dev->deviceGrab.ActivateGrab) (dev, &tempGrab, currentTime, TRUE);
+	tempGrab->eventMask = deliveryMask;
+	tempGrab->keyboardMode = GrabModeAsync;
+	tempGrab->pointerMode = GrabModeAsync;
+	tempGrab->confineTo = NullWindow;
+	tempGrab->cursor = NullCursor;
+	tempGrab->next = NULL;
+	(*dev->deviceGrab.ActivateGrab) (dev, tempGrab, currentTime, TRUE);
+	FreeGrab(tempGrab);
     }
 }
 
@@ -2162,14 +2193,12 @@ XISetEventMask(DeviceIntPtr dev, WindowPtr win, ClientPtr client,
 	for (others = wOtherInputMasks(win)->inputClients; others;
 	     others = others->next) {
 	    if (SameClient(others, client)) {
-                memset(others->xi2mask[dev->id], 0,
-                       sizeof(others->xi2mask[dev->id]));
+                xi2mask_zero(others->xi2mask, dev->id);
                 break;
             }
         }
     }
 
-    len = min(len, sizeof(others->xi2mask[dev->id]));
 
     if (len && !others)
     {
@@ -2178,11 +2207,14 @@ XISetEventMask(DeviceIntPtr dev, WindowPtr win, ClientPtr client,
         others= wOtherInputMasks(win)->inputClients;
     }
 
-    if (others)
-        memset(others->xi2mask[dev->id], 0, sizeof(others->xi2mask[dev->id]));
+    if (others) {
+        xi2mask_zero(others->xi2mask, dev->id);
+        len = min(len, xi2mask_mask_size(others->xi2mask));
+    }
 
-    if (len)
-        memcpy(others->xi2mask[dev->id], mask, len);
+    if (len) {
+        xi2mask_set_one_mask(others->xi2mask, dev->id, mask, len);
+    }
 
     RecalculateDeviceDeliverableEvents(win);
 

@@ -175,9 +175,9 @@ extern _X_HIDDEN Bool CreateConnectionBlock(void);
 /* dixutils.c */
 
 extern _X_EXPORT int CompareISOLatin1Lowered(
-    unsigned char * /*a*/,
+    const unsigned char * /*a*/,
     int alen,
-    unsigned char * /*b*/,
+    const unsigned char * /*b*/,
     int blen);
 
 extern _X_EXPORT int dixLookupWindow(
@@ -339,6 +339,7 @@ extern _X_EXPORT void NoticeEventTime(InternalEvent *ev);
 extern void EnqueueEvent(
     InternalEvent * /* ev */,
     DeviceIntPtr  /* device */);
+extern void PlayReleasedEvents(void);
 
 extern void ActivatePointerGrab(
     DeviceIntPtr /* mouse */,
@@ -398,6 +399,11 @@ extern int DeliverDeviceEvents(
     GrabPtr /* grab */,
     WindowPtr /* stopAt */,
     DeviceIntPtr /* dev */);
+
+extern int DeliverOneGrabbedEvent(
+    InternalEvent* /* event*/,
+    DeviceIntPtr /* dev */,
+    enum InputLevel /* level */);
 
 extern void InitializeSprite(
     DeviceIntPtr /* pDev */,
@@ -529,7 +535,9 @@ extern _X_EXPORT void
 ScreenRestructured (ScreenPtr pScreen);
 #endif
 
+#ifndef HAVE_FFS
 extern _X_EXPORT int ffs(int i);
+#endif
 
 
 /*
