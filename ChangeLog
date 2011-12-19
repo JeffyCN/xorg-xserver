@@ -1,3 +1,2291 @@
+commit c065f7b16329e30cb976359e0a807c2adaf50123
+Author: Keith Packard <keithp@keithp.com>
+Date:   Sat Dec 17 17:22:45 2011 -0800
+
+    Version 1.11.99.2 (1.12 snapshot 2)
+    
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit ead968a4300c0adeff89b9886e888b6d284c75cc
+Author: Antoine Martin <antoine@nagafix.co.uk>
+Date:   Sat Dec 17 01:36:51 2011 +0700
+
+    xserver: check for elevated privileges not uid=0
+    
+    This allows us to run the server as a normal user whilst still
+    being able to use the -modulepath, -logfile and -config switches
+    We define a xf86PrivsElevated which will do the checks and cache
+    the result in case it is called more than once.
+    Also renamed the paths #defines to match their new meaning.
+    Original discussion which led to this patch can be found here:
+    http://lists.freedesktop.org/archives/xorg-devel/2011-September/025853.html
+    
+    Signed-off-by: Antoine Martin <antoine@nagafix.co.uk>
+    Tested-by: Michal Suchanek <hramrach at centrum.cz>
+    Reviewed-by: Jamey Sharp <jamey at minilop.net>
+    Reviewed-by: Adam Jackson <ajax@redhat.com>
+
+commit 2c1d0a539c0fb1860ac89a00d1fb609f1959e1b6
+Author: Gaetan Nadon <memsize@videotron.ca>
+Date:   Fri Dec 9 07:45:02 2011 -0500
+
+    dmx: fix distcheck failure, missing compsize.h in Makefile.am
+    
+    which was added in commit:
+    dmx: Build fix for -Werror=implicit-function-declaration
+    
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Signed-off-by: Gaetan Nadon <memsize@videotron.ca>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit f7ea7a324520844beaac8be7503ac50e20da5ab1
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Wed Dec 14 10:34:19 2011 +1000
+
+    configure: split the required modules up
+    
+    We do the same thing for libraries and optional modules already, and it's
+    much easier to read when one of them changes
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Reviewed-by: Gaetan Nadon <memsize@videotron.ca>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit 7da7aa96a0acb895e1fe57a9d3f2d093479cf2a2
+Merge: b79de3f 7528a6b
+Author: Keith Packard <keithp@keithp.com>
+Date:   Wed Dec 14 11:40:10 2011 -0800
+
+    Merge remote-tracking branch 'whot/for-keith'
+
+commit 7528a6b88eb32098af4369a8bd9d70a808fa6f1c
+Merge: f0de5e3 898d976
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Tue Dec 13 14:19:54 2011 +1000
+
+    Merge branch 'for-whot' of git://people.freedesktop.org/~alanc/xserver into for-keith
+
+commit f0de5e3990b70df9899b7dd17d7ee6ff7c768183
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Sun Dec 11 07:31:43 2011 +1000
+
+    dix: add a MAXEVENTS define for the number of core + extension events
+    
+    Not including GenericEvents
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Walter Harms <wharms@bfs.de>
+    Reviewed-by: Chase Douglas <chase.douglas@canonical.com>
+
+commit adf8a0d62c0643f4c44a3b6d2e3c6c9b02532915
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Fri Dec 9 18:38:53 2011 +1000
+
+    dix: move event filter retrieval helpers to inpututils.c
+    
+    No functional changes
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Reviewed-by: Chase Douglas <chase.douglas@canonical.com>
+
+commit a03fe819506fbcbfcb299d4919d16061603fd4ec
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Fri Dec 9 18:02:49 2011 +1000
+
+    dix: switch EventIsDeliverable to take the event type only
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Reviewed-by: Chase Douglas <chase.douglas@canonical.com>
+
+commit 10a8c428fac0d4ff8f8a3e3487c13dd349d27ed7
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Fri Dec 9 15:49:04 2011 +1000
+
+    dix: move storing last.valuators into a helper function
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Chase Douglas <chase.douglas@canonical.com>
+
+commit a15abf82ddb5a209dbc30c4d12e1dc23c4adf3e4
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Thu Dec 8 15:38:44 2011 +1000
+
+    dix: always allocate and set the grab's sync.event
+    
+    Allocate the memory at device creation time and always store the event, even
+    if we're not frozen. This way we know which event triggered the grab.
+    Since the event was never freed anyway except on device shutdown, this
+    doesn't really change things much.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Chase Douglas <chase.douglas@canonical.com>
+
+commit 218752bdc5d9323d1e6202e762573a925cf8a4eb
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Thu Dec 8 14:27:01 2011 +1000
+
+    input: replace GRABTYPE_* with the InputLevel enums
+    
+    They achieve the same thing, re-use the more generic InputLevel so we can
+    convert to/fro easier.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Chase Douglas <chase.douglas@canonical.com>
+
+commit cd56bd7b3ee34a4b10eb3a57a6e94cac7512167a
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Thu Dec 8 14:59:06 2011 +1000
+
+    Add GrabIsPointerGrab and GrabIsKeyboardGrab helpers
+    
+    No functional changes
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Chase Douglas <chase.douglas@canonical.com>
+
+commit 47734b2ba2e1f9246fd1a3b7059ca60b0e15acb2
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Thu Dec 8 12:00:34 2011 +1000
+
+    dix: move delivery stop condition out of event mask
+    
+    Previously, this was only called if there was a mask match, so even if we
+    had a no-propagate flag set or a stopAt window specified, if no mask
+    triggered on the window we would recurse up to the root window and
+    eventually deliver.
+    Move this, so that the stopAt and do-not-propagate mask is honoured.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Chase Douglas <chase.douglas@canonical.com>
+
+commit 1d01e861b69d7ca8fe2335270b8286bc115fb6e9
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Thu Dec 8 10:22:26 2011 +1000
+
+    dix: split out core state and event state setting into helper functions
+    
+    no functional changes.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Chase Douglas <chase.douglas@canonical.com>
+
+commit fb010c543696b781a83b945f72865b7d7b75bf95
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Wed Dec 7 14:41:18 2011 +1000
+
+    dix: move grab matching code into a helper function
+    
+    No functional changes.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Chase Douglas <chase.douglas@canonical.com>
+
+commit d253a262c2c690357a4db7e235c48ab5dd0b77f8
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Wed Dec 7 13:57:25 2011 +1000
+
+    dix: split core grab interference check into helper function
+    
+    No functional changes.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Chase Douglas <chase.douglas@canonical.com>
+
+commit 97d79dd740ed1ac4eb02b0d4135850f953716278
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Wed Dec 7 13:54:28 2011 +1000
+
+    dix: compare the grab type, not the tempGrab type
+    
+    No functional change. To get here, GrabMatchesSecond() needs to be TRUE and
+    for that the two grab types must be identical.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Chase Douglas <chase.douglas@canonical.com>
+
+commit b9d6ae42b686287d7d23c2eefe2b12da98fe6ff8
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Wed Dec 7 15:43:31 2011 +1000
+
+    dix: remove event type check
+    
+    Can't remember why this is there but we'll need to pass in XI2 events soon,
+    so this check is obsolete.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Chase Douglas <chase.douglas@canonical.com>
+
+commit 80816366aa77f1730a1b6ddabfa55a946d76d494
+Author: Chase Douglas <chase.douglas@canonical.com>
+Date:   Fri Nov 25 13:57:03 2011 -0800
+
+    dix: Split ActivatePassiveGrab() from CheckPassiveGrab()
+    
+    The changed logic means we don't require the explicit grab = NULL setting
+    and early exit anymore. Not 100% of it, but if we see that message pop up in
+    a log we know it's broken.
+    
+    Signed-off-by: Chase Douglas <chase.douglas@canonical.com>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit 9ee62cd8ce3c3effc3663f3d56b322385ce12fdb
+Author: Chase Douglas <chase.douglas@canonical.com>
+Date:   Thu Nov 17 17:40:24 2011 -0800
+
+    dix: Move grab check and activation logic to CheckPassiveGrab()
+    
+    This is needed for future pointer emulation work.
+    
+    Signed-off-by: Chase Douglas <chase.douglas@canonical.com>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit c53651dabc66aeb9882819a404a799a364f00a29
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Tue Dec 6 12:57:38 2011 +1000
+
+    dix: move EventDeliveryState into a header file, we'll need it elsewhere
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Chase Douglas <chase.douglas@canonical.com>
+
+commit 86c3137c81e924bacd919e9d65809e07afeabbff
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Tue Dec 6 12:04:11 2011 +1000
+
+    Xi: split updating button count and state into helper functions
+    
+    Functional change: for a button mapped to 0, the motionHintWindow is not
+    updated to the NullWindow anymore. Before it got updated unconditionally to
+    the button mapping. I have no idea what the practical effect of this is, but
+    I guess it's closer to the correct behaviour: pressing a button that's
+    logically disabled now does not disrupt the motion hint delivery.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Chase Douglas <chase.douglas@canonical.com>
+
+commit e0f37250ffff5dcb3bc0e8cad63439995ce01a20
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Tue Dec 6 11:40:33 2011 +1000
+
+    Xi: deduplicate button motion mask setting
+    
+    No functional changes
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Chase Douglas <chase.douglas@canonical.com>
+
+commit 6eff14a789341d366b3013c5aa020e959c954651
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Mon Dec 5 18:54:30 2011 +1000
+
+    dix: deduplicate callers of DeliverDeviceEvents in DeliverGrabbedEvents
+    
+    No functional change.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Chase Douglas <chase.douglas@canonical.com>
+
+commit 93945b0a74aa8156a88f52b8ba77f1210042f396
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Mon Dec 5 18:42:05 2011 +1000
+
+    dix: split grab event conversion and delivery into a helper function
+    
+    Effective functional change: XI2 events are checked with XACE now.
+    
+    DeliverOneGrabbedEvent is exported for future use by touch events.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Chase Douglas <chase.douglas@canonical.com>
+
+commit c81cdb0862e2184f033b3933e6bacbe0809ef2c0
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Mon Dec 5 18:29:27 2011 +1000
+
+    dix: replace conversion errors with BUG_WARN_MSG
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Chase Douglas <chase.douglas@canonical.com>
+
+commit 6368c2aa4613a7c7eb0e8afca8d41f1a9bc4fc4d
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Mon Dec 5 16:46:18 2011 +1000
+
+    dix: deduplicate event delivery code
+    
+    Move all the event delivery code into DeliverOneEvent, based on the
+    InputLevel we're sending to.
+    
+    Functional change: we now check XI2 events with XACE too.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Chase Douglas <chase.douglas@canonical.com>
+
+commit 7e2207548b3173afc9accb5ccd532c181a7b94ed
+Author: Chase Douglas <chase.douglas@canonical.com>
+Date:   Wed Dec 7 20:32:28 2011 +1000
+
+    include: Add an InputLevel enum
+    
+    Currently unused, but will be in the future.
+    
+    Signed-off-by: Chase Douglas <chase.douglas@canonical.com>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit 898d97672907a8074031d0d1038cd44bb5caf40d
+Author: Alan Coopersmith <alan.coopersmith@oracle.com>
+Date:   Mon Dec 12 16:49:33 2011 -0800
+
+    verify_internal_event: preserve constness of data pointer
+    
+    All we're using it for is ErrorF calls, so make it a const char *
+    to stop gcc from warning:
+    
+    inpututils.c: In function 'verify_internal_event':
+    inpututils.c:629:9: warning: cast discards qualifiers from pointer target type
+    
+    Signed-off-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Reviewed-by: Jamey Sharp <jamey@minilop.net>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit 79d09647d878e66721a778979a9eb1f4bba5f8d6
+Author: Alan Coopersmith <alan.coopersmith@oracle.com>
+Date:   Mon Dec 12 16:49:33 2011 -0800
+
+    Use const cast in BitIsOn macro to avoid angering gcc
+    
+    Fixes gcc warnings such as:
+    inpututils.c: In function 'valuator_mask_isset':
+    inpututils.c:498:5: warning: cast discards qualifiers from pointer target type
+    inpututils.c: In function 'CountBits':
+    inpututils.c:613:9: warning: cast discards qualifiers from pointer target type
+    
+    Signed-off-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Reviewed-by: Jamey Sharp <jamey@minilop.net>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit 99dfe9b1de09cb481e95bd4c45dcf7493480798b
+Author: Alan Coopersmith <alan.coopersmith@oracle.com>
+Date:   Mon Dec 12 16:49:32 2011 -0800
+
+    Fix deconstifying cast warning in xi2_get_type
+    
+    Since we're just comparing values in the struct, cast it to a
+    const xGenericEvent * to clear gcc warning of:
+    
+    events.c: In function 'xi2_get_type':
+    events.c:193:5: warning: cast discards qualifiers from pointer target type
+    
+    Signed-off-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Reviewed-by: Jamey Sharp <jamey@minilop.net>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit dd80156bf05c9eb4000d0981e00d0d9fb69a94f6
+Author: Alan Coopersmith <alan.coopersmith@oracle.com>
+Date:   Wed Dec 7 22:58:45 2011 -0800
+
+    Include client name if available in PrintDeviceGrabInfo
+    
+    Also adds missing newline to first line of output.
+    
+    Before patch:
+    
+    [3581472.414] (II) Printing all currently active device grabs:
+    [3581472.414] Active grab 0x1800000 (core) on device 'Virtual core pointer' (2):
+          client pid 26174 uid 0 gid 10
+    [3581472.415]       at 3581469139 (from active grab) (device thawed, state 1)
+    [3581472.415]         core event mask 0x0
+    [3581472.415]       owner-events true, kb 1 ptr 1, confine 0, cursor 0x0
+    [3581472.415] Active grab 0x1800000 (core) on device 'Virtual core keyboard' (3)
+    :      client pid 26174 uid 0 gid 10
+    [3581472.415]       at 3581469139 (from active grab) (device thawed, state 1)
+    [3581472.415]         core event mask 0x3
+    [3581472.415]       owner-events true, kb 1 ptr 1, confine 0, cursor 0x0
+    [3581472.415] (II) End list of active device grabs
+    
+    After patch:
+    [3581736.601] (II) Printing all currently active device grabs:
+    [3581736.601] Active grab 0x1600000 (core) on device 'Virtual core pointer' (2):
+    [3581736.601]       client pid 26741 /usr/bin/xscreensaver -nosplash
+    [3581736.601]       at 3581735000 (from active grab) (device thawed, state 1)
+    [3581736.601]         core event mask 0x0
+    [3581736.601]       owner-events true, kb 1 ptr 1, confine 0, cursor 0x0
+    [3581736.601] Active grab 0x1600000 (core) on device 'Virtual core keyboard' (3)
+    :
+    [3581736.601]       client pid 26741 /usr/bin/xscreensaver -nosplash
+    [3581736.601]       at 3581735000 (from active grab) (device thawed, state 1)
+    [3581736.601]         core event mask 0x3
+    [3581736.601]       owner-events true, kb 1 ptr 1, confine 0, cursor 0x0
+    [3581736.601] (II) End list of active device grabs
+    
+    Signed-off-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Reviewed-by: Rami Ylimäki <rami.ylimaki@vincit.fi>
+
+commit b79de3f42ff8412dcabf2f2a805cbcbd1c6907c3
+Author: Alan Coopersmith <alan.coopersmith@oracle.com>
+Date:   Mon Dec 12 16:49:35 2011 -0800
+
+    xf86 parser: convert Error to a varargs macro to clear gcc format warnings
+    
+    Previously it always passed a format string with exactly one argument,
+    using NULL when the format string needed none.   Now pass the right number
+    of arguments to clear gcc warnings of 'too many arguments for format'.
+    
+    Signed-off-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Reviewed-by: Jamey Sharp <jamey@minilop.net>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit 7801b3dcd6501e3de93a6d2cee93b2593806e922
+Author: Alan Coopersmith <alan.coopersmith@oracle.com>
+Date:   Mon Dec 12 16:49:35 2011 -0800
+
+    Add some printf format attributes suggested by gcc
+    
+    Signed-off-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Reviewed-by: Jamey Sharp <jamey@minilop.net>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit f68df9dfd2c7ca03c24aaa0a895b7191ecb81e85
+Author: Alan Coopersmith <alan.coopersmith@oracle.com>
+Date:   Mon Dec 12 16:49:34 2011 -0800
+
+    xf86Priv.h: Add some noreturn attributes suggested by gcc
+    
+    Both functions call exit() at the end and have no other return path.
+    Also correct comment/heading to reflect commit 6450f6ca7ee0 moving
+    DoShowOptions into xf86Configure.c.
+    
+    Signed-off-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Reviewed-by: Jamey Sharp <jamey@minilop.net>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit 3823eedf3c124d3a20360480ba349bea72de3069
+Author: Alan Coopersmith <alan.coopersmith@oracle.com>
+Date:   Mon Dec 12 16:49:34 2011 -0800
+
+    Remove duplicate declarations of KdAdd*Driver in kdrive.h
+    
+    Clears gcc warnings in every file that includes kdrive.h:
+    kdrive.h:507:1: warning: redundant redeclaration of 'KdAddPointerDriver'
+    kdrive.h:225:6: note: previous declaration of 'KdAddPointerDriver' was here
+    kdrive.h:510:1: warning: redundant redeclaration of 'KdAddKeyboardDriver'
+    kdrive.h:284:6: note: previous declaration of 'KdAddKeyboardDriver' was here
+    
+    Signed-off-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Reviewed-by: Jamey Sharp <jamey@minilop.net>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit 471e5373b6f87336dac3b9de9b3852f63a2b10dc
+Author: Alan Coopersmith <alan.coopersmith@oracle.com>
+Date:   Mon Dec 12 16:49:34 2011 -0800
+
+    Remove duplicate declaration of xf86ValidateModesFlags in xf86Modes.h
+    
+    Clears gcc warning in every file that includes xf86Modes.h:
+    xf86Modes.h:102:1: warning: redundant redeclaration of 'xf86ValidateModesFlags'
+    xf86Modes.h:72:1: note: previous declaration of 'xf86ValidateModesFlags' was here
+    
+    Signed-off-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Reviewed-by: Jamey Sharp <jamey@minilop.net>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit 41dd7cf673e47ab74c5065b8dbf268b2e5facb64
+Author: Alan Coopersmith <alan.coopersmith@oracle.com>
+Date:   Mon Dec 12 16:49:34 2011 -0800
+
+    _XkbFilterDeviceBtn: move variable declarations to match usage scope
+    
+    The main body of this function is an if { } else if { } pair of blocks.
+    Previously there was int button at the top level scope which is used
+    only in the first block, and a redeclaration of int button inside the
+    second block.   Since there's no overlap in the code paths for the
+    two uses of button, move the one from the outer block into the first
+    block to help the programmer more quickly determine they are unrelated
+    usages, and to silence the gcc warning of:
+    
+    xkbActions.c: In function '_XkbFilterDeviceBtn':
+    xkbActions.c:999:6: warning: declaration of 'button' shadows a previous local
+    xkbActions.c:955:6: warning: shadowed declaration is here
+    
+    For consistency, move DeviceIntPtr dev declarations as well that are
+    used in the same way.
+    
+    Signed-off-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Reviewed-by: Jamey Sharp <jamey@minilop.net>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit d8eb9b5faa2d2c9350bdaffef8749a9cac3c87b8
+Author: Alan Coopersmith <alan.coopersmith@oracle.com>
+Date:   Mon Dec 12 16:49:34 2011 -0800
+
+    XkbFindSrvLedInfo: remove extraneous name-clashing sli variable
+    
+    Variable is already defined outside the outer if statement, and
+    there's no need to redefine inside the if statement.
+    
+    No point in setting sli before if (dev->kbdfeed->xkb_sli==NULL)
+    check - if check is true, we immediately set it, if check is false,
+    we immediately return without further reference or use of it.
+    
+    The one thing we do with it inside the inner if statement is store
+    an allocation in it for a brief moment before writing to the final
+    destination, which is immediately returned to the caller.
+    
+    In short, there's no benefit to the variable at all in this block,
+    it just gives the optimizer more code to figure out how to omit.
+    
+    Fixes gcc warning:
+    xkbLEDs.c: In function 'XkbFindSrvLedInfo':
+    xkbLEDs.c:683:19: warning: declaration of 'sli' shadows a previous local
+    xkbLEDs.c:679:18: warning: shadowed declaration is here
+    
+    Signed-off-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Reviewed-by: Jamey Sharp <jamey@minilop.net>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit 9edfa47bd58cd318d57d0f114714fd146be35a79
+Author: Alan Coopersmith <alan.coopersmith@oracle.com>
+Date:   Mon Dec 12 16:49:34 2011 -0800
+
+    KdParseFindNext: Constify delim argument
+    
+    It's only used as input to strchr to find the delimiters, never
+    written to.
+    
+    Clears a bunch of gcc warnings of the form:
+    kdrive.c:323:2: warning: passing argument 2 of 'KdParseFindNext' discards qualifiers from pointer target type
+    kdrive.c:261:1: note: expected 'char *' but argument is of type 'const char *'
+    
+    Signed-off-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Reviewed-by: Jamey Sharp <jamey@minilop.net>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit ff64ad6c74a3e14ca34bacb8866bdbd2262bddff
+Author: Alan Coopersmith <alan.coopersmith@oracle.com>
+Date:   Mon Dec 12 16:49:34 2011 -0800
+
+    Convert KdDoSwitchCmd to use asprintf instead of malloc/strcat/etc.
+    
+    Also fix the reason argument to be const char * to clear several gcc
+    warnings of:
+    kdrive.c:151:2: warning: passing argument 1 of 'KdDoSwitchCmd' discards qualifiers from pointer target type
+    kdrive.c:116:1: note: expected 'char *' but argument is of type 'const char *'
+    
+    Signed-off-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Reviewed-by: Jamey Sharp <jamey@minilop.net>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit 5bc590bde23ce1c57015b1d9e1cc63189c37448e
+Author: Alan Coopersmith <alan.coopersmith@oracle.com>
+Date:   Mon Dec 12 16:49:34 2011 -0800
+
+    DoShowOptions: preserve constness of options list as we walk it
+    
+    Since all we do with the option list is walk down the list printing
+    the names, there's no need to cast away its constness.
+    
+    Clears gcc warning:
+    xf86Configure.c: In function 'DoShowOptions':
+    xf86Configure.c:781:4: warning: cast discards qualifiers from pointer target type
+    
+    Signed-off-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Reviewed-by: Jamey Sharp <jamey@minilop.net>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit 71efd868282d47a6db405a16de18ac322926962b
+Author: Alan Coopersmith <alan.coopersmith@oracle.com>
+Date:   Mon Dec 12 16:49:34 2011 -0800
+
+    x86emu: constify debug strings
+    
+    Strings are all pointers to literal constants, just used as input
+    to printf calls when debugging is enabled.
+    
+    Signed-off-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Reviewed-by: Jamey Sharp <jamey@minilop.net>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit d5a5eece670dee963765eab1431c21525c16d9ee
+Author: Alan Coopersmith <alan.coopersmith@oracle.com>
+Date:   Mon Dec 12 16:49:34 2011 -0800
+
+    CompareISOLatin1Lowered: constify arguments
+    
+    Allows callers to avoid deconstifying arguments when calling, fixing
+    gcc warning:
+    
+    filter.c: In function 'PictureGetFilterId':
+    filter.c:59:2: warning: cast discards qualifiers from pointer target type
+    
+    Signed-off-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Reviewed-by: Jamey Sharp <jamey@minilop.net>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit 83ac9502ea9f1dedf3a8002745668af16bb1f2af
+Author: Alan Coopersmith <alan.coopersmith@oracle.com>
+Date:   Mon Dec 12 16:49:33 2011 -0800
+
+    xdmcp.c: fix three small const warnings
+    
+    xdmcp.c:63:36: warning: initialization discards qualifiers from pointer target type
+    
+    xdmcp.c: In function 'XdmcpRegisterConnection':
+    xdmcp.c:482:8: warning: cast discards qualifiers from pointer target type
+    xdmcp.c:482:8: warning: cast discards qualifiers from pointer target type
+    xdmcp.c:482:8: warning: cast discards qualifiers from pointer target type
+    
+    xdmcp.c: In function 'get_mcast_options':
+    xdmcp.c:1596:21: warning: initialization discards qualifiers from pointer target type
+    
+    Signed-off-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Reviewed-by: Jamey Sharp <jamey@minilop.net>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit 3839d1480877818f3ccc04e25237d853bab210c3
+Author: Alan Coopersmith <alan.coopersmith@oracle.com>
+Date:   Mon Dec 12 16:49:33 2011 -0800
+
+    LockServer: store path to LOCKDIR literal string in a const char *
+    
+    And instead of initializing to NULL, then resetting to LOCKDIR almost
+    immediately (before ever using the NULL value), skip directly to setting
+    it to LOCKDIR.
+    
+    tmppath variable is only used as input for generating the path name
+    via calls to strlen, sprintf, etc.
+    
+    Fixes gcc warning of:
+    utils.c: In function 'LockServer':
+    utils.c:259:11: warning: assignment discards qualifiers from pointer target type
+    
+    Signed-off-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Reviewed-by: Jamey Sharp <jamey@minilop.net>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit af4113bfeb1d155f5f037c3492e50513336fa4a7
+Author: Alan Coopersmith <alan.coopersmith@oracle.com>
+Date:   Mon Dec 12 16:49:33 2011 -0800
+
+    WriteToClient: preserve constness of buf while extracting length value
+    
+    Fixes gcc warning:
+    io.c: In function 'WriteToClient':
+    io.c:826:6: warning: cast discards qualifiers from pointer target type
+    
+    Signed-off-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Reviewed-by: Jamey Sharp <jamey@minilop.net>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit 2c9800f91559fbb12dd276cf0536631104092f67
+Author: Alan Coopersmith <alan.coopersmith@oracle.com>
+Date:   Mon Dec 12 16:49:33 2011 -0800
+
+    OsInit: store "/dev/null" in a const char *
+    
+    It's only passed as the input side of a strcpy and as the filename to
+    fopen, so doesn't need to be non-const.   Fixes gcc warning:
+    
+    osinit.c: In function 'OsInit':
+    osinit.c:154:28: warning: initialization discards qualifiers from pointer target type
+    
+    Signed-off-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Reviewed-by: Jamey Sharp <jamey@minilop.net>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit 50b1097643934c8caec9530e5eda6ed6534aaf61
+Author: Alan Coopersmith <alan.coopersmith@oracle.com>
+Date:   Mon Dec 12 16:49:33 2011 -0800
+
+    Constify the reason string throughout the authorization check framework
+    
+    Almost all of the places the string is assigned point to a literal
+    string constant, so use const char * for those, and const char **
+    for function calls that return it via an argument.   Fortunately
+    the top level function, ClientAuthorized, which returns the string
+    as its return value is called from only one place, ProcEstablishConnection.
+    
+    ProcEstablishConnection stores either that return value or a string literal
+    in char *reason.  It only uses reason as an argument to SendConnSetup.
+    SendConnSetup passes the reason argument to strlen & WriteToClient,
+    both of which already have const qualifiers on their args.
+    Thus added const to the reason variable in ProcEstablishConnection
+    and the reason argument to SendConnSetup.
+    
+    Fixes gcc warnings:
+    dispatch.c: In function 'ProcEstablishConnection':
+    dispatch.c:3711:9: warning: assignment discards qualifiers from pointer target type
+    auth.c: In function 'CheckAuthorization':
+    auth.c:218:14: warning: assignment discards qualifiers from pointer target type
+    auth.c:220:20: warning: assignment discards qualifiers from pointer target type
+    connection.c: In function 'ClientAuthorized':
+    connection.c:683:3: warning: return discards qualifiers from pointer target type
+    mitauth.c: In function 'MitCheckCookie':
+    mitauth.c:88:13: warning: assignment discards qualifiers from pointer target type
+    xdmauth.c:259:14: warning: assignment discards qualifiers from pointer target type
+    xdmauth.c:270:14: warning: assignment discards qualifiers from pointer target type
+    xdmauth.c:277:11: warning: assignment discards qualifiers from pointer target type
+    xdmauth.c:293:15: warning: assignment discards qualifiers from pointer target type
+    xdmauth.c:313:14: warning: assignment discards qualifiers from pointer target type
+    xdmauth.c:322:11: warning: assignment discards qualifiers from pointer target type
+    rpcauth.c: In function 'SecureRPCCheck':
+    rpcauth.c:136:10: warning: assignment discards qualifiers from pointer target type
+    
+    Signed-off-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Reviewed-by: Jamey Sharp <jamey@minilop.net>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit 99998196017ef38ec88459b50605aa20f628788b
+Author: Alan Coopersmith <alan.coopersmith@oracle.com>
+Date:   Mon Dec 12 16:49:33 2011 -0800
+
+    Constify string for authorization protocol names
+    
+    gcc was warning from storing string constants in a char *name field:
+    auth.c:64:1: warning: initialization discards qualifiers from pointer target type
+    auth.c:72:1: warning: initialization discards qualifiers from pointer target type
+    auth.c:81:1: warning: initialization discards qualifiers from pointer target type
+    
+    Making the field const requires changing AuthorizationFromID to take
+    a const char ** pointer for the name argument which it sets to point
+    to the matching name entry.
+    
+    Changing that argument requires changing its sole caller in the security
+    extension to pass the address of a const char * variable to it, which it
+    can do, since the only thing it does with the returned name is to pass
+    it back to the RemoveAuthorization function that already expects a const
+    char *name.
+    
+    Signed-off-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Reviewed-by: Jamey Sharp <jamey@minilop.net>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit 01834e99e461e2a8354f3b4aef7f14c5e83fa255
+Author: Alan Coopersmith <alan.coopersmith@oracle.com>
+Date:   Mon Dec 12 16:49:33 2011 -0800
+
+    os/access.c: replace acmp & acopy macros with memcmp & memcpy calls
+    
+    No need to cast to char * now that all supported platforms use C89-standard
+    void * argument types, so just drop the casts from acmp & acopy macros,
+    which clears the gcc warnings for places const pointers were cast non-const:
+    
+    access.c: In function 'DefineSelf':
+    access.c:786:3: warning: cast discards qualifiers from pointer target type
+    access.c:795:6: warning: cast discards qualifiers from pointer target type
+    access.c: In function 'NewHost':
+    access.c:1293:9: warning: cast discards qualifiers from pointer target type
+    access.c:1298:6: warning: cast discards qualifiers from pointer target type
+    access.c:1309:5: warning: cast discards qualifiers from pointer target type
+    
+    Without the casts, acmp & acopy are just a funny way to write memcmp
+    & memmove, so drop the macros and inline the calls, taking care to
+    swap the first two arguments to memmove since it had swapped them.
+    
+    Since all the calls to memmove end up being to non-overlapping memory
+    (mostly copying from an existing pointer to a newly allocated one),
+    replace those with memcpy.
+    
+    And finally, don't actually call memcpy to copy 0 bytes from one place
+    to another, since that's just a waste of a perfectly good function call.
+    
+    Signed-off-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Reviewed-by: Jamey Sharp <jamey@minilop.net>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit 020d83d361b0ab54ac962e97b12935be785f9a67
+Author: Alan Coopersmith <alan.coopersmith@oracle.com>
+Date:   Mon Dec 12 16:49:33 2011 -0800
+
+    xres.c: Preserve constness of string returned by LookupResourceName
+    
+    MakeAtom now accepts a const char * so we don't need to cast down to
+    char * anymore.   Fixes gcc warning of:
+    
+    xres.c: In function 'ProcXResQueryClientResources':
+    xres.c:155:6: warning: cast discards qualifiers from pointer target type
+    
+    Signed-off-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Reviewed-by: Jamey Sharp <jamey@minilop.net>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit 2ddae8f0bd2a9ce0cd15bf3848393af29e615acf
+Author: Alan Coopersmith <alan.coopersmith@oracle.com>
+Date:   Mon Dec 12 16:49:33 2011 -0800
+
+    constify strings in resource name registry
+    
+    LookupResourceName already returned a const char *, so just needed
+    to change the variable we're storing the list in to be a const char **
+    and then add const to the name argument to RegisterResourceName
+    (which just stores name in the array) and CreateNewResourceType
+    (which just passes name to RegisterResourceName).
+    
+    Clears a bunch of gcc warnings of the form:
+    registry.c:319:5: warning: passing argument 2 of 'RegisterResourceName' discards qualifiers from pointer target type
+    registry.c:200:1: note: expected 'char *' but argument is of type 'const char *'
+    
+    and from all the extensions:
+    damageext.c: In function 'DamageExtensionInit':
+    damageext.c:490:5: warning: passing argument 2 of 'CreateNewResourceType' discards qualifiers from pointer target type
+    ../include/resource.h:159:26: note: expected 'char *' but argument is of type 'const char *'
+    
+    Signed-off-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Reviewed-by: Jamey Sharp <jamey@minilop.net>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit 424dbde891486ad6a6c00c61a334031ff18f5556
+Author: Alan Coopersmith <alan.coopersmith@oracle.com>
+Date:   Fri Dec 9 10:08:55 2011 -0800
+
+    CheckForEmptyMask does not need to declare int n twice
+    
+    Just use the existing n variable again in the ARGB_CURSOR loop
+    instead of creating another one.
+    
+    Fixes gcc -Wshadow warning:
+    cursor.c: In function 'CheckForEmptyMask':
+    cursor.c:155:6: warning: declaration of 'n' shadows a previous local
+    cursor.c:146:9: warning: shadowed declaration is here
+    
+    Signed-off-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Reviewed-by: Jamey Sharp <jamey@minilop.net>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit b2bc38e4a553c29f49a0284333b34b4d6c8a8c12
+Author: Alan Coopersmith <alan.coopersmith@oracle.com>
+Date:   Sat Dec 10 10:01:18 2011 -0800
+
+    Even more correctly free config file names
+    
+    If we didn't go into the if (!autoconfig) { } block, the filename,
+    dirname, and sysdirname pointers were never initialized, but we
+    freed them outside the block, leading to potential memory corruption.
+    
+    Move the frees inside the block where they're initialized to avoid this.
+    
+    To avoid similar problems, move the declarations of the variables that
+    are only used in this block inside the block.
+    
+    Regression introduced by commit 3d635fe84d6de53e2f74203b10e89f7851fe3fc1
+    
+    Found by gcc warning:
+    xf86Config.c: In function 'xf86HandleConfigFile':
+    xf86Config.c:2303:11: warning: 'filename' may be used uninitialized in this function
+    xf86Config.c:2303:22: warning: 'dirname' may be used uninitialized in this function
+    xf86Config.c:2303:32: warning: 'sysdirname' may be used uninitialized in this function
+    
+    Signed-off-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Reviewed-by: Paulo Zanoni <paulo.r.zanoni@intel.com>
+
+commit 33d6e6743d86324c2078f156991b16ac4f2593fc
+Author: Alan Coopersmith <alan.coopersmith@oracle.com>
+Date:   Wed Dec 7 19:06:05 2011 -0800
+
+    xf86RegisterRootWindowProperty is confused about xnfcalloc
+    
+    It will never return NULL, so don't try to handle a NULL condition,
+    since that just confuses programmers and static analyzers.
+    
+    It uses calloc, so all the allocated memory is cleared, so there's
+    no point looping over the memory to manually initialize it NULL.
+    
+    And just because it's annoying, it doesn't need to be the only
+    place in this file to do if (NULL==...) instead of if (... == NULL).
+    
+    Signed-off-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Reviewed-by: Paulo Zanoni <paulo.r.zanoni@intel.com>
+
+commit e5aa00989cda9ebd18063c5e955235123ad37b88
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Wed Dec 7 14:14:10 2011 +1000
+
+    Change GetXI2/XI/CoreType to just take a type argument
+    
+    Avoids the dummy-event dance if we have an event type and need to get the
+    matching XI2 type.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Chase Douglas <chase.douglas@canonical.com>
+
+commit 6cc0e6a0afa6a87802767d484aa4e68fa935d3eb
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Fri Oct 28 12:55:55 2011 +1000
+
+    include: add GetXI2MaskByte and GetXI2EventFilterMask to headers
+    
+    This is needed for touch event processing.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Chase Douglas <chase.douglas@canonical.com>
+
+commit 372a6f10dc2d74d2d179e8b92449e9b8636a99ef
+Author: Alan Coopersmith <alan.coopersmith@oracle.com>
+Date:   Thu Dec 8 21:52:07 2011 -0800
+
+    Change disable_clientpointer return type to void
+    
+    It doesn't return anything, nor does it's caller expect it to.
+    
+    Fixes Solaris Studio compiler error:
+    "xichangehierarchy.c", line 214: Function has no return statement : disable_clientpointer
+    
+    Signed-off-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit 522f8bcc0360d6a117e929a004bc956ab92037e9
+Merge: 6369b59 2abe83d
+Author: Keith Packard <keithp@keithp.com>
+Date:   Thu Dec 8 20:57:26 2011 -0800
+
+    Merge remote-tracking branch 'whot/for-keith'
+
+commit 2abe83df686ed64c4f4df711ac3c1fd12131c2e4
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Mon Dec 5 14:02:51 2011 +1000
+
+    include: add BUG_WARN_MSG for custom error message on bug condition
+    
+    __BUG_WARN_MSG is a simple helper to enable call with and without varargs. I
+    couldn't find a way to otherwise do this without getting gcc warnings.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Chase Douglas <chase.douglas@canonical.com>
+
+commit 4fc797f3756611a97767f407e1af0b6a7cf2f1d9
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Fri Nov 11 16:25:30 2011 +1000
+
+    xfree86: include xorg-config.h from xaalocal.h
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+
+commit 8c9589c71d47f287588314d77ddbfcc22cd04c8a
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Mon Dec 5 11:55:58 2011 +1000
+
+    Xi: rename "state" to "corestate" in ProcessDeviceEvents
+    
+    'state' is shadowed by the XKB 'state' as well (which feeds into the event
+    too), so rename this one to clarify that this is the core event state only.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Chase Douglas <chase.douglas@canonical.com>
+
+commit 631516a4aa9858874ee197444cd93d91b97a1089
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Fri Dec 2 15:47:58 2011 +1000
+
+    Xi: check button mapping value _before_ assigning it
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Chase Douglas <chase.douglas@canonical.com>
+
+commit a1304d6cb69301899c3c8450d6bf3e68573599df
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Mon Dec 5 11:26:30 2011 +1000
+
+    Xi: skip superfluous cast
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Chase Douglas <chase.douglas@canonical.com>
+
+commit 1ab50be938524dcd4a9e56d27e3b96a27c2db2c0
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Wed Nov 30 09:06:06 2011 +1000
+
+    xfixes: don't dereference a NULL cursor
+    
+    If the new cursor is the NULL cursor, don't dereference it and use zeros
+    instead.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Jeremy Huddleston <jeremyhu@apple.com>
+
+commit d2ebbcdaf6b13d70eee704b1764ff349e1be22a0
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Tue Nov 29 16:15:37 2011 +1000
+
+    Xi: when removing a device, reset ClientPointers where needed
+    
+    if a client had the to-be-removed device as ClientPointer, reset to NULL.
+    
+    Fixes #43165
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Jeremy Huddleston <jeremyhu@apple.com>
+
+commit 27425f07b29e0ddaa782345c1899273ca742891e
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Wed Nov 9 14:45:02 2011 +1000
+
+    dix: use BUG_WARN for input mask size issues
+    
+    Yes, we're likely corrupting memory here but really this is unlikely to be
+    triggered other than a real bug in the server. In which case a stacktrace is
+    going to be more useful than any silent error handling.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Chase Douglas <chase.douglas@canonical.com>
+
+commit 9b570ecbda954227c89938ee6f94b9efd192d3c6
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Fri Dec 9 10:48:05 2011 +1000
+
+    xfree86: bump the input ABI
+    
+    The last few patches broke the ABI, bump it for convenience.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit 86bb3781b336c09e4279136ed81974de5acdba7f
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Fri Nov 4 11:29:01 2011 +1000
+
+    input: swap the server over to use the XI2mask struct
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Chase Douglas <chase.douglas@canonical.com>
+
+commit b8b90cd1610331ff12fa3f70bf372670af7795ec
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Thu Nov 3 13:39:59 2011 +1000
+
+    Add a new XI2Mask struct and a few helper functions.
+    
+    The current XI2 mask handling is handy for copying (fixed size arrays) but a
+    pain to deal with otherwise. Add a struct for XI2 masks and the required
+    accessors.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Chase Douglas <chase.douglas@canonical.com>
+
+commit 4bc2761ad5ec2d0668aec639780ffb136605fbc8
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Fri Nov 4 14:16:37 2011 +1000
+
+    dix: switch the dev->deviceGrab.activeGrab from GrabRec to GrabPtr
+    
+    This breaks the input ABI.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Chase Douglas <chase.douglas@canonical.com>
+
+commit b601ea769f1b8a4d7f19e9d4a13541c78e865fe5
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Fri Nov 4 10:47:27 2011 +1000
+
+    dix: allocate temporary grabs on the heap
+    
+    Once grabs start having nested memory locations, we can't just use the
+    GrabRec on the stack anymore, we need to alloc/copy/free the grabs.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Chase Douglas <chase.douglas@canonical.com>
+
+commit b0e9e2e32616d09c30a02b9d0ae9db0b13e150d1
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Fri Nov 4 10:44:31 2011 +1000
+
+    dix: add CopyGrab() function
+    
+    Not really needed at this point, but will be once touch support is added.
+    Since grabs are now expected to be allocated/freed with AllocGrab and
+    FreeGrab, CopyGrab must increase the refcount and duplicate the modifier
+    masks. Until the callers are switched to use FreeGrab, this introduces
+    memleaks.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Chase Douglas <chase.douglas@canonical.com>
+
+commit 347f377f3b3f8c9d230d6309ec8ae92aa86d78b7
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Thu Nov 3 16:12:09 2011 +1000
+
+    dix: add AllocGrab helper function
+    
+    Not needed since the GrabRec is a self-contained struct but will be needed
+    for the xi2 input mask rework.
+    FreeGrab already exists, make it available to other callers.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Chase Douglas <chase.douglas@canonical.com>
+
+commit 7af23259d88f4c28ed21140f82cc03b3724c06bb
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Mon Nov 21 11:41:12 2011 -0800
+
+    dix: switch the syncEvent queue to a struct list
+    
+    No effective functionality change, just cleanup to make this code slightly
+    more sane.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Chase Douglas <chase.douglas@canonical.com>
+
+commit 6369b59668613e51131857fbaeaa393a65a73048
+Author: Gaetan Nadon <memsize@videotron.ca>
+Date:   Thu Dec 1 16:24:32 2011 -0500
+
+    test: update .gitignore with xfree86 and sort alphabetically
+    
+    Reviewed-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Signed-off-by: Gaetan Nadon <memsize@videotron.ca>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit 3ab8ee32470f7cf1223e04238bb8c5f74ed52fc3
+Merge: 22a666f 98c4a88
+Author: Keith Packard <keithp@keithp.com>
+Date:   Wed Dec 7 12:42:17 2011 -0800
+
+    Merge remote-tracking branch 'airlied/reviewed-fixes'
+
+commit 22a666f9952feb7248e9bb2faf777edaaac8175f
+Merge: 3824f55 e89b032
+Author: Keith Packard <keithp@keithp.com>
+Date:   Wed Dec 7 12:27:23 2011 -0800
+
+    Merge remote-tracking branch 'alanc/master'
+
+commit 3824f558cc2ee051da8314c7bf08b8647b44e84a
+Author: Keith Packard <keithp@keithp.com>
+Date:   Wed Dec 7 12:13:37 2011 -0800
+
+    hw/xfree86: fix segfault in config parser when config dir is missing
+    
+    Treat a scandir error from a missing (or unusable) directory return as
+    if it simply returned no files at all, which is what we want.
+    
+    cc: Paulo Zanoni <przanoni@gmail.com>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit 98c4a888a4428789386c7c47cecc81933b5999ba
+Author: Dave Airlie <airlied@redhat.com>
+Date:   Mon Nov 28 16:37:59 2011 +0000
+
+    kdrive: drop screen crossing code.
+    
+    The only kdrive server we probably care about anymore is Xephyr,
+    and this screen enable/disable code totally breaks it in multi-screen mode.
+    
+    When you are in one screen the other stops updating.
+    
+    Fixes https://bugzilla.redhat.com/show_bug.cgi?id=757457
+    
+    Signed-off-by: Dave Airlie <airlied@redhat.com>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit 8d3731a811e33e263920dd7c8ec63d02968cb56e
+Author: Dave Airlie <airlied@redhat.com>
+Date:   Thu Oct 20 10:48:26 2011 +0100
+
+    hal: free tmp_val in one missing case
+    
+    Pointed out by coverity scan.
+    
+    Signed-off-by: Dave Airlie <airlied@redhat.com>
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+
+commit 41229392b790f30a0f0ef1f4ed95647c5bca4001
+Author: Dave Airlie <airlied@redhat.com>
+Date:   Thu Oct 20 11:00:43 2011 +0100
+
+    xv: test correct number of requests. (v2)
+    
+    Pointed out by coverity.
+    
+    v2: fix swapped as well, as pointed out by Alan
+    
+    Signed-off-by: Dave Airlie <airlied@redhat.com>
+    Reviewed-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+
+commit 1049139499d9132a20cd6d4d156fe9da9cddb6c2
+Author: Dave Airlie <airlied@redhat.com>
+Date:   Wed Oct 19 16:57:13 2011 +0100
+
+    xaa: avoid possible freed pointer reuse in epilogue
+    
+    If the pGCPriv->flags == 2, then we try to assign the freed pGCPriv->XAAOps
+    avoid this by clearing the flags in to be destroyed pGCPriv.
+    
+    Reported by coverity.
+    
+    Signed-off-by: Dave Airlie <airlied@redhat.com>
+    Reviewed-by: Jeremy Huddleston <jeremyhu@apple.com>
+
+commit 682c09a2cedd234b005334cc01247d859dd7f26a
+Author: Dave Airlie <airlied@redhat.com>
+Date:   Wed Oct 19 16:22:31 2011 +0100
+
+    Xi: avoid overrun of callback array.
+    
+    This code had an off-by-one and would allow writing one past the end of
+    the callbacks array.
+    
+    Pointed out by coverity.
+    
+    Signed-off-by: Dave Airlie <airlied@redhat.com>
+    Reviewed-by: Jeremy Huddleston <jeremyhu@apple.com>
+
+commit b62dc4fcbcffd10de16650bee284702c8608bb60
+Author: Dave Airlie <airlied@redhat.com>
+Date:   Wed Oct 19 16:21:26 2011 +0100
+
+    xext: don't free uninitialised pointer when malloc fails. (v2)
+    
+    Initialise the pAttr->values to values so if the values allocation
+    fails it just ends up as free(NULL).
+    
+    Pointed out by coverity.
+    
+    v2: use Alan's suggestion.
+    
+    Signed-off-by: Dave Airlie <airlied@redhat.com>
+    Reviewed-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Reviewed-by: Jeremy Huddleston <jeremyhu@apple.com>
+
+commit 22605effd188436629a0dbc688666549473741e4
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Thu Apr 28 13:34:28 2011 +1000
+
+    fbdevhw: iterate over all modes that match a mode. (v3)
+    
+    So on RHEL5 anaconda sets an xorg.conf with a fixed 800x600 mode in it,
+    we run radeonfb and fbdev since ati won't work in userspace due to domain
+    issues in the older codebase.
+    
+    On certain pseries blades the built-in KVM can't accept an 800x600-43 mode,
+    it requires the 800x600-60 mode, so we have to have the kernel radeonfb
+    driver reject the 800x600-43 mode when it sees it. However then fbdev
+    doesn't try any of the other 800x600 modes in the modelist, and we end up
+    getting a default 640x480 mode we don't want.
+    
+    This patch changes the mode validation loop to continue on with the other modes
+    that match to find one that works.
+    
+    v2: move code around to avoid extra loop, after comment from Jamey.
+    v3: move loop setup back into loop as per Jeremy's review.
+    
+    Signed-off-by: Dave Airlie <airlied@redhat.com>
+    Reviewed-by: Jamey Sharp <jamey@minilop.net>
+    Reviewed-by: Jeremy Huddleston <jeremyhu@apple.com>
+
+commit fac464e310b82fadcedf790798d1016c4805640b
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Fri Dec 2 08:52:53 2011 +1000
+
+    include: rename "foos" to "list_of_foos" in the struct list documentation
+    
+    Makes things a little easier to read.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Chase Douglas <chase.douglas@canonical.com>
+
+commit 7dfe8c32a96d3f96c8aaeb2802f5b122e381a1e4
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Fri Dec 2 08:51:24 2011 +1000
+
+    include: update struct list documentation to use one set of structs only
+    
+    The example at the top of the file used a struct bar and a list of struct
+    foos. Use those two throughout instead of a different struct foo for the
+    examples and for the API documentation.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Chase Douglas <chase.douglas@canonical.com>
+
+commit 18539c89eca8f6e272ead2b631365da530065ae7
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Fri Dec 2 08:51:04 2011 +1000
+
+    include: a new list element does not need initialization, state so
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Chase Douglas <chase.douglas@canonical.com>
+
+commit 58dc73314b6508121ca094bbcf00612fe19ed69f
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Fri Dec 2 08:43:45 2011 +1000
+
+    include: point to the tests in list.c as examples
+    
+    Even with the documentation, the list.c tests are the best examples.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Chase Douglas <chase.douglas@canonical.com>
+
+commit c8e451a8e719ba432bcfa8976774c07307087809
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Thu Dec 1 14:12:11 2011 +1000
+
+    include: add list_last_entry to get the tail of a list
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Chase Douglas <chase.douglas@canonical.com>
+
+commit 6acebf9e1298939593b942ec91ae9ec9e74faa19
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Thu Dec 1 13:35:50 2011 +1000
+
+    include: add list_append()
+    
+    The existing list_add() prepends to the list, but in some cases we need the
+    list ordered in the way we append the elements.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Chase Douglas <chase.douglas@canonical.com>
+
+commit e89b0324da89ba5c0ba64af1ef46a12b7f55f879
+Author: Gaetan Nadon <memsize@videotron.ca>
+Date:   Sat Dec 3 21:23:51 2011 -0500
+
+    autoconf: the minimum required level for autoconf is 2.60
+    
+    The toolchain requirements are documented here:
+    http://www.x.org/wiki/ModularDevelopersGuide#Required_Tools
+    
+    Note that autoconf features only found in versions later
+    than 2.60 must not be used.
+    
+    Signed-off-by: Gaetan Nadon <memsize@videotron.ca>
+    Reviewed-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Signed-off-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+
+commit 427cb53fddf0c517d1fd1025a87b1104735edd2a
+Author: Gaetan Nadon <memsize@videotron.ca>
+Date:   Sat Dec 3 21:23:21 2011 -0500
+
+    autoconf: remove redundant AC_PROG_MAKE_SET
+    
+    Already included during Automake initialization.
+    
+    After the patch, no change:
+    configure:3893: checking whether make sets $(MAKE)
+    configure:3915: result: yes
+    
+    Signed-off-by: Gaetan Nadon <memsize@videotron.ca>
+    Reviewed-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Signed-off-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+
+commit c19c55a93ab1bc6db56075ca34d6e1c3f522f622
+Author: Alan Coopersmith <alan.coopersmith@oracle.com>
+Date:   Fri Dec 2 00:09:07 2011 -0800
+
+    Fix builds of Xnest & Xephyr with Solaris Studio compilers
+    
+    Required in order to build with Studio cc now that xorg-macros is
+    setting -errwarn=E_FUNC_HAS_NO_RETURN_STMT since a bug in the Solaris
+    system headers causes the noreturn attribute to not be correctly
+    applied to the exit() prototype in <stdlib.h> when building with
+    Studio instead of gcc.
+    
+    Otherwise compiler exits with errors:
+    "Display.c", line 65: Function has no return statement : x_io_error_handler
+    "hostx.c", line 341: Function has no return statement : x_io_error_handler
+    
+    Uses Studio-specific pragma instead of adding another exit() prototype
+    with a noreturn attribute to avoid causing gcc to warn about having
+    a redundant prototype for the exit() function.
+    
+    Signed-off-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Reviewed-by: Mikhail Gusarov <dottedmag@dottedmag.net>
+
+commit e4dcf580f007d6adcf5b0c639865d7aaab1a319d
+Author: Alan Coopersmith <alan.coopersmith@oracle.com>
+Date:   Thu Dec 1 23:45:42 2011 -0800
+
+    LoaderOpen returns either a valid pointer or NULL, so don't check for < 0
+    
+    Fixes Sun cc warning that was recently elevated to error by the
+    stricter default CFLAGS changes to xorg-macros:
+    
+    "loadmod.c", line 914: improper pointer/integer combination: op "<"
+    
+    Should have been changed when commit ab7f057ce9df4e905b12 changed the
+    LoaderOpen return type from int to void *.
+    
+    Changes log message when file is found but dlopen() fails from:
+     (EE) LoadModule: Module dbe does not have a dbeModuleData data object.
+     (EE) Failed to load module "dbe" (invalid module, 0)
+    to:
+     (EE) Failed to load module "dbe" (loader failed, 7)
+    
+    Signed-off-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Reviewed-by: Adam Jackson <ajax@redhat.com>
+
+commit 8b6a75009746db4b8e2e180210ac097e35136bcd
+Author: Alan Coopersmith <alan.coopersmith@oracle.com>
+Date:   Wed Nov 30 23:01:34 2011 -0800
+
+    Fix gcc warnings about redundant declarations of fallback functions
+    
+    Ensure ffs, strndup, strlcat, etc. aren't defined by our headers
+    if they're already defined in the system headers.
+    
+    This does export the HAVE_FFS, HAVE_STRNDUP, etc. definitions to drivers,
+    but if you built the Xserver with a libc that had those, and then build
+    the drivers with a less capable libc, you're going to have problems anyway,
+    and this should solve some reported problems with conflicts between our
+    strndup definition and gcc magic for it.
+    
+    Signed-off-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Reviewed-by: Adam Jackson <ajax@redhat.com>
+
+commit d829a7c5cb42c979b58f3547136df5b05d906423
+Author: Alan Coopersmith <alan.coopersmith@oracle.com>
+Date:   Wed Nov 30 22:20:09 2011 -0800
+
+    Move to autoconf standard function name checks & defines
+    
+    Replace multiple methods of checking for functions with AC_CHECK_FUNCS
+    Replace multiple methods of selecting fallback funcs with AC_REPLACE_FUNCS
+    Replace HAS_* and NEED_* #defines with autogenerated HAVE_*
+    
+    Signed-off-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Reviewed-by: Adam Jackson <ajax@redhat.com>
+    Reviewed-by: Mikhail Gusarov <dottedmag@dottedmag.net>
+    Reviewed-by: Gaetan Nadon <memsize@videotron.ca>
+
+commit 4be68b03128e958d2a6dc1b7feb3587329b9561b
+Author: Alan Coopersmith <alan.coopersmith@oracle.com>
+Date:   Wed Nov 30 19:39:51 2011 -0800
+
+    Remove unused function checks from configure.ac & include/*.h.in
+    
+    The code that used getisax to check for MMX support was moved to pixman
+    and removed from the X server by commit eb2d7fe02f9cbc.
+    
+    The code that used HAVE_MKSTEMP was deleted by the Xprint removal in
+    commit 1c8bd318fbaf.
+    
+    All alloca calls were removed by the patch series end in commit 5e363500c8,
+    and used custom X checks instead of the autoconf HAVE_ALLOCA anyway.
+    
+    I can find no record of HAVE_GETUID, HAVE_GETEUID, HAVE_LINK, HAVE_MEMMOVE,
+    HAVE_MEMSET, HAVE_STRCHR, HAVE_STRRCHR, HAVE_GETOPT, HAVE_GETOPT_LONG,
+    HAVE_DOPRNT, or HAVE_VPRINTF ever being used, and the calls to those
+    functions are not wrapped in #ifdefs.
+    (Most of those are in our baseline requirements of C89 & Unix98 anyway.)
+    
+    Signed-off-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Reviewed-by: Adam Jackson <ajax@redhat.com>
+    Reviewed-by: Mikhail Gusarov <dottedmag@dottedmag.net>
+    Reviewed-by: Gaetan Nadon <memsize@videotron.ca>
+
+commit 84207def93e4489df8dca8e044ce544be8a3f845
+Author: Alan Coopersmith <alan.coopersmith@oracle.com>
+Date:   Mon Nov 28 20:38:58 2011 -0800
+
+    Disable building of tests requiring DDX functions when Xorg is not built
+    
+    Some test cases require linking with some sort of DDX - ideally we'd
+    have a stub ddx for testing, but for now, since we link with the Xorg
+    ddx, disable those tests when configured with --disable-xorg
+    
+    Fixes https://bugs.freedesktop.org/show_bug.cgi?id=43320
+    
+    Signed-off-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Reviewed-by: Dan Nicholson <dbn.lists@gmail.com>
+    Reviewed-by: Jeremy Huddleston <jeremyhu@apple.com>
+
+commit fd976e4051e15ab2d01ec0bf89ff26926d4ed04e
+Author: Gaetan Nadon <memsize@videotron.ca>
+Date:   Thu Dec 1 16:24:12 2011 -0500
+
+    config: conftest needs an include directive to locate X11/Xfuncproto.h
+    
+    The compiler option -fvisibility=hidden is erroneously missing
+    due to a faulty configuration test. The gcc command is unable to
+    locate X11/Xfuncproto.h unless the build occurs on a
+    system where X11 development headers are installed.
+    
+    configure:21294: checking for symbol visibility support
+    configure:21323: gcc -std=gnu99 -c -g -O2 -fvisibility=hidden  conftest.c >&5
+    conftest.c:144:28: fatal error: X11/Xfuncproto.h: No such file or directory
+    
+    The solution is to add an include directive to obtain the location
+    of X11/Xfuncproto.h which may or may not be the system installed headers.
+    
+    Reviewed-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Signed-off-by: Gaetan Nadon <memsize@videotron.ca>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit feebf6746374aa04b12e9e3e51313a3a82c03530
+Author: Alan Coopersmith <alan.coopersmith@oracle.com>
+Date:   Wed Nov 23 00:30:02 2011 -0800
+
+    Limit the number of screens Xvfb will attempt to allocate memory for
+    
+    Commit f9e3a2955d2ca7 removing the MAXSCREEN limit left the screen
+    number too unlimited, and allowed any positive int for a screen number:
+    
+    Xvfb :1 -screen 2147483647 1024x1024x8
+    
+    Fatal server error:
+    Not enough memory for screen 2147483647
+    
+    Found by Parfait 0.3.7:
+    Error: Integer overflow (CWE 190)
+       Integer parameter of memory allocation function realloc() may overflow due to multiplication with constant value 1112
+            at line 293 of hw/vfb/InitOutput.c in function 'ddxProcessArgument'.
+    
+    Since the X11 connection setup only has a CARD8 for number of SCREENS,
+    limit to 255 screens, which is also low enough to avoid overflow on the
+    sizeof(*vfbScreens) * (screenNum + 1) calculation for realloc.
+    
+    Signed-off-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Reviewed-by: Jamey Sharp <jamey@minilop.net>
+
+commit fb22a408c69a84f81905147de9e82cf66ffb6eb2
+Author: Keith Packard <keithp@keithp.com>
+Date:   Tue Nov 8 10:13:15 2011 -0800
+
+    Save major/minor opcodes in ClientRec for RecordAReply
+    
+    The record extension needs the major and minor opcodes in the reply
+    hook, but the request buffer may have been freed by the time the hook
+    is invoked. Saving the request major and minor codes as the request is
+    executed avoids fetching from the defunct request buffer.
+    
+    This patch also eliminates the public MinorOpcodeOfRequest function,
+    inlining it into Dispatch. Usages of that function have been replaced
+    with direct access to the new ClientRec field.
+    
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+    Reviewed-by: Jamey Sharp <jamey@minilop.net>
+
+commit 05f09354a30a4f5edd421220e1aa97be754c71bb
+Merge: 3197b77 08ec4da
+Author: Keith Packard <keithp@keithp.com>
+Date:   Thu Dec 1 14:44:52 2011 +0000
+
+    Merge remote-tracking branch 'jcristau/for-keith'
+
+commit 3197b773c81e58cd4aa412eccaee49526012ed6f
+Merge: 2dc5ba4 dfcec1d
+Author: Keith Packard <keithp@keithp.com>
+Date:   Thu Dec 1 14:36:58 2011 +0000
+
+    Merge remote-tracking branch 'whot/for-keith'
+
+commit 2dc5ba4a1b127e3ed286718ab0a6c20438361192
+Author: Matt Turner <mattst88@gmail.com>
+Date:   Tue Nov 29 23:52:19 2011 -0500
+
+    Remove another if (E != NULL) check around free(E)
+    
+    I wonder if there are any other patterns we haven't seen yet?
+    
+    Reviewed-by: Jamey Sharp <jamey@minilop.net>
+    Signed-off-by: Matt Turner <mattst88@gmail.com>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit dfcec1d3f9d7bac5cde9eb034341428ee0ad3728
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Fri Nov 11 08:55:14 2011 +1000
+
+    test: remove unneeded printf statements from misc.c
+    
+    Leftover from debugging, is not really needeed in a test.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+
+commit 9c38422fc4cf853c3104fada2a3851c79df2a66f
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Wed Nov 9 14:37:26 2011 +1000
+
+    include: add BUG_WARN macro for internal bug cases.
+    
+    There are plenty of cases that can only be triggered by a real bug in the
+    server and doing the ErrorF dance manually everywhere is a tad painful and
+    the error message is usually used only to find the spot in the file anyway.
+    
+    Plus, reading BUG_WARN somewhere is a good indicator to the casual reader
+    that this isn't intended behaviour.
+    
+    Note that this is intentionally different to the BUG_ON behaviour on the
+    kernel, we do not FatalError the server. It's just a warning + stacktrace.
+    If the bug is really fatal, call FatalError.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Chase Douglas <chase.douglas@canonical.com>
+    Reviewed-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+
+commit 61ef4daf6450da573b9de72ba7b200566821b916
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Fri Nov 4 15:49:23 2011 +1000
+
+    Xi: add FreeInputMask function
+    
+    Does what it says on the box, complements MakeInputMask.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Chase Douglas <chase.douglas@canonical.com>
+
+commit ee9346bb31efce4036df1b8dd8f1a5dc43ae955a
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Thu Nov 3 15:45:34 2011 +1000
+
+    Xi: add helper functions to alloc/free InputClientPtrs
+    
+    Currently not needed since the InputClientRec is a self-contained struct. As
+    part of the touch rework that won't be the case in the future and a function
+    to allocate/free memory appropriately is required.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Chase Douglas <chase.douglas@canonical.com>
+
+commit 4acf999c294868a44e559d212c6d88a4978256b2
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Fri Nov 4 15:37:32 2011 +1000
+
+    dix: use a single return statement in CheckPassiveGrabsOnWindow
+    
+    No functional change.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Chase Douglas <chase.douglas@canonical.com>
+
+commit b371795f01c1d7fc338cfe18b8a567ed9f402846
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Thu Nov 3 14:54:06 2011 +1000
+
+    dix: rename GetWindowXI2Mask to WindowXI2MaskIsset
+    
+    And let it return a boolean value, that's all the callers need anyway.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Chase Douglas <chase.douglas@canonical.com>
+
+commit bedb8fd90de8e2db33d5e3b1d859f24bf34efc9a
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Thu Nov 3 14:25:51 2011 +1000
+
+    Xi: use single return code from XIPassiveGrabDevice
+    
+    Some failures returned status but the actual return code was "ret". Use
+    "ret" consistently and move status to the local block is used in.
+    
+    [the goto isn't necessary yet, but for a future patch]
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Chase Douglas <chase.douglas@canonical.com>
+
+commit 2aad1a2b42b7def7812abfa2462b6bcc6382e03a
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Wed Nov 2 14:07:19 2011 +1000
+
+    include: fix mask size calculation
+    
+    Same bug as inputproto-2.0.1-9-gb1149ab, if the XI2LASTEVENT was a multiple
+    of 8, the mask was one bit too short.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+    Reviewed-by: Chase Douglas <chase.douglas@canonical.com>
+
+commit b2015a2c01711646bb7ae23d684abee0cd55d4d0
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Thu Nov 24 13:54:08 2011 -0800
+
+    dmx: Build fix for -Werror=implicit-function-declaration on linux
+    
+    Fixes regression introduced by: 6e6d732bac3c21cb85f8e998908f9b393630e5f8
+    Found-by: Tinderbox
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+    CC: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit 873a1ace3646994adf95961f48719e95dcade7a2
+Author: Paulo Zanoni <paulo.r.zanoni@intel.com>
+Date:   Tue Nov 1 10:57:56 2011 -0200
+
+    parser: free val.str after xstrtokenize
+    
+    After we tokenize val.str, we discard it.
+    
+    This is just one example:
+    6 bytes in 1 blocks are definitely lost in loss record 24 of 652
+       at 0x4C2779D: malloc (in vgpreload_memcheck-amd64-linux.so)
+       by 0x4D744D: xf86getToken (scan.c:400)
+       by 0x4D75F1: xf86getSubToken (scan.c:462)
+       by 0x4DB060: xf86parseInputClassSection (InputClass.c:145)
+       by 0x4D664C: xf86readConfigFile (read.c:184)
+       by 0x490556: xf86HandleConfigFile (xf86Config.c:2360)
+       by 0x49AA77: InitOutput (xf86Init.c:365)
+       by 0x425A7A: main (main.c:204)
+    
+    Signed-off-by: Paulo Zanoni <paulo.r.zanoni@intel.com>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Dan Nicholson <dbn.lists@gmail.com>
+
+commit d41987d77c903e00cca7bcf3e04ed07151e3bb4d
+Author: Paulo Zanoni <paulo.r.zanoni@intel.com>
+Date:   Tue Nov 1 10:42:36 2011 -0200
+
+    parser: free val.str after xf86getBoolValue
+    
+    After we convert the value to a boolean, we discard the string.
+    
+    This is just one example:
+    
+    3 bytes in 1 blocks are definitely lost in loss record 5 of 657
+       at 0x4C2779D: malloc (vgpreload_memcheck-amd64-linux.so)
+       by 0x4D744D: xf86getToken (scan.c:400)
+       by 0x4D75F1: xf86getSubToken (scan.c:462)
+       by 0x4DB3E0: xf86parseInputClassSection (InputClass.c:189)
+       by 0x4D664C: xf86readConfigFile (read.c:184)
+       by 0x490556: xf86HandleConfigFile (xf86Config.c:2360)
+       by 0x49AA77: InitOutput (xf86Init.c:365)
+       by 0x425A7A: main (main.c:204)
+    
+    Signed-off-by: Paulo Zanoni <paulo.r.zanoni@intel.com>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Dan Nicholson <dbn.lists@gmail.com>
+
+commit d5c7338b3eaea55177ade6fcba71a47ccd5547f5
+Author: Paulo Zanoni <paulo.r.zanoni@intel.com>
+Date:   Mon Oct 31 17:54:03 2011 -0200
+
+    parser: free scandir's list
+    
+    v2: move the free()s to the function that calls scandir
+    
+    80 bytes in 1 blocks are definitely lost in loss record 411 of 631
+       at 0x4C2779D: malloc (vgpreload_memcheck-amd64-linux.so)
+       by 0x4C27927: realloc (vgpreload_memcheck-amd64-linux.so)
+       by 0x696A80D: scandir (scandir.c:108)
+       by 0x4D8828: OpenConfigDir (scan.c:854)
+       by 0x4D8A43: xf86openConfigDirFiles (scan.c:952)
+       by 0x49031F: xf86HandleConfigFile (xf86Config.c:2327)
+       by 0x49A9E3: InitOutput (xf86Init.c:365)
+       by 0x425A7A: main (main.c:204)
+    
+    Signed-off-by: Paulo Zanoni <paulo.r.zanoni@intel.com>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit 3d635fe84d6de53e2f74203b10e89f7851fe3fc1
+Author: Paulo Zanoni <paulo.r.zanoni@intel.com>
+Date:   Sun Oct 30 18:04:59 2011 -0200
+
+    Correctly free config file names
+    
+    We call xf86penConfigDirFiles twice, so we overwrite the configDirPath
+    variable, losing the pointer. If we move the pointer management to the
+    upper layer (the function callers), they will be able to call these
+    functions as many times as they want, but they'll have to free those
+    returned values.
+    
+    v2: don't leak inside XWin
+    
+    4,097 bytes in 1 blocks are definitely lost in loss record 625 of 632
+       at 0x4C2779D: malloc (in vgpreload_memcheck-amd64-linux.so)
+       by 0x4D7899: DoSubstitution (scan.c:615)
+       by 0x4D87B0: OpenConfigDir (scan.c:845)
+       by 0x4D8A2D: xf86openConfigDirFiles (scan.c:955)
+       by 0x49031F: xf86HandleConfigFile (xf86Config.c:2327)
+       by 0x49A9BF: InitOutput (xf86Init.c:365)
+       by 0x425A7A: main (main.c:204)
+    
+    Signed-off-by: Paulo Zanoni <paulo.r.zanoni@intel.com>
+    Reviewed-by: Dan Nicholson <dbn.lists@gmail.com>
+
+commit 0ae087e13192d9b498db782be5ba49ca91a81547
+Author: Paulo Zanoni <paulo.r.zanoni@intel.com>
+Date:   Sat Oct 29 18:33:24 2011 -0200
+
+    glx: don't leak driConfigs
+    
+    For dri, dri2 and driswrast.
+    
+    12,968 (584 direct, 12,384 indirect) bytes in 1 blocks are definitely lost in loss record 569 of 570
+       at 0x4C2779D: malloc (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+       by 0x7821E3B: driConcatConfigs (utils.c:560)
+       by 0x7827CF2: dri_fill_in_modes (dri_screen.c:224)
+       by 0x782831E: dri_init_screen_helper (dri_screen.c:405)
+       by 0x7826C03: drisw_init_screen (drisw.c:266)
+       by 0x782225F: driCreateNewScreen (drisw_util.c:69)
+       by 0x4826E2: __glXDRIscreenProbe (glxdriswrast.c:451)
+       by 0x4812FA: GlxExtensionInit (glxext.c:327)
+       by 0x41FB14: InitExtensions (miinitext.c:471)
+       by 0x568622: main (main.c:208)
+    
+    Signed-off-by: Paulo Zanoni <paulo.r.zanoni@intel.com>
+    Reviewed-by: Jeremy Huddleston <jeremyhu@apple.com>
+
+commit d26fae246d7c451b4d5ffe24fdb959d4bd00b107
+Author: Paulo Zanoni <paulo.r.zanoni@intel.com>
+Date:   Tue Oct 25 14:56:35 2011 -0200
+
+    glx: don't leak fbconfigs
+    
+    29,952 (208 direct, 29,744 indirect) bytes in 1 blocks are definitely lost in loss record 573 of 573
+       at 0x4C2779D: malloc (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+       by 0x4829BC: createModeFromConfig (glxdricommon.c:131)
+       by 0x482C09: glxConvertConfigs (glxdricommon.c:185)
+       by 0x482788: __glXDRIscreenProbe (glxdriswrast.c:468)
+       by 0x4812FA: GlxExtensionInit (glxext.c:327)
+       by 0x41FB14: InitExtensions (miinitext.c:471)
+       by 0x568636: main (main.c:208)
+    
+    Signed-off-by: Paulo Zanoni <paulo.r.zanoni@intel.com>
+    Reviewed-by: Jeremy Huddleston <jeremyhu@apple.com>
+
+commit 305a8bcb2fc6f87f8d891fcb774198b6fd118ee1
+Author: Paulo Zanoni <paulo.r.zanoni@intel.com>
+Date:   Thu Oct 20 17:39:29 2011 -0200
+
+    glx: fix memory leak when destroying screen
+    
+    1,152 bytes in 1 blocks are definitely lost in loss record 536 of 575
+       at 0x4C25E84: calloc (in /usr/lib/valgrind/vgpreload_memcheck-amd64-linux.so)
+       by 0x483820: __glXScreenInit (glxscreens.c:357)
+       by 0x48271C: __glXDRIscreenProbe (glxdriswrast.c:469)
+       by 0x4812BE: GlxExtensionInit (glxext.c:327)
+       by 0x41FB14: InitExtensions (miinitext.c:471)
+       by 0x5685AE: main (main.c:208)
+    
+    Signed-off-by: Paulo Zanoni <paulo.r.zanoni@intel.com>
+    Reviewed-by: Jeremy Huddleston <jeremyhu@apple.com>
+
+commit f405dfffe7d5db81d398615a80acbeba7e014ada
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Mon Nov 7 22:14:30 2011 +0000
+
+    dmx: Build fix for -Werror=implicit-function-declaration
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+    Reviewed-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Signed-off-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+
+commit 632d205b309d0515b4ae0f9902059aa4b093a313
+Author: Alan Coopersmith <alan.coopersmith@oracle.com>
+Date:   Mon Nov 7 20:24:08 2011 -0800
+
+    Fix gcc -Wwrite-strings warnings in xf86Modes code
+    
+    Signed-off-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Reviewed-by: Jeremy Huddleston <jeremyhu@apple.com>
+
+commit 09e4b78f7944234865f4648940453303af0c2663
+Author: Alan Coopersmith <alan.coopersmith@oracle.com>
+Date:   Mon Nov 7 19:19:47 2011 -0800
+
+    Fix gcc -Wwrite-strings warnings in xf86 ddx
+    
+    Signed-off-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Reviewed-by: Jeremy Huddleston <jeremyhu@apple.com>
+
+commit 8e4556f560487f3d07812834d4785441d0a8323c
+Author: Alan Coopersmith <alan.coopersmith@oracle.com>
+Date:   Mon Nov 7 20:09:47 2011 -0800
+
+    FindModule: stop copying const char *dirname to char *dirpath
+    
+    Not needed since 6cf844ab69926b split out the allocation/manipulation
+    into the helper function, leaving FindModule just copying the pointer
+    around, and causing gcc warnings and an unreachable call to free.
+    
+    Also no longer need to store the combined strlen results in dirlen.
+    
+    Signed-off-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Reviewed-by: Jeremy Huddleston <jeremyhu@apple.com>
+
+commit 05f589d464a961aea8d25632a390fb66a06cd186
+Author: Alan Coopersmith <alan.coopersmith@oracle.com>
+Date:   Fri Nov 4 23:21:34 2011 -0700
+
+    Fix gcc -Wwrite-strings warnings in various extensions
+    
+    Signed-off-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Reviewed-by: Jeremy Huddleston <jeremyhu@apple.com>
+
+commit 232f1ddf3d060f3ce9d2ebd35f33b1294cac380e
+Author: Alan Coopersmith <alan.coopersmith@oracle.com>
+Date:   Thu Nov 3 21:21:19 2011 -0700
+
+    Fix gcc -Wwrite-strings warnings in XkbGetRulesDflts
+    
+    Stop temporarily storing a pointer to a constant literal string
+    in a char *, just to strdup it a few lines later.
+    
+    Fixes gcc -Wwrite-strings warnings:
+    
+    xkbInit.c: In function 'XkbGetRulesDflts':
+    xkbInit.c:121:38: warning: assignment discards qualifiers from pointer target type
+    xkbInit.c:123:23: warning: assignment discards qualifiers from pointer target type
+    xkbInit.c:125:24: warning: assignment discards qualifiers from pointer target type
+    xkbInit.c:127:25: warning: assignment discards qualifiers from pointer target type
+    xkbInit.c:129:25: warning: assignment discards qualifiers from pointer target type
+    
+    Signed-off-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Reviewed-by: Jeremy Huddleston <jeremyhu@apple.com>
+
+commit 0bc41d5f8d1a6192f57d9bf646cc46ed839b06b9
+Author: Alan Coopersmith <alan.coopersmith@oracle.com>
+Date:   Mon Nov 7 18:08:21 2011 -0800
+
+    Remove redundant redeclarations of functions in the same header file
+    
+    Exposed by recent addition of -Wredundant-decls to default CWARNFLAGS
+    
+    Signed-off-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Reviewed-by: Jeremy Huddleston <jeremyhu@apple.com>
+
+commit 285133a35eede03e37f41aeea6cbfd15a0800d98
+Author: Alan Coopersmith <alan.coopersmith@oracle.com>
+Date:   Mon Nov 7 15:44:26 2011 -0800
+
+    sun_agp: cast key to uintptr_t before casting to (int *)
+    
+    Matches what linux_agp already does and prevents gcc from throwing up:
+    
+    sun_agp.c: In function 'xf86DeallocateGARTMemory':
+    sun_agp.c:236:40: error: cast to pointer from integer of different size
+    
+    Signed-off-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Reviewed-by: Jeremy Huddleston <jeremyhu@apple.com>
+
+commit f8dd5efb673439e7e9f7d82e6f9cfb97afacc85a
+Author: Alan Coopersmith <alan.coopersmith@oracle.com>
+Date:   Thu Nov 3 21:18:56 2011 -0700
+
+    Mark XKB char * as const to clean up gcc -Wwrite-strings warnings
+    
+    Cleans up around 120 warnings from this set
+    
+    Signed-off-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Reviewed-by: Jeremy Huddleston <jeremyhu@apple.com>
+
+commit cccafabd56d0f8e5784ea0ad9fdc03224f952bfe
+Author: Alan Coopersmith <alan.coopersmith@oracle.com>
+Date:   Thu Nov 3 21:10:51 2011 -0700
+
+    Mark arguments to fopen/popen/system wrappers as const char *
+    
+    Silencing more gcc -Wwrite-strings warnings
+    
+    Signed-off-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Reviewed-by: Jeremy Huddleston <jeremyhu@apple.com>
+
+commit 3d0ece5e8467d823afb227b7a7f8b12b906b6ba9
+Author: Alan Coopersmith <alan.coopersmith@oracle.com>
+Date:   Thu Nov 3 20:44:43 2011 -0700
+
+    Reduce unnecessary string copying in xkbtext routines
+    
+    Instead of using sprintf to copy a static string to a local buffer,
+    just to pass it to TryCopyStr, pass the static string to TryCopyStr
+    directly, as is already done in other parts of this code.
+    
+    Signed-off-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Reviewed-by: Jeremy Huddleston <jeremyhu@apple.com>
+
+commit 05d8a7f7a785eff3292f0f0537bb3902930f1b5c
+Author: Alan Coopersmith <alan.coopersmith@oracle.com>
+Date:   Sat Oct 29 11:08:17 2011 -0700
+
+    Convert a bunch of sprintf to snprintf calls
+    
+    This batch is the straightforward set - others are more complex and
+    need more analysis to determine right size to pass.
+    
+    Signed-off-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Reviewed-by: Jeremy Huddleston <jeremyhu@apple.com>
+
+commit b967bf2af264726042e2f6ffb9ca7d234f34b56b
+Author: Alan Coopersmith <alan.coopersmith@oracle.com>
+Date:   Mon Oct 31 23:01:35 2011 -0700
+
+    Remove xf86FormatPciBusNumber from API, inline the one place its used
+    
+    Found no calls from current driver modules
+    
+    Signed-off-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Reviewed-by: Jeremy Huddleston <jeremyhu@apple.com>
+
+commit 6450f6ca7ee070da3b6d70c2d3a6977f018ac421
+Author: Alan Coopersmith <alan.coopersmith@oracle.com>
+Date:   Thu Nov 3 22:13:05 2011 -0700
+
+    Move DoShowOptions to xf86Configure.c, delete xf86ShowOpts.c
+    
+    Gets rid of duplicate static copy of optionTypeToString by putting
+    both callers of that helper function in the same source file.
+    
+    Signed-off-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+    Reviewed-by: Jeremy Huddleston <jeremyhu@apple.com>
+
+commit 43fa1274263f76faaca995f6e498bc3179a857b8
+Author: Alan Coopersmith <alan.coopersmith@oracle.com>
+Date:   Mon Oct 31 22:17:35 2011 -0700
+
+    Remove bad code from DoShowOptions (Xorg -showopts handler)
+    
+    When we want to print a string, it's okay to just print it.
+    We don't need to first allocate a buffer 2 bytes bigger than the
+    string, copy the entire string unmodified to the buffer, print the
+    buffer, and then leak the buffer (though we AbortDDX 8 lines later,
+    and then just in case we survived that, call exit as well, so the
+    leak is short lived, just oh so pointless).
+    
+    Signed-off-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+    Reviewed-by: Jeremy Huddleston <jeremyhu@apple.com>
+
+commit 71a89d97332cc181becc5a5f73166e642f96c076
+Author: Alan Coopersmith <alan.coopersmith@oracle.com>
+Date:   Mon Oct 31 21:36:47 2011 -0700
+
+    Convert glx/single2.c:DoGetString() to use asprintf()
+    
+    Signed-off-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Reviewed-by: Jeremy Huddleston <jeremyhu@apple.com>
+
+commit f3cb512dc4daaeed389bb4740e21b6e2330e01e1
+Author: Alan Coopersmith <alan.coopersmith@oracle.com>
+Date:   Sat Oct 29 11:19:44 2011 -0700
+
+    LogVMessageVerb: Fix const mismatch warning
+    
+    "log.c", line 382: warning: assignment type mismatch:
+    	pointer to char "=" pointer to const char
+    
+    Signed-off-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Reviewed-by: Jeremy Huddleston <jeremyhu@apple.com>
+
+commit 3d2d88029b29d6e1c53220ad275ba8ba2dedd89e
+Author: Alan Coopersmith <alan.coopersmith@oracle.com>
+Date:   Sat Oct 29 11:13:32 2011 -0700
+
+    AuthAudit: clean up string handling calls
+    
+    The extra "out" pointer to redirect writes to the array isn't needed since
+    the removal of LBX (commit a9ed5a87902a), and eliminating it allows more
+    logical use of sizeof(addr) in length-checked strlcpy & snprintf calls to
+    write to it.
+    
+    Signed-off-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Reviewed-by: Jeremy Huddleston <jeremyhu@apple.com>
+
+commit 615f93a3d03d40924365061c6ae242240dd0ab7e
+Author: Alan Coopersmith <alan.coopersmith@oracle.com>
+Date:   Tue Nov 1 14:57:41 2011 -0700
+
+    Remove unnecessary variable rtrn in XkbKeysymText
+    
+    Also removes even more unnecessary use of variable assignment inside
+    function arguments.
+    
+    Signed-off-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+
+commit 5f285a30a1d6ffba82ebe5e08a0b68352bb51556
+Author: Alan Coopersmith <alan.coopersmith@oracle.com>
+Date:   Tue Nov 1 16:56:18 2011 -0700
+
+    Make XIGetKnownProperty take a const char * argument
+    
+    Now that MakeAtom takes const char *, so can XIGetKnownProperty.
+    Clears 71 warnings from gcc -Wwrite-strings of the form:
+    devices.c:145:5: warning: passing argument 1 of 'XIGetKnownProperty' discards qualifiers from pointer target type
+    ../include/exevents.h:128:23: note: expected 'char *' but argument is of type 'const char *'
+    
+    Signed-off-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit e0f3633632de609e60950aef07c82df534db7888
+Author: Alan Coopersmith <alan.coopersmith@oracle.com>
+Date:   Fri Oct 28 21:31:46 2011 -0700
+
+    Convert ProcRenderQueryFilters to use memcpy instead of strncpy
+    
+    We just got the string length with strlen, might as well use it
+    to copy the whole string quickly instead of checking each character
+    a second time to see if it's 0 or not.
+    
+    Signed-off-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Reviewed-by: Jeremy Huddleston <jeremyhu@apple.com>
+
+commit 780133f9ae7fada462714b47e79d26075bbd9abe
+Author: Alan Coopersmith <alan.coopersmith@oracle.com>
+Date:   Fri Oct 28 21:29:50 2011 -0700
+
+    Convert DetermineClientCmd to use strdup instead of malloc+strncpy
+    
+    *cmdname is initialized to NULL earlier in the function, so it's
+    okay to overwrite it with NULL if strdup fails, don't need that
+    extra check.
+    
+    Signed-off-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Reviewed-by: Jeremy Huddleston <jeremyhu@apple.com>
+
+commit 03ddca6f71339fad089c56484bf35c63642ae1be
+Author: Alan Coopersmith <alan.coopersmith@oracle.com>
+Date:   Fri Oct 28 21:25:20 2011 -0700
+
+    Convert dmxSetDefaultFontPath to use strdup instead of malloc+strncpy
+    
+    Signed-off-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Reviewed-by: Jeremy Huddleston <jeremyhu@apple.com>
+
+commit d9243777c77d9b2992fbaf7f459430283837e323
+Author: Alan Coopersmith <alan.coopersmith@oracle.com>
+Date:   Sat Oct 29 10:32:52 2011 -0700
+
+    matchDriverFromFiles: use one snprintf instead of strncpy/cat series
+    
+    Signed-off-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Reviewed-by: Jeremy Huddleston <jeremyhu@apple.com>
+
+commit 6e6d732bac3c21cb85f8e998908f9b393630e5f8
+Author: Alan Coopersmith <alan.coopersmith@oracle.com>
+Date:   Fri Oct 28 21:18:46 2011 -0700
+
+    Convert strncpy/strncat to strlcpy/strlcat
+    
+    As long as we're carrying around a compatibility copy in os/strl*.c,
+    might as well use them.
+    
+    Signed-off-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Reviewed-by: Jeremy Huddleston <jeremyhu@apple.com>
+
+commit e189dbb3e57d30eb96034d4ce9544ce7a93a371e
+Author: Alan Coopersmith <alan.coopersmith@oracle.com>
+Date:   Fri Oct 28 20:19:44 2011 -0700
+
+    Convert AllocXTestDevice to use asprintf
+    
+    Signed-off-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Reviewed-by: Jeremy Huddleston <jeremyhu@apple.com>
+
+commit 08093c25a91c07ab8af7cece9bba738b827cfd1b
+Author: Alan Coopersmith <alan.coopersmith@oracle.com>
+Date:   Mon Oct 24 23:16:30 2011 -0700
+
+    Convert some malloc + strncpy pairs into strndup calls
+    
+    Signed-off-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Reviewed-by: Jeremy Huddleston <jeremyhu@apple.com>
+
+commit acde97a39d35bfb03af2614c68176ad9afb71f53
+Author: Alan Coopersmith <alan.coopersmith@oracle.com>
+Date:   Mon Oct 24 20:28:32 2011 -0700
+
+    Add fallback implementation of strndup()
+    
+    Signed-off-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Reviewed-by: Jeremy Huddleston <jeremyhu@apple.com>
+    Linux test code fixed by: Keith Packard <keithp@keithp.com>
+
+commit ed38c2648cf7cc04c1d03f8d14375815f6cf536e
+Author: Alan Coopersmith <alan.coopersmith@oracle.com>
+Date:   Fri Oct 28 14:32:56 2011 -0700
+
+    Fix Sun compiler check that got turned around
+    
+    Since the check is for !(compilers that support __builtin_constant_p)
+    it needs to be !(gcc or new enough Sun cc), but was written as
+    !(gcc or too old Sun cc).
+    
+    Signed-off-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Reviewed-by: Jeremy Huddleston <jeremyhu@apple.com>
+
+commit 7ee7fd1f4c72b2ab6dba0413e63dd2e8b95b2112
+Author: Alan Coopersmith <alan.coopersmith@oracle.com>
+Date:   Mon Oct 24 20:39:24 2011 -0700
+
+    Remove a couple Error() instances left behind by 09dbfcb0ad7b6c8
+    
+    Two instances found in the SIOCGIFCONF code for listing network interfaces.
+    
+    Signed-off-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Reviewed-by: Jeremy Huddleston <jeremyhu@apple.com>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit e47aa9475027ed6a255daefec85561c6b15789bd
+Author: Alan Coopersmith <alan.coopersmith@oracle.com>
+Date:   Mon Oct 24 23:40:45 2011 -0700
+
+    Enable memory checking during unit testing
+    
+    If configure is generated with xorg-macros 1.16.0 or newer, and
+    an appropriate memory checking library is found for the platform,
+    use it when running unit tests.   If not, then no harm is done.
+    
+    Signed-off-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Reviewed-by: Jeremy Huddleston <jeremyhu@apple.com>
+
+commit 36670065bd74b870d0da7c6a69a9c0d222b21706
+Author: Alan Coopersmith <alan.coopersmith@oracle.com>
+Date:   Tue Oct 25 00:12:48 2011 -0700
+
+    Don't require ld -wrap for tests that don't need it
+    
+    If configure is generated with xorg-macros 1.16 or later, this allows
+    builders to --enable-unit-test and run the tests other than the xi2
+    tests which require ld -wrap (and are still wrapped in if HAVE_LD_WRAP
+    in tests/xi2/Makefile).  If an older xorg-macros is used, the existing
+    behaviour is preserved of requiring ld -wrap for all unit tests, but
+    no side effects occur, so the minimum xorg-macros version is not raised.
+    
+    If unit testing is enabled without ld -wrap, then we create a bogus
+    "xi2-tests" script just to report that we're skipping them.
+    
+    Signed-off-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Reviewed-by: Jeremy Huddleston <jeremyhu@apple.com>
+
+commit 0e6b88db7f2e94ccc8153a0e002d176440914e01
+Author: Alan Coopersmith <alan.coopersmith@oracle.com>
+Date:   Mon Aug 1 14:09:33 2011 -0700
+
+    Don't fallback to wsfb or fbdev on Solaris
+    
+    We don't ship either one, so don't waste time and make confusing log
+    entries trying to load them.
+    
+    Signed-off-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+
+commit 7b0f53f0a5824fcd81ef505beb3e19ac7c77961f
+Author: Alan Coopersmith <alan.coopersmith@oracle.com>
+Date:   Wed Nov 23 10:50:13 2011 -0800
+
+    Fix Xdmx build on Linux to work with strlcpy changes
+    
+    Include strlcpy.c in the  libdmxconfig.a library with the other functions
+    shared among the xdmx configuration programs.
+    
+    Also add a #include "os.h" to the scanner.l file that now calls strlcpy
+    to include the prototype from $(top_srcdir)/include/os.h.
+    
+    (To be squashed into
+    http://cgit.freedesktop.org/~alanc/xserver/commit/?id=c19f0ff5223d428f8ad2ab3c563c974c96a521ba
+    before next PULL request to avoid breaking bisection.)
+    
+    Signed-off-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit 922c1d817091c7eedfb701f4d9eb4324e22ccca4
+Author: Gaetan Nadon <memsize@videotron.ca>
+Date:   Fri Nov 11 20:44:19 2011 -0500
+
+    docs: spell "X Server Version" consistently in titles. Add where missing.
+    
+    Reviewed-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Signed-off-by: Gaetan Nadon <memsize@videotron.ca>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
 commit 5952efa903d57ac69070f1477ce46223a2a7893c
 Author: Keith Packard <keithp@keithp.com>
 Date:   Sun Nov 20 13:07:33 2011 -0800
@@ -15,6 +2303,25 @@ Date:   Sun Nov 20 13:33:12 2011 -0800
     This makes sure it gets distributed
     
     Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit 08ec4da6a7617637914bee1636858474213cf39d
+Author: Julien Cristau <jcristau@debian.org>
+Date:   Sat Nov 5 13:00:07 2011 +0100
+
+    Fix ShmPutImage for XYBitmap
+    
+    We can't call CopyArea in that case because the image has depth 1, which
+    might not match the target drawable, so we might overrun the shm
+    segment.  Commit 11817a881cb93a89788105d1e575a468f2a8d27c apparently
+    fixed a similar bug for XYPixmap, but missed the bitmap case.
+    
+    Fixes: http://bugs.debian.org/629611
+    
+    Thanks to Alan Curry for diagnosing this and providing a test case.
+    
+    Reported-and-tested-by: Alan Curry <pacman@kosh.dhis.org>
+    Reviewed-by: Peter Harris <pharris@opentext.com>
+    Signed-off-by: Julien Cristau <jcristau@debian.org>
 
 commit 328074890eeb111950e984c6f618311983600b20
 Author: dtakahashi42 <dtakahashi42@gmail.com>
