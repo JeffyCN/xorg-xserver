@@ -1,9 +1,9 @@
-xorg-server (2:1.11.99.2-1) UNRELEASED; urgency=low
+xorg-server (2:1.11.99.2-1) experimental; urgency=low
 
   * New upstream snapshot.
   * Bump input ABI and serverminver again.
 
- -- Cyril Brulebois <kibi@debian.org>  Tue, 20 Dec 2011 00:37:02 +0100
+ -- Cyril Brulebois <kibi@debian.org>  Tue, 20 Dec 2011 11:39:51 +0100
 
 xorg-server (2:1.11.99.1-1) experimental; urgency=low
 
