@@ -1,3 +1,885 @@
+commit 98cde254acb9b98337ddecf64c138d38c14ec2bf
+Author: Keith Packard <keithp@keithp.com>
+Date:   Tue Dec 27 13:42:21 2011 -0800
+
+    Bump version to 1.11.99.901 (1.12 RC1)
+    
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit 5037c9af78da6652189de7202e70e1b833395af5
+Author: Keith Packard <keithp@keithp.com>
+Date:   Tue Dec 27 14:02:01 2011 -0800
+
+    glx/glapioffsets.h is no longer part of the build, remove it
+    
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit 8dedf9831bd80514d800f0085213296a3726dba7
+Merge: cfc4c3d cf96183
+Author: Keith Packard <keithp@keithp.com>
+Date:   Tue Dec 27 13:13:48 2011 -0800
+
+    Merge remote-tracking branch 'kibi/master'
+
+commit cfc4c3d7fa8bd4da4c08b2ab8e6f85435f75353a
+Author: Alan Coopersmith <alan.coopersmith@oracle.com>
+Date:   Sat Dec 24 10:00:56 2011 -0800
+
+    Add Solaris support to DetermineClientCmd
+    
+    Uses /proc/pid/psinfo to read command & partial arguments.
+    
+    Moves cmdsize & argsize variables into non-Solaris #else clause
+    to avoid unused variable warnings.
+    
+    Fixes format mismatch errors when building with DEBUG defined on
+    a 64-bit platform (where Mask is defined as CARD32).
+    
+    Signed-off-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Reviewed-by: Rami Ylimäki <rami.ylimaki@vincit.fi>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit a28ff2cf92c2b35e02eacca21af929afabbf6b83
+Author: Chase Douglas <chase.douglas@canonical.com>
+Date:   Thu Dec 22 12:00:37 2011 -0800
+
+    test/xi2: Really fix infinite loop in test_convert_XITouchOwnershipEvent
+    
+    long i;
+    for (i = 1; ; i <<= 1)
+      if (i == (1 << 31))
+        break;
+    
+    (1 << 31) is compiled as an int, and thus is equal to -2147483648. We
+    are trying to compare it against a long, which on 64-bit machines is
+    2147483648. This results in an infinite loop.
+    
+    Signed-off-by: Chase Douglas <chase.douglas@canonical.com>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit e7df42ab68e30588a5e32ed543b0711821daf009
+Author: Keith Packard <keithp@keithp.com>
+Date:   Thu Dec 22 09:35:51 2011 -0800
+
+    test/xi2: Fix infinite loop in test_convert_XITouchOwnershipEvent
+    
+    The touchid test was using a loop like:
+    
+    	for(i = 1; i < 0xffffffff; i <<= 1)
+    
+    When 'i' is a 32-bit variable, this infinite loops as it goes from
+    0x80000000 to 0. 'i' is declared as 'long', which is 32-bit in 32-bit mode.
+    
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit cf96183122a85e3376e560f0360b38b5676e57a9
+Author: Cyril Brulebois <kibi@debian.org>
+Date:   Wed Nov 2 12:41:20 2011 +0100
+
+    xorg.conf.man: Fix bad whatis entry.
+    
+    Debian's QA tool “lintian” reported a bad whatis entry for the
+    xorg.conf(.d) manpages.
+    
+    It comes with the following pointers:
+      For manual pages that document multiple programs, functions, files, or
+      other things, the part before "\-" should list each separated by a
+      comma and a space. […]
+    
+      Refer to the lexgrog(1) manual page, the groff_man(7) manual page, and
+      the groff_mdoc(7) manual page for details.
+    
+    Indeed, the current situation is:
+      $ whatis xorg.conf; whatis xorg.conf.d
+      xorg.conf (5)        - (unknown subject)
+      xorg.conf.d (5)      - (unknown subject)
+    
+    With this patch:
+      xorg.conf (5)        - configuration files for Xorg X server
+      xorg.conf.d (5)      - configuration files for Xorg X server
+    
+    Reviewed-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Signed-off-by: Cyril Brulebois <kibi@debian.org>
+
+commit f75bdf7fbe757f4603e39139acc3c90538a45e15
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Thu Dec 22 10:00:15 2011 +1000
+
+    test: fix grab mode value tests for new XIGrabModeTouch
+    
+    This test checks that last-valid-mode + 1 returns a BadValue. With the
+    addition of XIGrabModeTouch, that value has changed - sync it up again.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Chase Douglas <chase.douglas@canonical.com>
+
+commit e395efc25f9fd60377f32c2bf1a9153d70908236
+Merge: 2bb282c fcda98c
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Thu Dec 22 09:29:59 2011 +1000
+
+    Merge branch 'master' of git+ssh://git.freedesktop.org/git/xorg/xserver into multitouch
+    
+    Conflicts:
+    	configure.ac
+    	dix/inpututils.c
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit 2bb282cd45cb8149b39d72397ef5bbcfebca11d2
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Wed Dec 21 14:45:27 2011 +1000
+
+    Xi: only activate the device grab if we don't already have one
+    
+    If the device is already grabbed, don't activate the passive grab, it screws
+    with our event masks. Just deliver to the grabbing client instead.
+    
+    Reported-by: Carlos Garnacho <carlosg@gnome.org>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Chase Douglas <chase.douglas@canonical.com>
+
+commit 475ef5cc8339fac3696fe654ef683f92f0b0cc2c
+Author: Carlos Garnacho <carlosg@gnome.org>
+Date:   Wed Dec 21 01:08:40 2011 +0100
+
+    dix: fix xi2 mask/filter when delivering grabbed events
+    
+    Signed-off-by: Carlos Garnacho <carlosg@gnome.org>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit 4551510f752624592f9201f73db89ac1325a234a
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Mon Dec 19 09:08:05 2011 +1000
+
+    test: add a basic test for ownership event values
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit 0c661dc478b4b436a3e61066d31bc510c7a08456
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Mon Dec 19 08:31:37 2011 +1000
+
+    test: drop printfs from protocol-eventconvert.c
+    
+    The test outputs are noisy enough, no need having these here too.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit 8080d785b2c1e5791312ed0975efd1b8aea58d98
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Wed Dec 21 11:11:48 2011 +1000
+
+    dix: remove requirement for client_id be the first element
+    
+    Leftover code from an earlier version of GetTouchEvents.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Chase Douglas <chase.douglas@canonical.com>
+
+commit 552de314bf0c8e4de5d002bdd1c12388c2f42283
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Mon Dec 19 14:52:41 2011 +1000
+
+    dix: don't retrieve the syncEvents tail on an empty list
+    
+    An empty list points to itself but syncEvents has the list head only and is
+    of a different format than the elements. Thus, casting it to a QdEventPtr
+    gives us garbage.
+    
+    Segfaults with XTS test case Xlib13/XGrabKeyboard
+    
+    Introduced in 7af23259d88f4c28ed21140f82cc03b3724c06bb.
+    
+    Reported-by: Aaron Plattner <aplattner@nvidia.com>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Chase Douglas <chase.douglas@canonical.com>
+
+commit 76c11e0872dedcd360cbe02cf62bb9de3b212957
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Fri Dec 16 12:41:08 2011 +1000
+
+    dix: button state must show the logical buttons, not physical buttons
+    
+    If the device is mapped 3 2 1, a click on physical button 1 sends a button 3
+    press, but the state was set for button 1. Fix this, the state must be set
+    for that button's logical mapping.
+    
+    https://bugzilla.gnome.org/show_bug.cgi?id=655928
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Chase Douglas <chase.douglas@canonical.com>
+
+commit 8a32c39c00789c16006de61112627722ce548be1
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Thu Dec 15 07:59:06 2011 +1000
+
+    mi: handle screen switching on pointer emulated touch events
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Chase Douglas <chase.douglas@canonical.com>
+
+commit 48547068b115b1f5e5f46a70110454a2175fb9a4
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Thu Dec 15 07:57:47 2011 +1000
+
+    mi: split move to new screen logic to a helper function
+    
+    No functional changes.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Chase Douglas <chase.douglas@canonical.com>
+
+commit 3b1e2035cc4740711360c845cfcdff07f7b60558
+Author: Daniel Stone <daniel@fooishbar.org>
+Date:   Thu Dec 15 07:52:28 2011 +1000
+
+    dix: Remove touch grabs if the grab disappears
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Chase Douglas <chase.douglas@canonical.com>
+
+commit cd3de8324e8908955a2e4be3000c8ffee8684c68
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Thu Dec 15 07:48:49 2011 +1000
+
+    dix: hook up passive grabs and pointer emulated passive grabs
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Chase Douglas <chase.douglas@canonical.com>
+
+commit 5b169cb695bd450d7f64e3800f00c9237ee67f96
+Author: Carlos Garnacho <carlosg@gnome.org>
+Date:   Tue Dec 13 15:41:23 2011 +0100
+
+    Xi: assign correct grab_mode/other_device_mode in XI2 passive grabs
+    
+    CreateGrab() expects the keyboard mode to be stored in grab_mode, and the
+    pointer mode in other_device_mode, so respect this in passive XI2 grabs,
+    and switch modes if needed.
+    
+    Signed-off-by: Carlos Garnacho <carlosg@gnome.org>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Chase Douglas <chase.douglas@canonical.com>
+
+commit 4469430b109fa2da7ba3d2fadf66eca78b7156a0
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Thu Dec 15 07:42:12 2011 +1000
+
+    Xi: add the hooks for passive touch grabs
+    
+    Co-authored-by: Daniel Stone <daniel@fooishbar.org>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Chase Douglas <chase.douglas@canonical.com>
+
+commit bb0af002dc9ad5b464dc6793aedb6d1ff65d001d
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Thu Dec 15 07:21:38 2011 +1000
+
+    Xi: handle grab accept/reject requests
+    
+    Consists mostly of generating an ownership event and processing it.
+    
+    Co-authored-by: Daniel Stone <daniel@fooishbar.org>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Chase Douglas <chase.douglas@canonical.com>
+
+commit 209b3d613a7bed126c81daedbad6461e4391e9e6
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Tue Dec 20 16:34:43 2011 -0800
+
+    Xi: hook up touch ownership handling
+    
+    Ownership changes don't get processed directly when they happen, instead the
+    DIX submits an ownership event which goes through ProcessTouchEvents and
+    ProcessTouchOwnershipEvents.
+    Then on the required events are generated and sent to clients.
+    
+    Co-authored-by: Daniel Stone <daniel@fooishbar.org>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Chase Douglas <chase.douglas@canonical.com>
+    Reviewed-by: Chase Douglas <chase.douglas@canonical.com>
+
+commit 1894468c2b9788efa70ef4fb5fc911711402f3a7
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Tue Dec 20 16:33:33 2011 -0800
+
+    Xi: hook up pointer emulation for emulating touches
+    
+    Includes a hack for implicit grab activation, because integrating this
+    requires a larger rewrite and I'm not sleeping enough as it is.
+    Right now, we deliver the event and check before/after if there is an
+    implicit grab on. If one activated, then store the event in the grab and
+    switch the listener type to a grab listener.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Chase Douglas <chase.douglas@canonical.com>
+    Reviewed-by: Chase Douglas <chase.douglas@canonical.com>
+
+commit 753c4dca1e42035e29fb21458a746e484ed93ca3
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Wed Dec 14 17:04:38 2011 +1000
+
+    dix: add touch to pointer event conversion helper
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Chase Douglas <chase.douglas@canonical.com>
+
+commit c3843f5498a849920ab68cca3557411ad8ab3454
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Wed Dec 14 17:02:30 2011 +1000
+
+    dix: add real_event parameter to ActivatePassiveGrab
+    
+    For touch events with pointer emulation, the event that triggers the grab
+    (the pointer event) is not the same as the actual event (the touch event).
+    For replaying, we need to store the real event then.
+    
+    No effective changes at this point, for the current caller event and
+    real_event are identical.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Chase Douglas <chase.douglas@canonical.com>
+
+commit e389a19a730055d4550ff708da83c78099a516fd
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Tue Dec 20 16:32:52 2011 -0800
+
+    Process and deliver touch events
+    
+    Does not include pointer emulation handling.
+    Does include partial ownership handling but not the actual processing of
+    ownership events.
+    
+    Note: this commit is a retroactive commit extracted from a series of ~50
+    commits and may thus appear a bit more complicated than what you'd write out
+    from scratch.
+    
+    Pointer processing tree is roughly:
+    - ProcessOtherEvents
+      - ProcessTouchEvents
+        - DeliverTouchEvents
+          - DeliverTouchBeginEvent|DeliverTouchEndEvent|...
+            - DeliverOneTouchEvent
+    
+    Also hooks up the event history playing to the right function now.
+    
+    Co-authored-by: Daniel Stone <daniel@fooishbar.org>
+    Co-authored-by: Chase Douglas <chase.douglas@canonical.com>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Chase Douglas <chase.douglas@canonical.com>
+    Reviewed-by: Chase Douglas <chase.douglas@canonical.com>
+
+commit 634b0da9a83076d0e9e0fc44dc5dc77b0c368bc1
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Thu Dec 15 07:53:19 2011 +1000
+
+    dix: set core and button state based on the touch state
+    
+    If a pointer-emulating touch caused a button to be logically down, set that
+    state in the input events.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Chase Douglas <chase.douglas@canonical.com>
+
+commit dbfd7b37a0ba21899d8ebb7e0b324301bd466c49
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Wed Dec 14 16:33:05 2011 +1000
+
+    Xi: make UpdateDeviceState aware of touch events
+    
+    Update the logical button state for pointer-emulating events. Button state
+    must be kept separate from the ButtonClassRec to avoid clearing the button
+    state on a touch end if there is a physical button still down.
+    
+    And obviously don't change the button state if we're currently replaying the
+    event history for some client.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Chase Douglas <chase.douglas@canonical.com>
+
+commit 593c3e2eb3da5c5fb957b68c8025dfdbe1139639
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Wed Dec 14 16:30:05 2011 +1000
+
+    dix: add TouchResourceIsOwner helper function
+    
+    The first listener in the sequence is the owner of the touch sequence.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Chase Douglas <chase.douglas@canonical.com>
+
+commit 5d0260cc986e8c1f0907870b851d47fd73bb1b7d
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Wed Dec 14 16:24:17 2011 +1000
+
+    dix: add helper functions for adding/removing touch listeners
+    
+    The DIX will call TouchSetupListeners once for a new touch. After that
+    the listener list remains static, with listeners only dropping out when they
+    either reject the grab or disappear.
+    
+    Exception: if grabs activate they are prefixed to the listeners.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Chase Douglas <chase.douglas@canonical.com>
+
+commit 6a68f97ce6704dd2ff2a50f91acd2da72c9995bd
+Author: Chase Douglas <chase.douglas@canonical.com>
+Date:   Wed Dec 14 16:26:04 2011 +1000
+
+    dix: add TouchGetPointerEventType helper function
+    
+    Returns the respective pointer event type for a given touch event type.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Chase Douglas <chase.douglas@canonical.com>
+
+commit 8e58ce73c8b79cb86e890369d0216cdd850c52a5
+Author: Daniel Stone <daniel@fooishbar.org>
+Date:   Wed Dec 14 16:53:04 2011 +1000
+
+    dix: when a window disappears, remove it from the touch sprite trace
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Chase Douglas <chase.douglas@canonical.com>
+
+commit c18a173cf5f53778356c5e8f25ab132956f8c27d
+Author: Daniel Stone <daniel@fooishbar.org>
+Date:   Wed Dec 14 16:03:01 2011 +1000
+
+    dix: add helper functions to build up/verify the sprite trace
+    
+    Touch events' sprite trace stays the same for the duration of the touch
+    sequence.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Chase Douglas <chase.douglas@canonical.com>
+    Reviewed-by: Chase Douglas <chase.douglas@canonical.com>
+
+commit 40475261eacabb79a824db1138407a9d0f9fe37f
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Wed Dec 14 15:56:05 2011 +1000
+
+    dix: add touch event history helper functions
+    
+    If touch client has not registered for ownership events and a grab above
+    that client is rejected, the client needs to receive the complete event
+    history.
+    
+    The history currently doesn't really do fancy overflow handling. We assume
+    that the first TOUCH_HISTORY_SIZE events are the important ones and anything
+    after that is dropped. If that is a problem, fix the client that takes > 100
+    event to decide whether to accept or reject.
+    
+    Events marked with TOUCH_CLIENT_ID or TOUCH_REPLAYING must not be stored in
+    the history, they are events created by the DIX to comply with the protocol.
+    Any such event should already be in the history anyway.
+    
+    A fixme in this patch: we don't have a function to actually deliver the
+    event yet.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Chase Douglas <chase.douglas@canonical.com>
+
+commit b274c472a5ad700aea5fe651d677e8cb34ffc976
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Wed Oct 26 09:08:17 2011 +1000
+
+    Support XI 2.2 officially
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Chase Douglas <chase.douglas@canonical.com>
+
+commit d2af968cb65873780a6e61342d5d3c23b9654e2a
+Author: Daniel Stone <daniel@fooishbar.org>
+Date:   Wed Dec 14 15:45:19 2011 +1000
+
+    Xi: allow selecting for touch events
+    
+    Selecting for any of XI_TouchBegin/Update/End/Ownership requires the three
+    bits for begin/update/end to be set.
+    
+    Only one client at a time may select for XI_TouchBegin event
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Chase Douglas <chase.douglas@canonical.com>
+
+commit f3df3ad668fcd417ffb5afa3bea79a73a348bc1a
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Wed Dec 14 16:45:04 2011 +1000
+
+    dix: handle DIX-submitted touch events
+    
+    The DIX needs to submit touch events for e.g. TouchEnd after an
+    acceptance/rejection. These have the TOUCH_CLIENT_ID flag set.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Chase Douglas <chase.douglas@canonical.com>
+
+commit fcda98c48610fd507ca0b89c6006a5497d9dc1c9
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Fri Dec 16 12:41:08 2011 +1000
+
+    dix: button state must show the logical buttons, not physical buttons
+    
+    If the device is mapped 3 2 1, a click on physical button 1 sends a button 3
+    press, but the state was set for button 1. Fix this, the state must be set
+    for that button's logical mapping.
+    
+    https://bugzilla.gnome.org/show_bug.cgi?id=655928
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Chase Douglas <chase.douglas@canonical.com>
+
+commit 47da6b6b2c2e9245422655f94770146fb8cd430b
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Mon Dec 19 14:52:41 2011 +1000
+
+    dix: don't retrieve the syncEvents tail on an empty list
+    
+    An empty list points to itself but syncEvents has the list head only and is
+    of a different format than the elements. Thus, casting it to a QdEventPtr
+    gives us garbage.
+    
+    Segfaults with XTS test case Xlib13/XGrabKeyboard
+    
+    Introduced in 7af23259d88f4c28ed21140f82cc03b3724c06bb.
+    
+    Reported-by: Aaron Plattner <aplattner@nvidia.com>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Chase Douglas <chase.douglas@canonical.com>
+
+commit 2d34b34ed7547b829979756ccfb2cff79368d0a4
+Merge: e4b4d83 1deede3
+Author: Keith Packard <keithp@keithp.com>
+Date:   Tue Dec 20 00:23:33 2011 -0800
+
+    Merge remote-tracking branch 'jeremyhu/master'
+
+commit e4b4d83fad37bb737e25f7226dbcd15b892f9528
+Merge: 4df65d2 d26cb70
+Author: Keith Packard <keithp@keithp.com>
+Date:   Mon Dec 19 22:36:31 2011 -0800
+
+    Merge remote-tracking branch 'idr/glx-fixes'
+
+commit 4df65d247b56c6b1b06e17a61236d6637312cdbb
+Author: Ville Syrjälä <syrjala@sci.fi>
+Date:   Sun Dec 18 18:29:41 2011 +0200
+
+    dri2: Invalidate window pixmaps
+    
+    While a redirected window is flipped, its pixmap may still be used as
+    and EGL image and should also get invalidated. When sending invalidate
+    events for a window, also send the events for its pixmap.
+    
+    Signed-off-by: Ville Syrjälä <syrjala@sci.fi>
+    Reviewed-by: Keith Packard <keithp@keithp.com>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit e8fd23fad046877ca0ee08c1e147557756debc8e
+Author: Keith Packard <keithp@keithp.com>
+Date:   Sun Dec 18 18:29:40 2011 +0200
+
+    dri2: Invalidate DRI2 buffers for all windows with the same pixmap on swap
+    
+    Without this, when a compositing manager unredirects a fullscreen window which
+    uses DRI2 and page flipping, the DRI2 buffer information for the compositing
+    manager's output window (typically the Composite Overlay Window or root window)
+    may become stale, resulting in all kinds of hilarity.
+    
+    Fixes https://bugs.freedesktop.org/show_bug.cgi?id=35452 .
+    
+    [Original patch by Michel Dänzer <michel@daenzer.net>]
+    [Tree walk optimized version by Keith Packard <keithp@keithp.com>]
+    
+    Signed-off-by: Ville Syrjälä <syrjala@sci.fi>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit 6f916ffec7767eeab62132eb6575043969104c81
+Author: Michel Dänzer <daenzer@vmware.com>
+Date:   Sun Dec 18 18:29:39 2011 +0200
+
+    dri2: Always re-generate front buffer information when asked for it.
+    
+    Otherwise we might keep stale cached information, e.g. after the driver
+    performed page flipping.
+    
+    This is part of the fix for
+    https://bugs.freedesktop.org/show_bug.cgi?id=35452 .
+    
+    Signed-off-by: Michel Dänzer <daenzer@vmware.com>
+    Reviewed-by: Ville Syrjälä <ville.syrjala@nokia.com>
+    Reviewed-by: Mario Kleiner <mario.kleiner@tuebingen.mpg.de>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit 603fcb3abf155e91fd3250f4a7aa16f289506e8e
+Author: Rami Ylimäki <rami.ylimaki@vincit.fi>
+Date:   Sun Dec 18 18:29:38 2011 +0200
+
+    dri2: Initialize needInvalidate member of DRI2Drawable.
+    
+    If the client is not behaving correctly and swaps buffers before
+    getting them, Valgrind will complain about uninitialized memory being
+    used in DRI2InvalidateDrawable.
+    
+    Signed-off-by: Rami Ylimäki <rami.ylimaki@vincit.fi>
+    Reviewed-by: Ville Syrjälä <syrjala@sci.fi>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit 3aca8199405cff5097ee5813605ec78b5ae44a43
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Fri Dec 16 09:15:25 2011 -0500
+
+    dmx: force -fno-strict-aliasing for xinput example
+    
+    Compiler warning:
+    xinput.c:272: warning: dereferencing pointer 'e' does break strict-aliasing
+    rules
+    
+    The code itself is the usual XInput client-side code:
+            XEvent event;
+            XDeviceMotionEvent *e = (XDeviceMotionEvent *)&event;
+            XNextEvent(display, &event);
+            printf("%d\n", e->type);
+    
+    Since XDeviceMotionEvent is not guaranteed the same size as XEvent, clients
+    must use pointer aliasing as above when using the XNextEvent API. Disable
+    strict aliasing for this example.
+    
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Gaetan Nadon <memsize@videotron.ca>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Signed-off-by: Gaetan Nadon <memsize@videotron.ca>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit 1deede3c48d5ac91f50774c79f02afc6e036614e
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Sat Dec 17 12:56:59 2011 -0800
+
+    kdrive/linux: Fix compilation with -Werror=int-to-pointer-cast -Werror=pointer-to-int-cast
+    
+    Reported-by: Arkadiusz Miśkiewicz <arekm@maven.pl>
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+    Reviewed-by: Jamey Sharp <jamey@minilop.net>
+
+commit d0170d54c71fc761b8f1ae7a0e555dc2ca23cf9c
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Sat Dec 17 12:25:26 2011 -0800
+
+    configure.ac: Make Xephyr dependency error message more informative
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+    Reviewed-by: Jamey Sharp <jamey@minilop.net>
+
+commit 511beddffab3c4fd43c75556132159117b6ba884
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Fri Nov 25 09:45:25 2011 -0800
+
+    XQuartz: Provide in-tree implementation of strndup(3) if needed
+    
+    This function was added to Mac OS X 10.7, so we need to provide it
+    for earlier releases.
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+
+commit 9ce8463a3334f76f128bb35b541aa6e67b4e4374
+Author: Daniel Stone <daniel@fooishbar.org>
+Date:   Wed Dec 14 15:41:07 2011 +1000
+
+    dix: generate touchpoints from driver-submitted data
+    
+    The touchpoints are generated, enqueued but not processed since we don't
+    handle them in the event processing yet.
+    
+    Co-authored-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Chase Douglas <chase.douglas@canonical.com>
+
+commit bec51f5ec6575a1971ae5371a4b6d8563933032c
+Author: Daniel Stone <daniel@fooishbar.org>
+Date:   Wed Dec 14 15:29:48 2011 +1000
+
+    dix: add GetTouchOwnership event API
+    
+    No callers yet. This API is not to be used by drivers, it's an API for the
+    DIX which will create ownership events mainly on touch acceptance/rejection.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Chase Douglas <chase.douglas@canonical.com>
+
+commit 5c63dc6dbcbebbb19d79575a9f1ec9878e6537f1
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Wed Dec 14 14:57:46 2011 +1000
+
+    dix: add DIX API to create touchpoints
+    
+    The DIX touchpoints are the ones used for event processing.
+    
+    Co-authored-by: Daniel Stone <daniel@fooishbar.org>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Chase Douglas <chase.douglas@canonical.com>
+
+commit 7f8127d203394cae45c3ded0d063030d7c5fdb70
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Wed Dec 14 14:53:52 2011 +1000
+
+    dix: if we run out of space for new touch events, resize the queue
+    
+    The SIGIO handler forces us to drop the current touch and schedule the
+    actual resize for later. Should not happen if the device sets up the
+    TouchClassRec with the correct number of touchpoints.
+    
+    Co-authored-by: Daniel Stone <daniel@fooishbar.org>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Chase Douglas <chase.douglas@canonical.com>
+
+commit d26cb70272a1245a7b1db639cebeddafd8ed4c40
+Author: Ian Romanick <ian.d.romanick@intel.com>
+Date:   Thu Dec 8 12:07:38 2011 -0800
+
+    glx: use dispatch.h instead of glapioffsets.h
+    
+    Signed-off-by: Ian Romanick <ian.d.romanick@intel.com>
+    Reviewed-by: Adam Jackson <ajax@redhat.com>
+
+commit 66e6037c334c2bcfe6e60d24cac83a8d6087fdd5
+Author: Ian Romanick <ian.d.romanick@intel.com>
+Date:   Mon Dec 5 15:27:08 2011 -0800
+
+    glx: Regenerate GL API files from Mesa
+    
+    Adam reviewed the underlying changes in the Mesa generated scripts.
+    
+    Signed-off-by: Ian Romanick <ian.d.romanick@intel.com>
+    Reviewed-by: Adam Jackson <ajax@redhat.com>
+
+commit e8485768c1f1d9d9fb7ca9e52ff61175b7bb80e1
+Author: Ian Romanick <ian.d.romanick@intel.com>
+Date:   Tue Dec 6 12:30:17 2011 -0800
+
+    glx: Add stub implementations of next GLX extension functions
+    
+    Generated code from Mesa contains dispatch for GLX_ARB_create_context
+    and GLX_ARB_create_context_profile.  Provide stub implementations of
+    these functions so that the GLX extension will link.
+    
+    Signed-off-by: Ian Romanick <ian.d.romanick@intel.com>
+    Reviewed-by: Adam Jackson <ajax@redhat.com>
+
+commit 2df539c0bc3300ea858f8bc7d52e95e67ff379b8
+Author: Ian Romanick <ian.d.romanick@intel.com>
+Date:   Mon Dec 5 14:42:35 2011 -0800
+
+    glx: Only declare GlxExtensionInit in one header file
+    
+    This silences the GCC warning:
+    
+    In file included from singlepixswap.c:36:0:
+    glxext.h:47:13: warning: redundant redeclaration of 'GlxExtensionInit' [-Wredundant-decls]
+    glxserver.h:80:6: note: previous declaration of 'GlxExtensionInit' was here
+    
+    Signed-off-by: Ian Romanick <ian.d.romanick@intel.com>
+    Reviewed-by: Adam Jackson <ajax@redhat.com>
+
+commit 758bc57ba5a89f765d83f0b169aa09e79a89bf89
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Wed Dec 14 14:48:56 2011 +1000
+
+    dix: add helper functions to create DDX touch recs
+    
+    DDX touch points are the ones that keep records of the driver-submitted
+    touchpoints. They're unaffected by the grab state and terminate on a
+    TouchEnd submitted by the driver.
+    
+    The client ID assigned is server-global.
+    
+    Since drivers usually submit in the SIGIO handler, we cannot allocate in the
+    these functions.
+    
+    Co-authored-by: Daniel Stone <daniel@fooishbar.org>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Chase Douglas <chase.douglas@canonical.com>
+
+commit 1a133eb8b1ddbe0da7c2fbf7f6a686ec4512373e
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Thu Dec 15 08:30:02 2011 +1000
+
+    xfree86: bump the input ABI for the touch changes
+    
+    New additions to the API:
+    - InitTouchClassDeviceStruct
+    - xf86PostTouchEvent
+    
+    Changes to the ABI:
+    - DeviceIntRec now contains a TouchClassPtr
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Chase Douglas <chase.douglas@canonical.com>
+
+commit 3fb258ca28850c998097b55884774cb95f476f69
+Author: Daniel Stone <daniel@fooishbar.org>
+Date:   Wed Dec 14 12:46:40 2011 +1000
+
+    input: add a TouchClassRec to the devices
+    
+    These structs will be used to store touch-related data, events and
+    information.
+    
+    Drivers must call InitTouchClassDeviceStruct to set up a multi-touch capable
+    device.
+    
+    Touchpoints for the DDX and the DIX are handled separately - touchpoints
+    submitted by the driver/DDX will be stored in the DDXTouchPointInfoRec. Once
+    the touchpoints are processed by the DIX, new TouchPointInfoRecs are created
+    and stored. This process is already used for pointer events with the
+    last.valuators field.
+    
+    Note that this patch does not actually add the generation of touch events,
+    only the required structs.
+    
+    TouchListeners are (future) recipients of touch or emulated pointer events.
+    Each listener is in a state, depending which event they have already
+    received. The type of listener defines how the listener got to be one.
+    
+    Co-authored-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Chase Douglas <chase.douglas@canonical.com>
+
+commit 098b837440e40bbc485368ec9658e12efd6ef581
+Author: Daniel Stone <daniel@fooishbar.org>
+Date:   Wed Dec 14 14:41:48 2011 +1000
+
+    Add the touch input API stubs
+    
+    xf86PostTouchEvent is the driver API to submit touch events to the server.
+    This API doesn't do anything yet though but now we can at least bump the
+    API.
+    
+    For valuators, drivers should use the existing xf86InitValuatorAxisStruct
+    function.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Chase Douglas <chase.douglas@canonical.com>
+
+commit 93c2a1628a9f6e7480d834bf55c080997fd18911
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Wed Dec 14 13:51:12 2011 +1000
+
+    Hook up the ownership events
+    
+    This patch applies most of the protocol conversions and the internal event
+    type for ownership events.
+    
+    Note that ownership events are generated by the DIX only, they do not pass
+    through the event queue.
+    
+    Co-authored-by: Daniel Stone <daniel@fooishbar.org>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Chase Douglas <chase.douglas@canonical.com>
+
 commit c065f7b16329e30cb976359e0a807c2adaf50123
 Author: Keith Packard <keithp@keithp.com>
 Date:   Sat Dec 17 17:22:45 2011 -0800
@@ -25,6 +907,132 @@ Date:   Sat Dec 17 01:36:51 2011 +0700
     Reviewed-by: Jamey Sharp <jamey at minilop.net>
     Reviewed-by: Adam Jackson <ajax@redhat.com>
 
+commit 3390d3fc0347947796aa245d70fefecf59b7bfe4
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Wed Dec 14 13:21:59 2011 +1000
+
+    Xi: process raw touch events
+    
+    No-one can generated them yet, but if they could, we'd be processing them
+    like there was no tomorrow.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Chase Douglas <chase.douglas@canonical.com>
+
+commit 84db813b9db34975b5fe288a8a551bb98f0cc1c1
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Wed Dec 14 12:45:28 2011 +1000
+
+    Hook up TouchBegin/Update/End events
+    
+    The are the same as device events internally but require the touch ID
+    separately from the detail.button field (the protocol uses the detail field
+    for the touch id).
+    For simpler integration of pointer emulation we need to set the
+    detail.button field while keeping the touchid around.
+    
+    Add the three new touch event types to the various places in the server
+    where they need to be handled. The actual handling of the events is somewhat
+    more complicated in most places.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Chase Douglas <chase.douglas@canonical.com>
+
+commit 92a5862d0c120b009a688237ec7142b7c21ae272
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Wed Dec 14 15:00:33 2011 +1000
+
+    include: add a bunch of flags for GetTouchEvent processing
+    
+    TOUCH_CLIENT_ID is set if the touch was generated from a client ID instead
+    of a DDX/driver touch ID. i.e. submitted by the dix.
+    
+    TOUCH_END is a special flag that's required to force the touch to end.
+    Since the protocol with grab replaying and pointer emulation is rather
+    complex, it's quite hard to know otherwise when a touch sequence should
+    really die.
+    
+    The others do what it says on the imaginary box.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Chase Douglas <chase.douglas@canonical.com>
+
+commit 956a97487beada8cf5f354550ff779635cc64361
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Wed Dec 14 12:19:27 2011 +1000
+
+    include: RawTouchEnd is the last event now
+    
+    Plus, use the actual definition from the protocol instead of the numeric
+    values. Turns out not everyone knows the protocol event IDs by heart.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Chase Douglas <chase.douglas@canonical.com>
+
+commit 92c6c0c1d2d6a8882ed97b0e7f2952978ee5ce82
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Wed Dec 14 12:15:29 2011 +1000
+
+    tests: update for touch support
+    
+    Touch event mask must be set for all three event types.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Reviewed-by: Chase Douglas <chase.douglas@canonical.com>
+
+commit 731b1db2fcc82c0a8afd28d7f28363c1db0a20ce
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Wed Dec 14 10:41:17 2011 +1000
+
+    Require inputproto 2.1.99.3
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Reviewed-by: Chase Douglas <chase.douglas@canonical.com>
+
+commit 4c825eae89063fdc2241f92ab4101ba682b5b4b7
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Wed Nov 2 10:38:26 2011 +1000
+
+    Xi: add a FIXME
+    
+    All the DeepCopy stuff really needs to be shared between the init calls the
+    drivers use and this code here. Too many bugs by not keeping the two in
+    sync.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Reviewed-by: Chase Douglas <chase.douglas@canonical.com>
+
+commit 0b9d2e426defabbf6df7e872e158b080a6a5e0be
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Wed Dec 14 13:21:03 2011 +1000
+
+    Xi: split ProcessOtherEvent into ProcessDeviceEvent
+    
+    No functional changes.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Reviewed-by: Chase Douglas <chase.douglas@canonical.com>
+
+commit 190a6f45ee7412870b3d95c5db6c1079a285bc59
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Fri Dec 16 09:52:43 2011 +1000
+
+    dix: split positionSprite into scale_to_desktop and positionSprite
+    
+    For future touch points, we need positionSprite to calculate the coordinates
+    but we don't want to actually change the cursor position for non-emulating
+    touches.
+    
+    No functional changes at this point.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Jamey Sharp <jamey@minilop.net>
+    Reviewed-by: Chase Douglas <chase.douglas@canonical.com>
+
 commit 2c1d0a539c0fb1860ac89a00d1fb609f1959e1b6
 Author: Gaetan Nadon <memsize@videotron.ca>
 Date:   Fri Dec 9 07:45:02 2011 -0500
@@ -37,6 +1045,18 @@ Date:   Fri Dec 9 07:45:02 2011 -0500
     Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
     Signed-off-by: Gaetan Nadon <memsize@videotron.ca>
     Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit ff6d9c79c1aa502f1aef81d8063425e5fc002534
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Thu Dec 15 10:19:26 2011 +1000
+
+    include: fix BUG_WARN_MSG for constant messages only
+    
+    Previous declaration required the use of a message + printf varargs. We
+    obviously want to allow the use of just a message.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Alan Coopersmith <alan.coopersmith@oracle.com>
 
 commit f7ea7a324520844beaac8be7503ac50e20da5ab1
 Author: Peter Hutterer <peter.hutterer@who-t.net>
@@ -58,6 +1078,17 @@ Author: Keith Packard <keithp@keithp.com>
 Date:   Wed Dec 14 11:40:10 2011 -0800
 
     Merge remote-tracking branch 'whot/for-keith'
+
+commit 4c80dc1394344dc10cffe4f757c980944312dc3d
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Wed Dec 14 10:31:23 2011 +1000
+
+    configure: split the required modules up
+    
+    We do the same thing for libraries and optional modules already, and it's
+    much easier to read when one of them changes
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
 
 commit 7528a6b88eb32098af4369a8bd9d70a808fa6f1c
 Merge: f0de5e3 898d976
