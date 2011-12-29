@@ -1,10 +1,10 @@
-xorg-server (2:1.11.99.901-1) UNRELEASED; urgency=low
+xorg-server (2:1.11.99.901-1) experimental; urgency=low
 
   * New upstream release candidate (1.12 RC1).
   * Bump input ABI and serverminver again.
   * Bump x11proto-input-dev build-dep/dep.
 
- -- Cyril Brulebois <kibi@debian.org>  Thu, 29 Dec 2011 22:58:06 +0100
+ -- Cyril Brulebois <kibi@debian.org>  Fri, 30 Dec 2011 00:01:35 +0100
 
 xorg-server (2:1.11.99.2-1) experimental; urgency=low
 
