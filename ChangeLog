@@ -1,3 +1,1232 @@
+commit 052ca3f22eadd0aa60dd24ac7d5d76137273926f
+Author: Keith Packard <keithp@keithp.com>
+Date:   Fri Jan 27 22:08:08 2012 -0800
+
+    Bump version to 1.11.99.902 (1.12 RC2)
+    
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit bafedb7e9bcff31e2963eeb54669b2492214fae7
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Wed Jan 18 11:52:04 2012 -0800
+
+    XQuartz: Bump bundle version to 2.7.2
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+
+commit 8e78bbb2d2dc5b18f127540b63b45ba293bbdd25
+Author: Colin Harrison <colin.harrison@virgin.net>
+Date:   Thu Jan 26 13:28:24 2012 +0000
+
+    hw/xwin: Fix spelling of 'Canadian' in winkeybd.h
+    
+    The Mounties always get their typo
+    
+    Signed-off-by: Colin Harrison <colin.harrison@virgin.net>
+    Reviewed-by: Jon TURNEY <jon.turney@dronecode.org.uk>
+
+commit 80c073352a276bad3722263629de3cd61df758ab
+Author: Colin Harrison <colin.harrison@virgin.net>
+Date:   Wed Jan 4 17:16:36 2012 +0000
+
+    hw/xwin: Fix winEnqueueMotion() for change in miPointerSetPosition()
+    
+    Commit 3b36fd1b49030ead44358945f62e5abe7f4609ce changed miPointerSetPosition()
+    to take co-ordinates as doubles, not ints, so this code as it stands is now wrong
+    (if it ever was correct in the first place :-))
+    
+    It's unclear that we can safely promote x,y to doubles, apply miPointerSetPosition()
+    which potentially constrains the cursor, and then convert back to ints.
+    
+    Fortunately, this whole dance seems to be unnecessary, and we can simply remove the
+    call to miPointerSetPosition() entirely, and just QueuePointerEvents() like any other
+    input driver.
+    
+    Signed-off-by: Colin Harrison <colin.harrison@virgin.net>
+    Reviewed-by: Jon TURNEY <jon.turney@dronecode.org.uk>
+
+commit ced9db65950e402d7ddc663225b888e8482b8c57
+Author: Colin Harrison <colin.harrison@virgin.net>
+Date:   Wed Jan 25 01:37:16 2012 +0000
+
+    hw/xwin: Ignore WM_DISPLAYCHANGE messages with 0 bpp
+    
+    Ignore WM_DISPLAYCHANGE messages which indicate bpp is changing to 0.
+    That has no defined meaning I can find, but some graphics card drivers
+    appear to generate it on suspend/resume or screensaver activate/deactivate.
+    
+    Signed-off-by: Colin Harrison <colin.harrison@virgin.net>
+    Reviewed-by: Jon TURNEY <jon.turney@dronecode.org.uk>
+
+commit bea6fb6c7af551778cfe1c0e8412ef4ccf560808
+Author: Jon TURNEY <jon.turney@dronecode.org.uk>
+Date:   Sun Jan 22 19:31:51 2012 +0000
+
+    hw/xwin: Avoid WIN_WINDOW_PROP races during Windows window destruction
+    
+    The WIN_WINDOW_PROP is removed during WM_DESTROY handling, so it is not neccessary to
+    remove it in winDestroyWindowsWindow(), and doing so opens a race condition, as we may
+    attempt to access that property in the wndproc before the WM_DESTROY has completed.
+    
+    A specific example of that race is if a WM_KILLFOCUS occurs in the window between property
+    removal and WM_DESTROY processing, where we will attempt to apply DeleteWindowFromAnyEvents()
+    on an invalid (null) WindowPtr.
+    
+    Also guard against null WindowPtr in the WM_KILLFOCUS handler
+    
+    See http://cygwin.com/ml/cygwin-xfree/2012-01/msg00009.html
+    
+    Signed-off-by: Jon TURNEY <jon.turney@dronecode.org.uk>
+    Reviewed-by: Colin Harrison <colin.harrison@virgin.net>
+
+commit 9a709d5028094fcbeb7a49f47cb85e22cd772f36
+Author: Jon TURNEY <jon.turney@dronecode.org.uk>
+Date:   Thu Sep 29 15:05:27 2011 +0100
+
+    hw/xwin: Handle more motif window decoration hinting
+    
+    Handle the MWM_DECOR_MINIMIZE, MWM_DECOR_MAXIMIZE and MWM_DECOR_MENU
+    decoration hints in a _MOTIF_WM_HINTS window property
+    
+    Signed-off-by: Jon TURNEY <jon.turney@dronecode.org.uk>
+    Reviewed-by: Colin Harrison <colin.harrison@virgin.net>
+
+commit b8b0b841a0e7cfcecaf0b6a5aa67e1b4499374d9
+Author: Oliver Schmidt <oschmidt-mailinglists@gmx.de>
+Date:   Mon Sep 5 13:32:01 2011 +0100
+
+    hw/xwin: Fix AltGr key sometimes firing an additional Ctrl-L key
+    
+    I also had problems with the AltGr key. These could reliably
+    be reproduced by holding the AltGr for some seconds (causing
+    Windows generating auto repeat events)
+    
+    I discovered that the mechanism in winkeybd.c function
+    winIsFakeCtrl_L had a problem if PeekMessage cannot obtain
+    the next Alt_R message because it is not there yet.
+    
+    I prepared a patch that remembers the last Ctrl_L event and
+    reacts on a later Alt_R.
+    
+    It was also necessary to alter the order in winWindowProc() in
+    winwndproc.c: the invocation of winIsFakeCtrl_L had to be done
+    before discarding auto-repeated key presses, as winIsFakeCtrl_L()
+    now has an internal state which must be updated by all key events.
+    
+    Reviewed-by: Jon TURNEY <jon.turney@dronecode.org.uk>
+    Reviewed-by: Colin Harrison <colin.harrison@virgin.net>
+
+commit 3d3114d55a2a323f8d49c3549a0dfdf9d4acf89d
+Author: Jon TURNEY <jon.turney@dronecode.org.uk>
+Date:   Thu Jun 30 14:19:01 2011 +0100
+
+    hw/xwin: Handle the virtual key code generated by the Fn key on IBM Lenovo laptops
+    
+    Apparently, IBM Leonovo laptops can generate a key-press event for the Fn
+    key, with virtual key code 0xFF and scan code extended 0x63
+    
+    Handle this specially, rather than just passing on key code 0x63 (delete),
+    so you don't delete what you just typed when you adjust the screen brightness,
+    etc. :-)
+    
+    Signed-off-by: Jon TURNEY <jon.turney@dronecode.org.uk>
+    Reviewed-by: Colin Harrison <colin.harrison@virgin.net>
+
+commit 74af860f9a59332f6ed1ac9b3e7867fbbb3d7305
+Author: Jon TURNEY <jon.turney@dronecode.org.uk>
+Date:   Wed Mar 24 22:41:22 2010 +0000
+
+    hw/xwin: turn on -emulate3buttons if less than 3 mouse buttons are reported
+    
+    Try to be more intelligent with default options, turn on -emulate3buttons by
+    default if less than 3 mouse buttons are reported by Windows
+    
+    Also, add -noemulate3buttons option so this default setting can be reversed
+    if desired
+    
+    Also, correctly report the number of mouse buttons windows is reporting, rather
+    than always at least 3
+    
+    Signed-off-by: Jon TURNEY <jon.turney@dronecode.org.uk>
+    Reviewed-by: Colin Harrison <colin.harrison@virgin.net>
+
+commit c0f3709501a0afd3bf77e783f11d2c2e5f489d3b
+Author: Jon TURNEY <jon.turney@dronecode.org.uk>
+Date:   Thu Mar 24 20:19:47 2011 +0000
+
+    hw/xwin: In multiwindow mode, don't grab native input focus for new windows which hint they don't want it
+    
+    In multiwindow mode, avoid grabbing the input focus for newly
+    created windows which have InputHint FALSE
+    
+    (this is used by e.g. glean to avoid every test window grabbing
+    the focus)
+    
+    Signed-off-by: Jon TURNEY <jon.turney@dronecode.org.uk>
+    Reviewed-by: Colin Harrison <colin.harrison@virgin.net>
+
+commit 25caa8565d7d10f4c254bca5bb9efa05a77542ad
+Author: Jon TURNEY <jon.turney@dronecode.org.uk>
+Date:   Wed Jan 25 13:33:39 2012 +0000
+
+    hw/xwin: Remove some redundant OS version reporting
+    
+    Signed-off-by: Jon TURNEY <jon.turney@dronecode.org.uk>
+    Reviewed-by: Colin Harrison <colin.harrison@virgin.net>
+
+commit a9aca218f557c723e637287272819a7c17174e1e
+Author: Roland Cassard <roland.cassard@gmail.com>
+Date:   Sat Oct 23 18:12:36 2010 +0100
+
+    hw/xwin: Don't assume we'll always have converted the clipboard selection after 2 attempts
+    
+    Rather than knowing we have to call winProcessXEventsTimeout() for up to 2 WIN_XEVENTS_CONVERT messages, process
+    all messages in winProcessXEventsTimeout() until either: (i) the time out expired, (ii) an error occurred, or
+    (iii) received a WIN_XEVENTS_NOTIFY messaage indicating the data has been to put on the clipboard.
+    
+    Reviewed-by: Jon TURNEY <jon.turney@dronecode.org.uk>
+    Reviewed-by: Colin Harrison <colin.harrison@virgin.net>
+
+commit 75fe336b6c903133ae386f5cb8d308a0e9e2768e
+Author: Michel Hummel <hummel.michel@gmail.com>
+Date:   Fri Aug 6 15:23:52 2010 +0100
+
+    hw/xwin: Mitigate a race condition in clipboard thread initialization
+    
+    Remove the variables g_fClipboardLaunched and g_fClipboardStarted from
+    winInitializeGlobals(), as their re-initialization is handled in the
+    file hw/xwin/InitOutput.c.
+    
+    Re-initializing g_fClipboardLaunched and g_fClipboardStarted during
+    the server reset procedure can lead to the clipboard thread being
+    launched two times and sometimes leads to a crash of the X server...
+    
+    Reviewed-by: Jon TURNEY <jon.turney@dronecode.org.uk>
+    Reviewed-by: Colin Harrison <colin.harrison@virgin.net>
+
+commit 95b1391fe3d3192abdfbad4140513b2112cfa02a
+Author: Jon TURNEY <jon.turney@dronecode.org.uk>
+Date:   Mon Apr 5 13:57:24 2010 +0100
+
+    hw/xwin: Chain IOError handlers to avoid longjmp across threads
+    
+    Avoid crashes on shutdown due to the undefined behaviour of calling longjmp() on the
+    result of setjmp() from a different thread, by chaining IOError handlers and only
+    jumping back up to the frame for this thread
+    
+    Signed-off-by: Jon TURNEY <jon.turney@dronecode.org.uk>
+    Reviewed-by: Colin Harrison <colin.harrison@virgin.net>
+
+commit 0659437f5ec0e3f646373394f5f9c5461e2170f3
+Author: Yaakov Selkowitz <yselkowitz@users.sourceforge.net>
+Date:   Sat Feb 20 23:40:53 2010 -0600
+
+    hw/xwin: Improve XWinrc loading and error recovery
+    
+    If $HOME/.XWinrc is present but badly formed, ignore it and try
+    system.XWinrc instead.  If neither file is present or both are badly
+    formed, provide a built-in default which gives the user the chance to
+    load their new or fixed configuration without restarting.
+    
+    Signed-off-by: Yaakov Selkowitz <yselkowitz@users.sourceforge.net>
+    Reviewed-by: Jon TURNEY <jon.turney@dronecode.org.uk>
+    Reviewed-by: Colin Harrison <colin.harrison@virgin.net>
+
+commit 47c7b6d3e626497747ae2780f259a15b8e6c846f
+Author: Michel Hummel <hummel.michel@gmail.com>
+Date:   Sat Oct 23 18:35:57 2010 +0100
+
+    hw/xwin: Remove no-longer needed tricks used to prevent the clipboard client from being killed
+    
+    Remove no-longer needed tricks used to hide the clipboard client from XDM to prevent
+    it from being killed
+    
+    - Delete XQuery wrapper used to hide clipboard client
+    - Delete XDMCP mode heuristic which waits until some magic number of connections have
+    been established before starting the clipboard
+    
+    We still need the EstablishConnection wrapper to ensure that the clipboard client isn't
+    the first client (causing a server restart if it disconnects)
+    
+    Reviewed-by: Jon TURNEY <jon.turney@dronecode.org.uk>
+    Reviewed-by: Colin Harrison <colin.harrison@virgin.net>
+
+commit c1bf3baa44fbd8af33a2b3ce045324485b85a7a7
+Author: Michel Hummel <hummel.michel@gmail.com>
+Date:   Sun Oct 31 14:53:02 2010 +0000
+
+    hw/xwin: Automatically restart clipboard thread
+    
+    Automatically restart clipboard thread on unexpected exit
+    
+    Reviewed-by: Jon TURNEY <jon.turney@dronecode.org.uk>
+    Reviewed-by: Colin Harrison <colin.harrison@virgin.net>
+
+commit ae981341a98f7a1ee5d6f3bc8ebde04e42042dc5
+Author: Jon TURNEY <jon.turney@dronecode.org.uk>
+Date:   Mon Feb 8 22:37:30 2010 +0000
+
+    hw/xwin: Give the X window for the clipboard integration client a name
+    
+    This makes it a bit easier to find when staring at the output of
+    'xwininfo -tree -root'
+    
+    Signed-off-by: Jon TURNEY <jon.turney@dronecode.org.uk>
+    Reviewed-by: Colin Harrison <colin.harrison@virgin.net>
+
+commit b1093241f3e28223a139e7cb5c3ae85182bdf545
+Author: Jon TURNEY <jon.turney@dronecode.org.uk>
+Date:   Tue Oct 19 20:47:21 2010 +0100
+
+    Xext: Warning fix for shm.c
+    
+    shm.c: In function 'CheckForShmSyscall':
+    shm.c:182:5: warning: function declaration isn't a prototype [-Wstrict-prototypes]
+    
+    Signed-off-by: Jon TURNEY <jon.turney@dronecode.org.uk>
+    Reviewed-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Reviewed-by: Colin Harrison <colin.harrison@virgin.net>
+
+commit 02775efb8930291cc62fc84086c97da75b912a55
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Tue Jan 24 17:35:04 2012 -0500
+
+    int10: Fix unmapping of the BIOS scratch area
+    
+    342f3eac8460fc48cfad1f1d7be939d671e6e1cd introduced a bug, 'base' is
+    incremented before use.  The old code corrected this when unmapping, so
+    the new code should too.
+    
+    Signed-off-by: Adam Jackson <ajax@redhat.com>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit e1085a0da0b9299f48b3dc41dee5e33bf022bea5
+Author: Chase Douglas <chase.douglas@canonical.com>
+Date:   Wed Jan 18 19:09:21 2012 -0800
+
+    Don't set X and Y valuators for indirect touch events
+    
+    For expediency, it made sense to always have the X and Y axes set for
+    direct touch device event propagation. The last X and Y values are
+    stored internally. However, indirect device touch event propagation
+    does not depend on the touch's X and Y values. Thus, we don't need to
+    set the values for every indirect touch event.
+    
+    On top of this, the previous X and Y values aren't stored for indirect
+    touches, so without this change the axes get erroneously set to 0.
+    
+    Signed-off-by: Chase Douglas <chase.douglas@canonical.com>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit 5201310559fe8708ba8278bdef77cdc1673fff71
+Author: Daniel Stone <daniel@fooishbar.org>
+Date:   Thu Jan 19 22:40:32 2012 +1100
+
+    UngrabAllDevices: Don't kill clients if not told to
+    
+    The kill_client argument to UngrabAllClients specifies if we want to
+    kill the client holding the grab or just deactivate the grab.
+    
+    Signed-off-by: Daniel Stone <daniel@fooishbar.org>
+    Reported-by: Julien Cristau <jcristau@debian.org>
+    Reviewed-by: Cyril Brulebois <kibi@debian.org>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit 9b1e18f42a05a79d9ebec372a37b47442e397ca9
+Author: Chase Douglas <chase.douglas@canonical.com>
+Date:   Wed Jan 18 18:04:14 2012 -0800
+
+    Only update pointer motion data for pointer emulated touch events
+    
+    Signed-off-by: Chase Douglas <chase.douglas@canonical.com>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit f00e5b02f5d9928cd88961e761da91b5faff1b32
+Author: Chase Douglas <chase.douglas@canonical.com>
+Date:   Wed Jan 18 18:04:13 2012 -0800
+
+    Only scale direct device touch coordinates
+    
+    Indirect touch devices provide valuator values in pure device
+    coordinates. They also don't need to be fixed up for screen crossings.
+    
+    Signed-off-by: Chase Douglas <chase.douglas@canonical.com>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit 24dc0389da3970e83e4908039957567e55f9ea05
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Mon Jan 16 12:53:39 2012 +1000
+
+    include: Fix comment typo
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit 954bb994842aa43a0f272858e65036c016b729a4
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Mon Jan 9 00:40:10 2012 -0800
+
+    configure.ac: Remove MIEXT_SHADOW_LIB from XORG_LIBS
+    
+    This is provided by dixmods/libshadow.so and is not part of the main binary.
+    
+    This addresses a build failure on darwin due to MIEXT_SHADOW_LIB having
+    unsatisfied dependencies (FB_LIB) in XORG_LIBS.
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+
+commit ba0f5cc1961bfcfb5e7d66ac5df19d429952631d
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Mon Jan 9 00:14:29 2012 -0800
+
+    xfree86: Don't link libxorgxkb against libdix.la
+    
+    libdix.a is already provided by XSERVER_LIBS.  Including it in libxorgxkb
+    results can result in duplicate symbols landing in the Xorg binary on some
+    configurations (buggy glibtool on darwin).
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+
+commit 2387fb23858d645f15061bc7bcbe4654386ba116
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Fri Jan 13 12:00:14 2012 -0800
+
+    sdksyms.sh: Exit on error rather than building an empty symbol table
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+    Reviewed-by: Keith Packard <keithp@keithp.com>
+
+commit cd89482088f71ed517c2e88ed437e4752070c3f4
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Wed Jan 11 12:17:06 2012 -0800
+
+    test: Fix linking issues when building unit tests without the Xorg DDX
+    
+    This allows unit tests to build and run successfully on darwin when
+    only the Xvfb or XQuartz DDX is built.
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+    Signed-off-by: Jon TURNEY <jon.turney@dronecode.org.uk>
+    Reviewed-by: Jon TURNEY <jon.turney@dronecode.org.uk>
+
+commit 78d39b3222a4b0b92d840137f5455d3a20dd6906
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Sun Jan 15 02:26:43 2012 -0800
+
+    Revert "glx: don't leak fbconfigs"
+    
+    This reverts commit d26fae246d7c451b4d5ffe24fdb959d4bd00b107.
+    
+    This patch free()s memory in __glXScreenDestroy which was allocated in
+    glxdricommon (which isn't in every DDX).  That breaks abstraction and
+    causes a crash when XQuartz quits, because it results in freeing a pointer
+    that was never allocated.
+    
+    The correct fix is to do this cleanup in __glXDRIscreenDestroy.
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+
+commit f9e6858d5c10be6a8439c0f18bfb2325fa0ee070
+Author: Chase Douglas <chase.douglas@canonical.com>
+Date:   Wed Jan 11 07:38:12 2012 -0800
+
+    Use event time instead of CurrentTime for grab times
+    
+    When {XI,X,}AllowEvents is called, the timestamp is compared against the
+    grab time to ensure that the request pertains to the current grab in the
+    server. While many clients may use CurrentTime (client-side), the
+    timestamp of the event causing the grab is also valid.
+    
+    This change ensures that the server's notion of the grab time is the
+    time of the event that activated the grab rather than the time that the
+    grab is actually activated.
+    
+    This bug was exposed through nested touch then pointer grabs.
+    
+    Signed-off-by: Chase Douglas <chase.douglas@canonical.com>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit a6273cc85c01fc020643a68e49ca4e7a2d2ae898
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Thu Jan 12 10:17:34 2012 +1000
+
+    xfree86: mention udev in the xorg.conf manpage AutoAddDevices section
+    
+    And point out what "hotplugging" means.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Julien Cristau <jcristau@debian.org>
+
+commit a60d87ffe6d9a15fa830c8da2947c72487863c2b
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Wed Jan 11 09:04:02 2012 +1000
+
+    os: prettify backtrace output
+    
+    Changes to output:
+    * "Backtrace:" now appears on a separate line _with_ a timestamp
+    * A blank line is inserted after the last backtrace line
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Julien Cristau <jcristau@debian.org>
+
+commit c495a839ace7fcc1f1fe414d3d3ba04f08885434
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Wed Jan 11 09:01:05 2012 +1000
+
+    include: prettify BUG_WARN output
+    
+    ErrorF output is prefixed with a timestamp, so the previous output would
+    look like this:
+    
+    [ 50.423] BUG: triggered 'if (dev->valuator->numAxes < 2)'
+    BUG: getevents.c:842 in scale_to_desktop()
+    
+    Change this to have the prefix on both lines:
+    [ 50.423] BUG: triggered 'if (dev->valuator->numAxes < 2)'
+    [ 50.423] BUG: getevents.c:842 in scale_to_desktop()
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Julien Cristau <jcristau@debian.org>
+
+commit bbb6b8c834e0e1491ca14403b5d0840dd14380d3
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Fri Jan 6 13:20:45 2012 +1000
+
+    render: don't bother with animated cursors on floating slaves (#39989)
+    
+    X.Org Bug 39989 <http://bugs.freedesktop.org/show_bug.cgi?id=39989>
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Jeremy Huddleston <jeremyhu@apple.com>
+
+commit 35bd77e9d0701daae87d681900d749604fc6471f
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Mon Jan 9 15:04:10 2012 +1000
+
+    dix: Update pointer limits for floating devices too (#43635)
+    
+    When the screen is restructured, the pointer limits need to be reset for
+    floating slave devices as well, not just for master pointers. Only skip
+    devices that don't have a cursor (attached slaves and keyboard)
+    
+    Bug reproducer: float an absolute slave device, rotate the screen - the
+    device is now confined to a section of the screen only.
+    
+    X.Org Bug 43635 <http://bugs.freedesktop.org/show_bug.cgi?id=43635>
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Chase Douglas <chase.douglas@canonical.com>
+
+commit 5de0c2582f9c80874b4f4a5b86d250059bfaa85b
+Author: Keith Packard <keithp@keithp.com>
+Date:   Thu Jan 12 12:10:07 2012 -0800
+
+    Revert "os: Repack ConnectionOutput for LP64"
+    
+    This reverts commit d5f724544afd2949cebfcf4f0b4510ec0c701bec.
+    
+    ABI change pended for 1.13
+
+commit 11331305d4acd117b71502e45c0e86684fa9280b
+Author: Keith Packard <keithp@keithp.com>
+Date:   Thu Jan 12 12:10:03 2012 -0800
+
+    Revert "dix: Repack ClientRec"
+    
+    This reverts commit f702372822dadb1fef92cfc25086481f640147b3.
+    
+    ABI change pended for 1.13
+
+commit d9eeede52f2d5ba9dd6368d988a5d2abb3b8b4e5
+Author: Keith Packard <keithp@keithp.com>
+Date:   Thu Jan 12 12:09:59 2012 -0800
+
+    Revert "dix: Pull client-is-local flag up to the ClientRec"
+    
+    This reverts commit 49d38b75c8f3276cfce33ffe6b8c4fbeb1081b96.
+    
+    ABI change pended for 1.13
+
+commit 3be37375eed9eb9cfb9c42821deda4213af4057b
+Author: Keith Packard <keithp@keithp.com>
+Date:   Thu Jan 12 12:09:55 2012 -0800
+
+    Revert "dix: Extend initial connection handshake for forwarding proxies"
+    
+    This reverts commit 78fa121f4097d29458e5453c13473595df06e26e.
+    
+    ABI change pended for 1.13
+
+commit 5b9f5c8a53aca03c3c73bc10bd362987621a9d72
+Author: Keith Packard <keithp@keithp.com>
+Date:   Thu Jan 12 12:09:44 2012 -0800
+
+    Revert "os: Hide the Connection{In,Out}put implementation details"
+    
+    This reverts commit 48e7a2ef574c8b38c4f8f07b45f54c8bfd02552b.
+    
+    ABI change pended for 1.13
+
+commit 5867d453cebebec6b4f10409af86b603755fbf51
+Author: Keith Packard <keithp@keithp.com>
+Date:   Thu Jan 12 12:09:34 2012 -0800
+
+    Revert "dix: Fix types in WindowOptRec"
+    
+    This reverts commit a4553019a10b4e01cc06f3081db71a83338697b4.
+    
+    ABI change pended for 1.13
+
+commit e722ad6c3efa57b806ca0f2dc13114bd3619a88c
+Merge: e476af4 4e44580
+Author: Keith Packard <keithp@keithp.com>
+Date:   Mon Jan 9 13:22:28 2012 -0800
+
+    Merge remote-tracking branch 'jturney/rpavlik-xwin-fixes'
+
+commit e476af417d83730b11054f4e5b127ab5540bb332
+Merge: f4956fa 1460083
+Author: Keith Packard <keithp@keithp.com>
+Date:   Mon Jan 9 13:17:37 2012 -0800
+
+    Merge remote-tracking branch 'whot/multitouch'
+
+commit f4956faab9ccf9aba6cf9603f4489f5dad19a347
+Author: Zhigang Gong <zhigang.gong@linux.intel.com>
+Date:   Wed Jan 4 07:01:19 2012 +0000
+
+    mi/mibitblt: Fix an overflow bug of bit shift.
+    
+    When depth equal to 32 and planeMask equal to 0, the overflow will
+    occur and cause the pixmap can't be cleared. There are some test
+    cases in XTS hit this bug, and this fix can eliminate the corresponding
+    failures.
+    
+    Signed-off-by: Zhigang Gong <zhigang.gong@linux.intel.com>
+    Reviewed-by: Adam Jackson <ajax@redhat.com>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit 6d6d4cb6043905d850834946e9bfc526ed5a9ef7
+Author: Matthieu Herrb <matthieu.herrb@laas.fr>
+Date:   Mon Jan 2 13:23:59 2012 +0000
+
+    Add OpenBSD support to DetermineClientCmd()
+    
+    Uses kvm_getargv() from libkvm.
+    
+    Signed-off-by: Matthieu Herrb <matthieu.herrb@laas.fr>
+    Reviewed-by: Adam Jackson <ajax@redhat.com>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit a55214d11916b707b7c8c65c555cc0cbb59ac503
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Tue Jan 3 06:22:24 2012 +0000
+
+    Always install xaa sdk headers
+    
+    Always install XAA SDK headers so drivers still build even with
+    --disable-xaa
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Jeremy Huddleston <jeremyhu@apple.com>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit dafc327f3c75205cf7e5360e9ccd71c7457f61a5
+Author: Matthieu Herrb <matthieu.herrb@laas.fr>
+Date:   Mon Jan 2 13:11:41 2012 +0000
+
+    UnloadSubModule(): accept pointer value '1' and ignore it.
+    
+    Some driver modules try to unload submodules that are now built-in.
+    
+    Signed-off-by: Matthieu Herrb <matthieu.herrb@laas.fr>
+    Reviewed-by: Julien Cristau <jcristau@debian.org>
+    Reviewed-by: Adam Jackson <ajax@redhat.com>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit 8db029064bcbe378061e812bb8136608e3123226
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Wed Jan 4 16:39:33 2012 +0000
+
+    vgahw: Fix DACDelay() macro to use the driver's vtable
+    
+    We don't want to unconditionally use I/O routines here, since if the
+    driver is using mmap'd VGA ports then the I/O handle won't be set up.
+    
+    Tested-by: Jeff Chua <jeff.chua.linux@gmail.com>
+    Signed-off-by: Adam Jackson <ajax@redhat.com>
+    Reviewed-by: Mark Kettenis <kettenis@openbsd.org>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit 63a8012947fc44ccb3d661dec88dbda14e7f3c04
+Author: Chris Halse Rogers <christopher.halse.rogers@canonical.com>
+Date:   Thu Jan 5 01:22:40 2012 +0000
+
+    Revert "dix: don't return BadMatch from GetProperty (#23562)"
+    
+    This reverts commit f04fe06ae244b851b38be824b1a80f2f8a030591.
+    
+    dixLookupWindow no longer returns BadMatch. No other caller was checking
+    for it, so this problem is now fixed in the utility function.
+    
+    Signed-off-by: Christopher James Halse Rogers <christopher.halse.rogers@canonical.com>
+    Reviewed-by: Adam Jackson <ajax@redhat.com>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit ef492e9797b6d4f6bbc25e86bedc24477819fde7
+Author: Chris Halse Rogers <christopher.halse.rogers@canonical.com>
+Date:   Thu Jan 5 01:22:39 2012 +0000
+
+    dix: Return BadWindow rather than BadMatch from dixLookupWindow
+    
+    dixLookupWindow uses dixLookupDrawable internally, which returns
+    BadMatch when the XID matches a non-Window drawable.  Users
+    of dixLookupWindow don't care about this, just that it's not
+    a valid Window.
+    
+    This is a generalised version of the fix for X.Org Bug 23562,
+    where GetProperty was incorrectly returning BadMatch. Auditing other
+    window requests, all that I checked would incorrectly return BadMatch
+    in these circumstances.  An incomplete list of calls that could
+    incorrectly return BadMatch is: ListProperties, SetSelectionOwner,
+    {Destroy,Map,Unmap}{,Sub}Window.
+    
+    None of the callers of dixLookupWindow, except for GetProperty, check
+    for BadMatch
+    
+    Signed-off-by: Christopher James Halse Rogers <christopher.halse.rogers@canonical.com>
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+    Reviewed-by: Adam Jackson <ajax@redhat.com>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit ff891bbf68caefc22cabb541b6b56af086ac2280
+Author: Arthur Taylor <art@ified.ca>
+Date:   Fri Jan 6 07:21:37 2012 +0000
+
+    linux: Use K_OFF VT KB mode over K_RAW if available.
+    
+    Linux kernels since 2.6.38 (March 2011) have an VT KB mode K_OFF in
+    which special keys (like Ctrl+C) are not interpreted and input is not
+    buffered. Use of this mode over K_RAW removes the need for a
+    xf86ConsoleHandler to drain the VT input buffer, removing the grief it
+    causes when it goes wrong or is (de)initialized out-of-order. (This
+    also saves a few needless context switches per key event.)
+    
+    If K_OFF is not defined or not understood by the kernel, K_RAW and the
+    previous method is used as a fall-back.
+    
+    Reviewed-by: Adam Jackson <ajax@redhat.com>
+    Signed-off-by: Arthur Taylor <art@ified.ca>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit 0b113f7cdf5228dccd51a749a339c8669e3f20ff
+Merge: 0b2c649 777bf90
+Author: Keith Packard <keithp@keithp.com>
+Date:   Mon Jan 9 13:07:25 2012 -0800
+
+    Merge commit '777bf90abeac37087a3d0538b847742523d5acf2'
+
+commit 0b2c6491c5e5e1c9ba067299f3de61f5acee263b
+Merge: 1f5587e 6b19436
+Author: Keith Packard <keithp@keithp.com>
+Date:   Mon Jan 9 11:40:23 2012 -0800
+
+    Merge remote-tracking branch 'whot/for-keith'
+
+commit 1f5587e14406c083687203030db6a11691ac9d9f
+Merge: a97252d 6269977
+Author: Keith Packard <keithp@keithp.com>
+Date:   Mon Jan 9 11:37:59 2012 -0800
+
+    Merge remote-tracking branch 'kibi/master'
+
+commit a97252db24669a3e26a935024ea38b8a28d30586
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Tue Dec 20 19:49:47 2011 -0800
+
+    XQuartz: GL: Buildfix for recent GLX changes
+    
+    dispatch.h was leftover from an earlier implementation and is no longer
+    needed, so remove it since including it causes a build failure due to
+    conflicts between GL/gl.h and OpenGL/gl.h
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+    Reviewed-by: Jamey Sharp <jamey@minilop.net>
+    Reviewed-by: Ian Romanick <ian.d.romanick@intel.com>
+
+commit 6b194365364cb7a74c2b19f4a8c5e0e0404339da
+Author: Andreas Wettstein <wettstein509@solnet.ch>
+Date:   Wed Nov 30 20:20:21 2011 +0100
+
+    xkb: Message actions suppress other key presses #28575
+    
+    When a key to which a message action is mapped is held down, presses of
+    other keys were not registered.
+    
+    Signed-off-by: Andreas Wettstein <wettstein509@solnet.ch>
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit 4e44580efd4522ced644c698336d2f6ea54f3917
+Author: Ryan Pavlik <rpavlik@iastate.edu>
+Date:   Fri Nov 4 14:29:01 2011 -0500
+
+    hw/xwin: Include manifest file in the dist tarball
+    
+    Commit c02638fd added the manifest file, but didn't add it to EXTRA_DIST.
+    
+    Signed-off-by: Ryan Pavlik <rpavlik@iastate.edu>
+    Reviewed-by: Colin Harrison <colin.harrison@virgin.net>
+    Reviewed-by: Jon TURNEY <jon.turney@dronecode.org.uk>
+
+commit c763fe51b8ff18e204caab9cf97376a1b72324f0
+Author: Ryan Pavlik <rpavlik@iastate.edu>
+Date:   Fri Nov 4 13:17:50 2011 -0500
+
+    hw/xwin: Fix duplicate definition of HAS_WINSOCK when building for MinGW
+    
+    hw/xwin: Fix duplicate definition of HAS_WINSOCK when building for MinGW
+    but still provide it if building for Win32 without autotools
+    
+    xserver/hw/xwin/winclipboard.h:42:0: warning: "HAS_WINSOCK" redefined
+    ../../include/xwin-config.h:11:0: note: this is the location of the previous definition
+    
+    Signed-off-by: Ryan Pavlik <rpavlik@iastate.edu>
+    Reviewed-by: Colin Harrison <colin.harrison@virgin.net>
+    Reviewed-by: Jon TURNEY <jon.turney@dronecode.org.uk>
+
+commit 3d80f202b06227f7fc03b674f5fbf809c2d1efb2
+Author: Ryan Pavlik <rpavlik@iastate.edu>
+Date:   Fri Oct 28 09:56:19 2011 -0500
+
+    hw/xwin: Fix possible null ptr deref in winMWExtWMDecorateWindow()
+    
+    Signed-off-by: Ryan Pavlik <rpavlik@iastate.edu>
+    Reviewed-by: Colin Harrison <colin.harrison@virgin.net>
+    Reviewed-by: Jon TURNEY <jon.turney@dronecode.org.uk>
+
+commit c824004b4592b3d86b3514be7cab37b36642b13a
+Author: Ryan Pavlik <rpavlik@iastate.edu>
+Date:   Fri Oct 28 09:56:11 2011 -0500
+
+    hw/xwin: Fix possible null ptr deref in winMWExtWMRestackFrame()
+    
+    Signed-off-by: Ryan Pavlik <rpavlik@iastate.edu>
+    Reviewed-by: Colin Harrison <colin.harrison@virgin.net>
+    Reviewed-by: Jon TURNEY <jon.turney@dronecode.org.uk>
+
+commit 3c501691a0a9fa17da4e2cc84f55010ef2a4790d
+Author: Ryan Pavlik <rpavlik@iastate.edu>
+Date:   Fri Oct 28 09:52:34 2011 -0500
+
+    hw/xwin: Fix possible null ptr deref in winActivateAppPrimaryDD()
+    
+    Signed-off-by: Ryan Pavlik <rpavlik@iastate.edu>
+    Reviewed-by: Colin Harrison <colin.harrison@virgin.net>
+    Reviewed-by: Jon TURNEY <jon.turney@dronecode.org.uk>
+
+commit a492c02649de4c60ac21a7fcb6b7c730b558dca6
+Author: Ryan Pavlik <rpavlik@iastate.edu>
+Date:   Fri Oct 28 09:49:00 2011 -0500
+
+    hw/xwin: Fix possible null ptr deref in winActivateAppNativeGDI()
+    
+    Signed-off-by: Ryan Pavlik <rpavlik@iastate.edu>
+    Reviewed-by: Colin Harrison <colin.harrison@virgin.net>
+    Reviewed-by: Jon TURNEY <jon.turney@dronecode.org.uk>
+
+commit b907079596bc8600d3420c189409053b0b5016f6
+Author: Ryan Pavlik <rpavlik@iastate.edu>
+Date:   Fri Oct 28 09:46:56 2011 -0500
+
+    hw/xwin: Clarify an if statement mixed with ifdef in winSetEngine()
+    
+    Use the same pattern as elsewhere so it's a bit clearer what we
+    are checking
+    
+    Signed-off-by: Ryan Pavlik <rpavlik@iastate.edu>
+    Reviewed-by: Colin Harrison <colin.harrison@virgin.net>
+    Reviewed-by: Jon TURNEY <jon.turney@dronecode.org.uk>
+
+commit 5c35dd7be716a3464f012c92866919a3606f9beb
+Author: Ryan Pavlik <rpavlik@iastate.edu>
+Date:   Thu Oct 27 15:49:59 2011 -0500
+
+    hw/xwin: Fix rrScreenSetSize function pointer mismatch
+    
+    winrandr.c: In function ‘winRandRInit’:
+    winrandr.c:218:31: warning: assignment from incompatible pointer type
+    
+    Fix winRandRScreenSetSize() function signature to match RRScreenSetSizeProcPtr type,
+    to align with commit fd9331f6 'Revert "Separate out screen size and screen pixmap
+    sizes in RRScreenSizeSet"'
+    
+    This is fall-out from the late revert of RANDR 1.4 in the 1.10 release cycle, it will
+    probably need to be reverted if/when that goes back in again.
+    
+    Signed-off-by: Ryan Pavlik <rpavlik@iastate.edu>
+    Reviewed-by: Colin Harrison <colin.harrison@virgin.net>
+    Reviewed-by: Jon TURNEY <jon.turney@dronecode.org.uk>
+
+commit aa07d82908c28f4d083c0c55846a5b34f0e1ef31
+Author: Ryan Pavlik <rpavlik@iastate.edu>
+Date:   Fri Oct 28 09:56:26 2011 -0500
+
+    hw/xwin: Remove an empty #if 0/#endif
+    
+    Um... yeah
+    
+    Signed-off-by: Ryan Pavlik <rpavlik@iastate.edu>
+    Reviewed-by: Colin Harrison <colin.harrison@virgin.net>
+    Reviewed-by: Jon TURNEY <jon.turney@dronecode.org.uk>
+
+commit d459f42e64f2bafef5124a456d2ad6fa2cd92a7f
+Author: Ryan Pavlik <rpavlik@iastate.edu>
+Date:   Fri Oct 28 09:52:37 2011 -0500
+
+    hw/xwin: Fix double-free in error path in winQueryRGBBitsAndMasks()
+    
+    Signed-off-by: Ryan Pavlik <rpavlik@iastate.edu>
+    Reviewed-by: Colin Harrison <colin.harrison@virgin.net>
+    Reviewed-by: Jon TURNEY <jon.turney@dronecode.org.uk>
+
+commit cc7dedd6b51a01996ddab10fe8b84e30700d1570
+Author: Ryan Pavlik <rpavlik@iastate.edu>
+Date:   Fri Oct 28 09:46:45 2011 -0500
+
+    hw/xwin: Fix a memory leak in error path in winInitWM()
+    
+    Signed-off-by: Ryan Pavlik <rpavlik@iastate.edu>
+    Reviewed-by: Colin Harrison <colin.harrison@virgin.net>
+    Reviewed-by: Jon TURNEY <jon.turney@dronecode.org.uk>
+
+commit 777bf90abeac37087a3d0538b847742523d5acf2
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Mon Jul 18 15:07:07 2011 -0400
+
+    xfree86: Remove the pretense of EDID v2 support
+    
+    We don't do anything with EDID v2 blocks besides publish them on the
+    root window.  Worse, the check deleted by this patch would attempt to
+    take a checksum of arbitrary memory if the rawData array isn't 256+
+    bytes long (and, for the monitors mentioned, it probably is only 128).
+    
+    Reviewed-by: Mark Kettenis <kettenis@openbsd.org>
+    Signed-off-by: Adam Jackson <ajax@redhat.com>
+
+commit 8f9bdfd293ad8e45755efe8d764b4dcc2a724f51
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Tue Dec 13 21:23:12 2011 -0500
+
+    dix: Tune dixLookupDrawable for success
+    
+    The vast vast vast majority of resource lookups are successful.  Move some
+    work to the error paths so we don't punish success.
+    
+    Before:
+    40000000 trep @   0.0009 msec (1109091.3/sec): PutImage 10x10 square
+    60000000 trep @   0.0005 msec (2072652.2/sec): ShmPutImage 10x10 square
+    
+    After:
+    40000000 trep @   0.0009 msec (1148346.9/sec): PutImage 10x10 square
+    60000000 trep @   0.0005 msec (2091666.1/sec): ShmPutImage 10x10 square
+    
+    Reviewed-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Signed-off-by: Adam Jackson <ajax@redhat.com>
+
+commit 83a98543b58c661a22574a6f8d8f9d777c0955b8
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Tue Dec 13 20:23:40 2011 -0500
+
+    dix: Tune dtrace hooks around Dispatch
+    
+    Don't call LookupMajorName if the hooks aren't active, it's quite expensive.
+    
+    Before:
+    40000000 trep @   0.0009 msec (1087458.5/sec): PutImage 10x10 square
+    60000000 trep @   0.0005 msec (2012238.6/sec): ShmPutImage 10x10 square
+    
+    After:
+    40000000 trep @   0.0009 msec (1109091.3/sec): PutImage 10x10 square
+    60000000 trep @   0.0005 msec (2072652.2/sec): ShmPutImage 10x10 square
+    
+    Reviewed-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Signed-off-by: Adam Jackson <ajax@redhat.com>
+
+commit 11977fab546da35d579ebe285e3c26864007805e
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Tue Dec 13 21:00:05 2011 -0500
+
+    xace: ricer tuning for XaceHook
+    
+    gcc doesn't want to hoist the check for XaceHooks[hook] != NULL above the
+    varargs code for some reason, so do it ourselves.
+    
+    Before:
+    40000000 trep @   0.0010 msec (1050420.2/sec): PutImage 10x10 square
+    60000000 trep @   0.0005 msec (1921147.6/sec): ShmPutImage 10x10 square
+    
+    After:
+    40000000 trep @   0.0009 msec (1087458.5/sec): PutImage 10x10 square
+    60000000 trep @   0.0005 msec (2012238.6/sec): ShmPutImage 10x10 square
+    
+    Reviewed-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Signed-off-by: Adam Jackson <ajax@redhat.com>
+
+commit a4553019a10b4e01cc06f3081db71a83338697b4
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Fri Jun 17 14:30:06 2011 -0400
+
+    dix: Fix types in WindowOptRec
+    
+    No reason for these to be 64 bits on LP64.
+    
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+    Signed-off-by: Adam Jackson <ajax@redhat.com>
+
+commit c44ef2e1ff7bad168c348da63477b4636b3054fd
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Fri Jun 17 14:17:09 2011 -0400
+
+    os: Minor header cleanup
+    
+    Move some constants near their only users, and remove some
+    getdtablesize() logic that's second-guessing configure.
+    
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+    Signed-off-by: Adam Jackson <ajax@redhat.com>
+
+commit 48e7a2ef574c8b38c4f8f07b45f54c8bfd02552b
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Fri Jun 17 14:03:01 2011 -0400
+
+    os: Hide the Connection{In,Out}put implementation details
+    
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+    Signed-off-by: Adam Jackson <ajax@redhat.com>
+
+commit 78fa121f4097d29458e5453c13473595df06e26e
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Fri Jun 17 13:43:38 2011 -0400
+
+    dix: Extend initial connection handshake for forwarding proxies
+    
+    Forwarding proxies like sshd will appear to be local, even though they
+    aren't really.  This leads to weird behaviour for extensions that truly
+    require running under the same OS services as the client, like MIT-SHM
+    and DRI2.
+    
+    Add two new legal values for the initial connection's byteOrder field,
+    'r' and 'R'.  These act like 'l' and 'B' respectively, but have the side
+    effect of forcing the client to be treated as non-local.  Forwarding
+    proxies should attempt to munge the first packet of the connection
+    accordingly; older servers will reject connections thusly munged, so the
+    proxy should fall back to passthrough if the munged connection attempt
+    fails.
+    
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+    Signed-off-by: Adam Jackson <ajax@redhat.com>
+
+commit 49d38b75c8f3276cfce33ffe6b8c4fbeb1081b96
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Fri Jun 17 13:22:41 2011 -0400
+
+    dix: Pull client-is-local flag up to the ClientRec
+    
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+    Signed-off-by: Adam Jackson <ajax@redhat.com>
+
+commit f702372822dadb1fef92cfc25086481f640147b3
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Fri Jun 17 12:58:25 2011 -0400
+
+    dix: Repack ClientRec
+    
+    sizeof(ClientRec)   ILP32   LP64
+    before                120    184
+    after                 104    136
+    
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+    Signed-off-by: Adam Jackson <ajax@redhat.com>
+
+commit d5f724544afd2949cebfcf4f0b4510ec0c701bec
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Thu Jun 16 17:40:24 2011 -0400
+
+    os: Repack ConnectionOutput for LP64
+    
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+    Signed-off-by: Adam Jackson <ajax@redhat.com>
+
+commit ed8f3c4bd17bddf1369d050ea8e63b9451d887ce
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Fri Jan 6 10:10:16 2012 +1000
+
+    Xi: change XIChangeDeviceProperty from const pointer to const void *
+    
+    According to Daniel Kurtz, a typedef void *pointer is a atomic type. So a
+    'const pointer' is equivalent to 'void* const' instead of the intended
+    'const void*'.
+    
+    This technically changes the ABI, but we don't bump it for this.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Chase Douglas <chase.douglas@canonical.com>
+
+commit 146008358e9dd9b178bd5305bcc1680ca16c328d
+Author: Chase Douglas <chase.douglas@ubuntu.com>
+Date:   Thu Jan 5 16:43:40 2012 -0800
+
+    Remove last listener on touch reject
+    
+    The current code short-circuits around the block that removes the
+    rejecting listener if it is the only listener left. It also does not
+    delete the touchpoint record if the touch has not physically ended.
+    
+    This change ensures the listener is removed under these circumstances.
+    
+    Signed-off-by: Chase Douglas <chase.douglas@ubuntu.com>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit e30c3c5c59abba9713cf3be532a46220aa9aeeca
+Author: Chase Douglas <chase.douglas@canonical.com>
+Date:   Wed Jan 4 15:50:40 2012 -0800
+
+    Don't end touchpoint if owning client hasn't accepted/rejected
+    
+    A touchpoint is ended when no further processing will take place for it.
+    This includes the situation where there is only one grabbing client, and
+    the client receives a touch end before it has accepted/rejected the
+    touchpoint.
+    
+    This change ensures that a delivered touch end event is converted into a
+    touch update event under the above scenario. If the event is left as a
+    touch end event, the touchpoint will be ended in ProcessTouchEvent().
+    
+    Signed-off-by: Chase Douglas <chase.douglas@canonical.com>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit 075a473e538efb771497b762101694b6c0c45c2b
+Author: Carlos Garnacho <carlosg@gnome.org>
+Date:   Tue Jan 3 02:43:40 2012 +0100
+
+    dix: Set XITouchEmulatingPointer on events from the touch sequence emulating pointer events
+    
+    The internal flag is kept around, merely translated to XITouchEmulatingPointer
+    when creating the XI2 events that will be delivered to the client.
+    
+    Signed-off-by: Carlos Garnacho <carlosg@gnome.org>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Chase Douglas <chase.douglas@canonical.com>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit e8db10a033491059ddf2b4777c9fafed14c403e8
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Fri Jan 6 13:49:04 2012 +1000
+
+    Require inputproto 2.1.99.5
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit 223ba8b46eacbc8e573bc5136a3d6677f3e39099
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Thu Jan 5 15:55:04 2012 +1000
+
+    dix: fix wrong condition checking for attached slave (#44003)
+    
+    We need to update the master if the device is not a master _and_ it is not
+    floating.
+    
+    X.Org Bug 44003 <http://bugs.freedesktop.org/show_bug.cgi?id=44003>
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Chase Douglas <chase.douglas@canonical.com>
+
+commit 3ce102c362cadcd7087bdcf48440d9498eaf77d0
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Thu Jan 5 07:08:01 2012 -0500
+
+    dix: on PointerRootWin send a FocusIn to the sprite window too
+    
+    XTS XSetDeviceFocus-7
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Chase Douglas <chase.douglas@canonical.com>
+
+commit a125aabda3a5cf27aa98cb61f16e49280b66f451
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Thu Jan 5 07:02:51 2012 -0500
+
+    dix: send focus events to the immediate parent (#44079)
+    
+    For a transition from windows A to B, A->parent did not receive an event.
+    DeviceFocusOutEvents sends to windows ]from, to[, so start with the actual
+    window, not it's parent.
+    
+    X.Org Bug 44079 <http://bugs.freedesktop.org/show_bug.cgi?id=44079>
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Chase Douglas <chase.douglas@canonical.com>
+    Reviewed-by: Keith Packard <keithp@keithp.com>
+
+commit 75953ccb9e9e5f1dbbaa44c714716a0049e22aae
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Tue Jan 3 10:45:45 2012 +1000
+
+    xfree86: split warning about missing identifier or input driver
+    
+    Check for identifier first and bail if it's missing (also remove the current
+    identifier check after we've already bailed due to missing identifiers)
+    
+    If a driver is missing, warn but also say that we may have added this device
+    already. I see too many bugreports with incorrectly shortened log files.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Cyril Brulebois <kibi@debian.org>
+
+commit 6269977c91071e0ea16ca5b4b8e15fd6db0b6fcf
+Author: Julien Cristau <jcristau@debian.org>
+Date:   Fri Dec 30 20:41:25 2011 +0100
+
+    os: don't ignore failure from dladdr
+    
+    If dladdr returns 0, don't go and use the returned Dl_info, it may
+    contain garbage.
+    
+    X.Org bug#44315 <https://bugs.freedesktop.org/show_bug.cgi?id=44315>
+    
+    Reported-and-tested-by: Cyril Brulebois <kibi@debian.org>
+    Reviewed-by: Jeremy Huddleston <jeremyhu@apple.com>
+    Reviewed-by: Cyril Brulebois <kibi@debian.org>
+    Signed-off-by: Julien Cristau <jcristau@debian.org>
+
+commit 644efb43e0639af648dd46d9729c2cabd9511238
+Author: Cyril Brulebois <kibi@debian.org>
+Date:   Fri Dec 30 02:34:36 2011 +0000
+
+    linux/ia64: Fix regression after domain I/O support code removal.
+    
+    Side effect of aa0bfb0f133481c57762012e8e30c05ffa151423:
+    |   CCLD   Xorg
+    | sdksyms.o:(.data.rel+0x27d8): undefined reference to `outl'
+    | collect2: ld returned 1 exit status
+    
+    Since the linux/ia64 domain I/O support code got removed in that
+    commit, there's no reason to keep on declaring those functions
+    (inb, inl, inw, outb, outl, outw).
+    
+    Bugzilla: https://bugs.freedesktop.org/43985
+    
+    Reviewed-by: Jeremy Huddleston <jeremyhu@apple.com>
+    Signed-off-by: Cyril Brulebois <kibi@debian.org>
+
 commit 98cde254acb9b98337ddecf64c138d38c14ec2bf
 Author: Keith Packard <keithp@keithp.com>
 Date:   Tue Dec 27 13:42:21 2011 -0800

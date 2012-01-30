@@ -1,3 +1,10 @@
+xorg-server (2:1.11.99.902-1) UNRELEASED; urgency=low
+
+  * New upstream release candidate (1.12 RC2):
+    - Fix FTBFS on ia64 and mips*.
+
+ -- Cyril Brulebois <kibi@debian.org>  Mon, 30 Jan 2012 21:48:07 +0100
+
 xorg-server (2:1.11.99.901-1) experimental; urgency=low
 
   * New upstream release candidate (1.12 RC1).
