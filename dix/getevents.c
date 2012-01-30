@@ -1328,7 +1328,7 @@ fill_pointer_events(InternalEvent *events, DeviceIntPtr pDev, int type,
     storeLastValuators(pDev, &mask, 0, 1, devx, devy);
 
     /* Update the MD's co-ordinates, which are always in desktop space. */
-    if (!IsMaster(pDev) || !IsFloating(pDev)) {
+    if (!IsMaster(pDev) && !IsFloating(pDev)) {
         DeviceIntPtr master = GetMaster(pDev, MASTER_POINTER);
         master->last.valuators[0] = screenx;
         master->last.valuators[1] = screeny;
@@ -1836,7 +1836,7 @@ GetTouchEvents(InternalEvent *events, DeviceIntPtr dev, uint32_t ddx_touchid,
     default:
         return 0;
     }
-    if (!(flags & TOUCH_CLIENT_ID))
+    if (t->mode == XIDirectTouch && !(flags & TOUCH_CLIENT_ID))
     {
         if (!valuator_mask_isset(&mask, 0))
             valuator_mask_set_double(&mask, 0, valuator_mask_get_double(touchpoint.ti->valuators, 0));
@@ -1867,15 +1867,24 @@ GetTouchEvents(InternalEvent *events, DeviceIntPtr dev, uint32_t ddx_touchid,
     if (need_rawevent)
         set_raw_valuators(raw, &mask, raw->valuators.data);
 
-    scr = scale_to_desktop(dev, &mask, &devx, &devy, &screenx, &screeny);
+    /* Indirect device touch coordinates are not used for cursor positioning.
+     * They are merely informational, and are provided in device coordinates.
+     * The device sprite is used for positioning instead, and it is already
+     * scaled. */
+    if (t->mode == XIDirectTouch)
+        scr = scale_to_desktop(dev, &mask, &devx, &devy, &screenx, &screeny);
     if (emulate_pointer)
         scr = positionSprite(dev, Absolute, &mask,
                              &devx, &devy, &screenx, &screeny);
 
     /* see fill_pointer_events for coordinate systems */
-    updateHistory(dev, &mask, ms);
+    if (emulate_pointer)
+        updateHistory(dev, &mask, ms);
+
     clipValuators(dev, &mask);
-    storeLastValuators(dev, &mask, 0, 1, devx, devy);
+
+    if (emulate_pointer)
+        storeLastValuators(dev, &mask, 0, 1, devx, devy);
 
     event->root = scr->root->drawable.id;
 

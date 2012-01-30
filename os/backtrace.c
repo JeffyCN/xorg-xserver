@@ -43,10 +43,15 @@ void xorg_backtrace(void)
     const char *mod;
     int size, i;
     Dl_info info;
-    ErrorF("\nBacktrace:\n");
+    ErrorF("\n");
+    ErrorF("Backtrace:\n");
     size = backtrace(array, 64);
     for (i = 0; i < size; i++) {
-	dladdr(array[i], &info);
+	int rc = dladdr(array[i], &info);
+	if (rc == 0) {
+	    ErrorF("%d: ?? [%p]\n", i, array[i]);
+	    continue;
+	}
 	mod = (info.dli_fname && *info.dli_fname) ? info.dli_fname : "(vdso)";
 	if (info.dli_saddr)
 	    ErrorF("%d: %s (%s+0x%lx) [%p]\n", i, mod,
@@ -55,6 +60,7 @@ void xorg_backtrace(void)
 	    ErrorF("%d: %s (%p+0x%lx) [%p]\n", i, mod,
 		   info.dli_fbase, (long unsigned int)((char *) array[i] - (char *) info.dli_fbase), array[i]);
     }
+    ErrorF("\n");
 }
 
 #else /* not glibc or glibc < 2.1 */
@@ -184,7 +190,8 @@ static int xorg_backtrace_pstack(void) {
 
 void xorg_backtrace(void) {
 
-    ErrorF("\nBacktrace:\n");
+    ErrorF("\n");
+    ErrorF("Backtrace:\n");
 
 #  ifdef HAVE_PSTACK
 /* First try fork/exec of pstack - otherwise fall back to walkcontext
@@ -203,6 +210,7 @@ void xorg_backtrace(void) {
 #  endif
 	    ErrorF("Failed to get backtrace info: %s\n", strerror(errno));
     }
+    ErrorF("\n");
 }
 
 # else

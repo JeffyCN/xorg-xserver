@@ -39,7 +39,6 @@
 #include <sys/select.h>
 #else
 #include <X11/Xwinsock.h>
-#define HAS_WINSOCK
 #endif
 #include <fcntl.h>
 #include <setjmp.h>
@@ -71,6 +70,8 @@
 #define WIN_XEVENTS_SHUTDOWN			1
 #define WIN_XEVENTS_CONVERT			2
 #define WIN_XEVENTS_NOTIFY			3
+#define WIN_CLIPBOARD_RETRIES			40
+#define WIN_CLIPBOARD_DELAY			1
 
 #define WM_WM_REINIT                           (WM_USER + 1)
 
