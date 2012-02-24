@@ -1,3 +1,195 @@
+commit 62edd970f6f36058fcb31de4555eb7c1329cce74
+Author: Keith Packard <keithp@keithp.com>
+Date:   Sat Feb 11 16:13:44 2012 +1300
+
+    Bump to version 1.11.99.903 (1.12 RC3)
+    
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit 42b6756463ee0476340656707f1088dc6c2fd220
+Merge: 7674d00 ca64912
+Author: Keith Packard <keithp@keithp.com>
+Date:   Sat Feb 11 15:36:43 2012 +1300
+
+    Merge remote-tracking branch 'alanc/master'
+
+commit 7674d00b04da5cf73cfa5c7ed1d3a9f42b59960e
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Fri Jan 27 12:41:09 2012 +1000
+
+    Xi: handle new XIAllowEvents request in inputproto 2.1.99.6
+    
+    grab_window and touchid were removed from the struct for ABI compatibility
+    reasons, we need to pull in the new, XI 2.2-specific struct.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Keith Packard <keithp@keithp.com>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit b96275c4cdb164aa71f7aa9fbf88be18886d1936
+Author: Benjamin Otte <otte@redhat.com>
+Date:   Tue Feb 7 18:01:25 2012 +1000
+
+    dix: fix an out-of-memory crash
+    
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit 6241b5e4fdbdb08d30cc8787d858ac27122d2d49
+Author: Chase Douglas <chase.douglas@canonical.com>
+Date:   Fri Feb 3 16:19:11 2012 -0800
+
+    Implement touch early accept
+    
+    This doesn't really implement early accept as it should. Ideally, the
+    server should send end events to all subsequent touch clients as soon as
+    an early accept comes in. However, this implementation is still protocol
+    compliant. We can always improve it later.
+    
+    Signed-off-by: Chase Douglas <chase.douglas@canonical.com>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit b0c54856df71f9cabf9dad176fdade960ef8c5d9
+Author: Chase Douglas <chase.douglas@canonical.com>
+Date:   Fri Feb 3 16:19:10 2012 -0800
+
+    Implement early touch reject
+    
+    Signed-off-by: Chase Douglas <chase.douglas@canonical.com>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit 656ab879f20892975510723ce8fe78faf64aadb4
+Author: Chase Douglas <chase.douglas@canonical.com>
+Date:   Fri Feb 3 16:19:09 2012 -0800
+
+    Check for proper window ID when processing touch allow requests
+    
+    Signed-off-by: Chase Douglas <chase.douglas@canonical.com>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit 9a260e9af83feb5c53ffd3b2da2dc3adf06240a1
+Author: Chase Douglas <chase.douglas@canonical.com>
+Date:   Fri Feb 3 16:19:08 2012 -0800
+
+    Move AllowTouch to dix/touch.c, and rename to TouchAcceptReject
+    
+    Signed-off-by: Chase Douglas <chase.douglas@canonical.com>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit 192b2c9a2ec04522655675ddfe71de5cf974cc7b
+Author: Chase Douglas <chase.douglas@canonical.com>
+Date:   Fri Feb 3 16:19:07 2012 -0800
+
+    Export TouchEventRejected as TouchRejected
+    
+    This function is mostly correct for early reject usage. With a small
+    change to pass the client resource explicitly and making the
+    TouchOwnership event optional, it is usable for all rejection scenarios.
+    This change exports it for use outside Xi/exevents.c and modifies the
+    name accordingly.
+    
+    Signed-off-by: Chase Douglas <chase.douglas@canonical.com>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit 19073425e5df1317f73f74ce0b95ab24e0e0da14
+Author: Chase Douglas <chase.douglas@canonical.com>
+Date:   Fri Feb 3 16:19:06 2012 -0800
+
+    Factor out TouchEnd generation and delivery
+    
+    The server often needs to generate and deliver TouchEnd events for
+    circumstances including touch grab acceptance and rejection. This change
+    refactors the code so it can be used more easily.
+    
+    Signed-off-by: Chase Douglas <chase.douglas@canonical.com>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit ab60cadc2afb9d8882144e30fde11c3ef0f999cd
+Author: Chase Douglas <chase.douglas@canonical.com>
+Date:   Fri Feb 3 16:19:05 2012 -0800
+
+    Store window pointer in touch listener record
+    
+    Signed-off-by: Chase Douglas <chase.douglas@canonical.com>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit f92ba92adfce0e1975feb54ab0e1165b7c2a7bea
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Sat Feb 4 19:27:21 2012 +1000
+
+    Revert "dix: deduplicate callers of DeliverDeviceEvents in DeliverGrabbedEvents"
+    
+    This call was supposed to have no functional changes but in some cases
+    DeliverDeviceEvents() was called with a uninitialised win variable.
+    Revert, safer than trying to sort this out otherwise.
+    
+    This reverts commit 6eff14a789341d366b3013c5aa020e959c954651.
+    
+    Reported-by: Mathieu Taillefumier <mathieu.taillefumier@free.fr>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Keith Packard <keithp@keithp.com>
+
+commit ca64912c02bdff486fee420a49b11f54f8f5ba08
+Author: Alan Coopersmith <alan.coopersmith@oracle.com>
+Date:   Thu Jan 26 16:41:25 2012 -0800
+
+    Namespace list api to reduce conflicts with similar system headers
+    
+    Rename functions/macros from list_* to xorg_list_*
+    Rename struct from struct list to struct xorg_list.
+    
+    Signed-off-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Reviewed-by: Keith Packard <keithp@keithp.com>
+    In-sed-I-trust: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit 1541e242d1607d0db57b0cc12faca9b1c2850c67
+Author: Alan Coopersmith <alan.coopersmith@oracle.com>
+Date:   Fri Dec 23 15:17:28 2011 -0800
+
+    Stop including <sys/proc.h> from xf86_OSlib.h on Solaris
+    
+    We don't need anything from that header (which defines /proc & kernel
+    structures for process information), and it causes some namespace conflicts.
+    
+    Signed-off-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    Reviewed-by: Keith Packard <keithp@keithp.com>
+
+commit 85cecd981191f9c3dab0fb13310d91eff643d423
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Sat Jan 28 16:06:28 2012 -0800
+
+    XQuartz: Release all buttons and keys when deactivating
+    
+    http://xquartz.macosforge.org/trac/ticket/486
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit 47b457541b33f00807fd495f5b0b24d5f143bf84
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Sat Jan 28 23:11:44 2012 -0800
+
+    XQuartz: Toggle off fullscreen mode when XQuartz is hidden
+    
+    http://xquartz.macosforge.org/trac/ticket/478
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+
+commit c2ba3f339f089c595386c4c579935c7984a2a545
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Sun Jan 29 14:26:47 2012 -0800
+
+    XQuartz: Localization Updates
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+
 commit 052ca3f22eadd0aa60dd24ac7d5d76137273926f
 Author: Keith Packard <keithp@keithp.com>
 Date:   Fri Jan 27 22:08:08 2012 -0800
