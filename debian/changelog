@@ -1,6 +1,7 @@
 xorg-server (2:1.11.99.903-1) UNRELEASED; urgency=low
 
   * New upstream release candidate (1.12 RC3).
+  * Bump x11proto-input-dev in Build-Depends and Depends.
 
  -- Cyril Brulebois <kibi@debian.org>  Fri, 24 Feb 2012 13:47:33 +0100
 

@@ -39,7 +39,7 @@ Build-Depends:
  x11proto-xf86vidmode-dev (>= 2.2.99.1),
  xtrans-dev (>= 1.2.2),
  libxau-dev (>= 1:1.0.5-2),
- x11proto-input-dev (>= 2.1.99.5),
+ x11proto-input-dev (>= 2.1.99.6),
  x11proto-dri2-dev (>= 2.6),
  libxdmcp-dev (>= 1:0.99.1),
  libxfont-dev (>= 1:1.4.2),
@@ -158,7 +158,7 @@ Architecture: any
 Depends:
  libpixman-1-dev (>= 0.21.8),
  x11proto-core-dev (>= 7.0.22),
- x11proto-input-dev (>= 2.1.99.3),
+ x11proto-input-dev (>= 2.1.99.6),
  x11proto-xext-dev (>= 7.1.99),
  x11proto-video-dev,
  x11proto-randr-dev (>= 1.2.99.3),
