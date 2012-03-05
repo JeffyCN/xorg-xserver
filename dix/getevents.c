@@ -360,6 +360,7 @@ updateSlaveDeviceCoords(DeviceIntPtr master, DeviceIntPtr pDev)
             if (i >= lastSlave->valuator->numAxes)
             {
                 pDev->last.valuators[i] = 0;
+                valuator_mask_set_double(pDev->last.scroll, i, 0);
             }
             else
             {
@@ -367,6 +368,7 @@ updateSlaveDeviceCoords(DeviceIntPtr master, DeviceIntPtr pDev)
                 val = rescaleValuatorAxis(val, lastSlave->valuator->axes + i,
                                           pDev->valuator->axes + i, 0, 0);
                 pDev->last.valuators[i] = val;
+                valuator_mask_set_double(pDev->last.scroll, i, val);
             }
         }
     }
@@ -838,10 +840,15 @@ scale_to_desktop(DeviceIntPtr dev, ValuatorMask *mask,
     ScreenPtr scr = miPointerGetScreen(dev);
     double x, y;
 
-    BUG_WARN(!dev->valuator);
-    BUG_WARN(dev->valuator->numAxes < 2);
+    BUG_WARN(!dev->valuator || dev->valuator->numAxes < 2);
     if (!dev->valuator || dev->valuator->numAxes < 2)
+    {
+        /* if we have no axes, last.valuators must be in screen coords
+         * anyway */
+        *devx = *screenx = dev->last.valuators[0];
+        *devy = *screeny = dev->last.valuators[1];
         return scr;
+    }
 
     if (valuator_mask_isset(mask, 0))
         x = valuator_mask_get_double(mask, 0);
@@ -1491,8 +1498,6 @@ GetPointerEvents(InternalEvent *events, DeviceIntPtr pDev, int type,
 {
     CARD32 ms = GetTimeInMillis();
     int num_events = 0, nev_tmp;
-    int h_scroll_axis = pDev->valuator->h_scroll_axis;
-    int v_scroll_axis = pDev->valuator->v_scroll_axis;
     ValuatorMask mask;
     ValuatorMask scroll;
     int i;
@@ -1517,6 +1522,14 @@ GetPointerEvents(InternalEvent *events, DeviceIntPtr pDev, int type,
     {
         double val, adj;
         int axis;
+        int h_scroll_axis = -1;
+        int v_scroll_axis = -1;
+
+        if (pDev->valuator)
+        {
+            h_scroll_axis = pDev->valuator->h_scroll_axis;
+            v_scroll_axis = pDev->valuator->v_scroll_axis;
+        }
 
         /* Up is negative on valuators, down positive */
         switch (buttons) {
