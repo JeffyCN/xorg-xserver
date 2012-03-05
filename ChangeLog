@@ -1,3 +1,167 @@
+commit b1be72c5ca6cb98ba64637990b142be0f1710a19
+Author: Keith Packard <keithp@keithp.com>
+Date:   Sun Mar 4 20:26:18 2012 -0800
+
+    Version bumped to 1.12
+    
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit e08ed0b757b9b48344a301f612fabb3e39ffec78
+Author: Gaetan Nadon <memsize@videotron.ca>
+Date:   Sun Feb 26 17:51:50 2012 -0500
+
+    test: add new test cases to .gitignore
+    
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Signed-off-by: Gaetan Nadon <memsize@videotron.ca>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit 2416ee4a015068359807a10f433e8c54192c78a9
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Wed Feb 22 15:32:56 2012 +1000
+
+    dix: avoid NULL-pointer dereference on button-only devices (#38313)
+    
+    And for such devices simply take the last.valuators[] which must be valid at
+    all times anyway. UpdateSlaveDeviceCoords takes care of that.
+    
+    X.Org Bug 38313 <http://bugs.freedesktop.org/show_bug.cgi?id=38313>
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Chase Douglas <chase.douglas@canonical.com>
+
+commit 38000e7d1f958f5944e641de3e716944a5876d41
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Tue Jan 31 11:06:21 2012 -0800
+
+    Revert "dix: don't XWarpPointer through the last slave anymore (#38313)"
+    
+    This reverts commit 2bfb802839688ecf328119c4c6979390fc60348d.
+    
+    This commit caused a regression.
+    
+    See: http://xquartz.macosforge.org/trac/ticket/517#comment:10
+    
+    Acked-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit cb6a32da27f09261c4d561c19d1877c750d98cc3
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Fri Feb 17 13:44:12 2012 -0800
+
+    XQuartz: Short-circuit activateX:
+    
+    This also avoids a deadlock when calling activateX: before the server
+    thread has initialized
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+
+commit 1562c4a1ca748d2c4a8c69d57ba09ff7ca9cc453
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Fri Feb 17 13:54:57 2012 -0800
+
+    XQuartz: Actually install the new locales
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+
+commit 71594746c7da32e1c7986341a0da30f241a7a2be
+Merge: d53235a eaba06a
+Author: Keith Packard <keithp@keithp.com>
+Date:   Wed Feb 22 18:07:20 2012 +1300
+
+    Merge remote-tracking branch 'whot/for-keith'
+
+commit eaba06a27c5520a02f08431ac1e4b0e0bdc22cd8
+Author: Chase Douglas <chase.douglas@canonical.com>
+Date:   Mon Feb 13 16:00:48 2012 -0800
+
+    Keep virtual core pointer touch class around if new slave doesn't have one
+    
+    The VCP may have active touch grabs. The touch records must be kept so
+    these touch grabs may be accepted/rejected in the future. This means the
+    touch class list will not represent the touch class of the attached
+    slave device if it does not have a touch class, but we already were
+    breaking that assumption by keeping a separate touches array for the
+    VCP.
+    
+    Signed-off-by: Chase Douglas <chase.douglas@canonical.com>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit 8573b3519af138a3a12a2e77098718165f9fd8ff
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Mon Feb 13 16:00:47 2012 -0800
+
+    Don't clobber virtual core pointer touches array length
+    
+    The VCP has its own touches array, don't overwrite it when the class is
+    copied from the SD to the master.
+    
+    Reported-by: Chase Douglas <chase.douglas@canonical.com>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Chase Douglas <chase.douglas@canonical.com>
+
+commit 03d32fe7a718d9016053cdb5d57f51a74ef99b59
+Author: Chase Douglas <chase.douglas@ubuntu.com>
+Date:   Mon Feb 13 12:09:32 2012 -0800
+
+    Don't dereference a touch after it has been ended when punting to next owner
+    
+    In this case, we have ended the touch because the last owner has
+    rejected it. We need to return from the function right now so we don't
+    attempt to dereference another touch client for early acceptance
+    processing.
+    
+    Signed-off-by: Chase Douglas <chase.douglas@ubuntu.com>
+    Reviewed-by: Chase Douglas <chase.douglas@canonical.com>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit 1ecb7aaf2adedad1996cd26176ef5802113e3ad9
+Author: Chase Douglas <chase.douglas@ubuntu.com>
+Date:   Sat Feb 11 07:58:38 2012 -0800
+
+    Focus event button state must show the logical buttons, not physical buttons
+    
+    Similar to the fix in fcda98c48610fd507ca0b89c6006a5497d9dc1c9. This
+    ensures we show the correct logical state of the buttons in device focus
+    events too.
+    
+    Signed-off-by: Chase Douglas <chase.douglas@canonical.com>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+
+commit 6f28388187cffae9e5bc9bfc9425acff4f478b59
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Sat Feb 11 01:29:26 2012 +1000
+
+    dix: reset last.scroll when resetting the valuator (#45611)
+    
+    last.scroll remained on the last-submitted scrolling value but last.valuator
+    was changed whenever the slave device changed. The first scrolling delta
+    after a switch was then calculated as (last.scroll - new abs value), causing
+    erroneous scrolling events.
+    
+    Test case:
+    - synaptics with a scrolling method enabled, other device with 3+ axes (e.g.
+      wacom)
+    - scroll on touchpad
+    - use other device
+    - scroll on touchpad
+    
+    The second scroll caused erroneous button press/release events.
+    
+    X.Org Bug 45611 <http://bugs.freedesktop.org/show_bug.cgi?id=45611>
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Chase Douglas <chase.douglas@canonical.com>
+
+commit d53235af85d50774c68347720ce132daf9a5bc49
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Mon Feb 13 23:06:07 2012 -0800
+
+    XQuartz: Build fix for possible conflict of BOOL type
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+
 commit 62edd970f6f36058fcb31de4555eb7c1329cce74
 Author: Keith Packard <keithp@keithp.com>
 Date:   Sat Feb 11 16:13:44 2012 +1300
@@ -25,6 +189,17 @@ Date:   Fri Jan 27 12:41:09 2012 +1000
     Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
     Reviewed-by: Keith Packard <keithp@keithp.com>
     Signed-off-by: Keith Packard <keithp@keithp.com>
+
+commit ceb026c6a6f1eea8b34e745f06f1ebcd652c0ba1
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Fri Jan 27 12:41:09 2012 +1000
+
+    Xi: handle new XIAllowEvents request in inputproto 2.1.99.6
+    
+    grab_window and touchid were removed from the struct for ABI compatibility
+    reasons, we need to pull in the new, XI 2.2-specific struct.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
 
 commit b96275c4cdb164aa71f7aa9fbf88be18886d1936
 Author: Benjamin Otte <otte@redhat.com>
