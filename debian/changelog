@@ -1,6 +1,10 @@
 xorg-server (2:1.12.1-2) UNRELEASED; urgency=low
 
   * xvfb-run: kill Xvfb when the script dies.
+  * xvfb-run: instead of waiting 3 seconds and hoping that's enough for Xvfb
+    to come up (and waiting 2.9 seconds too many in the general case), tell it
+    to send us SIGUSR1 when it's ready to accept connections.  This reduces
+    "xvfb-run -- xterm -e true" from 3.17s to 0.28s on a quick test.
 
  -- Julien Cristau <jcristau@debian.org>  Mon, 19 Mar 2012 21:16:07 +0100
 
