@@ -1,13 +1,11 @@
 #!/bin/sh
 
-# $Id: xvfb-run 2027 2004-11-16 14:54:16Z branden $
-
 # This script starts an instance of Xvfb, the "fake" X server, runs a command
 # with that server available, and kills the X server when done.  The return
 # value of the command becomes the return value of this script.
 #
 # If anyone is using this to build a Debian package, make sure the package
-# Build-Depends on xvfb, xbase-clients, and xfonts-base.
+# Build-Depends on xvfb and xauth.
 
 set -e
 
