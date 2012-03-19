@@ -1,3 +1,9 @@
+xorg-server (2:1.12.1-2) UNRELEASED; urgency=low
+
+  * xvfb-run: kill Xvfb when the script dies.
+
+ -- Julien Cristau <jcristau@debian.org>  Mon, 19 Mar 2012 21:16:07 +0100
+
 xorg-server (2:1.12.1-2) unstable; urgency=low
 
   * Merge from server-1.12-branch up to 22a1953c4a to get:

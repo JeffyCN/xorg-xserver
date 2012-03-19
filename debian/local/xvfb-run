@@ -92,6 +92,9 @@ clean_up() {
             exit 5
         fi
     fi
+    if [ -n "$XVFBPID" ]; then
+        kill "$XVFBPID"
+    fi
 }
 
 # Parse the command line.
@@ -173,6 +176,7 @@ EOF
         continue
     fi
     error "Xvfb failed to start" >&2
+    XVFBPID=
     exit 1
 done
 
@@ -181,9 +185,6 @@ set +e
 DISPLAY=:$SERVERNUM XAUTHORITY=$AUTHFILE "$@" 2>&1
 RETVAL=$?
 set -e
-
-# Kill Xvfb now that the command has exited.
-kill $XVFBPID
 
 # Return the executed command's exit status.
 exit $RETVAL
