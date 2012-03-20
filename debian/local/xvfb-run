@@ -164,7 +164,7 @@ EOF
     (trap '' SIGUSR1; XAUTHORITY=$AUTHFILE exec Xvfb ":$SERVERNUM" $XVFBARGS $LISTENTCP >>"$ERRORFILE" 2>&1) &
     XVFBPID=$!
 
-    wait
+    wait || :
     if kill -0 $XVFBPID 2>/dev/null; then
         break
     elif [ -n "$AUTONUM" ]; then
