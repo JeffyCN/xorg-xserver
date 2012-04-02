@@ -1,3 +1,587 @@
+commit 391f75e87515fcc89b8e5cd058401c4a056d9139
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Fri Mar 30 16:01:57 2012 -0700
+
+    configure.ac: Bump to 1.12.0.901 (1.12.1 RC1)
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+
+commit 5eb20062208177172ff3443e522096a2e8f2f1e8
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Wed Mar 21 14:05:29 2012 +1000
+
+    dix: set raw event values before adding up relative values (#46976)
+    
+    Regression introduced in 4e52cc0ef48145134cd58d357fb7289e6f8bb709
+    
+    Raw event values are values as-is from the driver, modified only be
+    transformation or acceleration. 4e52cc caused the mask to be updated from
+    relative to absolute coordinates which then got written into the raw events.
+    
+    Move the raw event update into the respective branches for absolute/relative
+    events.
+    
+    X.Org Bug 46976 <http://bugs.freedesktop.org/show_bug.cgi?id=46976>
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Chase Douglas <chase.douglas@canonical.com>
+    Reviewed-by: Daniel Stone <daniel@fooishbar.org>
+    Tested-by: Sven Arvidsson <sa@whiz.se>
+    Reviewed-by: Simon Thum <simon.thum@gmx.de>
+    (cherry picked from commit 908ab3d580188533168c8cdfd2cab9dc689b4218)
+
+commit a095f7ae96a353073add83e78f88f29d854d289d
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Wed Mar 21 14:03:27 2012 +1000
+
+    dix: fix compiler warning "unused variable 'scr'"
+    
+    getevents.c: In function 'updateSlaveDeviceCoords':
+    getevents.c:326:15: warning: unused variable 'scr' [-Wunused-variable]
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    (cherry picked from commit 9c3bd3ae652af386b6821b197d24528f20ba867d)
+
+commit d0a6d9bcefaf56aa63708ea69e5c399dbf266d63
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Mon Mar 12 16:26:29 2012 +1000
+
+    Xext: drop InitServertime() declaration.
+    
+    Not implemented anywhere.
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Jeremy Huddleston <jeremyhu@apple.com>
+    Reviewed-by: Bryce Harrington <bryce@canonical.com>
+    (cherry picked from commit 5910f2df58beaae2187438fef0b62c29a563e853)
+
+commit f8446ad3d71cdf9c2200f5584bd156c629fe3c90
+Author: Chase Douglas <chase.douglas@canonical.com>
+Date:   Wed Mar 7 16:06:27 2012 -0800
+
+    Use a new sprite trace for indirect touches when all touches have physically ended
+    
+    All touches of an indirect device, such as a trackpad, are sent to the
+    same window set. When there are no active touches, a new window set is
+    created; otherwise, the window set of an existing touch is copied.
+    
+    The current code checks for any logically active touches. This includes
+    touches that have physically ended but are still logically active due to
+    unhandled touch grabs. Instead, we want a new window set whenever there
+    are no physically active touches.
+    
+    This change skips over logically active but pending end touches, which
+    are touches that have physically ended.
+    
+    Signed-off-by: Chase Douglas <chase.douglas@canonical.com>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    (cherry picked from commit 31df08a449cf9b6e1740e1c02257997490630d93)
+
+commit 5a3ec826e653377e8b70e7553d1f0ca72210447c
+Author: Chase Douglas <chase.douglas@canonical.com>
+Date:   Wed Mar 7 16:06:26 2012 -0800
+
+    Xi: Fix TouchEnd to TouchUpdate change for one accepted grab
+    
+    If there is only one listener of a touch, the listener is a grab, and is
+    accepted before the touch has ended, the current code will not end the
+    touch record when the touch does end.
+    
+    This change adds a listener state for when a touch is accepted but has
+    not yet ended. We now keep the touch record alive in this state, but end
+    it when the touch ends.
+    
+    Signed-off-by: Chase Douglas <chase.douglas@canonical.com>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    (cherry picked from commit 58427e08a4a36ce9e213e4b4fe5249d5db2c764d)
+
+commit a8c9a93c66edce893af3ba460d728fe2bc48c2af
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Mon Feb 27 10:09:44 2012 +1000
+
+    dix: when rescaling from master, rescale from desktop dimensions (#46657)
+    
+    master->last.valuators[] is in desktop dimensions, so use those as
+    rescale axis ranges, not the screen. Otherwise, a rescale on any screen
+    not the top-left will cause out-of-bounds coordinates which will always
+    map to the bottom-right screen, causing the device to be stuck on that
+    screen.
+    
+    X.Org Bug 46657 <http://bugs.freedesktop.org/show_bug.cgi?id=46657>
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Reviewed-by: Chase Douglas <chase.douglas@canonical.com>
+    (cherry picked from commit eb84c154ed38194c32651727b6dfe2d1bde4c599)
+
+commit bc8dc7183b50800470080eaa9c04cfd6ecc3591b
+Author: Peter Hutterer <peter.hutterer@who-t.net>
+Date:   Thu Feb 16 15:11:40 2012 +1000
+
+    Xext: return BadAccess if PickPointer fails (#45796)
+    
+    PickPointer or PickKeyboard return NULL, all MDs are currently disabled and
+    we cannot emulate a core event. This wasn't anticipated by the protocol, so
+    we don't really have an error code we may use here - BadAccess is simply the
+    least bad of the possible ones.
+    
+    And returning BadAccess beats crashing the server.
+    
+    X.Org Bug 45796 <http://bugs.freedesktop.org/show_bug.cgi?id=45796>
+    
+    Signed-off-by: Peter Hutterer <peter.hutterer@who-t.net>
+    (cherry picked from commit 6b6afd3d013e3f4910fae3520d1d786df2b0e47a)
+
+commit 1e2a7462bec388342424f22ebf77a6fd3f177d7d
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Sun Mar 25 23:33:54 2012 -0700
+
+    XQuartz: Use scrolling valuators
+    
+    This lets use send more accurate data to Xi clients and uses dix
+    for legacy scroll buttons rather than reinventing the wheel.
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+    Acked-by: Peter Hutterer <peter.hutterer@who-t.net>
+    (cherry picked from commit 31646d8fa9524adca1d7bc2cd2db90d47c2eb96e)
+
+commit 67d20e393fdbcc0702a9b3e9848faaa3571d8534
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Sun Mar 25 22:30:55 2012 -0700
+
+    XQuartz: Use AllocDevicePair to allocate our keyboard and mouse at the same time
+    
+    Also correct isMaster to FALSE while we're here.
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+    Acked-by: Peter Hutterer <peter.hutterer@who-t.net>
+    (cherry picked from commit 7790dc86384cc451ac44663737fde84dd81ad4e1)
+
+commit 3ee84899b1a3ea5d12e384046c52c7262af78395
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Sun Mar 25 22:16:22 2012 -0700
+
+    XQuartz: Call update_desktop_dimensions() after updating our screen coordinates
+    
+    Fixes: http://xquartz.macosforge.org/trac/ticket/555
+    Regression from: 8bebb4b4896d8b6ba3309b5b28fce883bb9f8a96
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+    Acked-by: Peter Hutterer <peter.hutterer@who-t.net>
+    (cherry picked from commit 74fb534bf15687610367248071341fe4bfd1d8bf)
+
+commit 815414858b918c39fdfb5f7500e2eec5d4946fba
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Sun Mar 25 23:05:43 2012 -0700
+
+    XQuartz: Formatting cleanup for sendX11NSEvent
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+    (cherry picked from commit 41a46546e92b66fed323b5845dd71a6385feb418)
+
+commit 3413570318ccb9fefb87169d6e7ea4b3391f4002
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Fri Mar 23 19:58:49 2012 -0700
+
+    XQuartz: Source formatting cleanup
+    
+    indent butchered Objective-C formatting.  This patch was created by:
+    
+    1) Reverting the indent changes in hw/xquartz
+    2) Editing X11Application.m and chaning some #ifdef logic to work
+       with uncrustify
+    3) Hand edited some (c) notifications
+    4) Opened all XQuartz sources in XCode and re-indented (^I)
+    5) Ran uncrustify with this configuration
+       (as close to the indent rules as I could get):
+    
+    tok_split_gte=false
+    utf8_byte=true
+    utf8_force=true
+    indent_cmt_with_tabs=false
+    indent_align_string=false
+    indent_braces=false
+    indent_braces_no_func=false
+    indent_braces_no_class=false
+    indent_braces_no_struct=false
+    indent_brace_parent=false
+    indent_namespace=false
+    indent_extern=false
+    indent_class=false
+    indent_class_colon=false
+    indent_else_if=false
+    indent_var_def_cont=false
+    indent_func_call_param=false
+    indent_func_def_param=false
+    indent_func_proto_param=false
+    indent_func_class_param=false
+    indent_func_ctor_var_param=false
+    indent_template_param=false
+    indent_func_param_double=false
+    indent_relative_single_line_comments=false
+    indent_col1_comment=false
+    indent_access_spec_body=false
+    indent_paren_nl=false
+    indent_comma_paren=false
+    indent_bool_paren=false
+    indent_first_bool_expr=false
+    indent_square_nl=false
+    indent_preserve_sql=false
+    indent_align_assign=true
+    sp_balance_nested_parens=false
+    align_keep_tabs=false
+    align_with_tabs=false
+    align_on_tabstop=false
+    align_number_left=false
+    align_func_params=false
+    align_same_func_call_params=false
+    align_var_def_colon=true
+    align_var_def_attribute=true
+    align_var_def_inline=true
+    align_right_cmt_mix=false
+    align_on_operator=false
+    align_mix_var_proto=false
+    align_single_line_func=false
+    align_single_line_brace=false
+    align_nl_cont=false
+    align_left_shift=true
+    align_oc_decl_colon=true
+    nl_collapse_empty_body=true
+    nl_assign_leave_one_liners=true
+    nl_class_leave_one_liners=true
+    nl_enum_leave_one_liners=true
+    nl_getset_leave_one_liners=true
+    nl_func_leave_one_liners=true
+    nl_if_leave_one_liners=true
+    nl_multi_line_cond=false
+    nl_multi_line_define=false
+    nl_before_case=true
+    nl_after_case=true
+    nl_after_return=false
+    nl_after_semicolon=true
+    nl_after_brace_open=true
+    nl_after_brace_open_cmt=false
+    nl_after_vbrace_open=false
+    nl_after_vbrace_open_empty=false
+    nl_after_brace_close=false
+    nl_after_vbrace_close=false
+    nl_define_macro=false
+    nl_squeeze_ifdef=false
+    nl_ds_struct_enum_cmt=false
+    nl_ds_struct_enum_close_brace=false
+    nl_create_if_one_liner=false
+    nl_create_for_one_liner=false
+    nl_create_while_one_liner=false
+    ls_for_split_full=false
+    ls_func_split_full=false
+    nl_after_multiline_comment=false
+    eat_blanks_after_open_brace=false
+    eat_blanks_before_close_brace=false
+    mod_full_brace_if_chain=false
+    mod_pawn_semicolon=false
+    mod_full_paren_if_bool=false
+    mod_remove_extra_semicolon=false
+    mod_sort_import=false
+    mod_sort_using=false
+    mod_sort_include=false
+    mod_move_case_break=false
+    mod_remove_empty_return=false
+    cmt_indent_multi=true
+    cmt_c_group=false
+    cmt_c_nl_start=false
+    cmt_c_nl_end=false
+    cmt_cpp_group=false
+    cmt_cpp_nl_start=false
+    cmt_cpp_nl_end=false
+    cmt_cpp_to_c=false
+    cmt_star_cont=false
+    cmt_multi_check_last=true
+    cmt_insert_before_preproc=false
+    pp_indent_at_level=false
+    pp_region_indent_code=false
+    pp_if_indent_code=false
+    pp_define_at_level=false
+    indent_columns=4
+    indent_brace=0
+    indent_switch_case=0
+    align_struct_init_span=2
+    align_pp_define_gap=0
+    align_pp_define_span=2
+    align_oc_msg_colon_span=16
+    nl_end_of_file_min=1
+    nl_func_var_def_blk=0
+    code_width=78
+    nl_max=2
+    newlines=auto
+    indent_with_tabs=0
+    sp_arith=force
+    sp_assign=force
+    sp_assign_default=force
+    sp_before_assign=force
+    sp_after_assign=force
+    sp_enum_assign=force
+    sp_enum_before_assign=force
+    sp_enum_after_assign=force
+    sp_pp_stringify=add
+    sp_bool=force
+    sp_compare=force
+    sp_inside_paren=remove
+    sp_paren_paren=remove
+    sp_paren_brace=force
+    sp_before_ptr_star=ignore
+    sp_before_unnamed_ptr_star=force
+    sp_before_byref=force
+    sp_before_unnamed_byref=force
+    sp_after_byref=remove
+    sp_after_type=force
+    sp_before_sparen=force
+    sp_inside_sparen=remove
+    sp_inside_sparen_close=remove
+    sp_after_sparen=force
+    sp_sparen_brace=force
+    sp_special_semi=force
+    sp_before_semi=remove
+    sp_after_semi=force
+    sp_after_semi_for=force
+    sp_after_semi_for_empty=remove
+    sp_before_square=remove
+    sp_inside_square=remove
+    sp_after_comma=force
+    sp_before_comma=remove
+    sp_paren_comma=force
+    sp_before_ellipsis=force
+    sp_after_class_colon=force
+    sp_before_class_colon=force
+    sp_before_case_colon=remove
+    sp_after_cast=remove
+    sp_inside_paren_cast=remove
+    sp_sizeof_paren=remove
+    sp_inside_braces_enum=force
+    sp_inside_braces_struct=force
+    sp_inside_braces=force
+    sp_inside_braces_empty=remove
+    sp_func_proto_paren=remove
+    sp_func_def_paren=remove
+    sp_inside_fparens=remove
+    sp_inside_fparen=remove
+    sp_square_fparen=remove
+    sp_fparen_brace=force
+    sp_func_call_paren=remove
+    sp_func_call_paren_empty=remove
+    sp_return_paren=force
+    sp_attribute_paren=remove
+    sp_defined_paren=remove
+    sp_macro=force
+    sp_macro_func=force
+    sp_else_brace=force
+    sp_brace_else=force
+    sp_brace_typedef=force
+    sp_not=remove
+    sp_inv=remove
+    nl_start_of_file=remove
+    nl_end_of_file=force
+    nl_assign_square=remove
+    nl_after_square_assign=remove
+    nl_fcall_brace=remove
+    nl_enum_brace=remove
+    nl_struct_brace=remove
+    nl_union_brace=remove
+    nl_if_brace=remove
+    nl_brace_else=force
+    nl_elseif_brace=remove
+    nl_else_brace=remove
+    nl_else_if=remove
+    nl_for_brace=remove
+    nl_do_brace=remove
+    nl_brace_while=remove
+    nl_switch_brace=remove
+    nl_case_colon_brace=force
+    nl_func_type_name=force
+    nl_func_type_name_class=force
+    nl_func_proto_type_name=force
+    nl_func_paren=remove
+    nl_func_def_paren=remove
+    nl_func_decl_start=remove
+    nl_func_def_start=remove
+    nl_func_decl_args=remove
+    nl_func_decl_end=remove
+    nl_func_def_end=remove
+    nl_func_decl_end_single=remove
+    nl_func_def_end_single=remove
+    nl_func_decl_empty=remove
+    nl_func_def_empty=remove
+    nl_fdef_brace=force
+    nl_return_expr=remove
+    nl_before_if=ignore
+    nl_after_if=ignore
+    nl_before_for=ignore
+    nl_after_for=ignore
+    nl_before_while=ignore
+    nl_after_while=ignore
+    nl_before_switch=ignore
+    nl_after_switch=ignore
+    nl_before_do=ignore
+    nl_after_do=ignore
+    pp_space=remove
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+    (cherry picked from commit 5324557c7b12dcacddac830bdb65769cb622c6cf)
+    
+    Conflicts:
+    
+    	hw/xquartz/X11Application.h
+    	hw/xquartz/X11Application.m
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+
+commit c0b4dec9f248ee2c659c75f32d920ea3073d83e4
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Tue Mar 13 00:15:55 2012 -0700
+
+    XQuartz: Add a defaults option to disable the RENDER extension
+    
+    RENDER has some ugly issues on XQuartz, so add an option to disable RENDER.
+    
+    Enables workaround for: https://bugs.freedesktop.org/show_bug.cgi?id=26124
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+    (cherry picked from commit 0bb8a2566debd6cd11164df9ddca534150ec440a)
+
+commit a6f856a72f1a012c8bf3bce4f59be69679a6debf
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Sat Mar 17 00:04:27 2012 -0700
+
+    XQuartz: Use doubles for input valuators
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+    (cherry picked from commit 5ff46d651ac0cd396be2053b79675997ed7af765)
+
+commit 3998ff2298424eef7952963b2e21862be4c10da0
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Sat Mar 17 00:08:19 2012 -0700
+
+    XQuartz: Xi: darwinPointer is now Relative
+    
+    There is really no real reason why this should be necessary, but wine
+    developers are stuborn, so doing this to try to work around this wine
+    issue:
+    
+    http://bugs.winehq.org/show_bug.cgi?id=29732
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+    (cherry picked from commit cd84c0949a9f397d8b803d3b87c9d02b260d4795)
+
+commit cdd704da190da8e6b15bb3dae81f84ce1535bff8
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Tue Mar 13 00:25:53 2012 -0700
+
+    XQuartz: Move our logs into an X11 subdirectory
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+    (cherry picked from commit 87939bf8311c0e7d168741fe57bc8fac414811d8)
+
+commit 5926ed85a1e2cb873f9e0950cfe21510b6c94d6f
+Author: Daniel Stone <daniel@fooishbar.org>
+Date:   Thu Mar 15 15:18:29 2012 +0000
+
+    Indentation: Change '& stuff' to '&stuff'
+    
+    If the typedef wasn't perfect, indent would get confused and change:
+        foo = (SomePointlessTypedef *) &stuff[1];
+    to:
+        foo = (SomePointlessTypedef *) & stuff[1];
+    
+    Fix this up with a really naïve sed script, plus some hand-editing to
+    change some false positives in XKB back.
+    
+    Signed-off-by: Daniel Stone <daniel@fooishbar.org>
+    (cherry picked from commit ab3a815a75ab5695753fa37a98b0ea5293d4cb91)
+
+commit dfecff4279b42a20ee1d186bfe49f5e2e3a53648
+Author: Daniel Stone <daniel@fooishbar.org>
+Date:   Thu Mar 15 15:13:51 2012 +0000
+
+    Xinerama: Fix up obnoxiously-indented code
+    
+    Comments inside of conditionals confuse indent to death.  Which is fair
+    enough really.
+    
+    Signed-off-by: Daniel Stone <daniel@fooishbar.org>
+    (cherry picked from commit 58b1f739d73b03ff7952ca986ed8746a7307fffe)
+
+commit 8384075e1a0fb3189f9c37c17f9e12e1aae5102c
+Author: Keith Packard <keithp@keithp.com>
+Date:   Wed Mar 21 12:55:09 2012 -0700
+
+    Introduce a consistent coding style
+    
+    This is strictly the application of the script 'x-indent-all.sh'
+    from util/modular. Compared to the patch that Daniel posted in
+    January, I've added a few indent flags:
+    
+    	-bap
+    	-psl
+    	-T PrivatePtr
+    	-T pmWait
+    	-T _XFUNCPROTOBEGIN
+    	-T _XFUNCPROTOEND
+    	-T _X_EXPORT
+    
+    The typedefs were needed to make the output of sdksyms.sh match the
+    previous output, otherwise, the code is formatted badly enough that
+    sdksyms.sh generates incorrect output.
+    
+    The generated code was compared with the previous version and found to
+    be essentially identical -- "assert" line numbers and BUILD_TIME were
+    the only differences found.
+    
+    The comparison was done with this script:
+    
+    dir1=$1
+    dir2=$2
+    
+    for dir in $dir1 $dir2; do
+    	(cd $dir && find . -name '*.o' | while read file; do
+    		dir=`dirname $file`
+    		base=`basename $file .o`
+    		dump=$dir/$base.dump
+    		objdump -d $file > $dump
+    	done)
+    done
+    
+    find $dir1 -name '*.dump' | while read dump; do
+    	otherdump=`echo $dump | sed "s;$dir1;$dir2;"`
+    	diff -u $dump $otherdump
+    done
+    
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+    Acked-by: Daniel Stone <daniel@fooishbar.org>
+    Acked-by: Alan Coopersmith <alan.coopersmith@oracle.com>
+    (cherry picked from commit 9838b7032ea9792bec21af424c53c07078636d21)
+
+commit d9a9788bb163731f681951e9f0ac0e37fd095e6b
+Author: Keith Packard <keithp@keithp.com>
+Date:   Wed Mar 21 12:33:19 2012 -0700
+
+    Handle blank betweeen type and name in sdksyms.sh
+    
+    indent sometimes adds a blank line between the type and the name in a
+    function declaration that includes _X_EXPORT, so handle that before
+    the files are re-indented.
+    
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+    (cherry picked from commit 75199129c603fc8567185ac31866c9518193cb78)
+
+commit 3590d0bb77b787e07030e43f60fa2d0a4a020057
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Mon Mar 5 00:05:48 2012 -0800
+
+    test: Fix 'make dist' for configurations that build the Xorg DDX
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+    (cherry picked from commit df327f98f6b8e02fadcfd313a85f906722acc572)
+
 commit b1be72c5ca6cb98ba64637990b142be0f1710a19
 Author: Keith Packard <keithp@keithp.com>
 Date:   Sun Mar 4 20:26:18 2012 -0800
