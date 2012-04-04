@@ -160,8 +160,8 @@ add :$SERVERNUM $XAUTHPROTO $MCOOKIE
 EOF
     # handle SIGUSR1 so Xvfb knows to send a signal when it's ready to accept
     # connections
-    trap : SIGUSR1
-    (trap '' SIGUSR1; XAUTHORITY=$AUTHFILE exec Xvfb ":$SERVERNUM" $XVFBARGS $LISTENTCP >>"$ERRORFILE" 2>&1) &
+    trap : USR1
+    (trap '' USR1; XAUTHORITY=$AUTHFILE exec Xvfb ":$SERVERNUM" $XVFBARGS $LISTENTCP >>"$ERRORFILE" 2>&1) &
     XVFBPID=$!
 
     wait || :
