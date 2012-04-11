@@ -1,3 +1,82 @@
+commit d603515dbfef94ec9cf7f5538815a954511e9e70
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Mon Apr 9 19:37:31 2012 -0700
+
+    configure.ac: Bump to 1.12.0.902 (1.12.1 RC2)
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+
+commit 7e62bc31c65aedcdf55cd7dc02b349b6b5c0812c
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Sat Apr 7 15:26:53 2012 -0700
+
+    test: Fix make dist
+    
+    I don't know why this fixes the problem with make dist, but it does...
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+
+commit ad89533327919223204021738dd108d7dd814e8c
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Mon Apr 9 19:36:04 2012 -0700
+
+    Revert "xfree86: workaround crash on close"
+    
+    This reverts commit b704d9146336c3044be2be7ae38ce2c5b5a47f86.
+    
+    This was causing some regressions.  Reverting as discussed on xorg-devel.
+
+commit 259aa5a69b69aa72be3fb7402b68560f9a6b05d6
+Author: Chase Douglas <chase.douglas@canonical.com>
+Date:   Thu Mar 29 18:06:03 2012 -0700
+
+    Implement passive touch ungrabbing
+    
+    Whoops. Forgot to implement this. The code currently generates an error
+    due to the unhandled grab type.
+    
+    X.Org Bug 48069 <https://bugs.freedesktop.org/show_bug.cgi?id=48069>
+    
+    Signed-off-by: Chase Douglas <chase.douglas@canonical.com>
+    Reviewed-by: Peter Hutterer <peter.hutterer@who-t.net>
+    Signed-off-by: Keith Packard <keithp@keithp.com>
+    (cherry picked from commit 1110facdfeb95b1ad47d03c0ca3d73933b86dbd6)
+
+commit 42474e98ec4245c9e80fc0e9a4b287f3999324f2
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Thu Apr 5 14:03:35 2012 -0700
+
+    XQuartz: Automatically start our virtual tablet devices
+    
+    Fixes: https://bugs.launchpad.net/inkscape/+bug/972914
+    Regression introduced by: 7790dc86384cc451ac44663737fde84dd81ad4e1
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+    (cherry picked from commit e9d3848d7bda7f7de4c0f497aee4482d0b30ad49)
+
+commit 4b3ac1b563c3de32ad13e794fefabd5124648393
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Fri Mar 30 14:29:48 2012 -0700
+
+    XQuartz: Tiger build fix
+    
+    Fixes: https://trac.macports.org/ticket/33818
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+    (cherry picked from commit 6cb83b78c47b80556cb4d573524d60f0cd1a64ac)
+
+commit b704d9146336c3044be2be7ae38ce2c5b5a47f86
+Author: Michal Suchanek <hramrach@gmail.com>
+Date:   Wed Mar 28 18:12:39 2012 -0700
+
+    xfree86: workaround crash on close
+    
+    Fixes: https://bugs.freedesktop.org/show_bug.cgi?id=41653
+    
+    Signed-off-by: Michal Suchanek <hramrach@gmail.com>
+    Reviewed-by: Jeremy Huddleston <jeremyhu@apple.com>
+    (cherry picked from commit 55f552adb651715d2620db7248cd5b9b8187654a)
+
 commit 391f75e87515fcc89b8e5cd058401c4a056d9139
 Author: Jeremy Huddleston <jeremyhu@apple.com>
 Date:   Fri Mar 30 16:01:57 2012 -0700

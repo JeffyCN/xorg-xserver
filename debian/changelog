@@ -1,6 +1,6 @@
-xorg-server (2:1.12.0.901-1) UNRELEASED; urgency=low
+xorg-server (2:1.12.0.902-1) UNRELEASED; urgency=low
 
-  * New upstream release candidate (1.12.1 RC1).
+  * New upstream release candidate (1.12.1 RC2).
 
  -- Cyril Brulebois <kibi@debian.org>  Mon, 02 Apr 2012 20:38:32 +0000
 
