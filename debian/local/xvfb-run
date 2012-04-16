@@ -88,7 +88,7 @@ clean_up() {
         fi
     fi
     if [ -n "$XVFBPID" ]; then
-        kill "$XVFBPID"
+        kill "$XVFBPID" >>"$ERRORFILE" 2>&1
     fi
 }
 
