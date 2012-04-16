@@ -5,6 +5,10 @@ xorg-server (2:1.12.1-2) UNRELEASED; urgency=low
     to come up (and waiting 2.9 seconds too many in the general case), tell it
     to send us SIGUSR1 when it's ready to accept connections.  This reduces
     "xvfb-run -- xterm -e true" from ~3.2s to ~0.4s on a quick test.
+  * xvfb-run: fix xauth handling; setting XAUTHORITY when starting an X server
+    isn't actually useful, we need to use the -auth command-line parameter
+    instead.  Somehow this seems to have been broken all these years and
+    nobody noticed...
 
  -- Julien Cristau <jcristau@debian.org>  Mon, 19 Mar 2012 21:16:07 +0100
 
