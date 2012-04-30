@@ -1,8 +1,9 @@
-xorg-server (2:1.12.1-1) UNRELEASED; urgency=low
+xorg-server (2:1.12.1-1) unstable; urgency=low
 
   * New upstream release.
+  * Upload to unstable.
 
- -- Cyril Brulebois <kibi@debian.org>  Tue, 01 May 2012 01:56:10 +0200
+ -- Cyril Brulebois <kibi@debian.org>  Tue, 01 May 2012 01:56:32 +0200
 
 xorg-server (2:1.12.0.902-1) experimental; urgency=low
 
