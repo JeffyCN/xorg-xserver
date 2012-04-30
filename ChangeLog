@@ -1,3 +1,11 @@
+commit 38e73f7fc29fe8e9defa8a0516a50ac3a84e10c2
+Author: Jeremy Huddleston <jeremyhu@apple.com>
+Date:   Fri Apr 13 15:44:08 2012 -0700
+
+    configure.ac: Bump to 1.12.1
+    
+    Signed-off-by: Jeremy Huddleston <jeremyhu@apple.com>
+
 commit d603515dbfef94ec9cf7f5538815a954511e9e70
 Author: Jeremy Huddleston <jeremyhu@apple.com>
 Date:   Mon Apr 9 19:37:31 2012 -0700
