@@ -1,11 +1,11 @@
-xorg-server (2:1.12.1-2) UNRELEASED; urgency=low
+xorg-server (2:1.12.1-2) unstable; urgency=low
 
   * Merge from server-1.12-branch up to 22a1953c4a to get:
     - many XI 2.2 fixes.
     - “os: make timers signal-safe”; fixing infinite loops with the
       synaptics tap handling code.
 
- -- Cyril Brulebois <kibi@debian.org>  Mon, 07 May 2012 01:43:38 +0200
+ -- Cyril Brulebois <kibi@debian.org>  Mon, 07 May 2012 01:46:16 +0200
 
 xorg-server (2:1.12.1-1) unstable; urgency=low
 
