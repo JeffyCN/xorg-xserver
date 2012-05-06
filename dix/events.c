@@ -341,7 +341,7 @@ IsMaster(DeviceIntPtr dev)
 Bool
 IsFloating(DeviceIntPtr dev)
 {
-    return GetMaster(dev, MASTER_KEYBOARD) == NULL;
+    return !IsMaster(dev) && GetMaster(dev, MASTER_KEYBOARD) == NULL;
 }
 
 /**
@@ -1272,18 +1272,11 @@ ComputeFreezes(void)
                        event->root_x, event->root_y);
         if (!CheckDeviceGrabs(replayDev, event, syncEvents.replayWin)) {
             if (IsTouchEvent((InternalEvent *) event)) {
-                InternalEvent *events = InitEventList(GetMaximumEventsNum());
-                int i, nev;
                 TouchPointInfoPtr ti =
                     TouchFindByClientID(replayDev, event->touchid);
                 BUG_WARN(!ti);
-                nev =
-                    GetTouchOwnershipEvents(events, replayDev, ti,
-                                            XIRejectTouch,
-                                            ti->listeners[0].listener, 0);
-                for (i = 0; i < nev; i++)
-                    mieqProcessDeviceEvent(replayDev, events + i, NULL);
-                ProcessInputEvents();
+
+                TouchListenerAcceptReject(replayDev, ti, 0, XIRejectTouch);
             }
             else if (replayDev->focus &&
                      !IsPointerEvent((InternalEvent *) event))
@@ -1415,6 +1408,38 @@ ReattachToOldMaster(DeviceIntPtr dev)
 }
 
 /**
+ * Update touch records when an explicit grab is activated. Any touches owned by
+ * the grabbing client are updated so the listener state reflects the new grab.
+ */
+static void
+UpdateTouchesForGrab(DeviceIntPtr mouse)
+{
+    int i;
+
+    if (!mouse->touch || mouse->deviceGrab.fromPassiveGrab)
+        return;
+
+    for (i = 0; i < mouse->touch->num_touches; i++) {
+        TouchPointInfoPtr ti = mouse->touch->touches + i;
+        GrabPtr grab = mouse->deviceGrab.grab;
+
+        if (ti->active &&
+            CLIENT_BITS(ti->listeners[0].listener) == grab->resource) {
+            ti->listeners[0].listener = grab->resource;
+            ti->listeners[0].level = grab->grabtype;
+            ti->listeners[0].state = LISTENER_IS_OWNER;
+            ti->listeners[0].window = grab->window;
+
+            if (grab->grabtype == CORE || grab->grabtype == XI ||
+                !xi2mask_isset(grab->xi2mask, mouse, XI_TouchBegin))
+                ti->listeners[0].type = LISTENER_POINTER_GRAB;
+            else
+                ti->listeners[0].type = LISTENER_GRAB;
+        }
+    }
+}
+
+/**
  * Activate a pointer grab on the given device. A pointer grab will cause all
  * core pointer events of this device to be delivered to the grabbing client only.
  * No other device will send core events to the grab client while the grab is
@@ -1463,6 +1488,7 @@ ActivatePointerGrab(DeviceIntPtr mouse, GrabPtr grab,
     grabinfo->fromPassiveGrab = isPassive;
     grabinfo->implicitGrab = autoGrab & ImplicitGrabMask;
     PostNewCursor(mouse);
+    UpdateTouchesForGrab(mouse);
     CheckGrabForSyncs(mouse, (Bool) grab->pointerMode,
                       (Bool) grab->keyboardMode);
 }
@@ -1479,6 +1505,8 @@ DeactivatePointerGrab(DeviceIntPtr mouse)
     DeviceIntPtr dev;
     Bool wasImplicit = (mouse->deviceGrab.fromPassiveGrab &&
                         mouse->deviceGrab.implicitGrab);
+    XID grab_resource = grab->resource;
+    int i;
 
     TouchRemovePointerGrab(mouse);
 
@@ -1503,6 +1531,15 @@ DeactivatePointerGrab(DeviceIntPtr mouse)
         ReattachToOldMaster(mouse);
 
     ComputeFreezes();
+
+    /* If an explicit grab was deactivated, we must remove it from the head of
+     * all the touches' listener lists. */
+    for (i = 0; mouse->touch && i < mouse->touch->num_touches; i++) {
+        TouchPointInfoPtr ti = mouse->touch->touches + i;
+
+        if (ti->active && TouchResourceIsOwner(ti, grab_resource))
+            TouchListenerAcceptReject(mouse, ti, 0, XIRejectTouch);
+    }
 }
 
 /**
@@ -5097,8 +5134,7 @@ ProcQueryPointer(ClientPtr client)
     memset(&rep, 0, sizeof(xQueryPointerReply));
     rep.type = X_Reply;
     rep.sequenceNumber = client->sequence;
-    rep.mask = mouse->button ? (mouse->button->state) : 0;
-    rep.mask |= XkbStateFieldFromRec(&keyboard->key->xkbInfo->state);
+    rep.mask = event_get_corestate(mouse, keyboard);
     rep.length = 0;
     rep.root = (GetCurrentRootWindow(mouse))->drawable.id;
     rep.rootX = pSprite->hot.x;
