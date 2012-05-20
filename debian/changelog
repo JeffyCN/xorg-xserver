@@ -1,5 +1,6 @@
-xorg-server (2:1.12.1-2) UNRELEASED; urgency=low
+xorg-server (2:1.12.1.902-1) UNRELEASED; urgency=low
 
+  [ Julien Cristau ]
   * xvfb-run: kill Xvfb when the script dies.
   * xvfb-run: instead of waiting 3 seconds and hoping that's enough for Xvfb
     to come up (and waiting 2.9 seconds too many in the general case), tell it
@@ -10,7 +11,15 @@ xorg-server (2:1.12.1-2) UNRELEASED; urgency=low
     instead.  Somehow this seems to have been broken all these years and
     nobody noticed...
 
- -- Julien Cristau <jcristau@debian.org>  Mon, 19 Mar 2012 21:16:07 +0100
+  [ Cyril Brulebois ]
+  * New upstream release candidate for the 1.12 stable branch:
+    - Bring the usual lot of stability fixes.
+    - Fix segfault on server shutdown (Closes: #671812).
+    - Refactor logging, fixing a format string vulnerability which could lead
+      to a denial of service (“only”, thanks to the fortified sources). This
+      is CVE-2012-2118 (Closes: #673148).
+
+ -- Cyril Brulebois <kibi@debian.org>  Sun, 20 May 2012 10:28:32 +0200
 
 xorg-server (2:1.12.1-2) unstable; urgency=low
 
