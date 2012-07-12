@@ -8,18 +8,20 @@ Signed-off-by: Cyril Brulebois <kibi@debian.org>
 [jcristau: forward-ported from 1.7 to 1.8]
 Signed-off-by: Julien Cristau <jcristau@debian.org>
 ---
---- a/configure.ac
-+++ b/configure.ac
-@@ -1339,7 +1339,7 @@ CORE_INCS='-I$(top_srcdir)/include -I$(t
+Index: xorg-server/configure.ac
+===================================================================
+--- xorg-server.orig/configure.ac	2012-07-12 14:32:56.665990355 +0200
++++ xorg-server/configure.ac	2012-07-12 14:33:23.040019369 +0200
+@@ -1359,7 +1359,7 @@
  
  # SHA1 hashing
  AC_ARG_WITH([sha1],
--            [AS_HELP_STRING([--with-sha1=libc|libmd|libgcrypt|libcrypto|libsha1|CommonCrypto],
-+            [AS_HELP_STRING([--with-sha1=libc|libmd|libgcrypt|libcrypto|libsha1|CommonCrypto|nettle],
+-            [AS_HELP_STRING([--with-sha1=libc|libmd|libgcrypt|libcrypto|libsha1|CommonCrypto|CryptoAPI],
++            [AS_HELP_STRING([--with-sha1=libc|libmd|libgcrypt|libcrypto|libsha1|CommonCrypto|CryptoAPI|nettle],
                              [choose SHA1 implementation])])
  AC_CHECK_FUNC([SHA1Init], [HAVE_SHA1_IN_LIBC=yes])
  if test "x$with_sha1" = x && test "x$HAVE_SHA1_IN_LIBC" = xyes; then
-@@ -1422,6 +1422,16 @@ if test "x$with_sha1" = xlibcrypto; then
+@@ -1455,6 +1455,16 @@
  		SHA1_CFLAGS="$OPENSSL_CFLAGS"
  	fi
  fi
@@ -36,9 +38,11 @@ Signed-off-by: Julien Cristau <jcristau@debian.org>
  AC_MSG_CHECKING([for SHA1 implementation])
  if test "x$with_sha1" = x; then
  	AC_MSG_ERROR([No suitable SHA1 implementation found])
---- a/include/dix-config.h.in
-+++ b/include/dix-config.h.in
-@@ -157,6 +157,9 @@
+Index: xorg-server/include/dix-config.h.in
+===================================================================
+--- xorg-server.orig/include/dix-config.h.in	2012-07-12 13:52:16.000000000 +0200
++++ xorg-server/include/dix-config.h.in	2012-07-12 14:33:01.499195672 +0200
+@@ -160,6 +160,9 @@
  /* Define to use libsha1 for SHA1 */
  #undef HAVE_SHA1_IN_LIBSHA1
  
@@ -48,9 +52,11 @@ Signed-off-by: Julien Cristau <jcristau@debian.org>
  /* Define to 1 if you have the `shmctl64' function. */
  #undef HAVE_SHMCTL64
  
---- a/os/xsha1.c
-+++ b/os/xsha1.c
-@@ -148,6 +148,31 @@ x_sha1_final(void *ctx, unsigned char re
+Index: xorg-server/os/xsha1.c
+===================================================================
+--- xorg-server.orig/os/xsha1.c	2012-07-12 13:52:16.000000000 +0200
++++ xorg-server/os/xsha1.c	2012-07-12 14:33:01.626295814 +0200
+@@ -190,6 +190,31 @@
      return 1;
  }
  
