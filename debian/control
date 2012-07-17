@@ -169,6 +169,8 @@ Depends:
  x11proto-xinerama-dev,
  x11proto-kb-dev,
  x11proto-xf86dri-dev,
+ x11proto-resource-dev,
+ x11proto-scrnsaver-dev,
  libxkbfile-dev,
  libpciaccess-dev,
  libpixman-1-dev (>= 0.21.8),
