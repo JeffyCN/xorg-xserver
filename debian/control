@@ -164,6 +164,7 @@ Depends:
  x11proto-randr-dev (>= 1.4.0),
  x11proto-render-dev (>= 2:0.11),
  x11proto-dri2-dev (>= 2.8),
+ x11proto-gl-dev,
  x11proto-fonts-dev,
  x11proto-xinerama-dev,
  x11proto-kb-dev,
@@ -171,6 +172,7 @@ Depends:
  libxkbfile-dev,
  libpciaccess-dev,
  libpixman-1-dev (>= 0.21.8),
+ mesa-common-dev,
  ${misc:Depends},
 Description: Xorg X server - development files
  This package provides development files for the X.Org ('Xorg') X server.
