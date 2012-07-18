@@ -30,6 +30,7 @@
 #include "inputstr.h"
 #include "scrnintstr.h"
 #include "exevents.h"
+#include "extinit.h"
 #include "xkbsrv.h"
 #include "xserver-properties.h"
 #include "syncsrv.h"
@@ -75,8 +76,6 @@ xtest_init_devices(void)
         FatalError("couldn't init server resources");
     InitAtoms();
     SyncExtensionInit();
-
-    XkbInitPrivates();
 
     /* this also inits the xtest devices */
     InitCoreDevices();
