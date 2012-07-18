@@ -2,5 +2,4 @@
 ## Ubuntu patches start with 100.
 001_fedora_extramodes.patch
 02_Add-libnettle-as-option-for-sha1.diff
-03_fix-disable-xv.diff
 #13_debian_add_xkbpath_env_variable.diff
