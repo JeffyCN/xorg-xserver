@@ -125,7 +125,7 @@ PseudoramiXAddScreen(int x, int y, int w, int h)
 // Initialize PseudoramiX.
 // Copied from PanoramiXExtensionInit
 void
-PseudoramiXExtensionInit(int argc, char *argv[])
+PseudoramiXExtensionInit(void)
 {
     Bool success = FALSE;
     ExtensionEntry      *extEntry;
@@ -211,10 +211,11 @@ ProcPseudoramiXGetState(ClientPtr client)
     rep.length = 0;
     rep.sequenceNumber = client->sequence;
     rep.state = !noPseudoramiXExtension;
+    rep.window = stuff->window;
     if (client->swapped) {
         swaps(&rep.sequenceNumber);
         swapl(&rep.length);
-        swaps(&rep.state);
+        swapl(&rep.window);
     }
     WriteToClient(client, sizeof(xPanoramiXGetStateReply), (char *)&rep);
     return Success;
@@ -240,10 +241,11 @@ ProcPseudoramiXGetScreenCount(ClientPtr client)
     rep.length = 0;
     rep.sequenceNumber = client->sequence;
     rep.ScreenCount = pseudoramiXNumScreens;
+    rep.window = stuff->window;
     if (client->swapped) {
         swaps(&rep.sequenceNumber);
         swapl(&rep.length);
-        swaps(&rep.ScreenCount);
+        swapl(&rep.window);
     }
     WriteToClient(client, sizeof(xPanoramiXGetScreenCountReply), (char *)&rep);
     return Success;
@@ -256,9 +258,12 @@ ProcPseudoramiXGetScreenSize(ClientPtr client)
     REQUEST(xPanoramiXGetScreenSizeReq);
     WindowPtr pWin;
     xPanoramiXGetScreenSizeReply rep;
-    register int n, rc;
+    register int rc;
 
     TRACE();
+
+    if (stuff->screen >= pseudoramiXNumScreens)
+      return BadMatch;
 
     REQUEST_SIZE_MATCH(xPanoramiXGetScreenSizeReq);
     rc = dixLookupWindow(&pWin, stuff->window, client, DixGetAttrAccess);
@@ -273,11 +278,15 @@ ProcPseudoramiXGetScreenSize(ClientPtr client)
     // was screenInfo.screens[stuff->screen]->width;
     rep.height = pseudoramiXScreens[stuff->screen].h;
     // was screenInfo.screens[stuff->screen]->height;
+    rep.window = stuff->window;
+    rep.screen = stuff->screen;
     if (client->swapped) {
         swaps(&rep.sequenceNumber);
         swapl(&rep.length);
-        swaps(&rep.width);
-        swaps(&rep.height);
+        swapl(&rep.width);
+        swapl(&rep.height);
+        swapl(&rep.window);
+        swapl(&rep.screen);
     }
     WriteToClient(client, sizeof(xPanoramiXGetScreenSizeReply), (char *)&rep);
     return Success;
