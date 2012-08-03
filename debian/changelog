@@ -1,3 +1,11 @@
+xorg-server (2:1.12.3.901-1) UNRELEASED; urgency=low
+
+  * New upstream release candidate
+    + glx: Free DRI2 drawable reference to destroyed GLX drawable
+      (closes: #681265, #674668)
+
+ -- Julien Cristau <jcristau@debian.org>  Fri, 03 Aug 2012 20:17:43 +0200
+
 xorg-server (2:1.12.3-1) unstable; urgency=low
 
   * New upstream release.
