@@ -1,13 +1,15 @@
-xorg-server (2:1.12.3.901-1) UNRELEASED; urgency=low
+xorg-server (2:1.12.3.902-1) UNRELEASED; urgency=low
 
   * New upstream release candidate
     + glx: Free DRI2 drawable reference to destroyed GLX drawable
       (closes: #681265, #674668)
+    + dix: make sure the mask is set for emulated scroll events
+      (closes: #684051)
   * 03_fix-panning.diff: disable cursor confinement when panning is enabled
     (closes: #643693)
   * Video ABI bumped to 12.1, serverminver to 2:1.12.3.901.
 
- -- Julien Cristau <jcristau@debian.org>  Fri, 03 Aug 2012 20:17:43 +0200
+ -- Julien Cristau <jcristau@debian.org>  Tue, 21 Aug 2012 19:50:31 +0200
 
 xorg-server (2:1.12.3-1) unstable; urgency=low
 
