@@ -1,4 +1,4 @@
-xorg-server (2:1.12.3.902-1) UNRELEASED; urgency=low
+xorg-server (2:1.12.3.902-1) unstable; urgency=low
 
   * New upstream release candidate
     + glx: Free DRI2 drawable reference to destroyed GLX drawable
@@ -9,7 +9,7 @@ xorg-server (2:1.12.3.902-1) UNRELEASED; urgency=low
     (closes: #643693)
   * Video ABI bumped to 12.1, serverminver to 2:1.12.3.901.
 
- -- Julien Cristau <jcristau@debian.org>  Tue, 21 Aug 2012 19:50:31 +0200
+ -- Julien Cristau <jcristau@debian.org>  Tue, 21 Aug 2012 21:35:25 +0200
 
 xorg-server (2:1.12.3-1) unstable; urgency=low
 
