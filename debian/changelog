@@ -2,6 +2,8 @@ xorg-server (2:1.12.3.902-2) UNRELEASED; urgency=low
 
   * int10: fix pci_device_read_rom usage (closes: #686153).  Thanks, Stephan
     Schreiber!
+  * Revert 'Unload submodules' (closes: #686152).  Seems to introduce a
+    regression, let's try that again later.  Thanks, Stephan Schreiber!
 
  -- Julien Cristau <jcristau@debian.org>  Wed, 29 Aug 2012 20:15:48 +0200
 
