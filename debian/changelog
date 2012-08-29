@@ -1,3 +1,10 @@
+xorg-server (2:1.12.3.902-2) UNRELEASED; urgency=low
+
+  * int10: fix pci_device_read_rom usage (closes: #686153).  Thanks, Stephan
+    Schreiber!
+
+ -- Julien Cristau <jcristau@debian.org>  Wed, 29 Aug 2012 20:15:48 +0200
+
 xorg-server (2:1.12.3.902-1) unstable; urgency=low
 
   * New upstream release candidate
