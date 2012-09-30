@@ -6,3 +6,4 @@
 #13_debian_add_xkbpath_env_variable.diff
 04_int10-fix-pci_device_read_rom-usage.diff
 05_Revert-Unload-submodules.diff
+06_Revert-fb-reorder-Bresenham-error-correction-to-avoi.diff
