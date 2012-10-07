@@ -1,3 +1,10 @@
+xorg-server (2:1.12.4-2) UNRELEASED; urgency=low
+
+  * Fix Xephyr command line option parsing (closes: #689246).  Thanks, Andrzej
+    Pietrasiewicz!
+
+ -- Julien Cristau <jcristau@debian.org>  Sun, 07 Oct 2012 18:50:40 +0200
+
 xorg-server (2:1.12.4-1) unstable; urgency=low
 
   * New upstream stable release.
