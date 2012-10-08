@@ -7,6 +7,8 @@ xorg-server (2:1.13.0-1) UNRELEASED; urgency=low
 
   [ Timo Aaltonen ]
   * Refresh 02_Add-libnettle-as-option-for-sha1.diff.
+  * Remove 03_fix-panning.diff, upstream
+  * Refresh 04_int10-fix-pci_device_read_rom-usage.diff.
 
  -- Robert Hooker <sarvatt@ubuntu.com>  Wed, 22 Aug 2012 11:12:17 -0400
 

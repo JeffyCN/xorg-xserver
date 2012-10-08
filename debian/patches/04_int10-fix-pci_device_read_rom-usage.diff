@@ -29,17 +29,15 @@ Signed-off-by: Julien Cristau <jcristau@debian.org>
  hw/xfree86/int10/generic.c |    3 ++-
  1 file changed, 2 insertions(+), 1 deletion(-)
 
-Index: xorg-server/hw/xfree86/int10/generic.c
-===================================================================
---- xorg-server.orig/hw/xfree86/int10/generic.c
-+++ xorg-server/hw/xfree86/int10/generic.c
-@@ -178,7 +178,8 @@ xf86ExtendedInitInt10(int entityIndex, i
+--- a/hw/xfree86/int10/generic.c
++++ b/hw/xfree86/int10/generic.c
+@@ -178,7 +178,8 @@
       */
      vbiosMem = (char *) base + V_BIOS;
      memset(vbiosMem, 0, 2 * V_BIOS_SIZE);
 -    if (pci_device_read_rom(pInt->dev, vbiosMem) < V_BIOS_SIZE) {
 +    if (pci_device_read_rom(pInt->dev, vbiosMem) != 0
 +        || pInt->dev->rom_size < V_BIOS_SIZE) {
-         xf86DrvMsg(screen, X_WARNING,
+         xf86DrvMsg(pScrn->scrnIndex, X_WARNING,
                     "Unable to retrieve all of segment 0x0C0000.\n");
      }
