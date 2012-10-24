@@ -4,6 +4,8 @@ xorg-server (2:1.12.4-2) UNRELEASED; urgency=low
     Pietrasiewicz!
   * Restore {in,out}{b,w,l} on ia64 (closes: #685750).  Thanks, Stephan
     Schreiber!
+  * EXA: Fall back earlier and more thoroughly from exaGlyphs (closes:
+    #666468).  Patch by Michel Dänzer stolen from upstream bugzilla.
 
  -- Julien Cristau <jcristau@debian.org>  Sun, 07 Oct 2012 18:50:40 +0200
 
