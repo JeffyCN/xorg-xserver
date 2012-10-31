@@ -1595,9 +1595,6 @@ ProcessTouchEvent(InternalEvent *ev, DeviceIntPtr dev)
     else
         touchid = ev->device_event.touchid;
 
-    if (emulate_pointer)
-        UpdateDeviceState(dev, &ev->device_event);
-
     if (type == ET_TouchBegin) {
         ti = TouchBeginTouch(dev, ev->device_event.sourceid, touchid,
                              emulate_pointer);
@@ -1644,6 +1641,7 @@ ProcessTouchEvent(InternalEvent *ev, DeviceIntPtr dev)
      * events which _only_ emulate motion just work normally */
     if (emulate_pointer && ev->any.type != ET_TouchUpdate)
         DeliverEmulatedMotionEvent(dev, ti, ev);
+
     if (emulate_pointer && IsMaster(dev))
         CheckMotion(&ev->device_event, dev);
 
@@ -1668,6 +1666,9 @@ ProcessTouchEvent(InternalEvent *ev, DeviceIntPtr dev)
         if (ev->any.type == ET_TouchEnd)
             TouchEndTouch(dev, ti);
     }
+
+    if (emulate_pointer)
+        UpdateDeviceState(dev, &ev->device_event);
 }
 
 /**
