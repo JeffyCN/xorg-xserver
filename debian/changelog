@@ -1,3 +1,10 @@
+xorg-server (2:1.12.4-3) unstable; urgency=low
+
+  * Replace EXA patch from previous upload with the one actually applied
+    upstream (closes: #666468).
+
+ -- Julien Cristau <jcristau@debian.org>  Mon, 05 Nov 2012 10:44:58 +0100
+
 xorg-server (2:1.12.4-2) unstable; urgency=low
 
   * Fix Xephyr command line option parsing (closes: #689246).  Thanks, Andrzej
