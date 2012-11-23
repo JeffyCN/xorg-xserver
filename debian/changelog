@@ -12,12 +12,29 @@ xorg-server (2:1.13.0.901-1) UNRELEASED; urgency=low
 
  -- Robert Hooker <sarvatt@ubuntu.com>  Wed, 22 Aug 2012 11:12:17 -0400
 
-xorg-server (2:1.12.4-2) UNRELEASED; urgency=low
+xorg-server (2:1.12.4-4) UNRELEASED; urgency=low
+
+  * Fix memory leak in libnettle sha1 patch.  Thanks, Yaakov Selkowitz!
+
+ -- Julien Cristau <jcristau@debian.org>  Mon, 05 Nov 2012 20:39:01 +0100
+
+xorg-server (2:1.12.4-3) unstable; urgency=low
+
+  * Replace EXA patch from previous upload with the one actually applied
+    upstream (closes: #666468).
+
+ -- Julien Cristau <jcristau@debian.org>  Mon, 05 Nov 2012 10:44:58 +0100
+
+xorg-server (2:1.12.4-2) unstable; urgency=low
 
   * Fix Xephyr command line option parsing (closes: #689246).  Thanks, Andrzej
     Pietrasiewicz!
+  * Restore {in,out}{b,w,l} on ia64 (closes: #685750).  Thanks, Stephan
+    Schreiber!
+  * EXA: Fall back earlier and more thoroughly from exaGlyphs (closes:
+    #666468).  Patch by Michel Dänzer stolen from upstream bugzilla.
 
- -- Julien Cristau <jcristau@debian.org>  Sun, 07 Oct 2012 18:50:40 +0200
+ -- Julien Cristau <jcristau@debian.org>  Wed, 24 Oct 2012 16:46:48 +0200
 
 xorg-server (2:1.12.4-1) unstable; urgency=low
 
