@@ -10,16 +10,16 @@ Signed-off-by: Julien Cristau <jcristau@debian.org>
 ---
 --- a/configure.ac
 +++ b/configure.ac
-@@ -1339,7 +1339,7 @@ CORE_INCS='-I$(top_srcdir)/include -I$(t
+@@ -1361,7 +1361,7 @@ CORE_INCS='-I$(top_srcdir)/include -I$(t
  
  # SHA1 hashing
  AC_ARG_WITH([sha1],
--            [AS_HELP_STRING([--with-sha1=libc|libmd|libgcrypt|libcrypto|libsha1|CommonCrypto],
-+            [AS_HELP_STRING([--with-sha1=libc|libmd|libgcrypt|libcrypto|libsha1|CommonCrypto|nettle],
+-            [AS_HELP_STRING([--with-sha1=libc|libmd|libgcrypt|libcrypto|libsha1|CommonCrypto|CryptoAPI],
++            [AS_HELP_STRING([--with-sha1=libc|libmd|libgcrypt|libcrypto|libsha1|CommonCrypto|CryptoAPI|nettle],
                              [choose SHA1 implementation])])
  AC_CHECK_FUNC([SHA1Init], [HAVE_SHA1_IN_LIBC=yes])
  if test "x$with_sha1" = x && test "x$HAVE_SHA1_IN_LIBC" = xyes; then
-@@ -1422,6 +1422,16 @@ if test "x$with_sha1" = xlibcrypto; then
+@@ -1457,6 +1457,16 @@ if test "x$with_sha1" = xlibcrypto; then
  		SHA1_CFLAGS="$OPENSSL_CFLAGS"
  	fi
  fi
@@ -38,7 +38,7 @@ Signed-off-by: Julien Cristau <jcristau@debian.org>
  	AC_MSG_ERROR([No suitable SHA1 implementation found])
 --- a/include/dix-config.h.in
 +++ b/include/dix-config.h.in
-@@ -157,6 +157,9 @@
+@@ -160,6 +160,9 @@
  /* Define to use libsha1 for SHA1 */
  #undef HAVE_SHA1_IN_LIBSHA1
  
@@ -50,7 +50,7 @@ Signed-off-by: Julien Cristau <jcristau@debian.org>
  
 --- a/os/xsha1.c
 +++ b/os/xsha1.c
-@@ -148,6 +148,31 @@ x_sha1_final(void *ctx, unsigned char re
+@@ -190,6 +190,32 @@ x_sha1_final(void *ctx, unsigned char re
      return 1;
  }
  

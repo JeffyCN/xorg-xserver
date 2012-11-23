@@ -10,11 +10,9 @@ This doesn't seem to work quite well.  See Debian bug#686152.
  hw/xfree86/common/xf86Helper.c |    6 ++++++
  1 file changed, 6 insertions(+)
 
-diff --git a/hw/xfree86/common/xf86Helper.c b/hw/xfree86/common/xf86Helper.c
-index 8c948cf..620c9b8 100644
 --- a/hw/xfree86/common/xf86Helper.c
 +++ b/hw/xfree86/common/xf86Helper.c
-@@ -1554,7 +1554,13 @@ xf86LoadOneModule(char *name, pointer opt)
+@@ -1596,7 +1596,13 @@ xf86LoadOneModule(char *name, pointer op
  void
  xf86UnloadSubModule(pointer mod)
  {
@@ -28,6 +26,3 @@ index 8c948cf..620c9b8 100644
  }
  
  Bool
--- 
-1.7.10.4
-
