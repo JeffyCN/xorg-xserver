@@ -1555,11 +1555,13 @@ ActivateKeyboardGrab(DeviceIntPtr keybd, GrabPtr grab, TimeStamp time,
     WindowPtr oldWin;
 
     /* slave devices need to float for the duration of the grab. */
-    if (grab->grabtype == XI2 &&
+    if (grab->grabtype == XI2 && keybd->enabled &&
         !(passive & ImplicitGrabMask) && !IsMaster(keybd))
         DetachFromMaster(keybd);
 
-    if (grabinfo->grab)
+    if (!keybd->enabled)
+        oldWin = NULL;
+    else if (grabinfo->grab)
         oldWin = grabinfo->grab->window;
     else if (keybd->focus)
         oldWin = keybd->focus->win;
@@ -1569,7 +1571,8 @@ ActivateKeyboardGrab(DeviceIntPtr keybd, GrabPtr grab, TimeStamp time,
         oldWin = keybd->focus->win;
     if (keybd->valuator)
         keybd->valuator->motionHintWindow = NullWindow;
-    DoFocusEvents(keybd, oldWin, grab->window, NotifyGrab);
+    if (oldWin)
+        DoFocusEvents(keybd, oldWin, grab->window, NotifyGrab);
     if (syncEvents.playingEvents)
         grabinfo->grabTime = syncEvents.time;
     else
@@ -1590,13 +1593,10 @@ DeactivateKeyboardGrab(DeviceIntPtr keybd)
 {
     GrabPtr grab = keybd->deviceGrab.grab;
     DeviceIntPtr dev;
-    WindowPtr focusWin = keybd->focus ? keybd->focus->win
-        : keybd->spriteInfo->sprite->win;
+    WindowPtr focusWin;
     Bool wasImplicit = (keybd->deviceGrab.fromPassiveGrab &&
                         keybd->deviceGrab.implicitGrab);
 
-    if (focusWin == FollowKeyboardWin)
-        focusWin = inputInfo.keyboard->focus->win;
     if (keybd->valuator)
         keybd->valuator->motionHintWindow = NullWindow;
     keybd->deviceGrab.grab = NullGrab;
@@ -1607,6 +1607,17 @@ DeactivateKeyboardGrab(DeviceIntPtr keybd)
         if (dev->deviceGrab.sync.other == grab)
             dev->deviceGrab.sync.other = NullGrab;
     }
+
+    if (keybd->focus)
+        focusWin = keybd->focus->win;
+    else if (keybd->spriteInfo->sprite)
+        focusWin = keybd->spriteInfo->sprite->win;
+    else
+        focusWin = NullWindow;
+
+    if (focusWin == FollowKeyboardWin)
+        focusWin = inputInfo.keyboard->focus->win;
+
     DoFocusEvents(keybd, grab->window, focusWin, NotifyUngrab);
 
     if (!wasImplicit && grab->grabtype == XI2)

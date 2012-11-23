@@ -896,9 +896,9 @@ scale_to_desktop(DeviceIntPtr dev, ValuatorMask *mask,
 
     /* scale x&y to desktop coordinates */
     *screenx = rescaleValuatorAxis(x, dev->valuator->axes + 0, NULL,
-                                   screenInfo.x, screenInfo.width);
+                                   screenInfo.x, screenInfo.width - 1);
     *screeny = rescaleValuatorAxis(y, dev->valuator->axes + 1, NULL,
-                                   screenInfo.y, screenInfo.height);
+                                   screenInfo.y, screenInfo.height - 1);
 
     *devx = x;
     *devy = y;
@@ -1400,8 +1400,9 @@ fill_pointer_events(InternalEvent *events, DeviceIntPtr pDev, int type,
        coordinates were.
      */
     if (flags & POINTER_SCREEN) {
-        screenx = sx;
-        screeny = sy;
+        scr = miPointerGetScreen(pDev);
+        screenx = sx + scr->x;
+        screeny = sy + scr->y;
     }
 
     scr = positionSprite(pDev, (flags & POINTER_ABSOLUTE) ? Absolute : Relative,
