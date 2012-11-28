@@ -1,6 +1,9 @@
 xorg-server (2:1.12.4-4) UNRELEASED; urgency=low
 
   * Fix memory leak in libnettle sha1 patch.  Thanks, Yaakov Selkowitz!
+  * Cherry-pick from upstream:
+    - dix: set the device transformation matrix.  Avoids cursor jumps in
+      virtualbox (closes: #694598)
 
  -- Julien Cristau <jcristau@debian.org>  Mon, 05 Nov 2012 20:39:01 +0100
 
