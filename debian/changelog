@@ -1,8 +1,7 @@
-xorg-server (2:1.13.0.901-1) UNRELEASED; urgency=low
-
-  * New upstream release
+xorg-server (2:1.13.0.902-1) UNRELEASED; urgency=low
 
   [ Maarten Lankhorst ]
+  * New upstream release
   * Bump minimum required abi, randr, dri2 and gl protos.
 
   [ Timo Aaltonen ]
