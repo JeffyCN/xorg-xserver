@@ -16,6 +16,8 @@ xorg-server (2:1.13.99.901-1) UNRELEASED; urgency=low
     - 04_int10-fix-pci_device_read_rom-usage.diff
     - 07_Revert-kinput-allocate-enough-space-for-null-charact.diff
   * Bump x11proto-input-dev and libpixman-1-dev minimum versions.
+  * Add patch to fix build failure of xserver-xorg-core-udeb.
+    - 02_hide_panoramix_symbol.diff
 
  -- Robert Hooker <sarvatt@ubuntu.com>  Wed, 22 Aug 2012 11:12:17 -0400
 

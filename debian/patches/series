@@ -1,6 +1,7 @@
 ## Patches with a number < 100 are applied in debian.
 ## Ubuntu patches start with 100.
 001_fedora_extramodes.patch
+02_hide_panoramix_symbol.diff
 #13_debian_add_xkbpath_env_variable.diff
 05_Revert-Unload-submodules.diff
 06_Revert-fb-reorder-Bresenham-error-correction-to-avoi.diff
