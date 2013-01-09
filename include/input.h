@@ -465,6 +465,11 @@ extern int GetTouchOwnershipEvents(InternalEvent *events,
                                    TouchPointInfoPtr ti,
                                    uint8_t mode, XID resource, uint32_t flags);
 
+extern void GetDixTouchEnd(InternalEvent *ievent,
+                           DeviceIntPtr dev,
+                           TouchPointInfoPtr ti,
+                           uint32_t flags);
+
 extern _X_EXPORT int GetProximityEvents(InternalEvent *events,
                                         DeviceIntPtr pDev,
                                         int type, const ValuatorMask *mask);
@@ -580,6 +585,8 @@ extern int TouchListenerAcceptReject(DeviceIntPtr dev, TouchPointInfoPtr ti,
 extern int TouchAcceptReject(ClientPtr client, DeviceIntPtr dev, int mode,
                              uint32_t touchid, Window grab_window, XID *error);
 extern void TouchEndPhysicallyActiveTouches(DeviceIntPtr dev);
+extern void TouchDeliverDeviceClassesChangedEvent(TouchPointInfoPtr ti,
+                                                  Time time, XID resource);
 
 /* misc event helpers */
 extern Mask GetEventMask(DeviceIntPtr dev, xEvent *ev, InputClientsPtr clients);
@@ -670,5 +677,11 @@ extern _X_EXPORT void input_option_set_value(InputOption *opt,
 
 extern _X_HIDDEN Bool point_on_screen(ScreenPtr pScreen, int x, int y);
 extern _X_HIDDEN void update_desktop_dimensions(void);
+
+extern _X_HIDDEN void input_constrain_cursor(DeviceIntPtr pDev, ScreenPtr screen,
+                                             int current_x, int current_y,
+                                             int dest_x, int dest_y,
+                                             int *out_x, int *out_y,
+                                             int *nevents, InternalEvent* events);
 
 #endif                          /* INPUT_H */

@@ -88,7 +88,9 @@ extern void ddxBeforeReset(void);
 #endif
 
 #ifdef DDXOSVERRORF
-extern _X_EXPORT void (*OsVendorVErrorFProc) (const char *, va_list args);
+extern _X_EXPORT void (*OsVendorVErrorFProc) (const char *,
+                                              va_list args)
+_X_ATTRIBUTE_PRINTF(1, 0);
 #endif
 
 extern _X_EXPORT int WaitForSomething(int *     /*pClientsReady */
@@ -405,9 +407,6 @@ typedef struct sockaddr *sockaddrPtr;
 
 extern _X_EXPORT int
 InvalidHost(sockaddrPtr /*saddr */ , int /*len */ , ClientPtr client);
-
-extern _X_EXPORT int
-LocalClient(ClientPtr /* client */ );
 
 extern _X_EXPORT int
 LocalClientCred(ClientPtr, int *, int *);

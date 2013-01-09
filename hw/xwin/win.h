@@ -133,6 +133,8 @@
 
 #define WIN_MAX_KEYS_PER_KEY	4
 
+#define NONAMELESSUNION
+
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <stdio.h>
@@ -169,7 +171,6 @@
 #include "micmap.h"
 #include "mifillarc.h"
 #include "mifpoly.h"
-#include "mibstore.h"
 #include "input.h"
 #include "mipointer.h"
 #include "X11/keysym.h"
@@ -248,9 +249,6 @@ static unsigned int PROFPT##point = 0;\
 if (++PROFPT##point % thresh == 0)\
 ErrorF (#point ": PROFILEPOINT hit %u times\n", PROFPT##point);\
 }
-
-/* We use xor this macro for detecting toggle key state changes */
-#define WIN_XOR(a,b) ((!(a) && (b)) || ((a) && !(b)))
 
 #define DEFINE_ATOM_HELPER(func,atom_name)			\
 static Atom func (void) {					\
@@ -858,11 +856,13 @@ void
 
 #ifdef DDXOSVERRORF
 void
- OSVenderVErrorF(const char *pszFormat, va_list va_args);
+OsVendorVErrorF(const char *pszFormat, va_list va_args)
+_X_ATTRIBUTE_PRINTF(1, 0);
 #endif
 
 void
- winMessageBoxF(const char *pszError, UINT uType, ...);
+winMessageBoxF(const char *pszError, UINT uType, ...)
+_X_ATTRIBUTE_PRINTF(1, 3);
 
 #ifdef XWIN_NATIVEGDI
 /*
@@ -1053,18 +1053,6 @@ void
 winPolyLineNativeGDI(DrawablePtr pDrawable,
                      GCPtr pGC, int mode, int npt, DDXPointPtr ppt);
 #endif
-
-#ifdef XWIN_NATIVEGDI
-/*
- * winpushpxl.c
- */
-
-void
-
-winPushPixels(GCPtr pGC, PixmapPtr pBitMap, DrawablePtr pDrawable,
-              int dx, int dy, int xOrg, int yOrg);
-#endif
-
 /*
  * winscrinit.c
  */

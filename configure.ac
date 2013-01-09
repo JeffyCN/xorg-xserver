@@ -26,12 +26,11 @@ dnl
 dnl Process this file with autoconf to create configure.
 
 AC_PREREQ(2.60)
-AC_INIT([xorg-server], 1.13.1.901, [https://bugs.freedesktop.org/enter_bug.cgi?product=xorg], xorg-server)
-RELEASE_DATE="2013-01-03"
-RELEASE_NAME=""
+AC_INIT([xorg-server], 1.13.99.901, [https://bugs.freedesktop.org/enter_bug.cgi?product=xorg], xorg-server)
+RELEASE_DATE="2012-12-19"
+RELEASE_NAME="Egg Nog"
 AC_CONFIG_SRCDIR([Makefile.am])
 AM_INIT_AUTOMAKE([foreign dist-bzip2])
-AM_MAINTAINER_MODE
 
 # Require xorg-macros minimum of 1.14 for XORG_COMPILER_BRAND in XORG_DEFAULT_OPTIONS
 m4_ifndef([XORG_MACROS_VERSION],
@@ -421,7 +420,7 @@ case $host_os in
   darwin*)
 	AC_DEFINE(CSRG_BASED, 1, [System is BSD-like])
 	;;
-  cygwin*)
+  cygwin*|mingw*)
 	CFLAGS="$CFLAGS -DFD_SETSIZE=256"
 	;;
 esac
@@ -789,7 +788,7 @@ XPROTO="xproto >= 7.0.22"
 RANDRPROTO="randrproto >= 1.4.0"
 RENDERPROTO="renderproto >= 0.11"
 XEXTPROTO="xextproto >= 7.1.99"
-INPUTPROTO="inputproto >= 2.1.99.6"
+INPUTPROTO="inputproto >= 2.2.99.1"
 KBPROTO="kbproto >= 1.0.3"
 FONTSPROTO="fontsproto"
 FIXESPROTO="fixesproto >= 5.0"
@@ -812,7 +811,7 @@ LIBPCIACCESS="pciaccess >= 0.12.901"
 LIBUDEV="libudev >= 143"
 LIBSELINUX="libselinux >= 2.0.86"
 LIBDBUS="dbus-1 >= 1.0"
-LIBPIXMAN="pixman-1 >= 0.21.8"
+LIBPIXMAN="pixman-1 >= 0.27.2"
 
 dnl Pixman is always required, but we separate it out so we can link
 dnl specific modules against it
@@ -1361,7 +1360,7 @@ CORE_INCS='-I$(top_srcdir)/include -I$(top_builddir)/include'
 
 # SHA1 hashing
 AC_ARG_WITH([sha1],
-            [AS_HELP_STRING([--with-sha1=libc|libmd|libgcrypt|libcrypto|libsha1|CommonCrypto|CryptoAPI],
+            [AS_HELP_STRING([--with-sha1=libc|libmd|libnettle|libgcrypt|libcrypto|libsha1|CommonCrypto|CryptoAPI],
                             [choose SHA1 implementation])])
 AC_CHECK_FUNC([SHA1Init], [HAVE_SHA1_IN_LIBC=yes])
 if test "x$with_sha1" = x && test "x$HAVE_SHA1_IN_LIBC" = xyes; then
@@ -1423,6 +1422,18 @@ if test "x$with_sha1" = xlibsha1; then
 	AC_DEFINE([HAVE_SHA1_IN_LIBSHA1], [1],
 	          [Use libsha1 for SHA1])
 	SHA1_LIBS=-lsha1
+fi
+AC_CHECK_LIB([nettle], [nettle_sha1_init], [HAVE_LIBNETTLE=yes])
+if test "x$with_sha1" = x && test "x$HAVE_LIBNETTLE" = xyes; then
+	with_sha1=libnettle
+fi
+if test "x$with_sha1" = xlibnettle && test "x$HAVE_LIBNETTLE" != xyes; then
+	AC_MSG_ERROR([libnettle requested but not found])
+fi
+if test "x$with_sha1" = xlibnettle; then
+	AC_DEFINE([HAVE_SHA1_IN_LIBNETTLE], [1],
+	          [Use libnettle SHA1 functions])
+	SHA1_LIBS=-lnettle
 fi
 AC_CHECK_LIB([gcrypt], [gcry_md_open], [HAVE_LIBGCRYPT=yes])
 if test "x$with_sha1" = x && test "x$HAVE_LIBGCRYPT" = xyes; then
@@ -1905,7 +1916,7 @@ if test "x$XWIN" = xyes; then
 			XWIN_SERVER_NAME=Xming
 			AC_DEFINE(RELOCATE_PROJECTROOT,1,[Make PROJECT_ROOT relative to the xserver location])
 			AC_DEFINE(HAS_WINSOCK,1,[Use Windows sockets])
-			XWIN_SYS_LIBS=-lws2_32
+			XWIN_SYS_LIBS="-lpthread -lws2_32"
 			;;
 	esac
 

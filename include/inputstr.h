@@ -71,7 +71,7 @@ extern _X_EXPORT int CountBits(const uint8_t * mask, int len);
  * events to the protocol, the server will not support these events until
  * this number here is bumped.
  */
-#define XI2LASTEVENT    XI_RawTouchEnd
+#define XI2LASTEVENT    XI_BarrierLeave
 #define XI2MASKSIZE     ((XI2LASTEVENT >> 3) + 1)       /* no of bytes for masks */
 
 /**
@@ -331,7 +331,7 @@ typedef struct _DDXTouchPointInfo {
     uint32_t ddx_id;            /* touch ID given by the DDX */
     Bool emulate_pointer;
 
-    ValuatorMask *valuators;    /* last recorded axis values */
+    ValuatorMask *valuators;    /* last axis values as posted, pre-transform */
 } DDXTouchPointInfoRec;
 
 typedef struct _TouchClassRec {

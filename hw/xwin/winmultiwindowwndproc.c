@@ -498,7 +498,7 @@ winTopLevelWindowProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
                           NULL,
                           GetLastError(),
                           MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
-                          (LPTSTR) & lpMsgBuf, 0, NULL);
+                          (LPTSTR) &lpMsgBuf, 0, NULL);
 
             ErrorF("winTopLevelWindowProc - BitBlt failed: %s\n",
                    (LPSTR) lpMsgBuf);
@@ -825,6 +825,8 @@ winTopLevelWindowProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
         break;
 
     case WM_CLOSE:
+        /* Removep AppUserModelID property */
+        winSetAppUserModelID(hwnd, NULL);
         /* Branch on if the window was killed in X already */
         if (pWinPriv->fXKilled) {
             /* Window was killed, go ahead and destroy the window */

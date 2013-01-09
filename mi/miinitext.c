@@ -368,7 +368,7 @@ NewExtensionModule(void)
 }
 
 void
-LoadExtension(ExtensionModule * e, Bool builtin)
+LoadExtension(const ExtensionModule * e, Bool builtin)
 {
     ExtensionModule *newext;
 

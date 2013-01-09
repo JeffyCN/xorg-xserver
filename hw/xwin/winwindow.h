@@ -81,15 +81,6 @@ typedef struct {
 #ifdef XWIN_GLX_WINDOWS
     Bool fWglUsed;
 #endif
-
-    /* Privates used by primary fb DirectDraw server */
-    LPDDSURFACEDESC pddsdPrimary;
-
-    /* Privates used by shadow fb DirectDraw Nonlocking server */
-    LPDIRECTDRAWSURFACE4 pddsPrimary4;
-
-    /* Privates used by both shadow fb DirectDraw servers */
-    LPDIRECTDRAWCLIPPER pddcPrimary;
 } winPrivWinRec, *winPrivWinPtr;
 
 #ifdef XWIN_MULTIWINDOW
@@ -156,6 +147,18 @@ void
 
 void
  winMinimizeWindow(Window id);
+
+void
+ winPropertyStoreInit(void);
+
+void
+ winPropertyStoreDestroy(void);
+
+void
+ winSetAppUserModelID(HWND hWnd, const char *AppID);
+
+void
+ winShowWindowOnTaskbar(HWND hWnd, BOOL show);
 
 #endif                          /* XWIN_MULTIWINDOW */
 #endif

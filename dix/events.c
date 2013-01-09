@@ -219,6 +219,9 @@ static void CheckVirtualMotion(DeviceIntPtr pDev, QdEventPtr qe,
 static void CheckPhysLimits(DeviceIntPtr pDev, CursorPtr cursor,
                             Bool generateEvents, Bool confineToScreen,
                             ScreenPtr pScreen);
+static Bool IsWrongPointerBarrierClient(ClientPtr client,
+                                        DeviceIntPtr dev,
+                                        xEvent *event);
 
 /** Key repeat hack. Do not use but in TryClientEvents */
 extern BOOL EventIsKeyRepeat(xEvent *event);
@@ -1503,10 +1506,26 @@ DeactivatePointerGrab(DeviceIntPtr mouse)
 {
     GrabPtr grab = mouse->deviceGrab.grab;
     DeviceIntPtr dev;
+    Bool wasPassive = mouse->deviceGrab.fromPassiveGrab;
     Bool wasImplicit = (mouse->deviceGrab.fromPassiveGrab &&
                         mouse->deviceGrab.implicitGrab);
     XID grab_resource = grab->resource;
     int i;
+
+    /* If an explicit grab was deactivated, we must remove it from the head of
+     * all the touches' listener lists. */
+    for (i = 0; !wasPassive && mouse->touch && i < mouse->touch->num_touches; i++) {
+        TouchPointInfoPtr ti = mouse->touch->touches + i;
+        if (ti->active && TouchResourceIsOwner(ti, grab_resource)) {
+            /* Rejecting will generate a TouchEnd, but we must not
+               emulate a ButtonRelease here. So pretend the listener
+               already has the end event */
+            if (grab->grabtype == CORE || grab->grabtype == XI ||
+                    !xi2mask_isset(dev->deviceGrab.grab->xi2mask, dev, XI_TouchBegin))
+                ti->listeners[0].state = LISTENER_HAS_END;
+            TouchListenerAcceptReject(mouse, ti, 0, XIRejectTouch);
+        }
+    }
 
     TouchRemovePointerGrab(mouse);
 
@@ -2027,19 +2046,19 @@ DeliverToWindowOwner(DeviceIntPtr dev, WindowPtr win,
  */
 static Bool
 GetClientsForDelivery(DeviceIntPtr dev, WindowPtr win,
-                      xEvent *events, Mask filter, InputClients ** clients)
+                      xEvent *events, Mask filter, InputClients ** iclients)
 {
     int rc = 0;
 
     if (core_get_type(events) != 0)
-        *clients = (InputClients *) wOtherClients(win);
+        *iclients = (InputClients *) wOtherClients(win);
     else if (xi2_get_type(events) != 0) {
         OtherInputMasks *inputMasks = wOtherInputMasks(win);
 
         /* Has any client selected for the event? */
         if (!WindowXI2MaskIsset(dev, win, events))
             goto out;
-        *clients = inputMasks->inputClients;
+        *iclients = inputMasks->inputClients;
     }
     else {
         OtherInputMasks *inputMasks = wOtherInputMasks(win);
@@ -2048,7 +2067,7 @@ GetClientsForDelivery(DeviceIntPtr dev, WindowPtr win,
         if (!inputMasks || !(inputMasks->inputEvents[dev->id] & filter))
             goto out;
 
-        *clients = inputMasks->inputClients;
+        *iclients = inputMasks->inputClients;
     }
 
     rc = 1;
@@ -2074,6 +2093,9 @@ DeliverEventToInputClients(DeviceIntPtr dev, InputClients * inputclients,
         ClientPtr client = rClient(inputclients);
 
         if (IsInterferingGrab(client, dev, events))
+            continue;
+
+        if (IsWrongPointerBarrierClient(client, dev, events))
             continue;
 
         mask = GetEventMask(dev, events, inputclients);
@@ -2110,12 +2132,12 @@ DeliverEventToWindowMask(DeviceIntPtr dev, WindowPtr win, xEvent *events,
                          int count, Mask filter, GrabPtr grab,
                          ClientPtr *client_return, Mask *mask_return)
 {
-    InputClients *clients;
+    InputClients *iclients;
 
-    if (!GetClientsForDelivery(dev, win, events, filter, &clients))
+    if (!GetClientsForDelivery(dev, win, events, filter, &iclients))
         return EVENT_SKIP;
 
-    return DeliverEventToInputClients(dev, clients, win, events, count, filter,
+    return DeliverEventToInputClients(dev, iclients, win, events, count, filter,
                                       grab, client_return, mask_return);
 
 }
@@ -2430,6 +2452,8 @@ FixUpEventFromWindow(SpritePtr pSprite,
         case XI_DeviceChanged:
         case XI_HierarchyChanged:
         case XI_PropertyEvent:
+        case XI_BarrierHit:
+        case XI_BarrierLeave:
             return;
         default:
             break;
@@ -2444,8 +2468,8 @@ FixUpEventFromWindow(SpritePtr pSprite,
         }
 
         if (pSprite->hot.pScreen == pWin->drawable.pScreen) {
-            event->event_x = event->root_x - FP1616(pWin->drawable.x, 0);
-            event->event_y = event->root_y - FP1616(pWin->drawable.y, 0);
+            event->event_x = event->root_x - double_to_fp1616(pWin->drawable.x);
+            event->event_y = event->root_y - double_to_fp1616(pWin->drawable.y);
             event->child = child;
         }
         else {
@@ -4417,7 +4441,7 @@ int
 EventSuppressForWindow(WindowPtr pWin, ClientPtr client,
                        Mask mask, Bool *checkOptional)
 {
-    int i, free;
+    int i, freed;
 
     if (mask & ~PropagateMask) {
         client->errorValue = mask;
@@ -4428,14 +4452,14 @@ EventSuppressForWindow(WindowPtr pWin, ClientPtr client,
     if (!mask)
         i = 0;
     else {
-        for (i = DNPMCOUNT, free = 0; --i > 0;) {
+        for (i = DNPMCOUNT, freed = 0; --i > 0;) {
             if (!DontPropagateRefCnts[i])
-                free = i;
+                freed = i;
             else if (mask == DontPropagateMasks[i])
                 break;
         }
-        if (!i && free) {
-            i = free;
+        if (!i && freed) {
+            i = freed;
             DontPropagateMasks[i] = mask;
         }
     }
@@ -4573,8 +4597,8 @@ DeviceEnterLeaveEvent(DeviceIntPtr mouse,
     event->deviceid = mouse->id;
     event->sourceid = sourceid;
     event->mode = mode;
-    event->root_x = FP1616(mouse->spriteInfo->sprite->hot.x, 0);
-    event->root_y = FP1616(mouse->spriteInfo->sprite->hot.y, 0);
+    event->root_x = double_to_fp1616(mouse->spriteInfo->sprite->hot.x);
+    event->root_y = double_to_fp1616(mouse->spriteInfo->sprite->hot.y);
 
     for (i = 0; mouse && mouse->button && i < mouse->button->numButtons; i++)
         if (BitIsOn(mouse->button->down, i))
@@ -5027,7 +5051,7 @@ GrabDevice(ClientPtr client, DeviceIntPtr dev,
     grab = grabInfo->grab;
     if (grab && grab->grabtype != grabtype)
         *status = AlreadyGrabbed;
-    if (grab && !SameClient(grab, client))
+    else if (grab && !SameClient(grab, client))
         *status = AlreadyGrabbed;
     else if ((!pWin->realized) ||
              (confineTo &&
@@ -6063,4 +6087,20 @@ IsInterferingGrab(ClientPtr client, DeviceIntPtr dev, xEvent *event)
     }
 
     return FALSE;
+}
+
+/* PointerBarrier events are only delivered to the client that created that
+ * barrier */
+static Bool
+IsWrongPointerBarrierClient(ClientPtr client, DeviceIntPtr dev, xEvent *event)
+{
+    xXIBarrierEvent *ev = (xXIBarrierEvent*)event;
+
+    if (ev->type != GenericEvent || ev->extension != IReqCode)
+        return FALSE;
+
+    if (ev->evtype != XI_BarrierHit && ev->evtype != XI_BarrierLeave)
+        return FALSE;
+
+    return client->index != CLIENT_ID(ev->barrier);
 }

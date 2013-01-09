@@ -164,17 +164,6 @@ key_autorepeats(DeviceIntPtr pDev, int key_code)
 }
 
 static void
-init_event(DeviceIntPtr dev, DeviceEvent *event, Time ms)
-{
-    memset(event, 0, sizeof(DeviceEvent));
-    event->header = ET_Internal;
-    event->length = sizeof(DeviceEvent);
-    event->time = ms;
-    event->deviceid = dev->id;
-    event->sourceid = dev->id;
-}
-
-static void
 init_touch_ownership(DeviceIntPtr dev, TouchOwnershipEvent *event, Time ms)
 {
     memset(event, 0, sizeof(TouchOwnershipEvent));
@@ -927,10 +916,13 @@ scale_to_desktop(DeviceIntPtr dev, ValuatorMask *mask,
  * @param[in,out] devy y desktop-wide coordinate in device coordinate system
  * @param[in,out] screenx x coordinate in desktop coordinate system
  * @param[in,out] screeny y coordinate in desktop coordinate system
+ * @param[out] nevents Number of barrier events added to events
+ * @param[in,out] events List of events barrier events are added to
  */
 static ScreenPtr
 positionSprite(DeviceIntPtr dev, int mode, ValuatorMask *mask,
-               double *devx, double *devy, double *screenx, double *screeny)
+               double *devx, double *devy, double *screenx, double *screeny,
+               int *nevents, InternalEvent* events)
 {
     ScreenPtr scr = miPointerGetScreen(dev);
     double tmpx, tmpy;
@@ -944,7 +936,7 @@ positionSprite(DeviceIntPtr dev, int mode, ValuatorMask *mask,
     /* miPointerSetPosition takes care of crossing screens for us, as well as
      * clipping to the current screen. Coordinates returned are in desktop
      * coord system */
-    scr = miPointerSetPosition(dev, mode, screenx, screeny);
+    scr = miPointerSetPosition(dev, mode, screenx, screeny, nevents, events);
 
     /* If we were constrained, rescale x/y from the screen coordinates so
      * the device valuators reflect the correct position. For screen
@@ -1330,6 +1322,7 @@ fill_pointer_events(InternalEvent *events, DeviceIntPtr pDev, int type,
     int sx, sy;                         /* for POINTER_SCREEN */
     ValuatorMask mask;
     ScreenPtr scr;
+    int num_barrier_events = 0;
 
     switch (type) {
     case MotionNotify:
@@ -1406,7 +1399,10 @@ fill_pointer_events(InternalEvent *events, DeviceIntPtr pDev, int type,
     }
 
     scr = positionSprite(pDev, (flags & POINTER_ABSOLUTE) ? Absolute : Relative,
-                         &mask, &devx, &devy, &screenx, &screeny);
+                         &mask, &devx, &devy, &screenx, &screeny,
+                         &num_barrier_events, events);
+    num_events += num_barrier_events;
+    events += num_barrier_events;
 
     /* screenx, screeny are in desktop coordinates,
        mask is in device coordinates per-screen (the event data)
@@ -1844,10 +1840,7 @@ GetTouchEvents(InternalEvent *events, DeviceIntPtr dev, uint32_t ddx_touchid,
     int i;
     int num_events = 0;
     RawDeviceEvent *raw;
-    union touch {
-        TouchPointInfoPtr dix_ti;
-        DDXTouchPointInfoPtr ti;
-    } touchpoint;
+    DDXTouchPointInfoPtr ti;
     int need_rawevent = TRUE;
     Bool emulate_pointer = FALSE;
     int client_id = 0;
@@ -1866,37 +1859,15 @@ GetTouchEvents(InternalEvent *events, DeviceIntPtr dev, uint32_t ddx_touchid,
 
     /* Find and/or create the DDX touch info */
 
-    if (flags & TOUCH_CLIENT_ID) {      /* A DIX-submitted TouchEnd */
-        touchpoint.dix_ti = TouchFindByClientID(dev, ddx_touchid);
-        BUG_RETURN_VAL(!touchpoint.dix_ti, 0);
-
-        if (!mask_in ||
-            !valuator_mask_isset(mask_in, 0) ||
-            !valuator_mask_isset(mask_in, 1)) {
-            ErrorF
-                ("[dix] dix-submitted events must have x/y valuator information.\n");
-            return 0;
-        }
-
-        need_rawevent = FALSE;
-        client_id = touchpoint.dix_ti->client_id;
+    ti = TouchFindByDDXID(dev, ddx_touchid, (type == XI_TouchBegin));
+    if (!ti) {
+        ErrorFSigSafe("[dix] %s: unable to %s touch point %u\n", dev->name,
+                      type == XI_TouchBegin ? "begin" : "find", ddx_touchid);
+        return 0;
     }
-    else {                      /* a DDX-submitted touch */
+    client_id = ti->client_id;
 
-        touchpoint.ti =
-            TouchFindByDDXID(dev, ddx_touchid, (type == XI_TouchBegin));
-        if (!touchpoint.ti) {
-            ErrorFSigSafe("[dix] %s: unable to %s touch point %u\n", dev->name,
-                          type == XI_TouchBegin ? "begin" : "find", ddx_touchid);
-            return 0;
-        }
-        client_id = touchpoint.ti->client_id;
-    }
-
-    if (!(flags & TOUCH_CLIENT_ID))
-        emulate_pointer = touchpoint.ti->emulate_pointer;
-    else
-        emulate_pointer = ! !(flags & TOUCH_POINTER_EMULATED);
+    emulate_pointer = ti->emulate_pointer;
 
     if (!IsMaster(dev))
         events =
@@ -1915,12 +1886,7 @@ GetTouchEvents(InternalEvent *events, DeviceIntPtr dev, uint32_t ddx_touchid,
     event = &events->device_event;
     num_events++;
 
-    init_event(dev, event, ms);
-    /* if submitted for master device, get the sourceid from there */
-    if (flags & TOUCH_CLIENT_ID) {
-        event->sourceid = touchpoint.dix_ti->sourceid;
-        /* TOUCH_CLIENT_ID implies norawevent */
-    }
+    init_device_event(event, dev, ms);
 
     switch (type) {
     case XI_TouchBegin:
@@ -1945,38 +1911,30 @@ GetTouchEvents(InternalEvent *events, DeviceIntPtr dev, uint32_t ddx_touchid,
         event->type = ET_TouchEnd;
         /* We can end the DDX touch here, since we don't use the active
          * field below */
-        if (!(flags & TOUCH_CLIENT_ID))
-            TouchEndDDXTouch(dev, touchpoint.ti);
+        TouchEndDDXTouch(dev, ti);
         break;
     default:
         return 0;
-    }
-    if (t->mode == XIDirectTouch && !(flags & TOUCH_CLIENT_ID)) {
-        if (!valuator_mask_isset(&mask, 0))
-            valuator_mask_set_double(&mask, 0,
-                                     valuator_mask_get_double(touchpoint.ti->
-                                                              valuators, 0));
-        if (!valuator_mask_isset(&mask, 1))
-            valuator_mask_set_double(&mask, 1,
-                                     valuator_mask_get_double(touchpoint.ti->
-                                                              valuators, 1));
     }
 
     /* Get our screen event co-ordinates (root_x/root_y/event_x/event_y):
      * these come from the touchpoint in Absolute mode, or the sprite in
      * Relative. */
     if (t->mode == XIDirectTouch) {
-        transformAbsolute(dev, &mask);
+        for (i = 0; i < max(valuator_mask_size(&mask), 2); i++) {
+            double val;
 
-        if (!(flags & TOUCH_CLIENT_ID)) {
-            for (i = 0; i < valuator_mask_size(&mask); i++) {
-                double val;
-
-                if (valuator_mask_fetch_double(&mask, i, &val))
-                    valuator_mask_set_double(touchpoint.ti->valuators, i, val);
-            }
+            if (valuator_mask_fetch_double(&mask, i, &val))
+                valuator_mask_set_double(ti->valuators, i, val);
+            /* If the device doesn't post new X and Y axis values,
+             * use the last values posted.
+             */
+            else if (i < 2 &&
+                valuator_mask_fetch_double(ti->valuators, i, &val))
+                valuator_mask_set_double(&mask, i, val);
         }
 
+        transformAbsolute(dev, &mask);
         clipAbsolute(dev, &mask);
     }
     else {
@@ -1994,7 +1952,7 @@ GetTouchEvents(InternalEvent *events, DeviceIntPtr dev, uint32_t ddx_touchid,
         scr = scale_to_desktop(dev, &mask, &devx, &devy, &screenx, &screeny);
     if (emulate_pointer)
         scr = positionSprite(dev, Absolute, &mask,
-                             &devx, &devy, &screenx, &screeny);
+                             &devx, &devy, &screenx, &screeny, NULL, NULL);
 
     /* see fill_pointer_events for coordinate systems */
     if (emulate_pointer)
@@ -2004,6 +1962,14 @@ GetTouchEvents(InternalEvent *events, DeviceIntPtr dev, uint32_t ddx_touchid,
 
     if (emulate_pointer)
         storeLastValuators(dev, &mask, 0, 1, devx, devy);
+
+    /* Update the MD's co-ordinates, which are always in desktop space. */
+    if (emulate_pointer && !IsMaster(dev) && !IsFloating(dev)) {
+	    DeviceIntPtr master = GetMaster(dev, MASTER_POINTER);
+
+	    master->last.valuators[0] = screenx;
+	    master->last.valuators[1] = screeny;
+    }
 
     event->root = scr->root->drawable.id;
 
@@ -2023,6 +1989,37 @@ GetTouchEvents(InternalEvent *events, DeviceIntPtr dev, uint32_t ddx_touchid,
     }
 
     return num_events;
+}
+
+void
+GetDixTouchEnd(InternalEvent *ievent, DeviceIntPtr dev, TouchPointInfoPtr ti,
+               uint32_t flags)
+{
+    ScreenPtr scr = dev->spriteInfo->sprite->hotPhys.pScreen;
+    DeviceEvent *event = &ievent->device_event;
+    CARD32 ms = GetTimeInMillis();
+
+    BUG_WARN(!dev->enabled);
+
+    init_device_event(event, dev, ms);
+
+    event->sourceid = ti->sourceid;
+    event->type = ET_TouchEnd;
+
+    event->root = scr->root->drawable.id;
+
+    /* Get screen event coordinates from the sprite.  Is this really the best
+     * we can do? */
+    event_set_root_coordinates(event,
+                               dev->last.valuators[0],
+                               dev->last.valuators[1]);
+    event->touchid = ti->client_id;
+    event->flags = flags;
+
+    if (flags & TOUCH_POINTER_EMULATED) {
+        event->flags |= TOUCH_POINTER_EMULATED;
+        event->detail.button = 1;
+    }
 }
 
 /**

@@ -561,7 +561,7 @@ ProcXF86DRIQueryDirectRenderingCapable(register ClientPtr client)
         return BadValue;
     }
 
-    if (!LocalClient(client) || client->swapped)
+    if (!client->local || client->swapped)
         isCapable = 0;
 
     rep = (xXF86DRIQueryDirectRenderingCapableReply) {
@@ -754,7 +754,7 @@ ProcXF86DRICreateContext(register ClientPtr client)
     if (!ephyrDRICreateContext(stuff->screen,
                                stuff->visual,
                                &context_id,
-                               (drm_context_t *) & rep.hHWContext)) {
+                               (drm_context_t *) &rep.hHWContext)) {
         return BadValue;
     }
 
@@ -964,7 +964,7 @@ ProcXF86DRICreateDrawable(ClientPtr client)
 
     if (!ephyrDRICreateDrawable(stuff->screen,
                                 remote_win,
-                                (drm_drawable_t *) & rep.hHWDrawable)) {
+                                (drm_drawable_t *) &rep.hHWDrawable)) {
         EPHYR_LOG_ERROR("failed to create dri drawable\n");
         return BadValue;
     }
@@ -1229,7 +1229,7 @@ ProcXF86DRIDispatch(register ClientPtr client)
     }
     }
 
-    if (!LocalClient(client))
+    if (!client->local)
         return DRIErrorBase + XF86DRIClientNotLocal;
 
     switch (stuff->data) {

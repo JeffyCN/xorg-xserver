@@ -126,7 +126,8 @@ ProcXChangeDeviceControl(ClientPtr client)
         .repType = X_Reply,
         .RepType = X_ChangeDeviceControl,
         .sequenceNumber = client->sequence,
-        .length = 0
+        .length = 0,
+        .status = Success,
     };
 
     switch (stuff->control) {
@@ -186,7 +187,10 @@ ProcXChangeDeviceControl(ClientPtr client)
     case DEVICE_ENABLE:
         e = (xDeviceEnableCtl *) &stuff[1];
 
-        status = ChangeDeviceControl(client, dev, (xDeviceCtl *) e);
+        if (IsXTestDevice(dev, NULL))
+            status = !Success;
+        else
+            status = ChangeDeviceControl(client, dev, (xDeviceCtl *) e);
 
         if (status == Success) {
             if (e->enable)

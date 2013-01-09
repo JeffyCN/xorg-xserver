@@ -157,13 +157,31 @@ winClipboardFlushXEvents(HWND hwnd,
                  */
                 iReturn = XSendEvent(pDisplay,
                                      eventSelection.requestor,
-                                     False, 0L, (XEvent *) & eventSelection);
+                                     False, 0L, (XEvent *) &eventSelection);
                 if (iReturn == BadValue || iReturn == BadWindow) {
                     ErrorF("winClipboardFlushXEvents - SelectionRequest - "
                            "XSendEvent () failed\n");
                 }
                 break;
             }
+
+            /* Close clipboard if we have it open already */
+            if (GetOpenClipboardWindow() == hwnd) {
+                CloseClipboard();
+            }
+
+            /* Access the clipboard */
+            if (!OpenClipboard(hwnd)) {
+                ErrorF("winClipboardFlushXEvents - SelectionRequest - "
+                       "OpenClipboard () failed: %08lx\n", GetLastError());
+
+                /* Abort */
+                fAbort = TRUE;
+                goto winClipboardFlushXEvents_SelectionRequest_Done;
+            }
+
+            /* Indicate that clipboard was opened */
+            fCloseClipboard = TRUE;
 
             /* Check that clipboard format is available */
             if (fUseUnicode && !IsClipboardFormatAvailable(CF_UNICODETEXT)) {
@@ -191,24 +209,6 @@ winClipboardFlushXEvents(HWND hwnd,
                 fAbort = TRUE;
                 goto winClipboardFlushXEvents_SelectionRequest_Done;
             }
-
-            /* Close clipboard if we have it open already */
-            if (GetOpenClipboardWindow() == hwnd) {
-                CloseClipboard();
-            }
-
-            /* Access the clipboard */
-            if (!OpenClipboard(hwnd)) {
-                ErrorF("winClipboardFlushXEvents - SelectionRequest - "
-                       "OpenClipboard () failed: %08lx\n", GetLastError());
-
-                /* Abort */
-                fAbort = TRUE;
-                goto winClipboardFlushXEvents_SelectionRequest_Done;
-            }
-
-            /* Indicate that clipboard was opened */
-            fCloseClipboard = TRUE;
 
             /* Setup the string style */
             if (event.xselectionrequest.target == XA_STRING)
@@ -341,7 +341,7 @@ winClipboardFlushXEvents(HWND hwnd,
             /* Notify the requesting window that the operation has completed */
             iReturn = XSendEvent(pDisplay,
                                  eventSelection.requestor,
-                                 False, 0L, (XEvent *) & eventSelection);
+                                 False, 0L, (XEvent *) &eventSelection);
             if (iReturn == BadValue || iReturn == BadWindow) {
                 ErrorF("winClipboardFlushXEvents - SelectionRequest - "
                        "XSendEvent () failed\n");
@@ -380,7 +380,7 @@ winClipboardFlushXEvents(HWND hwnd,
                 /* Notify the requesting window that the operation is complete */
                 iReturn = XSendEvent(pDisplay,
                                      eventSelection.requestor,
-                                     False, 0L, (XEvent *) & eventSelection);
+                                     False, 0L, (XEvent *) &eventSelection);
                 if (iReturn == BadValue || iReturn == BadWindow) {
                     /*
                      * Should not be a problem if XSendEvent fails because

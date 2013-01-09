@@ -223,7 +223,11 @@ UpdateCurrentTimeIf(void)
 #define SMART_SCHEDULE_DEFAULT_INTERVAL	20      /* ms */
 #define SMART_SCHEDULE_MAX_SLICE	200     /* ms */
 
+#if defined(WIN32) && !defined(__CYGWIN__)
+Bool SmartScheduleDisable = TRUE;
+#else
 Bool SmartScheduleDisable = FALSE;
+#endif
 long SmartScheduleSlice = SMART_SCHEDULE_DEFAULT_INTERVAL;
 long SmartScheduleInterval = SMART_SCHEDULE_DEFAULT_INTERVAL;
 long SmartScheduleMaxSlice = SMART_SCHEDULE_MAX_SLICE;
@@ -2450,7 +2454,7 @@ ProcListInstalledColormaps(ClientPtr client)
     preply->type = X_Reply;
     preply->sequenceNumber = client->sequence;
     nummaps = (*pWin->drawable.pScreen->ListInstalledColormaps)
-        (pWin->drawable.pScreen, (Colormap *) & preply[1]);
+        (pWin->drawable.pScreen, (Colormap *) &preply[1]);
     preply->nColormaps = nummaps;
     preply->length = nummaps;
     WriteReplyToClient(client, sizeof(xListInstalledColormapsReply), preply);
@@ -3499,20 +3503,25 @@ ProcInitialConnection(ClientPtr client)
     REQUEST(xReq);
     xConnClientPrefix *prefix;
     int whichbyte = 1;
+    char order;
 
-    prefix = (xConnClientPrefix *) ((char *) stuff + sz_xReq);
-    if ((prefix->byteOrder != 'l') && (prefix->byteOrder != 'B'))
-        return client->noClientException = -1;
-    if (((*(char *) &whichbyte) && (prefix->byteOrder == 'B')) ||
-        (!(*(char *) &whichbyte) && (prefix->byteOrder == 'l'))) {
-        client->swapped = TRUE;
-        SwapConnClientPrefix(prefix);
+    prefix = (xConnClientPrefix *) ((char *)stuff + sz_xReq);
+    order = prefix->byteOrder;
+    if (order != 'l' && order != 'B' && order != 'r' && order != 'R')
+	return client->noClientException = -1;
+    if (((*(char *) &whichbyte) && (order == 'B' || order == 'R')) ||
+	(!(*(char *) &whichbyte) && (order == 'l' || order == 'r'))) {
+	client->swapped = TRUE;
+	SwapConnClientPrefix(prefix);
     }
     stuff->reqType = 2;
     stuff->length += bytes_to_int32(prefix->nbytesAuthProto) +
         bytes_to_int32(prefix->nbytesAuthString);
     if (client->swapped) {
         swaps(&stuff->length);
+    }
+    if (order == 'r' || order == 'R') {
+	client->local = FALSE;
     }
     ResetCurrentRequest(client);
     return Success;

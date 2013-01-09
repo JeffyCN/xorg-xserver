@@ -145,9 +145,11 @@ DeviceSetProperty(DeviceIntPtr dev, Atom property, XIPropertyValuePtr prop,
         if (prop->format != 8 || prop->type != XA_INTEGER || prop->size != 1)
             return BadValue;
 
-        /* Don't allow disabling of VCP/VCK */
-        if ((dev == inputInfo.pointer ||dev ==
-             inputInfo.keyboard) &&!(*(CARD8 *) prop->data))
+        /* Don't allow disabling of VCP/VCK or XTest devices */
+        if ((dev == inputInfo.pointer ||
+             dev == inputInfo.keyboard ||
+             IsXTestDevice(dev, NULL))
+            &&!(*(CARD8 *) prop->data))
             return BadAccess;
 
         if (!checkonly) {
@@ -281,7 +283,7 @@ AddInputDevice(ClientPtr client, DeviceProc deviceProc, Bool autoStart)
     dev->coreEvents = TRUE;
 
     /* sprite defaults */
-    dev->spriteInfo = (SpriteInfoPtr) & dev[1];
+    dev->spriteInfo = (SpriteInfoPtr) &dev[1];
 
     /*  security creation/labeling check
      */
@@ -942,7 +944,7 @@ CloseDevice(DeviceIntPtr dev)
 
     free(dev->name);
 
-    classes = (ClassesPtr) & dev->key;
+    classes = (ClassesPtr) &dev->key;
     FreeAllDeviceClasses(classes);
 
     if (IsMaster(dev)) {
