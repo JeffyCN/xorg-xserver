@@ -186,7 +186,7 @@ confflags_udeb = \
 	--disable-kdrive \
 	--disable-xephyr \
 	--disable-xfbdev \
-	--with-sha1=nettle \
+	--with-sha1=libnettle \
 	$(config_backend_udeb) \
 	$(void)
 
