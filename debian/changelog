@@ -11,7 +11,11 @@ xorg-server (2:1.13.99.901-1) UNRELEASED; urgency=low
   * Drop 09_EXA-Track...diff, upstream.
 
   [ Maarten Lankhorst ]
-  * Remove 02_Add-libnettle-as-option-for-sha1.diff, upstreamed
+  * Remove upstreamed patches.
+    - 02_Add-libnettle-as-option-for-sha1.diff
+    - 04_int10-fix-pci_device_read_rom-usage.diff
+    - 07_Revert-kinput-allocate-enough-space-for-null-charact.diff
+  * Bump x11proto-input-dev and libpixman-1-dev minimum versions.
 
  -- Robert Hooker <sarvatt@ubuntu.com>  Wed, 22 Aug 2012 11:12:17 -0400
 
