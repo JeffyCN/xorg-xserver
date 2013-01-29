@@ -9,6 +9,7 @@ xorg-server (2:1.13.99.901-1) UNRELEASED; urgency=low
   * Remove 03_fix-panning.diff, upstream
   * Refresh 04_int10-fix-pci_device_read_rom-usage.diff.
   * Drop 09_EXA-Track...diff, upstream.
+  * control: Mark xvfb as M-A: foreign.
 
   [ Maarten Lankhorst ]
   * Remove upstreamed patches.
