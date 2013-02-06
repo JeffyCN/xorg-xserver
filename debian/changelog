@@ -20,6 +20,11 @@ xorg-server (2:1.13.99.901-1) UNRELEASED; urgency=low
   * Add patch to fix build failure of xserver-xorg-core-udeb.
     - 02_hide_panoramix_symbol.diff
 
+  [ Robert Hooker ]
+  * Update to a newer git snapshot, 7fe5e6dfa5c1e71
+  * Bump input ABI version in serverminver
+  * Bump libxi-dev build requirement to 2:1.6.99.1
+
  -- Robert Hooker <sarvatt@ubuntu.com>  Wed, 22 Aug 2012 11:12:17 -0400
 
 xorg-server (2:1.12.4-4) UNRELEASED; urgency=low
