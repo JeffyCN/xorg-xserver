@@ -3,15 +3,6 @@ xorg-server (2:1.13.99.901-1) UNRELEASED; urgency=low
   [ Maarten Lankhorst ]
   * New upstream release
   * Bump minimum required abi, randr, dri2 and gl protos.
-
-  [ Timo Aaltonen ]
-  * Refresh 02_Add-libnettle-as-option-for-sha1.diff.
-  * Remove 03_fix-panning.diff, upstream
-  * Refresh 04_int10-fix-pci_device_read_rom-usage.diff.
-  * Drop 09_EXA-Track...diff, upstream.
-  * control: Mark xvfb as M-A: foreign.
-
-  [ Maarten Lankhorst ]
   * Remove upstreamed patches.
     - 02_Add-libnettle-as-option-for-sha1.diff
     - 04_int10-fix-pci_device_read_rom-usage.diff
@@ -19,6 +10,13 @@ xorg-server (2:1.13.99.901-1) UNRELEASED; urgency=low
   * Bump x11proto-input-dev and libpixman-1-dev minimum versions.
   * Add patch to fix build failure of xserver-xorg-core-udeb.
     - 02_hide_panoramix_symbol.diff
+
+  [ Timo Aaltonen ]
+  * Refresh 02_Add-libnettle-as-option-for-sha1.diff.
+  * Remove 03_fix-panning.diff, upstream
+  * Refresh 04_int10-fix-pci_device_read_rom-usage.diff.
+  * Drop 09_EXA-Track...diff, upstream.
+  * control: Mark xvfb as M-A: foreign.
 
   [ Robert Hooker ]
   * Update to a newer git snapshot, 7fe5e6dfa5c1e71
