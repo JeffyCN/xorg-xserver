@@ -1,4 +1,4 @@
-xorg-server (2:1.12.4-5) UNRELEASED; urgency=low
+xorg-server (2:1.12.4-5) unstable; urgency=low
 
   * dmx: don't include dmx-config.h from xdmxconfig (closes: #495816)
   * xfree86: bail on misformed acpi strings (closes: #696110)
@@ -7,7 +7,7 @@ xorg-server (2:1.12.4-5) UNRELEASED; urgency=low
   * Link against -lbsd on kfreebsd.  This gives us access to getpeereid(), and
     makes MIT-SHM work with non-world-accessible segments (closes: #701469).
 
- -- Julien Cristau <jcristau@debian.org>  Sat, 23 Feb 2013 14:46:13 +0100
+ -- Julien Cristau <jcristau@debian.org>  Sat, 23 Feb 2013 15:37:44 +0100
 
 xorg-server (2:1.12.4-4) unstable; urgency=low
 
