@@ -1,3 +1,10 @@
+xorg-server (2:1.12.4-6) UNRELEASED; urgency=low
+
+  * Touch: Fix duplicate TouchBegin selection with virtual devices
+    (closes: #696272)
+
+ -- Julien Cristau <jcristau@debian.org>  Sun, 03 Mar 2013 19:13:57 +0100
+
 xorg-server (2:1.12.4-5) unstable; urgency=low
 
   * dmx: don't include dmx-config.h from xdmxconfig (closes: #495816)
