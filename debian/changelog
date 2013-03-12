@@ -2,6 +2,9 @@ xorg-server (2:1.12.4-6) UNRELEASED; urgency=low
 
   * Touch: Fix duplicate TouchBegin selection with virtual devices
     (closes: #696272)
+  * Xi: Don't check for TOUCH_END, it's never set
+  * Xi: Update the device after delivering the emulated pointer event
+    (closes: #702662)
 
  -- Julien Cristau <jcristau@debian.org>  Sun, 03 Mar 2013 19:13:57 +0100
 
