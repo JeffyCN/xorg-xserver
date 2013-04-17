@@ -1,12 +1,14 @@
-xorg-server (2:1.12.4-6) UNRELEASED; urgency=low
+xorg-server (2:1.12.4-6) unstable; urgency=low
 
   * Touch: Fix duplicate TouchBegin selection with virtual devices
     (closes: #696272)
   * Xi: Don't check for TOUCH_END, it's never set
   * Xi: Update the device after delivering the emulated pointer event
     (closes: #702662)
+  * xf86: fix flush input to work with Linux evdev devices.  Addresses
+    CVE-2013-1940.
 
- -- Julien Cristau <jcristau@debian.org>  Sun, 03 Mar 2013 19:13:57 +0100
+ -- Julien Cristau <jcristau@debian.org>  Wed, 17 Apr 2013 12:12:30 +0200
 
 xorg-server (2:1.12.4-5) unstable; urgency=low
 
