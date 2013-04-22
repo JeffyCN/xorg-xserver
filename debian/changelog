@@ -17,6 +17,7 @@ xorg-server (2:1.14.1-1) UNRELEASED; urgency=low
   * Refresh 04_int10-fix-pci_device_read_rom-usage.diff.
   * Drop 09_EXA-Track...diff, upstream.
   * control: Mark xvfb as M-A: foreign.
+  * control: Bump inputproto build-dep to 2.3.
 
   [ Robert Hooker ]
   * Update to a newer git snapshot, 7fe5e6dfa5c1e71
