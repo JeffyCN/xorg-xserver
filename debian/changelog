@@ -8,8 +8,6 @@ xorg-server (2:1.14.1-1) UNRELEASED; urgency=low
     - 04_int10-fix-pci_device_read_rom-usage.diff
     - 07_Revert-kinput-allocate-enough-space-for-null-charact.diff
   * Bump x11proto-input-dev and libpixman-1-dev minimum versions.
-  * Add patch to fix build failure of xserver-xorg-core-udeb.
-    - 02_hide_panoramix_symbol.diff
 
   [ Timo Aaltonen ]
   * Refresh 02_Add-libnettle-as-option-for-sha1.diff.
