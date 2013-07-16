@@ -1,4 +1,4 @@
-xorg-server (2:1.14.1-1) UNRELEASED; urgency=low
+xorg-server (2:1.14.2-1) UNRELEASED; urgency=low
 
   [ Maarten Lankhorst ]
   * New upstream release
