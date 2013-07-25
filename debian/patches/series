@@ -10,3 +10,4 @@
 07_Revert-kinput-allocate-enough-space-for-null-charact.diff
 08_xfree86_fix_ia64_inx_outx.diff
 09_EXA-Track-source-mask-pixmaps-more-explicitly-for-Co.diff
+10_Include-missing-selection-h.diff
