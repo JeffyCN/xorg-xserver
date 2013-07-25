@@ -1,3 +1,12 @@
+xorg-server (2:1.12.4-6.1) unstable; urgency=low
+
+  * Non-maintainer upload.
+  * 10_Include-missing-selection-h.diff: Fix FTBFS with GCC 4.8. Include
+    selection.h in dix/window.c for the missing DeleteWindowFromAnySelections
+    function prototype. Patch by Gerardo Malazdrewicz (closes: #701372)
+
+ -- Michael Biebl <biebl@debian.org>  Thu, 25 Jul 2013 19:45:29 +0200
+
 xorg-server (2:1.12.4-6) unstable; urgency=low
 
   * Touch: Fix duplicate TouchBegin selection with virtual devices
