@@ -79,6 +79,7 @@ else ifeq ($(DEB_HOST_ARCH_OS), kfreebsd)
 	config_backend += --disable-config-udev
 	config_backend_main += --enable-config-hal
 	config_backend_udeb += --disable-config-hal
+	libs = LIBS=-lbsd
 else # hurd
 	config_backend += --disable-config-udev --disable-config-hal
 endif
@@ -126,7 +127,8 @@ confflags += \
 	     --disable-xquartz \
 	     --disable-xwin \
 	     --disable-xfake \
-	     --disable-install-setuid
+	     --disable-install-setuid \
+	     $(libs)
 
 confflags_main = \
 	--with-default-font-path="/usr/share/fonts/X11/misc,/usr/share/fonts/X11/cyrillic,/usr/share/fonts/X11/100dpi/:unscaled,/usr/share/fonts/X11/75dpi/:unscaled,/usr/share/fonts/X11/Type1,/usr/share/fonts/X11/100dpi,/usr/share/fonts/X11/75dpi,/var/lib/defoma/x-ttcidfont-conf.d/dirs/TrueType,built-ins" \

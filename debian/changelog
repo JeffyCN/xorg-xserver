@@ -23,13 +23,51 @@ xorg-server (2:1.14.2.901-1) UNRELEASED; urgency=low
   * Bump input ABI version in serverminver
   * Bump libxi-dev build requirement to 2:1.6.99.1
 
+  [ Julien Cristau ]
+  * Merge sid branch up to 2:1.12.4-6.1.
+
  -- Julien Cristau <jcristau@debian.org>  Fri, 26 Jul 2013 14:05:51 +0200
 
-xorg-server (2:1.12.4-4) UNRELEASED; urgency=low
+xorg-server (2:1.12.4-6.1) unstable; urgency=low
+
+  * Non-maintainer upload.
+  * 10_Include-missing-selection-h.diff: Fix FTBFS with GCC 4.8. Include
+    selection.h in dix/window.c for the missing DeleteWindowFromAnySelections
+    function prototype. Patch by Gerardo Malazdrewicz (closes: #701372)
+
+ -- Michael Biebl <biebl@debian.org>  Thu, 25 Jul 2013 19:45:29 +0200
+
+xorg-server (2:1.12.4-6) unstable; urgency=low
+
+  * Touch: Fix duplicate TouchBegin selection with virtual devices
+    (closes: #696272)
+  * Xi: Don't check for TOUCH_END, it's never set
+  * Xi: Update the device after delivering the emulated pointer event
+    (closes: #702662)
+  * xf86: fix flush input to work with Linux evdev devices.  Addresses
+    CVE-2013-1940.
+
+ -- Julien Cristau <jcristau@debian.org>  Wed, 17 Apr 2013 12:12:30 +0200
+
+xorg-server (2:1.12.4-5) unstable; urgency=low
+
+  * dmx: don't include dmx-config.h from xdmxconfig (closes: #495816)
+  * xfree86: bail on misformed acpi strings (closes: #696110)
+  * dix: don't allow overriding a grab with a different type of grab
+  * dix: Set focus field on XI2 crossing events (closes: #699907)
+  * Link against -lbsd on kfreebsd.  This gives us access to getpeereid(), and
+    makes MIT-SHM work with non-world-accessible segments (closes: #701469).
+
+ -- Julien Cristau <jcristau@debian.org>  Sat, 23 Feb 2013 15:37:44 +0100
+
+xorg-server (2:1.12.4-4) unstable; urgency=low
 
   * Fix memory leak in libnettle sha1 patch.  Thanks, Yaakov Selkowitz!
+  * Cherry-pick from upstream:
+    - dix: set the device transformation matrix.  Avoids cursor jumps in
+      virtualbox (closes: #694598)
 
- -- Julien Cristau <jcristau@debian.org>  Mon, 05 Nov 2012 20:39:01 +0100
+ -- Julien Cristau <jcristau@debian.org>  Thu, 29 Nov 2012 19:27:31 +0100
 
 xorg-server (2:1.12.4-3) unstable; urgency=low
 

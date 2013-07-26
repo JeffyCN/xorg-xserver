@@ -77,6 +77,8 @@ Build-Depends:
 # unit tests
  xkb-data,
  x11-xkb-utils,
+# getpeereid()
+ libbsd-dev [kfreebsd-any],
 Standards-Version: 3.9.2
 Vcs-Git: git://git.debian.org/git/pkg-xorg/xserver/xorg-server
 Vcs-Browser: http://git.debian.org/?p=pkg-xorg/xserver/xorg-server.git
