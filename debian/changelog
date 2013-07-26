@@ -1,7 +1,8 @@
-xorg-server (2:1.14.2-1) UNRELEASED; urgency=low
+xorg-server (2:1.14.2.901-1) UNRELEASED; urgency=low
+
+  * New upstream release
 
   [ Maarten Lankhorst ]
-  * New upstream release
   * Bump minimum required abi, randr, dri2 and gl protos.
   * Remove upstreamed patches.
     - 02_Add-libnettle-as-option-for-sha1.diff
@@ -22,7 +23,7 @@ xorg-server (2:1.14.2-1) UNRELEASED; urgency=low
   * Bump input ABI version in serverminver
   * Bump libxi-dev build requirement to 2:1.6.99.1
 
- -- Robert Hooker <sarvatt@ubuntu.com>  Wed, 22 Aug 2012 11:12:17 -0400
+ -- Julien Cristau <jcristau@debian.org>  Fri, 26 Jul 2013 14:05:51 +0200
 
 xorg-server (2:1.12.4-4) UNRELEASED; urgency=low
 
