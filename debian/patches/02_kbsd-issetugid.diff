@@ -1,0 +1,57 @@
+From e3eef88873d47ee62df5d01eaf1577e7e71cefe5 Mon Sep 17 00:00:00 2001
+From: Julien Cristau <jcristau@debian.org>
+Date: Sat, 27 Jul 2013 20:01:50 +0200
+Subject: [PATCH 1/2] xfree86: Check for issetugid declaration
+
+Avoids 'implicit function declaration' build error on gnu/kfreebsd.
+
+Signed-off-by: Julien Cristau <jcristau@debian.org>
+---
+ configure.ac                 |    1 +
+ hw/xfree86/common/xf86Init.c |    2 +-
+ include/xorg-config.h.in     |    4 ++++
+ 3 files changed, 6 insertions(+), 1 deletion(-)
+
+diff --git a/configure.ac b/configure.ac
+index c6ecba4..a93e903 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -213,6 +213,7 @@ AC_CHECK_FUNC([dlopen], [],
+ AC_SUBST(DLOPEN_LIBS)
+ 
+ dnl Checks for library functions.
++AC_CHECK_DECLS([issetugid])
+ AC_CHECK_FUNCS([backtrace ffs geteuid getuid issetugid getresuid \
+ 	getdtablesize getifaddrs getpeereid getpeerucred getzoneid \
+ 	mmap shmctl64 strncasecmp vasprintf vsnprintf walkcontext])
+diff --git a/hw/xfree86/common/xf86Init.c b/hw/xfree86/common/xf86Init.c
+index 91ec4c8..6caaa51 100644
+--- a/hw/xfree86/common/xf86Init.c
++++ b/hw/xfree86/common/xf86Init.c
+@@ -253,7 +253,7 @@ xf86PrivsElevated(void)
+             privsElevated = TRUE;
+         }
+         else {
+-#if defined(HAVE_ISSETUGID)
++#if defined(HAVE_ISSETUGID) && HAVE_DECL_ISSETUGID
+             privsElevated = issetugid();
+ #elif defined(HAVE_GETRESUID)
+             uid_t ruid, euid, suid;
+diff --git a/include/xorg-config.h.in b/include/xorg-config.h.in
+index a71b25d..d9e7ec5 100644
+--- a/include/xorg-config.h.in
++++ b/include/xorg-config.h.in
+@@ -130,6 +130,10 @@
+ /* Use libpciaccess */
+ #undef XSERVER_LIBPCIACCESS
+ 
++/* Define to 1 if you have the declaration of `issetugid', and to 0 if you
++   don't. */
++#undef HAVE_DECL_ISSETUGID
++
+ /* Have setugid */
+ #undef HAVE_ISSETUGID
+ 
+-- 
+1.7.10.4
+

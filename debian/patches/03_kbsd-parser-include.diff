@@ -1,0 +1,26 @@
+From d9079fc23e3cd7c78885ee9316be11878312d0de Mon Sep 17 00:00:00 2001
+From: Julien Cristau <jcristau@debian.org>
+Date: Sat, 27 Jul 2013 20:09:16 +0200
+Subject: [PATCH 2/2] xfree86: include os.h for FatalError
+
+Signed-off-by: Julien Cristau <jcristau@debian.org>
+---
+ hw/xfree86/parser/write.c |    2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/hw/xfree86/parser/write.c b/hw/xfree86/parser/write.c
+index 9c706a0..b525b11 100644
+--- a/hw/xfree86/parser/write.c
++++ b/hw/xfree86/parser/write.c
+@@ -67,6 +67,8 @@
+ 
+ #if defined(SVR4) || defined(__linux__) || defined(CSRG_BASED)
+ #define HAS_SAVED_IDS_AND_SETEUID
++#else
++#include "os.h"
+ #endif
+ #if defined(WIN32)
+ #define HAS_NO_UIDS
+-- 
+1.7.10.4
+
