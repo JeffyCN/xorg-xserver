@@ -10,6 +10,7 @@ Uploaders: Drew Parsons <dparsons@debian.org>, Cyril Brulebois <kibi@debian.org>
 # everything on is for the DMX and Xnest servers.
 Build-Depends:
  debhelper (>= 7),
+ dpkg-dev (>= 1.16.1),
  quilt,
  lsb-release,
  pkg-config,
