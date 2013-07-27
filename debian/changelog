@@ -25,6 +25,8 @@ xorg-server (2:1.14.2.901-1) UNRELEASED; urgency=low
 
   [ Julien Cristau ]
   * Merge sid branch up to 2:1.12.4-6.1.
+  * Drop old --disable-builddocs, --disable-xcalibrate configure options from
+    d/rules.
 
  -- Julien Cristau <jcristau@debian.org>  Fri, 26 Jul 2013 14:05:51 +0200
 
