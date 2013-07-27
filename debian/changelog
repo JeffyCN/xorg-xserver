@@ -1,4 +1,4 @@
-xorg-server (2:1.14.2.901-1) UNRELEASED; urgency=low
+xorg-server (2:1.14.2.901-1) experimental; urgency=low
 
   * New upstream release
 
@@ -29,7 +29,7 @@ xorg-server (2:1.14.2.901-1) UNRELEASED; urgency=low
     d/rules.
   * Make build-deps match xserver-xorg-dev dependencies and configure checks.
 
- -- Julien Cristau <jcristau@debian.org>  Fri, 26 Jul 2013 14:05:51 +0200
+ -- Julien Cristau <jcristau@debian.org>  Sat, 27 Jul 2013 13:18:28 +0200
 
 xorg-server (2:1.12.4-6.1) unstable; urgency=low
 
