@@ -1,4 +1,4 @@
-xorg-server (2:1.14.2.901-2) UNRELEASED; urgency=low
+xorg-server (2:1.14.2.901-2) experimental; urgency=low
 
   * Use libbsd-overlay to get missing declarations on kfreebsd and fix FTBFS.
     Require dpkg-dev 1.16.1.
@@ -6,7 +6,7 @@ xorg-server (2:1.14.2.901-2) UNRELEASED; urgency=low
   * Link against libnettle.a, to unbreak the udeb (there's no libnettle udeb).
   * Fix a test failure on 64bit big-endian (s390x, ppc64, sparc64).
 
- -- Julien Cristau <jcristau@debian.org>  Sat, 27 Jul 2013 18:48:37 +0200
+ -- Julien Cristau <jcristau@debian.org>  Sat, 03 Aug 2013 18:17:30 +0200
 
 xorg-server (2:1.14.2.901-1) experimental; urgency=low
 
