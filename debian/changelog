@@ -1,10 +1,14 @@
-xorg-server (2:1.14.2.901-3) UNRELEASED; urgency=low
+xorg-server (2:1.14.3-1) UNRELEASED; urgency=low
 
+  [ Julien Cristau ]
   * Remove the Replaces: xdmx from xdmx-tools, that was before lenny.  That
     change was done in the 1.10.x timeframe and then lost when moving to
     1.11.x.
 
- -- Julien Cristau <jcristau@debian.org>  Tue, 13 Aug 2013 19:48:22 +0200
+  [ Michele Cane ]
+  * New upstream release.
+
+ -- Michele Cane <michele.cane@gmail.com>  Sun, 15 Sep 2013 22:46:06 +0200
 
 xorg-server (2:1.14.2.901-2) experimental; urgency=low
 
