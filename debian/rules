@@ -219,7 +219,6 @@ build-indep: build
 
 clean: unpatch abibumpcheck
 	dh_testdir
-
 	rm -rf $(STAMP_DIR)
 	rm -f config.cache config.log config.status
 	rm -f */config.cache */config.log */config.status
@@ -231,7 +230,7 @@ clean: unpatch abibumpcheck
 	rm -f include/do-not-use-config.h.in
 	rm -f m4/lt*.m4 m4/libtool.m4
 	find -name Makefile.in -delete
-
+	rm -f test-driver
 	dh_clean
 
 install: build
