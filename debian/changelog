@@ -1,6 +1,8 @@
 xorg-server (2:1.14.3-2) UNRELEASED; urgency=low
 
   * Delete test-driver on clean.
+  * Add a couple patches to fix FTBFS on hurd (closes: #720736).  Thanks, Pino
+    Toscano!
 
  -- Julien Cristau <jcristau@debian.org>  Mon, 16 Sep 2013 01:22:24 +0200
 
