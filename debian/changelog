@@ -1,3 +1,9 @@
+xorg-server (2:1.14.3-3) unstable; urgency=low
+
+  * Upload to unstable.
+
+ -- Julien Cristau <jcristau@debian.org>  Sun, 22 Sep 2013 16:32:19 +0200
+
 xorg-server (2:1.14.3-2) experimental; urgency=low
 
   * Delete test-driver on clean.
