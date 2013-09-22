@@ -1,4 +1,5 @@
 fixes
+hashtabletest
 input
 list
 misc
@@ -7,3 +8,4 @@ touch
 xfree86
 xkb
 xtest
+signal-logging

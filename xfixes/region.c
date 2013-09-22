@@ -27,7 +27,6 @@
 #include "xfixesint.h"
 #include "scrnintstr.h"
 #include <picturestr.h>
-extern int RenderErrBase;
 
 #include <regionstr.h>
 #include <gcstruct.h>
@@ -586,7 +585,7 @@ ProcXFixesFetchRegion(ClientPtr client)
         swaps(&reply->height);
         SwapShorts((INT16 *) pRect, nBox * 4);
     }
-    (void) WriteToClient(client, sizeof(xXFixesFetchRegionReply) +
+    WriteToClient(client, sizeof(xXFixesFetchRegionReply) +
                          nBox * sizeof(xRectangle), (char *) reply);
     free(reply);
     return Success;

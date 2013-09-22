@@ -617,7 +617,8 @@ hostx_set_cmap_entry(unsigned char idx,
  */
 void *
 hostx_screen_init(EphyrScreenInfo screen,
-                  int width, int height, int buffer_height)
+                  int width, int height, int buffer_height,
+                  int *bytes_per_line, int *bits_per_pixel)
 {
     int bitmap_pad;
     Bool shm_success = False;
@@ -693,6 +694,9 @@ hostx_screen_init(EphyrScreenInfo screen,
         host_screen->ximg->data =
             malloc(host_screen->ximg->bytes_per_line * buffer_height);
     }
+
+    *bytes_per_line = host_screen->ximg->bytes_per_line;
+    *bits_per_pixel = host_screen->ximg->bits_per_pixel;
 
     XResizeWindow(HostX.dpy, host_screen->win, width, height);
 
@@ -881,7 +885,9 @@ host_screen_from_window(Window w)
     struct EphyrHostScreen *result = NULL;
 
     for (index = 0; index < HostX.n_screens; index++) {
-        if (HostX.screens[index].win == w || HostX.screens[index].peer_win == w) {
+        if (HostX.screens[index].win == w
+            || HostX.screens[index].peer_win == w
+            || HostX.screens[index].win_pre_existing == w) {
             result = &HostX.screens[index];
             goto out;
         }

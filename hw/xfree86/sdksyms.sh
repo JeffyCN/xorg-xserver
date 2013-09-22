@@ -46,10 +46,10 @@ cat > sdksyms.c << EOF
 #include "misyncstr.h"
 
 /* Xext/Makefile.am -- half is module, half is builtin */
-/*
+#ifdef XV
 #include "xvdix.h"
 #include "xvmcext.h"
- */
+#endif
 #include "geext.h"
 #include "geint.h"
 #ifdef MITSHM
@@ -95,11 +95,9 @@ cat > sdksyms.c << EOF
 
 
 /* hw/xfree86/dri2/Makefile.am -- module */
-/*
 #if DRI2
 # include "dri2.h"
 #endif
- */
 
 
 /* hw/xfree86/vgahw/Makefile.am -- module */
@@ -135,12 +133,9 @@ cat > sdksyms.c << EOF
 # include "xf86xvmc.h"
 # include "xf86xvpriv.h"
 #endif
-/* XF86VidMode code is in libextmod module */
-/*
 #if XF86VIDMODE
 # include "vidmodeproc.h"
 #endif
- */
 #include "xorgVersion.h"
 #if defined(__sparc__) || defined(__sparc)
 # include "xf86sbusBus.h"
@@ -181,18 +176,10 @@ cat > sdksyms.c << EOF
 #endif
 
 
-/* hw/xfree86/xaa/Makefile.am -- module */
-/*
-#include "xaa.h"
-#include "xaalocal.h"
-#include "xaarop.h"
- */
-
-
 /* hw/xfree86/dixmods/extmod/Makefile.am -- module */
-/*
+#ifdef XFreeXDGA
 #include "dgaproc.h"
- */
+#endif
 
 
 /* hw/xfree86/parser/Makefile.am */
@@ -208,13 +195,11 @@ cat > sdksyms.c << EOF
 
 
 /* hw/xfree86/dri/Makefile.am -- module */
-/*
 #if XF86DRI
 # include "dri.h"
 # include "sarea.h"
 # include "dristruct.h"
 #endif
- */
 
 
 /* mi/Makefile.am */
@@ -222,7 +207,6 @@ cat > sdksyms.c << EOF
 #include "miline.h"
 #include "mipointer.h"
 #include "mi.h"
-#include "mibstore.h"
 #include "migc.h"
 #include "mipointrst.h"
 #include "mizerarc.h"
@@ -241,9 +225,9 @@ cat > sdksyms.c << EOF
 
 
 /* dbe/Makefile.am -- module */
-/*
+#ifdef DBE
 #include "dbestruct.h"
- */
+#endif
 
 
 /* exa/Makefile.am -- module */
@@ -251,6 +235,9 @@ cat > sdksyms.c << EOF
 #include "exa.h"
  */
 
+#ifdef COMPOSITE
+#include "compositeext.h"
+#endif
 
 /* xfixes/Makefile.am */
 #include "xfixes.h"
@@ -272,11 +259,11 @@ cat > sdksyms.c << EOF
 #include "dixevents.h"
 #include "dixfont.h"
 #include "dixfontstr.h"
+#include "dixfontstubs.h"
 #include "dixgrabs.h"
 #include "dixstruct.h"
 #include "exevents.h"
 #include "extension.h"
-#include "extinit.h"
 #include "extnsionst.h"
 #include "gc.h"
 #include "gcstruct.h"
@@ -324,8 +311,8 @@ topdir=$1
 shift
 LC_ALL=C
 export LC_ALL
-${CPP:-cpp} "$@" -DXorgLoader sdksyms.c > /dev/null || exit $?
-${CPP:-cpp} "$@" -DXorgLoader sdksyms.c | ${AWK:-awk} -v topdir=$topdir '
+${CPP:-cpp} "$@" sdksyms.c > /dev/null || exit $?
+${CPP:-cpp} "$@" sdksyms.c | ${AWK:-awk} -v topdir=$topdir '
 BEGIN {
     sdk = 0;
     print("/*");

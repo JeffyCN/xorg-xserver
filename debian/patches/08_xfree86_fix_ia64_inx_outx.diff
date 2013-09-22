@@ -5,11 +5,9 @@ Call the equivalent glibc functions.
 
 Debian bug #685750
 
-Index: xorg-server/hw/xfree86/common/compiler.h
-===================================================================
---- xorg-server.orig/hw/xfree86/common/compiler.h
-+++ xorg-server/hw/xfree86/common/compiler.h
-@@ -421,6 +421,54 @@ extern _X_EXPORT unsigned int inl(unsign
+--- a/hw/xfree86/common/compiler.h
++++ b/hw/xfree86/common/compiler.h
+@@ -438,6 +438,54 @@ extern _X_EXPORT unsigned int inl(unsign
  #include <machine/pio.h>
  #endif                          /* __NetBSD__ */
  

@@ -169,7 +169,7 @@ LoaderSymbolFromModule(void *handle, const char *name)
 void
 LoaderUnload(const char *name, void *handle)
 {
-    xf86Msg(X_INFO, "Unloading %s\n", name);
+    LogMessageVerbSigSafe(X_INFO, 1, "Unloading %s\n", name);
     if (handle)
         dlclose(handle);
 }

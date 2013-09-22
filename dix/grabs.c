@@ -179,7 +179,7 @@ UngrabAllDevices(Bool kill_client)
             continue;
         PrintDeviceGrabInfo(dev);
         client = clients[CLIENT_ID(dev->deviceGrab.grab->resource)];
-        if (!client || client->clientGone)
+        if (!kill_client || !client || client->clientGone)
             dev->deviceGrab.DeactivateGrab(dev);
         if (kill_client)
             CloseDownClient(client);
@@ -189,7 +189,7 @@ UngrabAllDevices(Bool kill_client)
 }
 
 GrabPtr
-AllocGrab(void)
+AllocGrab(const GrabPtr src)
 {
     GrabPtr grab = calloc(1, sizeof(GrabRec));
 
@@ -201,22 +201,34 @@ AllocGrab(void)
         }
     }
 
+    if (src && !CopyGrab(grab, src)) {
+        free(grab->xi2mask);
+        free(grab);
+        grab = NULL;
+    }
+
     return grab;
 }
 
 GrabPtr
-CreateGrab(int client, DeviceIntPtr device, DeviceIntPtr modDevice, WindowPtr window, enum InputLevel grabtype, GrabMask *mask, GrabParameters *param, int type, KeyCode keybut,        /* key or button */
+CreateGrab(int client, DeviceIntPtr device, DeviceIntPtr modDevice,
+           WindowPtr window, enum InputLevel grabtype, GrabMask *mask,
+           GrabParameters *param, int type,
+           KeyCode keybut,        /* key or button */
            WindowPtr confineTo, CursorPtr cursor)
 {
     GrabPtr grab;
 
-    grab = AllocGrab();
+    grab = AllocGrab(NULL);
     if (!grab)
         return (GrabPtr) NULL;
     grab->resource = FakeClientID(client);
     grab->device = device;
     grab->window = window;
-    grab->eventMask = mask->core;       /* same for XI */
+    if (grabtype == CORE || grabtype == XI)
+        grab->eventMask = mask->core;       /* same for XI */
+    else
+        grab->eventMask = 0;
     grab->deviceMask = 0;
     grab->ownerEvents = param->ownerEvents;
     grab->keyboardMode = param->this_device_mode;
@@ -229,13 +241,11 @@ CreateGrab(int client, DeviceIntPtr device, DeviceIntPtr modDevice, WindowPtr wi
     grab->detail.exact = keybut;
     grab->detail.pMask = NULL;
     grab->confineTo = confineTo;
-    grab->cursor = cursor;
+    grab->cursor = RefCursor(cursor);
     grab->next = NULL;
 
     if (grabtype == XI2)
         xi2mask_merge(grab->xi2mask, mask->xi2mask);
-    if (cursor)
-        cursor->refcnt++;
     return grab;
 
 }
@@ -243,8 +253,7 @@ CreateGrab(int client, DeviceIntPtr device, DeviceIntPtr modDevice, WindowPtr wi
 void
 FreeGrab(GrabPtr pGrab)
 {
-    if (pGrab->grabtype == XI2 && pGrab->type == XI_TouchBegin)
-        TouchListenerGone(pGrab->resource);
+    BUG_RETURN(!pGrab);
 
     free(pGrab->modifiersDetail.pMask);
     free(pGrab->detail.pMask);
@@ -262,9 +271,6 @@ CopyGrab(GrabPtr dst, const GrabPtr src)
     Mask *mdetails_mask = NULL;
     Mask *details_mask = NULL;
     XI2Mask *xi2mask;
-
-    if (src->cursor)
-        src->cursor->refcnt++;
 
     if (src->modifiersDetail.pMask) {
         int len = MasksPerDetailMask * sizeof(Mask);
@@ -303,6 +309,7 @@ CopyGrab(GrabPtr dst, const GrabPtr src)
     dst->modifiersDetail.pMask = mdetails_mask;
     dst->detail.pMask = details_mask;
     dst->xi2mask = xi2mask;
+    dst->cursor = RefCursor(src->cursor);
 
     xi2mask_merge(dst->xi2mask, src->xi2mask);
 
