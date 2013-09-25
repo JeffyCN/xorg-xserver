@@ -1,3 +1,9 @@
+xorg-server (2:1.14.3-4) UNRELEASED; urgency=low
+
+  * rules: Drop defoma support from the font path. (LP: #986061)
+
+ -- Timo Aaltonen <tjaalton@ubuntu.com>  Wed, 25 Sep 2013 15:53:06 +0300
+
 xorg-server (2:1.14.3-3) unstable; urgency=low
 
   * Upload to unstable.
