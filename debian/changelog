@@ -1,9 +1,14 @@
-xorg-server (2:1.14.3-4) UNRELEASED; urgency=low
+xorg-server (2:1.14.3-4) unstable; urgency=high
 
+  [ Timo Aaltonen ]
   * rules: Drop defoma support from the font path. (Closes: #689233,
     LP: #986061)
 
- -- Timo Aaltonen <tjaalton@ubuntu.com>  Wed, 25 Sep 2013 15:53:06 +0300
+  [ Julien Cristau ]
+  * Avoid use-after-free in dix/dixfonts.c: doImageText().  Addresses
+    CVE-2013-4396.
+
+ -- Julien Cristau <jcristau@debian.org>  Sat, 05 Oct 2013 15:57:55 +0200
 
 xorg-server (2:1.14.3-3) unstable; urgency=low
 
