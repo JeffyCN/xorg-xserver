@@ -12,6 +12,7 @@ xorg-server (2:1.14.99.3-1) UNRELEASED; urgency=low
     - require xcb bits for Xephyr
     - xserver-xorg-dev depends on x11proto-xf86bigfont-dev
   * Bump ABI versions (should have been done upstream, but hasn't yet).
+  * Stop building Xfbdev.
 
  -- Julien Cristau <jcristau@debian.org>  Mon, 21 Oct 2013 20:25:02 +0200
 

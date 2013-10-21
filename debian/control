@@ -312,22 +312,6 @@ Description: nested X server
  .
  This package is built from the X.org xserver module.
 
-Package: xserver-xfbdev
-Architecture: linux-any
-Depends:
- xserver-common (>= ${source:Version}),
- ${shlibs:Depends},
- ${misc:Depends},
-Provides: xserver
-Description: Linux framebuffer device tiny X server
- xserver-xfbdev is a Linux framebuffer device tiny X server based on the
- kdrive X server.
- .
- More information about X.Org can be found at:
- <URL:http://www.X.org>
- .
- This package is built from the X.org xserver module.
-
 Package: xserver-xorg-core-dbg
 Architecture: any
 Depends:
