@@ -207,6 +207,7 @@ $(STAMP_DIR)/tests-%: $(STAMP_DIR)/build-%
 	cd build-$* && $(MAKE) check
 	>$@
 
+build: abibumpcheck
 build: $(STAMP_DIR)/build-main
 build: $(STAMP_DIR)/tests-main
 ifeq ($(udeb), yes)
@@ -216,7 +217,7 @@ endif
 build-arch: build
 build-indep: build
 
-clean: unpatch abibumpcheck
+clean: unpatch
 	dh_testdir
 	rm -rf $(STAMP_DIR)
 	rm -f config.cache config.log config.status
@@ -294,7 +295,7 @@ SERVERMINVER = debian/serverminver
 serverminver = $(shell head -1 $(SERVERMINVER))
 
 .PHONY: abibumpcheck
-abibumpcheck: debian/serverminver
+abibumpcheck: debian/serverminver $(QUILT_STAMPFN)
 	@echo Checking for the need of an ABI bump
 	# Build an updated version of the file:
 	head -1 $(SERVERMINVER) > $(SERVERMINVER).new
