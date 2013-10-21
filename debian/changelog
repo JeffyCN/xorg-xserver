@@ -7,6 +7,10 @@ xorg-server (2:1.14.99.3-1) UNRELEASED; urgency=low
     - 10_Include-missing-selection-h.diff
     - os-move-arpa-inet.h-for-any-win32-system.patch
     - xfree86-hurd-include-hurd.h.patch
+  * Update build-deps:
+    - bump libx11-dev to 2:1.6 for _XEatDataWords
+    - require xcb bits for Xephyr
+    - xserver-xorg-dev depends on x11proto-xf86bigfont-dev
 
  -- Julien Cristau <jcristau@debian.org>  Mon, 21 Oct 2013 20:25:02 +0200
 
