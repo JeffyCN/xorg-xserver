@@ -1,4 +1,4 @@
-xorg-server (2:1.14.99.3-1) UNRELEASED; urgency=low
+xorg-server (2:1.14.99.3-1) experimental; urgency=low
 
   * New upstream snapshot.
   * Drop patches applied upstream:
@@ -18,7 +18,7 @@ xorg-server (2:1.14.99.3-1) UNRELEASED; urgency=low
   * Run abibumpcheck on build instead of clean so it's done on a patched tree.
   * Remove Drew and Cyril from Uploaders.
 
- -- Julien Cristau <jcristau@debian.org>  Mon, 21 Oct 2013 20:25:02 +0200
+ -- Julien Cristau <jcristau@debian.org>  Mon, 21 Oct 2013 23:46:34 +0200
 
 xorg-server (2:1.14.3-4) unstable; urgency=high
 
