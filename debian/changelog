@@ -13,6 +13,8 @@ xorg-server (2:1.14.99.3-1) UNRELEASED; urgency=low
     - xserver-xorg-dev depends on x11proto-xf86bigfont-dev
   * Bump ABI versions (should have been done upstream, but hasn't yet).
   * Stop building Xfbdev.
+  * Reduce noise from dh_install --list-missing by deleting some files from the
+    udeb build after make install.
 
  -- Julien Cristau <jcristau@debian.org>  Mon, 21 Oct 2013 20:25:02 +0200
 

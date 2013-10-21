@@ -254,6 +254,13 @@ endif
 	rm -f debian/tmp/udeb/usr/lib/xorg/modules/libwfb.so
 	rm -f debian/tmp/udeb/usr/lib/xorg/modules/libxf8_16bpp.so
 
+	# we don't ship these from the udeb build, reduce noise from dh_install
+	# --list-missing
+	rm -rf debian/tmp/udeb/usr/include
+	rm -rf debian/tmp/udeb/usr/share/aclocal
+	rm -rf debian/tmp/udeb/usr/share/man
+	rm -rf debian/tmp/udeb/usr/lib/pkgconfig
+
 	install -m 755 debian/local/xvfb-run debian/tmp/main/usr/bin
 	install debian/local/xvfb-run.1 debian/tmp/main/usr/share/man/man1
 ifneq ($(DEB_HOST_ARCH_OS), linux)
