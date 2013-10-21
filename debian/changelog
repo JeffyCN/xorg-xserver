@@ -15,6 +15,9 @@ xorg-server (2:1.14.99.3-1) UNRELEASED; urgency=low
   * Stop building Xfbdev.
   * Reduce noise from dh_install --list-missing by deleting some files from the
     udeb build after make install.
+  * Delete old patch 13_debian_add_xkbpath_env_variable.diff.  It's not been
+    applied since 1.6, and nobody seems to have noticed, so clearly it's not
+    needed.
 
  -- Julien Cristau <jcristau@debian.org>  Mon, 21 Oct 2013 20:25:02 +0200
 
