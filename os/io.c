@@ -259,6 +259,14 @@ ReadRequestFromClient(ClientPtr client)
         oc->input = oci;
     }
 
+#if XTRANS_SEND_FDS
+    /* Discard any unused file descriptors */
+    while (client->req_fds > 0) {
+        int req_fd = ReadFdFromClient(client);
+        if (req_fd >= 0)
+            close(req_fd);
+    }
+#endif
     /* advance to start of next request */
 
     oci->bufptr += oci->lenLastReq;
@@ -484,6 +492,31 @@ ReadRequestFromClient(ClientPtr client)
 #endif
     return needed;
 }
+
+#if XTRANS_SEND_FDS
+int
+ReadFdFromClient(ClientPtr client)
+{
+    int fd = -1;
+
+    if (client->req_fds > 0) {
+        OsCommPtr oc = (OsCommPtr) client->osPrivate;
+
+        --client->req_fds;
+        fd = _XSERVTransRecvFd(oc->trans_conn);
+    } else
+        LogMessage(X_ERROR, "Request asks for FD without setting req_fds\n");
+    return fd;
+}
+
+int
+WriteFdToClient(ClientPtr client, int fd, Bool do_close)
+{
+    OsCommPtr oc = (OsCommPtr) client->osPrivate;
+
+    return _XSERVTransSendFd(oc->trans_conn, fd, do_close);
+}
+#endif
 
 /*****************************************************************
  * InsertFakeRequest

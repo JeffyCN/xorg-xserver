@@ -26,11 +26,12 @@ dnl
 dnl Process this file with autoconf to create configure.
 
 AC_PREREQ(2.60)
-AC_INIT([xorg-server], 1.14.99.3, [https://bugs.freedesktop.org/enter_bug.cgi?product=xorg], xorg-server)
-RELEASE_DATE="2013-10-18"
-RELEASE_NAME="Bundaberg"
+AC_INIT([xorg-server], 1.14.99.902, [https://bugs.freedesktop.org/enter_bug.cgi?product=xorg], xorg-server)
+RELEASE_DATE="2013-11-14"
+RELEASE_NAME="English Breakfast"
 AC_CONFIG_SRCDIR([Makefile.am])
 AM_INIT_AUTOMAKE([foreign dist-bzip2])
+AC_USE_SYSTEM_EXTENSIONS
 
 # Require xorg-macros minimum of 1.14 for XORG_COMPILER_BRAND in XORG_DEFAULT_OPTIONS
 m4_ifndef([XORG_MACROS_VERSION],
@@ -228,10 +229,6 @@ dnl AGPGART headers
 AC_CHECK_HEADERS([linux/agpgart.h sys/agpio.h sys/agpgart.h], AGP=yes)
 AM_CONDITIONAL(AGP, [test "x$AGP" = xyes])
 
-dnl APM header
-AC_CHECK_HEADERS([linux/apm_bios.h], LNXAPM=yes)
-AM_CONDITIONAL(LNXAPM, [test "x$LNXAPM" = xyes])
-
 dnl fbdev header
 AC_CHECK_HEADERS([linux/fb.h], FBDEV=yes)
 AM_CONDITIONAL(FBDEVHW, [test "x$FBDEV" = xyes])
@@ -300,7 +297,7 @@ AC_CHECK_HEADER([machine/apmvar.h],[
 AM_CONDITIONAL(BSD_APM, [test "x$ac_cv_BSD_APM" = xyes])
 AM_CONDITIONAL(BSD_KQUEUE_APM, [test "x$ac_cv_BSD_KQUEUE_APM" = xyes])
 	
-dnl glibc backtrace support check (hw/xfree86/common/xf86Events.c)
+dnl glibc backtrace support check
 AC_CHECK_HEADER([execinfo.h],[
     AC_CHECK_LIB(c, backtrace, [
         AC_DEFINE(HAVE_BACKTRACE, 1, [Has backtrace support])
@@ -613,6 +610,8 @@ AC_ARG_ENABLE(xdm-auth-1,     AS_HELP_STRING([--disable-xdm-auth-1], [Build XDM-
 AC_ARG_ENABLE(glx,            AS_HELP_STRING([--disable-glx], [Build GLX extension (default: enabled)]), [GLX=$enableval], [GLX=yes])
 AC_ARG_ENABLE(dri,            AS_HELP_STRING([--enable-dri], [Build DRI extension (default: auto)]), [DRI=$enableval])
 AC_ARG_ENABLE(dri2,           AS_HELP_STRING([--enable-dri2], [Build DRI2 extension (default: auto)]), [DRI2=$enableval], [DRI2=auto])
+AC_ARG_ENABLE(dri3,           AS_HELP_STRING([--enable-dri3], [Build DRI3 extension (default: auto)]), [DRI3=$enableval], [DRI3=auto])
+AC_ARG_ENABLE(present,	      AS_HELP_STRING([--disable-present], [Build Present extension (default: enabled)]), [PRESENT=$enableval], [PRESENT=yes])
 AC_ARG_ENABLE(xinerama,	      AS_HELP_STRING([--disable-xinerama], [Build Xinerama extension (default: enabled)]), [XINERAMA=$enableval], [XINERAMA=yes])
 AC_ARG_ENABLE(xf86vidmode,    AS_HELP_STRING([--disable-xf86vidmode], [Build XF86VidMode extension (default: auto)]), [XF86VIDMODE=$enableval], [XF86VIDMODE=auto])
 AC_ARG_ENABLE(xace,           AS_HELP_STRING([--disable-xace], [Build X-ACE extension (default: enabled)]), [XACE=$enableval], [XACE=yes])
@@ -635,6 +634,8 @@ AC_ARG_ENABLE(windowswm,      AS_HELP_STRING([--enable-windowswm], [Build XWin w
 AC_ARG_ENABLE(libdrm,         AS_HELP_STRING([--enable-libdrm], [Build Xorg with libdrm support (default: enabled)]), [DRM=$enableval],[DRM=yes])
 AC_ARG_ENABLE(clientids,      AS_HELP_STRING([--disable-clientids], [Build Xorg with client ID tracking (default: enabled)]), [CLIENTIDS=$enableval], [CLIENTIDS=yes])
 AC_ARG_ENABLE(pciaccess, AS_HELP_STRING([--enable-pciaccess], [Build Xorg with pciaccess library (default: enabled)]), [PCI=$enableval], [PCI=yes])
+AC_ARG_ENABLE(linux_acpi, AC_HELP_STRING([--disable-linux-acpi], [Disable building ACPI support on Linux (if available).]), [enable_linux_acpi=$enableval], [enable_linux_acpi=yes])
+AC_ARG_ENABLE(linux_apm, AC_HELP_STRING([--disable-linux-apm], [Disable building APM support on Linux (if available).]), [enable_linux_apm=$enableval], [enable_linux_apm=yes])
 
 dnl DDXes.
 AC_ARG_ENABLE(xorg,    	      AS_HELP_STRING([--enable-xorg], [Build Xorg server (default: auto)]), [XORG=$enableval], [XORG=auto])
@@ -715,6 +716,7 @@ case $host_os in
 		CONFIG_UDEV_KMS=no
 		DGA=no
 		DRI2=no
+		DRI3=no
 		INT10MODULE=no
 		PCI=no
 		VGAHW=no
@@ -732,6 +734,7 @@ case $host_os in
 		VBE=no
 		DRM=no
 		DRI2=no
+		DRI3=no
 
 		if test x$XQUARTZ = xauto; then
 			AC_CACHE_CHECK([whether to build Xquartz],xorg_cv_Carbon_framework,[
@@ -781,6 +784,7 @@ SCRNSAVERPROTO="scrnsaverproto >= 1.1"
 RESOURCEPROTO="resourceproto >= 1.2.0"
 DRIPROTO="xf86driproto >= 2.1.0"
 DRI2PROTO="dri2proto >= 2.8"
+DRI3PROTO="dri3proto >= 1.0"
 XINERAMAPROTO="xineramaproto"
 BIGFONTPROTO="xf86bigfontproto >= 1.2.0"
 DGAPROTO="xf86dgaproto >= 2.0.99.1"
@@ -789,12 +793,13 @@ DMXPROTO="dmxproto >= 2.2.99.1"
 VIDMODEPROTO="xf86vidmodeproto >= 2.2.99.1"
 WINDOWSWMPROTO="windowswmproto"
 APPLEWMPROTO="applewmproto >= 1.4"
+XSHMFENCE="xshmfence"
 
 dnl Required modules
 XPROTO="xproto >= 7.0.22"
 RANDRPROTO="randrproto >= 1.4.0"
 RENDERPROTO="renderproto >= 0.11"
-XEXTPROTO="xextproto >= 7.1.99"
+XEXTPROTO="xextproto >= 7.2.99.901"
 INPUTPROTO="inputproto >= 2.3"
 KBPROTO="kbproto >= 1.0.3"
 FONTSPROTO="fontsproto"
@@ -802,7 +807,8 @@ FIXESPROTO="fixesproto >= 5.0"
 DAMAGEPROTO="damageproto >= 1.1"
 XCMISCPROTO="xcmiscproto >= 1.2.0"
 BIGREQSPROTO="bigreqsproto >= 1.1.0"
-XTRANS="xtrans >= 1.2.2"
+XTRANS="xtrans >= 1.3.2"
+PRESENTPROTO="presentproto >= 1.0"
 
 dnl List of libraries that require a specific version
 LIBAPPLEWM="applewm >= 1.4"
@@ -1064,34 +1070,6 @@ fi
 AC_MSG_RESULT([$CLIENTIDS])
 AM_CONDITIONAL(CLIENTIDS, [test "x$CLIENTIDS" = xyes])
 
-if test "x$GLX" = xyes; then
-	PKG_CHECK_MODULES([XLIB], [x11])
-	PKG_CHECK_MODULES([GL], $GLPROTO $LIBGL)
-	AC_SUBST(XLIB_CFLAGS)
-	AC_DEFINE(GLXEXT, 1, [Build GLX extension])
-	GLX_LIBS='$(top_builddir)/glx/libglx.la'
-	GLX_SYS_LIBS="$GLX_SYS_LIBS"
-else
-        GLX=no
-fi
-AM_CONDITIONAL(GLX, test "x$GLX" = xyes)
-
-if test "x$GLX" = xno; then
-        AIGLX=no
-fi
-
-if test "x$AIGLX" = xyes -a \( "x$DRI" = xyes -o "x$DRI2" = xyes \); then
-	AC_DEFINE(AIGLX, 1, [Build AIGLX loader])
-fi
-AM_CONDITIONAL(AIGLX_DRI_LOADER, { test "x$DRI" = xyes || test "x$DRI2" = xyes; } && test "x$AIGLX" = xyes)
-
-if test "x$GLX_USE_TLS" = xyes ; then
-	GLX_DEFINES="-DGLX_USE_TLS -DPTHREADS"
-	GLX_SYS_LIBS="$GLX_SYS_LIBS -lpthread"
-fi
-AC_SUBST([GLX_DEFINES])
-AC_SUBST([GLX_SYS_LIBS])
-
 AM_CONDITIONAL(DRI, test "x$DRI" = xyes)
 if test "x$DRI" = xyes; then
 	AC_DEFINE(XF86DRI, 1, [Build DRI extension])
@@ -1108,12 +1086,125 @@ case "$DRI2,$HAVE_DRI2PROTO" in
 	yes,yes | auto,yes)
 		AC_DEFINE(DRI2, 1, [Build DRI2 extension])
 		DRI2=yes
+		LIBGL="gl >= 9.2.0"
 		SDK_REQUIRED_MODULES="$SDK_REQUIRED_MODULES $DRI2PROTO"
 		;;
 esac
 AM_CONDITIONAL(DRI2, test "x$DRI2" = xyes)
 
-if test "x$DRI" = xyes || test "x$DRI2" = xyes || test "x$CONFIG_UDEV_KMS" = xyes; then
+AC_ARG_ENABLE(xtrans-send-fds,	AS_HELP_STRING([--disable-xtrans-send-fds], [Use Xtrans support for fd passing (default: auto)]), [XTRANS_SEND_FDS=$enableval], [XTRANS_SEND_FDS=auto])
+
+case "x$XTRANS_SEND_FDS" in
+xauto)
+	case "$host_os" in
+	linux*|solaris*)
+		XTRANS_SEND_FDS=yes
+		;;
+	*)
+		XTRANS_SEND_FDS=no
+		;;
+	esac
+esac
+
+case "x$XTRANS_SEND_FDS" in
+xyes)
+	AC_DEFINE(XTRANS_SEND_FDS, 1, [Enable xtrans fd passing support])
+	;;
+esac
+
+case "$DRI3,$XTRANS_SEND_FDS" in
+	yes,yes | auto,yes)
+		;;
+	yes,no)
+		AC_MSG_ERROR([DRI3 requested, but xtrans fd passing support not found.])
+		DRI3=no
+		;;
+	no,*)
+		;;
+	*)
+		AC_MSG_NOTICE([DRI3 disabled because xtrans fd passing support not found.])
+		DRI3=no
+		;;
+esac
+
+PKG_CHECK_MODULES([DRI3PROTO], $DRI3PROTO,
+                  [HAVE_DRI3PROTO=yes], [HAVE_DRI3PROTO=no])
+
+case "$DRI3,$HAVE_DRI3PROTO" in
+	yes,yes | auto,yes)
+		;;
+	yes,no)
+		AC_MSG_ERROR([DRI3 requested, but dri3proto not found.])
+		DRI3=no
+		;;
+	no,*)
+		;;
+	*)
+		AC_MSG_NOTICE([DRI3 disabled because dri3proto not found.])
+		DRI3=no
+		;;
+esac
+
+AC_CHECK_FUNCS([sigaction])
+
+BUSFAULT=no
+
+case x"$ac_cv_func_sigaction" in
+	xyes)
+		AC_DEFINE(HAVE_SIGACTION, 1, [Have sigaction function])
+		BUSFAULT=yes
+		;;
+esac
+
+case x"$BUSFAULT" in
+	xyes)
+		AC_DEFINE(BUSFAULT, 1, [Include busfault OS API])
+		;;
+esac
+
+AM_CONDITIONAL(BUSFAULT, test x"$BUSFAULT" = xyes)
+
+PKG_CHECK_MODULES([XSHMFENCE], $XSHMFENCE,
+		  [HAVE_XSHMFENCE=yes], [HAVE_XSHMFENCE=no])
+
+AM_CONDITIONAL(XSHMFENCE, test "x$HAVE_XSHMFENCE" = xyes)
+
+case x"$HAVE_XSHMFENCE" in
+	xyes)
+		AC_DEFINE(HAVE_XSHMFENCE, 1, [Have X Shared Memory Fence library])
+		REQUIRED_LIBS="$REQUIRED_LIBS xshmfence"
+		;;
+esac
+
+
+case "$DRI3,$HAVE_XSHMFENCE" in
+	yes,yes | auto,yes)
+		;;
+	yes,no)
+		AC_MSG_ERROR("DRI3 requested, but xshmfence not found.])
+		DRI3=no
+		;;
+	no,*)
+		;;
+	*)
+		AC_MSG_NOTICE([DRI3 disabled because xshmfence not found.])
+		DRI3=no
+		;;
+esac
+
+case x"$DRI3" in
+	xyes|xauto)
+		DRI3=yes
+		AC_DEFINE(DRI3, 1, [Build DRI3 extension])
+		DRI3_LIB='$(top_builddir)/dri3/libdri3.la'
+		SDK_REQUIRED_MODULES="$SDK_REQUIRED_MODULES $DRI3PROTO"
+		AC_MSG_NOTICE([DRI3 enabled]);
+		;;
+esac
+
+AM_CONDITIONAL(DRI3, test "x$DRI3" = xyes)
+
+if test "x$DRI" = xyes || test "x$DRI2" = xyes || test "x$DRI3" = xyes || test "x$CONFIG_UDEV_KMS" = xyes; then
 	if test "x$DRM" = xyes; then
 		AC_DEFINE(WITH_LIBDRM, 1, [Building with libdrm support])
 		PKG_CHECK_MODULES([LIBDRM], $LIBDRM)
@@ -1141,6 +1232,42 @@ if test "x$DRI2" = xyes; then
 fi
 AM_CONDITIONAL(DRI2_AIGLX, test "x$DRI2_AIGLX" = xyes)
 
+if test "x$GLX" = xyes; then
+	PKG_CHECK_MODULES([XLIB], [x11])
+	PKG_CHECK_MODULES([GL], $GLPROTO $LIBGL)
+	AC_SUBST(XLIB_CFLAGS)
+	AC_DEFINE(GLXEXT, 1, [Build GLX extension])
+	GLX_LIBS='$(top_builddir)/glx/libglx.la'
+	GLX_SYS_LIBS="$GLX_SYS_LIBS $GL_LIBS"
+else
+        GLX=no
+fi
+AM_CONDITIONAL(GLX, test "x$GLX" = xyes)
+
+if test "x$GLX" = xno; then
+        AIGLX=no
+fi
+
+if test "x$AIGLX" = xyes -a \( "x$DRI2" = xyes \); then
+	AC_DEFINE(AIGLX, 1, [Build AIGLX loader])
+fi
+AM_CONDITIONAL(AIGLX_DRI_LOADER, { test "x$DRI2" = xyes; } && test "x$AIGLX" = xyes)
+
+if test "x$GLX_USE_TLS" = xyes ; then
+	GLX_DEFINES="-DGLX_USE_TLS -DPTHREADS"
+	GLX_SYS_LIBS="$GLX_SYS_LIBS -lpthread"
+fi
+AC_SUBST([GLX_DEFINES])
+AC_SUBST([GLX_SYS_LIBS])
+
+AM_CONDITIONAL(PRESENT, [test "x$PRESENT" = xyes])
+if test "x$PRESENT" = xyes; then
+	AC_DEFINE(PRESENT, 1, [Support Present extension])
+	REQUIRED_MODULES="$REQUIRED_MODULES $PRESENTPROTO"
+	SDK_REQUIRED_MODULES="$SDK_REQUIRED_MODULES $PRESENTPROTO"
+	PRESENT_INC='-I$(top_srcdir)/present'
+	PRESENT_LIB='$(top_builddir)/present/libpresent.la'
+fi
 
 AM_CONDITIONAL(XINERAMA, [test "x$XINERAMA" = xyes])
 if test "x$XINERAMA" = xyes; then
@@ -1564,7 +1691,7 @@ AC_EGREP_CPP([I_AM_SVR4],[
 AC_DEFINE([SVR4],1,[Define to 1 on systems derived from System V Release 4])
 AC_MSG_RESULT([yes])], AC_MSG_RESULT([no]))
 
-XSERVER_CFLAGS="$XSERVER_CFLAGS $CORE_INCS $XEXT_INC $COMPOSITE_INC $DAMAGE_INC $FIXES_INC $XI_INC $MI_INC $MIEXT_SYNC_INC $MIEXT_SHADOW_INC $MIEXT_LAYER_INC $MIEXT_DAMAGE_INC $RENDER_INC $RANDR_INC $FB_INC $DBE_INC"
+XSERVER_CFLAGS="$XSERVER_CFLAGS $CORE_INCS $XEXT_INC $COMPOSITE_INC $DAMAGE_INC $FIXES_INC $XI_INC $MI_INC $MIEXT_SYNC_INC $MIEXT_SHADOW_INC $MIEXT_LAYER_INC $MIEXT_DAMAGE_INC $RENDER_INC $RANDR_INC $FB_INC $DBE_INC $PRESENT_INC"
 
 dnl ---------------------------------------------------------------------------
 dnl DDX section.
@@ -1577,7 +1704,7 @@ AC_MSG_RESULT([$XVFB])
 AM_CONDITIONAL(XVFB, [test "x$XVFB" = xyes])
 
 if test "x$XVFB" = xyes; then
-	XVFB_LIBS="$FB_LIB $FIXES_LIB $XEXT_LIB $DBE_LIB $RECORD_LIB $GLX_LIBS $RANDR_LIB $RENDER_LIB $DAMAGE_LIB $MIEXT_SYNC_LIB $MIEXT_DAMAGE_LIB $MIEXT_SHADOW_LIB $XI_LIB $XKB_LIB $XKB_STUB_LIB $COMPOSITE_LIB"
+	XVFB_LIBS="$FB_LIB $FIXES_LIB $XEXT_LIB $DBE_LIB $RECORD_LIB $GLX_LIBS $RANDR_LIB $RENDER_LIB $DAMAGE_LIB $DRI3_LIB $PRESENT_LIB $MIEXT_SYNC_LIB $MIEXT_DAMAGE_LIB $MIEXT_SHADOW_LIB $XI_LIB $XKB_LIB $XKB_STUB_LIB $COMPOSITE_LIB"
 	XVFB_SYS_LIBS="$XVFBMODULES_LIBS $GLX_SYS_LIBS"
 	AC_SUBST([XVFB_LIBS])
 	AC_SUBST([XVFB_SYS_LIBS])
@@ -1598,7 +1725,7 @@ if test "x$XNEST" = xyes; then
 	if test "x$have_xnest" = xno; then
 		AC_MSG_ERROR([Xnest build explicitly requested, but required modules not found.])
 	fi
-	XNEST_LIBS="$FB_LIB $FIXES_LIB $MI_LIB $XEXT_LIB $DBE_LIB $RECORD_LIB $GLX_LIBS $RANDR_LIB $RENDER_LIB $DAMAGE_LIB $MIEXT_SYNC_LIB $MIEXT_DAMAGE_LIB $MIEXT_SHADOW_LIB $XI_LIB $XKB_LIB $XKB_STUB_LIB $COMPOSITE_LIB $MAIN_LIB $DIX_LIB $OS_LIB"
+	XNEST_LIBS="$FB_LIB $FIXES_LIB $MI_LIB $XEXT_LIB $DBE_LIB $RECORD_LIB $GLX_LIBS $RANDR_LIB $RENDER_LIB $DAMAGE_LIB  $DRI3_LIB $PRESENT_LIB $MIEXT_SYNC_LIB $MIEXT_DAMAGE_LIB $MIEXT_SHADOW_LIB $XI_LIB $XKB_LIB $XKB_STUB_LIB $COMPOSITE_LIB $MAIN_LIB $DIX_LIB $OS_LIB"
 	XNEST_SYS_LIBS="$XNESTMODULES_LIBS $GLX_SYS_LIBS"
 	AC_SUBST([XNEST_LIBS])
 	AC_SUBST([XNEST_SYS_LIBS])
@@ -1623,7 +1750,7 @@ if test "x$XORG" = xyes; then
 	XORG_OSINCS='-I$(top_srcdir)/hw/xfree86/os-support -I$(top_srcdir)/hw/xfree86/os-support/bus -I$(top_srcdir)/os'
 	XORG_INCS="$XORG_DDXINCS $XORG_OSINCS"
 	XORG_CFLAGS="$XORGSERVER_CFLAGS -DHAVE_XORG_CONFIG_H"
-	XORG_LIBS="$COMPOSITE_LIB $FIXES_LIB $XEXT_LIB $DBE_LIB $RECORD_LIB $RANDR_LIB $RENDER_LIB $DAMAGE_LIB $MIEXT_SYNC_LIB $MIEXT_DAMAGE_LIB $XI_LIB $XKB_LIB"
+	XORG_LIBS="$COMPOSITE_LIB $FIXES_LIB $XEXT_LIB $DBE_LIB $RECORD_LIB $RANDR_LIB $RENDER_LIB $DAMAGE_LIB $DRI3_LIB $PRESENT_LIB $MIEXT_SYNC_LIB $MIEXT_DAMAGE_LIB $XI_LIB $XKB_LIB"
 
 	dnl ==================================================================
 	dnl symbol visibility
@@ -1705,9 +1832,6 @@ if test "x$XORG" = xyes; then
 
 	case $host_os in
 	  linux*)
-		if test "x$LNXAPM" = xyes; then
-			XORG_CFLAGS="$XORG_CFLAGS -DXF86PM"
-		fi
 		XORG_OS_SUBDIR="linux"
 		linux_acpi="no"
 		case $host_cpu in
@@ -1715,11 +1839,16 @@ if test "x$XORG" = xyes; then
 		  	linux_alpha=yes
 			;;
 		  i*86|amd64*|x86_64*|ia64*)
-			linux_acpi="yes"
+			linux_acpi=$enable_linux_acpi
 			;;
 		  *)
 			;;
 		esac
+		dnl APM header
+		AC_CHECK_HEADERS([linux/apm_bios.h], [linux_apm=$enable_linux_apm])
+		if test "x$linux_apm" = xyes -o "x$linux_acpi" = xyes; then
+			AC_DEFINE(XF86PM, 1, [Support APM/ACPI power management in the server])
+		fi
 		;;
 	  freebsd* | kfreebsd*-gnu | dragonfly*)
 		XORG_OS_SUBDIR="bsd"
@@ -1882,6 +2011,7 @@ AM_CONDITIONAL([XORG_BUS_BSDPCI], [test "x$xorg_bus_bsdpci" = xyes])
 AM_CONDITIONAL([XORG_BUS_SPARC], [test "x$xorg_bus_sparc" = xyes])
 AM_CONDITIONAL([LINUX_ALPHA], [test "x$linux_alpha" = xyes])
 AM_CONDITIONAL([LNXACPI], [test "x$linux_acpi" = xyes])
+AM_CONDITIONAL([LNXAPM], [test "x$linux_apm" = xyes])
 AM_CONDITIONAL([SOLARIS_ASM_INLINE], [test "x$solaris_asm_inline" = xyes])
 AM_CONDITIONAL([SOLARIS_VT], [test "x$solaris_vt" = xyes])
 AM_CONDITIONAL([DGA], [test "x$DGA" = xyes])
@@ -2036,7 +2166,7 @@ if test "x$DMX" = xyes; then
 	fi
 	DMX_INCLUDES="$XEXT_INC $RENDER_INC $RECORD_INC"
 	XDMX_CFLAGS="$DMXMODULES_CFLAGS"
-	XDMX_LIBS="$FB_LIB $MI_LIB $XEXT_LIB $RENDER_LIB $RECORD_LIB $XI_LIB $XKB_LIB $XKB_STUB_LIB $MIEXT_SYNC_LIB $MIEXT_SHADOW_LIB $MIEXT_DAMAGE_LIB $COMPOSITE_LIB $DAMAGE_LIB $MAIN_LIB $DIX_LIB $CONFIG_LIB $OS_LIB $FIXES_LIB"
+	XDMX_LIBS="$FB_LIB $MI_LIB $XEXT_LIB $RENDER_LIB $RECORD_LIB $XI_LIB $XKB_LIB $XKB_STUB_LIB  $DRI3_LIB $PRESENT_LIB $MIEXT_SYNC_LIB $MIEXT_SHADOW_LIB $MIEXT_DAMAGE_LIB $COMPOSITE_LIB $DAMAGE_LIB $MAIN_LIB $DIX_LIB $CONFIG_LIB $OS_LIB $FIXES_LIB"
 	XDMX_SYS_LIBS="$DMXMODULES_LIBS"
 	AC_SUBST([XDMX_CFLAGS])
 	AC_SUBST([XDMX_LIBS])
@@ -2145,7 +2275,7 @@ if test "$KDRIVE" = yes; then
     
     KDRIVE_CFLAGS="$XSERVER_CFLAGS -DHAVE_KDRIVE_CONFIG_H $TSLIB_CFLAGS"
 
-    KDRIVE_PURE_LIBS="$FB_LIB $MI_LIB $FIXES_LIB $XEXT_LIB $DBE_LIB $RECORD_LIB $GLX_LIBS $RANDR_LIB $RENDER_LIB $DAMAGE_LIB $MIEXT_SYNC_LIB $MIEXT_DAMAGE_LIB $MIEXT_SHADOW_LIB $XI_LIB $XKB_LIB $XKB_STUB_LIB $COMPOSITE_LIB $OS_LIB"
+    KDRIVE_PURE_LIBS="$FB_LIB $MI_LIB $FIXES_LIB $XEXT_LIB $DBE_LIB $RECORD_LIB $GLX_LIBS $RANDR_LIB $RENDER_LIB $DAMAGE_LIB $DRI3_LIB $PRESENT_LIB $MIEXT_SYNC_LIB $MIEXT_DAMAGE_LIB $MIEXT_SHADOW_LIB $XI_LIB $XKB_LIB $XKB_STUB_LIB $COMPOSITE_LIB $OS_LIB"
     KDRIVE_LIB='$(top_builddir)/hw/kdrive/src/libkdrive.la'
     case $host_os in
 	*linux*)
@@ -2238,7 +2368,7 @@ if test "x$CONFIG_HAL" = xno && test "x$CONFIG_UDEV" = xno; then
              ***********************************************])
 fi
 
-AC_OUTPUT([
+AC_CONFIG_FILES([
 Makefile
 glx/Makefile
 include/Makefile
@@ -2267,6 +2397,8 @@ Xext/Makefile
 Xi/Makefile
 xfixes/Makefile
 exa/Makefile
+dri3/Makefile
+present/Makefile
 hw/Makefile
 hw/xfree86/Makefile
 hw/xfree86/common/Makefile
@@ -2339,3 +2471,4 @@ test/xi2/Makefile
 xserver.ent
 xorg-server.pc
 ])
+AC_OUTPUT

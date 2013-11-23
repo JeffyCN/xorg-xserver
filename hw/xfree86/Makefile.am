@@ -9,6 +9,11 @@ DRI2_SUBDIR = dri2
 DRI2_LIB = dri2/libdri2.la
 endif
 
+if DRI3
+DRI3_BUILDDIR = $(top_builddir)/dri3
+DRI3_LIB = $(DRI3_BUILDDIR)/libdri3.la
+endif
+
 if XF86UTILS
 XF86UTILS_SUBDIR = utils
 endif
@@ -41,7 +46,7 @@ nodist_Xorg_SOURCES = sdksyms.c
 AM_CFLAGS = $(DIX_CFLAGS) @XORG_CFLAGS@
 AM_CPPFLAGS = $(XORG_INCS) -I$(srcdir)/parser -I$(top_srcdir)/miext/cw \
 	-I$(srcdir)/ddc -I$(srcdir)/i2c -I$(srcdir)/modes -I$(srcdir)/ramdac \
-	-I$(srcdir)/dri -I$(srcdir)/dri2
+	-I$(srcdir)/dri -I$(srcdir)/dri2 -I$(top_srcdir)/dri3
 
 LOCAL_LIBS = \
             $(MAIN_LIB) \
@@ -59,6 +64,8 @@ LOCAL_LIBS = \
             dixmods/libxorgxkb.la \
             $(DRI_LIB) \
             $(DRI2_LIB) \
+	    $(DRI3_LIB) \
+	    $(top_builddir)/miext/sync/libsync.la \
             $(top_builddir)/mi/libmi.la \
             $(top_builddir)/os/libos.la
 Xorg_LDADD = \

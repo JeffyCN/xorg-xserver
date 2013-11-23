@@ -141,7 +141,7 @@ SyncCheckWarnIsCounter(const SyncObject * pSync, const char *warning)
  *  interested in the counter.  The two functions below are used to
  *  delete and add triggers on this list.
  */
-static void
+void
 SyncDeleteTriggerFromSyncObject(SyncTrigger * pTrigger)
 {
     SyncTriggerList *pCur;
@@ -184,7 +184,7 @@ SyncDeleteTriggerFromSyncObject(SyncTrigger * pTrigger)
     }
 }
 
-static int
+int
 SyncAddTriggerToSyncObject(SyncTrigger * pTrigger)
 {
     SyncTriggerList *pCur;
@@ -914,6 +914,42 @@ SyncCreate(ClientPtr client, XID id, unsigned char type)
     pSync->type = type;
 
     return pSync;
+}
+
+int
+SyncCreateFenceFromFD(ClientPtr client, DrawablePtr pDraw, XID id, int fd, BOOL initially_triggered)
+{
+#if HAVE_XSHMFENCE
+    SyncFence  *pFence;
+    int         status;
+
+    pFence = (SyncFence *) SyncCreate(client, id, SYNC_FENCE);
+    if (!pFence)
+        return BadAlloc;
+
+    status = miSyncInitFenceFromFD(pDraw, pFence, fd, initially_triggered);
+    if (status != Success) {
+        miSyncDestroyFence(pFence);
+        return status;
+    }
+
+    if (!AddResource(id, RTFence, (pointer) pFence))
+        return BadAlloc;
+
+    return Success;
+#else
+    return BadImplementation;
+#endif
+}
+
+int
+SyncFDFromFence(ClientPtr client, DrawablePtr pDraw, SyncFence *pFence)
+{
+#if HAVE_XSHMFENCE
+    return miSyncFDFromFence(pDraw, pFence);
+#else
+    return BadImplementation;
+#endif
 }
 
 static SyncCounter *
@@ -2654,7 +2690,16 @@ IdleTimeBlockHandler(pointer pCounter, struct timeval **wt, pointer LastSelectMa
     IdleTimeQueryValue(counter, &idle);
     counter->value = idle;      /* push, so CheckTrigger works */
 
-    if (less && XSyncValueLessOrEqual(idle, *less)) {
+    /**
+     * There's an indefinite amount of time between ProcessInputEvents()
+     * where the idle time is reset and the time we actually get here. idle
+     * may be past the lower bracket if we dawdled with the events, so
+     * check for whether we did reset and bomb out of select immediately.
+     */
+    if (less && XSyncValueGreaterThan(idle, *less) &&
+        LastEventTimeWasReset(priv->deviceid)) {
+        AdjustWaitForDelay(wt, 0);
+    } else if (less && XSyncValueLessOrEqual(idle, *less)) {
         /*
          * We've been idle for less than the threshold value, and someone
          * wants to know about that, but now we need to know whether they
