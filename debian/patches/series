@@ -1,7 +1,6 @@
 ## Patches with a number < 100 are applied in debian.
 ## Ubuntu patches start with 100.
 001_fedora_extramodes.patch
-xfree86-Bump-to-video-ABI-15-and-input-ABI-20.patch
 03_static-nettle.diff
 05_Revert-Unload-submodules.diff
 06_Revert-fb-reorder-Bresenham-error-correction-to-avoi.diff
