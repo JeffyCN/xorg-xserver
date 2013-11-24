@@ -2,10 +2,6 @@ Source: xorg-server
 Section: x11
 Priority: optional
 Maintainer: Debian X Strike Force <debian-x@lists.debian.org>
-# all the Build-Depends up to x11proto-xf86-dri-dev are for the normal Xorg
-# server, and common dependencies for the DIX.
-# x11proto-xf86dri-dev and libdrm-dev are for DRI support for the Xorg server.
-# everything on is for the DMX, Xnest and Xephyr servers.
 Build-Depends:
  debhelper (>= 7),
  dpkg-dev (>= 1.16.1),
@@ -32,11 +28,13 @@ Build-Depends:
  x11proto-scrnsaver-dev,
  x11proto-video-dev,
  x11proto-xcmisc-dev (>= 1.2.0),
- x11proto-xext-dev (>= 7.1.99),
+ x11proto-xext-dev (>= 7.2.99.901),
  x11proto-xf86bigfont-dev (>= 1.2.0),
  x11proto-xf86dga-dev (>= 2.0.99.1),
  x11proto-xf86vidmode-dev (>= 2.2.99.1),
- xtrans-dev (>= 1.2.2),
+ x11proto-present-dev,
+ x11proto-dri3-dev,
+ xtrans-dev (>= 1.3.2),
  libxau-dev (>= 1:1.0.5-2),
  x11proto-input-dev (>= 2.3),
  x11proto-dri2-dev (>= 2.8),
@@ -55,8 +53,7 @@ Build-Depends:
  x11proto-xf86dri-dev (>= 2.1.0),
  libdrm-dev (>= 2.4.3) [!hurd-i386],
  x11proto-gl-dev (>= 1.4.16),
- mesa-common-dev (>= 7.8),
- libgl1-mesa-dev (>= 7.8),
+ libgl1-mesa-dev (>= 9.2),
  libxmuu-dev (>= 1:0.99.1),
  libxext-dev (>= 1:0.99.1),
  libx11-dev (>= 2:1.6),
@@ -73,6 +70,7 @@ Build-Depends:
  libxfixes-dev (>= 1:3.0.0),
  libxv-dev,
  libxinerama-dev,
+ libxshmfence-dev,
 # XCB bits for Xephyr
  libxcb1-dev,
  libxcb-shape0-dev,
@@ -173,7 +171,7 @@ Depends:
  libpixman-1-dev (>= 0.27.2),
  x11proto-core-dev (>= 7.0.22),
  x11proto-input-dev (>= 2.3),
- x11proto-xext-dev (>= 7.1.99),
+ x11proto-xext-dev (>= 7.2.99.901),
  x11proto-video-dev,
  x11proto-randr-dev (>= 1.4.0),
  x11proto-render-dev (>= 2:0.11),
@@ -186,6 +184,8 @@ Depends:
  x11proto-resource-dev (>= 1.2.0),
  x11proto-scrnsaver-dev,
  x11proto-xf86bigfont-dev (>= 1.2.0),
+ x11proto-dri3-dev,
+ x11proto-present-dev,
  libxkbfile-dev,
  libpciaccess-dev,
  mesa-common-dev,
