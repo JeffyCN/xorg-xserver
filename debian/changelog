@@ -1,6 +1,8 @@
 xorg-server (2:1.14.99.902-1) UNRELEASED; urgency=low
 
   * New upstream snapshot.
+  * Point to http://www.debian.org/support instead of the uploader's email
+    address in the Xorg log.
 
  -- Julien Cristau <jcristau@debian.org>  Sat, 23 Nov 2013 16:43:13 +0100
 

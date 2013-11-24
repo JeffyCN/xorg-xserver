@@ -79,10 +79,10 @@ endif
 INSTALL=/usr/bin/install
 
 VENDOR = $(shell lsb_release -i -s)
+SUPPORT = http://www.debian.org/support
 
 SOURCE_NAME    :=  xorg-server
 SOURCE_VERSION := $(shell dpkg-parsechangelog | awk -F': ' '/^Version: / {print $$2}')
-BUILDER        := $(shell dpkg-parsechangelog | awk -F': ' '/^Maintainer: / {print $$2}')
 
 # disable-static is so we don't get libfoo.a for modules.  now if only we could
 # kill the .las.
@@ -95,7 +95,7 @@ confflags += \
 	     $(config_tests) \
 	     --with-int10=x86emu \
 	     --with-os-vendor="$(VENDOR)" \
-	     --with-builderstring="$(SOURCE_NAME) $(SOURCE_VERSION) ($(BUILDER))" \
+	     --with-builderstring="$(SOURCE_NAME) $(SOURCE_VERSION) ($(SUPPORT))" \
 	     --with-xkb-path=/usr/share/X11/xkb \
 	     --with-xkb-output=/var/lib/xkb \
 	     --disable-install-libxf86config \
