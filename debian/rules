@@ -108,6 +108,8 @@ confflags += \
 	     --enable-dpms \
 	     $(config_backend) \
 	     --enable-xorg \
+	     --disable-linux-acpi \
+	     --disable-linux-apm \
 	     --disable-xquartz \
 	     --disable-xwin \
 	     --disable-xfake \
