@@ -1,4 +1,4 @@
-xorg-server (2:1.14.99.902-1) UNRELEASED; urgency=low
+xorg-server (2:1.14.99.903-1) UNRELEASED; urgency=low
 
   * New upstream snapshot.
   * Point to http://www.debian.org/support instead of the uploader's email
