@@ -26,9 +26,9 @@ dnl
 dnl Process this file with autoconf to create configure.
 
 AC_PREREQ(2.60)
-AC_INIT([xorg-server], 1.14.99.902, [https://bugs.freedesktop.org/enter_bug.cgi?product=xorg], xorg-server)
-RELEASE_DATE="2013-11-14"
-RELEASE_NAME="English Breakfast"
+AC_INIT([xorg-server], 1.14.99.903, [https://bugs.freedesktop.org/enter_bug.cgi?product=xorg], xorg-server)
+RELEASE_DATE="2013-11-23"
+RELEASE_NAME="Apple Pie"
 AC_CONFIG_SRCDIR([Makefile.am])
 AM_INIT_AUTOMAKE([foreign dist-bzip2])
 AC_USE_SYSTEM_EXTENSIONS
@@ -304,13 +304,6 @@ AC_CHECK_HEADER([execinfo.h],[
         AC_DEFINE(HAVE_EXECINFO_H, 1, [Have execinfo.h])
     ])]
 )
-
-PKG_CHECK_MODULES(LIBUNWIND, libunwind, [HAVE_LIBUNWIND=yes], [HAVE_LIBUNWIND=no])
-if test "x$HAVE_LIBUNWIND" = xyes; then
-	AC_DEFINE(HAVE_LIBUNWIND, 1, [Have libunwind support])
-fi
-AM_CONDITIONAL(HAVE_LIBUNWIND, [test "x$HAVE_LIBUNWIND" = xyes])
-
 
 dnl ---------------------------------------------------------------------------
 dnl Bus options and CPU capabilities.  Replaces logic in
@@ -654,6 +647,7 @@ dnl kdrive options
 AC_ARG_ENABLE(kdrive-kbd,     AS_HELP_STRING([--enable-kdrive-kbd], [Build kbd driver for kdrive (default: auto)]), [KDRIVE_KBD=$enableval], [KDRIVE_KBD=auto])
 AC_ARG_ENABLE(kdrive-mouse,   AC_HELP_STRING([--enable-kdrive-mouse], [Build mouse driver for kdrive (default: auto)]), [KDRIVE_MOUSE=$enableval], [KDRIVE_MOUSE=auto])
 AC_ARG_ENABLE(kdrive-evdev,   AC_HELP_STRING([--enable-kdrive-evdev], [Build evdev driver for kdrive (default: auto)]), [KDRIVE_EVDEV=$enableval], [KDRIVE_EVDEV=auto])
+AC_ARG_ENABLE(libunwind,      AS_HELP_STRING([--enable-libunwind], [Use libunwind for backtracing (default: auto)]), [LIBUNWIND="$enableval"], [LIBUNWIND="auto"])
 
 
 dnl chown/chmod to be setuid root as part of build
@@ -1616,6 +1610,20 @@ AC_SUBST(SHA1_CFLAGS)
 PKG_CHECK_MODULES([XSERVERCFLAGS], [$REQUIRED_MODULES $REQUIRED_LIBS])
 PKG_CHECK_MODULES([XSERVERLIBS], [$REQUIRED_LIBS])
 
+PKG_CHECK_MODULES(LIBUNWIND, libunwind, [HAVE_LIBUNWIND=yes], [HAVE_LIBUNWIND=no])
+if test "x$LIBUNWIND" = "xauto"; then
+    LIBUNWIND="$HAVE_LIBUNWIND"
+fi
+
+if test "x$LIBUNWIND" = "xyes"; then
+    if test "x$HAVE_LIBUNWIND" != "xyes"; then
+        AC_MSG_ERROR([libunwind requested but not installed.])
+    fi
+    AC_DEFINE(HAVE_LIBUNWIND, 1, [Have libunwind support])
+fi
+
+AM_CONDITIONAL(HAVE_LIBUNWIND, [test "x$LIBUNWIND" = xyes])
+
 # Autotools has some unfortunate issues with library handling.  In order to
 # get a server to rebuild when a dependency in the tree is changed, it must
 # be listed in SERVERNAME_DEPENDENCIES.  However, no system libraries may be
@@ -1879,9 +1887,6 @@ if test "x$XORG" = xyes; then
 		if test "${OS_MINOR}" -lt 8 ; then
 			AC_MSG_ERROR([This release no longer supports Solaris versions older than Solaris 8.])
 		fi
-		if test "x$SUNCC" = "xyes"; then
-			solaris_asm_inline="yes"
-		fi
 		AC_CHECK_DECL([_LP64], [SOLARIS_64="yes"], [SOLARIS_64="no"])
 			
 		case $host_cpu in
@@ -1902,11 +1907,6 @@ if test "x$XORG" = xyes; then
 			xorg@lists.freedesktop.org.]) ;;
 		esac
 		AC_SUBST([SOLARIS_INOUT_ARCH])
-		if test x$solaris_asm_inline = xyes ; then
-			SOLARIS_ASM_CFLAGS='$(top_srcdir)/hw/xfree86/os-support/solaris/solaris-$(SOLARIS_INOUT_ARCH).il'
-			XORG_CFLAGS="${XORG_CFLAGS} "'$(SOLARIS_ASM_CFLAGS)'
-		fi
-		AC_SUBST([SOLARIS_ASM_CFLAGS])
 		;;
 	  gnu*)
 		XORG_OS_SUBDIR="hurd"
@@ -2012,7 +2012,6 @@ AM_CONDITIONAL([XORG_BUS_SPARC], [test "x$xorg_bus_sparc" = xyes])
 AM_CONDITIONAL([LINUX_ALPHA], [test "x$linux_alpha" = xyes])
 AM_CONDITIONAL([LNXACPI], [test "x$linux_acpi" = xyes])
 AM_CONDITIONAL([LNXAPM], [test "x$linux_apm" = xyes])
-AM_CONDITIONAL([SOLARIS_ASM_INLINE], [test "x$solaris_asm_inline" = xyes])
 AM_CONDITIONAL([SOLARIS_VT], [test "x$solaris_vt" = xyes])
 AM_CONDITIONAL([DGA], [test "x$DGA" = xyes])
 AM_CONDITIONAL([XF86VIDMODE], [test "x$XF86VIDMODE" = xyes])
