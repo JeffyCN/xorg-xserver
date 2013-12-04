@@ -1,12 +1,9 @@
 ## Patches with a number < 100 are applied in debian.
 ## Ubuntu patches start with 100.
 001_fedora_extramodes.patch
-02_improve-posix-saved-ids-check.diff
 03_static-nettle.diff
-04_hashtabletest-s390x.diff
 05_Revert-Unload-submodules.diff
 06_Revert-fb-reorder-Bresenham-error-correction-to-avoi.diff
 08_xfree86_fix_ia64_inx_outx.diff
-10_Include-missing-selection-h.diff
 os-move-arpa-inet.h-for-any-win32-system.patch
 xfree86-hurd-include-hurd.h.patch

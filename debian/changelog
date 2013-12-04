@@ -1,6 +1,10 @@
 xorg-server (2:1.14.4-1) UNRELEASED; urgency=low
 
   * New upstream release.
+  * Drop upstreamed patches.
+    - 02_improve-posix-saved-ids-check.diff
+    - 04_hashtabletest-s390x.diff
+    - 10_Include-missing-selection-h.diff
 
  -- Maarten Lankhorst <maarten.lankhorst@ubuntu.com>  Wed, 04 Dec 2013 12:48:27 +0100
 
