@@ -1,4 +1,4 @@
-xorg-server (2:1.14.4-1) UNRELEASED; urgency=low
+xorg-server (2:1.14.4-1) unstable; urgency=low
 
   * New upstream release.
   * Drop upstreamed patches.
@@ -6,7 +6,7 @@ xorg-server (2:1.14.4-1) UNRELEASED; urgency=low
     - 04_hashtabletest-s390x.diff
     - 10_Include-missing-selection-h.diff
 
- -- Maarten Lankhorst <maarten.lankhorst@ubuntu.com>  Wed, 04 Dec 2013 12:48:27 +0100
+ -- Maarten Lankhorst <maarten.lankhorst@ubuntu.com>  Wed, 04 Dec 2013 13:09:36 +0100
 
 xorg-server (2:1.14.3-5) unstable; urgency=low
 
