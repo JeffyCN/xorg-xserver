@@ -26,9 +26,9 @@ dnl
 dnl Process this file with autoconf to create configure.
 
 AC_PREREQ(2.60)
-AC_INIT([xorg-server], 1.14.99.903, [https://bugs.freedesktop.org/enter_bug.cgi?product=xorg], xorg-server)
-RELEASE_DATE="2013-11-23"
-RELEASE_NAME="Apple Pie"
+AC_INIT([xorg-server], 1.14.99.904, [https://bugs.freedesktop.org/enter_bug.cgi?product=xorg], xorg-server)
+RELEASE_DATE="2013-12-10"
+RELEASE_NAME="Chai"
 AC_CONFIG_SRCDIR([Makefile.am])
 AM_INIT_AUTOMAKE([foreign dist-bzip2])
 AC_USE_SYSTEM_EXTENSIONS
@@ -782,12 +782,12 @@ DRI3PROTO="dri3proto >= 1.0"
 XINERAMAPROTO="xineramaproto"
 BIGFONTPROTO="xf86bigfontproto >= 1.2.0"
 DGAPROTO="xf86dgaproto >= 2.0.99.1"
-GLPROTO="glproto >= 1.4.16"
+GLPROTO="glproto >= 1.4.17"
 DMXPROTO="dmxproto >= 2.2.99.1"
 VIDMODEPROTO="xf86vidmodeproto >= 2.2.99.1"
 WINDOWSWMPROTO="windowswmproto"
 APPLEWMPROTO="applewmproto >= 1.4"
-XSHMFENCE="xshmfence"
+XSHMFENCE="xshmfence >= 1.1"
 
 dnl Required modules
 XPROTO="xproto >= 7.0.22"
@@ -1085,6 +1085,49 @@ case "$DRI2,$HAVE_DRI2PROTO" in
 		;;
 esac
 AM_CONDITIONAL(DRI2, test "x$DRI2" = xyes)
+
+dnl
+dnl Locate a suitable tmp file system for creating shared memeory files
+dnl
+
+AC_ARG_WITH(shared-memory-dir, AS_HELP_STRING([--with-shared-memory-dir=PATH], [Path to directory in a world-writable temporary directory for anonymous shared memory (default: auto)]),
+[],
+[with_shared_memory_dir=yes])
+
+shmdirs="/run/shm /var/tmp /tmp"
+
+case x"$with_shared_memory_dir" in
+xyes)
+	for dir in $shmdirs; do
+		case x"$with_shared_memory_dir" in
+		xyes)
+			echo Checking temp dir "$dir"
+			if test -d "$dir"; then
+				with_shared_memory_dir="$dir"
+			fi
+			;;
+		esac
+	done
+	;;
+x/*)
+	;;
+xno)
+	;;
+*)
+	AC_MSG_ERROR([Invalid directory specified for --with-shared-memory-dir: $with_shared_memory_dir])
+	;;
+esac
+
+case x"$with_shared_memory_dir" in
+xyes)
+	AC_MSG_ERROR([No directory found for shared memory temp files.])
+	;;
+xno)
+	;;
+*)
+	AC_DEFINE_UNQUOTED(SHMDIR, ["$with_shared_memory_dir"], [Directory for shared memory temp files])
+	;;
+esac
 
 AC_ARG_ENABLE(xtrans-send-fds,	AS_HELP_STRING([--disable-xtrans-send-fds], [Use Xtrans support for fd passing (default: auto)]), [XTRANS_SEND_FDS=$enableval], [XTRANS_SEND_FDS=auto])
 
@@ -1809,24 +1852,30 @@ if test "x$XORG" = xyes; then
 
 	AC_MSG_CHECKING([whether to build Xorg PCI functions])
 	if test "x$PCI" = xyes; then
+		PKG_CHECK_MODULES([PCIACCESS], $LIBPCIACCESS)
+		SDK_REQUIRED_MODULES="$SDK_REQUIRED_MODULES $LIBPCIACCESS"
+		XORG_SYS_LIBS="$XORG_SYS_LIBS $PCIACCESS_LIBS $GLX_SYS_LIBS $LIBDRM_LIBS"
+		XORG_CFLAGS="$XORG_CFLAGS $PCIACCESS_CFLAGS $LIBDRM_CFLAGS"
 
-	PKG_CHECK_MODULES([PCIACCESS], $LIBPCIACCESS)
-	SDK_REQUIRED_MODULES="$SDK_REQUIRED_MODULES $LIBPCIACCESS"
-	XORG_SYS_LIBS="$XORG_SYS_LIBS $PCIACCESS_LIBS $GLX_SYS_LIBS $LIBDRM_LIBS"
-	XORG_CFLAGS="$XORG_CFLAGS $PCIACCESS_CFLAGS $LIBDRM_CFLAGS"
-
-	AC_DEFINE(XSERVER_LIBPCIACCESS, 1, [Use libpciaccess for all pci manipulation])
-	AC_DEFINE_DIR(PCI_TXT_IDS_PATH, PCI_TXT_IDS_DIR, [Default PCI text file ID path])
-	case $host_os in
-	  gnu* | freebsd* | kfreebsd*-gnu | netbsd* | openbsd* | solaris* | dragonfly*)
-		xorg_bus_bsdpci="yes"
-		;;
-	esac
-	case $host_cpu in
-	  sparc*)
-		xorg_bus_sparc="yes"
-		;;
-	esac
+		AC_DEFINE(XSERVER_LIBPCIACCESS, 1, [Use libpciaccess for all pci manipulation])
+		AC_DEFINE_DIR(PCI_TXT_IDS_PATH, PCI_TXT_IDS_DIR, [Default PCI text file ID path])
+		case $host_os in
+		  gnu* | freebsd* | kfreebsd*-gnu | netbsd* | openbsd* | solaris* | dragonfly*)
+			xorg_bus_bsdpci="yes"
+			;;
+		esac
+		case $host_cpu in
+		  sparc*)
+			xorg_bus_sparc="yes"
+			;;
+		esac
+	else
+		if test "x$CONFIG_UDEV_KMS" = xyes; then
+			AC_MSG_ERROR([Platform device enumeration requires libpciaccess])
+		fi
+		if test "x$INT10MODULE" = xyes && test "x$INT10" != xstub; then
+			AC_MSG_ERROR([Cannot build int10 without libpciaccess])
+		fi
 	fi
 	AC_MSG_RESULT([$PCI])
 
@@ -2059,8 +2108,8 @@ if test "x$XWIN" = xyes; then
 			;;
 	esac
 
-	XWIN_LIBS="$FB_LIB $MI_LIB $FIXES_LIB $XEXT_LIB $RANDR_LIB $RENDER_LIB $DBE_LIB $RECORD_LIB $GLX_LIBS $XKB_LIB $XKB_STUB_LIB $COMPOSITE_LIB $DAMAGE_LIB $MIEXT_SYNC_LIB $MIEXT_DAMAGE_LIB $MIEXT_SHADOW_LIB $XI_LIB $OS_LIB"
-	XWIN_SYS_LIBS="$XWIN_SYS_LIBS $XWINMODULES_LIBS $GLX_SYS_LIBS"
+	XWIN_LIBS="$FB_LIB $MI_LIB $FIXES_LIB $XEXT_LIB $RANDR_LIB $RENDER_LIB $DBE_LIB $RECORD_LIB $GLX_LIBS $XKB_LIB $XKB_STUB_LIB $COMPOSITE_LIB $DAMAGE_LIB $PRESENT_LIB $MIEXT_SYNC_LIB $MIEXT_DAMAGE_LIB $MIEXT_SHADOW_LIB $XI_LIB $OS_LIB"
+	XWIN_SYS_LIBS="$XWIN_SYS_LIBS $XWINMODULES_LIBS"
 	AC_SUBST(XWIN_LIBS)
 	AC_SUBST(XWIN_SERVER_NAME)
 	AC_SUBST(XWIN_SYS_LIBS)
@@ -2076,10 +2125,16 @@ if test "x$XWIN" = xyes; then
 
 dnl XWin with AIGLX requires OpenGL spec files in order to generate wrapper code for native GL functions
 	if [test "x$XWIN" = xyes && test "x$AIGLX" = xyes] ; then
-           AC_CHECK_PROG(PYTHON, python, python)
-           if test -z "$PYTHON"; then
-                AC_MSG_ERROR([python not found])
+           AC_CHECK_PROG(PYTHON3, python3, python3)
+           if test -z "$PYTHON3"; then
+                AC_MSG_ERROR([python3 not found])
            fi
+           AC_MSG_CHECKING(for python module lxml)
+           $PYTHON3 -c "import lxml;"
+           if test $? -ne 0 ; then
+                AC_MSG_ERROR([not found])
+           fi
+           AC_MSG_RESULT(yes)
            if test "x$KHRONOS_SPEC_DIR" = "xauto" ; then
 		PKG_CHECK_MODULES([KHRONOS_OPENGL_REGISTRY], [khronos-opengl-registry])
 		KHRONOS_SPEC_DIR=`pkg-config khronos-opengl-registry --variable=specdir`
