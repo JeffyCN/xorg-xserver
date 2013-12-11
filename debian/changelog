@@ -1,7 +1,7 @@
-xorg-server (2:1.14.99.903-1) UNRELEASED; urgency=low
+xorg-server (2:1.14.99.904-1) UNRELEASED; urgency=low
 
   [ Julien Cristau ]
-  * New upstream snapshot.
+  * New upstream release candidate.
   * Point to http://www.debian.org/support instead of the uploader's email
     address in the Xorg log.
 
