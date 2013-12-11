@@ -1,8 +1,12 @@
 xorg-server (2:1.14.99.903-1) UNRELEASED; urgency=low
 
+  [ Julien Cristau ]
   * New upstream snapshot.
   * Point to http://www.debian.org/support instead of the uploader's email
     address in the Xorg log.
+
+  [ Maarten Lankhorst ]
+  * Disable xorg-server's linux acpi and apm support.  Can only cause bugs.
 
  -- Julien Cristau <jcristau@debian.org>  Sat, 23 Nov 2013 16:43:13 +0100
 
