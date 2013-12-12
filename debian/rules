@@ -207,7 +207,7 @@ $(STAMP_DIR)/build-%: $(STAMP_DIR)/configure-%
 	>$@
 
 $(STAMP_DIR)/tests-%: $(STAMP_DIR)/build-%
-	cd build-$* && $(MAKE) check
+	cd build-$* && $(MAKE) check VERBOSE=1
 	>$@
 
 build: abibumpcheck
