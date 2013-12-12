@@ -1,14 +1,18 @@
-xorg-server (2:1.14.99.904-1) UNRELEASED; urgency=low
+xorg-server (2:1.14.99.904-1) experimental; urgency=low
 
   [ Julien Cristau ]
   * New upstream release candidate.
+  * Update (build-)dependencies:
+    - bump x11proto-xext-dev, x11proto-gl-dev, xtrans-dev, libgl1-mesa-dev
+    - add x11proto-present-dev, x11proto-dri3-dev, libxshmfence-dev
+  * Enable dri3 (on !hurd) and present extensions.
   * Point to http://www.debian.org/support instead of the uploader's email
     address in the Xorg log.
 
   [ Maarten Lankhorst ]
   * Disable xorg-server's linux acpi and apm support.  Can only cause bugs.
 
- -- Julien Cristau <jcristau@debian.org>  Sat, 23 Nov 2013 16:43:13 +0100
+ -- Julien Cristau <jcristau@debian.org>  Thu, 12 Dec 2013 12:11:14 +0100
 
 xorg-server (2:1.14.99.3-1) experimental; urgency=low
 
