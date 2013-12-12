@@ -70,7 +70,7 @@ Build-Depends:
  libxfixes-dev (>= 1:3.0.0),
  libxv-dev,
  libxinerama-dev,
- libxshmfence-dev (>= 1.1),
+ libxshmfence-dev (>= 1.1) [!hurd-i386],
 # XCB bits for Xephyr
  libxcb1-dev,
  libxcb-shape0-dev,
