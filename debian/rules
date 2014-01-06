@@ -192,6 +192,16 @@ $(STAMP_DIR)/autoreconf: $(STAMP_DIR)/stampdir $(QUILT_STAMPFN)
 	autoreconf -vfi
 	>$@
 
+$(STAMP_DIR)/build-source: $(STAMP_DIR)/autoreconf
+	mkdir -p build-source
+	tar \
+	--owner=0 --group=0 \
+        --transform 's,^,xorg-server/,' \
+        --exclude=stampdir --exclude=debian \
+        --exclude=build-* --exclude=autom4te.cache \
+        -cf - * | xz > build-source/xorg-server.tar.xz
+	>$@
+
 $(STAMP_DIR)/configure-%: $(STAMP_DIR)/autoreconf
 	dh_testdir
 	mkdir -p build-$*
@@ -224,7 +234,7 @@ build: $(STAMP_DIR)/build-udeb
 build: $(STAMP_DIR)/tests-udeb
 endif
 build-arch: build
-build-indep: build
+build-indep: $(STAMP_DIR)/build-source build
 
 clean: unpatch
 	dh_testdir
@@ -357,7 +367,7 @@ endif
 
 
 # Build architecture-independent files here
-binary-indep: build install
+binary-indep: build-indep install
 	$(MAKE) -f debian/rules DH_OPTIONS=-i binary-initial
 	dh_install -i
 	dh_installdocs -i
