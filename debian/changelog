@@ -1,8 +1,8 @@
-xorg-server (2:1.15.0-1) UNRELEASED; urgency=low
+xorg-server (2:1.15.0-1) experimental; urgency=low
 
   * New upstream release.
 
- -- Maarten Lankhorst <maarten.lankhorst@ubuntu.com>  Mon, 06 Jan 2014 10:33:40 +0100
+ -- Maarten Lankhorst <maarten.lankhorst@ubuntu.com>  Mon, 06 Jan 2014 11:00:39 +0100
 
 xorg-server (2:1.14.99.904-2) experimental; urgency=medium
 
