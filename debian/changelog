@@ -1,3 +1,9 @@
+xorg-server (2:1.15.0-2) UNRELEASED; urgency=medium
+
+  * Bump debhelper compat level to 7.
+
+ -- Julien Cristau <jcristau@debian.org>  Tue, 07 Jan 2014 00:51:53 +0100
+
 xorg-server (2:1.15.0-1) experimental; urgency=low
 
   * New upstream release.
