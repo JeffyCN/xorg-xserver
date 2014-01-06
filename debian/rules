@@ -325,7 +325,7 @@ binary-arch: build install
 
 	dh_installdocs -s
 	dh_installchangelogs -s
-	dh_install $(DH_INSTALL_OPTIONS) -s --sourcedir=debian/tmp --list-missing
+	dh_install $(DH_INSTALL_OPTIONS) -s --list-missing
 	$(INSTALL) -d $(CURDIR)/debian/xserver-xorg-dev/usr/share/xserver-xorg
 	# Extract only the major ABI version:
 	abi_videodrv=`PKG_CONFIG_PATH=debian/tmp/main/usr/lib/pkgconfig pkg-config --variable=abi_videodrv xorg-server|cut -d . -f 1`; \
@@ -359,7 +359,7 @@ endif
 # Build architecture-independent files here
 binary-indep: build install
 	$(MAKE) -f debian/rules DH_OPTIONS=-i binary-initial
-	dh_install -i --sourcedir=debian/tmp
+	dh_install -i
 	dh_installdocs -i
 	dh_installchangelogs -i ChangeLog
 
