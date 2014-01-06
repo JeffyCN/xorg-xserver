@@ -26,9 +26,9 @@ dnl
 dnl Process this file with autoconf to create configure.
 
 AC_PREREQ(2.60)
-AC_INIT([xorg-server], 1.14.99.904, [https://bugs.freedesktop.org/enter_bug.cgi?product=xorg], xorg-server)
-RELEASE_DATE="2013-12-10"
-RELEASE_NAME="Chai"
+AC_INIT([xorg-server], 1.15.0, [https://bugs.freedesktop.org/enter_bug.cgi?product=xorg], xorg-server)
+RELEASE_DATE="2013-12-27"
+RELEASE_NAME="Egg Nog"
 AC_CONFIG_SRCDIR([Makefile.am])
 AM_INIT_AUTOMAKE([foreign dist-bzip2])
 AC_USE_SYSTEM_EXTENSIONS
@@ -1218,7 +1218,7 @@ case "$DRI3,$HAVE_XSHMFENCE" in
 	yes,yes | auto,yes)
 		;;
 	yes,no)
-		AC_MSG_ERROR("DRI3 requested, but xshmfence not found.])
+		AC_MSG_ERROR([DRI3 requested, but xshmfence not found.])
 		DRI3=no
 		;;
 	no,*)
@@ -2158,7 +2158,7 @@ if test "x$XQUARTZ" = xyes; then
 	AC_DEFINE(XQUARTZ,1,[Have Quartz])
 	AC_DEFINE(ROOTLESS,1,[Build Rootless code])
 
-	XQUARTZ_LIBS="$FB_LIB $FIXES_LIB $XEXT_LIB $DBE_LIB $RECORD_LIB $RANDR_LIB $RENDER_LIB $DAMAGE_LIB $MIEXT_SYNC_LIB $MIEXT_DAMAGE_LIB $MIEXT_SHADOW_LIB $XI_LIB $XKB_LIB $XKB_STUB_LIB $XPSTUBS_LIB"
+	XQUARTZ_LIBS="$FB_LIB $FIXES_LIB $XEXT_LIB $DBE_LIB $RECORD_LIB $RANDR_LIB $RENDER_LIB $DAMAGE_LIB $MIEXT_SYNC_LIB $MIEXT_DAMAGE_LIB $MIEXT_SHADOW_LIB $XI_LIB $XKB_LIB $XKB_STUB_LIB $XPSTUBS_LIB $PRESENT_LIB"
 	AC_SUBST([XQUARTZ_LIBS])
 
 	AC_CHECK_LIB([Xplugin],[xp_init],[:])
