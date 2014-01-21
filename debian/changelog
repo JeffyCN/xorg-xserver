@@ -61,6 +61,28 @@ xorg-server (2:1.14.99.3-1) experimental; urgency=low
 
  -- Julien Cristau <jcristau@debian.org>  Mon, 21 Oct 2013 23:46:34 +0200
 
+xorg-server (2:1.14.5-1) unstable; urgency=low
+
+  * New upstream release.
+
+ -- Maarten Lankhorst <maarten.lankhorst@ubuntu.com>  Fri, 13 Dec 2013 11:10:46 +0100
+
+xorg-server (2:1.14.4-1) unstable; urgency=low
+
+  * New upstream release.
+  * Drop upstreamed patches.
+    - 02_improve-posix-saved-ids-check.diff
+    - 04_hashtabletest-s390x.diff
+    - 10_Include-missing-selection-h.diff
+
+ -- Maarten Lankhorst <maarten.lankhorst@ubuntu.com>  Wed, 04 Dec 2013 13:09:36 +0100
+
+xorg-server (2:1.14.3-5) unstable; urgency=low
+
+  * Cherry-pick a upstream commit to fix mesa-10 driver loading.
+
+ -- Maarten Lankhorst <maarten.lankhorst@ubuntu.com>  Mon, 25 Nov 2013 14:52:54 +0100
+
 xorg-server (2:1.14.3-4) unstable; urgency=high
 
   [ Timo Aaltonen ]

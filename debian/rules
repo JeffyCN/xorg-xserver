@@ -322,6 +322,8 @@ abibumpcheck: debian/serverminver $(QUILT_STAMPFN)
 	# Compare both files:
 	@if ! cmp --quiet $(SERVERMINVER) $(SERVERMINVER).new; then \
 	echo "serverminver bump required, ABI changed!";\
+	echo "When bumping major or minor, always bump required xorg-server minimum";\
+	echo "version too, the newly built drivers are not backwards compatible!";\
 	diff -u $(SERVERMINVER) $(SERVERMINVER).new; \
 	exit 1; \
 	else \
