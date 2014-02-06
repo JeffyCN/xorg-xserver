@@ -1,14 +1,15 @@
-xorg-server (2:1.15.0-2) UNRELEASED; urgency=medium
+xorg-server (2:1.15.0-2) unstable; urgency=medium
 
   [ Julien Cristau ]
   * Bump debhelper compat level to 7.
+  * Upload to unstable.
 
   [ Yaroslav Halchenko ]
   * Adding xorg-server-source binary package to provide a tarball with
     original (patched, autoreconfed) sources of the xserver (Closes:
     #730552)
 
- -- Julien Cristau <jcristau@debian.org>  Tue, 07 Jan 2014 00:51:53 +0100
+ -- Julien Cristau <jcristau@debian.org>  Thu, 06 Feb 2014 16:14:15 +0100
 
 xorg-server (2:1.15.0-1) experimental; urgency=low
 
