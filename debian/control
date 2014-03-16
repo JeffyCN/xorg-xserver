@@ -45,8 +45,6 @@ Build-Depends:
  libpciaccess-dev (>= 0.12.901),
  libgcrypt-dev,
  nettle-dev,
- libdbus-1-dev [kfreebsd-any],
- libhal-dev [kfreebsd-any],
  libudev-dev (>= 151-3) [linux-any],
  libselinux1-dev (>= 2.0.80) [linux-any],
  libaudit-dev [linux-any],
@@ -97,6 +95,7 @@ Depends:
  xserver-common (>= ${source:Version}),
  keyboard-configuration [linux-any kfreebsd-any],
  udev (>= 149) [linux-any],
+ devd [kfreebsd-any],
  ${shlibs:Depends},
  ${misc:Depends},
 Recommends: libgl1-mesa-dri (>= 7.10.2-4)
@@ -157,6 +156,7 @@ Depends:
  x11-xkb-utils-udeb,
 # disabled: keyboard-configuration [linux-any kfreebsd-any],
  udev-udeb (>= 149) [linux-any],
+ devd-udeb [kfreebsd-any],
  ${shlibs:Depends},
  ${misc:Depends},
 Provides:

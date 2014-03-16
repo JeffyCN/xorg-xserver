@@ -1,3 +1,11 @@
+xorg-server (2:1.15.0-3) UNRELEASED; urgency=medium
+
+  [ Robert Millan ]
+  * Add devd input backend for kFreeBSD, and use it instead of hal (closes:
+    #736765, #710196, #683833)
+
+ -- Julien Cristau <jcristau@debian.org>  Sun, 16 Mar 2014 13:54:27 +0100
+
 xorg-server (2:1.15.0-2) unstable; urgency=medium
 
   [ Julien Cristau ]

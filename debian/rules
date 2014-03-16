@@ -61,17 +61,15 @@ else
 endif
 endif
 
-config_backend = --disable-config-dbus
+config_backend = --disable-config-dbus --disable-config-hal
 ifeq ($(DEB_HOST_ARCH_OS), linux)
-	config_backend += --enable-config-udev --disable-config-hal
+	config_backend += --enable-config-udev
 else ifeq ($(DEB_HOST_ARCH_OS), kfreebsd)
-	config_backend += --disable-config-udev
-	config_backend_main += --enable-config-hal
-	config_backend_udeb += --disable-config-hal
+	config_backend += --disable-config-udev --enable-config-devd
 	libs = $(shell pkg-config --libs libbsd-overlay)
 	cppflags = $(shell pkg-config --cflags libbsd-overlay)
 else # hurd
-	config_backend += --disable-config-udev --disable-config-hal
+	config_backend += --disable-config-udev
 endif
 
 vars = $(shell DEB_BUILD_MAINT_OPTIONS="hardening=+pie" DEB_LDFLAGS_MAINT_APPEND="-Wl,-Bsymbolic" DEB_CPPFLAGS_MAINT_APPEND="-DPRE_RELEASE=0 $(cppflags)" dpkg-buildflags --export=configure) LIBS="$(libs)"
