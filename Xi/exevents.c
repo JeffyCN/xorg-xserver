@@ -1783,8 +1783,25 @@ ProcessDeviceEvent(InternalEvent *ev, DeviceIntPtr device)
         DeliverDeviceEvents(GetSpriteWindow(device), (InternalEvent *) event,
                             NullGrab, NullWindow, device);
 
-    if (deactivateDeviceGrab == TRUE)
+    if (deactivateDeviceGrab == TRUE) {
         (*device->deviceGrab.DeactivateGrab) (device);
+
+        if (!IsMaster (device) && !IsFloating (device)) {
+            int flags, num_events = 0;
+            InternalEvent dce;
+
+            flags = (IsPointerDevice (device)) ?
+                DEVCHANGE_POINTER_EVENT : DEVCHANGE_KEYBOARD_EVENT;
+            UpdateFromMaster (&dce, device, flags, &num_events);
+            BUG_WARN(num_events > 1);
+
+            if (num_events == 1)
+                ChangeMasterDeviceClasses(GetMaster (device, MASTER_ATTACHED),
+                                          &dce.changed_event);
+        }
+
+    }
+
     event->detail.key = key;
 }
 
@@ -2166,7 +2183,8 @@ CheckGrabValues(ClientPtr client, GrabParameters *param)
         return BadValue;
     }
 
-    if (param->grabtype != XI2 && (param->modifiers != AnyModifier) &&
+    if (param->modifiers != AnyModifier &&
+        param->modifiers != XIAnyModifier &&
         (param->modifiers & ~AllModifiersMask)) {
         client->errorValue = param->modifiers;
         return BadValue;
