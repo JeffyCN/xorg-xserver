@@ -10,11 +10,13 @@ This doesn't seem to work quite well.  See Debian bug#686152.
  hw/xfree86/common/xf86Helper.c |    6 ++++++
  1 file changed, 6 insertions(+)
 
---- a/hw/xfree86/common/xf86Helper.c
-+++ b/hw/xfree86/common/xf86Helper.c
-@@ -1596,7 +1596,13 @@ xf86LoadOneModule(char *name, pointer op
+Index: xorg-server/hw/xfree86/common/xf86Helper.c
+===================================================================
+--- xorg-server.orig/hw/xfree86/common/xf86Helper.c
++++ xorg-server/hw/xfree86/common/xf86Helper.c
+@@ -1623,7 +1623,13 @@ xf86LoadOneModule(const char *name, void
  void
- xf86UnloadSubModule(pointer mod)
+ xf86UnloadSubModule(void *mod)
  {
 +    /*
 +     * This is disabled for now.  The loader isn't smart enough yet to undo

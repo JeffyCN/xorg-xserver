@@ -1,3 +1,11 @@
+xorg-server (2:1.15.99.902-1) UNRELEASED; urgency=medium
+
+  * New upstream snapshot.
+    + fix Xephyr -screen (closes: #742028)
+  * Refresh patches.
+
+ -- Julien Cristau <jcristau@debian.org>  Sun, 13 Apr 2014 17:18:44 +0200
+
 xorg-server (2:1.15.0.901-1) unstable; urgency=medium
 
   [ Robert Millan ]

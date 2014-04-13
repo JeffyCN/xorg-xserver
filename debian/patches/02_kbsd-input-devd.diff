@@ -23,7 +23,7 @@ Index: xorg-server/config/Makefile.am
 ===================================================================
 --- xorg-server.orig/config/Makefile.am
 +++ xorg-server/config/Makefile.am
-@@ -40,6 +40,10 @@ if CONFIG_WSCONS
+@@ -34,6 +34,10 @@ if CONFIG_WSCONS
  libconfig_la_SOURCES += wscons.c
  endif # CONFIG_WSCONS
  
@@ -31,14 +31,14 @@ Index: xorg-server/config/Makefile.am
 +libconfig_la_SOURCES += devd.c
 +endif
 +
- endif # CONFIG_NEED_DBUS
+ endif # !CONFIG_HAL
  
  endif # !CONFIG_UDEV
 Index: xorg-server/config/config-backends.h
 ===================================================================
 --- xorg-server.orig/config/config-backends.h
 +++ xorg-server/config/config-backends.h
-@@ -75,3 +75,8 @@ void config_hal_fini(void);
+@@ -44,3 +44,8 @@ void config_hal_fini(void);
  int config_wscons_init(void);
  void config_wscons_fini(void);
  #endif
@@ -51,7 +51,7 @@ Index: xorg-server/config/config.c
 ===================================================================
 --- xorg-server.orig/config/config.c
 +++ xorg-server/config/config.c
-@@ -64,6 +64,9 @@ config_init(void)
+@@ -55,6 +55,9 @@ config_init(void)
  #elif defined(CONFIG_WSCONS)
      if (!config_wscons_init())
          ErrorF("[config] failed to initialise wscons\n");
@@ -61,8 +61,8 @@ Index: xorg-server/config/config.c
  #endif
  }
  
-@@ -82,6 +85,8 @@ config_fini(void)
-     config_dbus_core_fini();
+@@ -67,6 +70,8 @@ config_fini(void)
+     config_hal_fini();
  #elif defined(CONFIG_WSCONS)
      config_wscons_fini();
 +#elif defined(CONFIG_DEVD)
@@ -466,15 +466,15 @@ Index: xorg-server/configure.ac
 ===================================================================
 --- xorg-server.orig/configure.ac
 +++ xorg-server/configure.ac
-@@ -618,6 +618,7 @@ AC_ARG_ENABLE(config-udev,    AS_HELP_ST
+@@ -613,6 +613,7 @@ AC_ARG_ENABLE(dpms,           AS_HELP_ST
+ AC_ARG_ENABLE(config-udev,    AS_HELP_STRING([--enable-config-udev], [Build udev support (default: auto)]), [CONFIG_UDEV=$enableval], [CONFIG_UDEV=auto])
  AC_ARG_ENABLE(config-udev-kms,    AS_HELP_STRING([--enable-config-udev-kms], [Build udev kms support (default: auto)]), [CONFIG_UDEV_KMS=$enableval], [CONFIG_UDEV_KMS=auto])
- AC_ARG_ENABLE(config-dbus,    AS_HELP_STRING([--enable-config-dbus], [Build D-BUS API support (default: no)]), [CONFIG_DBUS_API=$enableval], [CONFIG_DBUS_API=no])
  AC_ARG_ENABLE(config-hal,     AS_HELP_STRING([--disable-config-hal], [Build HAL support (default: auto)]), [CONFIG_HAL=$enableval], [CONFIG_HAL=auto])
 +AC_ARG_ENABLE(config-devd,    AS_HELP_STRING([--disable-config-devd], [Build devd support (default: auto)]), [CONFIG_DEVD=$enableval], [CONFIG_DEVD=auto])
  AC_ARG_ENABLE(config-wscons,  AS_HELP_STRING([--enable-config-wscons], [Build wscons config support (default: auto)]), [CONFIG_WSCONS=$enableval], [CONFIG_WSCONS=auto])
  AC_ARG_ENABLE(xfree86-utils,     AS_HELP_STRING([--enable-xfree86-utils], [Build xfree86 DDX utilities (default: enabled)]), [XF86UTILS=$enableval], [XF86UTILS=yes])
  AC_ARG_ENABLE(vgahw,          AS_HELP_STRING([--enable-vgahw], [Build Xorg with vga access (default: enabled)]), [VGAHW=$enableval], [VGAHW=yes])
-@@ -922,6 +923,21 @@ if test "x$CONFIG_WSCONS" = xyes; then
+@@ -955,6 +956,21 @@ if test "x$CONFIG_WSCONS" = xyes; then
  	AC_DEFINE(CONFIG_WSCONS, 1, [Use wscons for input auto configuration])
  fi
  
@@ -500,7 +500,7 @@ Index: xorg-server/hw/xfree86/common/xf86Config.c
 ===================================================================
 --- xorg-server.orig/hw/xfree86/common/xf86Config.c
 +++ xorg-server/hw/xfree86/common/xf86Config.c
-@@ -1377,15 +1377,18 @@ checkCoreInputDevices(serverLayoutPtr se
+@@ -1379,15 +1379,18 @@ checkCoreInputDevices(serverLayoutPtr se
      }
  
      if (!xf86Info.forceInputDevices && !(foundPointer && foundKeyboard)) {
@@ -539,9 +539,9 @@ Index: xorg-server/include/dix-config.h.in
 ===================================================================
 --- xorg-server.orig/include/dix-config.h.in
 +++ xorg-server/include/dix-config.h.in
-@@ -420,6 +420,9 @@
- /* Support HAL for hotplug */
- #undef CONFIG_HAL
+@@ -429,6 +429,9 @@
+ /* Enable systemd-logind integration */
+ #undef SYSTEMD_LOGIND 1
  
 +/* Support devd for hotplug */
 +#undef CONFIG_DEVD
