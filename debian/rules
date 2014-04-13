@@ -146,7 +146,6 @@ confflags_main = \
 	--enable-xnest \
 	--enable-kdrive \
 	--enable-xephyr \
-	$(build_xfbdev) \
 	--with-sha1=libgcrypt \
 	--enable-xcsecurity \
 	$(config_backend_main) \
@@ -178,7 +177,6 @@ confflags_udeb = \
 	--disable-xnest \
 	--disable-kdrive \
 	--disable-xephyr \
-	--disable-xfbdev \
 	--with-sha1=libnettle \
 	$(config_backend_udeb) \
 	$(void)
