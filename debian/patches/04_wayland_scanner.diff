@@ -1,0 +1,28 @@
+From: =?UTF-8?q?Kristian=20H=C3=B8gsberg?= <krh@bitplanet.net>
+To: xorg-devel@lists.freedesktop.org
+Subject: [PATCH 3/3] configure.ac: Remove check for WAYLAND_SCANNER_RULES
+Date: Tue,  8 Apr 2014 09:24:12 -0700
+Message-Id: <1396974252-6462-3-git-send-email-krh@bitplanet.net>
+Content-Type: text/plain; charset="utf-8"
+
+This makes configure fail if the wayland autoconf macros aren't found.
+We don't need the scanner for shm-only xwayland so just drop this line for
+now.
+
+Signed-off-by: Kristian Høgsberg <krh@bitplanet.net>
+---
+ configure.ac | 1 -
+ 1 file changed, 1 deletion(-)
+
+Index: xorg-server/configure.ac
+===================================================================
+--- xorg-server.orig/configure.ac
++++ xorg-server/configure.ac
+@@ -2474,7 +2474,6 @@ if test "x$XWAYLAND" = xyes; then
+ 	XWAYLAND_SYS_LIBS="$XWAYLANDMODULES_LIBS $GLX_SYS_LIBS"
+ 	AC_SUBST([XWAYLAND_LIBS])
+ 	AC_SUBST([XWAYLAND_SYS_LIBS])
+-	WAYLAND_SCANNER_RULES(['$(top_srcdir)/hw/xwayland'])
+ fi
+ 
+ 
