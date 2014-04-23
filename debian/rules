@@ -52,13 +52,7 @@ endif
 ifeq ($(DEB_HOST_ARCH_OS), hurd)
 	dri = --disable-dri --disable-dri2 --disable-dri3
 else
-	dri = --enable-dri --enable-dri2
-ifeq ($(DEB_HOST_ARCH_OS), linux)
-	dri += --enable-dri3
-else
-	# disable dri3 on kbsd until xtrans fd passing is enabled
-	dri += --disable-dri3
-endif
+	dri = --enable-dri --enable-dri2 --enable-dri3
 endif
 
 config_backend = --disable-config-dbus --disable-config-hal
