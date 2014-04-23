@@ -70,6 +70,9 @@ Build-Depends:
  libxv-dev,
  libxinerama-dev,
  libxshmfence-dev (>= 1.1) [!hurd-i386],
+# glamor
+ libepoxy-dev [linux-any kfreebsd-any],
+ libgbm-dev [linux-any],
 # XCB bits for Xephyr
  libxcb1-dev,
  libxcb-shape0-dev,

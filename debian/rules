@@ -53,6 +53,7 @@ ifeq ($(DEB_HOST_ARCH_OS), hurd)
 	dri = --disable-dri --disable-dri2 --disable-dri3
 else
 	dri = --enable-dri --enable-dri2 --enable-dri3
+	dri += --enable-glamor
 endif
 
 config_backend = --disable-config-dbus --disable-config-hal
