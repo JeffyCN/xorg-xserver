@@ -100,6 +100,8 @@ Depends:
  keyboard-configuration [linux-any kfreebsd-any],
  udev (>= 149) [linux-any],
  devd [kfreebsd-any],
+# for glamor; not a shlibdep because we use epoxy
+ libegl1-mesa [linux-any kfreebsd-any] | libegl1 [linux-any kfreebsd-any],
  ${shlibs:Depends},
  ${misc:Depends},
 Recommends: libgl1-mesa-dri (>= 7.10.2-4)
