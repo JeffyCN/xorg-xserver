@@ -9,6 +9,7 @@ xorg-server (2:1.15.99.903-1) UNRELEASED; urgency=medium
   * Enable glamor.
   * Don't run tests in parallel.
   * Bump video ABI and serverminver.
+  * Explicitly disable xwayland.
 
  -- Julien Cristau <jcristau@debian.org>  Thu, 05 Jun 2014 19:16:24 +0200
 

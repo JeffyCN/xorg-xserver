@@ -109,6 +109,7 @@ confflags += \
 	     --enable-xorg \
 	     --disable-linux-acpi \
 	     --disable-linux-apm \
+	     --disable-xwayland \
 	     --disable-xquartz \
 	     --disable-xwin \
 	     --disable-xfake \
