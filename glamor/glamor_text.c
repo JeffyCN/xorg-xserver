@@ -37,6 +37,7 @@ glamor_get_glyphs(FontPtr font, glamor_font_t *glamor_font,
     unsigned long nglyphs;
     FontEncoding encoding;
     int char_step;
+    int c;
 
     if (sixteen) {
         char_step = 2;
@@ -49,7 +50,7 @@ glamor_get_glyphs(FontPtr font, glamor_font_t *glamor_font,
         encoding = Linear8Bit;
     }
 
-    /* If the font has a default character, then we don't have to
+    /* If the font has a default character, then we shouldn't have to
      * worry about missing glyphs, so just get the whole string all at
      * once. Otherwise, we have to fetch chars one at a time to notice
      * missing ones.
@@ -57,15 +58,28 @@ glamor_get_glyphs(FontPtr font, glamor_font_t *glamor_font,
     if (glamor_font->default_char) {
         GetGlyphs(font, (unsigned long) count, (unsigned char *) chars,
                   encoding, &nglyphs, charinfo);
-    } else {
-        int c;
-        for (c = 0; c < count; c++) {
-            GetGlyphs(font, 1, (unsigned char *) chars,
-                      encoding, &nglyphs, &charinfo[c]);
-            if (!nglyphs)
-                charinfo[c] = NULL;
-            chars += char_step;
-        }
+
+        /* Make sure it worked. There's a bug in libXfont through
+         * version 1.4.7 which would cause it to fail when the font is
+         * a 2D font without a first row, and the application sends a
+         * 1-d request. In this case, libXfont would return zero
+         * glyphs, even when the font had a default character.
+         *
+         * It's easy enough for us to work around that bug here by
+         * simply checking the returned nglyphs and falling through to
+         * the one-at-a-time code below. Not doing this check would
+         * result in uninitialized memory accesses in the rendering code.
+         */
+        if (nglyphs == count)
+            return;
+    }
+
+    for (c = 0; c < count; c++) {
+        GetGlyphs(font, 1, (unsigned char *) chars,
+                  encoding, &nglyphs, &charinfo[c]);
+        if (!nglyphs)
+            charinfo[c] = NULL;
+        chars += char_step;
     }
 }
 
@@ -267,7 +281,7 @@ glamor_poly_text(DrawablePtr drawable, GCPtr gc,
     if (!GLAMOR_PIXMAP_PRIV_HAS_FBO(pixmap_priv))
         goto bail;
 
-    glamor_get_context(glamor_priv);
+    glamor_make_current(glamor_priv);
 
     prog = glamor_use_program_fill(pixmap, gc, &glamor_priv->poly_text_progs, &glamor_facet_poly_text);
 
@@ -279,8 +293,6 @@ glamor_poly_text(DrawablePtr drawable, GCPtr gc,
 
     glDisable(GL_COLOR_LOGIC_OP);
 
-    glamor_put_context(glamor_priv);
-
     glamor_priv->state = RENDER_STATE;
     glamor_priv->render_idle_cnt = 0;
 
@@ -289,7 +301,6 @@ glamor_poly_text(DrawablePtr drawable, GCPtr gc,
 
 bail_ctx:
     glDisable(GL_COLOR_LOGIC_OP);
-    glamor_put_context(glamor_priv);
 bail:
     return FALSE;
 }
@@ -420,7 +431,7 @@ glamor_image_text(DrawablePtr drawable, GCPtr gc,
 
     glamor_get_glyphs(gc->font, glamor_font, count, chars, sixteen, charinfo);
 
-    glamor_get_context(glamor_priv);
+    glamor_make_current(glamor_priv);
 
     if (TERMINALFONT(gc->font))
         prog = &glamor_priv->te_text_prog;
@@ -482,8 +493,6 @@ glamor_image_text(DrawablePtr drawable, GCPtr gc,
     (void) glamor_text(drawable, gc, glamor_font, prog,
                        x, y, count, chars, charinfo, sixteen);
 
-    glamor_put_context(glamor_priv);
-
     glamor_priv->state = RENDER_STATE;
     glamor_priv->render_idle_cnt = 0;
 
@@ -491,7 +500,6 @@ glamor_image_text(DrawablePtr drawable, GCPtr gc,
 
 bail:
     glDisable(GL_COLOR_LOGIC_OP);
-    glamor_put_context(glamor_priv);
     return FALSE;
 }
 
@@ -514,7 +522,7 @@ Bool
 glamor_image_text16_nf(DrawablePtr drawable, GCPtr gc,
                        int x, int y, int count, unsigned short *chars)
 {
-    return glamor_image_text(drawable, gc, x, y, count, (char *) chars, FALSE);
+    return glamor_image_text(drawable, gc, x, y, count, (char *) chars, TRUE);
 }
 
 void

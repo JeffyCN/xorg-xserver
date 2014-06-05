@@ -26,9 +26,9 @@ dnl
 dnl Process this file with autoconf to create configure.
 
 AC_PREREQ(2.60)
-AC_INIT([xorg-server], 1.15.99.902, [https://bugs.freedesktop.org/enter_bug.cgi?product=xorg], xorg-server)
-RELEASE_DATE="2014-04-08"
-RELEASE_NAME="Glacier Blue"
+AC_INIT([xorg-server], 1.15.99.903, [https://bugs.freedesktop.org/enter_bug.cgi?product=xorg], xorg-server)
+RELEASE_DATE="2014-06-04"
+RELEASE_NAME="Strawberry Shortcake"
 AC_CONFIG_SRCDIR([Makefile.am])
 AC_CONFIG_MACRO_DIR([m4])
 AM_INIT_AUTOMAKE([foreign dist-bzip2])
@@ -325,6 +325,7 @@ case $host_cpu in
 	;;
   arm*)
 	ARM_VIDEO=yes
+	DEFAULT_INT10="stub"
 	;;
   i*86)
 	I386_VIDEO=yes
@@ -629,7 +630,7 @@ AC_ARG_ENABLE(suid-wrapper, AS_HELP_STRING([--enable-suid-wrapper], [Build suid-
 
 dnl DDXes.
 AC_ARG_ENABLE(xorg,    	      AS_HELP_STRING([--enable-xorg], [Build Xorg server (default: auto)]), [XORG=$enableval], [XORG=auto])
-AC_ARG_ENABLE(dmx,    	      AS_HELP_STRING([--enable-dmx], [Build DMX server (default: auto)]), [DMX=$enableval], [DMX=no])
+AC_ARG_ENABLE(dmx,    	      AS_HELP_STRING([--enable-dmx], [Build DMX server (default: no)]), [DMX=$enableval], [DMX=no])
 AC_ARG_ENABLE(xvfb,    	      AS_HELP_STRING([--enable-xvfb], [Build Xvfb server (default: yes)]), [XVFB=$enableval], [XVFB=yes])
 AC_ARG_ENABLE(xnest,   	      AS_HELP_STRING([--enable-xnest], [Build Xnest server (default: auto)]), [XNEST=$enableval], [XNEST=auto])
 AC_ARG_ENABLE(xquartz,        AS_HELP_STRING([--enable-xquartz], [Build Xquartz server for OS-X (default: auto)]), [XQUARTZ=$enableval], [XQUARTZ=auto])
@@ -789,13 +790,13 @@ APPLEWMPROTO="applewmproto >= 1.4"
 XSHMFENCE="xshmfence >= 1.1"
 
 dnl Required modules
-XPROTO="xproto >= 7.0.22"
+XPROTO="xproto >= 7.0.26"
 RANDRPROTO="randrproto >= 1.4.0"
 RENDERPROTO="renderproto >= 0.11"
 XEXTPROTO="xextproto >= 7.2.99.901"
 INPUTPROTO="inputproto >= 2.3"
 KBPROTO="kbproto >= 1.0.3"
-FONTSPROTO="fontsproto"
+FONTSPROTO="fontsproto >= 2.1.3"
 FIXESPROTO="fixesproto >= 5.0"
 DAMAGEPROTO="damageproto >= 1.1"
 XCMISCPROTO="xcmiscproto >= 1.2.0"
@@ -2441,7 +2442,7 @@ AM_CONDITIONAL(XFAKESERVER, [test "x$KDRIVE" = xyes && test "x$XFAKE" = xyes])
 
 dnl Xwayland DDX
 
-PKG_CHECK_MODULES(XWAYLANDMODULES, [wayland-client libdrm epoxy], [have_xwayland=yes], [have_xwayland=no])
+PKG_CHECK_MODULES(XWAYLANDMODULES, [wayland-client >= 1.3.0 libdrm epoxy], [have_xwayland=yes], [have_xwayland=no])
 AC_MSG_CHECKING([whether to build Xwayland DDX])
 if test "x$XWAYLAND" = xauto; then
    XWAYLAND="$have_xwayland"
@@ -2458,7 +2459,6 @@ if test "x$XWAYLAND" = xyes; then
 	XWAYLAND_SYS_LIBS="$XWAYLANDMODULES_LIBS $GLX_SYS_LIBS"
 	AC_SUBST([XWAYLAND_LIBS])
 	AC_SUBST([XWAYLAND_SYS_LIBS])
-	WAYLAND_SCANNER_RULES(['$(top_srcdir)/hw/xwayland'])
 fi
 
 

@@ -661,6 +661,8 @@ void
 DeepCopyDeviceClasses(DeviceIntPtr from, DeviceIntPtr to,
                       DeviceChangedEvent *dce)
 {
+    OsBlockSIGIO();
+
     /* generic feedback classes, not tied to pointer and/or keyboard */
     DeepCopyFeedbackClasses(from, to);
 
@@ -668,6 +670,8 @@ DeepCopyDeviceClasses(DeviceIntPtr from, DeviceIntPtr to,
         DeepCopyKeyboardClasses(from, to);
     if ((dce->flags & DEVCHANGE_POINTER_EVENT))
         DeepCopyPointerClasses(from, to);
+
+    OsReleaseSIGIO();
 }
 
 /**
@@ -1469,7 +1473,7 @@ static void
 DeliverEmulatedMotionEvent(DeviceIntPtr dev, TouchPointInfoPtr ti,
                            InternalEvent *ev)
 {
-    InternalEvent motion;
+    DeviceEvent motion;
 
     if (ti->num_listeners) {
         ClientPtr client;
@@ -1481,11 +1485,11 @@ DeliverEmulatedMotionEvent(DeviceIntPtr dev, TouchPointInfoPtr ti,
             ti->listeners[0].type != LISTENER_POINTER_GRAB)
             return;
 
-        motion = *ev;
-        motion.any.type = ET_TouchUpdate;
-        motion.device_event.detail.button = 0;
+        motion = ev->device_event;
+        motion.type = ET_TouchUpdate;
+        motion.detail.button = 0;
 
-        if (!RetrieveTouchDeliveryData(dev, ti, &motion,
+        if (!RetrieveTouchDeliveryData(dev, ti, (InternalEvent*)&motion,
                                        &ti->listeners[0], &client, &win, &grab,
                                        &mask))
             return;
@@ -1500,18 +1504,18 @@ DeliverEmulatedMotionEvent(DeviceIntPtr dev, TouchPointInfoPtr ti,
             }
         }
 
-        DeliverTouchEmulatedEvent(dev, ti, &motion, &ti->listeners[0], client,
+        DeliverTouchEmulatedEvent(dev, ti, (InternalEvent*)&motion, &ti->listeners[0], client,
                                   win, grab, mask);
     }
     else {
         InternalEvent button;
         int converted;
 
-        converted = TouchConvertToPointerEvent(ev, &motion, &button);
+        converted = TouchConvertToPointerEvent(ev, (InternalEvent*)&motion, &button);
 
         BUG_WARN(converted == 0);
         if (converted)
-            ProcessOtherEvent(&motion, dev);
+            ProcessOtherEvent((InternalEvent*)&motion, dev);
     }
 }
 

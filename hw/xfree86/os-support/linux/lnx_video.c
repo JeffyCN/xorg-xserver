@@ -59,7 +59,9 @@ static Bool ExtendedEnabled = FALSE;
       !defined(__mips__) && \
       !defined(__nds32__) && \
       !defined(__arm__) && \
-      !defined(__aarch64__)
+      !defined(__aarch64__) && \
+      !defined(__arc__) && \
+      !defined(__xtensa__)
 
 /*
  * Due to conflicts with "compiler.h", don't rely on <sys/io.h> to declare

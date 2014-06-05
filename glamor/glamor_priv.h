@@ -30,9 +30,6 @@
 #include "dix-config.h"
 
 #include <xorg-server.h>
-#ifndef DEBUG
-#define NDEBUG
-#endif
 #include "glamor.h"
 
 #include <epoxy/gl.h>
@@ -276,11 +273,6 @@ typedef struct glamor_screen_private {
 
     /* glamor trapezoid shader. */
     GLint trapezoid_prog;
-
-    /* glamor_putimage */
-    GLint put_image_xybitmap_prog;
-    GLint put_image_xybitmap_fg_uniform_location;
-    GLint put_image_xybitmap_bg_uniform_location;
 
     PixmapPtr *back_pixmap;
     int screen_fbo;
@@ -631,10 +623,6 @@ void glamor_copy_n_to_n(DrawablePtr src, DrawablePtr dst, GCPtr gc,
                         BoxPtr box, int nbox, int dx, int dy, Bool reverse,
                         Bool upsidedown, Pixel bitplane, void *closure);
 
-/* glamor_copywindow.c */
-void glamor_copy_window(WindowPtr win, DDXPointRec old_origin,
-                        RegionPtr src_region);
-
 /* glamor_core.c */
 Bool glamor_prepare_access(DrawablePtr drawable, glamor_access_t access);
 void glamor_finish_access(DrawablePtr drawable);
@@ -675,7 +663,6 @@ glamor_pixmap_fbo *glamor_es2_pixmap_read_prepare(PixmapPtr source, int x,
 
 Bool glamor_set_alu(ScreenPtr screen, unsigned char alu);
 Bool glamor_set_planemask(PixmapPtr pixmap, unsigned long planemask);
-Bool glamor_change_window_attributes(WindowPtr pWin, unsigned long mask);
 RegionPtr glamor_bitmap_to_region(PixmapPtr pixmap);
 
 /* glamor_fill.c */
@@ -703,12 +690,6 @@ void glamor_glyphs(CARD8 op,
 /* glamor_polylines.c */
 void glamor_poly_lines(DrawablePtr drawable, GCPtr gc, int mode, int n,
                        DDXPointPtr points);
-
-/* glamor_putimage.c */
-void glamor_put_image(DrawablePtr drawable, GCPtr gc, int depth, int x, int y,
-                      int w, int h, int leftPad, int format, char *bits);
-void glamor_init_putimage_shaders(ScreenPtr screen);
-void glamor_fini_putimage_shaders(ScreenPtr screen);
 
 /* glamor_render.c */
 Bool glamor_composite_clipped_region(CARD8 op,
@@ -951,9 +932,6 @@ Bool glamor_fixup_pixmap_priv(ScreenPtr screen,
 void glamor_picture_format_fixup(PicturePtr picture,
                                  glamor_pixmap_private *pixmap_priv);
 
-void glamor_get_image(DrawablePtr pDrawable, int x, int y, int w, int h,
-                      unsigned int format, unsigned long planeMask, char *d);
-
 void glamor_add_traps(PicturePtr pPicture,
                       INT16 x_off, INT16 y_off, int ntrap, xTrap *traps);
 
@@ -993,6 +971,15 @@ glamor_set_spans(DrawablePtr drawable, GCPtr gc, char *src,
 void
 glamor_poly_fill_rect(DrawablePtr drawable,
                       GCPtr gc, int nrect, xRectangle *prect);
+
+/* glamor_image.c */
+void
+glamor_put_image(DrawablePtr drawable, GCPtr gc, int depth, int x, int y,
+                 int w, int h, int leftPad, int format, char *bits);
+
+void
+glamor_get_image(DrawablePtr pDrawable, int x, int y, int w, int h,
+                 unsigned int format, unsigned long planeMask, char *d);
 
 /* glamor_glyphblt.c */
 void glamor_image_glyph_blt(DrawablePtr pDrawable, GCPtr pGC,
