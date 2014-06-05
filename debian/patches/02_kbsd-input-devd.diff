@@ -466,7 +466,7 @@ Index: xorg-server/configure.ac
 ===================================================================
 --- xorg-server.orig/configure.ac
 +++ xorg-server/configure.ac
-@@ -613,6 +613,7 @@ AC_ARG_ENABLE(dpms,           AS_HELP_ST
+@@ -614,6 +614,7 @@ AC_ARG_ENABLE(dpms,           AS_HELP_ST
  AC_ARG_ENABLE(config-udev,    AS_HELP_STRING([--enable-config-udev], [Build udev support (default: auto)]), [CONFIG_UDEV=$enableval], [CONFIG_UDEV=auto])
  AC_ARG_ENABLE(config-udev-kms,    AS_HELP_STRING([--enable-config-udev-kms], [Build udev kms support (default: auto)]), [CONFIG_UDEV_KMS=$enableval], [CONFIG_UDEV_KMS=auto])
  AC_ARG_ENABLE(config-hal,     AS_HELP_STRING([--disable-config-hal], [Build HAL support (default: auto)]), [CONFIG_HAL=$enableval], [CONFIG_HAL=auto])
@@ -474,7 +474,7 @@ Index: xorg-server/configure.ac
  AC_ARG_ENABLE(config-wscons,  AS_HELP_STRING([--enable-config-wscons], [Build wscons config support (default: auto)]), [CONFIG_WSCONS=$enableval], [CONFIG_WSCONS=auto])
  AC_ARG_ENABLE(xfree86-utils,     AS_HELP_STRING([--enable-xfree86-utils], [Build xfree86 DDX utilities (default: enabled)]), [XF86UTILS=$enableval], [XF86UTILS=yes])
  AC_ARG_ENABLE(vgahw,          AS_HELP_STRING([--enable-vgahw], [Build Xorg with vga access (default: enabled)]), [VGAHW=$enableval], [VGAHW=yes])
-@@ -955,6 +956,21 @@ if test "x$CONFIG_WSCONS" = xyes; then
+@@ -956,6 +957,21 @@ if test "x$CONFIG_WSCONS" = xyes; then
  	AC_DEFINE(CONFIG_WSCONS, 1, [Use wscons for input auto configuration])
  fi
  
@@ -500,7 +500,7 @@ Index: xorg-server/hw/xfree86/common/xf86Config.c
 ===================================================================
 --- xorg-server.orig/hw/xfree86/common/xf86Config.c
 +++ xorg-server/hw/xfree86/common/xf86Config.c
-@@ -1379,15 +1379,18 @@ checkCoreInputDevices(serverLayoutPtr se
+@@ -1391,15 +1391,18 @@ checkCoreInputDevices(serverLayoutPtr se
      }
  
      if (!xf86Info.forceInputDevices && !(foundPointer && foundKeyboard)) {
