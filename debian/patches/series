@@ -3,7 +3,6 @@
 001_fedora_extramodes.patch
 02_kbsd-input-devd.diff
 03_static-nettle.diff
-04_wayland_scanner.diff
 05_Revert-Unload-submodules.diff
 06_Revert-fb-reorder-Bresenham-error-correction-to-avoi.diff
 08_xfree86_fix_ia64_inx_outx.diff
