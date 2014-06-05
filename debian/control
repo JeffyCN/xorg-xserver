@@ -72,6 +72,7 @@ Build-Depends:
  libxshmfence-dev (>= 1.1) [!hurd-i386],
 # glamor
  libepoxy-dev [linux-any kfreebsd-any],
+ libegl1-mesa-dev [linux-any kfreebsd-any],
  libgbm-dev [linux-any],
 # XCB bits for Xephyr
  libxcb1-dev,
