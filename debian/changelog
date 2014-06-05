@@ -1,8 +1,8 @@
-xorg-server (2:1.15.99.903-2) UNRELEASED; urgency=medium
+xorg-server (2:1.15.99.903-2) experimental; urgency=medium
 
   * Enable xwayland for the main build on linux (closes: #747950).
 
- -- Julien Cristau <jcristau@debian.org>  Thu, 05 Jun 2014 21:26:21 +0200
+ -- Julien Cristau <jcristau@debian.org>  Thu, 05 Jun 2014 21:58:45 +0200
 
 xorg-server (2:1.15.99.903-1) experimental; urgency=medium
 
