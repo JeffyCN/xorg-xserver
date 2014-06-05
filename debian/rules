@@ -45,8 +45,10 @@ endif
 
 ifeq ($(DEB_HOST_ARCH_OS), linux)
 	selinux = --enable-xselinux
+	wayland = --enable-xwayland
 else
 	selinux = --disable-xselinux
+	wayland = --disable-xwayland
 endif
 
 ifeq ($(DEB_HOST_ARCH_OS), hurd)
@@ -109,7 +111,6 @@ confflags += \
 	     --enable-xorg \
 	     --disable-linux-acpi \
 	     --disable-linux-apm \
-	     --disable-xwayland \
 	     --disable-xquartz \
 	     --disable-xwin \
 	     --disable-xfake \
@@ -137,6 +138,7 @@ confflags_main = \
 	--enable-xace \
 	$(selinux) \
 	--enable-xfree86-utils \
+	$(wayland) \
 	--enable-dmx \
 	--enable-xvfb \
 	--enable-xnest \
@@ -168,6 +170,7 @@ confflags_udeb = \
 	--disable-xace \
 	--disable-xselinux \
 	--disable-xfree86-utils \
+	--disable-xwayland \
 	--disable-dmx \
 	--disable-xvfb \
 	--disable-xnest \

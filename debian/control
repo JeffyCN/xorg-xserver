@@ -90,6 +90,8 @@ Build-Depends:
  x11-xkb-utils,
 # getpeereid()
  libbsd-dev [kfreebsd-any],
+# xwayland
+ libwayland-dev [linux-any],
 Standards-Version: 3.9.2
 Vcs-Git: git://git.debian.org/git/pkg-xorg/xserver/xorg-server
 Vcs-Browser: http://git.debian.org/?p=pkg-xorg/xserver/xorg-server.git
@@ -362,3 +364,14 @@ Description: Xorg X server - source files
  .
  Unless you are building a software product using X server sources,
  you probably want xserver-xorg and/or xserver-xorg-core instead.
+
+Package: xwayland
+Architecture: linux-any
+Depends:
+ xserver-common (>= ${source:Version}),
+ ${shlibs:Depends},
+ ${misc:Depends},
+Description: Xwayland X server
+ This package provides an X server running on top of wayland, using wayland
+ input devices for input and forwarding either the root window or individual
+ top-level windows as wayland surfaces.
