@@ -1,9 +1,9 @@
-xorg-server (2:1.15.99.903-3) UNRELEASED; urgency=medium
+xorg-server (2:1.15.99.903-3) experimental; urgency=medium
 
   * Set shared memory dir to /dev/shm (closes: #747894).
   * Disable dri3 on kfreebsd again to fix FTBFS.
 
- -- Julien Cristau <jcristau@debian.org>  Tue, 10 Jun 2014 21:40:49 +0200
+ -- Julien Cristau <jcristau@debian.org>  Tue, 10 Jun 2014 21:50:06 +0200
 
 xorg-server (2:1.15.99.903-2) experimental; urgency=medium
 
