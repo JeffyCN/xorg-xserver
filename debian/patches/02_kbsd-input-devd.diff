@@ -496,6 +496,15 @@ Index: xorg-server/configure.ac
  if test "x$USE_SIGIO_BY_DEFAULT" = xyes; then
  	USE_SIGIO_BY_DEFAULT_VALUE=TRUE
  else
+@@ -2495,7 +2511,7 @@ AC_SUBST([prefix])
+ 
+ AC_CONFIG_COMMANDS([sdksyms], [touch hw/xfree86/sdksyms.dep])
+ 
+-if test "x$CONFIG_HAL" = xno && test "x$CONFIG_UDEV" = xno; then
++if test "x$CONFIG_HAL" = xno && test "x$CONFIG_UDEV" = xno && test "x$CONFIG_DEVD" = xno; then
+     AC_MSG_WARN([
+              ***********************************************
+              Neither HAL nor udev backend will be enabled.
 Index: xorg-server/hw/xfree86/common/xf86Config.c
 ===================================================================
 --- xorg-server.orig/hw/xfree86/common/xf86Config.c
