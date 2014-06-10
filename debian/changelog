@@ -1,3 +1,9 @@
+xorg-server (2:1.15.99.903-3) UNRELEASED; urgency=medium
+
+  * Set shared memory dir to /dev/shm (closes: #747894).
+
+ -- Julien Cristau <jcristau@debian.org>  Tue, 10 Jun 2014 21:40:49 +0200
+
 xorg-server (2:1.15.99.903-2) experimental; urgency=medium
 
   * Enable xwayland for the main build on linux (closes: #747950).

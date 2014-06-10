@@ -99,6 +99,7 @@ confflags += \
 	     --with-builderstring="$(SOURCE_NAME) $(SOURCE_VERSION) ($(SUPPORT))" \
 	     --with-xkb-path=/usr/share/X11/xkb \
 	     --with-xkb-output=/var/lib/xkb \
+	     --with-shared-memory-dir=/dev/shm \
 	     --disable-install-libxf86config \
 	     --enable-mitshm \
 	     --enable-xres \
