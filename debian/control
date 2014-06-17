@@ -339,6 +339,7 @@ Description: Xorg - the X.Org X server (debugging symbols)
 
 Package: xserver-common
 Architecture: all
+Multi-Arch: foreign
 Depends:
  x11-common,
  xkb-data,
