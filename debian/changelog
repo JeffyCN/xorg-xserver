@@ -1,11 +1,12 @@
-xorg-server (2:1.15.99.904-1) UNRELEASED; urgency=medium
+xorg-server (2:1.15.99.904-1) unstable; urgency=medium
 
   * New upstream release candidate.
   * Make xserver-common Multi-Arch: foreign (closes: #693922)
   * Add debian/upstream/signing-key.asc, and add pgpsigurlmangle option to
     debian/watch, to allow uscan to verify tarball signatures.
+  * Upload to unstable.
 
- -- Julien Cristau <jcristau@debian.org>  Tue, 08 Jul 2014 15:15:44 +0200
+ -- Julien Cristau <jcristau@debian.org>  Tue, 08 Jul 2014 15:22:20 +0200
 
 xorg-server (2:1.15.99.903-3) experimental; urgency=medium
 
