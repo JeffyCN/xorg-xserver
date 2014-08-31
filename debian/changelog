@@ -1,3 +1,11 @@
+xorg-server (2:1.16.0-2) unstable; urgency=medium
+
+  * xserver-xorg-dev: /usr/share/xserver-xorg/configure_flags.mk
+    Provide the flags how the xserver was configured (closes: #757246).  Based
+    on Ubuntu patch by Matthias Klose.  Thanks, Yaroslav Halchenko!
+
+ -- Julien Cristau <jcristau@debian.org>  Sun, 31 Aug 2014 11:58:36 -0700
+
 xorg-server (2:1.16.0-1) unstable; urgency=medium
 
   * New upstream release

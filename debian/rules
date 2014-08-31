@@ -352,6 +352,11 @@ binary-arch: build install
 	# The udeb uses the same substvars:
 	cp debian/xserver-xorg-core.substvars debian/xserver-xorg-core-udeb.substvars
 
+	# save the configure flags so that packages like vnc, tightvnc, tigervnc
+	# know how the package was built.
+	echo 'xserver_confflags = $(confflags) $(confflags_main)' \
+		> debian/xserver-xorg-dev/usr/share/xserver-xorg/configure_flags.mk
+
 	$(INSTALL) -m 755 -d debian/xserver-xorg-core/usr/share/bug/xserver-xorg-core
 	$(INSTALL) -m 755 debian/xserver-xorg-core.bug.script debian/xserver-xorg-core/usr/share/bug/xserver-xorg-core/script
 ifeq ($(DEB_HOST_ARCH_OS), linux)
