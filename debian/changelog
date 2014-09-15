@@ -1,3 +1,10 @@
+xorg-server (2:1.16.0.901-1) UNRELEASED; urgency=medium
+
+  * New upstream release
+    + glx/present: Only send GLX_BufferSwapComplete for PresentCompleteKindPixmap (closes: #761393)
+
+ -- Julien Cristau <jcristau@debian.org>  Mon, 15 Sep 2014 23:56:51 +0200
+
 xorg-server (2:1.16.0-2) unstable; urgency=medium
 
   * xserver-xorg-dev: /usr/share/xserver-xorg/configure_flags.mk
