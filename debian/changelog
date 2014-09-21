@@ -1,3 +1,9 @@
+xorg-server (2:1.16.0.901-2) UNRELEASED; urgency=medium
+
+  * Add my key to debian/upstream/signing-key.asc.
+
+ -- Julien Cristau <jcristau@debian.org>  Sun, 21 Sep 2014 11:26:04 +0200
+
 xorg-server (2:1.16.0.901-1) unstable; urgency=medium
 
   * New upstream release
