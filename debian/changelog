@@ -1,10 +1,10 @@
-xorg-server (2:1.16.1-1) UNRELEASED; urgency=medium
+xorg-server (2:1.16.1-1) unstable; urgency=medium
 
   * Add my key to debian/upstream/signing-key.asc.
   * New upstream release.
   * Update help text since -iglx is now the default (cherry-pick from master)
 
- -- Julien Cristau <jcristau@debian.org>  Sun, 21 Sep 2014 11:29:00 +0200
+ -- Julien Cristau <jcristau@debian.org>  Mon, 22 Sep 2014 22:12:20 +0200
 
 xorg-server (2:1.16.0.901-1) unstable; urgency=medium
 
