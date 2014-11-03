@@ -1,3 +1,14 @@
+xorg-server (2:1.16.1.901-1) UNRELEASED; urgency=medium
+
+  * New upstream release.
+    + Xext/shm: Detach SHM segment after Pixmap is released
+    + Fix present_notify to return right away when querying current or past msc
+    + Fix present_pixmap when using present_notify_msc
+    + xkb: ignore floating slave devices when updating from master
+    + fb: Fix invalid bpp for 24bit depth window
+
+ -- Julien Cristau <jcristau@debian.org>  Mon, 03 Nov 2014 21:29:43 +0100
+
 xorg-server (2:1.16.1-1) unstable; urgency=medium
 
   * Add my key to debian/upstream/signing-key.asc.
