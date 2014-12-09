@@ -1,3 +1,23 @@
+xorg-server (2:1.16.2.901-1) UNRELEASED; urgency=medium
+
+  * New upstream release
+    + fb: Fix Bresenham algorithms for commonly used small segments
+    + denial of service due to unchecked malloc in client authentication
+      [CVE-2014-8091]
+    + integer overflows calculating memory needs for requests [CVE-2014-8092,
+      CVE-2014-8093, CVE-2014-8094]
+    + out of bounds access due to not validating length or offset values in
+      requests [CVE-2014-8095, CVE-2014-8096, CVE-2014-8097, CVE-2014-8098,
+      CVE-2014-8099, CVE-2014-8100, CVE-2014-8101, CVE-2014-8102,
+      CVE-2014-8103]
+    See http://www.x.org/wiki/Development/Security/Advisory-2014-12-09/
+  * Drop 06_Revert-fb-reorder-Bresenham-error-correction-to-avoi.diff,
+    obsoleted by the upstream fix (closes: #752156)
+  * 09_Xserver-man-iglx.diff: adjust Xserver man page, we disable indirect glx
+    contexts by default.
+
+ -- Julien Cristau <jcristau@debian.org>  Tue, 09 Dec 2014 21:39:42 +0100
+
 xorg-server (2:1.16.1.901-1) unstable; urgency=medium
 
   * New upstream release.
