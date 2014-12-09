@@ -1,4 +1,4 @@
-xorg-server (2:1.16.2.901-1) UNRELEASED; urgency=medium
+xorg-server (2:1.16.2.901-1) unstable; urgency=medium
 
   * New upstream release
     + fb: Fix Bresenham algorithms for commonly used small segments
@@ -16,7 +16,7 @@ xorg-server (2:1.16.2.901-1) UNRELEASED; urgency=medium
   * 09_Xserver-man-iglx.diff: adjust Xserver man page, we disable indirect glx
     contexts by default.
 
- -- Julien Cristau <jcristau@debian.org>  Tue, 09 Dec 2014 21:39:42 +0100
+ -- Julien Cristau <jcristau@debian.org>  Tue, 09 Dec 2014 22:04:20 +0100
 
 xorg-server (2:1.16.1.901-1) unstable; urgency=medium
 
