@@ -1,3 +1,10 @@
+xorg-server (2:1.16.99.901-1) UNRELEASED; urgency=medium
+
+  * New upstream release candidate 17~rc1.
+  * Enable the modesetting driver from xorg-server.
+
+ -- Maarten Lankhorst <maarten.lankhorst@ubuntu.com>  Thu, 11 Dec 2014 15:49:13 +0100
+
 xorg-server (2:1.16.2.901-1) unstable; urgency=medium
 
   * New upstream release
