@@ -2,6 +2,11 @@ xorg-server (2:1.16.99.901-1) UNRELEASED; urgency=medium
 
   * New upstream release candidate 17~rc1.
   * Enable the modesetting driver from xorg-server.
+  * Drop upstreamed patches:
+    - 09_Xserver-man-iglx.diff
+  * Disable 08_xfree86_fix_ia64_inx_outx.diff, no longer applies.
+    - Is this patch still needed because it seems to be handled now?
+  * Bump video abi to 19.
 
  -- Maarten Lankhorst <maarten.lankhorst@ubuntu.com>  Thu, 11 Dec 2014 15:49:13 +0100
 
