@@ -186,10 +186,10 @@ Prohibit creating indirect GLX contexts.  Indirect GLX is of limited use,
 since it lacks support for many modern OpenGL features and extensions;
 it's slower than direct contexts; and it opens a large attack surface for
 protocol parsing errors.
+This is the default unless +iglx is specified.
 .TP 8
 .B +iglx
 Allow creating indirect GLX contexts.
-This is the default unless \-iglx is specified.
 .TP 8
 .B \-maxbigreqsize \fIsize\fP
 sets the maximum big request to
@@ -204,6 +204,13 @@ disables a transport type.  For example, TCP/IP connections can be disabled
 with
 .BR "\-nolisten tcp" .
 This option may be issued multiple times to disable listening to different
+transport types.
+.TP 8
+.B \-listen \fItrans-type\fP
+enables a transport type.  For example, TCP/IP connections can be enabled
+with
+.BR "\-listen tcp" .
+This option may be issued multiple times to enable listening to different
 transport types.
 .TP 8
 .B \-noreset

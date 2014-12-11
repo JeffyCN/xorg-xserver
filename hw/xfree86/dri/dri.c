@@ -595,14 +595,6 @@ DRIFinishScreenInit(ScreenPtr pScreen)
     DRIInfoPtr pDRIInfo = pDRIPriv->pDriverInfo;
 
     /* Wrap DRI support */
-    if (pDRIInfo->wrap.ValidateTree) {
-        pDRIPriv->wrap.ValidateTree = pScreen->ValidateTree;
-        pScreen->ValidateTree = pDRIInfo->wrap.ValidateTree;
-    }
-    if (pDRIInfo->wrap.PostValidateTree) {
-        pDRIPriv->wrap.PostValidateTree = pScreen->PostValidateTree;
-        pScreen->PostValidateTree = pDRIInfo->wrap.PostValidateTree;
-    }
     if (pDRIInfo->wrap.WindowExposures) {
         pDRIPriv->wrap.WindowExposures = pScreen->WindowExposures;
         pScreen->WindowExposures = pDRIInfo->wrap.WindowExposures;
@@ -652,14 +644,6 @@ DRICloseScreen(ScreenPtr pScreen)
 
         if (pDRIPriv->wrapped) {
             /* Unwrap DRI Functions */
-            if (pDRIInfo->wrap.ValidateTree) {
-                pScreen->ValidateTree = pDRIPriv->wrap.ValidateTree;
-                pDRIPriv->wrap.ValidateTree = NULL;
-            }
-            if (pDRIInfo->wrap.PostValidateTree) {
-                pScreen->PostValidateTree = pDRIPriv->wrap.PostValidateTree;
-                pDRIPriv->wrap.PostValidateTree = NULL;
-            }
             if (pDRIInfo->wrap.WindowExposures) {
                 pScreen->WindowExposures = pDRIPriv->wrap.WindowExposures;
                 pDRIPriv->wrap.WindowExposures = NULL;
@@ -1601,8 +1585,6 @@ DRICreateInfoRec(void)
     inforec->wrap.BlockHandler = DRIDoBlockHandler;
     inforec->wrap.WindowExposures = DRIWindowExposures;
     inforec->wrap.CopyWindow = DRICopyWindow;
-    inforec->wrap.ValidateTree = DRIValidateTree;
-    inforec->wrap.PostValidateTree = DRIPostValidateTree;
     inforec->wrap.ClipNotify = DRIClipNotify;
     inforec->wrap.AdjustFrame = DRIAdjustFrame;
 
@@ -1846,7 +1828,7 @@ DRIGetContextStore(DRIContextPrivPtr context)
 }
 
 void
-DRIWindowExposures(WindowPtr pWin, RegionPtr prgn, RegionPtr bsreg)
+DRIWindowExposures(WindowPtr pWin, RegionPtr prgn)
 {
     ScreenPtr pScreen = pWin->drawable.pScreen;
     DRIScreenPrivPtr pDRIPriv = DRI_SCREEN_PRIV(pScreen);
@@ -1864,7 +1846,7 @@ DRIWindowExposures(WindowPtr pWin, RegionPtr prgn, RegionPtr bsreg)
         pScreen->WindowExposures = pDRIPriv->wrap.WindowExposures;
 
         /* call lower layers */
-        (*pScreen->WindowExposures) (pWin, prgn, bsreg);
+        (*pScreen->WindowExposures) (pWin, prgn);
 
         /* rewrap */
         pDRIPriv->wrap.WindowExposures = pScreen->WindowExposures;
@@ -2061,61 +2043,6 @@ DRILockTree(ScreenPtr pScreen)
                                                pDRIPriv->partial3DContextStore,
                                                DRI_2D_CONTEXT,
                                                pDRIPriv->hiddenContextStore);
-    }
-}
-
-int
-DRIValidateTree(WindowPtr pParent, WindowPtr pChild, VTKind kind)
-{
-    ScreenPtr pScreen = pParent->drawable.pScreen;
-    DRIScreenPrivPtr pDRIPriv = DRI_SCREEN_PRIV(pScreen);
-
-    int returnValue = 1;        /* always return 1, not checked by dix/window.c */
-
-    if (!pDRIPriv)
-        return returnValue;
-
-    /* call lower wrapped functions */
-    if (pDRIPriv->wrap.ValidateTree) {
-        /* unwrap */
-        pScreen->ValidateTree = pDRIPriv->wrap.ValidateTree;
-
-        /* call lower layers */
-        returnValue = (*pScreen->ValidateTree) (pParent, pChild, kind);
-
-        /* rewrap */
-        pDRIPriv->wrap.ValidateTree = pScreen->ValidateTree;
-        pScreen->ValidateTree = DRIValidateTree;
-    }
-
-    return returnValue;
-}
-
-void
-DRIPostValidateTree(WindowPtr pParent, WindowPtr pChild, VTKind kind)
-{
-    ScreenPtr pScreen;
-    DRIScreenPrivPtr pDRIPriv;
-
-    if (pParent) {
-        pScreen = pParent->drawable.pScreen;
-    }
-    else {
-        pScreen = pChild->drawable.pScreen;
-    }
-    if (!(pDRIPriv = DRI_SCREEN_PRIV(pScreen)))
-        return;
-
-    if (pDRIPriv->wrap.PostValidateTree) {
-        /* unwrap */
-        pScreen->PostValidateTree = pDRIPriv->wrap.PostValidateTree;
-
-        /* call lower layers */
-        (*pScreen->PostValidateTree) (pParent, pChild, kind);
-
-        /* rewrap */
-        pDRIPriv->wrap.PostValidateTree = pScreen->PostValidateTree;
-        pScreen->PostValidateTree = DRIPostValidateTree;
     }
 }
 
@@ -2365,11 +2292,11 @@ DRIAdjustFrame(ScrnInfoPtr pScrn, int x, int y)
     _DRIAdjustFrame(pScrn, pDRIPriv, x, y);
 }
 
-/* 
+/*
  * DRIMoveBuffersHelper swaps the regions rects in place leaving you
  * a region with the rects in the order that you need to blit them,
  * but it is possibly (likely) an invalid region afterwards.  If you
- * need to use the region again for anything you have to call 
+ * need to use the region again for anything you have to call
  * REGION_VALIDATE on it, or better yet, save a copy first.
  */
 

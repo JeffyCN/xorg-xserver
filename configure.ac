@@ -26,9 +26,9 @@ dnl
 dnl Process this file with autoconf to create configure.
 
 AC_PREREQ(2.60)
-AC_INIT([xorg-server], 1.16.2.901, [https://bugs.freedesktop.org/enter_bug.cgi?product=xorg], xorg-server)
-RELEASE_DATE="2014-12-09"
-RELEASE_NAME="Marionberry Pie"
+AC_INIT([xorg-server], 1.16.99.901, [https://bugs.freedesktop.org/enter_bug.cgi?product=xorg], xorg-server)
+RELEASE_DATE="2014-10-28"
+RELEASE_NAME="Chanterelle"
 AC_CONFIG_SRCDIR([Makefile.am])
 AC_CONFIG_MACRO_DIR([m4])
 AM_INIT_AUTOMAKE([foreign dist-bzip2])
@@ -139,7 +139,8 @@ AC_CHECK_HEADERS([fcntl.h stdlib.h string.h unistd.h dlfcn.h stropts.h \
 dnl Checks for typedefs, structures, and compiler characteristics.
 AC_C_CONST
 AC_C_TYPEOF
-AC_C_BIGENDIAN([ENDIAN="X_BIG_ENDIAN"], [ENDIAN="X_LITTLE_ENDIAN"])
+AC_C_BIGENDIAN(AC_DEFINE(X_BYTE_ORDER, X_BIG_ENDIAN, [byte order]),
+               AC_DEFINE(X_BYTE_ORDER, X_LITTLE_ENDIAN, [byte order]))
 
 AC_CHECK_SIZEOF([unsigned long])
 if test "$ac_cv_sizeof_unsigned_long" = 8; then
@@ -216,9 +217,11 @@ AC_SUBST(DLOPEN_LIBS)
 
 dnl Checks for library functions.
 AC_CHECK_FUNCS([backtrace ffs geteuid getuid issetugid getresuid \
-	getdtablesize getifaddrs getpeereid getpeerucred getzoneid \
+	getdtablesize getifaddrs getpeereid getpeerucred getprogname getzoneid \
 	mmap seteuid shmctl64 strncasecmp vasprintf vsnprintf walkcontext])
 AC_REPLACE_FUNCS([strcasecmp strcasestr strlcat strlcpy strndup])
+
+AC_CHECK_DECLS([program_invocation_short_name], [], [], [[#include <errno.h>]])
 
 dnl Find the math libary, then check for cbrt function in it.
 AC_CHECK_LIB(m, sqrt)
@@ -233,29 +236,6 @@ AM_CONDITIONAL(AGP, [test "x$AGP" = xyes])
 dnl fbdev header
 AC_CHECK_HEADERS([linux/fb.h], FBDEV=yes)
 AM_CONDITIONAL(FBDEVHW, [test "x$FBDEV" = xyes])
-
-dnl MTRR header
-AC_CHECK_HEADERS([asm/mtrr.h], ac_cv_asm_mtrr_h=yes)
-if test "x$ac_cv_asm_mtrr_h" = xyes; then
-	HAVE_MTRR=yes
-fi
-
-dnl BSD MTRR header
-AC_CHECK_HEADERS([sys/memrange.h], ac_cv_memrange_h=yes)
-if test "x$ac_cv_memrange_h" = xyes; then
-	HAVE_MTRR=yes
-fi
-
-if test "x$HAVE_MTRR" = xyes; then
-	AC_DEFINE(HAS_MTRR_SUPPORT, 1, [MTRR support available])
-fi
-
-dnl A NetBSD MTRR header
-AC_CHECK_HEADERS([machine/mtrr.h], ac_cv_machine_mtrr_h=yes)
-if test "x$ac_cv_machine_mtrr_h" = xyes; then
-	AC_DEFINE(HAS_MTRR_BUILTIN, 1, [Define to 1 if NetBSD built-in MTRR
-		support is available])
-fi
 
 dnl FreeBSD kldload support (sys/linker.h)
 AC_CHECK_HEADERS([sys/linker.h],
@@ -483,6 +463,16 @@ AC_ARG_WITH(os-vendor,       AS_HELP_STRING([--with-os-vendor=OSVENDOR], [Name o
 AC_ARG_WITH(builderstring,   AS_HELP_STRING([--with-builderstring=BUILDERSTRING], [Additional builder string]),
 				[ BUILDERSTRING="$withval" ]
 				[ ])
+AC_ARG_ENABLE(listen-tcp,    AS_HELP_STRING([--enable-listen-tcp],
+                                            [Listen on TCP by default (default:disabled)]),
+                                [LISTEN_TCP=$enableval], [LISTEN_TCP=no])
+AC_ARG_ENABLE(listen-unix,   AS_HELP_STRING([--disable-listen-unix],
+                                            [Listen on Unix by default (default:enabled)]),
+                                [LISTEN_UNIX=$enableval], [LISTEN_UNIX=yes])
+
+AC_ARG_ENABLE(listen-local,  AS_HELP_STRING([--disable-listen-local],
+                                            [Listen on local by default (default:enabled)]),
+                                [LISTEN_LOCAL=$enableval], [LISTEN_LOCAL=yes])
 
 dnl Determine font path
 XORG_FONTROOTDIR
@@ -586,7 +576,6 @@ AC_ARG_WITH(khronos-spec-dir, AS_HELP_STRING([--with-khronos-spec-dir=PATH], [Pa
 				[KHRONOS_SPEC_DIR=auto])
 
 dnl Extensions.
-AC_ARG_ENABLE(registry,       AS_HELP_STRING([--disable-registry], [Build string registry module (default: enabled)]), [XREGISTRY=$enableval], [XREGISTRY=yes])
 AC_ARG_ENABLE(composite,      AS_HELP_STRING([--disable-composite], [Build Composite extension (default: enabled)]), [COMPOSITE=$enableval], [COMPOSITE=yes])
 AC_ARG_ENABLE(mitshm,         AS_HELP_STRING([--disable-mitshm], [Build SHM extension (default: auto)]), [MITSHM=$enableval], [MITSHM=auto])
 AC_ARG_ENABLE(xres,           AS_HELP_STRING([--disable-xres], [Build XRes extension (default: enabled)]), [RES=$enableval], [RES=yes])
@@ -648,6 +637,7 @@ AC_ARG_ENABLE(kdrive-kbd,     AS_HELP_STRING([--enable-kdrive-kbd], [Build kbd d
 AC_ARG_ENABLE(kdrive-mouse,   AS_HELP_STRING([--enable-kdrive-mouse], [Build mouse driver for kdrive (default: auto)]), [KDRIVE_MOUSE=$enableval], [KDRIVE_MOUSE=auto])
 AC_ARG_ENABLE(kdrive-evdev,   AS_HELP_STRING([--enable-kdrive-evdev], [Build evdev driver for kdrive (default: auto)]), [KDRIVE_EVDEV=$enableval], [KDRIVE_EVDEV=auto])
 AC_ARG_ENABLE(libunwind,      AS_HELP_STRING([--enable-libunwind], [Use libunwind for backtracing (default: auto)]), [LIBUNWIND="$enableval"], [LIBUNWIND="auto"])
+AC_ARG_ENABLE(xshmfence,      AS_HELP_STRING([--disable-xshmfence], [Disable xshmfence (default: auto)]), [XSHMFENCE="$enableval"], [XSHMFENCE="auto"])
 
 
 dnl chown/chmod to be setuid root as part of build
@@ -708,6 +698,7 @@ case $host_os in
 		CONFIG_UDEV=no
 		CONFIG_UDEV_KMS=no
 		DGA=no
+		DRM=no
 		DRI2=no
 		DRI3=no
 		INT10MODULE=no
@@ -787,7 +778,7 @@ DMXPROTO="dmxproto >= 2.2.99.1"
 VIDMODEPROTO="xf86vidmodeproto >= 2.2.99.1"
 WINDOWSWMPROTO="windowswmproto"
 APPLEWMPROTO="applewmproto >= 1.4"
-XSHMFENCE="xshmfence >= 1.1"
+LIBXSHMFENCE="xshmfence >= 1.1"
 
 dnl Required modules
 XPROTO="xproto >= 7.0.26"
@@ -801,7 +792,7 @@ FIXESPROTO="fixesproto >= 5.0"
 DAMAGEPROTO="damageproto >= 1.1"
 XCMISCPROTO="xcmiscproto >= 1.2.0"
 BIGREQSPROTO="bigreqsproto >= 1.1.0"
-XTRANS="xtrans >= 1.3.3"
+XTRANS="xtrans >= 1.3.5"
 PRESENTPROTO="presentproto >= 1.0"
 
 dnl List of libraries that require a specific version
@@ -861,6 +852,7 @@ fi
 PKG_CHECK_MODULES(UDEV, $LIBUDEV, [HAVE_LIBUDEV=yes], [HAVE_LIBUDEV=no])
 if test "x$CONFIG_UDEV" = xauto; then
 	CONFIG_UDEV="$HAVE_LIBUDEV"
+	AC_DEFINE(HAVE_LIBUDEV, 1, [Define to 1 if libudev is available.])
 fi
 AM_CONDITIONAL(CONFIG_UDEV, [test "x$CONFIG_UDEV" = xyes])
 if test "x$CONFIG_UDEV" = xyes; then
@@ -1036,11 +1028,6 @@ if test "x$XVMC" = xyes; then
 	AC_DEFINE(XvMCExtension, 1, [Build XvMC extension])
 fi
 
-AM_CONDITIONAL(XREGISTRY, [test "x$XREGISTRY" = xyes])
-if test "x$XREGISTRY" = xyes; then
-	AC_DEFINE(XREGISTRY, 1, [Build registry module])
-fi
-
 AM_CONDITIONAL(COMPOSITE, [test "x$COMPOSITE" = xyes])
 if test "x$COMPOSITE" = xyes; then
 	AC_DEFINE(COMPOSITE, 1, [Support Composite Extension])
@@ -1077,6 +1064,16 @@ if test "x$RES" = xyes; then
 	AC_DEFINE(RES, 1, [Support X resource extension])
 	REQUIRED_MODULES="$REQUIRED_MODULES $RESOURCEPROTO"
 	SDK_REQUIRED_MODULES="$SDK_REQUIRED_MODULES $RESOURCEPROTO"
+fi
+
+if test "x$LISTEN_TCP" = xyes; then
+	AC_DEFINE(LISTEN_TCP, 1, [Listen on TCP socket])
+fi
+if test "x$LISTEN_UNIX" = xyes; then
+	AC_DEFINE(LISTEN_UNIX, 1, [Listen on Unix socket])
+fi
+if test "x$LISTEN_LOCAL" = xyes; then
+	AC_DEFINE(LISTEN_LOCAL, 1, [Listen on local socket])
 fi
 
 # The XRes extension may support client ID tracking only if it has
@@ -1235,20 +1232,23 @@ esac
 
 AM_CONDITIONAL(BUSFAULT, test x"$BUSFAULT" = xyes)
 
-PKG_CHECK_MODULES([XSHMFENCE], $XSHMFENCE,
-		  [HAVE_XSHMFENCE=yes], [HAVE_XSHMFENCE=no])
 
-AM_CONDITIONAL(XSHMFENCE, test "x$HAVE_XSHMFENCE" = xyes)
+PKG_CHECK_MODULES([XSHMFENCE], $LIBXSHMFENCE, [HAVE_XSHMFENCE=yes], [HAVE_XSHMFENCE=no])
+if test "x$XSHMFENCE" = "xauto"; then
+    XSHMFENCE="$HAVE_XSHMFENCE"
+fi
 
-case x"$HAVE_XSHMFENCE" in
-	xyes)
-		AC_DEFINE(HAVE_XSHMFENCE, 1, [Have X Shared Memory Fence library])
-		REQUIRED_LIBS="$REQUIRED_LIBS xshmfence"
-		;;
-esac
+if test "x$XSHMFENCE" = "xyes"; then
+    if test "x$HAVE_XSHMFENCE" != "xyes"; then
+        AC_MSG_ERROR([xshmfence requested but not installed.])
+    fi
+    AC_DEFINE(HAVE_XSHMFENCE, 1, [Have xshmfence support])
+    REQUIRED_LIBS="$REQUIRED_LIBS $LIBXSHMFENCE"
+fi
 
+AM_CONDITIONAL(XSHMFENCE, [test "x$XSHMFENCE" = xyes])
 
-case "$DRI3,$HAVE_XSHMFENCE" in
+case "$DRI3,$XSHMFENCE" in
 	yes,yes | auto,yes)
 		;;
 	yes,no)
@@ -1994,11 +1994,13 @@ if test "x$XORG" = xyes; then
 	  gnu*)
 		XORG_OS_SUBDIR="hurd"
 		;;
+	  cygwin*)
+		XORG_OS_SUBDIR="stub"
+		;;
 	  *)
 		XORG_OS_SUBDIR="stub"
 		AC_MSG_NOTICE([m4_text_wrap(m4_join([ ],
-		[Your OS is unknown. Xorg currently only supports Linux,],
-		[Free/Open/Net/DragonFlyBSD, Solaris/OpenSolaris, & GNU Hurd.],
+		[Your OS is unknown.],
 		[If you are interested in porting Xorg to your platform,],
 		[please email xorg@lists.freedesktop.org.]))])
 		;;
@@ -2032,6 +2034,12 @@ if test "x$XORG" = xyes; then
 	        PKG_CHECK_MODULES(XORG_MODULES, [$XORG_MODULES])
 	        XORG_CFLAGS="$XORG_CFLAGS $XORG_MODULES_CFLAGS"
 	        XORG_SYS_LIBS="$XORG_SYS_LIBS $XORG_MODULES_LIBS"
+	fi
+
+	if test "x$DRM" = xyes; then
+		dnl 2.4.46 is required for cursor hotspot support.
+		PKG_CHECK_EXISTS(libdrm >= 2.4.46)
+		XORG_DRIVER_MODESETTING=yes
 	fi
 
 	AC_SUBST([XORG_LIBS])
@@ -2104,6 +2112,7 @@ AM_CONDITIONAL([SOLARIS_VT], [test "x$solaris_vt" = xyes])
 AM_CONDITIONAL([DGA], [test "x$DGA" = xyes])
 AM_CONDITIONAL([XF86VIDMODE], [test "x$XF86VIDMODE" = xyes])
 AM_CONDITIONAL([XORG_BUS_PLATFORM], [test "x$CONFIG_UDEV_KMS" = xyes])
+AM_CONDITIONAL([XORG_DRIVER_MODESETTING], [test "x$XORG_DRIVER_MODESETTING" = xyes])
 
 dnl glamor
 AM_CONDITIONAL([GLAMOR], [test "x$GLAMOR" = xyes])
@@ -2138,7 +2147,7 @@ if test "x$XWIN" = xyes; then
 	AC_DEFINE_UNQUOTED(__VENDORDWEBSUPPORT__, ["$VENDOR_WEB"], [Vendor web address for support])
 	AC_CHECK_TOOL(WINDRES, windres)
 
-	PKG_CHECK_MODULES([XWINMODULES],[x11 xdmcp xau])
+	PKG_CHECK_MODULES([XWINMODULES],[x11 xdmcp xau xfixes])
 
 	if test "x$WINDOWSWM" = xauto; then
 		PKG_CHECK_EXISTS($WINDOWSWMPROTO, [WINDOWSWM=yes], [WINDOWSWM=no])
@@ -2202,8 +2211,6 @@ AM_CONDITIONAL(XWIN_MULTIWINDOW, [test "x$XWIN" = xyes])
 AM_CONDITIONAL(XWIN_MULTIWINDOWEXTWM, [test "x$XWIN" = xyes && test "x$WINDOWSWM" = xyes])
 AM_CONDITIONAL(XWIN_CLIPBOARD, [test "x$XWIN" = xyes])
 AM_CONDITIONAL(XWIN_GLX_WINDOWS, [test "x$XWIN" = xyes && test "x$AIGLX" = xyes])
-AM_CONDITIONAL(XWIN_NATIVEGDI, [test "x$XWIN" = xyes])
-AM_CONDITIONAL(XWIN_PRIMARYFB, [test "x$XWIN" = xyes])
 AM_CONDITIONAL(XWIN_RANDR, [test "x$XWIN" = xyes])
 AM_CONDITIONAL(XWIN_XV, [test "x$XWIN" = xyes && test "x$XV" = xyes])
 
@@ -2359,7 +2366,7 @@ if test "$KDRIVE" = yes; then
        AC_DEFINE(KDRIVE_MOUSE, 1, [Enable KDrive mouse driver])
     fi
 
-    XEPHYR_REQUIRED_LIBS="xau xdmcp xcb xcb-shape xcb-aux xcb-image xcb-icccm xcb-shm xcb-keysyms"
+    XEPHYR_REQUIRED_LIBS="xau xdmcp xcb xcb-shape xcb-render xcb-renderutil xcb-aux xcb-image xcb-icccm xcb-shm xcb-keysyms xcb-randr"
     if test "x$XV" = xyes; then
         XEPHYR_REQUIRED_LIBS="$XEPHYR_REQUIRED_LIBS xcb-xv"
     fi
@@ -2549,6 +2556,9 @@ hw/xfree86/dixmods/Makefile
 hw/xfree86/doc/Makefile
 hw/xfree86/dri/Makefile
 hw/xfree86/dri2/Makefile
+hw/xfree86/dri2/pci_ids/Makefile
+hw/xfree86/drivers/Makefile
+hw/xfree86/drivers/modesetting/Makefile
 hw/xfree86/exa/Makefile
 hw/xfree86/exa/man/Makefile
 hw/xfree86/fbdevhw/Makefile
@@ -2594,6 +2604,7 @@ hw/xnest/man/Makefile
 hw/xwin/Makefile
 hw/xwin/glx/Makefile
 hw/xwin/man/Makefile
+hw/xwin/winclipboard/Makefile
 hw/xquartz/Makefile
 hw/xquartz/GL/Makefile
 hw/xquartz/bundle/Makefile

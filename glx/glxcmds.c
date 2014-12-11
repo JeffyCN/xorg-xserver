@@ -198,6 +198,12 @@ __glXdirectContextDestroy(__GLXcontext * context)
     free(context);
 }
 
+static int
+__glXdirectContextLoseCurrent(__GLXcontext * context)
+{
+    return GL_TRUE;
+}
+
 _X_HIDDEN __GLXcontext *
 __glXdirectContextCreate(__GLXscreen * screen,
                          __GLXconfig * modes, __GLXcontext * shareContext)
@@ -209,6 +215,7 @@ __glXdirectContextCreate(__GLXscreen * screen,
         return NULL;
 
     context->destroy = __glXdirectContextDestroy;
+    context->loseCurrent = __glXdirectContextLoseCurrent;
 
     return context;
 }
@@ -233,13 +240,13 @@ DoCreateContext(__GLXclientState * cl, GLXContextID gcId,
     LEGAL_NEW_RESOURCE(gcId, client);
 
     /*
-     ** Find the display list space that we want to share.  
+     ** Find the display list space that we want to share.
      **
      ** NOTE: In a multithreaded X server, we would need to keep a reference
-     ** count for each display list so that if one client detroyed a list that 
-     ** another client was using, the list would not really be freed until it 
-     ** was no longer in use.  Since this sample implementation has no support 
-     ** for multithreaded servers, we don't do this.  
+     ** count for each display list so that if one client detroyed a list that
+     ** another client was using, the list would not really be freed until it
+     ** was no longer in use.  Since this sample implementation has no support
+     ** for multithreaded servers, we don't do this.
      */
     if (shareList == None) {
         shareglxc = 0;
@@ -413,7 +420,9 @@ __glXDisp_DestroyContext(__GLXclientState * cl, GLbyte * pc)
                          &glxc, &err))
         return err;
 
-    FreeResourceByType(req->context, __glXContextRes, FALSE);
+    glxc->idExists = GL_FALSE;
+    if (!glxc->currentClient)
+        FreeResourceByType(req->context, __glXContextRes, FALSE);
 
     return Success;
 }
@@ -992,7 +1001,7 @@ __glXDisp_GetVisualConfigs(__GLXclientState * cl, GLbyte * pc)
         buf[p++] = modes->level;
 
         assert(p == GLX_VIS_CONFIG_UNPAIRED);
-        /* 
+        /*
          ** Add token/value pairs for extensions.
          */
         buf[p++] = GLX_VISUAL_CAVEAT_EXT;
@@ -1041,7 +1050,7 @@ __glXDisp_GetVisualConfigs(__GLXclientState * cl, GLbyte * pc)
  * and interface into the driver on the server-side to get GLXFBConfigs,
  * so we "invent" some based on the \c __GLXvisualConfig structures that
  * the driver does supply.
- * 
+ *
  * The reply format for both \c glXGetFBConfigs and \c glXGetFBConfigsSGIX
  * is the same, so this routine pulls double duty.
  */
@@ -2521,12 +2530,15 @@ __glXsendSwapEvent(__GLXdrawable *drawable, int type, CARD64 ust,
 
 #if PRESENT
 static void
-__glXpresentCompleteNotify(WindowPtr window, CARD8 present_mode, CARD32 serial,
-                           uint64_t ust, uint64_t msc)
+__glXpresentCompleteNotify(WindowPtr window, CARD8 present_kind, CARD8 present_mode,
+                           CARD32 serial, uint64_t ust, uint64_t msc)
 {
     __GLXdrawable *drawable;
     int glx_type;
     int rc;
+
+    if (present_kind != PresentCompleteKindPixmap)
+        return;
 
     rc = dixLookupResourceByType((void **) &drawable, window->drawable.id,
                                  __glXDrawableRes, serverClient, DixGetAttrAccess);
@@ -2538,7 +2550,7 @@ __glXpresentCompleteNotify(WindowPtr window, CARD8 present_mode, CARD32 serial,
         glx_type = GLX_FLIP_COMPLETE_INTEL;
     else
         glx_type = GLX_BLIT_COMPLETE_INTEL;
-        
+
     __glXsendSwapEvent(drawable, glx_type, ust, msc, serial);
 }
 
