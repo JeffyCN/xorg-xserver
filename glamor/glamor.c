@@ -221,11 +221,12 @@ glamor_destroy_textured_pixmap(PixmapPtr pixmap)
 {
     if (pixmap->refcnt == 1) {
         glamor_pixmap_private *pixmap_priv = glamor_get_pixmap_private(pixmap);
-        if (pixmap_priv != NULL)
-            glamor_pixmap_destroy_fbo(pixmap_priv);
+        if (pixmap_priv != NULL) {
 #if GLAMOR_HAS_GBM
-        glamor_egl_destroy_pixmap_image(pixmap);
+            glamor_egl_destroy_pixmap_image(pixmap);
 #endif
+            glamor_set_pixmap_private(pixmap, NULL);
+        }
     }
 }
 
@@ -248,17 +249,17 @@ glamor_block_handler(ScreenPtr screen)
 }
 
 static void
-_glamor_block_handler(void *data, OSTimePtr timeout, void *last_select_mask)
+_glamor_block_handler(ScreenPtr screen, void *timeout, void *readmask)
 {
-    glamor_screen_private *glamor_priv = data;
+    glamor_screen_private *glamor_priv = glamor_get_screen_private(screen);
+
+    screen->BlockHandler = glamor_priv->saved_procs.block_handler;
+    screen->BlockHandler(screen, timeout, readmask);
+    glamor_priv->saved_procs.block_handler = screen->BlockHandler;
+    screen->BlockHandler = _glamor_block_handler;
 
     glamor_make_current(glamor_priv);
     glFlush();
-}
-
-static void
-_glamor_wakeup_handler(void *data, int result, void *last_select_mask)
-{
 }
 
 static void
@@ -422,6 +423,9 @@ glamor_init(ScreenPtr screen, unsigned int flags)
 
     glamor_set_debug_level(&glamor_debug_level);
 
+    glamor_priv->saved_procs.close_screen = screen->CloseScreen;
+    screen->CloseScreen = glamor_close_screen;
+
     /* If we are using egl screen, call egl screen init to
      * register correct close screen function. */
     if (flags & GLAMOR_USE_EGL_SCREEN) {
@@ -431,9 +435,6 @@ glamor_init(ScreenPtr screen, unsigned int flags)
             goto fail;
     }
 
-    glamor_priv->saved_procs.close_screen = screen->CloseScreen;
-    screen->CloseScreen = glamor_close_screen;
-
     glamor_priv->saved_procs.create_screen_resources =
         screen->CreateScreenResources;
     screen->CreateScreenResources = glamor_create_screen_resources;
@@ -442,11 +443,9 @@ glamor_init(ScreenPtr screen, unsigned int flags)
         goto fail;
 
     if (flags & GLAMOR_USE_SCREEN) {
-        if (!RegisterBlockAndWakeupHandlers(_glamor_block_handler,
-                                            _glamor_wakeup_handler,
-                                            glamor_priv)) {
-            goto fail;
-        }
+
+        glamor_priv->saved_procs.block_handler = screen->BlockHandler;
+        screen->BlockHandler = _glamor_block_handler;
 
         glamor_priv->saved_procs.create_gc = screen->CreateGC;
         screen->CreateGC = glamor_create_gc;
@@ -552,7 +551,6 @@ _X_EXPORT void
 glamor_set_pixmap_private(PixmapPtr pixmap, glamor_pixmap_private *priv)
 {
     glamor_pixmap_private *old_priv;
-    glamor_pixmap_fbo *fbo;
 
     old_priv = dixGetPrivate(&pixmap->devPrivates, &glamor_pixmap_private_key);
 
@@ -562,8 +560,8 @@ glamor_set_pixmap_private(PixmapPtr pixmap, glamor_pixmap_private *priv)
     else {
         if (old_priv == NULL)
             return;
-        fbo = glamor_pixmap_detach_fbo(old_priv);
-        glamor_purge_fbo(fbo);
+
+        glamor_pixmap_destroy_fbo(old_priv);
         free(old_priv);
     }
 
@@ -597,6 +595,7 @@ glamor_close_screen(ScreenPtr screen)
             glamor_priv->saved_procs.change_window_attributes;
         screen->CopyWindow = glamor_priv->saved_procs.copy_window;
         screen->BitmapToRegion = glamor_priv->saved_procs.bitmap_to_region;
+        screen->BlockHandler = glamor_priv->saved_procs.block_handler;
     }
 #ifdef RENDER
     if (ps && (flags & GLAMOR_USE_PICTURE_SCREEN)) {
