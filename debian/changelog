@@ -1,4 +1,4 @@
-xorg-server (2:1.16.99.901-1) UNRELEASED; urgency=medium
+xorg-server (2:1.17.1-1) UNRELEASED; urgency=medium
 
   * New upstream release candidate 17~rc1.
   * Enable the modesetting driver from xorg-server.
