@@ -1,6 +1,6 @@
 xorg-server (2:1.17.1-1) UNRELEASED; urgency=medium
 
-  * New upstream release candidate 17~rc1.
+  * New upstream release 1.17.1.
   * Enable the modesetting driver from xorg-server.
   * Drop upstreamed patches:
     - 09_Xserver-man-iglx.diff

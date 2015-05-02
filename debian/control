@@ -138,14 +138,15 @@ Breaks:
  xserver-xorg-video-vga (<= 1:4.1.0-8),
  libgl1-mesa-dri (<< 7.10.2-4),
  libgl1-mesa-dri-experimental (<< 7.10.2-4),
- xserver-xorg-video-modesetting,
 Replaces:
  xserver-xorg-video-modesetting,
 Conflicts:
  xserver-xorg-input-evtouch,
+ xserver-xorg-video-modesetting,
 Provides:
  ${videoabi},
  ${inputabi},
+ xserver-xorg-video-modesetting,
 Description: Xorg X server - core server
  The Xorg X server is an X server for several architectures and operating
  systems, which is derived from the XFree86 4.x series of X servers.
