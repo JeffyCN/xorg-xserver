@@ -53,9 +53,11 @@ endif
 
 ifeq ($(DEB_HOST_ARCH_OS), hurd)
 	dri = --disable-dri --disable-dri2
+	xshmfence = --disable-xshmfence
 else
 	dri = --enable-dri --enable-dri2
 	dri += --enable-glamor
+	xshmfence = --enable-xshmfence
 endif
 
 ifeq ($(DEB_HOST_ARCH_OS), linux)
@@ -114,6 +116,7 @@ confflags += \
 	     --enable-dbe \
 	     --disable-xf86bigfont \
 	     --enable-dpms \
+	     $(xshmfence) \
 	     $(config_backend) \
 	     --enable-xorg \
 	     --disable-linux-acpi \
@@ -128,7 +131,6 @@ confflags_main = \
 	--with-default-font-path="/usr/share/fonts/X11/misc,/usr/share/fonts/X11/cyrillic,/usr/share/fonts/X11/100dpi/:unscaled,/usr/share/fonts/X11/75dpi/:unscaled,/usr/share/fonts/X11/Type1,/usr/share/fonts/X11/100dpi,/usr/share/fonts/X11/75dpi,built-ins" \
 	--enable-aiglx \
 	--enable-glx-tls \
-	--enable-registry \
 	--enable-composite \
 	--enable-record \
 	--enable-xv \
@@ -160,7 +162,6 @@ confflags_udeb = \
 	--with-default-font-path="built-ins" \
 	--disable-aiglx \
 	--disable-glx-tls \
-	--disable-registry \
 	--disable-composite \
 	--disable-record \
 	--disable-xv \
