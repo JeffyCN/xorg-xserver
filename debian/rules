@@ -211,6 +211,7 @@ $(STAMP_DIR)/configure-%: $(STAMP_DIR)/autoreconf
 	cd build-$* && \
 	../configure \
 	  --prefix=/usr \
+	  --libdir=\$${exec_prefix}/lib \
 	  --mandir=\$${prefix}/share/man \
 	  --infodir=\$${prefix}/share/info \
 	  --sysconfdir=/etc \

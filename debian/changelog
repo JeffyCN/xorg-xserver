@@ -1,5 +1,6 @@
 xorg-server (2:1.17.1-1) UNRELEASED; urgency=medium
 
+  [ Maarten Lankhorst ]
   * New upstream release 1.17.1.
   * Enable the modesetting driver from xorg-server.
   * Drop upstreamed patches:
@@ -7,6 +8,9 @@ xorg-server (2:1.17.1-1) UNRELEASED; urgency=medium
   * Disable 08_xfree86_fix_ia64_inx_outx.diff, no longer applies.
     - Is this patch still needed because it seems to be handled now?
   * Bump video abi to 19.
+
+  [ Julien Cristau ]
+  * Bump debhelper compat level to 9.
 
  -- Maarten Lankhorst <maarten.lankhorst@ubuntu.com>  Thu, 11 Dec 2014 15:49:13 +0100
 
