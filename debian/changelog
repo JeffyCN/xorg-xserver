@@ -1,4 +1,4 @@
-xorg-server (2:1.17.1-1) UNRELEASED; urgency=medium
+xorg-server (2:1.17.1-1) experimental; urgency=medium
 
   [ Maarten Lankhorst ]
   * New upstream release 1.17.1.
@@ -13,7 +13,7 @@ xorg-server (2:1.17.1-1) UNRELEASED; urgency=medium
   * Bump debhelper compat level to 9.
   * Update debian/copyright from upstream COPYING.
 
- -- Maarten Lankhorst <maarten.lankhorst@ubuntu.com>  Thu, 11 Dec 2014 15:49:13 +0100
+ -- Julien Cristau <jcristau@debian.org>  Sun, 03 May 2015 18:00:32 +0200
 
 xorg-server (2:1.16.4-1) unstable; urgency=high
 
