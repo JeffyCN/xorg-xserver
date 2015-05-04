@@ -1,11 +1,11 @@
-xorg-server (2:1.17.1-2) UNRELEASED; urgency=medium
+xorg-server (2:1.17.1-2) experimental; urgency=medium
 
   * Disable libdrm support on hurd and in the kfreebsd udev build, so we don't
     try building the modesetting driver without libdrm.  We should probably
     revisit this later and ship modesetting_drv.so in d-i, but this should do
     for now.
 
- -- Julien Cristau <jcristau@debian.org>  Mon, 04 May 2015 21:39:19 +0200
+ -- Julien Cristau <jcristau@debian.org>  Mon, 04 May 2015 22:04:01 +0200
 
 xorg-server (2:1.17.1-1) experimental; urgency=medium
 
