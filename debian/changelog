@@ -1,6 +1,6 @@
 xorg-server (2:1.17.1-2) experimental; urgency=medium
 
-  * Disable libdrm support on hurd and in the kfreebsd udev build, so we don't
+  * Disable libdrm support on hurd and in the kfreebsd udeb build, so we don't
     try building the modesetting driver without libdrm.  We should probably
     revisit this later and ship modesetting_drv.so in d-i, but this should do
     for now.
