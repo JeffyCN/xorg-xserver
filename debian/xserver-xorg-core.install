@@ -9,4 +9,5 @@ main/usr/bin/cvt	usr/bin
 main/usr/bin/gtf	usr/bin
 main/usr/share/man/man1/cvt.1	usr/share/man/man1
 main/usr/share/man/man1/gtf.1	usr/share/man/man1
+main/usr/share/man/man4/modesetting.4	usr/share/man/man4
 main/usr/share/X11/xorg.conf.d	usr/share/X11/
