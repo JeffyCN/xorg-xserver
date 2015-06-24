@@ -236,6 +236,8 @@ typedef struct glamor_screen_private {
     int has_buffer_storage;
     int has_khr_debug;
     int has_nv_texture_barrier;
+    int has_pack_subimage;
+    int has_unpack_subimage;
     int max_fbo_size;
     int has_rw_pbo;
 
@@ -669,7 +671,7 @@ glamor_pixmap_fbo *glamor_create_fbo_array(glamor_screen_private *glamor_priv,
 void glamor_init_finish_access_shaders(ScreenPtr screen);
 void glamor_fini_finish_access_shaders(ScreenPtr screen);
 
-const Bool glamor_get_drawable_location(const DrawablePtr drawable);
+Bool glamor_get_drawable_location(const DrawablePtr drawable);
 void glamor_get_drawable_deltas(DrawablePtr drawable, PixmapPtr pixmap,
                                 int *x, int *y);
 GLint glamor_compile_glsl_prog(GLenum type, const char *source);
@@ -1094,5 +1096,7 @@ void glamor_xv_render(glamor_port_private *port_priv);
 #define GLYPHS_EDEGE_OVERLAP_LOOSE_CHECK
 
 #include "glamor_font.h"
+
+#define GLAMOR_MIN_ALU_INSTRUCTIONS 128 /* Minimum required number of native ALU instructions */
 
 #endif                          /* GLAMOR_PRIV_H */

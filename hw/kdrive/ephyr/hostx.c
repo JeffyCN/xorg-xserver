@@ -177,7 +177,7 @@ hostx_set_win_title(KdScreenInfo *screen, const char *extra_text)
 
         memset(buf, 0, BUF_LEN + 1);
         snprintf(buf, BUF_LEN, "Xephyr on %s.%d %s",
-                 HostX.server_dpy_name,
+                 HostX.server_dpy_name ? HostX.server_dpy_name : ":0",
                  scrpriv->mynum, (extra_text != NULL) ? extra_text : "");
 
         xcb_icccm_set_wm_name(HostX.conn,
@@ -443,7 +443,7 @@ hostx_init(void)
     else
 #endif
         HostX.conn = xcb_connect(NULL, &HostX.screen);
-    if (xcb_connection_has_error(HostX.conn)) {
+    if (!HostX.conn || xcb_connection_has_error(HostX.conn)) {
         fprintf(stderr, "\nXephyr cannot open host display. Is DISPLAY set?\n");
         exit(1);
     }
@@ -798,7 +798,7 @@ hostx_screen_init(KdScreenInfo *screen,
     }
 
     EPHYR_DBG("host_screen=%p x=%d, y=%d, wxh=%dx%d, buffer_height=%d",
-              host_screen, x, y, width, height, buffer_height);
+              screen, x, y, width, height, buffer_height);
 
     if (scrpriv->ximg != NULL) {
         /* Free up the image data if previously used
@@ -865,6 +865,11 @@ hostx_screen_init(KdScreenInfo *screen,
                                                     NULL,
                                                     ~0,
                                                     NULL);
+
+        /* Match server byte order so that the image can be converted to
+         * the native byte order by xcb_image_put() before drawing */
+        if (host_depth_matches_server(scrpriv))
+            scrpriv->ximg->byte_order = IMAGE_BYTE_ORDER;
 
         scrpriv->ximg->data =
             malloc(scrpriv->ximg->stride * buffer_height);
@@ -1034,8 +1039,11 @@ hostx_paint_rect(KdScreenInfo *screen,
                           sx, sy, dx, dy, width, height, FALSE);
     }
     else {
-        xcb_image_put(HostX.conn, scrpriv->win, HostX.gc, scrpriv->ximg,
-                      dx, dy, 0);
+        /* This is slow and could be done better */
+        xcb_image_t *img = xcb_image_native (HostX.conn, scrpriv->ximg, 1);
+        xcb_image_put(HostX.conn, scrpriv->win, HostX.gc, img, 0, 0, 0);
+        if (scrpriv->ximg != img)
+            xcb_image_destroy(img);
     }
 
     xcb_aux_sync(HostX.conn);
@@ -1407,9 +1415,12 @@ ephyr_glamor_init(ScreenPtr screen)
     ephyr_glamor_set_window_size(scrpriv->glamor,
                                  scrpriv->win_width, scrpriv->win_height);
 
-    glamor_init(screen,
-                GLAMOR_USE_SCREEN |
-                GLAMOR_USE_PICTURE_SCREEN);
+    if (!glamor_init(screen,
+                     GLAMOR_USE_SCREEN |
+                     GLAMOR_USE_PICTURE_SCREEN)) {
+        FatalError("Failed to initialize glamor\n");
+        return FALSE;
+    }
 
     return TRUE;
 }

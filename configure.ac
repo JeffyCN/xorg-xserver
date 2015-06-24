@@ -26,8 +26,8 @@ dnl
 dnl Process this file with autoconf to create configure.
 
 AC_PREREQ(2.60)
-AC_INIT([xorg-server], 1.17.1, [https://bugs.freedesktop.org/enter_bug.cgi?product=xorg], xorg-server)
-RELEASE_DATE="2015-02-10"
+AC_INIT([xorg-server], 1.17.2, [https://bugs.freedesktop.org/enter_bug.cgi?product=xorg], xorg-server)
+RELEASE_DATE="2015-06-16"
 RELEASE_NAME="lambic"
 AC_CONFIG_SRCDIR([Makefile.am])
 AC_CONFIG_MACRO_DIR([m4])
@@ -1976,7 +1976,7 @@ if test "x$XORG" = xyes; then
 		  sparc*)	
 			SOLARIS_INOUT_ARCH="sparcv8plus"
 			;;
-		  i*86)	
+		  i*86|x86_64*)
 			if test x$SOLARIS_64 = xyes ; then
 				SOLARIS_INOUT_ARCH="amd64"
 			else
@@ -2423,7 +2423,8 @@ if test "$KDRIVE" = yes; then
 	    fi
 	    ;;
     esac
-    KDRIVE_LOCAL_LIBS="$MAIN_LIB $DIX_LIB $KDRIVE_LIB"
+    KDRIVE_MAIN_LIB="$MAIN_LIB"
+    KDRIVE_LOCAL_LIBS="$DIX_LIB $KDRIVE_LIB"
     KDRIVE_LOCAL_LIBS="$KDRIVE_LOCAL_LIBS $FB_LIB $MI_LIB $KDRIVE_PURE_LIBS"
     KDRIVE_LOCAL_LIBS="$KDRIVE_LOCAL_LIBS $KDRIVE_OS_LIB"
     KDRIVE_LIBS="$KDRIVE_LOCAL_LIBS $XSERVER_SYS_LIBS $GLX_SYS_LIBS $DLOPEN_LIBS $TSLIB_LIBS"
@@ -2435,6 +2436,7 @@ AC_SUBST([KDRIVE_INCS])
 AC_SUBST([KDRIVE_PURE_INCS])
 AC_SUBST([KDRIVE_CFLAGS])
 AC_SUBST([KDRIVE_PURE_LIBS])
+AC_SUBST([KDRIVE_MAIN_LIB])
 AC_SUBST([KDRIVE_LOCAL_LIBS])
 AC_SUBST([KDRIVE_LIBS])
 AM_CONDITIONAL(KDRIVELINUX, [test "x$KDRIVELINUX" = xyes])
