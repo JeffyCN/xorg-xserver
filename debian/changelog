@@ -1,3 +1,15 @@
+xorg-server (2:1.17.2-1) UNRELEASED; urgency=medium
+
+  * New upstream release.
+    + symbols: Fix sdksyms.sh to cope with gcc5 (Closes: #778187)
+    + os/access: fix regression in server interpreted auth (Closes: #784687)
+    + dix: Fix image byte order on big endian hardware (Closes: #785474)
+    + int10: Fix error check for pci_device_map_legacy (Closes: #787144)
+    + unauthorised local client access in XWayland [CVE-2015-3164]
+      (Closes: #788410)
+
+ -- Sven Joachim <svenjoac@gmx.de>  Wed, 24 Jun 2015 17:17:25 +0200
+
 xorg-server (2:1.17.1-2) experimental; urgency=medium
 
   * Disable libdrm support on hurd and in the kfreebsd udeb build, so we don't
