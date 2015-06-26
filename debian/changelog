@@ -9,6 +9,7 @@ xorg-server (2:1.17.2-1) UNRELEASED; urgency=medium
     + unauthorised local client access in XWayland [CVE-2015-3164]
       (Closes: #788410)
   * Install the modesetting.4 manpage into xserver-xorg-core (Closes: #789646)
+  * Build xserver-xorg-core-udeb on all architectures again (Closes: #775205)
   * Update debian/upstream/signing-key.asc.
 
  -- Sven Joachim <svenjoac@gmx.de>  Wed, 24 Jun 2015 17:17:25 +0200
