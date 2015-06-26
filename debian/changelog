@@ -5,6 +5,7 @@ xorg-server (2:1.17.2-1) UNRELEASED; urgency=medium
     + os/access: fix regression in server interpreted auth (Closes: #784687)
     + dix: Fix image byte order on big endian hardware (Closes: #785474)
     + int10: Fix error check for pci_device_map_legacy (Closes: #787144)
+    + modesetting: Include dix-config.h from dumb_bo.c (Closes: #789823)
     + unauthorised local client access in XWayland [CVE-2015-3164]
       (Closes: #788410)
   * Install the modesetting.4 manpage into xserver-xorg-core (Closes: #789646)
