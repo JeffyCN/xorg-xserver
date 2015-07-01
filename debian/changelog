@@ -1,5 +1,6 @@
-xorg-server (2:1.17.2-1) UNRELEASED; urgency=medium
+xorg-server (2:1.17.2-1) unstable; urgency=medium
 
+  [ Sven Joachim ]
   * New upstream release.
     + symbols: Fix sdksyms.sh to cope with gcc5 (Closes: #778187)
     + os/access: fix regression in server interpreted auth (Closes: #784687)
@@ -12,9 +13,9 @@ xorg-server (2:1.17.2-1) UNRELEASED; urgency=medium
   * Build xserver-xorg-core-udeb on all architectures again (Closes: #775205)
   * Update debian/upstream/signing-key.asc.
 
- -- Sven Joachim <svenjoac@gmx.de>  Wed, 24 Jun 2015 17:17:25 +0200
+ -- Julien Cristau <jcristau@debian.org>  Wed, 01 Jul 2015 18:07:40 +0200
 
-xorg-server (2:1.17.1-2) experimental; urgency=medium
+xorg-server (2:1.17.1-2) unstable; urgency=medium
 
   * Disable libdrm support on hurd and in the kfreebsd udeb build, so we don't
     try building the modesetting driver without libdrm.  We should probably
