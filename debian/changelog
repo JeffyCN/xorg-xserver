@@ -1,9 +1,12 @@
-xorg-server (2:1.17.2-2) UNRELEASED; urgency=medium
+xorg-server (2:1.17.2-1.1) unstable; urgency=medium
 
+  * Non-Maintainer Upload.
+
+  [ Sven Joachim ]
   * Install the whole usr/share/man/man4 directory into xserver-xorg-core,
     fixes FTBFS on hurd where modesetting.4 does not exist (Closes: #794644).
 
- -- Sven Joachim <svenjoac@gmx.de>  Thu, 02 Jul 2015 19:33:57 +0200
+ -- Samuel Thibault <sthibault@debian.org>  Tue, 11 Aug 2015 10:45:35 +0200
 
 xorg-server (2:1.17.2-1) unstable; urgency=medium
 
