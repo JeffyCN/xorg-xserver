@@ -144,6 +144,7 @@ Breaks:
  libgl1-mesa-dri-experimental (<< 7.10.2-4),
 Replaces:
  xserver-xorg-video-modesetting,
+ xserver-xorg,
 Conflicts:
  xserver-xorg-input-evtouch,
  xserver-xorg-video-modesetting,

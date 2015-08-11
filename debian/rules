@@ -167,6 +167,7 @@ confflags_main = \
 	--enable-xfree86-utils \
 	$(wayland) \
 	$(logind) \
+	--enable-suid-wrapper \
 	--enable-dmx \
 	--enable-xvfb \
 	--enable-xnest \
@@ -200,6 +201,7 @@ confflags_udeb = \
 	--disable-xfree86-utils \
 	--disable-xwayland \
 	--disable-systemd-logind \
+	--disable-suid-wrapper \
 	--disable-dmx \
 	--disable-xvfb \
 	--disable-xnest \
@@ -237,6 +239,7 @@ $(STAMP_DIR)/configure-%: $(STAMP_DIR)/autoreconf
 	  --infodir=\$${prefix}/share/info \
 	  --sysconfdir=/etc \
 	  --localstatedir=/var \
+	  --libexecdir=\$${prefix}/lib/xorg-server \
 	  $(confflags) \
 	  $(confflags_$*) \
 	  $(vars)
@@ -327,6 +330,8 @@ binary-deb:
 	dh_lintian
 	dh_compress
 	dh_fixperms
+	-chown root:root $(CURDIR)/debian/xserver-xorg-core/usr/lib/xorg-server/Xorg.wrap
+	-chmod ug+s $(CURDIR)/debian/xserver-xorg-core/usr/lib/xorg-server/Xorg.wrap
 	dh_installdeb
 	dh_shlibdeps
 	dh_gencontrol
