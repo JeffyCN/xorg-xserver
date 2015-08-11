@@ -95,6 +95,8 @@ Build-Depends:
  libbsd-dev [kfreebsd-any],
 # xwayland
  libwayland-dev [linux-any],
+#logind
+  libdbus-1-dev (>= 1.0) [linux-any],
 Standards-Version: 3.9.2
 Vcs-Git: git://git.debian.org/git/pkg-xorg/xserver/xorg-server
 Vcs-Browser: http://git.debian.org/?p=pkg-xorg/xserver/xorg-server.git

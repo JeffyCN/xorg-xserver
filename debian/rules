@@ -46,9 +46,11 @@ endif
 ifeq ($(DEB_HOST_ARCH_OS), linux)
 	selinux = --enable-xselinux
 	wayland = --enable-xwayland
+	logind  = --enable-systemd-logind
 else
 	selinux = --disable-xselinux
 	wayland = --disable-xwayland
+	logind  = --disable-systemd-logind
 endif
 
 ifeq ($(DEB_HOST_ARCH_OS), hurd)
@@ -66,7 +68,7 @@ else
 	dri += --disable-dri3
 endif
 
-config_backend = --disable-config-dbus --disable-config-hal
+config_backend = --disable-config-hal
 ifeq ($(DEB_HOST_ARCH_OS), linux)
 	config_backend += --enable-config-udev
 else ifeq ($(DEB_HOST_ARCH_OS), kfreebsd)
@@ -164,6 +166,7 @@ confflags_main = \
 	$(selinux) \
 	--enable-xfree86-utils \
 	$(wayland) \
+	$(logind) \
 	--enable-dmx \
 	--enable-xvfb \
 	--enable-xnest \
@@ -196,6 +199,7 @@ confflags_udeb = \
 	--disable-xselinux \
 	--disable-xfree86-utils \
 	--disable-xwayland \
+	--disable-systemd-logind \
 	--disable-dmx \
 	--disable-xvfb \
 	--disable-xnest \
