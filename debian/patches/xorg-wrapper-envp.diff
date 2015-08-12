@@ -1,0 +1,21 @@
+diff --git a/hw/xfree86/xorg-wrapper.c b/hw/xfree86/xorg-wrapper.c
+index 22e97ad..10e6fe8 100644
+--- a/hw/xfree86/xorg-wrapper.c
++++ b/hw/xfree86/xorg-wrapper.c
+@@ -190,6 +190,7 @@ int main(int argc, char *argv[])
+     int total_cards = 0;
+     int allowed = CONSOLE_ONLY;
+     int needs_root_rights = -1;
++    char *const envp[1] = { NULL, };
+ 
+     progname = argv[0];
+ 
+@@ -265,7 +266,7 @@ int main(int argc, char *argv[])
+     }
+ 
+     argv[0] = buf;
+-    (void) execv(argv[0], argv);
++    (void) execve(argv[0], argv, envp);
+     fprintf(stderr, "%s: Failed to execute %s: %s\n",
+         progname, buf, strerror(errno));
+     exit(1);
