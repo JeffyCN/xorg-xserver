@@ -5,6 +5,10 @@ xorg-server (2:1.17.2-2) UNRELEASED; urgency=medium
   * Build and ship the setuid root wrapper from upstream, replacing
     xserver-xorg's.
 
+  [ Julien Cristau ]
+  * Take over x11-common's handling of the X wrapper; ship the wrapper in a
+    new xserver-xorg-legacy package.
+
  -- Julien Cristau <jcristau@debian.org>  Tue, 11 Aug 2015 19:40:35 +0200
 
 xorg-server (2:1.17.2-1.1) unstable; urgency=medium

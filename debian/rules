@@ -239,7 +239,7 @@ $(STAMP_DIR)/configure-%: $(STAMP_DIR)/autoreconf
 	  --infodir=\$${prefix}/share/info \
 	  --sysconfdir=/etc \
 	  --localstatedir=/var \
-	  --libexecdir=\$${prefix}/lib/xorg-server \
+	  --libexecdir=\$${libdir}/xorg \
 	  $(confflags) \
 	  $(confflags_$*) \
 	  $(vars)
@@ -330,8 +330,8 @@ binary-deb:
 	dh_lintian
 	dh_compress
 	dh_fixperms
-	-chown root:root $(CURDIR)/debian/xserver-xorg-core/usr/lib/xorg-server/Xorg.wrap
-	-chmod ug+s $(CURDIR)/debian/xserver-xorg-core/usr/lib/xorg-server/Xorg.wrap
+	-chown root:root $(CURDIR)/debian/xserver-xorg-legacy/usr/lib/xorg/Xorg.wrap
+	-chmod ug+s $(CURDIR)/debian/xserver-xorg-legacy/usr/lib/xorg/Xorg.wrap
 	dh_installdeb
 	dh_shlibdeps
 	dh_gencontrol
