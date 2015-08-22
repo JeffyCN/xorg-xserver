@@ -398,8 +398,10 @@ Depends:
  ${misc:Depends},
 Breaks:
  x11-common (<< 1:7.7+10~),
+ xserver-xorg-core (<< 2:1.17.2-3~),
 Replaces:
  x11-common (<< 1:7.7+10~),
+ xserver-xorg-core (<< 2:1.17.2-3~),
 Description: setuid root Xorg server wrapper
  This package provides a wrapper for the Xorg X server, which is
  necessary for legacy drivers and non-Linux kernels.
