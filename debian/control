@@ -101,6 +101,7 @@ Build-Depends:
 Standards-Version: 3.9.2
 Vcs-Git: git://anonscm.debian.org/pkg-xorg/xserver/xorg-server.git
 Vcs-Browser: http://anonscm.debian.org/cgit/pkg-xorg/xserver/xorg-server.git
+Homepage: http://www.x.org/
 
 Package: xserver-xorg-core
 Architecture: any

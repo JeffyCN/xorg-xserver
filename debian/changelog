@@ -6,6 +6,7 @@ xorg-server (2:1.17.2-3) UNRELEASED; urgency=medium
 
   [ Andreas Boll ]
   * Update Vcs-* fields.
+  * Add upstream url.
 
  -- Laurent Bigonville <bigon@debian.org>  Sat, 22 Aug 2015 16:29:11 +0200
 
