@@ -99,8 +99,8 @@ Build-Depends:
 #logind
   libdbus-1-dev (>= 1.0) [linux-any],
 Standards-Version: 3.9.2
-Vcs-Git: git://git.debian.org/git/pkg-xorg/xserver/xorg-server
-Vcs-Browser: http://git.debian.org/?p=pkg-xorg/xserver/xorg-server.git
+Vcs-Git: git://anonscm.debian.org/pkg-xorg/xserver/xorg-server.git
+Vcs-Browser: http://anonscm.debian.org/cgit/pkg-xorg/xserver/xorg-server.git
 
 Package: xserver-xorg-core
 Architecture: any

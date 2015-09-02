@@ -1,7 +1,11 @@
 xorg-server (2:1.17.2-3) UNRELEASED; urgency=medium
 
+  [ Laurent Bigonville ]
   * Move Xorg.wrap.1 man page from the xserver-xorg-core to
     xserver-xorg-legacy package (Closes: #797661)
+
+  [ Andreas Boll ]
+  * Update Vcs-* fields.
 
  -- Laurent Bigonville <bigon@debian.org>  Sat, 22 Aug 2015 16:29:11 +0200
 
