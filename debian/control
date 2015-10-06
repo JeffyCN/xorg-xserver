@@ -98,7 +98,7 @@ Build-Depends:
  libwayland-dev [linux-any],
 #logind
   libdbus-1-dev (>= 1.0) [linux-any],
-Standards-Version: 3.9.2
+Standards-Version: 3.9.6
 Vcs-Git: https://anonscm.debian.org/git/pkg-xorg/debian/xorg.git
 Vcs-Browser: https://anonscm.debian.org/cgit/pkg-xorg/xserver/xorg-server.git
 Homepage: http://www.x.org/
