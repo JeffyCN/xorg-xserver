@@ -1,5 +1,6 @@
-xorg-server (2:1.17.2-3) UNRELEASED; urgency=medium
+xorg-server (2:1.17.2-3) unstable; urgency=medium
 
+  * Team upload.
   [ Laurent Bigonville ]
   * Move Xorg.wrap.1 man page from the xserver-xorg-core to
     xserver-xorg-legacy package (Closes: #797661)
@@ -14,7 +15,7 @@ xorg-server (2:1.17.2-3) UNRELEASED; urgency=medium
   [ Julien Cristau ]
   * Only reset environment in the Xorg wrapper if we didn't drop privileges.
 
- -- Laurent Bigonville <bigon@debian.org>  Tue, 06 Oct 2015 09:05:48 +0200
+ -- Laurent Bigonville <bigon@debian.org>  Tue, 06 Oct 2015 09:06:22 +0200
 
 xorg-server (2:1.17.2-2) experimental; urgency=medium
 
