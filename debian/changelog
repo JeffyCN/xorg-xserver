@@ -3,6 +3,8 @@ xorg-server (2:1.17.2-3) UNRELEASED; urgency=medium
   [ Laurent Bigonville ]
   * Move Xorg.wrap.1 man page from the xserver-xorg-core to
     xserver-xorg-legacy package (Closes: #797661)
+  * Add a Breaks against systemd (<< 226-4~), before that version logind was
+    restarted on upgrade which makes the X server crash (See #798097)
 
   [ Andreas Boll ]
   * Update Vcs-* fields.
@@ -11,7 +13,7 @@ xorg-server (2:1.17.2-3) UNRELEASED; urgency=medium
   [ Julien Cristau ]
   * Only reset environment in the Xorg wrapper if we didn't drop privileges.
 
- -- Laurent Bigonville <bigon@debian.org>  Sat, 22 Aug 2015 16:29:11 +0200
+ -- Laurent Bigonville <bigon@debian.org>  Tue, 06 Oct 2015 08:49:08 +0200
 
 xorg-server (2:1.17.2-2) experimental; urgency=medium
 

@@ -145,6 +145,7 @@ Breaks:
  libgl1-mesa-dri (<< 7.10.2-4),
  libgl1-mesa-dri-experimental (<< 7.10.2-4),
  xserver-xorg (<< 1:7.7+10~),
+ systemd (<< 226-4~),
 Replaces:
  xserver-xorg-video-modesetting,
  xserver-xorg (<< 1:7.7+10~),
