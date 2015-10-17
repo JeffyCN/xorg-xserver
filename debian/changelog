@@ -3,6 +3,7 @@ xorg-server (2:1.17.2-4) UNRELEASED; urgency=medium
   [ Andreas Boll ]
   * Use the correct repository for the Vcs-Git field (Closes: #801340).
     Thanks, Vagrant Cascadian.
+  * Document new location for non-root Xorg log in the NEWS file.
 
   [ Julien Cristau ]
   * Add NEWS file for xserver-xorg-core with info about the -legacy split.

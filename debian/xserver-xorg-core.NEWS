@@ -7,6 +7,8 @@ xorg-server (2:1.17.2-4) UNRELEASED; urgency=medium
   * it relies on a kernel video driver (so the userspace component doesn't
     touch the hardware directly)
   * it needs X to run on the virtual console (VT) it was started from
+  * it changes the location for storing the Xorg log from /var/log/ to
+    ~/.local/share/xorg/
 
   On systems where those are not available, the new xserver-xorg-legacy package
   is needed to allow X to run with elevated privileges.  See the
