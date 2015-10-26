@@ -114,7 +114,9 @@ Depends:
  libegl1-mesa [linux-any kfreebsd-any] | libegl1 [linux-any kfreebsd-any],
  ${shlibs:Depends},
  ${misc:Depends},
-Recommends: libgl1-mesa-dri (>= 7.10.2-4)
+Recommends:
+ libgl1-mesa-dri (>= 7.10.2-4),
+ libpam-systemd,
 Suggests: xfonts-100dpi | xfonts-75dpi, xfonts-scalable
 Breaks:
  xserver-xorg-video,

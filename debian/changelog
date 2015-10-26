@@ -6,7 +6,10 @@ xorg-server (2:1.17.2-4) UNRELEASED; urgency=medium
   * Document new location for non-root Xorg log in the NEWS file.
 
   [ Julien Cristau ]
-  * Add NEWS file for xserver-xorg-core with info about the -legacy split.
+  * Add NEWS file for xserver-xorg-core with info about the -legacy split
+    (closes: #801487).
+  * Recommend libpam-systemd (closes:  #802544, #802618, #802327, #802566,
+    probably others)
 
   [ Samuel Thibault ]
   * Fix xorg-wrapper on hurd (cherry-picked from master).
