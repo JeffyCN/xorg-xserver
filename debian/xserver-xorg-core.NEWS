@@ -1,4 +1,4 @@
-xorg-server (2:1.17.2-4) UNRELEASED; urgency=medium
+xorg-server (2:1.17.3-1) unstable; urgency=medium
 
   The Xorg server is no longer setuid root by default.  This change reduces the
   risk of privilege escalation due to X server bugs, but has some side effects:
@@ -14,4 +14,4 @@ xorg-server (2:1.17.2-4) UNRELEASED; urgency=medium
   is needed to allow X to run with elevated privileges.  See the
   Xwrapper.config(5) manual page for configuration details.
 
- -- Julien Cristau <jcristau@debian.org>  Wed, 14 Oct 2015 14:12:43 +0200
+ -- Julien Cristau <jcristau@debian.org>  Tue, 27 Oct 2015 22:54:11 +0000

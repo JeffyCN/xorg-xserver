@@ -1,3 +1,9 @@
+xorg-server (2:1.17.3-2) unstable; urgency=medium
+
+  * Finalize xserver-xorg-core.NEWS.  Thanks, Michael Biebl!
+
+ -- Julien Cristau <jcristau@debian.org>  Tue, 27 Oct 2015 22:55:25 +0000
+
 xorg-server (2:1.17.3-1) unstable; urgency=medium
 
   [ Julien Cristau ]
