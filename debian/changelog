@@ -1,4 +1,4 @@
-xorg-server (2:1.17.3-1) UNRELEASED; urgency=medium
+xorg-server (2:1.17.3-1) unstable; urgency=medium
 
   [ Julien Cristau ]
   * New upstream release
@@ -19,7 +19,7 @@ xorg-server (2:1.17.3-1) UNRELEASED; urgency=medium
   [ Samuel Thibault ]
   * Fix xorg-wrapper on hurd (cherry-picked from master).
 
- -- Julien Cristau <jcristau@debian.org>  Tue, 27 Oct 2015 12:14:43 +0100
+ -- Julien Cristau <jcristau@debian.org>  Tue, 27 Oct 2015 13:55:55 +0000
 
 xorg-server (2:1.17.2-3) unstable; urgency=medium
 
