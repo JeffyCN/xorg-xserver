@@ -1,20 +1,22 @@
-xorg-server (2:1.17.2-4) UNRELEASED; urgency=medium
+xorg-server (2:1.17.3-1) UNRELEASED; urgency=medium
+
+  [ Julien Cristau ]
+  * New upstream release
+    - mi: fix typo in warning about overflowing queue (closes: #726041)
+  * Add NEWS file for xserver-xorg-core with info about the -legacy split
+    (closes: #801487).
+  * Recommend libpam-systemd (closes:  #802544, #802618, #802327, #802566,
+    probably others)
 
   [ Andreas Boll ]
   * Use the correct repository for the Vcs-Git field (Closes: #801340).
     Thanks, Vagrant Cascadian.
   * Document new location for non-root Xorg log in the NEWS file.
 
-  [ Julien Cristau ]
-  * Add NEWS file for xserver-xorg-core with info about the -legacy split
-    (closes: #801487).
-  * Recommend libpam-systemd (closes:  #802544, #802618, #802327, #802566,
-    probably others)
-
   [ Samuel Thibault ]
   * Fix xorg-wrapper on hurd (cherry-picked from master).
 
- -- Andreas Boll <andreas.boll.dev@gmail.com>  Thu, 08 Oct 2015 21:29:12 +0200
+ -- Julien Cristau <jcristau@debian.org>  Tue, 27 Oct 2015 12:14:43 +0100
 
 xorg-server (2:1.17.2-3) unstable; urgency=medium
 
