@@ -3,6 +3,7 @@ xorg-server (2:1.17.3-1) UNRELEASED; urgency=medium
   [ Julien Cristau ]
   * New upstream release
     - mi: fix typo in warning about overflowing queue (closes: #726041)
+  * Refresh 02_kbsd-input-devd.diff and 03_static-nettle.diff.
   * Add NEWS file for xserver-xorg-core with info about the -legacy split
     (closes: #801487).
   * Recommend libpam-systemd (closes:  #802544, #802618, #802327, #802566,

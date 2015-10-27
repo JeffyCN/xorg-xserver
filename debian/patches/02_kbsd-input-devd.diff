@@ -466,7 +466,7 @@ Index: xorg-server/configure.ac
 ===================================================================
 --- xorg-server.orig/configure.ac
 +++ xorg-server/configure.ac
-@@ -614,6 +614,7 @@ AC_ARG_ENABLE(dpms,           AS_HELP_ST
+@@ -603,6 +603,7 @@ AC_ARG_ENABLE(dpms,           AS_HELP_ST
  AC_ARG_ENABLE(config-udev,    AS_HELP_STRING([--enable-config-udev], [Build udev support (default: auto)]), [CONFIG_UDEV=$enableval], [CONFIG_UDEV=auto])
  AC_ARG_ENABLE(config-udev-kms,    AS_HELP_STRING([--enable-config-udev-kms], [Build udev kms support (default: auto)]), [CONFIG_UDEV_KMS=$enableval], [CONFIG_UDEV_KMS=auto])
  AC_ARG_ENABLE(config-hal,     AS_HELP_STRING([--disable-config-hal], [Build HAL support (default: auto)]), [CONFIG_HAL=$enableval], [CONFIG_HAL=auto])
@@ -474,7 +474,7 @@ Index: xorg-server/configure.ac
  AC_ARG_ENABLE(config-wscons,  AS_HELP_STRING([--enable-config-wscons], [Build wscons config support (default: auto)]), [CONFIG_WSCONS=$enableval], [CONFIG_WSCONS=auto])
  AC_ARG_ENABLE(xfree86-utils,     AS_HELP_STRING([--enable-xfree86-utils], [Build xfree86 DDX utilities (default: enabled)]), [XF86UTILS=$enableval], [XF86UTILS=yes])
  AC_ARG_ENABLE(vgahw,          AS_HELP_STRING([--enable-vgahw], [Build Xorg with vga access (default: enabled)]), [VGAHW=$enableval], [VGAHW=yes])
-@@ -956,6 +957,21 @@ if test "x$CONFIG_WSCONS" = xyes; then
+@@ -951,6 +952,21 @@ if test "x$CONFIG_WSCONS" = xyes; then
  	AC_DEFINE(CONFIG_WSCONS, 1, [Use wscons for input auto configuration])
  fi
  
@@ -496,7 +496,7 @@ Index: xorg-server/configure.ac
  if test "x$USE_SIGIO_BY_DEFAULT" = xyes; then
  	USE_SIGIO_BY_DEFAULT_VALUE=TRUE
  else
-@@ -2495,7 +2511,7 @@ AC_SUBST([prefix])
+@@ -2511,7 +2527,7 @@ AC_SUBST([prefix])
  
  AC_CONFIG_COMMANDS([sdksyms], [touch hw/xfree86/sdksyms.dep])
  
@@ -509,7 +509,7 @@ Index: xorg-server/hw/xfree86/common/xf86Config.c
 ===================================================================
 --- xorg-server.orig/hw/xfree86/common/xf86Config.c
 +++ xorg-server/hw/xfree86/common/xf86Config.c
-@@ -1391,15 +1391,18 @@ checkCoreInputDevices(serverLayoutPtr se
+@@ -1362,15 +1362,18 @@ checkCoreInputDevices(serverLayoutPtr se
      }
  
      if (!xf86Info.forceInputDevices && !(foundPointer && foundKeyboard)) {
@@ -534,8 +534,8 @@ Index: xorg-server/hw/xfree86/common/xf86Globals.c
 ===================================================================
 --- xorg-server.orig/hw/xfree86/common/xf86Globals.c
 +++ xorg-server/hw/xfree86/common/xf86Globals.c
-@@ -123,7 +123,8 @@ xf86InfoRec xf86Info = {
-     .log = LogNone,
+@@ -122,7 +122,8 @@ xf86InfoRec xf86Info = {
+     .pmFlag = TRUE,
      .disableRandR = FALSE,
      .randRFrom = X_DEFAULT,
 -#if defined(CONFIG_HAL) || defined(CONFIG_UDEV) || defined(CONFIG_WSCONS)
@@ -548,7 +548,7 @@ Index: xorg-server/include/dix-config.h.in
 ===================================================================
 --- xorg-server.orig/include/dix-config.h.in
 +++ xorg-server/include/dix-config.h.in
-@@ -429,6 +429,9 @@
+@@ -439,6 +439,9 @@
  /* Enable systemd-logind integration */
  #undef SYSTEMD_LOGIND 1
  
