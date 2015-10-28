@@ -14,7 +14,7 @@ Index: xorg-server/hw/xfree86/common/xf86Helper.c
 ===================================================================
 --- xorg-server.orig/hw/xfree86/common/xf86Helper.c
 +++ xorg-server/hw/xfree86/common/xf86Helper.c
-@@ -1623,7 +1623,13 @@ xf86LoadOneModule(const char *name, void
+@@ -1636,7 +1636,13 @@ xf86LoadOneModule(const char *name, void
  void
  xf86UnloadSubModule(void *mod)
  {

@@ -1,3 +1,9 @@
+xorg-server (2:1.17.99.902-1) UNRELEASED; urgency=medium
+
+  * New upstream release candidate.
+
+ -- Julien Cristau <jcristau@debian.org>  Wed, 28 Oct 2015 19:02:38 +0000
+
 xorg-server (2:1.17.3-2) unstable; urgency=medium
 
   * Finalize xserver-xorg-core.NEWS.  Thanks, Michael Biebl!

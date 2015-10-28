@@ -6,7 +6,7 @@ Index: xorg-server/configure.ac
 ===================================================================
 --- xorg-server.orig/configure.ac
 +++ xorg-server/configure.ac
-@@ -1660,7 +1660,7 @@ fi
+@@ -1656,7 +1656,7 @@ fi
  if test "x$with_sha1" = xlibnettle; then
  	AC_DEFINE([HAVE_SHA1_IN_LIBNETTLE], [1],
  	          [Use libnettle SHA1 functions])
