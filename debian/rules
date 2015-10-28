@@ -125,7 +125,6 @@ confflags += \
 	     --with-xkb-path=/usr/share/X11/xkb \
 	     --with-xkb-output=/var/lib/xkb \
 	     --with-shared-memory-dir=/dev/shm \
-	     --disable-install-libxf86config \
 	     --enable-mitshm \
 	     --enable-xres \
 	     --disable-xcsecurity \
@@ -147,7 +146,6 @@ confflags += \
 confflags_main = \
 	--with-default-font-path="/usr/share/fonts/X11/misc,/usr/share/fonts/X11/cyrillic,/usr/share/fonts/X11/100dpi/:unscaled,/usr/share/fonts/X11/75dpi/:unscaled,/usr/share/fonts/X11/Type1,/usr/share/fonts/X11/100dpi,/usr/share/fonts/X11/75dpi,built-ins" \
 	--enable-aiglx \
-	--enable-glx-tls \
 	--enable-composite \
 	--enable-record \
 	--enable-xv \
@@ -181,7 +179,6 @@ confflags_main = \
 confflags_udeb = \
 	--with-default-font-path="built-ins" \
 	--disable-aiglx \
-	--disable-glx-tls \
 	--disable-composite \
 	--disable-record \
 	--disable-xv \
