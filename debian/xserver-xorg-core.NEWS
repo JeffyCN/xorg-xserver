@@ -1,0 +1,17 @@
+xorg-server (2:1.17.3-1) unstable; urgency=medium
+
+  The Xorg server is no longer setuid root by default.  This change reduces the
+  risk of privilege escalation due to X server bugs, but has some side effects:
+
+  * it relies on logind and libpam-systemd
+  * it relies on a kernel video driver (so the userspace component doesn't
+    touch the hardware directly)
+  * it needs X to run on the virtual console (VT) it was started from
+  * it changes the location for storing the Xorg log from /var/log/ to
+    ~/.local/share/xorg/
+
+  On systems where those are not available, the new xserver-xorg-legacy package
+  is needed to allow X to run with elevated privileges.  See the
+  Xwrapper.config(5) manual page for configuration details.
+
+ -- Julien Cristau <jcristau@debian.org>  Tue, 27 Oct 2015 22:54:11 +0000
