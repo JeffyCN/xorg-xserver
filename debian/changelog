@@ -1,11 +1,12 @@
-xorg-server (2:1.17.99.902-1) UNRELEASED; urgency=medium
+xorg-server (2:1.17.99.902-1) experimental; urgency=medium
 
+  * Team upload.
   * New upstream release candidate.
   * Bump x11proto-core and x11proto-randr dependencies per configure.ac.
   * Stop passing deleted options to configure.
   * Bump serverminver (video ABI 20.0, input ABI 22.1).
 
- -- Julien Cristau <jcristau@debian.org>  Wed, 28 Oct 2015 19:02:38 +0000
+ -- Julien Cristau <jcristau@debian.org>  Thu, 29 Oct 2015 09:58:55 +0000
 
 xorg-server (2:1.17.3-2) unstable; urgency=medium
 
