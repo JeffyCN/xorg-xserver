@@ -74,7 +74,7 @@ Build-Depends:
 # glamor
  libepoxy-dev [linux-any kfreebsd-any],
  libegl1-mesa-dev [linux-any kfreebsd-any],
- libgbm-dev [linux-any],
+ libgbm-dev (>= 10.2) [linux-any kfreebsd-any],
 # XCB bits for Xephyr
  libxcb1-dev,
  libxcb-shape0-dev,
