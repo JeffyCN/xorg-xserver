@@ -1,10 +1,10 @@
-xorg-server (2:1.18.0-1) UNRELEASED; urgency=medium
+xorg-server (2:1.18.0-1) experimental; urgency=medium
 
   * New upstream release.
     - drop xext-fix-udeb-build.diff, merged upstream
   * Extend libgbm-dev build-dep to kfreebsd-any as well as linux-any.
 
- -- Julien Cristau <jcristau@debian.org>  Mon, 09 Nov 2015 22:21:51 +0100
+ -- Julien Cristau <jcristau@debian.org>  Tue, 10 Nov 2015 22:40:43 +0100
 
 xorg-server (2:1.17.99.902-1) experimental; urgency=medium
 
