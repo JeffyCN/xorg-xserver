@@ -213,6 +213,7 @@ Depends:
  x11proto-xf86bigfont-dev (>= 1.2.0),
  x11proto-dri3-dev,
  x11proto-present-dev,
+ libxfont-dev,
  libxkbfile-dev,
  libpciaccess-dev,
  mesa-common-dev,

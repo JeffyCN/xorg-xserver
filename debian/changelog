@@ -1,6 +1,11 @@
 xorg-server (2:1.18.0-2) UNRELEASED; urgency=medium
 
+  [ Laurent Bigonville ]
   * Enable systemd socket activation support (Closes: #803254)
+
+  [ Emilio Pozuelo Monfort ]
+  * Let xserver-xorg-dev depend on libxfont-dev, as dixfont.h needs
+    fontutil.h.
 
  -- Laurent Bigonville <bigon@debian.org>  Sat, 05 Dec 2015 20:26:53 +0100
 
