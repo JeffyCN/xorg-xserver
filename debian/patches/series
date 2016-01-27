@@ -7,3 +7,4 @@
 #08_xfree86_fix_ia64_inx_outx.diff
 add_support_new_libsystemd.patch
 update-intel-pciids.diff
+glamor-disable-debugging-msgs.diff
