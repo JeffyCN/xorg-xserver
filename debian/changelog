@@ -1,10 +1,10 @@
-xorg-server (2:1.18.0-3) UNRELEASED; urgency=medium
+xorg-server (2:1.18.0-3) unstable; urgency=medium
 
   * update-intel-pciids.diff: Sync dri2 mapping ids for intel.
   * glamor-disable-debugging-msgs.diff: Make glamor less noisy with
     recent mesa.
 
- -- Timo Aaltonen <tjaalton@debian.org>  Wed, 27 Jan 2016 14:21:32 +0200
+ -- Timo Aaltonen <tjaalton@debian.org>  Wed, 27 Jan 2016 16:41:59 +0200
 
 xorg-server (2:1.18.0-2) unstable; urgency=medium
 
