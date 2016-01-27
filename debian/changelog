@@ -1,3 +1,9 @@
+xorg-server (2:1.18.0-3) UNRELEASED; urgency=medium
+
+  * update-intel-pciids.diff: Sync dri2 mapping ids for intel.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Wed, 27 Jan 2016 14:21:32 +0200
+
 xorg-server (2:1.18.0-2) unstable; urgency=medium
 
   [ Laurent Bigonville ]

@@ -6,3 +6,4 @@
 05_Revert-Unload-submodules.diff
 #08_xfree86_fix_ia64_inx_outx.diff
 add_support_new_libsystemd.patch
+update-intel-pciids.diff
