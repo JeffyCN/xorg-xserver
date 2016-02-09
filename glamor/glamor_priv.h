@@ -251,6 +251,7 @@ typedef struct glamor_screen_private {
     /** Next offset within the VBO that glamor_get_vbo_space() will use. */
     int vbo_offset;
     int vbo_size;
+    Bool vbo_mapped;
     /**
      * Pointer to glamor_get_vbo_space()'s current VBO mapping.
      *
@@ -291,6 +292,9 @@ typedef struct glamor_screen_private {
     int flags;
     ScreenPtr screen;
     int dri3_enabled;
+
+    Bool suppress_gl_out_of_memory_logging;
+    Bool logged_any_fbo_allocation_failure;
 
     /* xv */
     GLint xv_prog;
