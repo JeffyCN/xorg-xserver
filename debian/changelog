@@ -1,4 +1,4 @@
-xorg-server (2:1.18.1-1) UNRELEASED; urgency=medium
+xorg-server (2:1.18.1-1) unstable; urgency=medium
 
   * New upstream release.
   * add_support_new_libsystemd.patch,
@@ -6,7 +6,7 @@ xorg-server (2:1.18.1-1) UNRELEASED; urgency=medium
     update-intel-pciids.diff:
     - dropped, upstream
 
- -- Timo Aaltonen <tjaalton@debian.org>  Tue, 09 Feb 2016 09:59:37 +0200
+ -- Timo Aaltonen <tjaalton@debian.org>  Tue, 09 Feb 2016 10:27:18 +0200
 
 xorg-server (2:1.18.0-3) unstable; urgency=medium
 
