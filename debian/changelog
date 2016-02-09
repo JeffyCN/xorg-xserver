@@ -1,3 +1,13 @@
+xorg-server (2:1.18.1-1) UNRELEASED; urgency=medium
+
+  * New upstream release.
+  * add_support_new_libsystemd.patch,
+    glamor-disable-debugging-msgs.diff,
+    update-intel-pciids.diff:
+    - dropped, upstream
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Tue, 09 Feb 2016 09:59:37 +0200
+
 xorg-server (2:1.18.0-3) unstable; urgency=medium
 
   * update-intel-pciids.diff: Sync dri2 mapping ids for intel.
