@@ -5,3 +5,8 @@
 03_static-nettle.diff
 05_Revert-Unload-submodules.diff
 #08_xfree86_fix_ia64_inx_outx.diff
+
+# 1.18.2 regression fixes/workarounds
+vidmode-reduce-verbosity-of-getmodeline.diff
+glamor-swizzle-red-to-0-for-alpha-textures.diff
+revert-eb5108b870.diff

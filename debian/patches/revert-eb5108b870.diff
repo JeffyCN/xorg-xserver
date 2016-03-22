@@ -1,0 +1,35 @@
+this reverts:
+
+commit eb5108b87017128f394ae31b5b7cd85dd8819bca
+Author: Michel Dänzer <michel.daenzer@amd.com>
+Date:   Wed Feb 24 16:52:58 2016 +0900
+
+    present: Requeue if flip driver hook fails and target MSC not reached
+
+some intel users suffer from frozen X because of it
+
+diff --git b/present/present.c a/present/present.c
+index 7f9fc17..17ec526 100644
+--- b/present/present.c
++++ a/present/present.c
+@@ -712,20 +712,6 @@ present_execute(present_vblank_ptr vblank, uint64_t ust, uint64_t crtc_msc)
+             if (window == screen_priv->flip_window)
+                 present_unflip(screen);
+         }
+-
+-        /* If present_flip failed, we may have to requeue for the target MSC */
+-        if (msc_is_after(vblank->target_msc, crtc_msc) &&
+-            Success == present_queue_vblank(screen,
+-                                            vblank->crtc,
+-                                            vblank->event_id,
+-                                            vblank->target_msc)) {
+-            xorg_list_add(&vblank->event_queue, &present_exec_queue);
+-            xorg_list_append(&vblank->window_list,
+-                             &present_get_window_priv(window, TRUE)->vblank);
+-            vblank->queued = TRUE;
+-            return;
+-        }
+-
+         present_copy_region(&window->drawable, vblank->pixmap, vblank->update, vblank->x_off, vblank->y_off);
+ 
+         /* present_copy_region sticks the region into a scratch GC,
