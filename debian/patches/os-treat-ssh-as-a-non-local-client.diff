@@ -1,0 +1,97 @@
+commit adefbaee499b9679c6cac21f52ec6545af2b36b5
+Author: Adam Jackson <ajax@redhat.com>
+Date:   Mon Mar 28 18:11:09 2016 +0900
+
+    os: Treat ssh as a non-local client (v4)
+    
+    By the time we get to ComputeLocalClient, we've already done
+    NextAvailableClient → ReserveClientIds → DetermineClientCmd (assuming
+    we're built with #define CLIENTIDS), so we can look up the name of the
+    client process and refuse to treat ssh's X forwarding as if it were
+    local.
+    
+    v2: (Michel Dänzer)
+        * Only match "ssh" itself, not other executable names starting with
+          that prefix.
+        * Ignore executable path for the match.
+    v3: (Michel Dänzer)
+        * Use GetClientCmdName (Mark Kettenis)
+        * Perform check on Windows as well, but only ignore path on Cygwin
+          (Martin Peres, Emil Velikov, Jon Turney)
+    v4: (Michel Dänzer)
+        * Cut of any colon and whatever comes after it. (Adam Jackson)
+        * Add bugzilla reference.
+    
+    Bugzilla: https://bugs.freedesktop.org/show_bug.cgi?id=93261
+    
+    Signed-off-by: Adam Jackson <ajax@redhat.com>
+    Signed-off-by: Michel Dänzer <michel.daenzer@amd.com>
+
+diff --git a/os/access.c b/os/access.c
+index 8b2177f..58f95a9 100644
+--- a/os/access.c
++++ b/os/access.c
+@@ -173,6 +173,10 @@ SOFTWARE.
+ 
+ #endif                          /* WIN32 */
+ 
++#if !defined(WIN32) || defined(__CYGWIN__)
++#include <libgen.h>
++#endif
++
+ #define X_INCLUDE_NETDB_H
+ #include <X11/Xos_r.h>
+ 
+@@ -1080,9 +1084,8 @@ ResetHosts(const char *display)
+     }
+ }
+ 
+-/* Is client on the local host */
+-Bool
+-ComputeLocalClient(ClientPtr client)
++static Bool
++xtransLocalClient(ClientPtr client)
+ {
+     int alen, family, notused;
+     Xtransaddr *from = NULL;
+@@ -1115,6 +1118,40 @@ ComputeLocalClient(ClientPtr client)
+     return FALSE;
+ }
+ 
++/* Is client on the local host */
++Bool
++ComputeLocalClient(ClientPtr client)
++{
++    const char *cmdname = GetClientCmdName(client);
++
++    if (!xtransLocalClient(client))
++        return FALSE;
++
++    /* If the executable name is "ssh", assume that this client connection
++     * is forwarded from another host via SSH
++     */
++    if (cmdname) {
++        char **cmd;
++        Bool ret;
++
++        /* Cut off any colon and whatever comes after it, see
++         * https://lists.freedesktop.org/archives/xorg-devel/2015-December/048164.html
++         */
++        cmd = xstrtokenize(cmdname, ":");
++
++#if !defined(WIN32) || defined(__CYGWIN__)
++        cmd[0] = basename(cmd[0]);
++#endif
++
++        ret = strcmp(cmd[0], "ssh") != 0;
++        free(cmd);
++
++        return ret;
++    }
++
++    return TRUE;
++}
++
+ /*
+  * Return the uid and all gids of a connected local client
+  * Allocates a LocalClientCredRec - caller must call FreeLocalClientCreds

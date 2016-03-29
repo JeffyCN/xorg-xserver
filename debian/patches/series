@@ -9,4 +9,7 @@
 # 1.18.2 regression fixes/workarounds
 vidmode-reduce-verbosity-of-getmodeline.diff
 glamor-swizzle-red-to-0-for-alpha-textures.diff
-revert-eb5108b870.diff
+present-only-requeue-for-next-msc-after-flip-fail.diff
+make-sure-hw-cursor-is-hidden-when-it-should.diff
+
+os-treat-ssh-as-a-non-local-client.diff

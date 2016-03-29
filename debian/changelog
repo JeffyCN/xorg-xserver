@@ -1,3 +1,14 @@
+xorg-server (2:1.18.2-3) UNRELEASED; urgency=medium
+
+  * regression fixes part2:
+    - replace revert-eb5108b870.diff with patch from upstream
+    - make-sure-hw-cursor-is-hidden-when-it-should.diff: Don't show an
+      extra cursor in some cases
+  * os-treat-ssh-as-a-non-local-client.diff: Allow remote clients to work
+    with DRI3.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Tue, 29 Mar 2016 10:16:23 +0300
+
 xorg-server (2:1.18.2-2) unstable; urgency=medium
 
   * regression fixes/workarounds:
