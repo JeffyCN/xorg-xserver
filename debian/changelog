@@ -1,4 +1,4 @@
-xorg-server (2:1.18.2-3) UNRELEASED; urgency=medium
+xorg-server (2:1.18.2-3) unstable; urgency=medium
 
   * regression fixes part2:
     - replace revert-eb5108b870.diff with patch from upstream
@@ -7,7 +7,7 @@ xorg-server (2:1.18.2-3) UNRELEASED; urgency=medium
   * os-treat-ssh-as-a-non-local-client.diff: Allow remote clients to work
     with DRI3.
 
- -- Timo Aaltonen <tjaalton@debian.org>  Tue, 29 Mar 2016 10:16:23 +0300
+ -- Timo Aaltonen <tjaalton@debian.org>  Tue, 29 Mar 2016 10:38:47 +0300
 
 xorg-server (2:1.18.2-2) unstable; urgency=medium
 
