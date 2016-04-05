@@ -1,3 +1,9 @@
+xorg-server (2:1.18.3-1) UNRELEASED; urgency=medium
+
+  * New upstream release.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Tue, 05 Apr 2016 07:46:11 +0300
+
 xorg-server (2:1.18.2-3) unstable; urgency=medium
 
   * regression fixes part2:
