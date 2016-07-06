@@ -2,6 +2,8 @@ xorg-server (2:1.18.3-2) UNRELEASED; urgency=medium
 
   * Drop 08_xfree86_fix_ia64_inx_outx.diff from the tree, it wasn't
     applied anyway since Dec'14.
+  * 06_use-intel-only-on-pre-gen4.diff: Use modesetting driver on intel
+    gen4 and newer.
 
  -- Timo Aaltonen <tjaalton@debian.org>  Thu, 12 May 2016 18:22:02 +0300
 
