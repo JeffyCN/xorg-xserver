@@ -5,6 +5,7 @@ xorg-server (2:1.18.3-2) UNRELEASED; urgency=medium
   * 06_use-intel-only-on-pre-gen4.diff: Use modesetting driver on intel
     gen4 and newer.
   * upstream-fixes.diff: Add fixes from 1.18-branch until effd785aa8a97c9.
+  * Document modesetting-on-intel in the NEWS file.
 
  -- Timo Aaltonen <tjaalton@debian.org>  Thu, 12 May 2016 18:22:02 +0300
 
