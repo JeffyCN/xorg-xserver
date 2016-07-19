@@ -6,4 +6,4 @@
 05_Revert-Unload-submodules.diff
 06_use-intel-only-on-pre-gen4.diff
 os-treat-ssh-as-a-non-local-client.diff
-upstream-fixes-effd785aa8a97c9.diff
+upstream-fixes.diff
