@@ -1,4 +1,4 @@
-xorg-server (2:1.18.3-2) UNRELEASED; urgency=medium
+xorg-server (2:1.18.3-2) unstable; urgency=medium
 
   * Drop 08_xfree86_fix_ia64_inx_outx.diff from the tree, it wasn't
     applied anyway since Dec'14.
@@ -7,7 +7,7 @@ xorg-server (2:1.18.3-2) UNRELEASED; urgency=medium
   * upstream-fixes.diff: Add fixes from 1.18-branch until effd785aa8a97c9.
   * Document modesetting-on-intel in the NEWS file.
 
- -- Timo Aaltonen <tjaalton@debian.org>  Thu, 12 May 2016 18:22:02 +0300
+ -- Timo Aaltonen <tjaalton@debian.org>  Tue, 19 Jul 2016 05:59:24 +0300
 
 xorg-server (2:1.18.3-1) unstable; urgency=medium
 
