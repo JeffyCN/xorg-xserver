@@ -1,6 +1,8 @@
 xorg-server (2:1.18.4-1) UNRELEASED; urgency=medium
 
   * New upstream stable release.
+  * os-treat-ssh-as-a-non-local-client.diff, upstream-fixes.diff:
+    Dropped, upstream.
 
  -- Timo Aaltonen <tjaalton@debian.org>  Wed, 20 Jul 2016 05:55:42 +0300
 

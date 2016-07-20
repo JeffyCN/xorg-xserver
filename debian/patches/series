@@ -5,5 +5,3 @@
 03_static-nettle.diff
 05_Revert-Unload-submodules.diff
 06_use-intel-only-on-pre-gen4.diff
-os-treat-ssh-as-a-non-local-client.diff
-upstream-fixes.diff
