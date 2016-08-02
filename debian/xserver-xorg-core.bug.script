@@ -111,11 +111,11 @@ fi
 
 echo
 
-XORG_LOGS=$(ls -dt /var/log/Xorg.*.log 2>/dev/null)
+XORG_LOGS=$(ls -dt /var/log/Xorg.*.log $HOME/.local/share/xorg/Xorg.*.log 2>/dev/null)
 
 if [ -n "$XORG_LOGS" ]; then
     pecho "Xorg X server log files on system:"
-    ls -dlrt /var/log/Xorg.*.log 2>/dev/null
+    ls -dlrt /var/log/Xorg.*.log $HOME/.local/share/xorg/Xorg.*.log 2>/dev/null
     echo
     for LOG in $XORG_LOGS; do
         if [ -f "$LOG" ]; then
