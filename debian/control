@@ -103,7 +103,7 @@ Build-Depends:
 Standards-Version: 3.9.6
 Vcs-Git: https://anonscm.debian.org/git/pkg-xorg/xserver/xorg-server.git
 Vcs-Browser: https://anonscm.debian.org/cgit/pkg-xorg/xserver/xorg-server.git
-Homepage: http://www.x.org/
+Homepage: https://www.x.org/
 
 Package: xserver-xorg-core
 Architecture: any
@@ -168,7 +168,7 @@ Description: Xorg X server - core server
  and supersedes all XFree86 X servers.
  .
  More information about X.Org can be found at:
- <URL:http://www.X.org>
+ <URL:https://www.x.org>
  .
  This package is built from the X.org xserver module.
 
@@ -229,7 +229,7 @@ Description: Xorg X server - development files
  xserver-xorg and/or xserver-xorg-core instead.
  .
  More information about X.Org can be found at:
- <URL:http://www.X.org>
+ <URL:https://www.x.org>
  .
  This package is built from the X.org xserver module.
 
@@ -250,7 +250,7 @@ Description: distributed multihead X server
  line), the clients see a single large screen.
  .
  More information about X.Org can be found at:
- <URL:http://www.X.org>
+ <URL:https://www.x.org>
  .
  This package is built from the X.org xserver module.
 
@@ -265,7 +265,7 @@ Description: Distributed Multihead X tools
  the Xdmx server; see the xdmx package for more information.
  .
  More information about X.Org can be found at:
- <URL:http://www.X.org>
+ <URL:https://www.x.org>
  .
  This package is built from the X.org xserver module.
 
@@ -286,7 +286,7 @@ Description: Nested X server
  Use of the Xephyr X server instead of Xnest is recommended.
  .
  More information about X.Org can be found at:
- <URL:http://www.X.org>
+ <URL:https://www.x.org>
  .
  This package is built from the X.org xserver module.
 
@@ -316,7 +316,7 @@ Description: Virtual Framebuffer 'fake' X server
  program.
  .
  More information about X.Org can be found at:
- <URL:http://www.X.org>
+ <URL:https://www.x.org>
  .
  This package is built from the X.org xserver module.
 
@@ -335,7 +335,7 @@ Description: nested X server
  composite.
  .
  More information about X.Org can be found at:
- <URL:http://www.X.org>
+ <URL:https://www.x.org>
  .
  This package is built from the X.org xserver module.
 

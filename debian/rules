@@ -107,7 +107,7 @@ endif
 INSTALL=/usr/bin/install
 
 VENDOR = $(shell lsb_release -i -s)
-SUPPORT = http://www.debian.org/support
+SUPPORT = https://www.debian.org/support
 
 SOURCE_NAME    :=  xorg-server
 SOURCE_VERSION := $(shell dpkg-parsechangelog | awk -F': ' '/^Version: / {print $$2}')
