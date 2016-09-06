@@ -1,4 +1,4 @@
-xorg-server (2:1.18.4-2) UNRELEASED; urgency=medium
+xorg-server (2:1.18.4-2) unstable; urgency=medium
 
   [ Julien Cristau ]
   * Adjust bug script to look for log files in $HOME/.local/share/xorg in
@@ -9,7 +9,7 @@ xorg-server (2:1.18.4-2) UNRELEASED; urgency=medium
   * Add glamor-Declare-pos-in-the-composite-glyph.diff from upstream
     (Closes: #834054).
 
- -- Julien Cristau <jcristau@debian.org>  Tue, 02 Aug 2016 10:30:00 +0200
+ -- Timo Aaltonen <tjaalton@debian.org>  Tue, 06 Sep 2016 16:09:04 +0300
 
 xorg-server (2:1.18.4-1) unstable; urgency=medium
 
