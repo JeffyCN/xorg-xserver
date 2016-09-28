@@ -5,6 +5,7 @@ xorg-server (2:1.18.99.901-1) UNRELEASED; urgency=medium
   * patches:
     - refreshed
     - glamor-Declare-pos-in-the-composite-glyph.diff dropped, upstream
+  * control: Add libxcb-xkb-dev to build-depends.
 
  -- Timo Aaltonen <tjaalton@debian.org>  Wed, 28 Sep 2016 13:47:51 +0300
 

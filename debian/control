@@ -77,6 +77,7 @@ Build-Depends:
  libgbm-dev (>= 10.2) [linux-any kfreebsd-any],
 # XCB bits for Xephyr
  libxcb1-dev,
+ libxcb-xkb-dev,
  libxcb-shape0-dev,
  libxcb-render0-dev,
  libxcb-render-util0-dev,
