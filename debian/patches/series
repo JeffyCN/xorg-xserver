@@ -5,4 +5,3 @@
 03_static-nettle.diff
 05_Revert-Unload-submodules.diff
 06_use-intel-only-on-pre-gen4.diff
-glamor-Declare-pos-in-the-composite-glyph.diff

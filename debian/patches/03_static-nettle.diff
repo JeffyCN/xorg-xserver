@@ -2,11 +2,9 @@ Link against static libnettle
 
 There's no libnettle udeb.
 
-Index: xorg-server/configure.ac
-===================================================================
---- xorg-server.orig/configure.ac
-+++ xorg-server/configure.ac
-@@ -1656,7 +1656,7 @@ fi
+--- a/configure.ac
++++ b/configure.ac
+@@ -1725,7 +1725,7 @@ fi
  if test "x$with_sha1" = xlibnettle; then
  	AC_DEFINE([HAVE_SHA1_IN_LIBNETTLE], [1],
  	          [Use libnettle SHA1 functions])
