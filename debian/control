@@ -41,7 +41,7 @@ Build-Depends:
  x11proto-input-dev (>= 2.3),
  x11proto-dri2-dev (>= 2.8),
  libxdmcp-dev (>= 1:0.99.1),
- libxfont-dev (>= 1:1.4.2),
+ libxfont-dev (>= 1:2.0.1),
  libxkbfile-dev (>= 1:0.99.1),
  libpixman-1-dev (>= 0.27.2),
  libpciaccess-dev (>= 0.12.901),
