@@ -1,3 +1,9 @@
+xorg-server (2:1.18.99.901-1) UNRELEASED; urgency=medium
+
+  * New upstream release candidate.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Wed, 28 Sep 2016 13:47:51 +0300
+
 xorg-server (2:1.18.4-2) unstable; urgency=medium
 
   [ Julien Cristau ]
