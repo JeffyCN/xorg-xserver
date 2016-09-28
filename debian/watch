@@ -1,0 +1,4 @@
+#git=git://anongit.freedesktop.org/xorg/xserver
+version=3
+opts="pgpsigurlmangle=s/$/.sig/" \
+https://xorg.freedesktop.orgreleases/individual/xserver/ xorg-server-(.*)\.tar\.gz
