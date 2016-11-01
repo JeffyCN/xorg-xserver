@@ -97,6 +97,7 @@ Build-Depends:
  libbsd-dev [kfreebsd-any],
 # xwayland
  libwayland-dev [linux-any],
+ wayland-protocols (>= 1.1) [linux-any],
 #logind
   libdbus-1-dev (>= 1.0) [linux-any],
 # systemd-daemon
