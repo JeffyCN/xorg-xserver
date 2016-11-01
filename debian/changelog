@@ -1,6 +1,7 @@
-xorg-server (2:1.18.99.901-1) UNRELEASED; urgency=medium
+xorg-server (2:1.18.99.902-1) UNRELEASED; urgency=medium
 
-  * New upstream release candidate.
+  [ Timo Aaltonen ]
+  * New upstream release candidate 1.
   * control: Bump libxfont-dev build-dependency.
   * patches:
     - refreshed
@@ -8,6 +9,9 @@ xorg-server (2:1.18.99.901-1) UNRELEASED; urgency=medium
   * control: Add libxcb-xkb-dev to build-depends.
   * serverminver: Bumped.
   * watch: Fix a typo.
+
+  [ Emilio Pozuelo Monfort ]
+  * New upstream release candidate 2.
 
  -- Timo Aaltonen <tjaalton@debian.org>  Wed, 28 Sep 2016 13:47:51 +0300
 
