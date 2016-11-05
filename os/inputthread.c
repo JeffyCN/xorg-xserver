@@ -197,7 +197,7 @@ InputThreadRegisterDev(int fd,
 
     dev = NULL;
     xorg_list_for_each_entry(old, &inputThreadInfo->devs, node) {
-        if (old->fd == fd) {
+        if (old->fd == fd && old->state != device_state_removed) {
             dev = old;
             break;
         }
@@ -218,6 +218,9 @@ InputThreadRegisterDev(int fd,
         dev->readInputProc = readInputProc;
         dev->readInputArgs = readInputArgs;
         dev->state = device_state_added;
+
+        /* Do not prepend, so that any dev->state == device_state_removed
+         * with the same dev->fd get processed first. */
         xorg_list_append(&dev->node, &inputThreadInfo->devs);
     }
 
@@ -428,10 +431,12 @@ InputThreadPreInit(void)
     }
     hotplugPipeWrite = hotplugPipe[1];
 
+#ifndef __linux__ /* Linux does not deal well with renaming the main thread */
 #if defined(HAVE_PTHREAD_SETNAME_NP_WITH_TID)
     pthread_setname_np (pthread_self(), "MainThread");
 #elif defined(HAVE_PTHREAD_SETNAME_NP_WITHOUT_TID)
     pthread_setname_np ("MainThread");
+#endif
 #endif
 
 }

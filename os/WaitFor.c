@@ -204,8 +204,10 @@ WaitForSomething(Bool are_ready)
        crashed connections and the screen saver timeout */
     while (1) {
         /* deal with any blocked jobs */
-        if (workQueue)
+        if (workQueue) {
             ProcessWorkQueue();
+            are_ready = clients_are_ready();
+        }
 
         if (are_ready)
             timeout = 0;
@@ -234,7 +236,7 @@ WaitForSomething(Bool are_ready)
         } else
             are_ready = clients_are_ready();
 
-        if (*checkForInput[0] != *checkForInput[1])
+        if (InputCheckPending())
             return FALSE;
 
         if (are_ready) {

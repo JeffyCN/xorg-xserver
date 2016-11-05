@@ -756,7 +756,7 @@ drmmode_set_cursor(xf86CrtcPtr crtc)
     drmmode_ptr drmmode = drmmode_crtc->drmmode;
     uint32_t handle = drmmode_crtc->cursor_bo->handle;
     modesettingPtr ms = modesettingPTR(crtc->scrn);
-    int ret;
+    int ret = -EINVAL;
 
     if (!drmmode_crtc->set_cursor2_failed) {
         CursorPtr cursor = xf86CurrentCursor(crtc->scrn->pScreen);
@@ -768,11 +768,15 @@ drmmode_set_cursor(xf86CrtcPtr crtc)
         if (!ret)
             return TRUE;
 
-        drmmode_crtc->set_cursor2_failed = TRUE;
+        /* -EINVAL can mean that an old kernel supports drmModeSetCursor but
+         * not drmModeSetCursor2, though it can mean other things too. */
+        if (ret == -EINVAL)
+            drmmode_crtc->set_cursor2_failed = TRUE;
     }
 
-    ret = drmModeSetCursor(drmmode->fd, drmmode_crtc->mode_crtc->crtc_id, handle,
-                           ms->cursor_width, ms->cursor_height);
+    if (ret == -EINVAL)
+        ret = drmModeSetCursor(drmmode->fd, drmmode_crtc->mode_crtc->crtc_id,
+                               handle, ms->cursor_width, ms->cursor_height);
 
     if (ret) {
         xf86CrtcConfigPtr xf86_config = XF86_CRTC_CONFIG_PTR(crtc->scrn);
@@ -1697,10 +1701,8 @@ drmmode_create_name(ScrnInfoPtr pScrn, drmModeConnectorPtr koutput, char *name,
  fallback:
     if (koutput->connector_type >= MS_ARRAY_SIZE(output_names))
         snprintf(name, 32, "Unknown%d-%d", koutput->connector_type, koutput->connector_type_id);
-#ifdef MODESETTING_OUTPUT_SLAVE_SUPPORT
     else if (pScrn->is_gpu)
         snprintf(name, 32, "%s-%d-%d", output_names[koutput->connector_type], pScrn->scrnIndex - GPU_SCREEN_OFFSET + 1, koutput->connector_type_id);
-#endif
     else
         snprintf(name, 32, "%s-%d", output_names[koutput->connector_type], koutput->connector_type_id);
 }
@@ -2269,11 +2271,14 @@ drmmode_handle_uevents(int fd, void *closure)
     drmModeResPtr mode_res;
     xf86CrtcConfigPtr  config = XF86_CRTC_CONFIG_PTR(scrn);
     int i, j;
-    Bool found;
+    Bool found = FALSE;
     Bool changed = FALSE;
 
-    dev = udev_monitor_receive_device(drmmode->uevent_monitor);
-    if (!dev)
+    while ((dev = udev_monitor_receive_device(drmmode->uevent_monitor))) {
+        udev_device_unref(dev);
+        found = TRUE;
+    }
+    if (!found)
         return;
 
     mode_res = drmModeGetResources(drmmode->fd);
@@ -2339,7 +2344,6 @@ out_free_res:
     drmModeFreeResources(mode_res);
 out:
     RRGetInfo(xf86ScrnToScreen(scrn), TRUE);
-    udev_device_unref(dev);
 }
 #endif
 

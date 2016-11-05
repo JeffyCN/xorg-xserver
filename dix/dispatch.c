@@ -195,7 +195,7 @@ UpdateCurrentTime(void)
     systime.milliseconds = GetTimeInMillis();
     if (systime.milliseconds < currentTime.milliseconds)
         systime.months++;
-    if (*checkForInput[0] != *checkForInput[1])
+    if (InputCheckPending())
         ProcessInputEvents();
     if (CompareTimeStamps(systime, currentTime) == LATER)
         currentTime = systime;
@@ -395,7 +395,6 @@ Dispatch(void)
 {
     int result;
     ClientPtr client;
-    HWEventQueuePtr *icheck = checkForInput;
     long start_tick;
 
     nextFreeClientID = 1;
@@ -405,7 +404,7 @@ Dispatch(void)
     init_client_ready();
 
     while (!dispatchException) {
-        if (*icheck[0] != *icheck[1]) {
+        if (InputCheckPending()) {
             ProcessInputEvents();
             FlushIfCriticalOutputPending();
         }
@@ -425,7 +424,7 @@ Dispatch(void)
 
             start_tick = SmartScheduleTime;
             while (!isItTimeToYield) {
-                if (*icheck[0] != *icheck[1])
+                if (InputCheckPending())
                     ProcessInputEvents();
 
                 FlushIfCriticalOutputPending();
@@ -2188,12 +2187,8 @@ DoGetImage(ClientPtr client, int format, Drawable drawable,
         return BadAlloc;
     WriteReplyToClient(client, sizeof(xGetImageReply), &xgi);
 
-    if (pDraw->type == DRAWABLE_WINDOW) {
-        pVisibleRegion = NotClippedByChildren((WindowPtr) pDraw);
-        if (pVisibleRegion) {
-            RegionTranslate(pVisibleRegion, -pDraw->x, -pDraw->y);
-        }
-    }
+    if (pDraw->type == DRAWABLE_WINDOW)
+        pVisibleRegion = &((WindowPtr) pDraw)->borderClip;
 
     if (linesPerBuf == 0) {
         /* nothing to do */
@@ -2252,8 +2247,6 @@ DoGetImage(ClientPtr client, int format, Drawable drawable,
             }
         }
     }
-    if (pVisibleRegion)
-        RegionDestroy(pVisibleRegion);
     free(pBuf);
     return Success;
 }

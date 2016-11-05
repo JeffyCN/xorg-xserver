@@ -635,6 +635,7 @@ extern _X_EXPORT int NewInputDeviceRequest(InputOption *options,
                                            InputAttributes * attrs,
                                            DeviceIntPtr *dev);
 extern _X_EXPORT void DeleteInputDeviceRequest(DeviceIntPtr dev);
+extern _X_EXPORT void RemoveInputDeviceTraces(const char *config_info);
 
 extern _X_EXPORT void DDXRingBell(int volume, int pitch, int duration);
 
@@ -675,12 +676,15 @@ extern _X_EXPORT Bool valuator_mask_fetch(const ValuatorMask *mask,
                                           int valnum, int *val);
 extern _X_EXPORT Bool valuator_mask_fetch_double(const ValuatorMask *mask,
                                                  int valnum, double *val);
-
 extern _X_EXPORT Bool valuator_mask_has_unaccelerated(const ValuatorMask *mask);
 extern _X_EXPORT void valuator_mask_set_unaccelerated(ValuatorMask *mask,
                                                       int valuator,
                                                       double accel,
                                                       double unaccel);
+extern _X_EXPORT void valuator_mask_set_absolute_unaccelerated(ValuatorMask *mask,
+                                                               int valuator,
+                                                               int absolute,
+                                                               double unaccel);
 extern _X_EXPORT double valuator_mask_get_accelerated(const ValuatorMask *mask,
                                                       int valuator);
 extern _X_EXPORT double valuator_mask_get_unaccelerated(const ValuatorMask *mask,
