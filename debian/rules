@@ -57,6 +57,7 @@ endif
 
 ifeq ($(DEB_HOST_ARCH_OS), hurd)
 	dri = --disable-dri --disable-dri2
+	dri += --disable-glamor
 	xshmfence = --disable-xshmfence
 else
 	dri = --enable-dri --enable-dri2
