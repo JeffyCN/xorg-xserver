@@ -1,5 +1,6 @@
-xorg-server (2:1.18.99.902-2) UNRELEASED; urgency=medium
+xorg-server (2:1.19.0-1) UNRELEASED; urgency=medium
 
+  * New upstream release.
   * rules: Explicitly disable glamor on hurd. Should fix FTBFS on hurd.
 
  -- Andreas Boll <andreas.boll.dev@gmail.com>  Mon, 07 Nov 2016 14:55:16 +0100
