@@ -102,7 +102,7 @@ Build-Depends:
   libdbus-1-dev (>= 1.0) [linux-any],
 # systemd-daemon
   libsystemd-dev [linux-any],
-Standards-Version: 3.9.6
+Standards-Version: 3.9.8
 Vcs-Git: https://anonscm.debian.org/git/pkg-xorg/xserver/xorg-server.git
 Vcs-Browser: https://anonscm.debian.org/cgit/pkg-xorg/xserver/xorg-server.git
 Homepage: https://www.x.org/
