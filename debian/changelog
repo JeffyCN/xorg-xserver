@@ -1,4 +1,4 @@
-xorg-server (2:1.19.0-2) UNRELEASED; urgency=medium
+xorg-server (2:1.19.0-2) unstable; urgency=medium
 
   * Disable glamor on the udeb build. It's not needed there.
     This has the side effect of fixing the Hurd build.
@@ -6,7 +6,7 @@ xorg-server (2:1.19.0-2) UNRELEASED; urgency=medium
     - Ported to NotifyFd. Fixes the kFreeBSD build.
   * Bump Standards-Version to 3.9.8; no changes needed.
 
- -- Emilio Pozuelo Monfort <pochu@debian.org>  Wed, 23 Nov 2016 18:49:56 +0100
+ -- Emilio Pozuelo Monfort <pochu@debian.org>  Wed, 23 Nov 2016 19:32:09 +0100
 
 xorg-server (2:1.19.0-1) unstable; urgency=medium
 
