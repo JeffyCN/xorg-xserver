@@ -192,6 +192,7 @@ confflags_udeb = \
 	--disable-glx \
 	--disable-dri \
 	--disable-dri2 \
+	--disable-glamor \
 	$(libdrm_udeb) \
 	--disable-xinerama \
 	--disable-xf86vidmode \
