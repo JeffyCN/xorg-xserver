@@ -7,6 +7,10 @@ Based on original code by Baptiste Daroussin, with some fixes made
 by Koop Mast and myself.
 
 Signed-off-by: Robert Millan <rmh@freebsd.org>
+
+v2 - Emilio Pozuelo Monfort <pochu@debian.org>
+
+ - Ported to NotifyFd API.
 ---
  config/Makefile.am              |    4 +
  config/config-backends.h        |    5 +
@@ -66,7 +70,7 @@ Signed-off-by: Robert Millan <rmh@freebsd.org>
  
 --- /dev/null
 +++ b/config/devd.c
-@@ -0,0 +1,387 @@
+@@ -0,0 +1,375 @@
 +/*
 + * Copyright © 2012 Baptiste Daroussin
 + * Copyright © 2014 Robert Millan
@@ -370,39 +374,29 @@ Signed-off-by: Robert Millan <rmh@freebsd.org>
 +}
 +
 +static void
-+wakeup_handler(void *data, int err, void *read_mask)
++socket_handler(int fd, int ready, void *data)
 +{
 +    char *line = NULL;
 +    char *walk;
 +
-+    if (err < 0)
++    if (socket_getline(sock_devd, &line) < 0)
 +        return;
 +
-+    if (FD_ISSET(sock_devd, (fd_set *) read_mask)) {
-+        if (socket_getline(sock_devd, &line) < 0)
-+            return;
++    walk = strchr(line + 1, ' ');
++    if (walk != NULL)
++        walk[0] = '\0';
 +
-+        walk = strchr(line + 1, ' ');
-+        if (walk != NULL)
-+            walk[0] = '\0';
-+
-+        switch (*line) {
-+        case DEVD_EVENT_ADD:
-+            device_added(line + 1);
-+            break;
-+        case DEVD_EVENT_REMOVE:
-+            device_removed(line + 1);
-+            break;
-+        default:
-+            break;
-+        }
-+        free(line);
++    switch (*line) {
++    case DEVD_EVENT_ADD:
++        device_added(line + 1);
++        break;
++    case DEVD_EVENT_REMOVE:
++        device_removed(line + 1);
++        break;
++    default:
++        break;
 +    }
-+}
-+
-+static void
-+block_handler(void *data, struct timeval **tv, void *read_mask)
-+{
++    free(line);
 +}
 +
 +int
@@ -438,8 +432,7 @@ Signed-off-by: Robert Millan <rmh@freebsd.org>
 +        return 0;
 +    }
 +
-+    RegisterBlockAndWakeupHandlers(block_handler, wakeup_handler, NULL);
-+    AddGeneralSocket(sock_devd);
++    SetNotifyFd(sock_devd, socket_handler, X_NOTIFY_READ, NULL);
 +
 +    return 1;
 +}
@@ -450,8 +443,7 @@ Signed-off-by: Robert Millan <rmh@freebsd.org>
 +    if (sock_devd < 0)
 +        return;
 +
-+    RemoveGeneralSocket(sock_devd);
-+    RemoveBlockAndWakeupHandlers(block_handler, wakeup_handler, NULL);
++    RemoveNotifyFd(sock_devd);
 +    close(sock_devd);
 +}
 --- a/configure.ac
