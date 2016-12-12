@@ -1,3 +1,9 @@
+xorg-server (2:1.19.0-3) UNRELEASED; urgency=medium
+
+  * Drop xserver-xorg-core-dbg in favor of xserver-xorg-core-dbgsym.
+
+ -- Emilio Pozuelo Monfort <pochu@debian.org>  Mon, 12 Dec 2016 19:20:18 +0100
+
 xorg-server (2:1.19.0-2) unstable; urgency=medium
 
   * Disable glamor on the udeb build. It's not needed there.

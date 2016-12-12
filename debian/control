@@ -341,23 +341,6 @@ Description: nested X server
  .
  This package is built from the X.org xserver module.
 
-Package: xserver-xorg-core-dbg
-Architecture: any
-Depends:
- xserver-xorg-core (= ${binary:Version}),
- ${misc:Depends},
-Priority: extra
-Section: debug
-Description: Xorg - the X.Org X server (debugging symbols)
- The Xorg X server is an X server for several architectures and operating
- systems, which is derived from the XFree86 4.x series of X servers.
- .
- The Xorg server supports most modern graphics hardware from most vendors,
- and supersedes all XFree86 X servers.
- .
- This package provides debugging symbols for the Xorg X server and associated
- modules.
-
 Package: xserver-common
 Architecture: all
 Multi-Arch: foreign
