@@ -1,4 +1,4 @@
-xorg-server (2:1.19.0-3) UNRELEASED; urgency=medium
+xorg-server (2:1.19.0-3) unstable; urgency=medium
 
   * Drop xserver-xorg-core-dbg in favor of xserver-xorg-core-dbgsym.
   * Cherry-pick upstream commit d6da2086951,
@@ -6,7 +6,7 @@ xorg-server (2:1.19.0-3) UNRELEASED; urgency=medium
     drawable". Fixes a crash caused by trying to free an invalid pointer.
     Closes: #847025, #848321.
 
- -- Emilio Pozuelo Monfort <pochu@debian.org>  Mon, 12 Dec 2016 19:20:18 +0100
+ -- Emilio Pozuelo Monfort <pochu@debian.org>  Fri, 16 Dec 2016 19:39:45 +0100
 
 xorg-server (2:1.19.0-2) unstable; urgency=medium
 
