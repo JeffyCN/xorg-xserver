@@ -1,6 +1,10 @@
 xorg-server (2:1.19.0-3) UNRELEASED; urgency=medium
 
   * Drop xserver-xorg-core-dbg in favor of xserver-xorg-core-dbgsym.
+  * Cherry-pick upstream commit d6da2086951,
+    Revert "damage: Make damageRegionProcessPending take a damage not a
+    drawable". Fixes a crash caused by trying to free an invalid pointer.
+    Closes: #847025, #848321.
 
  -- Emilio Pozuelo Monfort <pochu@debian.org>  Mon, 12 Dec 2016 19:20:18 +0100
 
