@@ -1,3 +1,9 @@
+xorg-server (2:1.19.0-4) UNRELEASED; urgency=medium
+
+  * Switch to dh.
+
+ -- Emilio Pozuelo Monfort <pochu@debian.org>  Mon, 19 Dec 2016 19:58:57 +0100
+
 xorg-server (2:1.19.0-3) unstable; urgency=medium
 
   * Drop xserver-xorg-core-dbg in favor of xserver-xorg-core-dbgsym.
