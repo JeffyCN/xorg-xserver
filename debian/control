@@ -11,8 +11,6 @@ Build-Depends:
  pkg-config,
  bison,
  flex,
- automake,
- libtool,
  xutils-dev (>= 1:7.6+4),
  xfonts-utils (>= 1:7.5+1),
  x11proto-bigreqs-dev (>= 1:1.1.0),
