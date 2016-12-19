@@ -62,8 +62,6 @@ else
 	config_tests = --enable-unit-tests
 endif
 
-INSTALL=/usr/bin/install
-
 VENDOR = $(shell lsb_release -i -s)
 SUPPORT = https://www.debian.org/support
 
@@ -269,7 +267,7 @@ override_dh_install:
 	-chown root:root $(CURDIR)/debian/xserver-xorg-legacy/usr/lib/xorg/Xorg.wrap
 	-chmod ug+s $(CURDIR)/debian/xserver-xorg-legacy/usr/lib/xorg/Xorg.wrap
 
-	$(INSTALL) -d $(CURDIR)/debian/xserver-xorg-dev/usr/share/xserver-xorg
+	install -d $(CURDIR)/debian/xserver-xorg-dev/usr/share/xserver-xorg
 	# Extract only the major ABI version:
 	abi_videodrv=`PKG_CONFIG_PATH=debian/tmp/main/usr/lib/pkgconfig pkg-config --variable=abi_videodrv xorg-server|cut -d . -f 1`; \
 	echo videoabi=xorg-video-abi-$$abi_videodrv > debian/xserver-xorg-core.substvars && \
@@ -286,8 +284,8 @@ override_dh_install:
 	echo 'xserver_confflags = $(confflags) $(confflags_main)' \
 		> debian/xserver-xorg-dev/usr/share/xserver-xorg/configure_flags.mk
 
-	$(INSTALL) -m 755 -d debian/xserver-xorg-core/usr/share/bug/xserver-xorg-core
-	$(INSTALL) -m 755 debian/xserver-xorg-core.bug.script debian/xserver-xorg-core/usr/share/bug/xserver-xorg-core/script
+	install -m 755 -d debian/xserver-xorg-core/usr/share/bug/xserver-xorg-core
+	install -m 755 debian/xserver-xorg-core.bug.script debian/xserver-xorg-core/usr/share/bug/xserver-xorg-core/script
 ifeq ($(DEB_HOST_ARCH_OS), linux)
 	install -d debian/xserver-xorg-core/lib/udev/rules.d
 	install -m 644 debian/local/64-xorg-xkb.rules debian/xserver-xorg-core/lib/udev/rules.d
