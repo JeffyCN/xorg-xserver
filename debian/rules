@@ -240,7 +240,7 @@ endif
 endif
 
 # Only read the first line, the rest of the file is used to determine
-# when the minimal version as to be bumped:
+# when the minimal version is to be bumped:
 SERVERMINVER = debian/serverminver
 serverminver = $(shell head -1 $(SERVERMINVER))
 
