@@ -1,10 +1,14 @@
-xorg-server (2:1.19.0-4) UNRELEASED; urgency=medium
+xorg-server (2:1.19.1-1) UNRELEASED; urgency=medium
 
+  [ Emilio Pozuelo Monfort ]
   * Switch to dh.
   * Drop build-deps on automake and libtool, dh-autoreconf depends on
     them for us.
   * rules: use install consistently.
   * Drop pre-wheezy Breaks.
+
+  [ Andreas Boll ]
+  * New upstream release.
 
  -- Emilio Pozuelo Monfort <pochu@debian.org>  Mon, 19 Dec 2016 19:58:57 +0100
 
