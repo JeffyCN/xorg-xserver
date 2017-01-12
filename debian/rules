@@ -168,7 +168,7 @@ confflags_udeb = \
 	$(void)
 
 %:
-	dh $@ --with quilt,autoreconf
+	dh $@ --with quilt,autoreconf --parallel
 
 build-source-stamp:
 	mkdir -p build-source
