@@ -9,6 +9,10 @@ xorg-server (2:1.19.1-1) UNRELEASED; urgency=medium
 
   [ Andreas Boll ]
   * New upstream release.
+    - AttendClient of grab-pervious client must queue to
+      saved_ready_clients [v2] (Closes: #846779, #850940).
+    - present: Only call present_flip_notify if vblank->queued == FALSE
+      (Closes: #849250).
 
  -- Emilio Pozuelo Monfort <pochu@debian.org>  Mon, 19 Dec 2016 19:58:57 +0100
 
