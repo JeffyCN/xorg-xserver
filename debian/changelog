@@ -1,4 +1,4 @@
-xorg-server (2:1.19.1-1) UNRELEASED; urgency=medium
+xorg-server (2:1.19.1-1) unstable; urgency=medium
 
   [ Emilio Pozuelo Monfort ]
   * Switch to dh.
@@ -14,7 +14,7 @@ xorg-server (2:1.19.1-1) UNRELEASED; urgency=medium
     - present: Only call present_flip_notify if vblank->queued == FALSE
       (Closes: #849250).
 
- -- Emilio Pozuelo Monfort <pochu@debian.org>  Mon, 19 Dec 2016 19:58:57 +0100
+ -- Emilio Pozuelo Monfort <pochu@debian.org>  Tue, 17 Jan 2017 20:43:34 +0100
 
 xorg-server (2:1.19.0-3) unstable; urgency=medium
 
