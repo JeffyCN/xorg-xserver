@@ -221,8 +221,10 @@ override_dh_auto_install:
 	rm -f debian/tmp/udeb/usr/lib/xorg/modules/libwfb.so
 	rm -f debian/tmp/udeb/usr/lib/xorg/modules/libxf8_16bpp.so
 
-	# we don't ship these from the udeb build, reduce noise from dh_install
-	# --list-missing
+	# we don't ship these from the udeb build, needed for dh_install
+	# --fail-missing
+	rm -rf debian/tmp/udeb/var/lib/xkb/README.compiled
+	rm -rf debian/tmp/udeb/usr/bin/X
 	rm -rf debian/tmp/udeb/usr/include
 	rm -rf debian/tmp/udeb/usr/share/aclocal
 	rm -rf debian/tmp/udeb/usr/share/man
@@ -261,7 +263,7 @@ abibumpcheck: debian/serverminver $(QUILT_STAMPFN)
 	fi
 
 override_dh_install:
-	dh_install
+	dh_install --fail-missing
 	-chown root:root $(CURDIR)/debian/xserver-xorg-legacy/usr/lib/xorg/Xorg.wrap
 	-chmod ug+s $(CURDIR)/debian/xserver-xorg-legacy/usr/lib/xorg/Xorg.wrap
 
