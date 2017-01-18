@@ -233,10 +233,8 @@ override_dh_auto_install:
 ifneq ($(DEB_HOST_ARCH_OS), linux)
 	install -d debian/tmp/main/usr/share/X11/xorg.conf.d
 	install -m 644 debian/local/10-*.conf debian/tmp/main/usr/share/X11/xorg.conf.d
-ifeq ($(udeb), yes)
 	install -d debian/tmp/udeb/usr/share/X11/xorg.conf.d
 	install -m 644 debian/local/10-*.conf debian/tmp/udeb/usr/share/X11/xorg.conf.d
-endif
 endif
 
 # Only read the first line, the rest of the file is used to determine
@@ -289,10 +287,8 @@ override_dh_install:
 ifeq ($(DEB_HOST_ARCH_OS), linux)
 	install -d debian/xserver-xorg-core/lib/udev/rules.d
 	install -m 644 debian/local/64-xorg-xkb.rules debian/xserver-xorg-core/lib/udev/rules.d
-ifeq ($(udeb), yes)
 	install -d debian/xserver-xorg-core-udeb/lib/udev/rules.d
 	install -m 644 debian/local/64-xorg-xkb.rules debian/xserver-xorg-core-udeb/lib/udev/rules.d
-endif
 endif
 
 override_dh_strip:
