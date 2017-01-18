@@ -131,7 +131,6 @@ confflags_main = \
 	--enable-xephyr \
 	--with-sha1=libgcrypt \
 	--enable-xcsecurity \
-	$(config_backend_main) \
 	$(void)
 
 confflags_udeb = \
@@ -164,7 +163,6 @@ confflags_udeb = \
 	--disable-kdrive \
 	--disable-xephyr \
 	--with-sha1=libnettle \
-	$(config_backend_udeb) \
 	$(void)
 
 %:
