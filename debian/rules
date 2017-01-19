@@ -260,7 +260,7 @@ abibumpcheck: debian/serverminver $(QUILT_STAMPFN)
 	rm -f $(SERVERMINVER).new; \
 	fi
 
-override_dh_fixperms:
+override_dh_fixperms-arch:
 	dh_fixperms
 	chown root:root $(CURDIR)/debian/xserver-xorg-legacy/usr/lib/xorg/Xorg.wrap
 	chmod ug+s $(CURDIR)/debian/xserver-xorg-legacy/usr/lib/xorg/Xorg.wrap
