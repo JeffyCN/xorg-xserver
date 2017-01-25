@@ -131,9 +131,9 @@ fi
 
 echo
 
-if [ -x /sbin/udevadm ]; then
+if [ -x /bin/udevadm ]; then
     pecho "udev information:"
-    /sbin/udevadm info --export-db | awk -F '\n' -v RS='\n\n' '/E: ID_INPUT/ { print; print "" }'
+    /bin/udevadm info --export-db | awk -F '\n' -v RS='\n\n' '/E: ID_INPUT/ { print; print "" }'
     echo
 fi
 

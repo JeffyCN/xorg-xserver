@@ -1,3 +1,10 @@
+xorg-server (2:1.19.1-5) UNRELEASED; urgency=medium
+
+  * xserver-xorg-core.bug.script: Change udevadm path from /sbin to /bin
+    (Closes: #852584).
+
+ -- Andreas Boll <andreas.boll.dev@gmail.com>  Wed, 25 Jan 2017 16:14:03 +0100
+
 xorg-server (2:1.19.1-4) unstable; urgency=medium
 
   * rules: Only set the suid bit on Xorg.wrap when building arch:any
