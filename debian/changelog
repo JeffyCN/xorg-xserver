@@ -7,6 +7,8 @@ xorg-server (2:1.19.2-1) UNRELEASED; urgency=medium
   [ Emilio Pozuelo Monfort ]
   * New upstream stable release.
     - CVE-2017-2624: Timing attack against MIT cookie. Closes: #856398.
+  * control: Build-depend on libbsd-dev everywhere, needed for
+    arc4random_buf for the above fix.
 
  -- Andreas Boll <andreas.boll.dev@gmail.com>  Wed, 25 Jan 2017 16:14:03 +0100
 

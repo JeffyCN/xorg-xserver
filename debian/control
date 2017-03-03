@@ -92,8 +92,8 @@ Build-Depends:
 # unit tests
  xkb-data,
  x11-xkb-utils,
-# getpeereid()
- libbsd-dev [kfreebsd-any],
+# arc4random_buf(), getpeereid()
+ libbsd-dev,
 # xwayland
  libwayland-dev [linux-any],
  wayland-protocols (>= 1.1) [linux-any],
