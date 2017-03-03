@@ -1,4 +1,4 @@
-xorg-server (2:1.19.2-1) UNRELEASED; urgency=medium
+xorg-server (2:1.19.2-1) unstable; urgency=medium
 
   [ Andreas Boll ]
   * xserver-xorg-core.bug.script: Change udevadm path from /sbin to /bin
@@ -10,7 +10,7 @@ xorg-server (2:1.19.2-1) UNRELEASED; urgency=medium
   * control: Build-depend on libbsd-dev everywhere, needed for
     arc4random_buf for the above fix.
 
- -- Andreas Boll <andreas.boll.dev@gmail.com>  Wed, 25 Jan 2017 16:14:03 +0100
+ -- Emilio Pozuelo Monfort <pochu@debian.org>  Fri, 03 Mar 2017 15:41:15 +0100
 
 xorg-server (2:1.19.1-4) unstable; urgency=medium
 
