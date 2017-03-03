@@ -1,7 +1,12 @@
-xorg-server (2:1.19.1-5) UNRELEASED; urgency=medium
+xorg-server (2:1.19.2-1) UNRELEASED; urgency=medium
 
+  [ Andreas Boll ]
   * xserver-xorg-core.bug.script: Change udevadm path from /sbin to /bin
     (Closes: #852584).
+
+  [ Emilio Pozuelo Monfort ]
+  * New upstream stable release.
+    - CVE-2017-2624: Timing attack against MIT cookie. Closes: #856398.
 
  -- Andreas Boll <andreas.boll.dev@gmail.com>  Wed, 25 Jan 2017 16:14:03 +0100
 
