@@ -1630,6 +1630,7 @@ static const char *const output_names[] = {
     "eDP",
     "Virtual",
     "DSI",
+    "DPI",
 };
 
 static xf86OutputPtr find_output(ScrnInfoPtr pScrn, int id)
