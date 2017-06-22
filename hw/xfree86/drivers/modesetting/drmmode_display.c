@@ -761,6 +761,9 @@ drmmode_set_cursor(xf86CrtcPtr crtc)
     if (!drmmode_crtc->set_cursor2_failed) {
         CursorPtr cursor = xf86CurrentCursor(crtc->scrn->pScreen);
 
+        if (cursor == NullCursor)
+	        return TRUE;
+
         ret =
             drmModeSetCursor2(drmmode->fd, drmmode_crtc->mode_crtc->crtc_id,
                               handle, ms->cursor_width, ms->cursor_height,
