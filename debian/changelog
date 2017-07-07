@@ -1,3 +1,17 @@
+xorg-server (2:1.19.3-2) unstable; urgency=high
+
+  * CVE-2017-10972: information leak out of the X server due to an
+    uninitialized stack area when swapping:
+    - Xi: Zero target buffer in SProcXSendExtensionEvent
+  * CVE-2017-10971: stack overflow due to missing GenericEvent handling in
+    XSendEvent:
+    - dix: Disallow GenericEvent in SendEvent request
+    - Xi: Verify all events in ProcXSendExtensionEvent
+    - Xi: Do not try to swap GenericEvent
+  * With both those fixes, this closes: #867492
+
+ -- Julien Cristau <jcristau@debian.org>  Fri, 07 Jul 2017 07:31:11 +0200
+
 xorg-server (2:1.19.3-1) unstable; urgency=medium
 
   * New upstream release.
