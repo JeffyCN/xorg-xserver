@@ -1,3 +1,10 @@
+xorg-server (2:1.19.3-3) UNRELEASED; urgency=medium
+
+  * xvfb-run: Do not redirect stderr to stdout when running the program
+    (Closes: #868876, LP: #1059947).
+
+ -- Sven Joachim <svenjoac@gmx.de>  Sat, 22 Jul 2017 16:55:40 +0200
+
 xorg-server (2:1.19.3-2) unstable; urgency=high
 
   * CVE-2017-10972: information leak out of the X server due to an
