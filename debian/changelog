@@ -1,7 +1,11 @@
 xorg-server (2:1.19.3-3) UNRELEASED; urgency=medium
 
+  [ Sven Joachim ]
   * xvfb-run: Do not redirect stderr to stdout when running the program
     (Closes: #868876, LP: #1059947).
+
+  [ Timo Aaltonen ]
+  * rules: Drop obsolete dh_strip line for -dbg package.
 
  -- Sven Joachim <svenjoac@gmx.de>  Sat, 22 Jul 2017 16:55:40 +0200
 

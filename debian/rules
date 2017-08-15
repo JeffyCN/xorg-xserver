@@ -295,4 +295,3 @@ endif
 
 override_dh_strip:
 	dh_strip -pxserver-xorg-core --dbgsym-migration="xserver-xorg-core-dbg (<< 2:1.19.0-3~)"
-	dh_strip -s -Nxserver-xorg-core -Nxserver-xorg-core-dbg
