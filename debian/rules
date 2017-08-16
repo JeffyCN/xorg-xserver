@@ -292,7 +292,3 @@ ifeq ($(DEB_HOST_ARCH_OS), linux)
 	install -d debian/xserver-xorg-core-udeb/lib/udev/rules.d
 	install -m 644 debian/local/64-xorg-xkb.rules debian/xserver-xorg-core-udeb/lib/udev/rules.d
 endif
-
-override_dh_strip:
-	dh_strip -pxserver-xorg-core --dbgsym-migration="xserver-xorg-core-dbg (<< 2:1.19.0-3~)"
-	dh_strip -s -Nxserver-xorg-core

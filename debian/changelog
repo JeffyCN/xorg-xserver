@@ -5,7 +5,7 @@ xorg-server (2:1.19.3-3) UNRELEASED; urgency=medium
     (Closes: #868876, LP: #1059947).
 
   [ Timo Aaltonen ]
-  * rules: -dbg is gone, drop it from dh_strip arguments.
+  * rules: Drop dh_strip override, dbgsym transition is done.
 
  -- Sven Joachim <svenjoac@gmx.de>  Sat, 22 Jul 2017 16:55:40 +0200
 
