@@ -5,7 +5,8 @@ xorg-server (2:1.19.3-3) UNRELEASED; urgency=medium
     (Closes: #868876, LP: #1059947).
 
   [ Timo Aaltonen ]
-  * rules: Drop dh_strip override, dbgsym transition is done.
+  * rules: Drop dh_strip override, dbgsym transition is done
+    (Closes: #876690).
 
  -- Sven Joachim <svenjoac@gmx.de>  Sat, 22 Jul 2017 16:55:40 +0200
 
