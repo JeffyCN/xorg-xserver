@@ -8,6 +8,10 @@ xorg-server (2:1.19.3-3) UNRELEASED; urgency=medium
   * rules: Drop dh_strip override, dbgsym transition is done
     (Closes: #876690).
 
+  [ Julien Cristau ]
+  * Restore definition of DEB_HOST_ARCH_OS in debian/rules, lost in dh
+    conversion (2:1.19.1-1).  Thanks, Helmut Grohne!
+
  -- Sven Joachim <svenjoac@gmx.de>  Sat, 22 Jul 2017 16:55:40 +0200
 
 xorg-server (2:1.19.3-2) unstable; urgency=high

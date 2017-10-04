@@ -1,5 +1,7 @@
 #!/usr/bin/make -f
 
+DEB_HOST_ARCH_OS ?= $(shell dpkg-architecture -qDEB_HOST_ARCH_OS)
+
 ifeq ($(DEB_HOST_ARCH_OS), linux)
 	selinux        = --enable-xselinux
 	wayland        = --enable-xwayland
