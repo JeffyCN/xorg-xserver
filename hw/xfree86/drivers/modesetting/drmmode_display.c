@@ -279,8 +279,6 @@ drmmode_SharedPixmapPresentOnVBlank(PixmapPtr ppix, xf86CrtcPtr crtc,
 {
     drmmode_crtc_private_ptr drmmode_crtc = crtc->driver_private;
     msPixmapPrivPtr ppriv = msGetPixmapPriv(drmmode, ppix);
-
-    drmVBlank vbl;
     struct vblank_event_args *event_args;
 
     if (ppix == drmmode_crtc->prime_pixmap)
@@ -303,12 +301,7 @@ drmmode_SharedPixmapPresentOnVBlank(PixmapPtr ppix, xf86CrtcPtr crtc,
                            drmmode_SharedPixmapVBlankEventHandler,
                            drmmode_SharedPixmapVBlankEventAbort);
 
-    vbl.request.type =
-        DRM_VBLANK_RELATIVE | DRM_VBLANK_EVENT | drmmode_crtc->vblank_pipe;
-    vbl.request.sequence = 1;
-    vbl.request.signal = (unsigned long) ppriv->flip_seq;
-
-    return drmWaitVBlank(drmmode->fd, &vbl) >= 0;
+    return ms_queue_vblank(crtc, MS_QUEUE_RELATIVE, 1, NULL, ppriv->flip_seq);
 }
 
 Bool
@@ -1566,7 +1559,8 @@ drmmode_output_set_property(xf86OutputPtr output, Atom property,
                 value->size != 1)
                 return FALSE;
             memcpy(&atom, value->data, 4);
-            name = NameForAtom(atom);
+            if (!(name = NameForAtom(atom)))
+                return FALSE;
 
             /* search for matching name string, then set its value down */
             for (j = 0; j < p->mode_prop->count_enums; j++) {
@@ -2262,6 +2256,10 @@ drmmode_setup_colormap(ScreenPtr pScreen, ScrnInfoPtr pScrn)
 }
 
 #ifdef CONFIG_UDEV_KMS
+
+#define DRM_MODE_LINK_STATUS_GOOD       0
+#define DRM_MODE_LINK_STATUS_BAD        1
+
 static void
 drmmode_handle_uevents(int fd, void *closure)
 {
@@ -2280,6 +2278,52 @@ drmmode_handle_uevents(int fd, void *closure)
     }
     if (!found)
         return;
+
+    /* Try to re-set the mode on all the connectors with a BAD link-state:
+     * This may happen if a link degrades and a new modeset is necessary, using
+     * different link-training parameters. If the kernel found that the current
+     * mode is not achievable anymore, it should have pruned the mode before
+     * sending the hotplug event. Try to re-set the currently-set mode to keep
+     * the display alive, this will fail if the mode has been pruned.
+     * In any case, we will send randr events for the Desktop Environment to
+     * deal with it, if it wants to.
+     */
+    for (i = 0; i < config->num_output; i++) {
+        xf86OutputPtr output = config->output[i];
+        drmmode_output_private_ptr drmmode_output = output->driver_private;
+        uint32_t con_id;
+        drmModeConnectorPtr koutput;
+
+        if (drmmode_output->mode_output == NULL)
+            continue;
+        con_id = drmmode_output->mode_output->connector_id;
+        /* Get an updated view of the properties for the current connector and
+         * look for the link-status property
+         */
+        koutput = drmModeGetConnectorCurrent(drmmode->fd, con_id);
+        for (j = 0; koutput && j < koutput->count_props; j++) {
+            drmModePropertyPtr props;
+            props = drmModeGetProperty(drmmode->fd, koutput->props[j]);
+            if (props && props->flags & DRM_MODE_PROP_ENUM &&
+                !strcmp(props->name, "link-status") &&
+                koutput->prop_values[j] == DRM_MODE_LINK_STATUS_BAD) {
+                xf86CrtcPtr crtc = output->crtc;
+                if (!crtc)
+                    continue;
+
+                /* the connector got a link failure, re-set the current mode */
+                drmmode_set_mode_major(crtc, &crtc->mode, crtc->rotation,
+                                       crtc->x, crtc->y);
+
+                xf86DrvMsg(scrn->scrnIndex, X_WARNING,
+                           "hotplug event: connector %u's link-state is BAD, "
+                           "tried resetting the current mode. You may be left"
+                           "with a black screen if this fails...\n", con_id);
+            }
+            drmModeFreeProperty(props);
+        }
+        drmModeFreeConnector(koutput);
+    }
 
     mode_res = drmModeGetResources(drmmode->fd);
     if (!mode_res)
@@ -2345,6 +2389,10 @@ out_free_res:
 out:
     RRGetInfo(xf86ScrnToScreen(scrn), TRUE);
 }
+
+#undef DRM_MODE_LINK_STATUS_BAD
+#undef DRM_MODE_LINK_STATUS_GOOD
+
 #endif
 
 void

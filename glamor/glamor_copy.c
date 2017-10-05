@@ -230,8 +230,8 @@ glamor_copy_cpu_fbo(DrawablePtr src,
             goto bail;
         }
 
-        src_pix->drawable.x = -dst->x;
-        src_pix->drawable.y = -dst->y;
+        src_pix->drawable.x = dst_xoff;
+        src_pix->drawable.y = dst_yoff;
 
         fbGetDrawable(&src_pix->drawable, src_bits, src_stride, src_bpp, src_xoff,
                       src_yoff);
@@ -344,6 +344,7 @@ glamor_copy_fbo_fbo_draw(DrawablePtr src,
     glamor_program *prog;
     const glamor_facet *copy_facet;
     int n;
+    Bool ret = FALSE;
 
     glamor_make_current(glamor_priv);
 
@@ -410,9 +411,10 @@ glamor_copy_fbo_fbo_draw(DrawablePtr src,
             goto bail_ctx;
 
         glamor_pixmap_loop(dst_priv, dst_box_index) {
-            glamor_set_destination_drawable(dst, dst_box_index, FALSE, FALSE,
-                                            prog->matrix_uniform,
-                                            &dst_off_x, &dst_off_y);
+            if (!glamor_set_destination_drawable(dst, dst_box_index, FALSE, FALSE,
+                                                 prog->matrix_uniform,
+                                                 &dst_off_x, &dst_off_y))
+                goto bail_ctx;
 
             glScissor(dst_off_x - args.dx,
                       dst_off_y - args.dy,
@@ -422,13 +424,14 @@ glamor_copy_fbo_fbo_draw(DrawablePtr src,
             glamor_glDrawArrays_GL_QUADS(glamor_priv, nbox);
         }
     }
+
+    ret = TRUE;
+
+bail_ctx:
     glDisable(GL_SCISSOR_TEST);
     glDisableVertexAttribArray(GLAMOR_VERTEX_POS);
 
-    return TRUE;
-
-bail_ctx:
-    return FALSE;
+    return ret;
 }
 
 /**

@@ -26,9 +26,9 @@ dnl
 dnl Process this file with autoconf to create configure.
 
 AC_PREREQ(2.60)
-AC_INIT([xorg-server], 1.19.3, [https://bugs.freedesktop.org/enter_bug.cgi?product=xorg], xorg-server)
-RELEASE_DATE="2017-03-15"
-RELEASE_NAME="Lobster Bisque"
+AC_INIT([xorg-server], 1.19.4, [https://bugs.freedesktop.org/enter_bug.cgi?product=xorg], xorg-server)
+RELEASE_DATE="2017-10-04"
+RELEASE_NAME="French Onion Soup"
 AC_CONFIG_SRCDIR([Makefile.am])
 AC_CONFIG_MACRO_DIR([m4])
 AM_INIT_AUTOMAKE([foreign dist-bzip2])
@@ -134,7 +134,7 @@ AM_CONDITIONAL(SPECIAL_DTRACE_OBJECTS, [test "x$SPECIAL_DTRACE_OBJECTS" = "xyes"
 AC_HEADER_DIRENT
 AC_HEADER_STDC
 AC_CHECK_HEADERS([fcntl.h stdlib.h string.h unistd.h dlfcn.h stropts.h \
- fnmatch.h sys/mkdev.h sys/utsname.h])
+ fnmatch.h sys/mkdev.h sys/sysmacros.h sys/utsname.h])
 
 dnl Checks for typedefs, structures, and compiler characteristics.
 AC_C_CONST
@@ -2647,6 +2647,7 @@ hw/xfree86/shadowfb/Makefile
 hw/xfree86/vbe/Makefile
 hw/xfree86/vgahw/Makefile
 hw/xfree86/x86emu/Makefile
+hw/xfree86/xkb/Makefile
 hw/xfree86/utils/Makefile
 hw/xfree86/utils/man/Makefile
 hw/xfree86/utils/cvt/Makefile
