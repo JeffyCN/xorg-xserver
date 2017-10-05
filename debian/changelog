@@ -1,10 +1,11 @@
-xorg-server (2:1.19.3-3) UNRELEASED; urgency=medium
+xorg-server (2:1.19.4-1) UNRELEASED; urgency=medium
 
   [ Sven Joachim ]
   * xvfb-run: Do not redirect stderr to stdout when running the program
     (Closes: #868876, LP: #1059947).
 
   [ Timo Aaltonen ]
+  * New upstream release.
   * rules: Drop dh_strip override, dbgsym transition is done
     (Closes: #876690).
 
