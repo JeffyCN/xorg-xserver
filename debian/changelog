@@ -8,6 +8,7 @@ xorg-server (2:1.19.4-1) UNRELEASED; urgency=medium
   * New upstream release.
   * rules: Drop dh_strip override, dbgsym transition is done
     (Closes: #876690).
+  * signing-key.asc: Update Adam Jackson's key.
 
   [ Julien Cristau ]
   * Restore definition of DEB_HOST_ARCH_OS in debian/rules, lost in dh
