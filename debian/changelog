@@ -6,6 +6,7 @@ xorg-server (2:1.19.4-1) UNRELEASED; urgency=medium
 
   [ Timo Aaltonen ]
   * New upstream release.
+    - CVE-2017-13721, CVE-2017-13723
   * rules: Drop dh_strip override, dbgsym transition is done
     (Closes: #876690).
   * signing-key.asc: Update Adam Jackson's key.
