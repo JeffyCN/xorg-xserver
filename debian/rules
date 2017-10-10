@@ -5,32 +5,32 @@ DEB_HOST_ARCH_OS ?= $(shell dpkg-architecture -qDEB_HOST_ARCH_OS)
 # disable-static is so we don't get libfoo.a for modules.  now if only we could
 # kill the .las.
 confflags += \
-	     --disable-silent-rules \
-	     --disable-static \
-	     --without-dtrace \
-	     --disable-strict-compilation \
-	     --disable-debug \
-	     --with-int10=x86emu \
-	     --with-os-vendor="$(VENDOR)" \
-	     --with-builderstring="$(SOURCE_NAME) $(SOURCE_VERSION) ($(SUPPORT))" \
-	     --with-xkb-path=/usr/share/X11/xkb \
-	     --with-xkb-output=/var/lib/xkb \
-	     --with-shared-memory-dir=/dev/shm \
-	     --enable-mitshm \
-	     --enable-xres \
-	     --disable-xcsecurity \
-	     --disable-tslib \
-	     --enable-dbe \
-	     --disable-xf86bigfont \
-	     --enable-dpms \
-	     --enable-xorg \
-	     --disable-linux-acpi \
-	     --disable-linux-apm \
-	     --disable-xquartz \
-	     --disable-xwin \
-	     --disable-xfake \
-	     --disable-xfbdev \
-	     --disable-install-setuid
+	--disable-silent-rules \
+	--disable-static \
+	--without-dtrace \
+	--disable-strict-compilation \
+	--disable-debug \
+	--with-int10=x86emu \
+	--with-os-vendor="$(VENDOR)" \
+	--with-builderstring="$(SOURCE_NAME) $(SOURCE_VERSION) ($(SUPPORT))" \
+	--with-xkb-path=/usr/share/X11/xkb \
+	--with-xkb-output=/var/lib/xkb \
+	--with-shared-memory-dir=/dev/shm \
+	--enable-mitshm \
+	--enable-xres \
+	--disable-xcsecurity \
+	--disable-tslib \
+	--enable-dbe \
+	--disable-xf86bigfont \
+	--enable-dpms \
+	--enable-xorg \
+	--disable-linux-acpi \
+	--disable-linux-apm \
+	--disable-xquartz \
+	--disable-xwin \
+	--disable-xfake \
+	--disable-xfbdev \
+	--disable-install-setuid
 
 confflags_main = \
 	--with-default-font-path="/usr/share/fonts/X11/misc,/usr/share/fonts/X11/cyrillic,/usr/share/fonts/X11/100dpi/:unscaled,/usr/share/fonts/X11/75dpi/:unscaled,/usr/share/fonts/X11/Type1,/usr/share/fonts/X11/100dpi,/usr/share/fonts/X11/75dpi,built-ins" \
