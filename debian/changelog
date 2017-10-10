@@ -1,3 +1,9 @@
+xorg-server (2:1.19.4-2) UNRELEASED; urgency=medium
+
+  * rules: Try to simplify a bit flags handling.
+
+ -- Emilio Pozuelo Monfort <pochu@debian.org>  Tue, 10 Oct 2017 18:55:26 +0200
+
 xorg-server (2:1.19.4-1) unstable; urgency=medium
 
   [ Sven Joachim ]
