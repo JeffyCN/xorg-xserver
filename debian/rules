@@ -90,12 +90,14 @@ confflags_udeb = \
 
 ifeq ($(DEB_HOST_ARCH_OS), linux)
 	confflags_main += \
+		--enable-dri3 \
 		--enable-xselinux \
 		--enable-xwayland \
 		--enable-systemd-logind \
 		--with-systemd-daemon
 else
 	confflags_main += \
+		--disable-dri3 \
 		--disable-xselinux \
 		--disable-xwayland \
 		--disable-systemd-logind \
@@ -110,12 +112,6 @@ else
 	confflags_main += --enable-dri --enable-dri2
 	confflags_main += --enable-glamor
 	confflags += --enable-xshmfence
-endif
-
-ifeq ($(DEB_HOST_ARCH_OS), linux)
-	confflags_main += --enable-dri3
-else
-	confflags_main += --disable-dri3
 endif
 
 confflags += --disable-config-hal
