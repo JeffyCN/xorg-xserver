@@ -5,6 +5,8 @@ DEB_HOST_ARCH_OS ?= $(shell dpkg-architecture -qDEB_HOST_ARCH_OS)
 # disable-static is so we don't get libfoo.a for modules.  now if only we could
 # kill the .las.
 confflags += \
+	--libdir=\$${prefix}/lib \
+	--libexecdir=\$${libdir}/xorg \
 	--disable-static \
 	--without-dtrace \
 	--disable-strict-compilation \
@@ -169,14 +171,10 @@ build-source-stamp:
 
 override_dh_auto_configure:
 	dh_auto_configure --builddirectory=debian/build/main -- \
-		--libdir=\$${prefix}/lib \
-		--libexecdir=\$${libdir}/xorg \
 		$(confflags) \
 		$(confflags_main) \
 		$(vars)
 	dh_auto_configure --builddirectory=debian/build/udeb -- \
-		--libdir=\$${prefix}/lib \
-		--libexecdir=\$${libdir}/xorg \
 		$(confflags) \
 		$(confflags_udeb) \
 		$(vars)
