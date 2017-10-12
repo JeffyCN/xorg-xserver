@@ -1,4 +1,4 @@
-xorg-server (2:1.19.5-1) UNRELEASED; urgency=medium
+xorg-server (2:1.19.5-1) UNRELEASED; urgency=high
 
   [ Emilio Pozuelo Monfort ]
   * rules: Try to simplify a bit flags handling and move them
@@ -7,6 +7,9 @@ xorg-server (2:1.19.5-1) UNRELEASED; urgency=medium
 
   [ Andreas Boll ]
   * New upstream release.
+    - CVE-2017-12176, CVE-2017-12177, CVE-2017-12178, CVE-2017-12179,
+    - CVE-2017-12180, CVE-2017-12181, CVE-2017-12182, CVE-2017-12183,
+    - CVE-2017-12184, CVE-2017-12185, CVE-2017-12186, CVE-2017-12187
 
  -- Emilio Pozuelo Monfort <pochu@debian.org>  Tue, 10 Oct 2017 18:55:26 +0200
 
