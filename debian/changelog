@@ -1,8 +1,12 @@
-xorg-server (2:1.19.4-2) UNRELEASED; urgency=medium
+xorg-server (2:1.19.5-1) UNRELEASED; urgency=medium
 
+  [ Emilio Pozuelo Monfort ]
   * rules: Try to simplify a bit flags handling and move them
     to rules.flags.
   * rules: Remove --disable-silent-rules, dh passes that for us.
+
+  [ Andreas Boll ]
+  * New upstream release.
 
  -- Emilio Pozuelo Monfort <pochu@debian.org>  Tue, 10 Oct 2017 18:55:26 +0200
 
