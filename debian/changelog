@@ -1,3 +1,14 @@
+xorg-server (2:1.19.2-1+deb9u1) stretch-security; urgency=high
+
+  * Non-maintainer upload by the Security Team.
+  * CVE-2017-10971: stack buffer overflow in X Event structures handling
+    (Closes: #867492)
+  * CVE-2017-10972: information leak due to an uninitialized stack area when
+    swapping endianess.
+    (Closes: #867492)
+
+ -- Salvatore Bonaccorso <carnil@debian.org>  Fri, 07 Jul 2017 07:09:57 +0200
+
 xorg-server (2:1.19.2-1) unstable; urgency=medium
 
   [ Andreas Boll ]
