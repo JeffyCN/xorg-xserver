@@ -19,6 +19,7 @@ xorg-server (2:1.19.2-1+deb9u2) UNRELEASED; urgency=high
   * Xext/shm: Validate shmseg resource id (CVE-2017-13721)
   * xkb: Handle xkb formated string output safely (CVE-2017-13723)
   * xkb: Escape non-printable characters correctly.
+  * render: Fix out of boundary heap access
 
  -- Julien Cristau <jcristau@debian.org>  Fri, 13 Oct 2017 14:59:22 +0200
 
