@@ -1,3 +1,27 @@
+xorg-server (2:1.19.2-1+deb9u2) UNRELEASED; urgency=high
+
+  * Unvalidated extra length in ProcEstablishConnection (CVE-2017-12176)
+  * dbe: Unvalidated variable-length request in ProcDbeGetVisualInfo
+    (CVE-2017-12177)
+  * Xi: fix wrong extra length check in ProcXIChangeHierarchy (CVE-2017-12178)
+  * Xi: integer overflow and unvalidated length in
+    (S)ProcXIBarrierReleasePointer (CVE-2017-12179)
+  * Unvalidated lengths in
+    - XFree86-VidModeExtension (CVE-2017-12180)
+    - XFree86-DGA (CVE-2017-12181)
+    - XFree86-DRI (CVE-2017-12182)
+    - XFIXES (CVE-2017-12183)
+    - XINERAMA (CVE-2017-12184
+    - MIT-SCREEN-SAVER (CVE-2017-12185
+    - X-Resource (CVE-2017-12186
+    - RENDER (CVE-2017-12187)
+  * os: Make sure big requests have sufficient length.
+  * Xext/shm: Validate shmseg resource id (CVE-2017-13721)
+  * xkb: Handle xkb formated string output safely (CVE-2017-13723)
+  * xkb: Escape non-printable characters correctly.
+
+ -- Julien Cristau <jcristau@debian.org>  Fri, 13 Oct 2017 14:59:22 +0200
+
 xorg-server (2:1.19.2-1+deb9u1) stretch-security; urgency=high
 
   * Non-maintainer upload by the Security Team.
