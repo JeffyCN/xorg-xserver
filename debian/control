@@ -355,7 +355,6 @@ Description: Xwayland X server
 
 Package: xserver-xorg-legacy
 Architecture: any
-Priority: extra
 Depends:
  xserver-common (>= ${source:Version}),
  ${shlibs:Depends},
