@@ -1,3 +1,12 @@
+xorg-server (2:1.19.5-2) UNRELEASED; urgency=medium
+
+  * Use --sourcedir=debian/tmp/udeb for the udeb package and
+    --sourcedir=debian/tmp/main for the rest, so that we don't have
+    to specify where the files come from as well as where they should
+    be installed to in *.install.
+
+ -- Emilio Pozuelo Monfort <pochu@debian.org>  Tue, 21 Nov 2017 19:34:34 +0100
+
 xorg-server (2:1.19.5-1) unstable; urgency=high
 
   [ Emilio Pozuelo Monfort ]

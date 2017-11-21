@@ -101,7 +101,8 @@ override_dh_fixperms-arch:
 	chmod ug+s $(CURDIR)/debian/xserver-xorg-legacy/usr/lib/xorg/Xorg.wrap
 
 override_dh_install:
-	dh_install --fail-missing
+	dh_install -pxserver-xorg-core-udeb --sourcedir=debian/tmp/udeb
+	dh_install --remaining-packages --sourcedir=debian/tmp/main --fail-missing
 	install -d $(CURDIR)/debian/xserver-xorg-dev/usr/share/xserver-xorg
 	# Extract only the major ABI version:
 	abi_videodrv=`PKG_CONFIG_PATH=debian/tmp/main/usr/lib/pkgconfig pkg-config --variable=abi_videodrv xorg-server|cut -d . -f 1`; \
