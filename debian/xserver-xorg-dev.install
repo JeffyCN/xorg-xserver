@@ -1,5 +1,5 @@
 usr/include/xorg
-usr/lib/pkgconfig/xorg-server.pc
+usr/lib/*/pkgconfig/xorg-server.pc
 usr/share/aclocal
 
 ../../debian/local/dh_xsf_substvars usr/bin

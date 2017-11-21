@@ -9,8 +9,9 @@ SOURCE_VERSION := $(shell dpkg-parsechangelog | awk -F': ' '/^Version: / {print 
 # disable-static is so we don't get libfoo.a for modules.  now if only we could
 # kill the .las.
 confflags += \
-	--libdir=\$${prefix}/lib \
-	--libexecdir=\$${libdir}/xorg \
+	--libexecdir=\$${prefix}/lib/xorg \
+	--with-module-dir=\$${libexecdir}/modules \
+	--with-serverconfig-path=\$${libexecdir} \
 	--disable-static \
 	--without-dtrace \
 	--disable-strict-compilation \
