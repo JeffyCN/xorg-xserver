@@ -105,12 +105,14 @@ override_dh_install:
 	dh_install --remaining-packages --sourcedir=debian/tmp/main --fail-missing
 	install -d $(CURDIR)/debian/xserver-xorg-dev/usr/share/xserver-xorg
 	# Extract only the major ABI version:
-	abi_videodrv=`PKG_CONFIG_PATH=debian/tmp/main/usr/lib/$(DEB_HOST_MULTIARCH)/pkgconfig pkg-config --variable=abi_videodrv xorg-server|cut -d . -f 1`; \
-	echo videoabi=xorg-video-abi-$$abi_videodrv > debian/xserver-xorg-core.substvars && \
-	echo "xorg-video-abi-$$abi_videodrv, xserver-xorg-core (>= $(serverminver))" > debian/xserver-xorg-dev/usr/share/xserver-xorg/videodrvdep
-	abi_xinput=`PKG_CONFIG_PATH=debian/tmp/main/usr/lib/$(DEB_HOST_MULTIARCH)/pkgconfig pkg-config --variable=abi_xinput xorg-server|cut -d . -f 1`; \
-	echo inputabi=xorg-input-abi-$$abi_xinput >> debian/xserver-xorg-core.substvars && \
-	echo "xorg-input-abi-$$abi_xinput, xserver-xorg-core (>= $(serverminver))" > debian/xserver-xorg-dev/usr/share/xserver-xorg/xinputdep
+	set -e; \
+		abi_videodrv=`PKG_CONFIG_PATH=debian/tmp/main/usr/lib/$(DEB_HOST_MULTIARCH)/pkgconfig pkg-config --variable=abi_videodrv xorg-server|cut -d . -f 1`; \
+		test -n "$$abi_videodrv"; echo videoabi=xorg-video-abi-$$abi_videodrv > debian/xserver-xorg-core.substvars && \
+		echo "xorg-video-abi-$$abi_videodrv, xserver-xorg-core (>= $(serverminver))" > debian/xserver-xorg-dev/usr/share/xserver-xorg/videodrvdep
+	set -e; \
+		abi_xinput=`PKG_CONFIG_PATH=debian/tmp/main/usr/lib/$(DEB_HOST_MULTIARCH)/pkgconfig pkg-config --variable=abi_xinput xorg-server|cut -d . -f 1`; \
+		test -n "$$abi_xinput"; echo inputabi=xorg-input-abi-$$abi_xinput >> debian/xserver-xorg-core.substvars && \
+		echo "xorg-input-abi-$$abi_xinput, xserver-xorg-core (>= $(serverminver))" > debian/xserver-xorg-dev/usr/share/xserver-xorg/xinputdep
 
 	# The udeb uses the same substvars:
 	cp debian/xserver-xorg-core.substvars debian/xserver-xorg-core-udeb.substvars
