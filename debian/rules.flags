@@ -10,7 +10,7 @@ SOURCE_VERSION := $(shell dpkg-parsechangelog | awk -F': ' '/^Version: / {print 
 # kill the .las.
 confflags += \
 	--libexecdir=\$${prefix}/lib/xorg \
-	--with-module-dir=\$${libexecdir}/modules \
+	--with-module-dir=\$${prefix}/lib/xorg/modules \
 	--with-serverconfig-path=\$${libexecdir} \
 	--disable-static \
 	--without-dtrace \

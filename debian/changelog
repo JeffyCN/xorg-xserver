@@ -10,6 +10,9 @@ xorg-server (2:1.19.5-2) UNRELEASED; urgency=medium
     deprecated.
   * Make calculation of xserver-xorg-core's xinput/video ABI provides more
     robust.
+  * Use ${prefix} rather than ${libexecdir} for --with-module-dir, as the
+    module dir ends up in the pkg-config file, where libexecdir is not
+    defined.
 
  -- Emilio Pozuelo Monfort <pochu@debian.org>  Tue, 21 Nov 2017 19:34:34 +0100
 
