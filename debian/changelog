@@ -17,6 +17,8 @@ xorg-server (2:1.19.6-1) UNRELEASED; urgency=medium
 
   [ Timo Aaltonen ]
   * New upstream release.
+  * 07-glx-do-not-pick-srgb-config-for-32bit-rgba-visual.diff: Add a
+    patch from upstream to fix potential issues with mesa git.
 
  -- Emilio Pozuelo Monfort <pochu@debian.org>  Tue, 21 Nov 2017 19:34:34 +0100
 
