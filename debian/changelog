@@ -1,4 +1,4 @@
-xorg-server (2:1.19.6-1) UNRELEASED; urgency=medium
+xorg-server (2:1.19.6-1) unstable; urgency=medium
 
   [ Emilio Pozuelo Monfort ]
   * Use --sourcedir=debian/tmp/udeb for the udeb package and
@@ -20,7 +20,7 @@ xorg-server (2:1.19.6-1) UNRELEASED; urgency=medium
   * 07-glx-do-not-pick-srgb-config-for-32bit-rgba-visual.diff: Add a
     patch from upstream to fix potential issues with mesa git.
 
- -- Emilio Pozuelo Monfort <pochu@debian.org>  Tue, 21 Nov 2017 19:34:34 +0100
+ -- Timo Aaltonen <tjaalton@debian.org>  Thu, 18 Jan 2018 14:11:18 +0200
 
 xorg-server (2:1.19.5-1) unstable; urgency=high
 
