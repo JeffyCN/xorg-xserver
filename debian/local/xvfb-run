@@ -22,9 +22,9 @@ XAUTHPROTO=.
 # the COLUMNS variable is not set.  ($COLUMNS can react to SIGWINCH while the
 # script is running, and this cannot, only being calculated once.)
 DEFCOLUMNS=$(stty size 2>/dev/null | awk '{print $2}') || true
-if ! expr "$DEFCOLUMNS" : "[[:digit:]]\+$" >/dev/null 2>&1; then
-    DEFCOLUMNS=80
-fi
+case "$DEFCOLUMNS" in
+    *[!0-9]*|'') DEFCOLUMNS=80 ;;
+esac
 
 # Display a message, wrapping lines at the terminal width.
 message () {
