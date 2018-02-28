@@ -2170,8 +2170,12 @@ if test "x$GLAMOR" = xyes; then
 		fi
 	fi
 
-	PKG_CHECK_MODULES(LIBDRM, "libdrm >= 2.4.74",
-			[AC_DEFINE(GLAMOR_HAS_DRM_NAME_FROM_FD_2, 1, [Have GLAMOR_HAS_DRM_NAME_FROM_FD_2])], [])
+	PKG_CHECK_EXISTS(libdrm >= 2.4.62,
+			 [AC_DEFINE(GLAMOR_HAS_DRM_ATOMIC, 1, [libdrm supports atomic API])],
+			 [])
+	PKG_CHECK_EXISTS(libdrm >= 2.4.74,
+			 [AC_DEFINE(GLAMOR_HAS_DRM_NAME_FROM_FD_2, 1, [Have GLAMOR_HAS_DRM_NAME_FROM_FD_2])],
+			 [])
 fi
 AM_CONDITIONAL([GLAMOR_EGL], [test "x$GBM" = xyes])
 
