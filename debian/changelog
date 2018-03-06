@@ -3,6 +3,7 @@ xorg-server (2:1.20.0~rc1-1) UNRELEASED; urgency=medium
   * New upstream release candidate.
   * control: Replace old proto build-deps with x11proto-dev.
   * patches: Refreshed, drop 07 which is upstream.
+  * serverminver: Updated.
 
  -- Timo Aaltonen <tjaalton@debian.org>  Tue, 06 Mar 2018 03:41:20 +0200
 
