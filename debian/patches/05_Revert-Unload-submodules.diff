@@ -12,7 +12,7 @@ This doesn't seem to work quite well.  See Debian bug#686152.
 
 --- a/hw/xfree86/common/xf86Helper.c
 +++ b/hw/xfree86/common/xf86Helper.c
-@@ -1625,7 +1625,13 @@ xf86LoadOneModule(const char *name, void
+@@ -1524,7 +1524,13 @@ xf86LoadOneModule(const char *name, void
  void
  xf86UnloadSubModule(void *mod)
  {
