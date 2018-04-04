@@ -206,6 +206,7 @@ typedef struct {
     drmmode_prop_info_rec props_connector[DRMMODE_CONNECTOR__COUNT];
     int enc_mask;
     int enc_clone_mask;
+    xf86CrtcPtr current_crtc;
 } drmmode_output_private_rec, *drmmode_output_private_ptr;
 
 typedef struct _msPixmapPriv {
