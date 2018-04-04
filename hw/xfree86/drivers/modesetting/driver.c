@@ -1667,7 +1667,10 @@ ScreenInit(ScreenPtr pScreen, int argc, char **argv)
     if (!drmmode_setup_colormap(pScreen, pScrn))
         return FALSE;
 
-    xf86DPMSInit(pScreen, xf86DPMSSet, 0);
+    if (ms->atomic_modeset)
+        xf86DPMSInit(pScreen, drmmode_set_dpms, 0);
+    else
+        xf86DPMSInit(pScreen, xf86DPMSSet, 0);
 
 #ifdef GLAMOR_HAS_GBM
     if (ms->drmmode.glamor) {
