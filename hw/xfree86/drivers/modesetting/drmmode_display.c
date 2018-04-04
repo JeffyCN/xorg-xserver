@@ -56,86 +56,6 @@ static Bool drmmode_xf86crtc_resize(ScrnInfoPtr scrn, int width, int height);
 static PixmapPtr drmmode_create_pixmap_header(ScreenPtr pScreen, int width, int height,
                                               int depth, int bitsPerPixel, int devKind,
                                               void *pPixData);
-<<<<<<< HEAD
-=======
-
-static inline uint32_t *
-formats_ptr(struct drm_format_modifier_blob *blob)
-{
-    return (uint32_t *)(((char *)blob) + blob->formats_offset);
-}
-
-static inline struct drm_format_modifier *
-modifiers_ptr(struct drm_format_modifier_blob *blob)
-{
-    return (struct drm_format_modifier *)(((char *)blob) + blob->modifiers_offset);
-}
-
-#endif
-
-#ifdef GBM_BO_WITH_MODIFIERS
-static uint32_t
-get_modifiers_set(ScrnInfoPtr scrn, uint32_t format, uint64_t **modifiers,
-                  Bool enabled_crtc_only, Bool exclude_multiplane)
-{
-    xf86CrtcConfigPtr xf86_config = XF86_CRTC_CONFIG_PTR(scrn);
-    modesettingPtr ms = modesettingPTR(scrn);
-    drmmode_ptr drmmode = &ms->drmmode;
-    int c, i, j, k, count_modifiers = 0;
-    uint64_t *tmp, *ret = NULL;
-
-    *modifiers = NULL;
-    for (c = 0; c < xf86_config->num_crtc; c++) {
-        xf86CrtcPtr crtc = xf86_config->crtc[c];
-        drmmode_crtc_private_ptr drmmode_crtc = crtc->driver_private;
-
-        if (enabled_crtc_only && !crtc->enabled)
-            continue;
-
-        for (i = 0; i < drmmode_crtc->num_formats; i++) {
-            drmmode_format_ptr iter = &drmmode_crtc->formats[i];
-
-            if (iter->format != format)
-                continue;
-
-            for (j = 0; j < iter->num_modifiers; j++) {
-                Bool found = FALSE;
-
-		/* Don't choose multi-plane formats for our screen pixmap.
-		 * These will get used with frontbuffer rendering, which will
-		 * lead to worse-than-tearing with multi-plane formats, as the
-		 * primary and auxiliary planes go out of sync. */
-		if (exclude_multiplane &&
-                    gbm_device_get_format_modifier_plane_count(drmmode->gbm,
-                                                               format,
-                                                               iter->modifiers[j]) > 1) {
-                    continue;
-                }
-
-                for (k = 0; k < count_modifiers; k++) {
-                    if (iter->modifiers[j] == ret[k])
-                        found = TRUE;
-                }
-                if (!found) {
-                    count_modifiers++;
-                    tmp = realloc(ret, count_modifiers * sizeof(uint64_t));
-                    if (!tmp) {
-                        free(ret);
-                        return 0;
-                    }
-                    ret = tmp;
-                    ret[count_modifiers - 1] = iter->modifiers[j];
-                }
-            }
-        }
-    }
-
-    *modifiers = ret;
-    return count_modifiers;
-}
-#endif
-
->>>>>>> c02909d78... Remove always true GLAMOR_HAS_DRM_* guards
 static Bool
 drmmode_zaphod_string_matches(ScrnInfoPtr scrn, const char *s, char *output_name)
 {
@@ -661,6 +581,7 @@ drmmode_create_bo(drmmode_ptr drmmode, drmmode_bo *bo,
                                 drmmode->scrn->depth == 30 ?
                                 GBM_FORMAT_ARGB2101010 : GBM_FORMAT_ARGB8888,
                                 GBM_BO_USE_RENDERING | GBM_BO_USE_SCANOUT);
+        bo->used_modifiers = FALSE;
         return bo->gbm != NULL;
     }
 #endif
@@ -1724,23 +1645,6 @@ drmmode_crtc_create_planes(xf86CrtcPtr crtc, int num)
     }
 
     drmmode_crtc->plane_id = best_plane;
-<<<<<<< HEAD
-=======
-    if (best_kplane) {
-        drmmode_crtc->num_formats = best_kplane->count_formats;
-        drmmode_crtc->formats = calloc(sizeof(drmmode_format_rec),
-                                       best_kplane->count_formats);
-        if (blob_id) {
-            populate_format_modifiers(crtc, best_kplane, blob_id);
-        }
-        else
-        {
-            for (i = 0; i < best_kplane->count_formats; i++)
-                drmmode_crtc->formats[i].format = best_kplane->formats[i];
-        }
-        drmModeFreePlane(best_kplane);
-    }
->>>>>>> c02909d78... Remove always true GLAMOR_HAS_DRM_* guards
 
     drmmode_prop_info_free(tmp_props, DRMMODE_PLANE__COUNT);
     drmModeFreePlaneResources(kplane_res);
