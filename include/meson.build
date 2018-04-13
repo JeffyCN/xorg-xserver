@@ -53,7 +53,6 @@ conf_data.set('HAS_APERTURE_DRV', host_machine.system() == 'openbsd')
 # XXX: BUNDLE_ID_PREFIX
 # XXX: HAVE_LIBDISPATCH
 conf_data.set_quoted('OSNAME', 'Linux') # XXX
-conf_data.set('HAVE_SYSV_IPC', '1') # XXX
 conf_data.set('HAVE_INPUTTHREAD', '1') # XXX
 conf_data.set('HAVE_PTHREAD_SETNAME_NP_WITHOUT_TID', '1') # XXX
 conf_data.set('HAVE_LIBBSD', libbsd_dep.found())
@@ -74,22 +73,25 @@ conf_data.set_quoted('SHMDIR', '/tmp')
 
 conf_data.set('HAVE_XSHMFENCE', xshmfence_dep.found())
 conf_data.set('WITH_LIBDRM', libdrm_dep.found())
-conf_data.set('GLAMOR_HAS_DRM_NAME_FROM_FD_2',
-              libdrm_dep.found() and libdrm_dep.version().version_compare('>= 2.4.74'))
+conf_data.set('GLAMOR_HAS_EGL_QUERY_DMABUF',
+              epoxy_dep.found() and epoxy_dep.version().version_compare('>= 1.4.4'))
 conf_data.set('GLXEXT', build_glx)
 conf_data.set('GLAMOR', build_glamor)
 conf_data.set('GLAMOR_HAS_GBM', gbm_dep.found())
 conf_data.set('GLAMOR_HAS_GBM_LINEAR',
               gbm_dep.found() and gbm_dep.version().version_compare('>= 10.6'))
+conf_data.set('GBM_BO_WITH_MODIFIERS',
+              gbm_dep.found() and gbm_dep.version().version_compare('>= 17.1'))
 
 conf_data.set_quoted('SERVER_MISC_CONFIG_PATH', serverconfigdir)
 conf_data.set_quoted('PROJECTROOT', get_option('prefix'))
 conf_data.set_quoted('SYSCONFDIR', join_paths(get_option('prefix'), get_option('sysconfdir')))
+conf_data.set_quoted('SUID_WRAPPER_DIR', join_paths(get_option('prefix'), get_option('libexecdir')))
+conf_data.set_quoted('COMPILEDDEFAULTFONTPATH', default_font_path)
 
-# XXX: Stopped enumerating at COMPILEDEFAULTFONTPATH
 conf_data.set('XORG_VERSION_CURRENT', release)
 
-conf_data.set('HASXDMAUTH', get_option('xdm-auth-1'))
+conf_data.set('HASXDMAUTH', has_xdm_auth)
 conf_data.set('SECURE_RPC', get_option('secure-rpc'))
 
 conf_data.set('HAVE_DLFCN_H', cc.has_header('dlfcn.h'))
@@ -168,7 +170,7 @@ conf_data.set('DPMSExtension', build_dpms)
 conf_data.set('DRI2', build_dri2)
 conf_data.set('DRI3', build_dri3)
 conf_data.set_quoted('DRI_DRIVER_PATH', dri_dep.get_pkgconfig_variable('dridriverdir'))
-conf_data.set('HAS_SHM', '1')
+conf_data.set('HAS_SHM', build_mitshm)
 conf_data.set('MITSHM', build_mitshm)
 conf_data.set('PANORAMIX', build_xinerama)
 conf_data.set('PRESENT', '1')
@@ -180,7 +182,7 @@ conf_data.set('SHAPE', '1')
 conf_data.set('XACE', build_xace)
 conf_data.set('XCMISC', '1')
 conf_data.set('XCSECURITY', build_xsecurity)
-conf_data.set('XDMCP', get_option('xdmcp'))
+conf_data.set('XDMCP', xdmcp_dep.found())
 conf_data.set('XF86BIGFONT', build_xf86bigfont)
 conf_data.set('XF86DRI', build_dri1)
 conf_data.set('XF86VIDMODE', build_xf86vidmode)
@@ -198,6 +200,9 @@ conf_data.set('XvMCExtension', build_xvmc)
 
 conf_data.set('HAVE_SHA1_IN_LIBNETTLE', '1') # XXX
 
+conf_data.set('HAVE_APM', build_apm or build_acpi)
+conf_data.set('HAVE_ACPI', build_acpi)
+
 enable_debugging = get_option('buildtype') == 'debug'
 conf_data.set('DEBUG', enable_debugging)
 
@@ -208,10 +213,68 @@ conf_data.set_quoted('OSVENDOR', get_option('os_vendor'))
 conf_data.set_quoted('BUILDERADDR', get_option('builder_addr'))
 conf_data.set_quoted('BUILDERSTRING', get_option('builder_string'))
 
+#
+# for xorg-server.h only
+#
+defines_svr4 = '''#if !defined(SVR4) && !defined(__svr4__) && !defined(__SVR4)
+#error "I am not SVR4"
+#endif
+'''
+
+# BSD specifics
+supports_pccons = false
+supports_pcvt = false
+supports_syscons = false
+supports_wscons = false
+csrg_based = false
+
+if host_machine.system() == 'freebsd' or host_machine.system() == 'dragonflybsd'
+  supports_pccons = true
+  supports_pcvt = true
+  supports_syscons = true
+  csrg_based = true
+endif
+
+if host_machine.system() == 'kfreebsd'
+  supports_pccons = true
+  supports_pcvt = true
+  supports_syscons = true
+endif
+
+if host_machine.system() == 'netbsd'
+  supports_pccons = true
+  supports_pcvt = true
+  supports_wscons = true
+  csrg_based = true
+endif
+
+if host_machine.system() == 'openbsd'
+  supports_pcvt = true
+  supports_wscons = true
+  csrg_based = true
+endif
+
+conf_data.set('SVR4', cc.compiles(defines_svr4))
+conf_data.set_quoted('XKB_DFLT_RULES', get_option('xkb_default_rules'))
+conf_data.set('XORGSERVER', build_xorg)
+conf_data.set_quoted('XCONFIGFILE', join_paths(get_option('sysconfdir'), 'xorg.conf'))
+conf_data.set_quoted('__XSERVERNAME__', 'Xorg')
+conf_data.set('WITH_VGAHW', build_vgahw)
+conf_data.set('CSRG_BASED', csrg_based)
+conf_data.set('PCCONS_SUPPORT', supports_pccons)
+conf_data.set('PCVT_SUPPORT', supports_pcvt)
+conf_data.set('SYSCONS_SUPPORT', supports_syscons)
+conf_data.set('WSCONS_SUPPORT', supports_wscons)
+conf_data.set('XSERVER_LIBPCIACCESS', get_option('pciaccess'))
+conf_data.set('XSERVER_PLATFORM_BUS', build_udev)
+
 configure_file(output : 'dix-config.h',
                configuration : conf_data)
 
-
+configure_file(output : 'xorg-server.h',
+               input : 'xorg-server.h.meson.in',
+               configuration : conf_data,
+               install_dir: xorgsdkdir)
 
 version_data = configuration_data()
 version_data.set('VENDOR_RELEASE', '@0@'.format(release))
@@ -255,6 +318,7 @@ xorg_data.set('XSERVER_LIBPCIACCESS', get_option('pciaccess'))
 xorg_data.set_quoted('PCI_TXT_IDS_PATH', '')
 xorg_data.set('XSERVER_PLATFORM_BUS', build_udev)
 xorg_data.set('WSCONS_SUPPORT', host_machine.system() == 'netbsd' or host_machine.system() == 'openbsd')
+xorg_data.set('XF86PM', build_apm or build_acpi)
 
 if host_machine.system() == 'freebsd' or host_machine.system() == 'dragonflybsd'
     if host_machine.cpu_family() == 'x86' or host_machine.cpu_family() == 'x86_64'
@@ -359,6 +423,7 @@ if build_xorg
             'xkbsrv.h',
             'xkbstr.h',
             'xkbrules.h',
+            'Xprintf.h',
             'xserver_poll.h',
             'xserver-properties.h',
         ],

@@ -227,7 +227,7 @@ check_outputs(int fd, int *count)
         *count = res->count_connectors;
 
     ret = res->count_connectors > 0;
-#if defined(DRM_CAP_PRIME) && defined(GLAMOR_HAS_GBM_LINEAR)
+#if defined(GLAMOR_HAS_GBM_LINEAR)
     if (ret == FALSE) {
         uint64_t value = 0;
         if (drmGetCap(fd, DRM_CAP_PRIME, &value) == 0 &&
@@ -244,12 +244,14 @@ probe_hw(const char *dev, struct xf86_platform_device *platform_dev)
 {
     int fd;
 
+#ifdef XF86_PDEV_SERVER_FD
     if (platform_dev && (platform_dev->flags & XF86_PDEV_SERVER_FD)) {
         fd = xf86_platform_device_odev_attributes(platform_dev)->fd;
         if (fd == -1)
             return FALSE;
         return check_outputs(fd, NULL);
     }
+#endif
 
     fd = open_hw(dev);
     if (fd != -1) {
@@ -710,8 +712,10 @@ FreeRec(ScrnInfoPtr pScrn)
             if (ms->pEnt->location.type == BUS_PCI)
                 ret = drmClose(ms->fd);
             else
+#ifdef XF86_PDEV_SERVER_FD
                 if (!(ms->pEnt->location.type == BUS_PLATFORM &&
                       (ms->pEnt->location.id.plat->flags & XF86_PDEV_SERVER_FD)))
+#endif
                     ret = close(ms->fd);
             (void) ret;
             ms_ent->fd = 0;
@@ -794,14 +798,6 @@ msShouldDoubleShadow(ScrnInfoPtr pScrn, modesettingPtr ms)
     return ret;
 }
 
-#ifndef DRM_CAP_CURSOR_WIDTH
-#define DRM_CAP_CURSOR_WIDTH 0x8
-#endif
-
-#ifndef DRM_CAP_CURSOR_HEIGHT
-#define DRM_CAP_CURSOR_HEIGHT 0x9
-#endif
-
 static Bool
 ms_get_drm_master_fd(ScrnInfoPtr pScrn)
 {
@@ -824,11 +820,13 @@ ms_get_drm_master_fd(ScrnInfoPtr pScrn)
 
 #ifdef XSERVER_PLATFORM_BUS
     if (pEnt->location.type == BUS_PLATFORM) {
+#ifdef XF86_PDEV_SERVER_FD
         if (pEnt->location.id.plat->flags & XF86_PDEV_SERVER_FD)
             ms->fd =
                 xf86_platform_device_odev_attributes(pEnt->location.id.plat)->
                 fd;
         else
+#endif
         {
             char *path =
                 xf86_platform_device_odev_attributes(pEnt->location.id.plat)->
@@ -1003,7 +1001,6 @@ PreInit(ScrnInfoPtr pScrn, int flags)
         xf86ReturnOptValBool(ms->drmmode.Options, OPTION_PAGEFLIP, TRUE);
 
     pScrn->capabilities = 0;
-#ifdef DRM_CAP_PRIME
     ret = drmGetCap(ms->fd, DRM_CAP_PRIME, &value);
     if (ret == 0) {
         if (connector_count && (value & DRM_PRIME_CAP_IMPORT)) {
@@ -1016,7 +1013,10 @@ PreInit(ScrnInfoPtr pScrn, int flags)
             pScrn->capabilities |= RR_Capability_SourceOutput | RR_Capability_SourceOffload;
 #endif
     }
-#endif
+
+    ret = drmSetClientCap(ms->fd, DRM_CLIENT_CAP_UNIVERSAL_PLANES, 1);
+    ret |= drmSetClientCap(ms->fd, DRM_CLIENT_CAP_ATOMIC, 1);
+    ms->atomic_modeset = (ret == 0);
 
     if (drmmode_pre_init(pScrn, &ms->drmmode, pScrn->bitsPerPixel / 8) == FALSE) {
         xf86DrvMsg(pScrn->scrnIndex, X_ERROR, "KMS setup failed\n");
@@ -1491,9 +1491,11 @@ SetMaster(ScrnInfoPtr pScrn)
     modesettingPtr ms = modesettingPTR(pScrn);
     int ret;
 
+#ifdef XF86_PDEV_SERVER_FD
     if (ms->pEnt->location.type == BUS_PLATFORM &&
         (ms->pEnt->location.id.plat->flags & XF86_PDEV_SERVER_FD))
         return TRUE;
+#endif
 
     ret = drmSetMaster(ms->fd);
     if (ret)
@@ -1595,15 +1597,11 @@ ScreenInit(ScreenPtr pScreen, int argc, char **argv)
 
     fbPictureInit(pScreen, NULL, 0);
 
-#ifdef GLAMOR_HAS_GBM
-    if (ms->drmmode.glamor) {
-        if (!glamor_init(pScreen, GLAMOR_USE_EGL_SCREEN)) {
-            xf86DrvMsg(pScrn->scrnIndex, X_ERROR,
-                       "Failed to initialize glamor at ScreenInit() time.\n");
-            return FALSE;
-        }
+    if (drmmode_init(pScrn, &ms->drmmode) == FALSE) {
+        xf86DrvMsg(pScrn->scrnIndex, X_ERROR,
+                   "Failed to initialize glamor at ScreenInit() time.\n");
+        return FALSE;
     }
-#endif
 
     if (ms->drmmode.shadow_enable && !msShadowInit(pScreen)) {
         xf86DrvMsg(pScrn->scrnIndex, X_ERROR, "shadow fb init failed\n");
@@ -1660,7 +1658,10 @@ ScreenInit(ScreenPtr pScreen, int argc, char **argv)
     if (!drmmode_setup_colormap(pScreen, pScrn))
         return FALSE;
 
-    xf86DPMSInit(pScreen, xf86DPMSSet, 0);
+    if (ms->atomic_modeset)
+        xf86DPMSInit(pScreen, drmmode_set_dpms, 0);
+    else
+        xf86DPMSInit(pScreen, xf86DPMSSet, 0);
 
 #ifdef GLAMOR_HAS_GBM
     if (ms->drmmode.glamor) {
@@ -1742,9 +1743,11 @@ LeaveVT(ScrnInfoPtr pScrn)
 
     pScrn->vtSema = FALSE;
 
+#ifdef XF86_PDEV_SERVER_FD
     if (ms->pEnt->location.type == BUS_PLATFORM &&
         (ms->pEnt->location.id.plat->flags & XF86_PDEV_SERVER_FD))
         return;
+#endif
 
     drmDropMaster(ms->fd);
 }

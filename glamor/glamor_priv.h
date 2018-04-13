@@ -281,6 +281,7 @@ typedef struct glamor_screen_private {
     int radial_max_nstops;
 
     struct glamor_saved_procs saved_procs;
+    GetDrawableModifiersFuncPtr get_drawable_modifiers;
     int flags;
     ScreenPtr screen;
     int dri3_enabled;
@@ -340,6 +341,7 @@ typedef struct glamor_pixmap_private {
     Bool prepared;
 #ifdef GLAMOR_HAS_GBM
     EGLImageKHR image;
+    Bool used_modifiers;
 #endif
     /** block width of this large pixmap. */
     int block_w;

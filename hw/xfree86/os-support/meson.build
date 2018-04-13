@@ -4,6 +4,13 @@ srcs_xorg_os_support = [
     'shared/sigio.c',
     'shared/vidmem.c',
 ]
+
+hdrs_xorg_os_support = [
+    'bus/xf86Pci.h',
+    'xf86_OSlib.h',
+    'xf86_OSproc.h'
+]
+
 os_support_flags = ['-DUSESTDRES']
 
 if get_option('pciaccess')
@@ -40,7 +47,6 @@ if host_machine.system() == 'linux'
         endif
     endif
 
-    os_support_flags += '-DHAVE_SYSV_IPC'
 elif host_machine.system() == 'solaris'
     srcs_xorg_os_support += [
         'solaris/sun_apm.c',
@@ -72,7 +78,6 @@ elif host_machine.system() == 'solaris'
         error('Unknown CPU family for Solaris build')
     endif
 
-    os_support_flags += '-DHAVE_SYSV_IPC'
 elif host_machine.system().endswith('bsd')
     srcs_xorg_os_support += [
         'bsd/bsd_VTsw.c',
@@ -137,4 +142,4 @@ xorg_os_support = static_library('xorg_os_support',
     c_args: xorg_c_args,
 )
 
-install_data('bus/xf86Pci.h', install_dir: xorgsdkdir)
+install_data(hdrs_xorg_os_support, install_dir: xorgsdkdir)

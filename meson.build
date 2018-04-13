@@ -3,7 +3,7 @@ project('xserver', 'c',
             'buildtype=debugoptimized',
             'c_std=gnu99',
         ],
-        version: '1.19.99.901',
+        version: '1.19.99.904',
         meson_version: '>= 0.42.0',
 )
 add_project_arguments('-DHAVE_DIX_CONFIG_H', language: 'c')
@@ -78,7 +78,7 @@ scrnsaverproto_dep = dependency('scrnsaverproto', version: '>= 1.1')
 resourceproto_dep = dependency('resourceproto', version: '>= 1.2.0')
 xf86driproto_dep = dependency('xf86driproto', version: '>= 2.1.0', required: get_option('dri1') == 'true')
 dri2proto_dep = dependency('dri2proto', version: '>= 2.8', required: get_option('dri2') == 'true')
-dri3proto_dep = dependency('dri3proto', version: '>= 1.0', required: get_option('dri3') == 'true')
+dri3proto_dep = dependency('dri3proto', version: '>= 1.2', required: get_option('dri3') == 'true')
 xineramaproto_dep = dependency('xineramaproto')
 xf86bigfontproto_dep = dependency('xf86bigfontproto', version: '>= 1.2.0')
 xf86vidmodeproto_dep = dependency('xf86vidmodeproto', version: '>= 2.2.99.1', required: false)
@@ -116,6 +116,22 @@ if xkb_bin_dir == ''
     if xkb_bin_dir == ''
         xkb_bin_dir = join_paths(get_option('prefix'), get_option('bindir'))
     endif
+endif
+
+dfp = get_option('default_font_path')
+if dfp == ''
+    fontutil_dep = dependency('fontutil')
+    fontrootdir = fontutil_dep.get_pkgconfig_variable('fontrootdir')
+    default_font_path = ','.join([
+        join_paths(fontrootdir, 'misc'),
+        join_paths(fontrootdir, 'TTF'),
+        join_paths(fontrootdir, 'OTF'),
+        join_paths(fontrootdir, 'Type1'),
+        join_paths(fontrootdir, '100dpi'),
+        join_paths(fontrootdir, '75dpi'),
+    ])
+else
+    default_font_path = dfp
 endif
 
 hal_option = get_option('hal')
@@ -262,35 +278,45 @@ else
     build_glamor = get_option('glamor') == 'true'
 endif
 
-gbm_dep = dependency('', required:false)
+gbm_dep = dependency('', required: false)
+epoxy_dep = dependency('', required: false)
 if build_glamor
     gbm_dep = dependency('gbm', version: '>= 10.2', required: false)
+    epoxy_dep = dependency('epoxy', required: false)
 endif
 
 # XXX: Add more sha1 options, because Linux is about choice
 sha1_dep = nettle_dep
 
-xdmcp_dep = []
+xdmcp_dep = dependency('', required : false)
 if get_option('xdmcp')
     xdmcp_dep = dependency('xdmcp')
 endif
 
+has_xdm_auth = get_option('xdm-auth-1')
+
+if not xdmcp_dep.found()
+  has_xdm_auth = false
+endif
+
 build_glx = get_option('glx')
 
+libdrm_dep = dependency('libdrm', version: '>= 2.4.89', required: false)
+
 if get_option('dri1') == 'auto'
-    build_dri1 = xf86driproto_dep.found()
+    build_dri1 = xf86driproto_dep.found() and libdrm_dep.found()
 else
     build_dri1 = get_option('dri1') == 'true'
 endif
 
 if get_option('dri2') == 'auto'
-    build_dri2 = dri2proto_dep.found()
+    build_dri2 = dri2proto_dep.found() and libdrm_dep.found()
 else
     build_dri2 = get_option('dri2') == 'true'
 endif
 
 if get_option('dri3') == 'auto'
-    build_dri3 = dri3proto_dep.found() and xshmfence_dep.found()
+    build_dri3 = dri3proto_dep.found() and xshmfence_dep.found() and libdrm_dep.found()
 else
     build_dri3 = get_option('dri3') == 'true'
     if build_dri3
@@ -300,17 +326,12 @@ else
     endif
 endif
 
-libdrm_required = (get_option('dri1') == 'true') or (get_option('dri2') == 'true') or (get_option('dri3') == 'true')
-libdrm_dep = dependency('libdrm', version: '>= 2.3.1', required: libdrm_required)
-build_modesetting = false
-if libdrm_dep.found()
-  if build_dri2
-    # 2.4.65 is required for drmGetDevice
-    dependency('libdrm', version: '>= 2.4.65')
-  endif
-  # 2.4.46 is required for cursor hotspot support.
-  build_modesetting = libdrm_dep.version().version_compare('>= 2.4.46')
+libdrm_required = build_dri1 or build_dri2 or build_dri3
+if not libdrm_dep.found() and libdrm_required
+    error('DRI requested, but LIBDRM not found')
 endif
+
+build_modesetting = libdrm_dep.found()
 
 build_vbe = false
 if get_option('vbe') == 'auto'
@@ -369,10 +390,32 @@ elif get_option('dga') == 'true'
     build_dga = true
 endif
 
-# XXX: Allow configuration of these.
 build_apm = false
+if (get_option('linux_apm') == true and
+   host_machine.system() == 'linux')
+    if cc.has_header('linux/apm_bios.h')
+        build_apm = true
+    endif
+endif
+
 build_acpi = false
-build_mitshm = true
+if (get_option('linux_acpi') == true and
+   host_machine.system() == 'linux')
+    if (host_machine.cpu() == 'x86' or
+       host_machine.cpu() == 'x86_64' or
+       host_machine.cpu() == 'ia64')
+        build_acpi = true
+    endif
+endif
+
+build_mitshm = false
+if get_option('mitshm') == 'auto'
+    build_mitshm = cc.has_header('sys/shm.h')
+elif get_option('mitshm') == 'true'
+    build_mitshm = true
+endif
+
+# XXX: Allow configuration of these.
 build_xselinux = false
 build_xf86vidmode = xf86vidmodeproto_dep.found()
 
@@ -440,7 +483,38 @@ glx_inc = include_directories('glx')
 
 top_srcdir_inc = include_directories('.')
 
-serverconfigdir = join_paths(get_option('libdir'), '/xorg')
+serverconfigdir = join_paths(get_option('libdir'), 'xorg')
+
+manpage_config = configuration_data()
+manpage_config.set('vendorversion', 'PACKAGE_STRING XORG_MAN_PAGE')
+manpage_config.set('xorgversion', 'PACKAGE_STRING XORG_MAN_PAGE')
+manpage_config.set('xservername', 'Xorg')
+manpage_config.set('xconfigfile', 'xorg.conf')
+manpage_config.set('projectroot', get_option('prefix'))
+manpage_config.set('apploaddir', '$(appdefaultdir)')
+manpage_config.set('appmansuffix', '1')
+manpage_config.set('drivermansuffix', '4')
+manpage_config.set('adminmansuffix', '8')
+manpage_config.set('libmansuffix', '3')
+manpage_config.set('miscmansuffix', '7')
+manpage_config.set('filemansuffix', '5')
+manpage_config.set('logdir', log_dir)
+manpage_config.set('datadir', get_option('datadir'))
+manpage_config.set('mandir', get_option('mandir'))
+manpage_config.set('sysconfdir', get_option('sysconfdir'))
+manpage_config.set('xconfigdir', 'xorg.conf.d')
+manpage_config.set('xkbdir', xkb_dir)
+manpage_config.set('XKB_DFLT_RULES', get_option('xkb_default_rules'))
+manpage_config.set('XKB_DFLT_MODEL', get_option('xkb_default_model'))
+manpage_config.set('XKB_DFLT_LAYOUT', get_option('xkb_default_layout'))
+manpage_config.set('XKB_DFLT_VARIANT', get_option('xkb_default_variant'))
+manpage_config.set('XKB_DFLT_OPTIONS', get_option('xkb_default_options'))
+manpage_config.set('bundle_id_prefix', '...')
+manpage_config.set('modulepath', join_paths(get_option('prefix'), module_dir))
+# wtf doesn't this work
+# manpage_config.set('suid_wrapper_dir', join_paths(get_option('prefix'), libexecdir))
+manpage_config.set('suid_wrapper_dir', join_paths(get_option('prefix'), 'libexec'))
+manpage_config.set('default_font_path', default_font_path)
 
 # Include must come first, as it sets up dix-config.h
 subdir('include')
@@ -505,3 +579,70 @@ libxserver += libxserver_dri3
 
 subdir('hw')
 subdir('test')
+
+install_man(configure_file(
+    input: 'man/Xserver.man',
+    output: 'Xserver.1',
+    configuration: manpage_config,
+))
+
+if build_xorg
+    sdkconfig = configuration_data()
+    awk = find_program('awk')
+
+    sdkconfig.set('prefix', get_option('prefix'))
+    sdkconfig.set('exec_prefix', '${prefix}')
+    sdkconfig.set('libdir', join_paths('${exec_prefix}', get_option('libdir')))
+    sdkconfig.set('includedir', join_paths('${prefix}', get_option('includedir')))
+    sdkconfig.set('datarootdir', join_paths('${prefix}', get_option('datadir')))
+    sdkconfig.set('moduledir', join_paths('${exec_prefix}', get_option('module_dir')))
+    sdkconfig.set('sdkdir', join_paths('${prefix}', get_option('includedir'), 'xorg'))
+    sdkconfig.set('sysconfigdir', join_paths('${datarootdir}', 'X11/xorg.conf.d'))
+
+    sdkconfig.set('abi_ansic',
+        run_command(awk, '-F', '[(,)]',
+                    '/^#define ABI_ANSIC.*SET/ { printf "%d.%d", $2, $3 }',
+                    files('hw/xfree86/common/xf86Module.h')
+        ).stdout()
+    )
+    sdkconfig.set('abi_videodrv',
+        run_command(awk, '-F', '[(,)]',
+                    '/^#define ABI_VIDEODRV.*SET/ { printf "%d.%d", $2, $3 }',
+                    files('hw/xfree86/common/xf86Module.h')
+        ).stdout()
+    )
+    sdkconfig.set('abi_xinput',
+        run_command(awk, '-F', '[(,)]',
+                    '/^#define ABI_XINPUT.*SET/ { printf "%d.%d", $2, $3 }',
+                    files('hw/xfree86/common/xf86Module.h')
+        ).stdout()
+    )
+    sdkconfig.set('abi_extension',
+        run_command(awk, '-F', '[(,)]',
+                    '/^#define ABI_EXTENSION.*SET/ { printf "%d.%d", $2, $3 }',
+                    files('hw/xfree86/common/xf86Module.h')
+        ).stdout()
+    )
+
+    sdk_required_modules = [
+      'pixman-1 >= 0.27.2',
+    ]
+
+    # XXX this isn't trying very hard, but hard enough.
+    sdkconfig.set('PACKAGE_VERSION', meson.project_version())
+    sdkconfig.set('SDK_REQUIRED_MODULES', ' '.join(sdk_required_modules))
+    sdkconfig.set('symbol_visibility', '-fvisibility=hidden')
+    sdkconfig.set('XORG_DRIVER_LIBS', '')
+
+    configure_file(
+        input: 'xorg-server.pc.in',
+        output: 'xorg-server.pc',
+        configuration: sdkconfig,
+        install_dir: join_paths(get_option('prefix'),
+                                get_option('libdir'),
+                                'pkgconfig'),
+    )
+endif
+
+install_data('xorg-server.m4',
+             install_dir: join_paths(get_option('datadir'), 'aclocal'))

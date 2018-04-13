@@ -26,9 +26,9 @@ dnl
 dnl Process this file with autoconf to create configure.
 
 AC_PREREQ(2.60)
-AC_INIT([xorg-server], 1.19.99.901, [https://bugs.freedesktop.org/enter_bug.cgi?product=xorg], xorg-server)
-RELEASE_DATE="2018-02-28"
-RELEASE_NAME="Broccoli Rabe Lasagna"
+AC_INIT([xorg-server], 1.19.99.904, [https://bugs.freedesktop.org/enter_bug.cgi?product=xorg], xorg-server)
+RELEASE_DATE="2018-04-10"
+RELEASE_NAME="Stuffed Morel"
 AC_CONFIG_SRCDIR([Makefile.am])
 AC_CONFIG_MACRO_DIR([m4])
 AM_INIT_AUTOMAKE([foreign dist-bzip2])
@@ -471,9 +471,9 @@ AC_ARG_WITH(default-font-path, AS_HELP_STRING([--with-default-font-path=PATH], [
 AC_MSG_CHECKING([for default font path])
 AC_MSG_RESULT([$FONTPATH])
 
-AC_ARG_WITH(xkb-path,         AS_HELP_STRING([--with-xkb-path=PATH], [Path to XKB base dir (default: ${datadir}/X11/xkb)]),
+AC_ARG_WITH(xkb-path,         AS_HELP_STRING([--with-xkb-path=PATH], [Path to XKB base dir (default: auto)]),
 				[ XKBPATH="$withval" ],
-				[ XKBPATH="${datadir}/X11/xkb" ])
+				[ XKBPATH="auto" ])
 AC_ARG_WITH(xkb-output,       AS_HELP_STRING([--with-xkb-output=PATH], [Path to XKB output dir (default: ${datadir}/X11/xkb/compiled)]),
 				[ XKBOUTPUT="$withval" ],
 				[ XKBOUTPUT="compiled" ])
@@ -729,7 +729,7 @@ SCRNSAVERPROTO="scrnsaverproto >= 1.1"
 RESOURCEPROTO="resourceproto >= 1.2.0"
 DRIPROTO="xf86driproto >= 2.1.0"
 DRI2PROTO="dri2proto >= 2.8"
-DRI3PROTO="dri3proto >= 1.0"
+DRI3PROTO="dri3proto >= 1.2"
 XINERAMAPROTO="xineramaproto"
 BIGFONTPROTO="xf86bigfontproto >= 1.2.0"
 DGAPROTO="xf86dgaproto >= 2.0.99.1"
@@ -753,7 +753,7 @@ DAMAGEPROTO="damageproto >= 1.1"
 XCMISCPROTO="xcmiscproto >= 1.2.0"
 BIGREQSPROTO="bigreqsproto >= 1.1.0"
 XTRANS="xtrans >= 1.3.5"
-PRESENTPROTO="presentproto >= 1.0"
+PRESENTPROTO="presentproto >= 1.1"
 
 dnl List of libraries that require a specific version
 LIBAPPLEWM="applewm >= 1.4"
@@ -1281,12 +1281,7 @@ AM_CONDITIONAL(DRI3, test "x$DRI3" = xyes)
 if test "x$DRI" = xyes || test "x$DRI2" = xyes || test "x$DRI3" = xyes || test "x$CONFIG_UDEV_KMS" = xyes; then
 	if test "x$DRM" = xyes; then
 		AC_DEFINE(WITH_LIBDRM, 1, [Building with libdrm support])
-		if test "x$DRI2" = xyes; then
-			dnl 2.4.65 is required for drmGetDevice
-			PKG_CHECK_MODULES([LIBDRM], libdrm >= 2.4.65)
-		else
-			PKG_CHECK_MODULES([LIBDRM], $LIBDRM)
-		fi
+		PKG_CHECK_MODULES([LIBDRM], $LIBDRM)
 	fi
 fi
 
@@ -1396,11 +1391,19 @@ AM_CONDITIONAL(INT10MODULE, test "x$INT10MODULE" = xyes)
 
 AC_DEFINE(SHAPE, 1, [Support SHAPE extension])
 
+if test "x$XKBPATH" = "xauto"; then
+    XKBPATH=$(pkg-config --variable datadir xkbcomp || echo ${datadir})/X11/xkb
+fi
+
 AC_DEFINE_DIR(XKB_BASE_DIRECTORY, XKBPATH, [Path to XKB data])
 AC_ARG_WITH(xkb-bin-directory,
-				AS_HELP_STRING([--with-xkb-bin-directory=DIR], [Directory containing xkbcomp program (default: ${bindir})]),
+				AS_HELP_STRING([--with-xkb-bin-directory=DIR], [Directory containing xkbcomp program (default: auto)]),
 				[XKB_BIN_DIRECTORY="$withval"],
-				[XKB_BIN_DIRECTORY="$bindir"])
+				[XKB_BIN_DIRECTORY="auto"])
+
+if test "x$XKB_BIN_DIRECTORY" = "xauto"; then
+    XKB_BIN_DIRECTORY=$(pkg-config --variable bindir xkbcomp || echo ${bindir})
+fi
 
 AC_DEFINE_DIR(XKB_BIN_DIRECTORY, XKB_BIN_DIRECTORY, [Path to XKB bin dir])
 
@@ -1491,7 +1494,6 @@ dridriverdir=`$PKG_CONFIG --variable=dridriverdir dri`
 AC_DEFINE_DIR(DRI_DRIVER_PATH, dridriverdir, [Default DRI driver path])
 AC_DEFINE_UNQUOTED(XVENDORNAME, ["$VENDOR_NAME"], [Vendor name])
 AC_DEFINE_UNQUOTED(XVENDORNAMESHORT, ["$VENDOR_NAME_SHORT"], [Short vendor name])
-AC_DEFINE_UNQUOTED(XORG_DATE, ["$RELEASE_DATE"], [Vendor release])
 AC_DEFINE_UNQUOTED(XORG_MAN_VERSION, ["$VENDOR_MAN_VERSION"], [Vendor man version])
 AC_DEFINE_UNQUOTED(BUILDERADDR, ["$BUILDERADDR"], [Builder address])
 
@@ -2004,8 +2006,7 @@ if test "x$XORG" = xyes; then
 	fi
 
 	if test "x$DRM" = xyes; then
-		dnl 2.4.46 is required for cursor hotspot support.
-		PKG_CHECK_EXISTS(libdrm >= 2.4.46, XORG_DRIVER_MODESETTING=yes, XORG_DRIVER_MODESETTING=no)
+		XORG_DRIVER_MODESETTING=yes
 	fi
 
 	AC_SUBST([XORG_LIBS])
@@ -2092,6 +2093,10 @@ if test "x$GLAMOR" = xyes; then
 	AC_DEFINE(GLAMOR, 1, [Build glamor])
 	PKG_CHECK_MODULES([GLAMOR], [epoxy])
 
+	PKG_CHECK_EXISTS(epoxy >= 1.4.4,
+			 [AC_DEFINE(GLAMOR_HAS_EGL_QUERY_DMABUF, 1, [Have GLAMOR_HAS_EGL_QUERY_DMABUF])],
+			 [])
+
 	PKG_CHECK_MODULES(GBM, "$LIBGBM", [GBM=yes], [GBM=no])
 	if test "x$GBM" = xyes; then
 		AC_DEFINE(GLAMOR_HAS_GBM, 1,
@@ -2100,15 +2105,15 @@ if test "x$GLAMOR" = xyes; then
 			[AC_DEFINE(GLAMOR_HAS_GBM_LINEAR, 1, [Have GBM_BO_USE_LINEAR])], [],
 			[#include <stdlib.h>
 			 #include <gbm.h>])
+		dnl 17.1.0 is required for gbm_bo_create_with_modifiers
+		PKG_CHECK_EXISTS(gbm >= 17.1.0,
+				 [AC_DEFINE(GBM_BO_WITH_MODIFIERS, 1, [Have gbm_bo_create_with_modifiers])],
+				 [])
 	else
 		if test "x$XORG" = xyes; then
 			AC_MSG_ERROR([Glamor for Xorg requires $LIBGBM])
 		fi
 	fi
-
-	PKG_CHECK_EXISTS(libdrm >= 2.4.74,
-			 [AC_DEFINE(GLAMOR_HAS_DRM_NAME_FROM_FD_2, 1, [Have GLAMOR_HAS_DRM_NAME_FROM_FD_2])],
-			 [])
 fi
 AM_CONDITIONAL([GLAMOR_EGL], [test "x$GBM" = xyes])
 
@@ -2385,6 +2390,10 @@ if test "x$XWAYLAND" = xyes; then
 	WAYLAND_PREFIX=`$PKG_CONFIG --variable=prefix wayland-client`
 	AC_PATH_PROG([WAYLAND_SCANNER], [wayland-scanner],,
 		     [${WAYLAND_PREFIX}/bin$PATH_SEPARATOR$PATH])
+
+        PKG_CHECK_MODULES(WAYLAND_SCANNER, [wayland-scanner >= 1.14.91],
+                          AC_SUBST(SCANNER_ARG, 'private-code'),
+                          AC_SUBST(SCANNER_ARG, 'code'))
 
 	AC_SUBST(WAYLAND_PROTOCOLS_DATADIR, `$PKG_CONFIG --variable=pkgdatadir wayland-protocols`)
 fi
