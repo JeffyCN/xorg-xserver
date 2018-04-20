@@ -795,7 +795,8 @@ drmmode_bo_import(drmmode_ptr drmmode, drmmode_bo *bo,
                   uint32_t *fb_id)
 {
 #ifdef GBM_BO_WITH_MODIFIERS
-    if (bo->gbm &&
+    modesettingPtr ms = modesettingPTR(drmmode->scrn);
+    if (bo->gbm && ms->kms_has_modifiers &&
         gbm_bo_get_modifier(bo->gbm) != DRM_FORMAT_MOD_INVALID) {
         int num_fds;
 
