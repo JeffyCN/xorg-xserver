@@ -96,6 +96,9 @@ ddxUseMsg(void)
     ErrorF("-rootless              run rootless, requires wm support\n");
     ErrorF("-wm fd                 create X client for wm on given fd\n");
     ErrorF("-listen fd             add give fd as a listen socket\n");
+#ifdef XWL_HAS_EGLSTREAM
+    ErrorF("-eglstream             use eglstream backend for nvidia GPUs\n");
+#endif
 }
 
 int
@@ -114,6 +117,11 @@ ddxProcessArgument(int argc, char *argv[], int i)
     else if (strcmp(argv[i], "-shm") == 0) {
         return 1;
     }
+#ifdef XWL_HAS_EGLSTREAM
+    else if (strcmp(argv[i], "-eglstream") == 0) {
+        return 1;
+    }
+#endif
 
     return 0;
 }
@@ -122,21 +130,10 @@ static DevPrivateKeyRec xwl_window_private_key;
 static DevPrivateKeyRec xwl_screen_private_key;
 static DevPrivateKeyRec xwl_pixmap_private_key;
 
-struct xwl_window *
-xwl_window_of_top(WindowPtr window)
+static struct xwl_window *
+xwl_window_get(WindowPtr window)
 {
     return dixLookupPrivate(&window->devPrivates, &xwl_window_private_key);
-}
-
-static struct xwl_window *
-xwl_window_of_self(WindowPtr window)
-{
-    struct xwl_window *xwl_window = dixLookupPrivate(&window->devPrivates, &xwl_window_private_key);
-
-    if (xwl_window && xwl_window->window == window)
-        return xwl_window;
-    else
-        return  NULL;
 }
 
 struct xwl_screen *
@@ -223,7 +220,7 @@ xwl_property_callback(CallbackListPtr *pcbl, void *closure,
     if (rec->win->drawable.pScreen != screen)
         return;
 
-    xwl_window = xwl_window_of_self(rec->win);
+    xwl_window = xwl_window_get(rec->win);
     if (!xwl_window)
         return;
 
@@ -262,6 +259,22 @@ xwl_close_screen(ScreenPtr screen)
     return screen->CloseScreen(screen);
 }
 
+struct xwl_window *
+xwl_window_from_window(WindowPtr window)
+{
+    struct xwl_window *xwl_window;
+
+    while (window) {
+        xwl_window = xwl_window_get(window);
+        if (xwl_window)
+            return xwl_window;
+
+        window = window->parent;
+    }
+
+    return NULL;
+}
+
 static struct xwl_seat *
 xwl_screen_get_default_seat(struct xwl_screen *xwl_screen)
 {
@@ -289,7 +302,10 @@ xwl_cursor_warped_to(DeviceIntPtr device,
     if (!xwl_seat)
         xwl_seat = xwl_screen_get_default_seat(xwl_screen);
 
-    xwl_window = xwl_window_of_top(window);
+    if (!window)
+        window = XYToWindow(sprite, x, y);
+
+    xwl_window = xwl_window_from_window(window);
     if (!xwl_window && xwl_seat->focus_window) {
         focus = xwl_seat->focus_window->window;
 
@@ -336,7 +352,7 @@ xwl_cursor_confined_to(DeviceIntPtr device,
         return;
     }
 
-    xwl_window = xwl_window_of_top(window);
+    xwl_window = xwl_window_from_window(window);
     if (!xwl_window && xwl_seat->focus_window) {
         /* Allow confining on InputOnly windows, but only if the geometry
          * is the same than the focus window.
@@ -452,7 +468,6 @@ xwl_realize_window(WindowPtr window)
     struct xwl_screen *xwl_screen;
     struct xwl_window *xwl_window;
     struct wl_region *region;
-    Bool create_xwl_window = TRUE;
     Bool ret;
 
     xwl_screen = xwl_screen_get(screen);
@@ -472,17 +487,11 @@ xwl_realize_window(WindowPtr window)
 
     if (xwl_screen->rootless) {
         if (window->redirectDraw != RedirectDrawManual)
-            create_xwl_window = FALSE;
+            return ret;
     }
     else {
         if (window->parent)
-            create_xwl_window = FALSE;
-    }
-
-    if (!create_xwl_window) {
-        if (window->parent)
-            dixSetPrivate(&window->devPrivates, &xwl_window_private_key, xwl_window_of_top(window->parent));
-        return ret;
+            return ret;
     }
 
     xwl_window = calloc(1, sizeof *xwl_window);
@@ -522,6 +531,7 @@ xwl_realize_window(WindowPtr window)
         wl_region_destroy(region);
     }
 
+#ifdef GLAMOR_HAS_GBM
     if (xwl_screen->present) {
         xwl_window->present_crtc_fake = RRCrtcCreate(xwl_screen->screen, xwl_window);
         xwl_window->present_msc = 1;
@@ -530,6 +540,7 @@ xwl_realize_window(WindowPtr window)
         xorg_list_init(&xwl_window->present_event_list);
         xorg_list_init(&xwl_window->present_release_queue);
     }
+#endif
 
     wl_display_flush(xwl_screen->display);
 
@@ -596,20 +607,20 @@ xwl_unrealize_window(WindowPtr window)
 
     compUnredirectWindow(serverClient, window, CompositeRedirectManual);
 
-    if (xwl_screen->present)
-        /* Always cleanup Present (Present might have been active on child window) */
-        xwl_present_cleanup(window);
+#ifdef GLAMOR_HAS_GBM
+    xwl_window = xwl_window_from_window(window);
+    if (xwl_window && xwl_screen->present)
+        xwl_present_cleanup(xwl_window, window);
+#endif
 
     screen->UnrealizeWindow = xwl_screen->UnrealizeWindow;
     ret = (*screen->UnrealizeWindow) (window);
     xwl_screen->UnrealizeWindow = screen->UnrealizeWindow;
     screen->UnrealizeWindow = xwl_unrealize_window;
 
-    xwl_window = xwl_window_of_self(window);
-    if (!xwl_window) {
-        dixSetPrivate(&window->devPrivates, &xwl_window_private_key, NULL);
+    xwl_window = xwl_window_get(window);
+    if (!xwl_window)
         return ret;
-    }
 
     wl_surface_destroy(xwl_window->surface);
     xorg_list_del(&xwl_window->link_damage);
@@ -618,8 +629,10 @@ xwl_unrealize_window(WindowPtr window)
     if (xwl_window->frame_callback)
         wl_callback_destroy(xwl_window->frame_callback);
 
+#ifdef GLAMOR_HAS_GBM
     if (xwl_window->present_crtc_fake)
         RRCrtcDestroy(xwl_window->present_crtc_fake);
+#endif
 
     free(xwl_window);
     dixSetPrivate(&window->devPrivates, &xwl_window_private_key, NULL);
@@ -663,7 +676,7 @@ xwl_window_post_damage(struct xwl_window *xwl_window)
     region = DamageRegion(xwl_window->damage);
     pixmap = (*xwl_screen->screen->GetWindowPixmap) (xwl_window->window);
 
-#ifdef GLAMOR_HAS_GBM
+#ifdef XWL_HAS_GLAMOR
     if (xwl_screen->glamor)
         buffer = xwl_glamor_pixmap_get_wl_buffer(pixmap,
                                                  pixmap->drawable.width,
@@ -672,6 +685,11 @@ xwl_window_post_damage(struct xwl_window *xwl_window)
     else
 #endif
         buffer = xwl_shm_pixmap_get_wl_buffer(pixmap);
+
+#ifdef XWL_HAS_GLAMOR
+    if (xwl_screen->glamor)
+        xwl_glamor_post_damage(xwl_window, pixmap, region);
+#endif
 
     wl_surface_attach(xwl_window->surface, buffer, 0, 0);
 
@@ -706,9 +724,11 @@ xwl_screen_post_damage(struct xwl_screen *xwl_screen)
 
     xorg_list_for_each_entry_safe(xwl_window, next_xwl_window,
                                   &xwl_screen->damage_window_list, link_damage) {
+#ifdef GLAMOR_HAS_GBM
         /* Present on the main surface. So don't commit here as well. */
         if (xwl_window->present_window)
             continue;
+#endif
         /* If we're waiting on a frame callback from the server,
          * don't attach a new buffer. */
         if (xwl_window->frame_callback)
@@ -716,6 +736,11 @@ xwl_screen_post_damage(struct xwl_screen *xwl_screen)
 
         if (!xwl_window->allow_commits)
             continue;
+
+#ifdef XWL_HAS_GLAMOR
+        if (!xwl_glamor_allow_commits(xwl_window))
+            continue;
+#endif
 
         xwl_window_post_damage(xwl_window);
     }
@@ -747,14 +772,10 @@ registry_global(void *data, struct wl_registry *registry, uint32_t id,
             wl_registry_bind(registry, id, &zxdg_output_manager_v1_interface, 1);
         xwl_screen_init_xdg_output(xwl_screen);
     }
-#ifdef GLAMOR_HAS_GBM
-    else if (xwl_screen->glamor &&
-             strcmp(interface, "wl_drm") == 0 && version >= 2) {
-        xwl_screen_set_drm_interface(xwl_screen, id, version);
-    }
-    else if (xwl_screen->glamor &&
-             strcmp(interface, "zwp_linux_dmabuf_v1") == 0 && version >= 3) {
-        xwl_screen_set_dmabuf_interface(xwl_screen, id, version);
+#ifdef XWL_HAS_GLAMOR
+    else if (xwl_screen->glamor) {
+        xwl_glamor_init_wl_registry(xwl_screen, registry, id, interface,
+                                    version);
     }
 #endif
 }
@@ -919,6 +940,9 @@ xwl_screen_init(ScreenPtr pScreen, int argc, char **argv)
     struct xwl_screen *xwl_screen;
     Pixel red_mask, blue_mask, green_mask;
     int ret, bpc, green_bpc, i;
+#ifdef XWL_HAS_EGLSTREAM
+    Bool use_eglstreams = FALSE;
+#endif
 
     xwl_screen = calloc(1, sizeof *xwl_screen);
     if (xwl_screen == NULL)
@@ -935,7 +959,7 @@ xwl_screen_init(ScreenPtr pScreen, int argc, char **argv)
     dixSetPrivate(&pScreen->devPrivates, &xwl_screen_private_key, xwl_screen);
     xwl_screen->screen = pScreen;
 
-#ifdef GLAMOR_HAS_GBM
+#ifdef XWL_HAS_GLAMOR
     xwl_screen->glamor = 1;
 #endif
 
@@ -961,7 +985,29 @@ xwl_screen_init(ScreenPtr pScreen, int argc, char **argv)
         else if (strcmp(argv[i], "-shm") == 0) {
             xwl_screen->glamor = 0;
         }
+#ifdef XWL_HAS_EGLSTREAM
+        else if (strcmp(argv[i], "-eglstream") == 0) {
+            use_eglstreams = TRUE;
+        }
+#endif
     }
+
+#ifdef XWL_HAS_GLAMOR
+    if (xwl_screen->glamor) {
+#ifdef XWL_HAS_EGLSTREAM
+        if (use_eglstreams) {
+            if (!xwl_glamor_init_eglstream(xwl_screen)) {
+                ErrorF("xwayland glamor: failed to setup eglstream backend, falling back to swaccel\n");
+                xwl_screen->glamor = 0;
+            }
+        } else
+#endif
+        if (!xwl_glamor_init_gbm(xwl_screen)) {
+            ErrorF("xwayland glamor: failed to setup GBM backend, falling back to sw accel\n");
+            xwl_screen->glamor = 0;
+        }
+    }
+#endif
 
     /* In rootless mode, we don't have any screen storage, and the only
      * rendering should be to redirected mode. */
@@ -1045,15 +1091,15 @@ xwl_screen_init(ScreenPtr pScreen, int argc, char **argv)
     if (!xwl_screen_init_cursor(xwl_screen))
         return FALSE;
 
-#ifdef GLAMOR_HAS_GBM
+#ifdef XWL_HAS_GLAMOR
     if (xwl_screen->glamor && !xwl_glamor_init(xwl_screen)) {
         ErrorF("Failed to initialize glamor, falling back to sw\n");
         xwl_screen->glamor = 0;
     }
-#endif
 
     if (xwl_screen->glamor && xwl_screen->rootless)
         xwl_screen->present = xwl_present_init(pScreen);
+#endif
 
     if (!xwl_screen->glamor) {
         xwl_screen->CreateScreenResources = pScreen->CreateScreenResources;

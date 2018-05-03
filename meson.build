@@ -96,6 +96,8 @@ nettle_dep = dependency('nettle')
 dbus_required = get_option('systemd_logind') == 'true'
 dbus_dep = dependency('dbus-1', version: '>= 1.0', required: dbus_required)
 
+build_hashtable = false
+
 # Resolve default values of some options
 xkb_dir = get_option('xkb_dir')
 if xkb_dir == ''
@@ -285,6 +287,21 @@ if build_glamor
     epoxy_dep = dependency('epoxy', required: false)
 endif
 
+eglstream_option = get_option('xwayland_eglstream')
+if build_xwayland and build_glamor
+    eglstream_dep = dependency('wayland-eglstream-protocols', required:false)
+    if eglstream_option == 'auto'
+        build_eglstream = eglstream_dep.found()
+    else
+        build_eglstream = eglstream_option == 'true'
+        if build_eglstream and not eglstream_dep.found()
+            error('glamor EGLStream support requested, but wayland-eglstream-protocols not found')
+        endif
+    endif
+else
+    build_eglstream = false
+endif
+
 # XXX: Add more sha1 options, because Linux is about choice
 sha1_dep = nettle_dep
 
@@ -300,6 +317,9 @@ if not xdmcp_dep.found()
 endif
 
 build_glx = get_option('glx')
+if build_glx
+    build_hashtable = true
+endif
 
 libdrm_dep = dependency('libdrm', version: '>= 2.4.89', required: false)
 
@@ -363,6 +383,10 @@ endif
 build_xf86bigfont = get_option('xf86bigfont')
 build_screensaver = get_option('screensaver')
 build_res = get_option('xres')
+if build_res
+    build_hashtable = true
+endif
+
 build_xace = get_option('xace')
 build_xinerama = get_option('xinerama')
 
