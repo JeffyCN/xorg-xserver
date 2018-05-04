@@ -1,6 +1,6 @@
 xorg-server (2:1.19.99.905-1) UNRELEASED; urgency=medium
 
-  * New upstream release candidate.
+  * New upstream release candidate. (Closes: #868843)
 
  -- Timo Aaltonen <tjaalton@debian.org>  Fri, 13 Apr 2018 12:12:05 +0300
 
