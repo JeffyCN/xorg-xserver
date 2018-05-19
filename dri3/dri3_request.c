@@ -32,6 +32,20 @@
 #include <protocol-versions.h>
 #include <drm_fourcc.h>
 
+static Bool
+dri3_screen_can_one_point_two(ScreenPtr screen)
+{
+    dri3_screen_priv_ptr dri3 = dri3_screen_priv(screen);
+
+    if (dri3 && dri3->info && dri3->info->version >= 2 &&
+        dri3->info->pixmap_from_fds && dri3->info->fds_from_pixmap &&
+        dri3->info->get_formats && dri3->info->get_modifiers &&
+        dri3->info->get_drawable_modifiers)
+        return TRUE;
+
+    return FALSE;
+}
+
 static int
 proc_dri3_query_version(ClientPtr client)
 {
@@ -45,6 +59,21 @@ proc_dri3_query_version(ClientPtr client)
     };
 
     REQUEST_SIZE_MATCH(xDRI3QueryVersionReq);
+
+    for (int i = 0; i < screenInfo.numScreens; i++) {
+        if (!dri3_screen_can_one_point_two(screenInfo.screens[i])) {
+            rep.minorVersion = 0;
+            break;
+        }
+    }
+
+    for (int i = 0; i < screenInfo.numGPUScreens; i++) {
+        if (!dri3_screen_can_one_point_two(screenInfo.gpuscreens[i])) {
+            rep.minorVersion = 0;
+            break;
+        }
+    }
+
     /* From DRI3 proto:
      *
      * The client sends the highest supported version to the server
@@ -53,7 +82,8 @@ proc_dri3_query_version(ClientPtr client)
      */
 
     if (rep.majorVersion > stuff->majorVersion ||
-        rep.minorVersion > stuff->minorVersion) {
+        (rep.majorVersion == stuff->majorVersion &&
+         rep.minorVersion > stuff->minorVersion)) {
         rep.majorVersion = stuff->majorVersion;
         rep.minorVersion = stuff->minorVersion;
     }
@@ -229,7 +259,7 @@ proc_dri3_buffer_from_pixmap(ClientPtr client)
     rep.bpp = pixmap->drawable.bitsPerPixel;
 
     fd = dri3_fd_from_pixmap(pixmap, &rep.stride, &rep.size);
-    if (fd == -1)
+    if (fd < 0)
         return BadPixmap;
 
     if (client->swapped) {

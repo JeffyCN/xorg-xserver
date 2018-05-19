@@ -66,8 +66,7 @@ dri3_pixmap_from_fds(PixmapPtr *ppixmap, ScreenPtr screen,
     if (info->version >= 2 && info->pixmap_from_fds != NULL) {
         pixmap = (*info->pixmap_from_fds) (screen, num_fds, fds, width, height,
                                            strides, offsets, depth, bpp, modifier);
-    } else if (info->pixmap_from_fd != NULL && num_fds == 1 &&
-               modifier == DRM_FORMAT_MOD_INVALID) {
+    } else if (info->pixmap_from_fd != NULL && num_fds == 1) {
         pixmap = (*info->pixmap_from_fd) (screen, fds[0], width, height,
                                           strides[0], depth, bpp);
     } else {
@@ -83,8 +82,8 @@ dri3_pixmap_from_fds(PixmapPtr *ppixmap, ScreenPtr screen,
 
 int
 dri3_fds_from_pixmap(PixmapPtr pixmap, int *fds,
-                     CARD32 *strides, CARD32 *offsets,
-                     CARD64 *modifier)
+                     uint32_t *strides, uint32_t *offsets,
+                     uint64_t *modifier)
 {
     ScreenPtr                   screen = pixmap->drawable.pScreen;
     dri3_screen_priv_ptr        ds = dri3_screen_priv(screen);
@@ -119,9 +118,9 @@ dri3_fd_from_pixmap(PixmapPtr pixmap, CARD16 *stride, CARD32 *size)
     ScreenPtr                   screen = pixmap->drawable.pScreen;
     dri3_screen_priv_ptr        ds = dri3_screen_priv(screen);
     const dri3_screen_info_rec  *info = ds->info;
-    CARD32                      strides[4];
-    CARD32                      offsets[4];
-    CARD64                      modifier;
+    uint32_t                    strides[4];
+    uint32_t                    offsets[4];
+    uint64_t                    modifier;
     int                         fds[4];
     int                         num_fds;
 
@@ -161,8 +160,8 @@ cache_formats_and_modifiers(ScreenPtr screen)
     const dri3_screen_info_rec *info = ds->info;
     CARD32                      num_formats;
     CARD32                     *formats;
-    CARD32                      num_modifiers;
-    CARD64                     *modifiers;
+    uint32_t                    num_modifiers;
+    uint64_t                   *modifiers;
     int                         i;
 
     if (ds->formats_cached)
@@ -225,8 +224,8 @@ dri3_get_supported_modifiers(ScreenPtr screen, DrawablePtr drawable,
     const dri3_screen_info_rec *info = ds->info;
     int                         i, j;
     int                         ret;
-    CARD32                      num_drawable_mods;
-    CARD64                     *drawable_mods;
+    uint32_t                    num_drawable_mods;
+    uint64_t                   *drawable_mods;
     CARD64                     *intersect_mods = NULL;
     CARD64                     *screen_mods = NULL;
     CARD32                      format;

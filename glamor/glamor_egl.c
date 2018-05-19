@@ -602,7 +602,7 @@ glamor_get_formats(ScreenPtr screen,
     glamor_egl = glamor_egl_get_screen_private(xf86ScreenToScrn(screen));
 
     if (!glamor_egl->dmabuf_capable)
-        return FALSE;
+        return TRUE;
 
     if (!eglQueryDmaBufFormatsEXT(glamor_egl->display, 0, NULL, &num))
         return FALSE;
@@ -629,8 +629,8 @@ glamor_get_formats(ScreenPtr screen,
 }
 
 _X_EXPORT Bool
-glamor_get_modifiers(ScreenPtr screen, CARD32 format,
-                     CARD32 *num_modifiers, uint64_t **modifiers)
+glamor_get_modifiers(ScreenPtr screen, uint32_t format,
+                     uint32_t *num_modifiers, uint64_t **modifiers)
 {
 #ifdef GLAMOR_HAS_EGL_QUERY_DMABUF
     struct glamor_egl_screen_private *glamor_egl;
