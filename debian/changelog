@@ -1,6 +1,10 @@
-xorg-server (2:1.19.99.905-1) UNRELEASED; urgency=medium
+xorg-server (2:1.20.0-1) UNRELEASED; urgency=medium
 
+  [ Timo Aaltonen ]
   * New upstream release candidate. (Closes: #868843)
+
+  [ Emilio Pozuelo Monfort ]
+  * New upstream stable release.
 
  -- Timo Aaltonen <tjaalton@debian.org>  Fri, 13 Apr 2018 12:12:05 +0300
 
