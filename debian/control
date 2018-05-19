@@ -82,8 +82,8 @@ Build-Depends:
 # systemd-daemon
   libsystemd-dev [linux-any],
 Standards-Version: 3.9.8
-Vcs-Git: https://anonscm.debian.org/git/pkg-xorg/xserver/xorg-server.git
-Vcs-Browser: https://anonscm.debian.org/cgit/pkg-xorg/xserver/xorg-server.git
+Vcs-Git: https://salsa.debian.org/xorg-team/xserver/xorg-server.git
+Vcs-Browser: https://salsa.debian.org/xorg-team/xserver/xorg-server
 Homepage: https://www.x.org/
 
 Package: xserver-xorg-core
