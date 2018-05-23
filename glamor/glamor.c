@@ -809,13 +809,13 @@ glamor_fd_from_pixmap(ScreenPtr screen,
         glamor_get_screen_private(pixmap->drawable.pScreen);
 
     if (!glamor_priv->dri3_enabled)
-        return -1;
+        return 0;
     switch (pixmap_priv->type) {
     case GLAMOR_TEXTURE_DRM:
     case GLAMOR_TEXTURE_ONLY:
         if (!glamor_pixmap_ensure_fbo(pixmap, pixmap->drawable.depth == 30 ?
                                       GL_RGB10_A2 : GL_RGBA, 0))
-            return -1;
+            return 0;
         return glamor_egl_dri3_fd_name_from_tex(screen,
                                                 pixmap,
                                                 pixmap_priv->fbo->tex,
@@ -823,7 +823,7 @@ glamor_fd_from_pixmap(ScreenPtr screen,
     default:
         break;
     }
-    return -1;
+    return 0;
 }
 
 _X_EXPORT int
