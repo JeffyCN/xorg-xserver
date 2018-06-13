@@ -1,3 +1,9 @@
+xorg-server (2:1.20.0-3) UNRELEASED; urgency=medium
+
+  * control: Add Breaks on libgl1-mesa-dri older than 18.0.5.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Wed, 13 Jun 2018 11:07:10 +0300
+
 xorg-server (2:1.20.0-2) unstable; urgency=medium
 
   * Bump some minimum (build) dependencies.

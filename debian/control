@@ -102,6 +102,7 @@ Recommends:
  libpam-systemd,
 Suggests: xfonts-100dpi | xfonts-75dpi, xfonts-scalable
 Breaks:
+ libgl1-mesa-dri (<< 18.0.5),
  xserver-xorg (<< 1:7.7+10~),
  systemd (<< 226-4~),
 Replaces:
