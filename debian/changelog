@@ -1,6 +1,11 @@
 xorg-server (2:1.20.0-3) UNRELEASED; urgency=medium
 
+  [ Timo Aaltonen ]
   * control: Add Breaks on libgl1-mesa-dri older than 18.0.5.
+
+  [ Mike Hommey ]
+  * 07_fix_glamor_fds_from_pixmap.diff: Apply 3da999a and 4d5950c from
+    upstream to fix an infinite loop in XWayland. Closes: #901883.
 
  -- Timo Aaltonen <tjaalton@debian.org>  Wed, 13 Jun 2018 11:07:10 +0300
 
