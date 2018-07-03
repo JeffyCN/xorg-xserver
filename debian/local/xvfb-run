@@ -134,7 +134,7 @@ if [ -z "$*" ]; then
     exit 2
 fi
 
-if ! which xauth >/dev/null; then
+if ! command -v xauth >/dev/null; then
     error "xauth command not found"
     exit 3
 fi
