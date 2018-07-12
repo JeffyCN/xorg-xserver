@@ -9,6 +9,7 @@ xorg-server (2:1.20.0-4) UNRELEASED; urgency=medium
   [ Sven Joachim ]
   * Depend on x11proto-dev rather than on the transitional x11proto-*-dev
     packages in xserver-xorg-dev (Closes: #900125).
+  * Remove remaining x11proto-*-dev packages from Build-Depends.
 
  -- Julien Cristau <jcristau@debian.org>  Tue, 03 Jul 2018 11:57:19 +0200
 
