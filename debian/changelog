@@ -1,9 +1,14 @@
 xorg-server (2:1.20.0-4) UNRELEASED; urgency=medium
 
+  [ Julien Cristau ]
   * xvfb-run portability improvements by Eli Schwartz (thanks!):
     + Fix use of deprecated tempfile utility
     + Use builtin `case` to test variable value, rather than external `expr`
     + Use "command -v" rather than "which" (closes: #889676)
+
+  [ Sven Joachim ]
+  * Depend on x11proto-dev rather than on the transitional x11proto-*-dev
+    packages in xserver-xorg-dev (Closes: #900125).
 
  -- Julien Cristau <jcristau@debian.org>  Tue, 03 Jul 2018 11:57:19 +0200
 
