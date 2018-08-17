@@ -1,4 +1,4 @@
-xorg-server (2:1.20.1-1) UNRELEASED; urgency=medium
+xorg-server (2:1.20.1-1) unstable; urgency=medium
 
   [ Julien Cristau ]
   * xvfb-run portability improvements by Eli Schwartz (thanks!):
@@ -19,7 +19,7 @@ xorg-server (2:1.20.1-1) UNRELEASED; urgency=medium
       (Closes: #906034, #900658).
   * Drop 07_fix_glamor_fds_from_pixmap.diff, upstream.
 
- -- Andreas Boll <aboll@debian.org>  Fri, 17 Aug 2018 20:38:22 +0200
+ -- Andreas Boll <aboll@debian.org>  Fri, 17 Aug 2018 22:05:00 +0200
 
 xorg-server (2:1.20.0-3) unstable; urgency=medium
 
