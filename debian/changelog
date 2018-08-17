@@ -10,11 +10,13 @@ xorg-server (2:1.20.1-1) UNRELEASED; urgency=medium
   * Depend on x11proto-dev rather than on the transitional x11proto-*-dev
     packages in xserver-xorg-dev (Closes: #900125).
   * Remove remaining x11proto-*-dev packages from Build-Depends.
-  * Cherry-pick commit 3ebef6ab8506 ("exa: Use PictureMatchFormat for
-    source-only picture format description") from upstream (Closes: #900550).
 
   [ Andreas Boll ]
   * New upstream release.
+    - exa: Use PictureMatchFormat for source-only picture format
+      description (Closes: #900550).
+    - modesetting: use drmmode_bo_import() for rotate_fb
+      (Closes: #906034, #900658).
 
  -- Andreas Boll <aboll@debian.org>  Fri, 17 Aug 2018 20:38:22 +0200
 
