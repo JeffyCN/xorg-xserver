@@ -17,6 +17,7 @@ xorg-server (2:1.20.1-1) UNRELEASED; urgency=medium
       description (Closes: #900550).
     - modesetting: use drmmode_bo_import() for rotate_fb
       (Closes: #906034, #900658).
+  * Drop 07_fix_glamor_fds_from_pixmap.diff, upstream.
 
  -- Andreas Boll <aboll@debian.org>  Fri, 17 Aug 2018 20:38:22 +0200
 
