@@ -1,4 +1,4 @@
-xorg-server (2:1.20.0-4) UNRELEASED; urgency=medium
+xorg-server (2:1.20.1-1) UNRELEASED; urgency=medium
 
   [ Julien Cristau ]
   * xvfb-run portability improvements by Eli Schwartz (thanks!):
@@ -13,7 +13,10 @@ xorg-server (2:1.20.0-4) UNRELEASED; urgency=medium
   * Cherry-pick commit 3ebef6ab8506 ("exa: Use PictureMatchFormat for
     source-only picture format description") from upstream (Closes: #900550).
 
- -- Julien Cristau <jcristau@debian.org>  Tue, 03 Jul 2018 11:57:19 +0200
+  [ Andreas Boll ]
+  * New upstream release.
+
+ -- Andreas Boll <aboll@debian.org>  Fri, 17 Aug 2018 20:38:22 +0200
 
 xorg-server (2:1.20.0-3) unstable; urgency=medium
 
