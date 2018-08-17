@@ -604,6 +604,8 @@ drmmode_crtc_get_fb_id(xf86CrtcPtr crtc, uint32_t *fb_id, int *x, int *y)
     drmmode_ptr drmmode = drmmode_crtc->drmmode;
     int ret;
 
+    *fb_id = 0;
+
     if (drmmode_crtc->prime_pixmap) {
         if (!drmmode->reverse_prime_offload_mode) {
             msPixmapPrivPtr ppriv =
@@ -695,18 +697,21 @@ drmmode_output_disable(xf86OutputPtr output)
 {
     modesettingPtr ms = modesettingPTR(output->scrn);
     drmmode_output_private_ptr drmmode_output = output->driver_private;
+    xf86CrtcPtr crtc = drmmode_output->current_crtc;
     drmModeAtomicReq *req = drmModeAtomicAlloc();
     uint32_t flags = DRM_MODE_ATOMIC_ALLOW_MODESET;
-    int ret;
+    int ret = 0;
 
     assert(ms->atomic_modeset);
 
     if (!req)
         return 1;
 
-    /* XXX Can we disable all outputs without disabling CRTC right away? */
-    ret = connector_add_prop(req, drmmode_output,
-                             DRMMODE_CONNECTOR_CRTC_ID, 0);
+    ret |= connector_add_prop(req, drmmode_output,
+                              DRMMODE_CONNECTOR_CRTC_ID, 0);
+    if (crtc)
+        ret |= crtc_add_dpms_props(req, crtc, DPMSModeOff, NULL);
+
     if (ret == 0)
         ret = drmModeAtomicCommit(ms->fd, req, flags, NULL);
 
@@ -990,7 +995,7 @@ drmmode_bo_import(drmmode_ptr drmmode, drmmode_bo *bo,
     }
 #endif
     return drmModeAddFB(drmmode->fd, bo->width, bo->height,
-                        drmmode->scrn->depth, drmmode->scrn->bitsPerPixel,
+                        drmmode->scrn->depth, drmmode->kbpp,
                         drmmode_bo_get_pitch(bo),
                         drmmode_bo_get_handle(bo), fb_id);
 }
@@ -1794,11 +1799,8 @@ drmmode_shadow_allocate(xf86CrtcPtr crtc, int width, int height)
         return NULL;
     }
 
-    ret = drmModeAddFB(drmmode->fd, width, height, crtc->scrn->depth,
-                       drmmode->kbpp,
-                       drmmode_bo_get_pitch(&drmmode_crtc->rotate_bo),
-                       drmmode_bo_get_handle(&drmmode_crtc->rotate_bo),
-                       &drmmode_crtc->rotate_fb_id);
+    ret = drmmode_bo_import(drmmode, &drmmode_crtc->rotate_bo,
+                            &drmmode_crtc->rotate_fb_id);
 
     if (ret) {
         ErrorF("failed to add rotate fb\n");
@@ -3251,6 +3253,9 @@ drmmode_create_lease(RRLeasePtr lease, int *fd)
 
     nobjects = ncrtc + noutput;
 
+    if (ms->atomic_modeset)
+        nobjects += ncrtc; /* account for planes as well */
+
     if (nobjects == 0)
         return BadValue;
 
@@ -3267,12 +3272,14 @@ drmmode_create_lease(RRLeasePtr lease, int *fd)
 
     i = 0;
 
-    /* Add CRTC ids */
+    /* Add CRTC and plane ids */
     for (c = 0; c < ncrtc; c++) {
         xf86CrtcPtr crtc = lease->crtcs[c]->devPrivate;
         drmmode_crtc_private_ptr drmmode_crtc = crtc->driver_private;
 
         objects[i++] = drmmode_crtc->mode_crtc->crtc_id;
+        if (ms->atomic_modeset)
+            objects[i++] = drmmode_crtc->plane_id;
     }
 
     /* Add connector ids */
@@ -3317,23 +3324,6 @@ drmmode_terminate_lease(RRLeasePtr lease)
         free(lease_private);
         lease->devPrivate = NULL;
         xf86CrtcLeaseTerminated(lease);
-    }
-}
-
-void
-drmmode_terminate_leases(ScrnInfoPtr pScrn, drmmode_ptr drmmode)
-{
-    ScreenPtr screen = xf86ScrnToScreen(pScrn);
-    rrScrPrivPtr scr_priv = rrGetScrPriv(screen);
-    RRLeasePtr lease, next;
-
-    xorg_list_for_each_entry_safe(lease, next, &scr_priv->leases, list) {
-        drmmode_lease_private_ptr lease_private = lease->devPrivate;
-        drmModeRevokeLease(drmmode->fd, lease_private->lessee_id);
-        free(lease_private);
-        lease->devPrivate = NULL;
-        RRLeaseTerminated(lease);
-        RRLeaseFree(lease);
     }
 }
 

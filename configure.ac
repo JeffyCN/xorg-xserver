@@ -26,9 +26,9 @@ dnl
 dnl Process this file with autoconf to create configure.
 
 AC_PREREQ(2.60)
-AC_INIT([xorg-server], 1.20.0, [https://bugs.freedesktop.org/enter_bug.cgi?product=xorg], xorg-server)
-RELEASE_DATE="2018-05-10"
-RELEASE_NAME="Avocado Toast"
+AC_INIT([xorg-server], 1.20.1, [https://bugs.freedesktop.org/enter_bug.cgi?product=xorg], xorg-server)
+RELEASE_DATE="2018-08-07"
+RELEASE_NAME="Kale Salad"
 AC_CONFIG_SRCDIR([Makefile.am])
 AC_CONFIG_MACRO_DIR([m4])
 AM_INIT_AUTOMAKE([foreign dist-bzip2])
@@ -1908,9 +1908,6 @@ if test "x$XORG" = xyes; then
 		XORG_OS_SUBDIR="linux"
 		linux_acpi="no"
 		case $host_cpu in
-		  alpha*)
-		  	linux_alpha=yes
-			;;
 		  i*86|amd64*|x86_64*|ia64*)
 			linux_acpi=$enable_linux_acpi
 			;;
@@ -2075,7 +2072,6 @@ AM_CONDITIONAL([XORG], [test "x$XORG" = xyes])
 AM_CONDITIONAL([XORG_BUS_PCI], [test "x$PCI" = xyes])
 AM_CONDITIONAL([XORG_BUS_BSDPCI], [test "x$xorg_bus_bsdpci" = xyes])
 AM_CONDITIONAL([XORG_BUS_SPARC], [test "x$xorg_bus_sparc" = xyes])
-AM_CONDITIONAL([LINUX_ALPHA], [test "x$linux_alpha" = xyes])
 AM_CONDITIONAL([LNXACPI], [test "x$linux_acpi" = xyes])
 AM_CONDITIONAL([LNXAPM], [test "x$linux_apm" = xyes])
 AM_CONDITIONAL([SOLARIS_VT], [test "x$solaris_vt" = xyes])

@@ -3,7 +3,7 @@ project('xserver', 'c',
             'buildtype=debugoptimized',
             'c_std=gnu99',
         ],
-        version: '1.20.0',
+        version: '1.20.1',
         meson_version: '>= 0.42.0',
 )
 add_project_arguments('-DHAVE_DIX_CONFIG_H', language: 'c')
@@ -507,8 +507,8 @@ top_srcdir_inc = include_directories('.')
 serverconfigdir = join_paths(get_option('libdir'), 'xorg')
 
 manpage_config = configuration_data()
-manpage_config.set('vendorversion', 'PACKAGE_STRING XORG_MAN_PAGE')
-manpage_config.set('xorgversion', 'PACKAGE_STRING XORG_MAN_PAGE')
+manpage_config.set('vendorversion', '"xorg-server @0@" "X Version 11"'.format(meson.project_version()))
+manpage_config.set('xorgversion', '"xorg-server @0@" "X Version 11"'.format(meson.project_version()))
 manpage_config.set('xservername', 'Xorg')
 manpage_config.set('xconfigfile', 'xorg.conf')
 manpage_config.set('projectroot', get_option('prefix'))
@@ -520,9 +520,9 @@ manpage_config.set('libmansuffix', '3')
 manpage_config.set('miscmansuffix', '7')
 manpage_config.set('filemansuffix', '5')
 manpage_config.set('logdir', log_dir)
-manpage_config.set('datadir', get_option('datadir'))
-manpage_config.set('mandir', get_option('mandir'))
-manpage_config.set('sysconfdir', get_option('sysconfdir'))
+manpage_config.set('datadir', join_paths(get_option('prefix'), get_option('datadir')))
+manpage_config.set('mandir', join_paths(get_option('prefix'), get_option('mandir')))
+manpage_config.set('sysconfdir', join_paths(get_option('prefix'), get_option('sysconfdir')))
 manpage_config.set('xconfigdir', 'xorg.conf.d')
 manpage_config.set('xkbdir', xkb_dir)
 manpage_config.set('XKB_DFLT_RULES', get_option('xkb_default_rules'))

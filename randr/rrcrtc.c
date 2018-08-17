@@ -534,6 +534,7 @@ rrSetupPixmapSharing(RRCrtcPtr crtc, int width, int height,
                                       width, height, depth,
                                       x, y, rotation);
     if (spix_front == NULL) {
+        ErrorF("randr: failed to create shared pixmap\n");
         return FALSE;
     }
 
@@ -871,6 +872,17 @@ RRCrtcDestroyResource(void *value, XID pid)
     if (pScreen) {
         rrScrPriv(pScreen);
         int i;
+        RRLeasePtr lease, next;
+
+        xorg_list_for_each_entry_safe(lease, next, &pScrPriv->leases, list) {
+            int c;
+            for (c = 0; c < lease->numCrtcs; c++) {
+                if (lease->crtcs[c] == crtc) {
+                    RRTerminateLease(lease);
+                    break;
+                }
+            }
+        }
 
         for (i = 0; i < pScrPriv->numCrtcs; i++) {
             if (pScrPriv->crtcs[i] == crtc) {
