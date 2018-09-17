@@ -41,6 +41,7 @@ confflags += \
 confflags_main = \
 	--with-default-font-path="/usr/share/fonts/X11/misc,/usr/share/fonts/X11/cyrillic,/usr/share/fonts/X11/100dpi/:unscaled,/usr/share/fonts/X11/75dpi/:unscaled,/usr/share/fonts/X11/Type1,/usr/share/fonts/X11/100dpi,/usr/share/fonts/X11/75dpi,built-ins" \
 	--enable-composite \
+	--enable-libunwind \
 	--enable-record \
 	--enable-xv \
 	--enable-xvmc \

@@ -29,6 +29,7 @@ Build-Depends:
  libaudit-dev [linux-any],
  libdrm-dev (>= 2.4.89) [!hurd-i386],
  libgl1-mesa-dev (>= 9.2),
+ libunwind-dev,
  libxmuu-dev (>= 1:0.99.1),
  libxext-dev (>= 1:0.99.1),
  libx11-dev (>= 2:1.6),
