@@ -5,3 +5,4 @@
 03_static-nettle.diff
 05_Revert-Unload-submodules.diff
 06_use-intel-only-on-pre-gen4.diff
+07_use-modesetting-driver-by-default-on-GeForce.diff
