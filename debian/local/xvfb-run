@@ -13,7 +13,7 @@ PROGNAME=xvfb-run
 SERVERNUM=99
 AUTHFILE=
 ERRORFILE=/dev/null
-XVFBARGS="-screen 0 640x480x8"
+XVFBARGS="-screen 0 1280x1024x24"
 LISTENTCP="-nolisten tcp"
 XAUTHPROTO=.
 
