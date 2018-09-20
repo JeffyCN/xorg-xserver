@@ -41,7 +41,6 @@ confflags += \
 confflags_main = \
 	--with-default-font-path="/usr/share/fonts/X11/misc,/usr/share/fonts/X11/cyrillic,/usr/share/fonts/X11/100dpi/:unscaled,/usr/share/fonts/X11/75dpi/:unscaled,/usr/share/fonts/X11/Type1,/usr/share/fonts/X11/100dpi,/usr/share/fonts/X11/75dpi,built-ins" \
 	--enable-composite \
-	--enable-libunwind \
 	--enable-record \
 	--enable-xv \
 	--enable-xvmc \
@@ -131,6 +130,11 @@ else ifeq ($(DEB_HOST_ARCH_OS), kfreebsd)
 	cppflags = $(shell pkg-config --cflags libbsd-overlay)
 else # hurd
 	confflags += --disable-config-udev
+endif
+
+# some archs don't have libunwind
+ifneq (,$(filter $(DEB_HOST_ARCH), amd64 arm64 armel armhf hppa i386 ia64 mips mips64 mips64el mipsel powerpc powerpcspe ppc64 ppc64el sh4))
+	confflags_main += --enable-libunwind
 endif
 
 # linux: libdrm needed for kms (hw/xfree86/os-support/linux/lnx_platform.c)
