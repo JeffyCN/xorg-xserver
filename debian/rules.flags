@@ -135,7 +135,10 @@ endif
 # some archs don't have libunwind
 ifneq (,$(filter $(DEB_HOST_ARCH), amd64 arm64 armel armhf hppa i386 ia64 mips mips64 mips64el mipsel powerpc powerpcspe ppc64 ppc64el sh4))
 	confflags_main += --enable-libunwind
+else
+	confflags_main += --disable-libunwind
 endif
+confflags_udeb += --disable-libunwind
 
 # linux: libdrm needed for kms (hw/xfree86/os-support/linux/lnx_platform.c)
 #        even in udeb
