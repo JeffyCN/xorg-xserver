@@ -1,6 +1,8 @@
 xorg-server (2:1.20.1-4) UNRELEASED; urgency=medium
 
   * Disable libunwind in udeb build.
+  * Disable libunwind backtraces on mips to work around bug#909242.  Thanks,
+    Simon McVittie!
 
  -- Julien Cristau <jcristau@debian.org>  Mon, 24 Sep 2018 19:54:25 +0200
 
