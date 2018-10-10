@@ -1,11 +1,11 @@
-xorg-server (2:1.20.1-5) UNRELEASED; urgency=medium
+xorg-server (2:1.20.1-5) unstable; urgency=medium
 
   [ Timo Aaltonen ]
   * 08_dont-init-glamor-on-llvmpipe.diff: Glamor shouldn't be used on
     llvmpipe, as it might end up crashing the server on a racy bootup.
     (LP: #1792932) (Closes: #907655, #910135)
 
- -- Andreas Boll <aboll@debian.org>  Wed, 10 Oct 2018 17:44:23 +0200
+ -- Andreas Boll <aboll@debian.org>  Wed, 10 Oct 2018 18:23:15 +0200
 
 xorg-server (2:1.20.1-4) unstable; urgency=medium
 
