@@ -1,3 +1,10 @@
+xorg-server (2:1.19.2-1+deb9u3) stretch-security; urgency=high
+
+  * Disable -logfile when running with elevated privileges.
+    Addresses CVE-2018-14665.
+
+ -- Julien Cristau <jcristau@debian.org>  Mon, 15 Oct 2018 16:17:31 +0200
+
 xorg-server (2:1.19.2-1+deb9u2) stretch-security; urgency=high
 
   * Unvalidated extra length in ProcEstablishConnection (CVE-2017-12176)

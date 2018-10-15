@@ -9,3 +9,4 @@
 08_Xi-Verify-all-events-in-ProcXSendExtensionEvent.patch
 09_Xi-Do-not-try-to-swap-GenericEvent.patch
 10_Xi-Zero-target-buffer-in-SProcXSendExtensionEvent.patch
+11_xfree86-Disable-logfile-when-elevated.patch
