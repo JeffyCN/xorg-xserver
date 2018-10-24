@@ -797,6 +797,7 @@ xwl_glamor_gbm_init_egl(struct xwl_screen *xwl_screen)
         GLAMOR_GL_CORE_VER_MINOR,
         EGL_NONE
     };
+    const GLubyte *renderer;
 
     if (!xwl_gbm->fd_render_node && !xwl_gbm->drm_authenticated) {
         ErrorF("Failed to get wl_drm, disabling Glamor and DRI3\n");
@@ -840,6 +841,16 @@ xwl_glamor_gbm_init_egl(struct xwl_screen *xwl_screen)
                         EGL_NO_SURFACE, EGL_NO_SURFACE,
                         xwl_screen->egl_context)) {
         ErrorF("Failed to make EGL context current\n");
+        goto error;
+    }
+
+    renderer = glGetString(GL_RENDERER);
+    if (!renderer) {
+        ErrorF("glGetString() returned NULL, your GL is broken\n");
+        goto error;
+    }
+    if (strstr((const char *)renderer, "llvmpipe")) {
+        ErrorF("Refusing to try glamor on llvmpipe\n");
         goto error;
     }
 

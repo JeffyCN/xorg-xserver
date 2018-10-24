@@ -892,6 +892,7 @@ Bool
 glamor_egl_init(ScrnInfoPtr scrn, int fd)
 {
     struct glamor_egl_screen_private *glamor_egl;
+    const GLubyte *renderer;
 
     glamor_egl = calloc(sizeof(*glamor_egl), 1);
     if (glamor_egl == NULL)
@@ -986,6 +987,19 @@ glamor_egl_init(ScrnInfoPtr scrn, int fd)
                    "Failed to make EGL context current\n");
         goto error;
     }
+
+    renderer = glGetString(GL_RENDERER);
+    if (!renderer) {
+        xf86DrvMsg(scrn->scrnIndex, X_ERROR,
+                   "glGetString() returned NULL, your GL is broken\n");
+        goto error;
+    }
+    if (strstr((const char *)renderer, "llvmpipe")) {
+        xf86DrvMsg(scrn->scrnIndex, X_INFO,
+                   "Refusing to try glamor on llvmpipe\n");
+        goto error;
+    }
+
     /*
      * Force the next glamor_make_current call to set the right context
      * (in case of multiple GPUs using glamor)
@@ -999,7 +1013,7 @@ glamor_egl_init(ScrnInfoPtr scrn, int fd)
     }
 
     xf86DrvMsg(scrn->scrnIndex, X_INFO, "glamor X acceleration enabled on %s\n",
-               glGetString(GL_RENDERER));
+               renderer);
 
 #ifdef GBM_BO_WITH_MODIFIERS
     if (epoxy_has_egl_extension(glamor_egl->display,
