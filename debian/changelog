@@ -5,6 +5,7 @@ xorg-server (2:1.20.2-1) UNRELEASED; urgency=medium
       #911146).
     - Fixes a crash when running the X server inside virtualbox
       (Closes: #911680).
+  * Drop 08_dont-init-glamor-on-llvmpipe.diff, upstream.
 
  -- Andreas Boll <aboll@debian.org>  Wed, 24 Oct 2018 13:32:00 +0200
 
