@@ -1,6 +1,10 @@
 xorg-server (2:1.20.2-1) UNRELEASED; urgency=medium
 
   * New upstream release.
+    - Fixes various crashes with xwayland (Closes: #777625, #881891,
+      #911146).
+    - Fixes a crash when running the X server inside virtualbox
+      (Closes: #911680).
 
  -- Andreas Boll <aboll@debian.org>  Wed, 24 Oct 2018 13:32:00 +0200
 
