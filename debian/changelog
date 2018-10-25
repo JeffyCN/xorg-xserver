@@ -1,6 +1,8 @@
 xorg-server (2:1.20.3-1) UNRELEASED; urgency=medium
 
   * New upstream release.
+    - Disables -logfile and -modulepath when running with elevated
+      privileges (CVE-2018-14665).
 
  -- Andreas Boll <aboll@debian.org>  Thu, 25 Oct 2018 19:55:00 +0200
 
