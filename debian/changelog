@@ -1,3 +1,12 @@
+xorg-server (2:1.19.2-1+deb9u5) stretch; urgency=medium
+
+  * Cherry-pick c2954b16c (glx: do not pick sRGB config for 32-bit RGBA
+    visual) from upstream. Fixes various blending issues with kwin and
+    Mesa >= 18.0 (i.e. Mesa from stretch-backports) (Closes: #908601).
+    Thanks to Nicholas D Steeves and Robert Trebula for testing!
+
+ -- Andreas Boll <aboll@debian.org>  Wed, 31 Oct 2018 17:58:03 +0100
+
 xorg-server (2:1.19.2-1+deb9u4) stretch-security; urgency=medium
 
   * Disable -logfile and -modulepath when running with elevated privileges.
