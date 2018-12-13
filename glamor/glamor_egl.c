@@ -933,6 +933,8 @@ glamor_egl_init(ScrnInfoPtr scrn, int fd)
 {
     struct glamor_egl_screen_private *glamor_egl;
     const GLubyte *renderer;
+    EGLConfig egl_config;
+    int n;
 
     glamor_egl = calloc(sizeof(*glamor_egl), 1);
     if (glamor_egl == NULL)
@@ -1011,8 +1013,14 @@ glamor_egl_init(ScrnInfoPtr scrn, int fd)
             goto error;
         }
 
+        if (!eglChooseConfig(glamor_egl->display, NULL, &egl_config, 1, &n)) {
+            xf86DrvMsg(scrn->scrnIndex, X_ERROR,
+                       "glamor: No acceptable EGL configs found\n");
+            goto error;
+        }
+
         glamor_egl->context = eglCreateContext(glamor_egl->display,
-                                               NULL, EGL_NO_CONTEXT,
+                                               egl_config, EGL_NO_CONTEXT,
                                                config_attribs);
     }
     if (glamor_egl->context == EGL_NO_CONTEXT) {
