@@ -1,3 +1,9 @@
+xorg-server (2:1.20.4-1) UNRELEASED; urgency=medium
+
+  * New upstream release.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Thu, 28 Feb 2019 11:35:31 +0200
+
 xorg-server (2:1.20.3-1) unstable; urgency=medium
 
   * New upstream release.
