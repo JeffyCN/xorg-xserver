@@ -1,4 +1,4 @@
-xorg-server (2:1.20.4-1) UNRELEASED; urgency=medium
+xorg-server (2:1.20.4-1) unstable; urgency=medium
 
   [ Timo Aaltonen ]
   * New upstream release.
@@ -10,7 +10,7 @@ xorg-server (2:1.20.4-1) UNRELEASED; urgency=medium
   [ Andreas Boll ]
   * Refresh 07_use-modesetting-driver-by-default-on-GeForce.diff.
 
- -- Timo Aaltonen <tjaalton@debian.org>  Thu, 28 Feb 2019 11:35:31 +0200
+ -- Andreas Boll <aboll@debian.org>  Tue, 05 Mar 2019 21:11:12 +0100
 
 xorg-server (2:1.20.3-1) unstable; urgency=medium
 
