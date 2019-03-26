@@ -105,7 +105,6 @@ glamor_set_pixmap_texture(PixmapPtr pixmap, unsigned int tex)
     glamor_pixmap_private *pixmap_priv;
     glamor_screen_private *glamor_priv;
     glamor_pixmap_fbo *fbo;
-    GLenum format;
 
     glamor_priv = glamor_get_screen_private(screen);
     pixmap_priv = glamor_get_pixmap_private(pixmap);
@@ -115,9 +114,9 @@ glamor_set_pixmap_texture(PixmapPtr pixmap, unsigned int tex)
         glamor_destroy_fbo(glamor_priv, fbo);
     }
 
-    format = gl_iformat_for_pixmap(pixmap);
-    fbo = glamor_create_fbo_from_tex(glamor_priv, pixmap->drawable.width,
-                                     pixmap->drawable.height, format, tex, 0);
+    fbo = glamor_create_fbo_from_tex(glamor_priv, pixmap,
+                                     pixmap->drawable.width,
+                                     pixmap->drawable.height, tex, 0);
 
     if (fbo == NULL) {
         ErrorF("XXX fail to create fbo.\n");
@@ -188,7 +187,6 @@ glamor_create_pixmap(ScreenPtr screen, int w, int h, int depth,
     glamor_screen_private *glamor_priv = glamor_get_screen_private(screen);
     glamor_pixmap_fbo *fbo = NULL;
     int pitch;
-    GLenum format;
 
     if (w > 32767 || h > 32767)
         return NullPixmap;
@@ -207,8 +205,6 @@ glamor_create_pixmap(ScreenPtr screen, int w, int h, int depth,
 
     pixmap_priv->is_cbcr = (usage == GLAMOR_CREATE_FORMAT_CBCR);
 
-    format = gl_iformat_for_pixmap(pixmap);
-
     pitch = (((w * pixmap->drawable.bitsPerPixel + 7) / 8) + 3) & ~3;
     screen->ModifyPixmapHeader(pixmap, w, h, 0, 0, pitch, NULL);
 
@@ -222,12 +218,12 @@ glamor_create_pixmap(ScreenPtr screen, int w, int h, int depth,
         glamor_check_fbo_size(glamor_priv, w, h))
     {
         glamor_init_pixmap_private_small(pixmap, pixmap_priv);
-        fbo = glamor_create_fbo(glamor_priv, w, h, format, usage);
+        fbo = glamor_create_fbo(glamor_priv, pixmap, w, h, usage);
     } else {
         int tile_size = glamor_priv->max_fbo_size;
         DEBUGF("Create LARGE pixmap %p width %d height %d, tile size %d\n",
                pixmap, w, h, tile_size);
-        fbo = glamor_create_fbo_array(glamor_priv, w, h, format, usage,
+        fbo = glamor_create_fbo_array(glamor_priv, pixmap, usage,
                                       tile_size, tile_size, pixmap_priv);
     }
 
@@ -815,8 +811,7 @@ glamor_fd_from_pixmap(ScreenPtr screen,
     switch (pixmap_priv->type) {
     case GLAMOR_TEXTURE_DRM:
     case GLAMOR_TEXTURE_ONLY:
-        if (!glamor_pixmap_ensure_fbo(pixmap, pixmap->drawable.depth == 30 ?
-                                      GL_RGB10_A2 : GL_RGBA, 0))
+        if (!glamor_pixmap_ensure_fbo(pixmap, 0))
             return 0;
         return glamor_egl_dri3_fd_name_from_tex(screen,
                                                 pixmap,
@@ -856,8 +851,7 @@ glamor_name_from_pixmap(PixmapPtr pixmap, CARD16 *stride, CARD32 *size)
     switch (pixmap_priv->type) {
     case GLAMOR_TEXTURE_DRM:
     case GLAMOR_TEXTURE_ONLY:
-        if (!glamor_pixmap_ensure_fbo(pixmap, pixmap->drawable.depth == 30 ?
-                                      GL_RGB10_A2 : GL_RGBA, 0))
+        if (!glamor_pixmap_ensure_fbo(pixmap, 0))
             return -1;
         return glamor_egl_dri3_fd_name_from_tex(pixmap->drawable.pScreen,
                                                 pixmap,
