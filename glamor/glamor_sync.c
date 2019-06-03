@@ -48,12 +48,10 @@ static void
 glamor_sync_fence_set_triggered (SyncFence *fence)
 {
 	ScreenPtr screen = fence->pScreen;
-	glamor_screen_private *glamor = glamor_get_screen_private(screen);
 	struct glamor_sync_fence *glamor_fence = glamor_get_sync_fence(fence);
 
 	/* Flush pending rendering operations */
-        glamor_make_current(glamor);
-        glFlush();
+	glamor_block_handler(screen);
 
 	fence->funcs.SetTriggered = glamor_fence->set_triggered;
 	fence->funcs.SetTriggered(fence);
