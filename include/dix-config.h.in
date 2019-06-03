@@ -476,6 +476,9 @@
 /* Build glamor/gbm has linear support */
 #undef GLAMOR_HAS_GBM_LINEAR
 
+/* Build glamor/gbm has gl fence support */
+#undef GLAMOR_HAS_GL_FENCE
+
 /* GBM has modifiers support */
 #undef GBM_BO_WITH_MODIFIERS
 
