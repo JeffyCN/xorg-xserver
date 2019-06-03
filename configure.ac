@@ -2113,6 +2113,10 @@ if test "x$GLAMOR" = xyes; then
 			AC_MSG_ERROR([Glamor for Xorg requires $LIBGBM])
 		fi
 	fi
+
+	AC_CHECK_HEADER([GLES3/gl3.h],
+		[AC_CHECK_LIB(GLESv2, glFenceSync,
+			[AC_DEFINE(GLAMOR_HAS_GL_FENCE,1,[Have glFenceSync])])])
 fi
 AM_CONDITIONAL([GLAMOR_EGL], [test "x$GBM" = xyes])
 
