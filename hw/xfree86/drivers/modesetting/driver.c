@@ -497,6 +497,15 @@ dispatch_dirty_region(ScrnInfoPtr scrn,
     unsigned num_cliprects = REGION_NUM_RECTS(dirty);
     int ret = 0;
 
+#ifdef GLAMOR_HAS_GBM
+    /*
+     * HACK: Move glamor_block_handler's glamor_finish here to avoid
+     * blocking no-dirty path.
+     */
+    if (ms->drmmode.glamor)
+        glamor_finish(pixmap->drawable.pScreen);
+#endif
+
     if (num_cliprects) {
         drmModeClip *clip = xallocarray(num_cliprects, sizeof(drmModeClip));
         BoxPtr rect = REGION_RECTS(dirty);
