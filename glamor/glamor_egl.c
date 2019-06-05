@@ -48,6 +48,10 @@
 #include "glamor_priv.h"
 #include "dri3.h"
 
+#ifndef GBM_FORMAT_R8
+#define GBM_FORMAT_R8                __gbm_fourcc_code('R', '8', ' ', ' ') /* [7:0] R */
+#endif
+
 struct glamor_egl_screen_private {
     EGLDisplay display;
     EGLContext context;
