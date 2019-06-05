@@ -83,7 +83,7 @@ glamor_get_tex_format_type_from_pictformat(ScreenPtr pScreen,
 
     switch (format) {
     case PICT_a1:
-        *tex_format = glamor_priv->formats[1].format;
+        *tex_format = glamor_priv->formats[8].format;
         *tex_type = GL_UNSIGNED_BYTE;
         *temp_format = PICT_a8;
         break;
