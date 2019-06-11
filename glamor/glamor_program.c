@@ -281,7 +281,7 @@ glamor_build_program(ScreenPtr          screen,
     if (!fs_vars)
         goto fail;
 
-    if (version) {
+    if (version && !glamor_priv->is_gles) {
         if (asprintf(&version_string, "#version %d\n", version) < 0)
             version_string = NULL;
         if (!version_string)
