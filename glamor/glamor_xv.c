@@ -532,6 +532,8 @@ glamor_xv_render(glamor_port_private *port_priv, int id)
     char *vbo_offset;
     int dst_box_index;
 
+    DamageRegionAppend(port_priv->pDraw, &port_priv->clip);
+
     if (!port_priv->xv_prog.prog)
         glamor_init_xv_shader(screen, port_priv, id);
 
@@ -710,7 +712,7 @@ glamor_xv_render(glamor_port_private *port_priv, int id)
     glDisableVertexAttribArray(GLAMOR_VERTEX_POS);
     glDisableVertexAttribArray(GLAMOR_VERTEX_SOURCE);
 
-    DamageDamageRegion(port_priv->pDraw, &port_priv->clip);
+    DamageRegionProcessPending(port_priv->pDraw);
 
     glamor_pixmap_invalid(pixmap);
 }
