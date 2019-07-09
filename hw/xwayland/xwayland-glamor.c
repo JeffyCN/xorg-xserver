@@ -45,6 +45,12 @@ struct xwl_pixmap {
     unsigned int texture;
 };
 
+_X_EXPORT struct gbm_bo *
+glamor_gbm_bo_from_pixmap(ScreenPtr screen, PixmapPtr pixmap)
+{
+    return NULL;
+}
+
 static void
 xwl_glamor_egl_make_current(struct glamor_context *glamor_ctx)
 {

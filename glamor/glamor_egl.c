@@ -167,6 +167,8 @@ glamor_egl_set_pixmap_bo(PixmapPtr pixmap, struct gbm_bo *bo)
     struct glamor_pixmap_private *pixmap_priv =
         glamor_get_pixmap_private(pixmap);
 
+    glamor_finish_access_pixmap(pixmap, TRUE);
+
     if (pixmap_priv->bo && pixmap_priv->owned_bo)
         gbm_bo_destroy(pixmap_priv->bo);
 
@@ -345,9 +347,11 @@ glamor_make_pixmap_exportable(PixmapPtr pixmap)
 
     scratch_gc = GetScratchGC(pixmap->drawable.depth, screen);
     ValidateGC(&pixmap->drawable, scratch_gc);
+    pixmap_priv->exporting = TRUE;
     scratch_gc->ops->CopyArea(&pixmap->drawable, &exported->drawable,
                               scratch_gc,
                               0, 0, width, height, 0, 0);
+    pixmap_priv->exporting = FALSE;
     FreeScratchGC(scratch_gc);
 
     /* Now, swap the tex/gbm/EGLImage/etc. of the exported pixmap into
@@ -487,8 +491,7 @@ glamor_egl_destroy_pixmap(PixmapPtr pixmap)
         struct glamor_pixmap_private *pixmap_priv =
             glamor_get_pixmap_private(pixmap);
 
-        if (pixmap_priv->bo)
-            gbm_bo_destroy(pixmap_priv->bo);
+        glamor_egl_set_pixmap_bo(pixmap, NULL);
     }
 
     screen->DestroyPixmap = glamor_egl->saved_destroy_pixmap;
@@ -502,7 +505,9 @@ glamor_egl_destroy_pixmap(PixmapPtr pixmap)
 _X_EXPORT void
 glamor_egl_exchange_buffers(PixmapPtr front, PixmapPtr back)
 {
-    struct gbm_bo *temp_bo;
+#define GLAMOR_EXCHANGE(a, b) \
+    { typeof(a) __tmp; __tmp = a; a = b; b = __tmp; }
+
     struct glamor_pixmap_private *front_priv =
         glamor_get_pixmap_private(front);
     struct glamor_pixmap_private *back_priv =
@@ -510,9 +515,18 @@ glamor_egl_exchange_buffers(PixmapPtr front, PixmapPtr back)
 
     glamor_pixmap_exchange_fbos(front, back);
 
-    temp_bo = back_priv->bo;
-    back_priv->bo = front_priv->bo;
-    front_priv->bo = temp_bo;
+    glamor_finish_access_pixmap(front, FALSE);
+    glamor_finish_access_pixmap(back, FALSE);
+
+    /* Swap all buffer related members */
+    GLAMOR_EXCHANGE(back_priv->bo, front_priv->bo);
+    GLAMOR_EXCHANGE(back_priv->owned_bo, front_priv->owned_bo);
+    GLAMOR_EXCHANGE(back_priv->bo_mapped, front_priv->bo_mapped);
+    GLAMOR_EXCHANGE(back_priv->map_data, front_priv->map_data);
+    GLAMOR_EXCHANGE(back_priv->gl_synced, front_priv->gl_synced);
+
+    GLAMOR_EXCHANGE(back->devPrivate.ptr, front->devPrivate.ptr);
+    GLAMOR_EXCHANGE(back->devKind, front->devKind);
 
     glamor_set_pixmap_type(front, GLAMOR_TEXTURE_DRM);
     glamor_set_pixmap_type(back, GLAMOR_TEXTURE_DRM);
@@ -531,8 +545,7 @@ glamor_egl_close_screen(ScreenPtr screen)
     screen_pixmap = screen->GetScreenPixmap(screen);
     pixmap_priv = glamor_get_pixmap_private(screen_pixmap);
 
-    gbm_bo_destroy(pixmap_priv->bo);
-    pixmap_priv->bo = NULL;
+    glamor_egl_set_pixmap_bo(screen_pixmap, NULL);
 
     screen->CloseScreen = glamor_egl->saved_close_screen;
 
