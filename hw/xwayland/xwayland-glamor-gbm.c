@@ -549,6 +549,12 @@ glamor_egl_fd_from_pixmap(ScreenPtr screen, PixmapPtr pixmap,
     return -1;
 }
 
+_X_EXPORT struct gbm_bo *
+glamor_gbm_bo_from_pixmap(ScreenPtr screen, PixmapPtr pixmap)
+{
+    return NULL;
+}
+
 _X_EXPORT Bool
 glamor_get_formats(ScreenPtr screen,
                    CARD32 *num_formats, CARD32 **formats)
