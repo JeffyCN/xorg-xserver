@@ -727,7 +727,7 @@ drmmode_bo_destroy(drmmode_ptr drmmode, drmmode_bo *bo)
     int ret;
 
 #ifdef GLAMOR_HAS_GBM
-    if (bo->gbm) {
+    if (bo->owned_gbm && bo->gbm) {
         gbm_bo_destroy(bo->gbm);
         bo->gbm = NULL;
     }
@@ -854,6 +854,7 @@ drmmode_create_bo(drmmode_ptr drmmode, drmmode_bo *bo,
                                 GBM_FORMAT_ARGB2101010 : GBM_FORMAT_ARGB8888,
                                 GBM_BO_USE_RENDERING | GBM_BO_USE_SCANOUT);
         bo->used_modifiers = FALSE;
+        bo->owned_gbm = TRUE;
         return bo->gbm != NULL;
     }
 #endif
@@ -2821,6 +2822,7 @@ drmmode_set_pixmap_bo(drmmode_ptr drmmode, PixmapPtr pixmap, drmmode_bo *bo)
         xf86DrvMsg(scrn->scrnIndex, X_ERROR, "Failed to create pixmap\n");
         return FALSE;
     }
+    bo->owned_gbm = FALSE;
 #endif
 
     return TRUE;

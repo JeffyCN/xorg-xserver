@@ -162,21 +162,16 @@ glamor_egl_create_textured_screen(ScreenPtr screen, int handle, int stride)
 }
 
 static void
-glamor_egl_set_pixmap_image(PixmapPtr pixmap, EGLImageKHR image)
+glamor_egl_set_pixmap_bo(PixmapPtr pixmap, struct gbm_bo *bo)
 {
     struct glamor_pixmap_private *pixmap_priv =
         glamor_get_pixmap_private(pixmap);
-    EGLImageKHR old;
 
-    old = pixmap_priv->image;
-    if (old) {
-        ScreenPtr                               screen = pixmap->drawable.pScreen;
-        ScrnInfoPtr                             scrn = xf86ScreenToScrn(screen);
-        struct glamor_egl_screen_private        *glamor_egl = glamor_egl_get_screen_private(scrn);
+    if (pixmap_priv->bo && pixmap_priv->owned_bo)
+        gbm_bo_destroy(pixmap_priv->bo);
 
-        eglDestroyImageKHR(glamor_egl->display, old);
-    }
-    pixmap_priv->image = image;
+    pixmap_priv->bo = bo;
+    pixmap_priv->owned_bo = TRUE;
 }
 
 Bool
@@ -222,6 +217,8 @@ glamor_egl_create_textured_pixmap_from_gbm_bo(PixmapPtr pixmap,
     ScrnInfoPtr scrn = xf86ScreenToScrn(screen);
     struct glamor_screen_private *glamor_priv =
         glamor_get_screen_private(screen);
+    struct glamor_pixmap_private *pixmap_priv =
+        glamor_get_pixmap_private(pixmap);
     struct glamor_egl_screen_private *glamor_egl;
     EGLImageKHR image;
     GLuint texture;
@@ -239,9 +236,13 @@ glamor_egl_create_textured_pixmap_from_gbm_bo(PixmapPtr pixmap,
         goto done;
     }
     glamor_create_texture_from_image(screen, image, &texture);
+    eglDestroyImage(glamor_egl->display, image);
     glamor_set_pixmap_type(pixmap, GLAMOR_TEXTURE_DRM);
     glamor_set_pixmap_texture(pixmap, texture);
-    glamor_egl_set_pixmap_image(pixmap, image);
+    glamor_egl_set_pixmap_bo(pixmap, bo);
+
+    /* HACK: At least for mali DDK, the bo is owned by texture */
+    pixmap_priv->owned_bo = FALSE;
     ret = TRUE;
 
  done:
@@ -274,7 +275,7 @@ glamor_make_pixmap_exportable(PixmapPtr pixmap)
     PixmapPtr exported;
     GCPtr scratch_gc;
 
-    if (pixmap_priv->image)
+    if (pixmap_priv->bo)
         return TRUE;
 
     switch (pixmap->drawable.depth) {
@@ -341,7 +342,6 @@ glamor_make_pixmap_exportable(PixmapPtr pixmap)
         gbm_bo_destroy(bo);
         return FALSE;
     }
-    gbm_bo_destroy(bo);
 
     scratch_gc = GetScratchGC(pixmap->drawable.depth, screen);
     ValidateGC(&pixmap->drawable, scratch_gc);
@@ -363,16 +363,13 @@ glamor_make_pixmap_exportable(PixmapPtr pixmap)
 static struct gbm_bo *
 glamor_gbm_bo_from_pixmap_internal(ScreenPtr screen, PixmapPtr pixmap)
 {
-    struct glamor_egl_screen_private *glamor_egl =
-        glamor_egl_get_screen_private(xf86ScreenToScrn(screen));
     struct glamor_pixmap_private *pixmap_priv =
         glamor_get_pixmap_private(pixmap);
 
-    if (!pixmap_priv->image)
+    if (!pixmap_priv->bo)
         return NULL;
 
-    return gbm_bo_import(glamor_egl->gbm, GBM_BO_IMPORT_EGL_IMAGE,
-                         pixmap_priv->image, 0);
+    return pixmap_priv->bo;
 }
 
 struct gbm_bo *
@@ -413,8 +410,6 @@ glamor_egl_dri3_fd_name_from_tex(ScreenPtr screen,
     }
     *stride = pixmap->devKind;
     *size = pixmap->devKind * gbm_bo_get_height(bo);
-
-    gbm_bo_destroy(bo);
  failure:
     return fd;
 }
@@ -453,7 +448,9 @@ glamor_back_pixmap_from_fd(PixmapPtr pixmap,
     screen->ModifyPixmapHeader(pixmap, width, height, 0, 0, stride, NULL);
 
     ret = glamor_egl_create_textured_pixmap_from_gbm_bo(pixmap, bo);
-    gbm_bo_destroy(bo);
+    if (!ret)
+        gbm_bo_destroy(bo);
+
     return ret;
 }
 
@@ -490,8 +487,8 @@ glamor_egl_destroy_pixmap(PixmapPtr pixmap)
         struct glamor_pixmap_private *pixmap_priv =
             glamor_get_pixmap_private(pixmap);
 
-        if (pixmap_priv->image)
-            eglDestroyImageKHR(glamor_egl->display, pixmap_priv->image);
+        if (pixmap_priv->bo)
+            gbm_bo_destroy(pixmap_priv->bo);
     }
 
     screen->DestroyPixmap = glamor_egl->saved_destroy_pixmap;
@@ -505,7 +502,7 @@ glamor_egl_destroy_pixmap(PixmapPtr pixmap)
 _X_EXPORT void
 glamor_egl_exchange_buffers(PixmapPtr front, PixmapPtr back)
 {
-    EGLImageKHR temp;
+    struct gbm_bo *temp_bo;
     struct glamor_pixmap_private *front_priv =
         glamor_get_pixmap_private(front);
     struct glamor_pixmap_private *back_priv =
@@ -513,9 +510,9 @@ glamor_egl_exchange_buffers(PixmapPtr front, PixmapPtr back)
 
     glamor_pixmap_exchange_fbos(front, back);
 
-    temp = back_priv->image;
-    back_priv->image = front_priv->image;
-    front_priv->image = temp;
+    temp_bo = back_priv->bo;
+    back_priv->bo = front_priv->bo;
+    front_priv->bo = temp_bo;
 
     glamor_set_pixmap_type(front, GLAMOR_TEXTURE_DRM);
     glamor_set_pixmap_type(back, GLAMOR_TEXTURE_DRM);
@@ -534,8 +531,8 @@ glamor_egl_close_screen(ScreenPtr screen)
     screen_pixmap = screen->GetScreenPixmap(screen);
     pixmap_priv = glamor_get_pixmap_private(screen_pixmap);
 
-    eglDestroyImageKHR(glamor_egl->display, pixmap_priv->image);
-    pixmap_priv->image = NULL;
+    gbm_bo_destroy(pixmap_priv->bo);
+    pixmap_priv->bo = NULL;
 
     screen->CloseScreen = glamor_egl->saved_close_screen;
 

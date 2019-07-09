@@ -56,6 +56,10 @@
 
 #include <list.h>
 
+#ifdef GLAMOR_HAS_GBM
+#include <gbm.h>
+#endif
+
 struct glamor_pixmap_private;
 
 typedef struct glamor_composite_shader {
@@ -349,8 +353,9 @@ typedef struct glamor_pixmap_private {
     GLuint pbo;
     RegionRec prepare_region;
     Bool prepared;
-#if GLAMOR_HAS_GBM
-    EGLImageKHR image;
+#ifdef GLAMOR_HAS_GBM
+    struct gbm_bo *bo;
+    Bool owned_bo;
 #endif
     /** block width of this large pixmap. */
     int block_w;
