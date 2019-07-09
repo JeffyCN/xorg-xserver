@@ -49,4 +49,7 @@ glamor_prepare_access_gc(GCPtr gc);
 void
 glamor_finish_access_gc(GCPtr gc);
 
+void
+glamor_finish_access_pixmap(PixmapPtr pixmap, Bool force);
+
 #endif /* _GLAMOR_PREPARE_H_ */
