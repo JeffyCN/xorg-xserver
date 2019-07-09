@@ -256,6 +256,7 @@ ms_do_pageflip(ScreenPtr screen,
 
     flipdata = calloc(1, sizeof(struct ms_flipdata));
     if (!flipdata) {
+        new_front_bo.gbm = NULL;
         drmmode_bo_destroy(&ms->drmmode, &new_front_bo);
         xf86DrvMsg(scrn->scrnIndex, X_ERROR,
                    "Failed to allocate flipdata.\n");
@@ -311,6 +312,7 @@ ms_do_pageflip(ScreenPtr screen,
         }
     }
 
+    new_front_bo.gbm = NULL;
     drmmode_bo_destroy(&ms->drmmode, &new_front_bo);
 
     /*
@@ -338,6 +340,7 @@ error_undo:
 error_out:
     xf86DrvMsg(scrn->scrnIndex, X_WARNING, "Page flip failed: %s\n",
                strerror(errno));
+    new_front_bo.gbm = NULL;
     drmmode_bo_destroy(&ms->drmmode, &new_front_bo);
     /* if only the local reference - free the structure,
      * else drop the local reference and return */
