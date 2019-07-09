@@ -701,6 +701,12 @@ glamor_copy_gl(DrawablePtr src,
     glamor_pixmap_private *src_priv = glamor_get_pixmap_private(src_pixmap);
     glamor_pixmap_private *dst_priv = glamor_get_pixmap_private(dst_pixmap);
 
+#ifdef GLAMOR_HAS_GBM_MAP
+    /* HACK for freerdp */
+    if (nbox == 1 && (box->x2 - box->x1) == 64 && (box->y2 - box->y1) == 64)
+        return FALSE;
+#endif
+
     if (GLAMOR_PIXMAP_PRIV_HAS_FBO(dst_priv)) {
         if (GLAMOR_PIXMAP_PRIV_HAS_FBO(src_priv)) {
             if (glamor_copy_needs_temp(src, dst, box, nbox, dx, dy))
