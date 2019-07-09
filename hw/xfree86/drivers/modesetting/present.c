@@ -287,7 +287,6 @@ ms_present_check_unflip(RRCrtcPtr crtc,
 
         format = gbm_bo_get_format(gbm);
         modifier = gbm_bo_get_modifier(gbm);
-        gbm_bo_destroy(gbm);
 
         if (!drmmode_is_format_supported(scrn, format, modifier)) {
             if (reason)
