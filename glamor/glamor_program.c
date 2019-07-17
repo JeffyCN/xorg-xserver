@@ -201,6 +201,8 @@ static const char vs_template[] =
 static const char fs_template[] =
     "%s"                                /* version */
     "%s"                                /* exts */
+    "%s"                                /* prim extensions */
+    "%s"                                /* fill extensions */
     GLAMOR_DEFAULT_PRECISION
     "%s"                                /* defines */
     "%s"                                /* prim fs_vars */
@@ -313,6 +315,8 @@ glamor_build_program(ScreenPtr          screen,
                  fs_template,
                  str(version_string),
                  gpu_shader4 ? "#extension GL_EXT_gpu_shader4 : require\n#define texelFetch texelFetch2D\n#define uint unsigned int\n" : "",
+                 str(prim->fs_extensions),
+                 str(fill->fs_extensions),
                  str(defines),
                  str(prim->fs_vars),
                  str(fill->fs_vars),
