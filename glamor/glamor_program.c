@@ -199,6 +199,8 @@ static const char vs_template[] =
 
 static const char fs_template[] =
     "%s"                                /* version */
+    "%s"                                /* prim extensions */
+    "%s"                                /* fill extensions */
     GLAMOR_DEFAULT_PRECISION
     "%s"                                /* defines */
     "%s"                                /* prim fs_vars */
@@ -302,6 +304,8 @@ glamor_build_program(ScreenPtr          screen,
     if (asprintf(&fs_prog_string,
                  fs_template,
                  str(version_string),
+                 str(prim->fs_extensions),
+                 str(fill->fs_extensions),
                  str(defines),
                  str(prim->fs_vars),
                  str(fill->fs_vars),
