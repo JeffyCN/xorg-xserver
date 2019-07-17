@@ -308,6 +308,7 @@ typedef struct glamor_screen_private {
 
     /* xv */
     glamor_program xv_prog;
+    glamor_program xv_prog_ext;
 
     struct glamor_context ctx;
 } glamor_screen_private;
@@ -876,6 +877,10 @@ typedef struct {
     int saturation;
     int hue;
     int contrast;
+    uint32_t dma_client;
+    uint32_t dma_hor_stride;
+    uint32_t dma_ver_stride;
+    int dma_socket_fd;
 
     DrawablePtr pDraw;
     PixmapPtr pPixmap;
