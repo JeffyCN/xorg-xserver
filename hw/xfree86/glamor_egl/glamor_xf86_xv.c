@@ -170,15 +170,7 @@ glamor_xv_init(ScreenPtr screen, int num_texture_ports)
     for (i = 0; i < num_texture_ports; i++) {
         glamor_port_private *pPriv = &port_priv[i];
 
-        pPriv->brightness = 0;
-        pPriv->contrast = 0;
-        pPriv->saturation = 0;
-        pPriv->hue = 0;
-        pPriv->gamma = 1000;
-        pPriv->transform_index = 0;
-
-        REGION_NULL(pScreen, &pPriv->clip);
-
+        glamor_xv_init_port(pPriv);
         adapt->pPortPrivates[i].ptr = (void *) (pPriv);
     }
     return adapt;
