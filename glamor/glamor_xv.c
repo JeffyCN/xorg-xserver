@@ -40,6 +40,13 @@
 #include "glamor_transform.h"
 #include "glamor_transfer.h"
 
+#include <stdio.h>
+#include <unistd.h>
+#include <sys/socket.h>
+#include <sys/stat.h>
+#include <sys/un.h>
+#include <libdrm/drm_fourcc.h>
+
 #include <X11/extensions/Xv.h>
 #include "../hw/xfree86/common/fourcc.h"
 /* Reference color space transform data */
@@ -58,6 +65,8 @@ typedef struct tagREF_TRANSFORM {
 #define RTFIntensity(a)   (((a)*1.0)/2000.0)
 #define RTFContrast(a)   (1.0 + ((a)*1.0)/1000.0)
 #define RTFHue(a)   (((a)*3.1416)/1000.0)
+
+#define XV_MAX_DMA_FD 3
 
 static const glamor_facet glamor_facet_xv_planar_2 = {
     .name = "xv_planar_2",
@@ -124,6 +133,24 @@ static const glamor_facet glamor_facet_xv_planar_3 = {
                 ),
 };
 
+static const glamor_facet glamor_facet_xv_egl_external = {
+    .name = "xv_egl_external",
+
+    .source_name = "v_texcoord0",
+    .vs_vars = ("attribute vec2 position;\n"
+                "attribute vec2 v_texcoord0;\n"
+                "varying vec2 tcs;\n"),
+    .vs_exec = (GLAMOR_POS(gl_Position, position)
+                "        tcs = v_texcoord0;\n"),
+
+    .fs_extensions = ("#extension GL_OES_EGL_image_external : require\n"),
+    .fs_vars = ("uniform samplerExternalOES sampler;\n"
+                "varying vec2 tcs;\n"),
+    .fs_exec = (
+                "        gl_FragColor = texture2D(sampler, tcs);\n"
+                ),
+};
+
 #define MAKE_ATOM(a) MakeAtom(a, sizeof(a) - 1, TRUE)
 
 XvAttributeRec glamor_xv_attributes[] = {
@@ -132,12 +159,16 @@ XvAttributeRec glamor_xv_attributes[] = {
     {XvSettable | XvGettable, -1000, 1000, (char *)"XV_SATURATION"},
     {XvSettable | XvGettable, -1000, 1000, (char *)"XV_HUE"},
     {XvSettable | XvGettable, 0, 1, (char *)"XV_COLORSPACE"},
+    {XvSettable | XvGettable, 0, 0xFFFFFFFF, (char *)"XV_DMA_CLIENT_ID"},
+    {XvSettable | XvGettable, 0, 0xFFFFFFFF, (char *)"XV_DMA_HOR_STRIDE"},
+    {XvSettable | XvGettable, 0, 0xFFFFFFFF, (char *)"XV_DMA_VER_STRIDE"},
     {0, 0, 0, NULL}
 };
 int glamor_xv_num_attributes = ARRAY_SIZE(glamor_xv_attributes) - 1;
 
 Atom glamorBrightness, glamorContrast, glamorSaturation, glamorHue,
-    glamorColorspace, glamorGamma;
+    glamorColorspace, glamorGamma, glamorDmaClient, glamorDmaHorStride,
+    glamorDmaVerStride;
 
 XvImageRec glamor_xv_images[] = {
     XVIMAGE_YV12,
@@ -189,11 +220,70 @@ glamor_init_xv_shader(ScreenPtr screen, int id)
 
 }
 
+static void
+glamor_init_xv_shader_egl_external(ScreenPtr screen)
+{
+    glamor_screen_private *glamor_priv = glamor_get_screen_private(screen);
+    GLint sampler_loc;
+
+    glamor_build_program(screen,
+                         &glamor_priv->xv_prog_ext,
+                         &glamor_facet_xv_egl_external, NULL, NULL, NULL);
+    glUseProgram(glamor_priv->xv_prog_ext.prog);
+
+    sampler_loc =
+        glGetUniformLocation(glamor_priv->xv_prog_ext.prog, "sampler");
+    glUniform1i(sampler_loc, 0);
+}
+
 #define ClipValue(v,min,max) ((v) < (min) ? (min) : (v) > (max) ? (max) : (v))
+
+static void
+glamor_xv_set_dma_client(glamor_port_private *port_priv,
+                         uint32_t dma_client)
+{
+    struct sockaddr_un addr;
+
+    // re-open socket to flush pending messages
+    if (port_priv->dma_client)
+        close(port_priv->dma_socket_fd);
+
+    port_priv->dma_client = dma_client;
+
+    if (!dma_client)
+        goto clear;
+
+    port_priv->dma_socket_fd = socket(PF_UNIX, SOCK_DGRAM | SOCK_NONBLOCK, 0);
+    if (port_priv->dma_socket_fd < 0)
+        goto clear;
+
+    addr.sun_family = AF_LOCAL;
+    snprintf(addr.sun_path, sizeof(addr.sun_path),
+             "/tmp/.xv_dma_client.%d", port_priv->dma_client);
+    addr.sun_path[sizeof(addr.sun_path) - 1] = '\0';
+
+    unlink(addr.sun_path);
+    if (bind(port_priv->dma_socket_fd,
+             (struct sockaddr *)&addr, sizeof(addr)) < 0)
+        goto clear;
+
+    chmod(addr.sun_path, S_IRUSR | S_IWUSR | S_IROTH | S_IWOTH);
+
+    return;
+clear:
+    if (port_priv->dma_socket_fd > 0) {
+        close(port_priv->dma_socket_fd);
+        port_priv->dma_socket_fd = 0;
+    }
+    port_priv->dma_client = 0;
+    port_priv->dma_hor_stride = 0;
+    port_priv->dma_ver_stride = 0;
+}
 
 void
 glamor_xv_stop_video(glamor_port_private *port_priv)
 {
+    glamor_xv_set_dma_client(port_priv, 0);
 }
 
 static void
@@ -227,6 +317,12 @@ glamor_xv_set_port_attribute(glamor_port_private *port_priv,
         port_priv->gamma = ClipValue(value, 100, 10000);
     else if (attribute == glamorColorspace)
         port_priv->transform_index = ClipValue(value, 0, 1);
+    else if (attribute == glamorDmaClient)
+        glamor_xv_set_dma_client(port_priv, ClipValue(value, 0, 0xFFFFFFFF));
+    else if (attribute == glamorDmaHorStride)
+        port_priv->dma_hor_stride = ClipValue(value, 0, 0xFFFFFFFF);
+    else if (attribute == glamorDmaVerStride)
+        port_priv->dma_ver_stride = ClipValue(value, 0, 0xFFFFFFFF);
     else
         return BadMatch;
     return Success;
@@ -248,6 +344,12 @@ glamor_xv_get_port_attribute(glamor_port_private *port_priv,
         *value = port_priv->gamma;
     else if (attribute == glamorColorspace)
         *value = port_priv->transform_index;
+    else if (attribute == glamorDmaClient)
+        *value = port_priv->dma_client;
+    else if (attribute == glamorDmaHorStride)
+        *value = port_priv->dma_hor_stride;
+    else if (attribute == glamorDmaVerStride)
+        *value = port_priv->dma_ver_stride;
     else
         return BadMatch;
 
@@ -484,6 +586,273 @@ glamor_xv_render(glamor_port_private *port_priv, int id)
     glamor_xv_free_port_data(port_priv);
 }
 
+static int
+glamor_xv_render_dma_nv12(glamor_port_private *port_priv, int dma_fd)
+{
+    ScreenPtr screen = port_priv->pPixmap->drawable.pScreen;
+    glamor_screen_private *glamor_priv = glamor_get_screen_private(screen);
+    PixmapPtr pixmap = port_priv->pPixmap;
+    glamor_pixmap_private *pixmap_priv = glamor_get_pixmap_private(pixmap);
+    BoxPtr box = REGION_RECTS(&port_priv->clip);
+    int nBox = REGION_NUM_RECTS(&port_priv->clip);
+    GLfloat src_xscale, src_yscale;
+    int i;
+    GLfloat *v;
+    char *vbo_offset;
+    int dst_box_index;
+
+    int hor_stride =
+        port_priv->dma_hor_stride ? port_priv->dma_hor_stride : port_priv->w;
+    int ver_stride =
+        port_priv->dma_ver_stride ? port_priv->dma_ver_stride : port_priv->h;
+
+    PFNEGLCREATEIMAGEKHRPROC create_image;
+    PFNEGLDESTROYIMAGEKHRPROC destroy_image;
+    PFNGLEGLIMAGETARGETTEXTURE2DOESPROC image_target_texture_2d;
+    EGLImageKHR image;
+    GLuint texture;
+
+    const EGLint attrs[] = {
+        EGL_WIDTH, hor_stride,
+        EGL_HEIGHT, ver_stride,
+        EGL_LINUX_DRM_FOURCC_EXT, DRM_FORMAT_NV12,
+        EGL_DMA_BUF_PLANE0_FD_EXT, dma_fd,
+        EGL_DMA_BUF_PLANE0_OFFSET_EXT, 0,
+        EGL_DMA_BUF_PLANE0_PITCH_EXT, hor_stride,
+        EGL_DMA_BUF_PLANE1_FD_EXT, dma_fd,
+        EGL_DMA_BUF_PLANE1_OFFSET_EXT, hor_stride * ver_stride,
+        EGL_DMA_BUF_PLANE1_PITCH_EXT, hor_stride,
+        EGL_YUV_COLOR_SPACE_HINT_EXT, EGL_ITU_REC601_EXT,
+        EGL_SAMPLE_RANGE_HINT_EXT, EGL_YUV_NARROW_RANGE_EXT,
+        EGL_NONE
+    };
+
+    create_image =
+        (PFNEGLCREATEIMAGEKHRPROC)eglGetProcAddress("eglCreateImageKHR");
+    destroy_image =
+        (PFNEGLDESTROYIMAGEKHRPROC)eglGetProcAddress("eglDestroyImageKHR");
+    image_target_texture_2d =
+        (PFNGLEGLIMAGETARGETTEXTURE2DOESPROC)
+        eglGetProcAddress("glEGLImageTargetTexture2DOES");
+    if (!create_image || !destroy_image || !image_target_texture_2d) {
+        ErrorF("glamor xv without EGL_EXT_image_dma_buf_import\n");
+        return BadMatch;
+    }
+
+    glamor_make_current(glamor_priv);
+
+    image = create_image(glamor_priv->ctx.display, EGL_NO_CONTEXT,
+                         EGL_LINUX_DMA_BUF_EXT, NULL, attrs);
+    if (image == EGL_NO_IMAGE) {
+        ErrorF("glamor xv failed to create egl image\n");
+        return BadMatch;
+    }
+
+    DamageRegionAppend(port_priv->pDraw, &port_priv->clip);
+
+    if (!glamor_priv->xv_prog_ext.prog)
+        glamor_init_xv_shader_egl_external(screen);
+
+    /* TODO: support contrast/brightness/gamma/saturation/hue */
+    glamor_set_alu(screen, GXcopy);
+
+    src_xscale = 1.0 / hor_stride;
+    src_yscale = 1.0 / ver_stride;
+
+    glUseProgram(glamor_priv->xv_prog_ext.prog);
+
+    glGenTextures(1, &texture);
+
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_EXTERNAL_OES, texture);
+    image_target_texture_2d(GL_TEXTURE_EXTERNAL_OES, (GLeglImageOES)image);
+
+    glTexParameteri(GL_TEXTURE_EXTERNAL_OES, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_EXTERNAL_OES, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_EXTERNAL_OES,
+                    GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_EXTERNAL_OES,
+                    GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+    glEnableVertexAttribArray(GLAMOR_VERTEX_POS);
+    glEnableVertexAttribArray(GLAMOR_VERTEX_SOURCE);
+
+    glEnable(GL_SCISSOR_TEST);
+
+    v = glamor_get_vbo_space(screen, 3 * 4 * sizeof(GLfloat), &vbo_offset);
+
+    /* Set up a single primitive covering the area being drawn.  We'll
+     * clip it to port_priv->clip using GL scissors instead of just
+     * emitting a GL_QUAD per box, because this way we hopefully avoid
+     * diagonal tearing between the two triangles used to rasterize a
+     * GL_QUAD.
+     */
+    i = 0;
+    v[i++] = port_priv->drw_x;
+    v[i++] = port_priv->drw_y;
+
+    v[i++] = port_priv->drw_x + port_priv->dst_w * 2;
+    v[i++] = port_priv->drw_y;
+
+    v[i++] = port_priv->drw_x;
+    v[i++] = port_priv->drw_y + port_priv->dst_h * 2;
+
+    v[i++] = t_from_x_coord_x(src_xscale, port_priv->src_x);
+    v[i++] = t_from_x_coord_y(src_yscale, port_priv->src_y);
+
+    v[i++] = t_from_x_coord_x(src_xscale, port_priv->src_x +
+                              port_priv->src_w * 2);
+    v[i++] = t_from_x_coord_y(src_yscale, port_priv->src_y);
+
+    v[i++] = t_from_x_coord_x(src_xscale, port_priv->src_x);
+    v[i++] = t_from_x_coord_y(src_yscale, port_priv->src_y +
+                              port_priv->src_h * 2);
+
+    glVertexAttribPointer(GLAMOR_VERTEX_POS, 2,
+                          GL_FLOAT, GL_FALSE,
+                          2 * sizeof(float), vbo_offset);
+
+    glVertexAttribPointer(GLAMOR_VERTEX_SOURCE, 2,
+                          GL_FLOAT, GL_FALSE,
+                          2 * sizeof(float), vbo_offset + 6 * sizeof(GLfloat));
+
+    glamor_put_vbo_space(screen);
+
+    /* Now draw our big triangle, clipped to each of the clip boxes. */
+    glamor_pixmap_loop(pixmap_priv, dst_box_index) {
+        int dst_off_x, dst_off_y;
+
+        glamor_set_destination_drawable(port_priv->pDraw,
+                                        dst_box_index,
+                                        FALSE, FALSE,
+                                        glamor_priv->xv_prog_ext.matrix_uniform,
+                                        &dst_off_x, &dst_off_y);
+
+        for (i = 0; i < nBox; i++) {
+            int dstx, dsty, dstw, dsth;
+
+            dstx = box[i].x1 + dst_off_x;
+            dsty = box[i].y1 + dst_off_y;
+            dstw = box[i].x2 - box[i].x1;
+            dsth = box[i].y2 - box[i].y1;
+
+            glScissor(dstx, dsty, dstw, dsth);
+            glDrawArrays(GL_TRIANGLE_FAN, 0, 3);
+        }
+    }
+    glDisable(GL_SCISSOR_TEST);
+
+    glDisableVertexAttribArray(GLAMOR_VERTEX_POS);
+    glDisableVertexAttribArray(GLAMOR_VERTEX_SOURCE);
+
+    DamageRegionProcessPending(port_priv->pDraw);
+
+    glamor_xv_free_port_data(port_priv);
+
+    glDeleteTextures(1, &texture);
+    destroy_image(glamor_priv->ctx.display, image);
+
+    return Success;
+}
+
+static int
+glamor_xv_put_dma_image(glamor_port_private *port_priv,
+                        DrawablePtr pDrawable,
+                        short src_x, short src_y,
+                        short drw_x, short drw_y,
+                        short src_w, short src_h,
+                        short drw_w, short drw_h,
+                        int id,
+                        short width,
+                        short height,
+                        Bool sync,
+                        RegionPtr clipBoxes)
+{
+    ScreenPtr pScreen = pDrawable->pScreen;
+    struct iovec iov;
+    struct msghdr msg;
+    struct cmsghdr *header;
+    char buf[CMSG_SPACE (sizeof (int))];
+    int dma_fds[XV_MAX_DMA_FD], num_dma_fd;
+    int ret = BadMatch;
+
+    if (!port_priv->dma_client || port_priv->dma_socket_fd <= 0)
+        return BadMatch;
+
+    /* Only support NV12 for now */
+    if (id != FOURCC_NV12)
+        return BadValue;
+
+    iov.iov_base = buf;
+    iov.iov_len = 1;
+
+    msg.msg_iov = &iov;
+    msg.msg_iovlen = 1;
+    msg.msg_name = NULL;
+    msg.msg_namelen = 0;
+
+    num_dma_fd = 0;
+    while (1) {
+        msg.msg_control = buf;
+        msg.msg_controllen = sizeof(buf);
+
+        if (recvmsg(port_priv->dma_socket_fd, &msg, 0) < 0)
+            break;
+
+        /* End with a empty msg */
+        header = CMSG_FIRSTHDR(&msg);
+        if (!header)
+            break;
+
+        for (; header != NULL; header = CMSG_NXTHDR(&msg, header)) {
+            if (header->cmsg_level != SOL_SOCKET
+                || header->cmsg_type != SCM_RIGHTS
+                || header->cmsg_len != CMSG_LEN(sizeof(int)))
+                break;
+
+            dma_fds[num_dma_fd++] = *((int *)CMSG_DATA(header));
+        }
+    }
+
+    /* Expected 1 buffer for NV12 */
+    if (num_dma_fd != 1)
+        goto out;
+
+    if (pDrawable->type == DRAWABLE_WINDOW)
+        port_priv->pPixmap = pScreen->GetWindowPixmap((WindowPtr) pDrawable);
+    else
+        port_priv->pPixmap = (PixmapPtr) pDrawable;
+
+    RegionCopy(&port_priv->clip, clipBoxes);
+
+    port_priv->src_x = src_x;
+    port_priv->src_y = src_y;
+    port_priv->src_w = src_w;
+    port_priv->src_h = src_h;
+    port_priv->dst_w = drw_w;
+    port_priv->dst_h = drw_h;
+    port_priv->drw_x = drw_x;
+    port_priv->drw_y = drw_y;
+    port_priv->w = width;
+    port_priv->h = height;
+    port_priv->pDraw = pDrawable;
+
+    ret = glamor_xv_render_dma_nv12(port_priv, dma_fds[0]);
+    if (ret == Success && sync)
+        glamor_finish(pScreen);
+
+out:
+    while (num_dma_fd--)
+        close(dma_fds[num_dma_fd]);
+
+    if (ret != Success) {
+        ErrorF("glamor xv failed to render dma image\n");
+        glamor_xv_set_dma_client(port_priv, 0);
+    }
+
+    return ret;
+}
+
 int
 glamor_xv_put_image(glamor_port_private *port_priv,
                     DrawablePtr pDrawable,
@@ -504,6 +873,12 @@ glamor_xv_put_image(glamor_port_private *port_priv,
     int top, nlines;
     int s2offset, s3offset, tmp;
     BoxRec full_box, half_box;
+
+    if (glamor_xv_put_dma_image(port_priv, pDrawable,
+                                src_x, src_y, drw_x, drw_y,
+                                src_w, src_h, drw_w, drw_h,
+                                id, width, height, sync, clipBoxes) == Success)
+        return Success;
 
     s2offset = s3offset = srcPitch2 = 0;
 
@@ -654,6 +1029,10 @@ glamor_xv_init_port(glamor_port_private *port_priv)
     port_priv->hue = 0;
     port_priv->gamma = 1000;
     port_priv->transform_index = 0;
+    port_priv->dma_client = 0;
+    port_priv->dma_socket_fd = 0;
+    port_priv->dma_hor_stride = 0;
+    port_priv->dma_ver_stride = 0;
 
     REGION_NULL(pScreen, &port_priv->clip);
 }
@@ -667,4 +1046,7 @@ glamor_xv_core_init(ScreenPtr screen)
     glamorHue = MAKE_ATOM("XV_HUE");
     glamorGamma = MAKE_ATOM("XV_GAMMA");
     glamorColorspace = MAKE_ATOM("XV_COLORSPACE");
+    glamorDmaClient = MAKE_ATOM("XV_DMA_CLIENT_ID");
+    glamorDmaHorStride = MAKE_ATOM("XV_DMA_HOR_STRIDE");
+    glamorDmaVerStride = MAKE_ATOM("XV_DMA_VER_STRIDE");
 }
