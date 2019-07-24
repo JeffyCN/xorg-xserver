@@ -133,6 +133,7 @@ static const OptionInfoRec Options[] = {
     {OPTION_ZAPHOD_HEADS, "ZaphodHeads", OPTV_STRING, {0}, FALSE},
     {OPTION_DOUBLE_SHADOW, "DoubleShadow", OPTV_BOOLEAN, {0}, FALSE},
     {OPTION_ATOMIC, "Atomic", OPTV_BOOLEAN, {0}, FALSE},
+    {OPTION_FLIP_FB, "FlipFB", OPTV_STRING, {0}, FALSE},
     {-1, NULL, OPTV_NONE, {0}, FALSE}
 };
 
@@ -684,6 +685,9 @@ static void
 msBlockHandler(ScreenPtr pScreen, void *timeout)
 {
     modesettingPtr ms = modesettingPTR(xf86ScreenToScrn(pScreen));
+    ScrnInfoPtr pScrn = xf86ScreenToScrn(pScreen);
+    xf86CrtcConfigPtr xf86_config = XF86_CRTC_CONFIG_PTR(pScrn);
+    int c;
 
     pScreen->BlockHandler = ms->BlockHandler;
     pScreen->BlockHandler(pScreen, timeout);
@@ -691,8 +695,22 @@ msBlockHandler(ScreenPtr pScreen, void *timeout)
     pScreen->BlockHandler = msBlockHandler;
     if (pScreen->isGPU && !ms->drmmode.reverse_prime_offload_mode)
         dispatch_slave_dirty(pScreen);
-    else if (ms->dirty_enabled)
-        dispatch_dirty(pScreen);
+    else {
+        if (ms->dirty_enabled)
+            dispatch_dirty(pScreen);
+
+        for (c = 0; c < xf86_config->num_crtc; c++) {
+            xf86CrtcPtr crtc = xf86_config->crtc[c];
+            drmmode_crtc_private_ptr drmmode_crtc = crtc->driver_private;
+
+            if (!drmmode_crtc || drmmode_flip_fb(crtc, timeout))
+                continue;
+
+            drmmode_crtc->can_flip_fb = FALSE;
+            drmmode_set_desired_modes(pScrn, &ms->drmmode, TRUE);
+            break;
+        }
+    }
 
     ms_dirty_update(pScreen, timeout);
 }
@@ -894,6 +912,7 @@ PreInit(ScrnInfoPtr pScrn, int flags)
     modesettingPtr ms;
     rgb defaultWeight = { 0, 0, 0 };
     EntityInfoPtr pEnt;
+    const char *str_value;
     uint64_t value = 0;
     int ret;
     int bppflags, connector_count;
@@ -1025,6 +1044,20 @@ PreInit(ScrnInfoPtr pScrn, int flags)
 
     ms->drmmode.pageflip =
         xf86ReturnOptValBool(ms->drmmode.Options, OPTION_PAGEFLIP, TRUE);
+
+    str_value = xf86GetOptValString(ms->drmmode.Options, OPTION_FLIP_FB);
+    if (!str_value || !strcmp(str_value, "transformed"))
+        ms->drmmode.fb_flip_mode = DRMMODE_FB_FLIP_TRANSFORMED;
+    else if (!strcmp(str_value, "always"))
+        ms->drmmode.fb_flip_mode = DRMMODE_FB_FLIP_ALWAYS;
+    else
+        ms->drmmode.fb_flip_mode = DRMMODE_FB_FLIP_NONE;
+
+    if (ms->drmmode.fb_flip_mode != DRMMODE_FB_FLIP_NONE)
+        xf86DrvMsg(pScrn->scrnIndex, X_INFO,
+                   "FlipFB: %s\n",
+                   (ms->drmmode.fb_flip_mode == DRMMODE_FB_FLIP_ALWAYS ?
+                    "Always" : "Transformed"));
 
     pScrn->capabilities = 0;
     ret = drmGetCap(ms->fd, DRM_CAP_PRIME, &value);
@@ -1855,6 +1888,15 @@ CloseScreen(ScreenPtr pScreen)
     ScrnInfoPtr pScrn = xf86ScreenToScrn(pScreen);
     modesettingPtr ms = modesettingPTR(pScrn);
     modesettingEntPtr ms_ent = ms_ent_priv(pScrn);
+
+    xf86CrtcConfigPtr xf86_config = XF86_CRTC_CONFIG_PTR(pScrn);
+    int c;
+
+    /* HACK: All filters would be reset after screen closed */
+    for (c = 0; c < xf86_config->num_crtc; c++) {
+        xf86CrtcPtr crtc = xf86_config->crtc[c];
+        crtc->transform.filter = NULL;
+    }
 
     /* Clear mask of assigned crtc's in this generation */
     ms_ent->assigned_crtcs = 0;
