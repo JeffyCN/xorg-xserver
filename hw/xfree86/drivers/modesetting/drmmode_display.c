@@ -32,6 +32,7 @@
 #include <errno.h>
 #include <sys/ioctl.h>
 #include <sys/mman.h>
+#include <sys/time.h>
 #include <unistd.h>
 #include "dumb_bo.h"
 #include "xf86str.h"
@@ -58,6 +59,10 @@ static Bool drmmode_xf86crtc_resize(ScrnInfoPtr scrn, int width, int height);
 static PixmapPtr drmmode_create_pixmap_header(ScreenPtr pScreen, int width, int height,
                                               int depth, int bitsPerPixel, int devKind,
                                               void *pPixData);
+
+static void drmmode_destroy_flip_fb(xf86CrtcPtr crtc);
+static Bool drmmode_create_flip_fb(xf86CrtcPtr crtc);
+static Bool drmmode_apply_transform(xf86CrtcPtr crtc);
 
 static inline uint32_t *
 formats_ptr(struct drm_format_modifier_blob *blob)
@@ -619,8 +624,7 @@ drmmode_crtc_get_fb_id(xf86CrtcPtr crtc, uint32_t *fb_id, int *x, int *y)
     else if (drmmode_crtc->rotate_fb_id) {
         *fb_id = drmmode_crtc->rotate_fb_id;
         *x = *y = 0;
-    }
-    else {
+    } else {
         *fb_id = drmmode->fb_id;
         *x = crtc->x;
         *y = crtc->y;
@@ -748,6 +752,27 @@ drmmode_crtc_disable(xf86CrtcPtr crtc)
     return ret;
 }
 
+static Bool
+drmmode_crtc_connected(xf86CrtcPtr crtc)
+{
+    xf86CrtcConfigPtr xf86_config = XF86_CRTC_CONFIG_PTR(crtc->scrn);
+    int i;
+
+    for (i = 0; i < xf86_config->num_output; i++) {
+        xf86OutputPtr output = xf86_config->output[i];
+        drmmode_output_private_ptr drmmode_output;
+        drmmode_output = output->driver_private;
+
+        if (output->crtc != crtc)
+            continue;
+
+        if (drmmode_output->status == XF86OutputStatusConnected)
+            return TRUE;
+    }
+
+    return FALSE;
+}
+
 static int
 drmmode_crtc_set_mode(xf86CrtcPtr crtc, Bool test_only)
 {
@@ -867,7 +892,19 @@ drmmode_crtc_flip(xf86CrtcPtr crtc, uint32_t fb_id, uint32_t flags, void *data)
 {
     modesettingPtr ms = modesettingPTR(crtc->scrn);
     drmmode_crtc_private_ptr drmmode_crtc = crtc->driver_private;
-    int ret;
+    int ret, sx, sy, w, h;
+
+    if (fb_id == ms->drmmode.fb_id) {
+        /* screen FB flip */
+        sx = crtc->x;
+        sy = crtc->y;
+    } else {
+        /* single crtc FB flip */
+        sx = sy = 0;
+    }
+
+    w = crtc->mode.HDisplay;
+    h = crtc->mode.VDisplay;
 
     if (ms->atomic_modeset) {
         drmModeAtomicReq *req = drmModeAtomicAlloc();
@@ -875,13 +912,19 @@ drmmode_crtc_flip(xf86CrtcPtr crtc, uint32_t fb_id, uint32_t flags, void *data)
         if (!req)
             return 1;
 
-        ret = plane_add_props(req, crtc, fb_id, crtc->x, crtc->y);
+        ret = plane_add_props(req, crtc, fb_id, sx, sy);
         flags |= DRM_MODE_ATOMIC_NONBLOCK;
         if (ret == 0)
             ret = drmModeAtomicCommit(ms->fd, req, flags, data);
         drmModeAtomicFree(req);
         return ret;
     }
+
+    ret = drmModeSetPlane(ms->fd, drmmode_crtc->plane_id,
+                          drmmode_crtc->mode_crtc->crtc_id, fb_id, 0,
+                          0, 0, w, h, sx << 16, sy << 16, w << 16, h << 16);
+    if (ret)
+        return ret;
 
     return drmModePageFlip(ms->fd, drmmode_crtc->mode_crtc->crtc_id,
                            fb_id, flags, data);
@@ -1263,6 +1306,8 @@ drmmode_EnableSharedPixmapFlipping(xf86CrtcPtr crtc, drmmode_ptr drmmode,
                                    PixmapPtr front, PixmapPtr back)
 {
     drmmode_crtc_private_ptr drmmode_crtc = crtc->driver_private;
+    ScrnInfoPtr scrn = crtc->scrn;
+    modesettingPtr ms = modesettingPTR(scrn);
 
     drmmode_crtc->enable_flipping = TRUE;
 
@@ -1283,6 +1328,8 @@ drmmode_EnableSharedPixmapFlipping(xf86CrtcPtr crtc, drmmode_ptr drmmode,
         return FALSE;
     }
 
+    drmmode_set_desired_modes(scrn, &ms->drmmode, TRUE);
+
     return TRUE;
 }
 
@@ -1290,6 +1337,8 @@ void
 drmmode_DisableSharedPixmapFlipping(xf86CrtcPtr crtc, drmmode_ptr drmmode)
 {
     drmmode_crtc_private_ptr drmmode_crtc = crtc->driver_private;
+    ScrnInfoPtr scrn = crtc->scrn;
+    modesettingPtr ms = modesettingPTR(scrn);
 
     drmmode_crtc->enable_flipping = FALSE;
 
@@ -1299,6 +1348,8 @@ drmmode_DisableSharedPixmapFlipping(xf86CrtcPtr crtc, drmmode_ptr drmmode)
 
     drmmode_set_target_scanout_pixmap(crtc, NULL,
                                       &drmmode_crtc->prime_pixmap_back);
+
+    drmmode_set_desired_modes(scrn, &ms->drmmode, TRUE);
 }
 
 static void
@@ -1495,9 +1546,8 @@ drmmode_set_mode_major(xf86CrtcPtr crtc, DisplayModePtr mode,
         crtc->y = y;
         crtc->rotation = rotation;
 
-        if (!xf86CrtcRotate(crtc)) {
+        if (!drmmode_apply_transform(crtc))
             goto done;
-        }
 
         crtc->funcs->gamma_set(crtc, crtc->gamma_red, crtc->gamma_green,
                                crtc->gamma_blue, crtc->gamma_size);
@@ -2212,7 +2262,12 @@ drmmode_crtc_init(ScrnInfoPtr pScrn, drmmode_ptr drmmode, drmModeResPtr mode_res
     drmmode_crtc->vblank_pipe = drmmode_crtc_vblank_pipe(num);
     xorg_list_init(&drmmode_crtc->mode_list);
 
-    if (ms->atomic_modeset) {
+    if (drmmode->fb_flip_mode == DRMMODE_FB_FLIP_NONE)
+        drmmode_crtc->can_flip_fb = FALSE;
+    else
+        drmmode_crtc->can_flip_fb = TRUE;
+
+    if (1 || ms->atomic_modeset) {
         props = drmModeObjectGetProperties(drmmode->fd, mode_res->crtcs[num],
                                            DRM_MODE_OBJECT_CRTC);
         if (!props || !drmmode_prop_info_copy(drmmode_crtc->props, crtc_props,
@@ -3515,7 +3570,7 @@ drmmode_set_desired_modes(ScrnInfoPtr pScrn, drmmode_ptr drmmode, Bool set_hw)
             crtc->rotation = crtc->desiredRotation;
             crtc->x = crtc->desiredX;
             crtc->y = crtc->desiredY;
-            if (!xf86CrtcRotate(crtc))
+            if (!drmmode_apply_transform(crtc))
                 return FALSE;
         }
     }
@@ -3884,6 +3939,7 @@ drmmode_free_bos(ScrnInfoPtr pScrn, drmmode_ptr drmmode)
         drmmode_crtc_private_ptr drmmode_crtc = crtc->driver_private;
 
         dumb_bo_destroy(drmmode->fd, drmmode_crtc->cursor_bo);
+        drmmode_destroy_flip_fb(crtc);
     }
 }
 
@@ -3939,4 +3995,430 @@ drmmode_get_default_bpp(ScrnInfoPtr pScrn, drmmode_ptr drmmode, int *depth,
  out:
     drmModeFreeResources(mode_res);
     return;
+}
+
+static void
+drmmode_destroy_flip_fb(xf86CrtcPtr crtc)
+{
+    drmmode_crtc_private_ptr drmmode_crtc = crtc->driver_private;
+    drmmode_ptr drmmode = drmmode_crtc->drmmode;
+    int i;
+
+    for (i = 0; i < ARRAY_SIZE(drmmode_crtc->flip_fb); i++) {
+        drmmode_fb *fb = &drmmode_crtc->flip_fb[i];
+
+        if (fb->fb_id)
+            drmModeRmFB(drmmode->fd, fb->fb_id);
+        fb->fb_id = 0;
+
+        drmmode_bo_destroy(drmmode, &fb->bo);
+
+        if (fb->pixmap)
+            fb->pixmap->drawable.pScreen->DestroyPixmap(fb->pixmap);
+        fb->pixmap = NULL;
+
+        if (fb->damage)
+            DamageDestroy(fb->damage);
+        fb->damage = NULL;
+    }
+}
+
+static Bool
+drmmode_create_flip_fb(xf86CrtcPtr crtc)
+{
+    drmmode_crtc_private_ptr drmmode_crtc = crtc->driver_private;
+    drmmode_ptr drmmode = drmmode_crtc->drmmode;
+    int i, width, height, bpp;
+
+    width = crtc->mode.HDisplay;
+    height = crtc->mode.VDisplay;
+    bpp = drmmode->kbpp;
+
+    drmmode_destroy_flip_fb(crtc);
+
+    for (i = 0; i < ARRAY_SIZE(drmmode_crtc->flip_fb); i++) {
+        drmmode_fb *fb = &drmmode_crtc->flip_fb[i];
+
+        if (!drmmode_create_bo(drmmode, &fb->bo, width, height, bpp))
+            goto fail;
+
+        if (drmmode_bo_import(drmmode, &fb->bo, &fb->fb_id) < 0)
+            goto fail;
+    }
+
+    return TRUE;
+
+fail:
+    drmmode_destroy_flip_fb(crtc);
+    return FALSE;
+}
+
+static Bool
+drmmode_apply_transform(xf86CrtcPtr crtc)
+{
+    drmmode_crtc_private_ptr drmmode_crtc = crtc->driver_private;
+    drmmode_ptr drmmode = drmmode_crtc->drmmode;
+    BoxRec box = {
+        .x1 = 0,
+        .y1 = 0,
+        .x2 = crtc->mode.HDisplay,
+        .y2 = crtc->mode.VDisplay,
+    };
+    int w, h;
+
+    /* should always success */
+    xf86CrtcRotate(crtc);
+
+    pixman_f_transform_bounds(&crtc->f_framebuffer_to_crtc, &box);
+    w = box.x2 - box.x1;
+    h = box.y2 - box.y1;
+
+    if ((w == crtc->mode.HDisplay && h == crtc->mode.VDisplay) ||
+        (w == crtc->mode.VDisplay && h == crtc->mode.HDisplay))
+        drmmode_crtc->is_scale = FALSE;
+    else
+        drmmode_crtc->is_scale = TRUE;
+
+    /* fb flipping disabled or doing shared pixmap flipping */
+    if (!drmmode_crtc->can_flip_fb || drmmode_crtc->enable_flipping)
+        goto bail;
+
+    crtc->driverIsPerformingTransform |= XF86DriverTransformOutput;
+
+    /* should always success */
+    xf86CrtcRotate(crtc);
+
+    if (!crtc->transform_in_use) {
+        crtc->driverIsPerformingTransform &= ~XF86DriverTransformOutput;
+
+        if (drmmode->fb_flip_mode == DRMMODE_FB_FLIP_TRANSFORMED)
+            goto bail;
+    }
+
+    if (!drmmode_create_flip_fb(crtc)) {
+        drmmode_crtc->can_flip_fb = FALSE;
+        goto fail;
+    }
+
+    drmmode_crtc->flip_fb_enabled = TRUE;
+
+    return TRUE;
+
+fail:
+    drmmode_crtc->can_flip_fb = FALSE;
+
+bail:
+    drmmode_destroy_flip_fb(crtc);
+    drmmode_crtc->flip_fb_enabled = FALSE;
+
+    crtc->driverIsPerformingTransform &= ~XF86DriverTransformOutput;
+    return xf86CrtcRotate(crtc);
+}
+
+static void
+drmmode_flip_damage_destroy(DamagePtr damage, void *closure)
+{
+    drmmode_fb *fb = closure;
+
+    if (fb->pixmap)
+        fb->pixmap->drawable.pScreen->DestroyPixmap(fb->pixmap);
+    fb->pixmap = NULL;
+
+    fb->damage = NULL;
+}
+
+static RegionPtr
+drmmode_transform_region(xf86CrtcPtr crtc, RegionPtr src)
+{
+#define MS_MAX_NUM_BOX 4
+    RegionPtr region = RegionCreate(NULL, 0);
+    BoxRec rects[MS_MAX_NUM_BOX];
+    BoxPtr box, rect;
+    Bool empty;
+    int n, i;
+
+    if (!RegionNotEmpty(src))
+        return region;
+
+    if (RegionNumRects(src) < MS_MAX_NUM_BOX) {
+        n = RegionNumRects(src);
+        box = RegionRects(src);
+    } else {
+        /* draw the extents rather than small rects */
+        n = 1;
+        box = RegionExtents(src);
+    }
+
+    empty = TRUE;
+    for (i = 0; i < n; i++) {
+        rect = &rects[i];
+
+        rect->x1 = box[i].x1 - crtc->filter_width / 2;
+        rect->x2 = box[i].x2 + crtc->filter_width / 2;
+        rect->y1 = box[i].y1 - crtc->filter_height / 2;
+        rect->y2 = box[i].y2 + crtc->filter_height / 2;
+        pixman_f_transform_bounds(&crtc->f_framebuffer_to_crtc, rect);
+        rect->x1 = max(rect->x1, 0);
+        rect->y1 = max(rect->y1, 0);
+        rect->x2 = min(rect->x2, crtc->mode.HDisplay);
+        rect->y2 = min(rect->y2, crtc->mode.VDisplay);
+
+        if (rect->x1 < rect->x2 && rect->y1 < rect->y2)
+            empty = FALSE;
+    }
+
+    if (empty)
+        return region;
+
+    RegionInitBoxes(region, rects, n);
+    return region;
+}
+
+Bool
+ms_copy_area(PixmapPtr pSrc, PixmapPtr pDst,
+             pixman_f_transform_t *transform, RegionPtr clip)
+{
+    ScreenPtr screen = pSrc->drawable.pScreen;
+    PictFormatPtr format = PictureWindowFormat(screen->root);
+    PicturePtr src = NULL, dst = NULL;
+    pixman_transform_t t;
+    Bool ret = FALSE;
+    BoxPtr box;
+    int n, error;
+
+    src = CreatePicture(None, &pSrc->drawable,
+                        format, 0L, NULL, serverClient, &error);
+    if (!src)
+        return FALSE;
+
+    dst = CreatePicture(None, &pDst->drawable,
+                        format, 0L, NULL, serverClient, &error);
+    if (!dst)
+        goto out;
+
+    if (transform) {
+        if (!pixman_transform_from_pixman_f_transform(&t, transform))
+            goto out;
+
+        error = SetPictureTransform(src, &t);
+        if (error)
+            goto out;
+    }
+
+    box = REGION_RECTS(clip);
+    n = REGION_NUM_RECTS(clip);
+
+    while (n--) {
+        CompositePicture(PictOpSrc,
+                         src, NULL, dst,
+                         box->x1, box->y1, 0, 0, box->x1,
+                         box->y1, box->x2 - box->x1,
+                         box->y2 - box->y1);
+
+        box++;
+    }
+
+    ret = TRUE;
+out:
+    if (src)
+        FreePicture(src, None);
+    if (dst)
+        FreePicture(dst, None);
+
+    return ret;
+}
+
+static Bool
+drmmode_update_fb(xf86CrtcPtr crtc, drmmode_fb *fb)
+{
+    drmmode_crtc_private_ptr drmmode_crtc = crtc->driver_private;
+    ScrnInfoPtr scrn = crtc->scrn;
+    modesettingPtr ms = modesettingPTR(scrn);
+    ScreenPtr screen = xf86ScrnToScreen(scrn);
+    SourceValidateProcPtr SourceValidate = screen->SourceValidate;
+    RegionPtr dirty;
+    Bool ret;
+
+    if (!fb->pixmap) {
+        void *data = drmmode_bo_map(&ms->drmmode, &fb->bo);
+        int pitch = drmmode_bo_get_pitch(&fb->bo);
+        fb->pixmap = drmmode_create_pixmap_header(screen,
+                                                  fb->bo.width,
+                                                  fb->bo.height,
+                                                  scrn->depth,
+                                                  ms->drmmode.kbpp,
+                                                  pitch, data);
+        if (!fb->pixmap)
+            return FALSE;
+
+        if (!drmmode_set_pixmap_bo(&ms->drmmode, fb->pixmap, &fb->bo))
+            return FALSE;
+
+        /* setup a damage to track dirty */
+        fb->damage = DamageCreate(NULL, drmmode_flip_damage_destroy,
+                                  DamageReportNone, TRUE, screen, fb);
+        DamageRegister(&screen->root->drawable, fb->damage);
+
+        fb->need_clear = TRUE;
+    }
+
+    /* scaled screens may not be able to map areas(due to precision) */
+    if (drmmode_crtc->is_scale && drmmode->exa)
+        fb->need_clear = TRUE;
+
+    dirty = NULL;
+    if (fb->need_clear) {
+        BoxRec rect = {
+            .x1 = 0,
+            .y1 = 0,
+            .x2 = crtc->mode.HDisplay,
+            .y2 = crtc->mode.VDisplay,
+        };
+
+        dirty = RegionCreate(&rect, 1);
+    } else {
+        RegionPtr region = DamageRegion(fb->damage);
+
+        dirty = drmmode_transform_region(crtc, region);
+    }
+
+    if (!RegionNotEmpty(dirty)) {
+        ret = TRUE;
+        goto out;
+    }
+
+    screen->SourceValidate = NULL;
+    ret = ms_copy_area(screen->GetScreenPixmap(screen), fb->pixmap,
+                       &crtc->f_crtc_to_framebuffer, dirty);
+    screen->SourceValidate = SourceValidate;
+
+#ifdef GLAMOR_HAS_GBM
+    if (ms->drmmode.glamor)
+        glamor_finish(screen);
+#endif
+
+    fb->need_clear = FALSE;
+    DamageEmpty(fb->damage);
+
+    ret = TRUE;
+out:
+    RegionDestroy(dirty);
+    return ret;
+}
+
+static void
+drmmode_flip_fb_handler(modesettingPtr ms, uint64_t msc,
+                        uint64_t ust, void *data)
+{
+    drmmode_crtc_private_ptr drmmode_crtc = data;
+
+    drmmode_crtc->flipping = FALSE;
+}
+
+static void
+drmmode_flip_fb_abort(modesettingPtr ms, void *data)
+{
+    drmmode_crtc_private_ptr drmmode_crtc = data;
+
+    drmmode_crtc->flipping = FALSE;
+}
+
+Bool
+drmmode_flip_fb(xf86CrtcPtr crtc, int *timeout)
+{
+    drmmode_crtc_private_ptr drmmode_crtc = crtc->driver_private;
+    drmmode_ptr drmmode = drmmode_crtc->drmmode;
+    ScreenPtr screen = xf86ScrnToScreen(drmmode->scrn);
+    drmmode_fb *fb;
+    struct timeval tv;
+    uint64_t now_ms, diff_ms;
+    int next_fb;
+
+    if (!drmmode_crtc || !crtc->active || !drmmode_crtc_connected(crtc) ||
+        drmmode_crtc->dpms_mode != DPMSModeOn || drmmode_crtc->rotate_fb_id)
+        return TRUE;
+
+    if (!drmmode_crtc->flip_fb_enabled)
+        return TRUE;
+
+    gettimeofday(&tv, NULL);
+    now_ms = tv.tv_sec * 1000 + tv.tv_usec / 1000;
+
+    diff_ms = now_ms - drmmode_crtc->flipping_time_ms;
+
+    /* handle flip timeout */
+    if (drmmode_crtc->flipping && diff_ms >= 50) {
+        xf86DrvMsg(drmmode->scrn->scrnIndex, X_WARNING,
+                   "crtc-%d flip timeout!\n", drmmode_crtc->mode_crtc->crtc_id);
+        drmmode_crtc->flipping = FALSE;
+    }
+
+    /* retry later if still flipping */
+    if (drmmode_crtc->flipping ||
+        drmmode->dri2_flipping || drmmode->present_flipping)
+        goto retry;
+
+    if (drmmode_crtc->external_flipped) {
+        /* delay to exit external flip mode */
+        if (diff_ms < 100)
+            goto retry;
+    } else if (drmmode->fb_flip_rate) {
+        /* limit flip rate */
+        if (diff_ms < (1000 / drmmode->fb_flip_rate))
+            goto retry;
+    }
+
+    /* keep the current fb if not dirty */
+    fb = &drmmode_crtc->flip_fb[drmmode_crtc->current_fb];
+    if (fb->damage && !fb->need_clear) {
+        RegionPtr region = DamageRegion(fb->damage);
+        RegionPtr dirty;
+        Bool ret;
+
+        dirty = drmmode_transform_region(crtc, region);
+        if (dirty) {
+            ret = RegionNotEmpty(dirty);
+            RegionDestroy(dirty);
+            if (!ret)
+                return TRUE;
+        }
+    }
+
+    /* switch to the next fb */
+    next_fb = drmmode_crtc->current_fb + 1;
+    next_fb %= ARRAY_SIZE(drmmode_crtc->flip_fb);
+    fb = &drmmode_crtc->flip_fb[next_fb];
+    if (!drmmode_update_fb(crtc, fb)) {
+        xf86DrvMsg(drmmode->scrn->scrnIndex, X_WARNING,
+                   "crtc-%d failed to update fb!\n",
+                   drmmode_crtc->mode_crtc->crtc_id);
+        return FALSE;
+    }
+
+    if (!ms_do_pageflip_bo(screen, &fb->bo, drmmode_crtc,
+                           drmmode_crtc->vblank_pipe, crtc, TRUE,
+                           drmmode_flip_fb_handler, drmmode_flip_fb_abort)) {
+        /* HACK: Workaround commit random interrupted case */
+        if (errno != EPERM) {
+            xf86DrvMsg(drmmode->scrn->scrnIndex, X_WARNING,
+                       "crtc-%d failed to flip(%s)!\n",
+                       drmmode_crtc->mode_crtc->crtc_id, strerror(errno));
+            return FALSE;
+        }
+    }
+
+    drmmode_crtc->current_fb = next_fb;
+
+    drmmode_crtc->flipping = TRUE;
+    drmmode_crtc->external_flipped = FALSE;
+
+    /* take out FB syncing time from framerate control */
+    drmmode_crtc->flipping_time_ms = now_ms;
+
+    return TRUE;
+
+retry:
+    if (*timeout)
+        *timeout = 3;
+    return TRUE;
 }
