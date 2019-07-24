@@ -123,7 +123,6 @@ ms_dri2_create_buffer2(ScreenPtr screen, DrawablePtr drawable,
                        unsigned int attachment, unsigned int format)
 {
     ScrnInfoPtr scrn = xf86ScreenToScrn(screen);
-    modesettingPtr ms = modesettingPTR(scrn);
     DRI2Buffer2Ptr buffer;
     PixmapPtr pixmap;
     CARD32 size;
@@ -500,6 +499,7 @@ ms_dri2_schedule_flip(ms_dri2_frame_event_ptr info)
                        ms_dri2_flip_abort,
                        "DRI2-flip")) {
         ms->drmmode.dri2_flipping = TRUE;
+        drmmode_crtc->external_flipped = TRUE;
         return TRUE;
     }
     return FALSE;
@@ -511,7 +511,6 @@ update_front(DrawablePtr draw, DRI2BufferPtr front)
     ScreenPtr screen = draw->pScreen;
     PixmapPtr pixmap = get_drawable_pixmap(draw);
     ms_dri2_buffer_private_ptr priv = front->driverPrivate;
-    modesettingPtr ms = modesettingPTR(xf86ScreenToScrn(screen));
     CARD32 size;
     CARD16 pitch;
     int name;
