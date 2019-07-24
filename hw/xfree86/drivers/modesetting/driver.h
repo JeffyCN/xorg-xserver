@@ -52,6 +52,7 @@ typedef enum {
     OPTION_ZAPHOD_HEADS,
     OPTION_DOUBLE_SHADOW,
     OPTION_ATOMIC,
+    OPTION_FLIP_FB,
 } modesettingOpts;
 
 typedef struct
@@ -163,14 +164,23 @@ void ms_vblank_close_screen(ScreenPtr screen);
 
 Bool ms_present_screen_init(ScreenPtr screen);
 
-#ifdef GLAMOR_HAS_GBM
-
 typedef void (*ms_pageflip_handler_proc)(modesettingPtr ms,
                                          uint64_t frame,
                                          uint64_t usec,
                                          void *data);
 
 typedef void (*ms_pageflip_abort_proc)(modesettingPtr ms, void *data);
+
+Bool ms_do_pageflip_bo(ScreenPtr screen,
+                       drmmode_bo *new_front_bo,
+                       void *event,
+                       int ref_crtc_vblank_pipe,
+                       xf86CrtcPtr target_crtc,
+                       Bool async,
+                       ms_pageflip_handler_proc pageflip_handler,
+                       ms_pageflip_abort_proc pageflip_abort);
+
+#ifdef GLAMOR_HAS_GBM
 
 Bool ms_do_pageflip(ScreenPtr screen,
                     PixmapPtr new_front,
