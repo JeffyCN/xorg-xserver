@@ -373,8 +373,10 @@ ms_present_flip(RRCrtcPtr crtc,
     ret = ms_do_pageflip(screen, pixmap, event, drmmode_crtc->vblank_pipe, !sync_flip,
                          ms_present_flip_handler, ms_present_flip_abort,
                          "Present-flip");
-    if (ret)
+    if (ret) {
         ms->drmmode.present_flipping = TRUE;
+        drmmode_crtc->flip_fb_enabled = FALSE;
+    }
 
     return ret;
 }
