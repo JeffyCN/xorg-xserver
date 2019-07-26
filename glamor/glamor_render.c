@@ -1615,6 +1615,9 @@ glamor_composite(CARD8 op,
     int nbox, ok = FALSE;
     int force_clip = 0;
 
+    if (!GLAMOR_PREFER_GL())
+        goto fail;
+
     if (source->pDrawable) {
         source_pixmap = glamor_get_drawable_pixmap(source->pDrawable);
         if (glamor_pixmap_drm_only(source_pixmap))
