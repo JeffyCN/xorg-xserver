@@ -173,7 +173,8 @@ glamor_fill_spans(DrawablePtr drawable,
                   GCPtr gc,
                   int n, DDXPointPtr points, int *widths, int sorted)
 {
-    if (glamor_fill_spans_gl(drawable, gc, n, points, widths, sorted))
+    if (GLAMOR_PREFER_GL() &&
+        glamor_fill_spans_gl(drawable, gc, n, points, widths, sorted))
         return;
     glamor_fill_spans_bail(drawable, gc, n, points, widths, sorted);
 }
@@ -256,7 +257,8 @@ void
 glamor_get_spans(DrawablePtr drawable, int wmax,
                  DDXPointPtr points, int *widths, int count, char *dst)
 {
-    if (glamor_get_spans_gl(drawable, wmax, points, widths, count, dst))
+    if (GLAMOR_PREFER_GL() &&
+        glamor_get_spans_gl(drawable, wmax, points, widths, count, dst))
         return;
     glamor_get_spans_bail(drawable, wmax, points, widths, count, dst);
 }
@@ -375,7 +377,8 @@ void
 glamor_set_spans(DrawablePtr drawable, GCPtr gc, char *src,
                  DDXPointPtr points, int *widths, int numPoints, int sorted)
 {
-    if (glamor_set_spans_gl(drawable, gc, src, points, widths, numPoints, sorted))
+    if (GLAMOR_PREFER_GL() &&
+        glamor_set_spans_gl(drawable, gc, src, points, widths, numPoints, sorted))
         return;
     glamor_set_spans_bail(drawable, gc, src, points, widths, numPoints, sorted);
 }
