@@ -144,6 +144,8 @@ glamor_poly_glyph_blt_gl(DrawablePtr drawable, GCPtr gc,
         }
     }
 
+    glamor_pixmap_invalid(pixmap);
+
     ret = TRUE;
 
 bail:
@@ -239,6 +241,8 @@ glamor_push_pixels_gl(GCPtr gc, PixmapPtr bitmap,
 
         glDrawArrays(GL_POINTS, 0, num_points);
     }
+
+    glamor_pixmap_invalid(pixmap);
 
     ret = TRUE;
 
