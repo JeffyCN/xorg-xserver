@@ -165,7 +165,8 @@ void
 glamor_poly_segment(DrawablePtr drawable, GCPtr gc,
                     int nseg, xSegment *segs)
 {
-    if (glamor_poly_segment_gl(drawable, gc, nseg, segs))
+    if (GLAMOR_PREFER_GL() &&
+        glamor_poly_segment_gl(drawable, gc, nseg, segs))
         return;
 
     glamor_poly_segment_bail(drawable, gc, nseg, segs);
