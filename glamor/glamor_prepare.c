@@ -160,9 +160,13 @@ done:
     RegionUninit(&region);
 
 #ifdef GLAMOR_HAS_GBM
-    if (priv->bo_mapped)
-        /* Finish all commands before accessing the buffer */
-        glamor_finish(screen);
+    if (priv->bo_mapped && !priv->gl_synced) {
+        /* Finish all gpu commands before accessing the buffer */
+        if (!glamor_priv->gl_synced)
+            glamor_finish(screen);
+
+        priv->gl_synced = TRUE;
+    }
 #endif
 
     priv->prepared = TRUE;
