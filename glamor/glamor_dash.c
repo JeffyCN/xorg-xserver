@@ -229,6 +229,8 @@ glamor_dash_loop(DrawablePtr drawable, GCPtr gc, glamor_program *prog,
 
     glDisable(GL_SCISSOR_TEST);
     glDisableVertexAttribArray(GLAMOR_VERTEX_POS);
+
+    glamor_pixmap_invalid(pixmap);
 }
 
 static int
