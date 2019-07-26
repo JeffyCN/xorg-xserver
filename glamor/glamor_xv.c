@@ -584,6 +584,8 @@ glamor_xv_render(glamor_port_private *port_priv, int id)
     DamageDamageRegion(port_priv->pDraw, &port_priv->clip);
 
     glamor_xv_free_port_data(port_priv);
+
+    glamor_pixmap_invalid(pixmap);
 }
 
 static int
@@ -751,6 +753,8 @@ glamor_xv_render_dma_nv12(glamor_port_private *port_priv, int dma_fd)
 
     glDeleteTextures(1, &texture);
     destroy_image(glamor_priv->ctx.display, image);
+
+    glamor_pixmap_invalid(pixmap);
 
     return Success;
 }
