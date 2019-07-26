@@ -159,9 +159,12 @@ glamor_prep_pixmap_box(PixmapPtr pixmap, glamor_access_t access, BoxPtr box)
 done:
     RegionUninit(&region);
 
-    if (priv->bo_mapped)
-        /* Finish all commands before accessing the buffer */
-        glamor_finish(screen);
+    if (priv->bo_mapped) {
+        /* Finish all gpu commands before accessing the buffer */
+        if (!priv->gl_synced && !glamor_priv->gl_synced)
+            glamor_finish(screen);
+
+        priv->gl_synced = TRUE;
 
         /* No prepared flag for directly mapping */
         return TRUE;

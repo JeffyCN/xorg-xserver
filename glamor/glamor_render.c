@@ -1300,6 +1300,9 @@ glamor_composite_with_shader(CARD8 op,
     }
 
     glDisable(GL_SCISSOR_TEST);
+
+    glamor_pixmap_invalid(dest_pixmap);
+
 disable_va:
     glDisableVertexAttribArray(GLAMOR_VERTEX_POS);
     glDisableVertexAttribArray(GLAMOR_VERTEX_SOURCE);
