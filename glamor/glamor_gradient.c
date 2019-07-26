@@ -1102,6 +1102,8 @@ glamor_generate_radial_gradient_picture(ScreenPtr screen,
     glDisableVertexAttribArray(GLAMOR_VERTEX_POS);
     glDisableVertexAttribArray(GLAMOR_VERTEX_SOURCE);
 
+    glamor_pixmap_invalid(pixmap);
+
     return dst_picture;
 
  GRADIENT_FAIL:
@@ -1445,6 +1447,8 @@ glamor_generate_linear_gradient_picture(ScreenPtr screen,
 
     glDisableVertexAttribArray(GLAMOR_VERTEX_POS);
     glDisableVertexAttribArray(GLAMOR_VERTEX_SOURCE);
+
+    glamor_pixmap_invalid(pixmap);
 
     return dst_picture;
 
