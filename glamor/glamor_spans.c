@@ -142,6 +142,8 @@ glamor_fill_spans_gl(DrawablePtr drawable,
         }
     }
 
+    glamor_pixmap_invalid(pixmap);
+
     ret = TRUE;
 
 bail:
@@ -350,6 +352,8 @@ glamor_set_spans_gl(DrawablePtr drawable, GCPtr gc, char *src,
             s += PixmapBytePad(w, drawable->depth);
         }
     }
+
+    glamor_pixmap_invalid(pixmap);
 
     return TRUE;
 
