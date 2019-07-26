@@ -1117,4 +1117,17 @@ glamor_finish(ScreenPtr screen)
 
     glamor_make_current(glamor_priv);
     glFinish();
+
+    glamor_priv->gl_synced = TRUE;
+}
+
+void
+glamor_pixmap_invalid(PixmapPtr pixmap)
+{
+    glamor_pixmap_private *pixmap_priv = glamor_get_pixmap_private(pixmap);
+    glamor_screen_private *glamor_priv =
+        glamor_get_screen_private(pixmap->drawable.pScreen);
+
+    pixmap_priv->gl_synced = FALSE;
+    glamor_priv->gl_synced = FALSE;
 }
