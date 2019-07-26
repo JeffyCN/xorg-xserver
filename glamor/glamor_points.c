@@ -120,7 +120,8 @@ void
 glamor_poly_point(DrawablePtr drawable, GCPtr gc, int mode, int npt,
                   DDXPointPtr ppt)
 {
-    if (glamor_poly_point_gl(drawable, gc, mode, npt, ppt))
+    if (GLAMOR_PREFER_GL() &&
+        glamor_poly_point_gl(drawable, gc, mode, npt, ppt))
         return;
     miPolyPoint(drawable, gc, mode, npt, ppt);
 }
