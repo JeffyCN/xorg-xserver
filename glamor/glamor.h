@@ -419,6 +419,7 @@ extern Bool _X_EXPORT glamor_change_window_attributes(WindowPtr pWin, unsigned l
 extern void _X_EXPORT glamor_copy_window(WindowPtr window, DDXPointRec old_origin, RegionPtr src_region);
 
 extern _X_EXPORT void glamor_finish(ScreenPtr screen);
+extern _X_EXPORT void glamor_pixmap_invalid(PixmapPtr pixmap);
 #define HAS_GLAMOR_TEXT 1
 
 #ifdef GLAMOR_FOR_XORG

@@ -251,6 +251,7 @@ typedef struct glamor_screen_private {
     Bool use_gpu_shader4;
     int max_fbo_size;
     Bool enable_gradient_shader;
+    Bool gl_synced;
 
     /**
      * Stores information about supported formats. Note, that this list contains all
@@ -403,6 +404,7 @@ typedef struct glamor_pixmap_private {
     void *map_data;
     Bool exporting;
 #endif
+    Bool gl_synced;
     /** block width of this large pixmap. */
     int block_w;
     /** block height of this large pixmap. */

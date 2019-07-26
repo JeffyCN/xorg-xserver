@@ -480,6 +480,8 @@ glamor_copy_fbo_fbo_draw(DrawablePtr src,
         }
     }
 
+    glamor_pixmap_invalid(dst_pixmap);
+
     ret = TRUE;
 
 bail_ctx:

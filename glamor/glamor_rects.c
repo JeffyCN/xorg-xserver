@@ -159,6 +159,8 @@ glamor_poly_fill_rect_gl(DrawablePtr drawable,
         }
     }
 
+    glamor_pixmap_invalid(pixmap);
+
     ret = TRUE;
 
 bail:
