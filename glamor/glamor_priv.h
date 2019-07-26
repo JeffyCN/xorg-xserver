@@ -216,6 +216,7 @@ typedef struct glamor_screen_private {
     Bool is_core_profile;
     Bool can_copyplane;
     int max_fbo_size;
+    Bool gl_synced;
 
     struct glamor_format formats[33];
     struct glamor_format cbcr_format;
@@ -363,6 +364,7 @@ typedef struct glamor_pixmap_private {
     void *map_data;
     Bool exporting;
 #endif
+    Bool gl_synced;
     /** block width of this large pixmap. */
     int block_w;
     /** block height of this large pixmap. */
