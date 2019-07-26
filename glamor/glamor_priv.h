@@ -870,6 +870,10 @@ void
 glamor_solid_boxes(PixmapPtr pixmap,
                    BoxPtr box, int nbox, unsigned long fg_pixel);
 
+Bool
+glamor_prefer_gl(const char *func);
+
+#define GLAMOR_PREFER_GL() glamor_prefer_gl(__func__)
 
 /* glamor_xv */
 typedef struct {
