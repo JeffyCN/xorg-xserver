@@ -294,6 +294,8 @@ glamor_glyphs_flush(CARD8 op, PicturePtr src, PicturePtr dst,
     glDisableVertexAttribArray(GLAMOR_VERTEX_SOURCE);
     glDisableVertexAttribArray(GLAMOR_VERTEX_POS);
     glDisable(GL_BLEND);
+
+    glamor_pixmap_invalid(pixmap);
 }
 
 static GLshort *
