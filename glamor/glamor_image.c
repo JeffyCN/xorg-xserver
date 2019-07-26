@@ -79,6 +79,9 @@ glamor_put_image_gl(DrawablePtr drawable, GCPtr gc, int depth, int x, int y,
     glamor_upload_region(pixmap, &region, x, y, (uint8_t *) bits, byte_stride);
 
     RegionUninit(&region);
+
+    glamor_pixmap_invalid(pixmap);
+
     return TRUE;
 bail:
     return FALSE;
