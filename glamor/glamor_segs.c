@@ -110,6 +110,8 @@ glamor_poly_segment_solid_gl(DrawablePtr drawable, GCPtr gc,
         }
     }
 
+    glamor_pixmap_invalid(pixmap);
+
     ret = TRUE;
 
     glDisable(GL_SCISSOR_TEST);
