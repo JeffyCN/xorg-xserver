@@ -217,6 +217,8 @@ glamor_text(DrawablePtr drawable, GCPtr gc,
     glVertexAttribDivisor(GLAMOR_VERTEX_POS, 0);
     glDisableVertexAttribArray(GLAMOR_VERTEX_POS);
 
+    glamor_pixmap_invalid(pixmap);
+
     return x;
 }
 
