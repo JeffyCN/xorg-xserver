@@ -97,6 +97,24 @@ dumb_bo_map(int fd, struct dumb_bo *bo)
 }
 
 int
+dumb_bo_get_fd(int fd, struct dumb_bo *bo, uint32_t flags)
+{
+    struct drm_prime_handle args;
+    int ret;
+
+    memset(&args, 0, sizeof(args));
+    args.fd = -1;
+    args.handle = bo->handle;
+    args.flags = flags;
+
+    ret = drmIoctl(fd, DRM_IOCTL_PRIME_HANDLE_TO_FD, &args);
+    if (ret)
+        return ret;
+
+    return args.fd;
+}
+
+int
 dumb_bo_destroy(int fd, struct dumb_bo *bo)
 {
     struct drm_mode_destroy_dumb arg;
