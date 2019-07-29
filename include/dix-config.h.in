@@ -464,6 +464,9 @@
 /* Ask fontsproto to make font path element names const */
 #define FONT_PATH_ELEMENT_NAME_CONST    1
 
+/* Build modesetting has rga support */
+#undef MODESETTING_WITH_RGA
+
 /* Build GLAMOR */
 #undef GLAMOR
 
