@@ -32,6 +32,7 @@
 #include "libudev.h"
 #endif
 
+#include "exa.h"
 #include "dumb_bo.h"
 
 struct gbm_device;
@@ -109,6 +110,8 @@ typedef struct {
     OptionInfoPtr Options;
 
     Bool glamor;
+    ExaDriverPtr exa;
+
     Bool shadow_enable;
     Bool shadow_enable2;
     /** Is Option "PageFlip" enabled? */
@@ -328,5 +331,9 @@ int drmmode_crtc_flip(xf86CrtcPtr crtc, uint32_t fb_id, uint32_t flags, void *da
 void drmmode_set_dpms(ScrnInfoPtr scrn, int PowerManagementMode, int flags);
 
 Bool drmmode_flip_fb(xf86CrtcPtr crtc, int *timeout);
+
+PixmapPtr drmmode_create_pixmap_header(ScreenPtr pScreen, int width, int height,
+                                       int depth, int bitsPerPixel, int devKind,
+                                       void *pPixData);
 
 #endif
