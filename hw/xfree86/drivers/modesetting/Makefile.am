@@ -31,6 +31,7 @@ AM_CFLAGS = $(DIX_CFLAGS) $(XORG_CFLAGS) $(LIBDRM_CFLAGS) $(UDEV_CFLAGS) $(CWARN
 AM_CPPFLAGS = \
 	$(XORG_INCS) \
 	-I$(top_srcdir)/glamor \
+	-I$(top_srcdir)/exa \
 	-I$(srcdir)/../../ddc \
 	-I$(srcdir)/../../dri2 \
 	-I$(srcdir)/../../i2c \
@@ -41,7 +42,7 @@ AM_CPPFLAGS = \
 
 modesetting_drv_la_LTLIBRARIES = modesetting_drv.la
 modesetting_drv_la_LDFLAGS = -module -avoid-version
-modesetting_drv_la_LIBADD = $(UDEV_LIBS) $(DRM_LIBS)
+modesetting_drv_la_LIBADD = $(UDEV_LIBS) $(DRM_LIBS) $(RGA_LIBS)
 modesetting_drv_ladir = @moduledir@/drivers
 
 modesetting_drv_la_SOURCES = \
@@ -55,6 +56,7 @@ modesetting_drv_la_SOURCES = \
 	 present.c \
 	 vblank.c \
 	 pageflip.c \
+	 exa.c \
 	 $(NULL)
 
 drivermandir = $(DRIVER_MAN_DIR)
