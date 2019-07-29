@@ -2046,6 +2046,20 @@ if test "x$GLES_HIGHP" = xyes; then
 	AC_DEFINE(GLES_USE_HIGHP, 1, [Use highp as default precision for GLES])
 fi
 
+dnl modesetting
+if test "x$XORG_DRIVER_MODESETTING" = xyes; then
+	RGA_LIBS=
+	RGA_HEADER=
+
+	AC_CHECK_LIB([rga], [c_RkRgaInit], RGA_LIBS="-lrga")
+	AC_CHECK_HEADERS([rga/RgaApi.h], RGA_HEADER="yes")
+
+	if test "x$RGA_LIBS" != "x" && test "x$RGA_HEADER" = "xyes"; then
+		AC_SUBST(RGA_LIBS)
+		AC_DEFINE(MODESETTING_WITH_RGA, 1, [Have rockchip rga])
+	fi
+fi
+
 dnl glamor
 if test "x$GLAMOR" = xauto; then
 	if echo "$XORG" "$XEPHYR" "$XWAYLAND" | grep -q yes ; then
