@@ -473,6 +473,9 @@
 /* Use highp as default precision for GLES */
 #undef GLES_USE_HIGHP
 
+/* Build modesetting has rga support */
+#undef MODESETTING_WITH_RGA
+
 /* Build GLAMOR */
 #undef GLAMOR
 
