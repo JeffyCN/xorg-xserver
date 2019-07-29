@@ -254,3 +254,10 @@ Bool ms_do_pageflip(ScreenPtr screen,
 int ms_flush_drm_events(ScreenPtr screen);
 Bool ms_window_has_variable_refresh(modesettingPtr ms, WindowPtr win);
 void ms_present_set_screen_vrr(ScrnInfoPtr scrn, Bool vrr_enabled);
+
+Bool ms_setup_exa(ScrnInfoPtr scrn, ExaDriverPtr exa);
+void ms_cleanup_exa(ScrnInfoPtr scrn, ExaDriverPtr exa);
+Bool ms_exa_set_pixmap_bo(ScrnInfoPtr scrn, PixmapPtr pPixmap,
+                          struct dumb_bo *bo, Bool owned);
+Bool ms_exa_prepare_access(PixmapPtr pPix, int index);
+void ms_exa_finish_access(PixmapPtr pPix, int index);
