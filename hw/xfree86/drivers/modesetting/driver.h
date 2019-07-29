@@ -194,3 +194,18 @@ Bool ms_do_pageflip(ScreenPtr screen,
 #endif
 
 int ms_flush_drm_events(ScreenPtr screen);
+
+Bool ms_copy_area(PixmapPtr pSrc, PixmapPtr pDst,
+                  pixman_f_transform_t *transform, RegionPtr clip);
+
+Bool ms_init_exa(ScrnInfoPtr scrn);
+void ms_deinit_exa(ScrnInfoPtr scrn);
+Bool ms_exa_set_pixmap_bo(ScrnInfoPtr scrn, PixmapPtr pPixmap,
+                          struct dumb_bo *bo, Bool owned);
+Bool ms_exa_prepare_access(PixmapPtr pPix, int index);
+void ms_exa_finish_access(PixmapPtr pPix, int index);
+
+Bool ms_exa_copy_area(PixmapPtr pSrc, PixmapPtr pDst,
+                      pixman_f_transform_t *transform, RegionPtr clip);
+
+XF86VideoAdaptorPtr ms_exa_xv_init(ScreenPtr screen, int num_texture_ports);
