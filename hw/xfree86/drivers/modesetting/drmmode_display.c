@@ -55,9 +55,6 @@
 #include "driver.h"
 
 static Bool drmmode_xf86crtc_resize(ScrnInfoPtr scrn, int width, int height);
-static PixmapPtr drmmode_create_pixmap_header(ScreenPtr pScreen, int width, int height,
-                                              int depth, int bitsPerPixel, int devKind,
-                                              void *pPixData);
 
 static void drmmode_destroy_flip_fb(xf86CrtcPtr crtc);
 static Bool drmmode_create_flip_fb(xf86CrtcPtr crtc);
@@ -1841,7 +1838,7 @@ drmmode_shadow_allocate(xf86CrtcPtr crtc, int width, int height)
     return drmmode_crtc->rotate_bo.dumb;
 }
 
-static PixmapPtr
+PixmapPtr
 drmmode_create_pixmap_header(ScreenPtr pScreen, int width, int height,
                              int depth, int bitsPerPixel, int devKind,
                              void *pPixData)
@@ -3106,9 +3103,12 @@ drmmode_clones_init(ScrnInfoPtr scrn, drmmode_ptr drmmode, drmModeResPtr mode_re
 static Bool
 drmmode_set_pixmap_bo(drmmode_ptr drmmode, PixmapPtr pixmap, drmmode_bo *bo)
 {
-#ifdef GLAMOR_HAS_GBM
     ScrnInfoPtr scrn = drmmode->scrn;
 
+    if (drmmode->exa)
+        return ms_exa_set_pixmap_bo(scrn, pixmap, bo->dumb, FALSE);
+
+#ifdef GLAMOR_HAS_GBM
     if (!drmmode->glamor)
         return TRUE;
 
@@ -3173,7 +3173,7 @@ drmmode_xf86crtc_resize(ScrnInfoPtr scrn, int width, int height)
     scrn->virtualY = height;
     scrn->displayWidth = pitch / kcpp;
 
-    if (!drmmode->gbm) {
+    if (!drmmode->gbm && !drmmode->exa) {
         new_pixels = drmmode_map_front_bo(drmmode);
         if (!new_pixels)
             goto fail;
