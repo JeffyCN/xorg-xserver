@@ -191,3 +191,10 @@ Bool ms_do_pageflip(ScreenPtr screen,
 #endif
 
 int ms_flush_drm_events(ScreenPtr screen);
+
+Bool ms_setup_exa(ScrnInfoPtr scrn, ExaDriverPtr exa);
+void ms_cleanup_exa(ScrnInfoPtr scrn, ExaDriverPtr exa);
+Bool ms_exa_set_pixmap_bo(ScrnInfoPtr scrn, PixmapPtr pPixmap,
+                          struct dumb_bo *bo, Bool owned);
+Bool ms_exa_prepare_access(PixmapPtr pPix, int index);
+void ms_exa_finish_access(PixmapPtr pPix, int index);
