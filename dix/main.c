@@ -310,8 +310,8 @@ dix_main(int argc, char *argv[], char *envp[])
         for (i = screenInfo.numGPUScreens - 1; i >= 0; i--) {
             ScreenPtr pScreen = screenInfo.gpuscreens[i];
             FreeScratchPixmapsForScreen(pScreen);
-            dixFreeScreenSpecificPrivates(pScreen);
             (*pScreen->CloseScreen) (pScreen);
+            dixFreeScreenSpecificPrivates(pScreen);
             dixFreePrivates(pScreen->devPrivates, PRIVATE_SCREEN);
             free(pScreen);
             screenInfo.numGPUScreens = i;
@@ -321,8 +321,8 @@ dix_main(int argc, char *argv[], char *envp[])
             FreeScratchPixmapsForScreen(screenInfo.screens[i]);
             FreeGCperDepth(i);
             FreeDefaultStipple(i);
-            dixFreeScreenSpecificPrivates(screenInfo.screens[i]);
             (*screenInfo.screens[i]->CloseScreen) (screenInfo.screens[i]);
+            dixFreeScreenSpecificPrivates(screenInfo.screens[i]);
             dixFreePrivates(screenInfo.screens[i]->devPrivates, PRIVATE_SCREEN);
             free(screenInfo.screens[i]);
             screenInfo.numScreens = i;
