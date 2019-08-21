@@ -65,6 +65,7 @@ in this Software without prior written authorization from The Open Group.
 #define QUEUE_MAXIMUM_SIZE                4096
 #define QUEUE_DROP_BACKTRACE_FREQUENCY     100
 #define QUEUE_DROP_BACKTRACE_MAX            10
+#define QUEUE_CACHED_SIZE                   32
 
 #define EnqueueScreen(dev) dev->spriteInfo->sprite->pEnqueueScreen
 #define DequeueScreen(dev) dev->spriteInfo->sprite->pDequeueScreen
@@ -83,6 +84,8 @@ typedef struct _EventQueue {
     size_t nevents;             /* the number of buckets in our queue */
     size_t dropped;             /* counter for number of consecutive dropped events */
     mieqHandler handlers[128];  /* custom event handler */
+    int motionLimitMs;          /* min duration of motion events */
+    EventRec motionEvents[QUEUE_CACHED_SIZE];   /* cached motion event queue as an array */
 } EventQueueRec, *EventQueuePtr;
 
 static EventQueueRec miEventQueue;
@@ -160,8 +163,20 @@ mieqGrowQueue(EventQueuePtr eventQueue, size_t new_nevents)
 Bool
 mieqInit(void)
 {
+    char *env;
+    int maxMotionRate;
+
     memset(&miEventQueue, 0, sizeof(miEventQueue));
     miEventQueue.lastEventTime = GetTimeInMillis();
+
+    env = getenv("X_MAX_MOTION_RATE");
+    if (env && env[0])
+        maxMotionRate = atoi(env);
+    else
+        maxMotionRate = 60;
+
+    if (maxMotionRate > 0)
+        miEventQueue.motionLimitMs = 1000 / maxMotionRate;
 
     input_lock();
     if (!mieqGrowQueue(&miEventQueue, QUEUE_INITIAL_SIZE))
@@ -497,15 +512,57 @@ mieqProcessDeviceEvent(DeviceIntPtr dev, InternalEvent *event, ScreenPtr screen)
     }
 }
 
+static EventPtr
+mieqGetMotionEvent(DeviceIntPtr dev)
+{
+    EventRec *e = NULL, *motion;
+    int i;
+
+    motion = NULL;
+    for (i = 0; i < QUEUE_CACHED_SIZE; i++) {
+        e = &miEventQueue.motionEvents[i];
+        if (!motion && !e->pDev) {
+            motion = e;
+            continue;
+        }
+
+        if (e->pDev != dev)
+            continue;
+
+        motion = e;
+        break;
+    }
+
+    return motion;
+}
+
+static Bool
+mieqMotionEventReady(EventRec *e)
+{
+    InternalEvent event;
+    DeviceIntPtr dev;
+
+    if (!e || !e->pDev)
+        return FALSE;
+
+    event = *e->events;
+    dev = e->pDev;
+
+    return event.any.time - dev->lastMotionTime >= miEventQueue.motionLimitMs;
+}
+
 /* Call this from ProcessInputEvents(). */
 void
 mieqProcessInputEvents(void)
 {
-    EventRec *e = NULL;
+    EventRec *e = NULL, *motion;
     ScreenPtr screen;
     InternalEvent event;
     DeviceIntPtr dev = NULL, master = NULL;
     static Bool inProcessInputEvents = FALSE;
+    unsigned int oldtail = miEventQueue.tail;
+    unsigned int oldhead;
+    int i;
 
     input_lock();
 
@@ -525,14 +582,34 @@ mieqProcessInputEvents(void)
         miEventQueue.dropped = 0;
     }
 
-    while (miEventQueue.head != miEventQueue.tail) {
+    while (miEventQueue.head != oldtail) {
         e = &miEventQueue.events[miEventQueue.head];
 
         event = *e->events;
         dev = e->pDev;
         screen = e->pScreen;
 
+        oldhead = miEventQueue.head;
         miEventQueue.head = (miEventQueue.head + 1) % miEventQueue.nevents;
+
+        motion = mieqGetMotionEvent(dev);
+        if (motion) {
+            if (event.any.type == ET_Motion) {
+                if (!mieqMotionEventReady(e)) {
+                    // cache new motion event
+                    *motion = *e;
+                    continue;
+                }
+
+                // clear cached motion
+                motion->pDev = NULL;
+            } else if (event.any.type != ET_RawMotion && motion->pDev) {
+                // inject cached motion event before other events
+                event = *motion->events;
+                motion->pDev = NULL;
+                miEventQueue.head = oldhead;
+            }
+        }
 
         input_unlock();
 
@@ -550,6 +627,9 @@ mieqProcessInputEvents(void)
 
         mieqProcessDeviceEvent(dev, &event, screen);
 
+        if (event.any.type == ET_Motion)
+            dev->lastMotionTime = event.any.time;
+
         /* Update the sprite now. Next event may be from different device. */
         if (master &&
             (event.any.type == ET_Motion ||
@@ -562,6 +642,16 @@ mieqProcessInputEvents(void)
     }
 
     inProcessInputEvents = FALSE;
+
+    // re-post cached motion events
+    for (i = 0; i < QUEUE_CACHED_SIZE; i++) {
+        e = &miEventQueue.motionEvents[i];
+        if (!mieqMotionEventReady(e))
+            continue;
+
+        mieqEnqueue(e->pDev, e->events);
+        e->pDev = NULL;
+    }
 
     input_unlock();
 }

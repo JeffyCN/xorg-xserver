@@ -19,6 +19,7 @@ sdk_HEADERS =		\
 	dixgrabs.h	\
 	dixstruct.h	\
 	events.h	\
+	eventstr.h	\
 	exevents.h	\
 	extension.h	\
 	extinit.h	\

@@ -531,6 +531,9 @@ typedef struct _SpriteInfoRec {
 #define KEYBOARD_OR_FLOAT       5       /* Keyboard master for this device or this device if floating */
 #define POINTER_OR_FLOAT        6       /* Pointer master for this device or this device if floating */
 
+#include "events.h"
+#include "eventstr.h"
+
 typedef struct _DeviceIntRec {
     DeviceRec public;
     DeviceIntPtr next;
@@ -602,6 +605,9 @@ typedef struct _DeviceIntRec {
     int xtest_master_id;
 
     struct _SyncCounter *idle_counter;
+
+    InternalEvent lastMotionEvent;
+    CARD32 lastMotionTime;
 } DeviceIntRec;
 
 typedef struct {
