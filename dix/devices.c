@@ -968,6 +968,9 @@ CloseDevice(DeviceIntPtr dev)
     if (!dev)
         return;
 
+    // HACK: Notify mieq to remove device
+    mieqEnqueue(dev, NULL);
+
     XIDeleteAllDeviceProperties(dev);
 
     if (dev->inited)
