@@ -78,6 +78,8 @@ rga_get_pixmap_format(PixmapPtr pPix)
         return RK_FORMAT_BGRA_8888;
     case 16:
         return RK_FORMAT_RGB_565;
+    case 12:
+        return RK_FORMAT_YCbCr_420_SP;
     default:
         return RK_FORMAT_UNKNOWN;
     }
@@ -88,6 +90,7 @@ rga_prepare_info(PixmapPtr pPixmap, rga_info_t *info,
                  int x, int y, int w, int h)
 {
     struct ms_exa_pixmap_priv *priv = exaGetPixmapDriverPrivate(pPixmap);
+    RgaSURF_FORMAT format;
     int pitch;
 
     memset(info, 0, sizeof(rga_info_t));
@@ -103,14 +106,23 @@ rga_prepare_info(PixmapPtr pPixmap, rga_info_t *info,
         pitch = pPixmap->devKind;
     }
 
+    format = rga_get_pixmap_format(pPixmap);
+
+    /* rga requires yuv image rect align to 2 */
+    if (format == RK_FORMAT_YCbCr_420_SP) {
+        x = (x + 1) & ~1;
+        y = (y + 1) & ~1;
+        w = w & ~1;
+        h = h & ~1;
+    }
+
     /* rga requires image width/height larger than 2 */
     if (w <= 2 || h <= 2)
         return FALSE;
 
     rga_set_rect(&info->rect, x, y, w, h,
                  pitch * 8 / pPixmap->drawable.bitsPerPixel,
-                 pPixmap->drawable.height,
-                 rga_get_pixmap_format(pPixmap));
+                 pPixmap->drawable.height, format);
 
     return TRUE;
 }
@@ -857,4 +869,66 @@ ms_exa_set_pixmap_bo(ScrnInfoPtr scrn, PixmapPtr pPixmap,
     pPixmap->devKind = priv->pitch;
 
     return TRUE;
+}
+
+// TODO: Add bail func
+Bool
+ms_exa_copy_area(PixmapPtr pSrc, PixmapPtr pDst,
+                 pixman_f_transform_t *transform, RegionPtr clip)
+{
+#ifndef MODESETTING_WITH_RGA
+    return FALSE;
+#else
+    rga_info_t src_info = {0};
+    rga_info_t dst_info = {0};
+    RegionPtr region;
+    BoxPtr box;
+    int n;
+
+    if (!rga_check_pixmap(pSrc))
+        return FALSE;
+
+    if (!rga_check_pixmap(pDst))
+        return FALSE;
+
+    region = RegionDuplicate(clip);
+    n = REGION_NUM_RECTS(region);
+
+    while(n--) {
+        int sx, sy, sw, sh, dx, dy, dw, dh;
+        box = REGION_RECTS(region) + n;
+
+        dx = box->x1;
+        dy = box->y1;
+        dw = box->x2 - box->x1;
+        dh = box->y2 - box->y1;
+
+        pixman_f_transform_bounds(transform, box);
+
+        sx = max(box->x1, 0);
+        sy = max(box->y1, 0);
+        sw = min(box->x2, pSrc->drawable.width) - sx;
+        sh = min(box->y2, pSrc->drawable.height) - sy;
+
+        if (sw <= 0 || sh <= 0 || dw <= 0 || dh <= 0)
+            continue;
+
+        /* rga has scale limits */
+        if ((double)sw / dw > 16 || (double)dw / sw > 16 ||
+            (double)sh / dh > 16 || (double)dh / sh > 16)
+            continue;
+
+        if (!rga_prepare_info(pSrc, &src_info, sx, sy, sw, sh))
+            continue;
+
+        if (!rga_prepare_info(pDst, &dst_info, dx, dy, dw, dh))
+            continue;
+
+        if (c_RkRgaBlit(&src_info, &dst_info, NULL) < 0)
+            continue;
+    }
+
+    RegionDestroy(region);
+    return TRUE;
+#endif
 }
