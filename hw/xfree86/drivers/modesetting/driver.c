@@ -1804,6 +1804,16 @@ ScreenInit(ScreenPtr pScreen, int argc, char **argv)
     }
 #endif
 
+    if (ms->drmmode.exa) {
+        ms->adaptor = ms_exa_xv_init(pScreen, 16);
+        if (ms->adaptor != NULL) {
+            xf86XVScreenInit(pScreen, &ms->adaptor, 1);
+        } else {
+            xf86DrvMsg(pScrn->scrnIndex, X_ERROR,
+                       "Failed to initialize XV support.\n");
+        }
+    }
+
     if (serverGeneration == 1)
         xf86ShowUnusedOptions(pScrn->scrnIndex, pScrn->options);
 
