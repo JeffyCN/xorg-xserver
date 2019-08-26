@@ -55,6 +55,7 @@ modesetting_drv_la_SOURCES = \
 	 vblank.c \
 	 pageflip.c \
 	 exa.c \
+	 xv.c \
 	 $(NULL)
 
 drivermandir = $(DRIVER_MAN_DIR)
