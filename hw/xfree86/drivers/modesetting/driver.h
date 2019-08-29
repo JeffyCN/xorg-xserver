@@ -32,6 +32,7 @@
 #include <errno.h>
 #include <drm.h>
 #include <xf86drm.h>
+#include <xf86xv.h>
 #include <xf86Crtc.h>
 #include <damage.h>
 #include <X11/extensions/dpmsconst.h>
@@ -178,6 +179,8 @@ typedef struct _modesettingRec {
         const char *(*egl_get_driver_name)(ScreenPtr);
     } glamor;
 #endif
+
+    XF86VideoAdaptorPtr adaptor;
 } modesettingRec, *modesettingPtr;
 
 #define glamor_finish(screen) ms->glamor.finish(screen)
