@@ -133,6 +133,8 @@ typedef struct {
 
     PixmapPtr fbcon_pixmap;
 
+    const char *dri2_device_name;
+
     Bool dri2_flipping;
     Bool present_flipping;
 
