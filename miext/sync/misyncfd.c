@@ -36,6 +36,8 @@ typedef struct _SyncFdScreenPrivate {
     SyncFdScreenFuncsRec        funcs;
 } SyncFdScreenPrivateRec, *SyncFdScreenPrivatePtr;
 
+static SyncFdScreenPrivateRec syncFdScreenPrivateRec;
+
 static inline SyncFdScreenPrivatePtr sync_fd_screen_priv(ScreenPtr pScreen)
 {
     if (!dixPrivateKeyRegistered(&syncFdScreenPrivateKey))
@@ -83,9 +85,7 @@ _X_EXPORT Bool miSyncFdScreenInit(ScreenPtr pScreen,
             return FALSE;
     }
 
-    priv = calloc(1, sizeof (SyncFdScreenPrivateRec));
-    if (!priv)
-        return FALSE;
+    priv = &syncFdScreenPrivateRec;
 
     /* Will require version checks when there are multiple versions
      * of the funcs structure
