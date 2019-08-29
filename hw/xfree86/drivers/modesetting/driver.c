@@ -53,7 +53,6 @@
 #include "xf86Crtc.h"
 #include "miscstruct.h"
 #include "dixstruct.h"
-#include "xf86xv.h"
 #include <X11/extensions/Xv.h>
 #include <xorg-config.h>
 #ifdef XSERVER_PLATFORM_BUS
@@ -1999,11 +1998,9 @@ ScreenInit(ScreenPtr pScreen, int argc, char **argv)
 
 #ifdef GLAMOR_HAS_GBM
     if (ms->drmmode.glamor) {
-        XF86VideoAdaptorPtr     glamor_adaptor;
-
-        glamor_adaptor = ms->glamor.xv_init(pScreen, 16);
-        if (glamor_adaptor != NULL)
-            xf86XVScreenInit(pScreen, &glamor_adaptor, 1);
+        ms->adaptor = ms->glamor.xv_init(pScreen, 16);
+        if (ms->adaptor != NULL)
+            xf86XVScreenInit(pScreen, &ms->adaptor, 1);
         else
             xf86DrvMsg(pScrn->scrnIndex, X_ERROR,
                        "Failed to initialize XV support.\n");
@@ -2214,6 +2211,11 @@ CloseScreen(ScreenPtr pScreen)
 
         if (PointPriv->spriteFuncs == &drmmode_sprite_funcs)
             PointPriv->spriteFuncs = ms->SpriteFuncs;        
+    }
+
+    if (ms->adaptor) {
+        free(ms->adaptor);
+        ms->adaptor = NULL;
     }
 
     if (pScrn->vtSema) {
