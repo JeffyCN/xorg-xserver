@@ -121,6 +121,7 @@ typedef struct _modesettingRec {
 
     Bool kms_has_modifiers;
 
+    XF86VideoAdaptorPtr adaptor;
 } modesettingRec, *modesettingPtr;
 
 #define modesettingPTR(p) ((modesettingPtr)((p)->driverPrivate))
