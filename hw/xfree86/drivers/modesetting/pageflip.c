@@ -154,9 +154,11 @@ ms_pageflip_abort(void *data)
     ScrnInfoPtr scrn = xf86ScreenToScrn(screen);
     modesettingPtr ms = modesettingPTR(scrn);
 
-    if (flipdata->flip_count == 1)
+    if (flipdata->flip_count == 1) {
         flipdata->abort_handler(ms, flipdata->event);
 
+        drmModeRmFB(ms->fd, flipdata->old_fb_id);
+    }
     ms_pageflip_free(flip);
 }
 
