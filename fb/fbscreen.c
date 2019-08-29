@@ -26,18 +26,34 @@
 
 #include "fb.h"
 
+/* per-screen private data */
+static DevPrivateKeyRec fbScreenPrivKeyRec;
+
+#define fbScreenPrivKey (&fbScreenPrivKeyRec)
+
+typedef struct {
+    CloseScreenProcPtr CloseScreen;
+} fbScreenRec, *fbScreenPtr;
+
+#define fbGetScreenPriv(s) ((fbScreenPtr)(dixLookupPrivate(&(s)->devPrivates, fbScreenPrivKey)))
+
 Bool
 fbCloseScreen(ScreenPtr pScreen)
 {
     int d;
     DepthPtr depths = pScreen->allowedDepths;
+    fbScreenPtr pScreenPriv = fbGetScreenPriv(pScreen);
 
     fbDestroyGlyphCache();
     for (d = 0; d < pScreen->numDepths; d++)
         free(depths[d].vids);
     free(depths);
     free(pScreen->visuals);
-    return TRUE;
+
+    pScreen->CloseScreen = pScreenPriv->CloseScreen;
+    free(pScreenPriv);
+
+    return (*pScreen->CloseScreen) (pScreen);
 }
 
 Bool
@@ -95,8 +111,20 @@ fbSetupScreen(ScreenPtr pScreen, void *pbits, /* pointer to screen bitmap */
               int dpiy, int width,      /* pixel width of frame buffer */
               int bpp)
 {                               /* bits per pixel for screen */
+    fbScreenPtr pScreenPriv;
+
     if (!fbAllocatePrivates(pScreen))
         return FALSE;
+
+    if (!dixRegisterPrivateKey(&fbScreenPrivKeyRec, PRIVATE_SCREEN, 0))
+        return FALSE;
+
+    pScreenPriv = calloc(1, sizeof(fbScreenRec));
+    if (!pScreenPriv)
+        return FALSE;
+
+    dixSetPrivate(&pScreen->devPrivates, fbScreenPrivKey, pScreenPriv);
+
     pScreen->defColormap = FakeClientID(0);
     /* let CreateDefColormap do whatever it wants for pixels */
     pScreen->blackPixel = pScreen->whitePixel = (Pixel) 0;
@@ -148,6 +176,7 @@ fbFinishScreenInit(ScreenPtr pScreen, void *pbits, int xsize, int ysize,
     int ndepths;
     int rootdepth;
     VisualID defaultVisual;
+    fbScreenPtr pScreenPriv = fbGetScreenPriv(pScreen);
 
 #ifdef FB_DEBUG
     int stride;
@@ -176,6 +205,7 @@ fbFinishScreenInit(ScreenPtr pScreen, void *pbits, int xsize, int ysize,
                       defaultVisual, nvisuals, visuals))
         return FALSE;
     /* overwrite miCloseScreen with our own */
+    pScreenPriv->CloseScreen = pScreen->CloseScreen;
     pScreen->CloseScreen = fbCloseScreen;
     return TRUE;
 }
