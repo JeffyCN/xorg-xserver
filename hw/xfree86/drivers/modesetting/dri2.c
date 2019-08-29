@@ -1062,6 +1062,7 @@ ms_dri2_screen_init(ScreenPtr screen)
     info.fd = ms->fd;
     info.driverName = NULL; /* Compat field, unused. */
     info.deviceName = drmGetDeviceNameFromFd(ms->fd);
+    ms->drmmode.dri2_device_name = info.deviceName;
 
     info.version = 9;
     info.CreateBuffer = ms_dri2_create_buffer;
@@ -1105,7 +1106,12 @@ ms_dri2_screen_init(ScreenPtr screen)
 void
 ms_dri2_close_screen(ScreenPtr screen)
 {
+    ScrnInfoPtr scrn = xf86ScreenToScrn(screen);
+    modesettingPtr ms = modesettingPTR(scrn);
+
     DRI2CloseScreen(screen);
+
+    free((char *)ms->drmmode.dri2_device_name);
 }
 
 #endif /* GLAMOR_HAS_GBM */
