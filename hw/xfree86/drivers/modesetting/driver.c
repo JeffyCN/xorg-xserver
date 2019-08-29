@@ -840,11 +840,12 @@ msShouldDoubleShadow(ScrnInfoPtr pScrn, modesettingPtr ms)
 {
     Bool ret = FALSE, asked;
     int from;
-    drmVersionPtr v = drmGetVersion(ms->fd);
+    drmVersionPtr v;
 
     if (!ms->drmmode.shadow_enable)
         return FALSE;
 
+    v = drmGetVersion(ms->fd);
     if (!strcmp(v->name, "mgag200") ||
         !strcmp(v->name, "ast")) /* XXX || rn50 */
         ret = TRUE;
