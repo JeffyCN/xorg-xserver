@@ -134,7 +134,10 @@ miCloseScreen(ScreenPtr pScreen)
 {
     miScreenPtr pScreenPriv = miGetScreenPriv(pScreen);
 
-    ((*pScreen->DestroyPixmap) ((PixmapPtr) pScreen->devPrivate));
+    if (pScreen->devPrivate) {
+        ((*pScreen->DestroyPixmap) ((PixmapPtr) pScreen->devPrivate));
+        pScreen->devPrivate = NULL;
+    }
 
     pScreen->CloseScreen = pScreenPriv->CloseScreen;
 
