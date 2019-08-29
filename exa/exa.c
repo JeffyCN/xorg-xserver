@@ -774,8 +774,6 @@ exaCloseScreen(ScreenPtr pScreen)
     unwrap(pExaScr, ps, Triangles);
     unwrap(pExaScr, ps, AddTraps);
 
-    free(pExaScr);
-
     return (*pScreen->CloseScreen) (pScreen);
 }
 
@@ -877,26 +875,24 @@ exaDriverInit(ScreenPtr pScreen, ExaDriverPtr pScreenInfo)
 
     ps = GetPictureScreenIfSet(pScreen);
 
-    if (!dixRegisterPrivateKey(&exaScreenPrivateKeyRec, PRIVATE_SCREEN, 0)) {
-        LogMessage(X_WARNING, "EXA(%d): Failed to register screen private\n",
-                   pScreen->myNum);
-        return FALSE;
-    }
-
-    pExaScr = calloc(sizeof(ExaScreenPrivRec), 1);
-    if (!pExaScr) {
+    if (!dixRegisterPrivateKey(&exaScreenPrivateKeyRec, PRIVATE_SCREEN, sizeof(ExaScreenPrivRec))) {
         LogMessage(X_WARNING, "EXA(%d): Failed to allocate screen private\n",
                    pScreen->myNum);
         return FALSE;
     }
 
+    pExaScr = ExaGetScreenPriv(pScreen);
+    if (!pExaScr) {
+        return FALSE;
+    }
+
     pExaScr->info = pScreenInfo;
-
-    dixSetPrivate(&pScreen->devPrivates, exaScreenPrivateKey, pExaScr);
-
     pExaScr->migration = ExaMigrationAlways;
 
     exaDDXDriverInit(pScreen);
+
+    /* private re-allocated */
+    pExaScr = ExaGetScreenPriv(pScreen);
 
     if (!dixRegisterScreenSpecificPrivateKey
         (pScreen, &pExaScr->gcPrivateKeyRec, PRIVATE_GC, sizeof(ExaGCPrivRec))) {
