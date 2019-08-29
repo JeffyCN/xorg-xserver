@@ -1996,6 +1996,15 @@ CloseScreen(ScreenPtr pScreen)
     }
 
     if (ms->drmmode.exa) {
+        PixmapPtr screen_pixmap;
+
+        /* Destroy exa screen pixmap before deinit exa */
+        screen_pixmap = pScreen->GetScreenPixmap(pScreen);
+        if (screen_pixmap == pScreen->devPrivate) {
+            pScreen->DestroyPixmap(screen_pixmap);
+            pScreen->devPrivate = NULL;
+        }
+
         exaDriverFini(pScreen);
         ms_cleanup_exa(pScrn, ms->drmmode.exa);
         free(ms->drmmode.exa);
