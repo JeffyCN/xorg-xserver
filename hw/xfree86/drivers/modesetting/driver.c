@@ -1987,6 +1987,8 @@ CloseScreen(ScreenPtr pScreen)
     pScreen->CreateScreenResources = ms->createScreenResources;
     pScreen->BlockHandler = ms->BlockHandler;
 
+    xf86_cursors_fini(pScreen);
+
     pScrn->vtSema = FALSE;
     pScreen->CloseScreen = ms->CloseScreen;
     return (*pScreen->CloseScreen) (pScreen);
