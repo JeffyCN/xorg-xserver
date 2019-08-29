@@ -108,6 +108,7 @@ typedef struct _DRI2Screen {
     unsigned int numDrivers;
     const char **driverNames;
     const char *deviceName;
+    const char *driverName;
     int fd;
     unsigned int lastSequence;
     int prime_id;
@@ -1458,7 +1459,7 @@ dri2_probe_driver_name(ScreenPtr pScreen, DRI2InfoPtr info)
 #ifdef WITH_LIBDRM
     int i, j;
     char *driver = NULL;
-    drmDevicePtr dev;
+    drmDevicePtr dev = NULL;
 
     /* For non-PCI devices and drmGetDevice fail, just assume that
      * the 3D driver is named the same as the kernel driver. This is
@@ -1476,6 +1477,7 @@ dri2_probe_driver_name(ScreenPtr pScreen, DRI2InfoPtr info)
 
         driver = strndup(version->name, version->name_len);
         drmFreeVersion(version);
+        drmFreeDevice(&dev);
         return driver;
     }
 
@@ -1619,9 +1621,8 @@ DRI2ScreenInit(ScreenPtr pScreen, DRI2InfoPtr info)
         if (info->driverName) {
             ds->driverNames[0] = info->driverName;
         } else {
-            /* FIXME dri2_probe_driver_name() returns a strdup-ed string,
-             * currently this gets leaked */
-            ds->driverNames[0] = ds->driverNames[1] = dri2_probe_driver_name(pScreen, info);
+            ds->driverName = dri2_probe_driver_name(pScreen, info);
+            ds->driverNames[0] = ds->driverNames[1] = ds->driverName;
             if (!ds->driverNames[0])
                 return FALSE;
 
@@ -1677,6 +1678,7 @@ DRI2CloseScreen(ScreenPtr pScreen)
     if (ds->prime_id)
         prime_id_allocate_bitmask &= ~(1 << ds->prime_id);
     free(ds->driverNames);
+    free((char *)ds->driverName);
     free(ds);
     dixSetPrivate(&pScreen->devPrivates, dri2ScreenPrivateKey, NULL);
 }
