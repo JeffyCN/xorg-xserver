@@ -2630,6 +2630,10 @@ drmmode_output_create_resources(xf86OutputPtr output)
     drmModePropertyPtr drmmode_prop;
     int i, j, err;
 
+    /* already created */
+    if (drmmode_output->props)
+        return;
+
     drmmode_output->props =
         calloc(mode_output->count_props, sizeof(drmmode_prop_rec));
     if (!drmmode_output->props)
@@ -3037,6 +3041,7 @@ drmmode_output_init(ScrnInfoPtr pScrn, drmmode_ptr drmmode, drmModeResPtr mode_r
                                            DRM_MODE_OBJECT_CONNECTOR);
         drmmode_prop_info_update(drmmode, drmmode_output->props_connector,
                                  DRMMODE_CONNECTOR__COUNT, props);
+        drmModeFreeObjectProperties(props);
     } else {
         drmmode_output->dpms_enum_id =
             koutput_get_prop_id(drmmode->fd, koutput, DRM_MODE_PROP_ENUM,
