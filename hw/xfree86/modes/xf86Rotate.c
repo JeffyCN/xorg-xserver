@@ -298,8 +298,20 @@ xf86RotateCloseScreen(ScreenPtr screen)
     xf86CrtcConfigPtr xf86_config = XF86_CRTC_CONFIG_PTR(scrn);
     int c;
 
-    /* This has already been destroyed when the root window was destroyed */
-    xf86_config->rotation_damage = NULL;
+    if (xf86_config->rotation_damage) {
+        if (xf86_config->rotation_damage_registered) {
+            /*
+             * This has already been destroyed when the root window
+             * was destroyed
+             */
+            xf86_config->rotation_damage_registered = FALSE;
+        } else {
+            /* Free damage structure */
+            DamageDestroy(xf86_config->rotation_damage);
+        }
+        xf86_config->rotation_damage = NULL;
+    }
+
     for (c = 0; c < xf86_config->num_crtc; c++)
         xf86RotateDestroy(xf86_config->crtc[c]);
 }
