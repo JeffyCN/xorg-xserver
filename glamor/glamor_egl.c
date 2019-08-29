@@ -791,6 +791,11 @@ glamor_egl_close_screen(ScreenPtr screen)
 
     glamor_egl_set_pixmap_bo(screen_pixmap, NULL, pixmap_priv->used_modifiers);
 
+    if (glamor_egl->device_path) {
+        free(glamor_egl->device_path);
+        glamor_egl->device_path = NULL;
+    }
+
     screen->CloseScreen = glamor_egl->saved_close_screen;
 
     return screen->CloseScreen(screen);
@@ -919,7 +924,6 @@ static void glamor_egl_cleanup(struct glamor_egl_screen_private *glamor_egl)
     }
     if (glamor_egl->gbm)
         gbm_device_destroy(glamor_egl->gbm);
-    free(glamor_egl->device_path);
     free(glamor_egl);
 }
 
