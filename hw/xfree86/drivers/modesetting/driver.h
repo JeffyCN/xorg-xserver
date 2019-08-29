@@ -30,6 +30,7 @@
 #include <errno.h>
 #include <drm.h>
 #include <xf86drm.h>
+#include <xf86xv.h>
 #include <xf86Crtc.h>
 #include <damage.h>
 #include <X11/extensions/dpmsconst.h>
@@ -122,6 +123,7 @@ typedef struct _modesettingRec {
 
     Bool kms_has_modifiers;
 
+    XF86VideoAdaptorPtr adaptor;
 } modesettingRec, *modesettingPtr;
 
 #define modesettingPTR(p) ((modesettingPtr)((p)->driverPrivate))
