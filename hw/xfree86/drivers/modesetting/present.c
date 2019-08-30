@@ -171,8 +171,6 @@ ms_present_flush(WindowPtr window)
 #endif
 }
 
-#ifdef GLAMOR_HAS_GBM
-
 /**
  * Callback for the DRM event queue when a flip has completed on all pipes
  *
@@ -233,11 +231,13 @@ ms_present_check_flip(RRCrtcPtr crtc,
         return FALSE;
 
     for (i = 0; i < config->num_crtc; i++) {
+#ifdef GLAMOR_HAS_GBM
         drmmode_crtc_private_ptr drmmode_crtc = config->crtc[i]->driver_private;
 
         /* Don't do pageflipping if CRTCs are rotated. */
         if (drmmode_crtc->rotate_bo.gbm)
             return FALSE;
+#endif
 
         if (ms_crtc_on(config->crtc[i]))
             num_crtcs_on++;
@@ -250,6 +250,12 @@ ms_present_check_flip(RRCrtcPtr crtc,
     /* Check stride, can't change that on flip */
     if (!ms->atomic_modeset &&
         pixmap->devKind != drmmode_bo_get_pitch(&ms->drmmode.front_bo))
+        return FALSE;
+
+    if (ms->drmmode.exa)
+        return TRUE;
+
+    if (!ms->drmmode.glamor)
         return FALSE;
 
     /* Make sure there's a bo we can get to */
@@ -357,7 +363,6 @@ ms_present_unflip(ScreenPtr screen, uint64_t event_id)
     present_event_notify(event_id, 0, 0);
     ms->drmmode.present_flipping = FALSE;
 }
-#endif
 
 static present_screen_info_rec ms_present_screen_info = {
     .version = PRESENT_SCREEN_INFO_VERSION,
