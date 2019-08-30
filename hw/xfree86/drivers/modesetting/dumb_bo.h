@@ -40,6 +40,7 @@ struct dumb_bo *dumb_bo_create(int fd, const unsigned width,
                                const unsigned height, const unsigned bpp);
 int dumb_bo_map(int fd, struct dumb_bo *bo);
 int dumb_bo_get_fd(int fd, struct dumb_bo *bo, uint32_t flags);
+int dumb_bo_get_name(int fd, struct dumb_bo *bo);
 int dumb_bo_destroy(int fd, struct dumb_bo *bo);
 struct dumb_bo *dumb_get_bo_from_fd(int fd, int handle, int pitch, int size);
 
