@@ -114,6 +114,25 @@ dumb_bo_get_fd(int fd, struct dumb_bo *bo, uint32_t flags)
     return args.fd;
 }
 
+/* From glamor_get_flink_name() */
+int
+dumb_bo_get_name(int fd, struct dumb_bo *bo)
+{
+    struct drm_gem_flink flink;
+
+    flink.handle = bo->handle;
+    if (ioctl(fd, DRM_IOCTL_GEM_FLINK, &flink) < 0) {
+        /*
+         * Assume non-GEM kernels have names identical to the handle
+         */
+        if (errno == ENODEV)
+            return bo->handle;
+
+        return -1;
+    }
+    return flink.name;
+}
+
 int
 dumb_bo_destroy(int fd, struct dumb_bo *bo)
 {
@@ -136,21 +155,29 @@ dumb_bo_destroy(int fd, struct dumb_bo *bo)
 }
 
 struct dumb_bo *
-dumb_get_bo_from_fd(int fd, int handle, int pitch, int size)
+dumb_get_bo_from_handle(int fd, int handle, int pitch, int size)
 {
     struct dumb_bo *bo;
-    int ret;
 
     bo = calloc(1, sizeof(*bo));
     if (!bo)
         return NULL;
 
-    ret = drmPrimeFDToHandle(fd, handle, &bo->handle);
-    if (ret) {
-        free(bo);
-        return NULL;
-    }
+    bo->handle = handle;
     bo->pitch = pitch;
     bo->size = size;
     return bo;
+}
+
+struct dumb_bo *
+dumb_get_bo_from_fd(int fd, int dmafd, int pitch, int size)
+{
+    unsigned int handle;
+    int ret;
+
+    ret = drmPrimeFDToHandle(fd, dmafd, &handle);
+    if (ret)
+        return NULL;
+
+    return dumb_get_bo_from_handle(fd, handle, pitch, size);
 }
