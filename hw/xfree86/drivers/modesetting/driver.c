@@ -82,6 +82,18 @@ static Bool ms_pci_probe(DriverPtr driver,
                          intptr_t match_data);
 static Bool ms_driver_func(ScrnInfoPtr scrn, xorgDriverFuncOp op, void *data);
 
+static int
+ms_shareable_fd_from_pixmap(ScreenPtr screen,
+                            PixmapPtr pixmap,
+                            CARD16 *stride,
+                            CARD32 *size);
+static Bool
+ms_back_pixmap_from_fd(PixmapPtr pixmap,
+                       int fd,
+                       CARD16 width,
+                       CARD16 height,
+                       CARD16 stride, CARD8 depth, CARD8 bpp);
+
 /* window wrapper functions used to get the notification when
  * the window property changes */
 static Atom vrr_atom;
@@ -1622,7 +1634,7 @@ CreateScreenResources(ScreenPtr pScreen)
     if (!drmmode_set_desired_modes(pScrn, &ms->drmmode, pScrn->is_gpu, FALSE))
         return FALSE;
 
-    if (!drmmode_glamor_handle_new_screen_pixmap(&ms->drmmode))
+    if (!drmmode_handle_new_screen_pixmap(&ms->drmmode))
         return FALSE;
 
     drmmode_uevent_init(pScrn, &ms->drmmode);
@@ -1635,7 +1647,7 @@ CreateScreenResources(ScreenPtr pScreen)
         if (!pixels)
             return FALSE;
 
-        drmmode_glamor_handle_new_screen_pixmap(&ms->drmmode);
+        drmmode_handle_new_screen_pixmap(&ms->drmmode);
     }
 
     rootPixmap = pScreen->GetScreenPixmap(pScreen);
@@ -1697,27 +1709,21 @@ CreateScreenResources(ScreenPtr pScreen)
 static Bool
 msSharePixmapBacking(PixmapPtr ppix, ScreenPtr secondary, void **handle)
 {
-#ifdef GLAMOR_HAS_GBM
-    modesettingPtr ms =
-        modesettingPTR(xf86ScreenToScrn(ppix->drawable.pScreen));
     int ret;
     CARD16 stride;
     CARD32 size;
-    ret = ms->glamor.shareable_fd_from_pixmap(ppix->drawable.pScreen, ppix,
-                                              &stride, &size);
+    ret = ms_shareable_fd_from_pixmap(ppix->drawable.pScreen, ppix,
+                                      &stride, &size);
     if (ret == -1)
         return FALSE;
 
     *handle = (void *)(long)(ret);
     return TRUE;
-#endif
-    return FALSE;
 }
 
 static Bool
 msSetSharedPixmapBacking(PixmapPtr ppix, void *fd_handle)
 {
-#ifdef GLAMOR_HAS_GBM
     ScreenPtr screen = ppix->drawable.pScreen;
     ScrnInfoPtr scrn = xf86ScreenToScrn(screen);
     modesettingPtr ms = modesettingPTR(scrn);
@@ -1729,12 +1735,11 @@ msSetSharedPixmapBacking(PixmapPtr ppix, void *fd_handle)
            return drmmode_SetSlaveBO(ppix, &ms->drmmode, ihandle, 0, 0);
 
     if (ms->drmmode.reverse_prime_offload_mode) {
-        ret = ms->glamor.back_pixmap_from_fd(ppix, ihandle,
-                                             ppix->drawable.width,
-                                             ppix->drawable.height,
-                                             ppix->devKind,
-                                             ppix->drawable.depth,
-                                             ppix->drawable.bitsPerPixel);
+        ret = ms_back_pixmap_from_fd(ppix, ihandle,
+                                     ppix->drawable.width,
+                                     ppix->drawable.height,
+                                     ppix->devKind, ppix->drawable.depth,
+                                     ppix->drawable.bitsPerPixel);
     } else {
         int size = ppix->devKind * ppix->drawable.height;
         ret = drmmode_SetSlaveBO(ppix, &ms->drmmode, ihandle, ppix->devKind, size);
@@ -1743,9 +1748,6 @@ msSetSharedPixmapBacking(PixmapPtr ppix, void *fd_handle)
         return ret;
 
     return TRUE;
-#else
-    return FALSE;
-#endif
 }
 
 static Bool
@@ -1962,7 +1964,7 @@ ScreenInit(ScreenPtr pScreen, int argc, char **argv)
      * later memory should be bound when allocating, e.g rotate_mem */
     pScrn->vtSema = TRUE;
 
-    if (serverGeneration == 1 && bgNoneRoot && ms->drmmode.glamor) {
+    if (serverGeneration == 1 && bgNoneRoot) {
         ms->CreateWindow = pScreen->CreateWindow;
         pScreen->CreateWindow = CreateWindow_oneshot;
     }
@@ -2027,8 +2029,7 @@ ScreenInit(ScreenPtr pScreen, int argc, char **argv)
         return FALSE;
     }
 
-#ifdef GLAMOR_HAS_GBM
-    if (ms->drmmode.glamor) {
+    if (ms->drmmode.glamor || ms->drmmode.exa) {
         if (!(ms->drmmode.dri2_enable = ms_dri2_screen_init(pScreen))) {
             xf86DrvMsg(pScrn->scrnIndex, X_ERROR,
                        "Failed to initialize the DRI2 extension.\n");
@@ -2063,7 +2064,7 @@ ScreenInit(ScreenPtr pScreen, int argc, char **argv)
             }
         }
     }
-#endif
+
     if (!(ms->drmmode.present_enable = ms_present_screen_init(pScreen))) {
         xf86DrvMsg(pScrn->scrnIndex, X_ERROR,
                    "Failed to initialize the Present extension.\n");
@@ -2180,11 +2181,9 @@ CloseScreen(ScreenPtr pScreen)
     /* Clear mask of assigned crtc's in this generation */
     ms_ent->assigned_crtcs = 0;
 
-#ifdef GLAMOR_HAS_GBM
     if (ms->drmmode.dri2_enable) {
         ms_dri2_close_screen(pScreen);
     }
-#endif
 
     ms_vblank_close_screen(pScreen);
 
@@ -2250,4 +2249,93 @@ static ModeStatus
 ValidMode(ScrnInfoPtr arg, DisplayModePtr mode, Bool verbose, int flags)
 {
     return MODE_OK;
+}
+
+void
+ms_exchange_buffers(PixmapPtr front, PixmapPtr back)
+{
+    ScreenPtr screen = front->drawable.pScreen;
+    ScrnInfoPtr scrn = xf86ScreenToScrn(screen);
+    modesettingPtr ms = modesettingPTR(scrn);
+
+#ifdef GLAMOR_HAS_GBM
+    if (ms->drmmode.glamor)
+        return ms->glamor.egl_exchange_buffers(front, back);
+#endif
+
+    if (ms->drmmode.exa)
+        return ms_exa_exchange_buffers(front, back);
+}
+
+static Bool
+ms_back_pixmap_from_fd(PixmapPtr pixmap,
+                       int fd,
+                       CARD16 width,
+                       CARD16 height,
+                       CARD16 stride, CARD8 depth, CARD8 bpp)
+{
+    ScreenPtr screen = pixmap->drawable.pScreen;
+    ScrnInfoPtr scrn = xf86ScreenToScrn(screen);
+    modesettingPtr ms = modesettingPTR(scrn);
+
+#ifdef GLAMOR_HAS_GBM
+    if (ms->drmmode.glamor)
+        return ms->glamor.back_pixmap_from_fd(pixmap, fd,
+                                          width, height,
+                                          stride, depth, bpp);
+#endif
+
+    if (ms->drmmode.exa)
+        return ms_exa_back_pixmap_from_fd(pixmap, fd,
+                                          width, height,
+                                          stride, depth, bpp);
+
+    return FALSE;
+}
+
+static int
+ms_shareable_fd_from_pixmap(ScreenPtr screen,
+                            PixmapPtr pixmap,
+                            CARD16 *stride,
+                            CARD32 *size)
+{
+    ScrnInfoPtr scrn = xf86ScreenToScrn(screen);
+    modesettingPtr ms = modesettingPTR(scrn);
+
+#ifdef GLAMOR_HAS_GBM
+    if (ms->drmmode.glamor)
+        return ms->glamor.shareable_fd_from_pixmap(screen, pixmap, stride, size);
+#endif
+
+    if (ms->drmmode.exa)
+        return ms_exa_shareable_fd_from_pixmap(screen, pixmap, stride, size);
+
+    return -1;
+}
+
+int
+ms_name_from_pixmap(PixmapPtr pixmap,
+                    CARD16 *stride, CARD32 *size)
+{
+    ScreenPtr screen = pixmap->drawable.pScreen;
+    ScrnInfoPtr scrn = xf86ScreenToScrn(screen);
+    modesettingPtr ms = modesettingPTR(scrn);
+    struct dumb_bo *bo;
+
+#ifdef GLAMOR_HAS_GBM
+    if (ms->drmmode.glamor)
+        return ms->glamor.name_from_pixmap(pixmap, stride, size);
+#endif
+
+    if (!ms->drmmode.exa)
+        return -1;
+
+    bo = ms_exa_bo_from_pixmap(screen, pixmap);
+    if (!bo)
+        return -1;
+
+    *stride = bo->pitch;
+    *size = bo->size;
+
+    return dumb_bo_get_name(ms->drmmode.fd, bo);
 }
