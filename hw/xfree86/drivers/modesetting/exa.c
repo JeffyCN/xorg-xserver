@@ -871,6 +871,75 @@ ms_exa_set_pixmap_bo(ScrnInfoPtr scrn, PixmapPtr pPixmap,
     return TRUE;
 }
 
+struct dumb_bo *
+ms_exa_bo_from_pixmap(ScreenPtr screen, PixmapPtr pixmap)
+{
+    struct ms_exa_pixmap_priv *priv = exaGetPixmapDriverPrivate(pixmap);
+    ScrnInfoPtr scrn = xf86ScreenToScrn(screen);
+    modesettingPtr ms = modesettingPTR(scrn);
+
+    if (!ms->drmmode.exa || !priv)
+        return NULL;
+
+    return priv->bo;
+}
+
+void
+ms_exa_exchange_buffers(PixmapPtr front, PixmapPtr back)
+{
+    struct ms_exa_pixmap_priv *front_priv = exaGetPixmapDriverPrivate(front);
+    struct ms_exa_pixmap_priv *back_priv = exaGetPixmapDriverPrivate(back);
+    struct ms_exa_pixmap_priv tmp_priv;
+
+    tmp_priv = *front_priv;
+    *front_priv = *back_priv;
+    *back_priv = tmp_priv;
+}
+
+Bool
+ms_exa_back_pixmap_from_fd(PixmapPtr pixmap,
+                           int fd,
+                           CARD16 width,
+                           CARD16 height,
+                           CARD16 stride, CARD8 depth, CARD8 bpp)
+{
+    ScreenPtr screen = pixmap->drawable.pScreen;
+    ScrnInfoPtr scrn = xf86ScreenToScrn(screen);
+    modesettingPtr ms = modesettingPTR(scrn);
+    struct dumb_bo *bo;
+    Bool ret;
+
+    bo = dumb_get_bo_from_fd(ms->drmmode.fd, fd,
+                             stride, stride * height);
+    if (!bo)
+        return FALSE;
+
+    screen->ModifyPixmapHeader(pixmap, width, height,
+                               depth, bpp, stride, NULL);
+
+    ret = ms_exa_set_pixmap_bo(scrn, pixmap, bo, TRUE);
+    if (!ret)
+        dumb_bo_destroy(ms->drmmode.fd, bo);
+
+    return ret;
+}
+
+int
+ms_exa_shareable_fd_from_pixmap(ScreenPtr screen,
+                                PixmapPtr pixmap,
+                                CARD16 *stride,
+                                CARD32 *size)
+{
+    struct ms_exa_pixmap_priv *priv = exaGetPixmapDriverPrivate(pixmap);
+    ScrnInfoPtr scrn = xf86ScreenToScrn(screen);
+    modesettingPtr ms = modesettingPTR(scrn);
+
+    if (!ms->drmmode.exa || !priv || !priv->fd)
+        return -1;
+
+    return priv->fd;
+}
+
 // TODO: Add bail func
 Bool
 ms_exa_copy_area(PixmapPtr pSrc, PixmapPtr pDst,

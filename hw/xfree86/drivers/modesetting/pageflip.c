@@ -63,8 +63,6 @@ ms_flush_drm_events(ScreenPtr screen)
     return 1;
 }
 
-#ifdef GLAMOR_HAS_GBM
-
 /*
  * Event data for an in progress flip.
  * This contains a pointer to the vblank event,
@@ -369,37 +367,47 @@ ms_do_pageflip(ScreenPtr screen,
                ms_pageflip_handler_proc pageflip_handler,
                ms_pageflip_abort_proc pageflip_abort)
 {
-#ifndef GLAMOR_HAS_GBM
-    return FALSE;
-#else
     ScrnInfoPtr scrn = xf86ScreenToScrn(screen);
     modesettingPtr ms = modesettingPTR(scrn);
-    drmmode_bo new_front_bo;
+    drmmode_bo new_front_bo = {0};
     Bool ret;
 
-    if (ms->drmmode.glamor)
+#ifdef GLAMOR_HAS_GBM
+    if (ms->drmmode.glamor) {
+        new_front_bo.gbm = glamor_gbm_bo_from_pixmap(screen, new_front);
+        if (!new_front_bo.gbm) {
+            xf86DrvMsg(scrn->scrnIndex, X_ERROR,
+                       "Failed to get GBM bo for flip to new front.\n");
+            return FALSE;
+        }
+
         glamor_block_handler(screen);
-
-    new_front_bo.gbm = glamor_gbm_bo_from_pixmap(screen, new_front);
-    new_front_bo.dumb = NULL;
-    new_front_bo.width = new_front->drawable.width;
-    new_front_bo.height = new_front->drawable.height;
-
-    if (!new_front_bo.gbm) {
-        xf86DrvMsg(scrn->scrnIndex, X_ERROR,
-                   "Failed to get GBM bo for flip to new front.\n");
+    } else
+#endif
+    if (ms->drmmode.exa) {
+        new_front_bo.dumb = ms_exa_bo_from_pixmap(screen, new_front);
+        if (!new_front_bo.dumb) {
+            xf86DrvMsg(scrn->scrnIndex, X_ERROR,
+                       "Failed to get dumb bo for flip to new front.\n");
+            return FALSE;
+        }
+    } else {
         return FALSE;
     }
+
+    new_front_bo.width = new_front->drawable.width;
+    new_front_bo.height = new_front->drawable.height;
 
     ret = ms_do_pageflip_bo(screen, &new_front_bo, event,
                             ref_crtc_vblank_pipe, async,
                             pageflip_handler, pageflip_abort);
 
+#ifdef GLAMOR_HAS_GBM
     new_front_bo.gbm = NULL;
+#endif
+    new_front_bo.dumb = NULL;
+
     drmmode_bo_destroy(&ms->drmmode, &new_front_bo);
 
     return ret;
-#endif /* GLAMOR_HAS_GBM */
 }
-
-#endif
