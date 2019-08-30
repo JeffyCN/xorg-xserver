@@ -241,8 +241,6 @@ Bool ms_do_pageflip_bo(ScreenPtr screen,
                        ms_pageflip_abort_proc pageflip_abort,
                        const char *log_prefix);
 
-#ifdef GLAMOR_HAS_GBM
-
 Bool ms_do_pageflip(ScreenPtr screen,
                     PixmapPtr new_front,
                     void *event,
@@ -252,8 +250,6 @@ Bool ms_do_pageflip(ScreenPtr screen,
                     ms_pageflip_abort_proc pageflip_abort,
                     const char *log_prefix);
 
-#endif
-
 int ms_flush_drm_events(ScreenPtr screen);
 Bool ms_window_has_variable_refresh(modesettingPtr ms, WindowPtr win);
 void ms_present_set_screen_vrr(ScrnInfoPtr scrn, Bool vrr_enabled);
@@ -262,6 +258,14 @@ Bool ms_setup_exa(ScrnInfoPtr scrn, ExaDriverPtr exa);
 void ms_cleanup_exa(ScrnInfoPtr scrn, ExaDriverPtr exa);
 Bool ms_exa_set_pixmap_bo(ScrnInfoPtr scrn, PixmapPtr pPixmap,
                           struct dumb_bo *bo, Bool owned);
+struct dumb_bo *ms_exa_bo_from_pixmap(ScreenPtr screen, PixmapPtr pixmap);
+void ms_exa_exchange_buffers(PixmapPtr front, PixmapPtr back);
+Bool ms_exa_back_pixmap_from_fd(PixmapPtr pixmap, int fd,
+                                CARD16 width, CARD16 height,
+                                CARD16 stride, CARD8 depth, CARD8 bpp);
+int ms_exa_shareable_fd_from_pixmap(ScreenPtr screen, PixmapPtr pixmap,
+                                    CARD16 *stride, CARD32 *size);
+
 Bool ms_exa_prepare_access(PixmapPtr pPix, int index);
 void ms_exa_finish_access(PixmapPtr pPix, int index);
 
@@ -269,3 +273,6 @@ Bool ms_exa_copy_area(PixmapPtr pSrc, PixmapPtr pDst,
                       pixman_f_transform_t *transform, RegionPtr clip);
 
 XF86VideoAdaptorPtr ms_exa_xv_init(ScreenPtr screen, int num_texture_ports);
+
+void ms_exchange_buffers(PixmapPtr front, PixmapPtr back);
+int ms_name_from_pixmap(PixmapPtr pixmap, CARD16 *stride, CARD32 *size);
