@@ -694,30 +694,49 @@ drmmode_set_dpms(ScrnInfoPtr scrn, int dpms, int flags)
 }
 
 static int
-drmmode_output_disable(xf86OutputPtr output)
+drmmode_output_dpms_atomic(xf86OutputPtr output, int mode)
 {
     modesettingPtr ms = modesettingPTR(output->scrn);
     drmmode_output_private_ptr drmmode_output = output->driver_private;
     xf86CrtcPtr crtc = drmmode_output->current_crtc;
-    drmModeAtomicReq *req = drmModeAtomicAlloc();
+    drmModeAtomicReq *req;
     uint32_t flags = DRM_MODE_ATOMIC_ALLOW_MODESET;
     int ret = 0;
 
+    if (mode == DPMSModeOn && !crtc)
+        return 1;
+
     assert(ms->atomic_modeset);
 
+    req = drmModeAtomicAlloc();
     if (!req)
         return 1;
 
-    ret |= connector_add_prop(req, drmmode_output,
-                              DRMMODE_CONNECTOR_CRTC_ID, 0);
     if (crtc)
-        ret |= crtc_add_dpms_props(req, crtc, DPMSModeOff, NULL);
+        ret |= crtc_add_dpms_props(req, crtc, mode, NULL);
+
+    if (mode == DPMSModeOn) {
+        drmmode_crtc_private_ptr drmmode_crtc = crtc->driver_private;
+        drmModeModeInfo kmode;
+
+        drmmode_ConvertToKMode(crtc->scrn, &kmode, &crtc->mode);
+        ret |= drm_mode_ensure_blob(crtc, kmode);
+
+        ret |= connector_add_prop(req, drmmode_output,
+                                  DRMMODE_CONNECTOR_CRTC_ID,
+                                  drmmode_crtc->mode_crtc->crtc_id);
+        ret |= crtc_add_prop(req, drmmode_crtc,
+                             DRMMODE_CRTC_ACTIVE, 1);
+        ret |= crtc_add_prop(req, drmmode_crtc,
+                             DRMMODE_CRTC_MODE_ID,
+                             drmmode_crtc->current_mode->blob_id);
+    } else {
+        ret |= connector_add_prop(req, drmmode_output,
+                                  DRMMODE_CONNECTOR_CRTC_ID, 0);
+    }
 
     if (ret == 0)
         ret = drmModeAtomicCommit(ms->fd, req, flags, NULL);
-
-    if (ret == 0)
-        drmmode_output->current_crtc = NULL;
 
     drmModeAtomicFree(req);
     return ret;
@@ -2576,8 +2595,8 @@ drmmode_output_dpms(xf86OutputPtr output, int mode)
     drmmode_output->dpms = mode;
 
     if (ms->atomic_modeset) {
-        if (mode != DPMSModeOn && !ms->pending_modeset)
-            drmmode_output_disable(output);
+        if (!ms->pending_modeset)
+            drmmode_output_dpms_atomic(output, mode);
     } else {
         drmModeConnectorSetProperty(drmmode->fd, koutput->connector_id,
                                     drmmode_output->dpms_enum_id, mode);
