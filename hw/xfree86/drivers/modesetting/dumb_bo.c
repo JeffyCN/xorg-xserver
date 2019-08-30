@@ -114,6 +114,25 @@ dumb_bo_get_fd(int fd, struct dumb_bo *bo, uint32_t flags)
     return args.fd;
 }
 
+/* From glamor_get_flink_name() */
+int
+dumb_bo_get_name(int fd, struct dumb_bo *bo)
+{
+    struct drm_gem_flink flink;
+
+    flink.handle = bo->handle;
+    if (ioctl(fd, DRM_IOCTL_GEM_FLINK, &flink) < 0) {
+        /*
+         * Assume non-GEM kernels have names identical to the handle
+         */
+        if (errno == ENODEV)
+            return bo->handle;
+
+        return -1;
+    }
+    return flink.name;
+}
+
 int
 dumb_bo_destroy(int fd, struct dumb_bo *bo)
 {
