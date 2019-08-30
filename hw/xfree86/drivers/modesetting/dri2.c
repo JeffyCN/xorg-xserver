@@ -25,7 +25,7 @@
 /**
  * @file dri2.c
  *
- * Implements generic support for DRI2 on KMS, using glamor pixmaps
+ * Implements generic support for DRI2 on KMS, using glamor/exa pixmaps
  * for color buffer management (no support for other aux buffers), and
  * the DRM vblank ioctls.
  *
@@ -41,8 +41,6 @@
 #include "xf86.h"
 #include "driver.h"
 #include "dri2.h"
-
-#ifdef GLAMOR_HAS_GBM
 
 enum ms_dri2_frame_event_type {
     MS_DRI2_QUEUE_SWAP,
@@ -199,8 +197,7 @@ ms_dri2_create_buffer2(ScreenPtr screen, DrawablePtr drawable,
      * Mesa currently.
      */
     buffer->flags = 0;
-
-    buffer->name = glamor_name_from_pixmap(pixmap, &pitch, &size);
+    buffer->name = ms_name_from_pixmap(pixmap, &pitch, &size);
     buffer->pitch = pitch;
     if (buffer->name == -1) {
         xf86DrvMsg(scrn->scrnIndex, X_ERROR,
@@ -514,7 +511,7 @@ update_front(DrawablePtr draw, DRI2BufferPtr front)
     CARD16 pitch;
     int name;
 
-    name = glamor_name_from_pixmap(pixmap, &pitch, &size);
+    name = ms_name_from_pixmap(pixmap, &pitch, &size);
     if (name < 0)
         return FALSE;
 
@@ -535,6 +532,7 @@ can_exchange(ScrnInfoPtr scrn, DrawablePtr draw,
 {
     ms_dri2_buffer_private_ptr front_priv = front->driverPrivate;
     ms_dri2_buffer_private_ptr back_priv = back->driverPrivate;
+    modesettingPtr ms = modesettingPTR(scrn);
     PixmapPtr front_pixmap;
     PixmapPtr back_pixmap = back_priv->pixmap;
     xf86CrtcConfigPtr config = XF86_CRTC_CONFIG_PTR(scrn);
@@ -549,6 +547,8 @@ can_exchange(ScrnInfoPtr scrn, DrawablePtr draw,
         if (drmmode_crtc->rotate_bo.gbm)
             return FALSE;
 #endif
+        if (drmmode_crtc->rotate_bo.dumb)
+            return FALSE;
 
         if (ms_crtc_on(config->crtc[i]))
             num_crtcs_on++;
@@ -574,6 +574,9 @@ can_exchange(ScrnInfoPtr scrn, DrawablePtr draw,
         return FALSE;
 
     if (front_pixmap->devKind != back_pixmap->devKind)
+        return FALSE;
+
+    if (!ms->drmmode.glamor && !ms->drmmode.exa)
         return FALSE;
 
     return TRUE;
@@ -617,7 +620,7 @@ ms_dri2_exchange_buffers(DrawablePtr draw, DRI2BufferPtr front,
     *front_pix = *back_pix;
     *back_pix = tmp_pix;
 
-    glamor_egl_exchange_buffers(front_priv->pixmap, back_priv->pixmap);
+    ms_exchange_buffers(front_priv->pixmap, back_priv->pixmap);
 
     /* Post damage on the front buffer so that listeners, such
      * as DisplayLink know take a copy and shove it over the USB.
@@ -1035,10 +1038,14 @@ ms_dri2_screen_init(ScreenPtr screen)
     modesettingPtr ms = modesettingPTR(scrn);
     DRI2InfoRec info;
 
-    if (!glamor_supports_pixmap_import_export(screen)) {
-        xf86DrvMsg(scrn->scrnIndex, X_WARNING,
-                   "DRI2: glamor lacks support for pixmap import/export\n");
+#ifdef GLAMOR_HAS_GBM
+    if (ms->drmmode.glamor) {
+        if (!glamor_supports_pixmap_import_export(screen)) {
+            xf86DrvMsg(scrn->scrnIndex, X_WARNING,
+                       "DRI2: glamor lacks support for pixmap import/export\n");
+        }
     }
+#endif
 
     if (!xf86LoaderCheckSymbol("DRI2Version"))
         return FALSE;
@@ -1090,5 +1097,3 @@ ms_dri2_close_screen(ScreenPtr screen)
 
     free((char *)ms->drmmode.dri2_device_name);
 }
-
-#endif /* GLAMOR_HAS_GBM */
