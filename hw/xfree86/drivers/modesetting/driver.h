@@ -54,6 +54,7 @@ typedef enum {
     OPTION_DOUBLE_SHADOW,
     OPTION_FLIP_FB,
     OPTION_FLIP_FB_RATE,
+    OPTION_BIND_CURRENT,
 } modesettingOpts;
 
 typedef struct
