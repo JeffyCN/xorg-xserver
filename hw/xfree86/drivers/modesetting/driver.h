@@ -55,6 +55,7 @@ typedef enum {
     OPTION_ATOMIC,
     OPTION_FLIP_FB,
     OPTION_FLIP_FB_RATE,
+    OPTION_BIND_CURRENT,
 } modesettingOpts;
 
 typedef struct
