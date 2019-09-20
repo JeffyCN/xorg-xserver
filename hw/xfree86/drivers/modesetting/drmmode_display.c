@@ -2976,6 +2976,9 @@ drmmode_output_init(ScrnInfoPtr pScrn, drmmode_ptr drmmode, drmModeResPtr mode_r
         [DRMMODE_CONNECTOR_CRTC_ID] = { .name = "CRTC_ID", },
     };
 
+    drmmode_prop_info_ptr crtc_info;
+    unsigned int current_crtc;
+
     koutput =
         drmModeGetConnector(drmmode->fd, mode_res->connectors[num]);
     if (!koutput)
@@ -3063,19 +3066,32 @@ drmmode_output_init(ScrnInfoPtr pScrn, drmmode_ptr drmmode, drmModeResPtr mode_r
     /* work out the possible clones later */
     output->possible_clones = 0;
 
-    if (ms->atomic_modeset) {
-        if (!drmmode_prop_info_copy(drmmode_output->props_connector,
-                                    connector_props, DRMMODE_CONNECTOR__COUNT,
-                                    0)) {
-            goto out_free_encoders;
+    if (!drmmode_prop_info_copy(drmmode_output->props_connector,
+                                connector_props, DRMMODE_CONNECTOR__COUNT,
+                                0)) {
+        goto out_free_encoders;
+    }
+    props = drmModeObjectGetProperties(drmmode->fd,
+                                       drmmode_output->output_id,
+                                       DRM_MODE_OBJECT_CONNECTOR);
+    drmmode_prop_info_update(drmmode, drmmode_output->props_connector,
+                             DRMMODE_CONNECTOR__COUNT, props);
+    crtc_info = &drmmode_output->props_connector[DRMMODE_CONNECTOR_CRTC_ID];
+    current_crtc = drmmode_prop_get_value(crtc_info, props,
+                                          DRMMODE_PLANE_TYPE__COUNT);
+    drmModeFreeObjectProperties(props);
+
+    for (i = 0; i < mode_res->count_crtcs; i++) {
+        if (current_crtc == mode_res->crtcs[i]) {
+            xf86DrvMsgVerb(pScrn->scrnIndex, X_INFO, 0,
+                           "Bind output %d to current crtc %d.\n",
+                           drmmode_output->output_id, current_crtc);
+            output->possible_crtcs = (1 << i) >> crtcshift;
+            break;
         }
-        props = drmModeObjectGetProperties(drmmode->fd,
-                                           drmmode_output->output_id,
-                                           DRM_MODE_OBJECT_CONNECTOR);
-        drmmode_prop_info_update(drmmode, drmmode_output->props_connector,
-                                 DRMMODE_CONNECTOR__COUNT, props);
-        drmModeFreeObjectProperties(props);
-    } else {
+    }
+
+    if (!ms->atomic_modeset) {
         drmmode_output->dpms_enum_id =
             koutput_get_prop_id(drmmode->fd, koutput, DRM_MODE_PROP_ENUM,
                                 "DPMS");
