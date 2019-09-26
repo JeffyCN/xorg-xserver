@@ -834,6 +834,7 @@ ms_dri2_schedule_swap(ClientPtr client, DrawablePtr draw,
     ScrnInfoPtr scrn = xf86ScreenToScrn(screen);
     int ret, flip = 0;
     xf86CrtcPtr crtc = ms_dri2_crtc_covering_drawable(draw);
+    drmmode_crtc_private_ptr drmmode_crtc = crtc ? crtc->driver_private : NULL;
     ms_dri2_frame_event_ptr frame_info = NULL;
     uint64_t current_msc, current_ust;
     uint64_t request_msc;
@@ -876,6 +877,9 @@ ms_dri2_schedule_swap(ClientPtr client, DrawablePtr draw,
     if (can_flip(scrn, draw, front, back)) {
         frame_info->type = MS_DRI2_QUEUE_FLIP;
         flip = 1;
+    } else if (drmmode_crtc->flip_fb_enabled) {
+        /* Ignore vblank in flip-fb mode */
+        goto blit_fallback;
     }
 
     /* Correct target_msc by 'flip' if frame_info->type == MS_DRI2_QUEUE_FLIP.
