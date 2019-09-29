@@ -45,8 +45,7 @@ override_dh_auto_install:
 		--destdir=debian/tmp/udeb
 
 	# oh, yuck.
-	find debian/tmp/*/usr/lib/xorg -type f -name '*.la' | \
-	  xargs rm -f
+	find debian/tmp/*/usr/lib/xorg -type f -name '*.la' -delete
 
 	# remove modules not needed in d-i
 	rm -rf debian/tmp/udeb/usr/lib/xorg/modules/multimedia
