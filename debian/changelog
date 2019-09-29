@@ -2030,7 +2030,7 @@ xorg-server (2:1.5.99.901-1) experimental; urgency=low
   [ Timo Aaltonen ]
   * debian/control:
     - Add x11proto-dri2-dev to build-depends.
-    - Bump the x11proto-randr-dev build-dep version to 1.2.99.3. 
+    - Bump the x11proto-randr-dev build-dep version to 1.2.99.3.
     - Bump the libpixman-1-dev build-dep version to 0.13.2.
     - Bump the xtrans-dev build-dep version to 1.2.2.
     - Bump the x11proto-xext-dev build-dep version to 7.0.3.
@@ -2177,7 +2177,7 @@ xorg-server (2:1.4.99.905-1) experimental; urgency=low
 
   [ Timo Aaltonen ]
   * Re-enable dri & glx.
-  * Add a build-dep on mesa-common-dev (>= 7.1~rc1) and bump the desired 
+  * Add a build-dep on mesa-common-dev (>= 7.1~rc1) and bump the desired
     version of libgl1-mesa-dev respectively.
   * Bump the libdrm-dev build-dep version to 2.3.1.
 
@@ -3259,7 +3259,7 @@ xorg-server (2:1.1.1-19) unstable; urgency=high
     (/usr/X11R6/lib/X11/fonts/Type1 not "/usr/X11R6/lib/  X11/fonts/Type1")
 
   [ David Nusinow ]
-  * Conflict with and replace xserver-common, because that package used to 
+  * Conflict with and replace xserver-common, because that package used to
     provide the SecurityPolicy file. This is an RC bugfix because it breaks
     upgrades, so it gets a high urgency. Thanks Christian Tsotras and Lionel
     Elie Mamane for reporting and it. Closes: #402658
