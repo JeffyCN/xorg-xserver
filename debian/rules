@@ -19,6 +19,10 @@ override_dh_autoreconf-indep:
 	--exclude=debian \
 	--exclude=autom4te.cache \
 	--exclude=build-source \
+	--sort=name \
+	--mtime=@$(SOURCE_DATE_EPOCH) \
+	--clamp-mtime \
+	--mode=u+rw,go+r,go-w,a-s \
         -cf - * | xz > build-source/xorg-server.tar.xz
 
 override_dh_auto_configure:

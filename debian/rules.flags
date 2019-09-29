@@ -5,6 +5,7 @@ SUPPORT = https://www.debian.org/support
 
 SOURCE_NAME    :=  xorg-server
 SOURCE_VERSION := $(shell dpkg-parsechangelog -S Version)
+SOURCE_DATE_EPOCH ?= $(shell dpkg-parsechangelog -S Timestamp)
 
 # disable-static is so we don't get libfoo.a for modules.  now if only we could
 # kill the .las.
