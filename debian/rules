@@ -14,6 +14,7 @@ build-source-stamp:
         --transform 's,^,xorg-server/,' \
 	--exclude=debian \
 	--exclude=autom4te.cache \
+	--exclude=build-source \
         -cf - * | xz > build-source/xorg-server.tar.xz
 	>$@
 
