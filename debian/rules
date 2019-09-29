@@ -79,7 +79,7 @@ SERVERMINVER = debian/serverminver
 serverminver = $(shell head -1 $(SERVERMINVER))
 
 .PHONY: abibumpcheck
-abibumpcheck: debian/serverminver $(QUILT_STAMPFN)
+abibumpcheck: debian/serverminver
 	@echo Checking for the need of an ABI bump
 	# Build an updated version of the file:
 	head -1 $(SERVERMINVER) > $(SERVERMINVER).new
