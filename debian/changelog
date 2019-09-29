@@ -3,6 +3,7 @@ xorg-server (2:1.20.4-2) UNRELEASED; urgency=medium
   * Remove the explicit build and build-indep targets (Closes: #941128).
   * Exclude the directory where xorg-server.tar.xz is built from it
     (Closes: #930405).
+  * Set Rules-Requires-Root to binary-targets.
 
  -- Sven Joachim <svenjoac@gmx.de>  Sun, 29 Sep 2019 13:01:04 +0200
 
