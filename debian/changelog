@@ -13,6 +13,7 @@ xorg-server (2:1.20.4-2) UNRELEASED; urgency=medium
       compat level 10.  Remove dh-autoreconf from Build-Depends, redundant.
   * Drop dpkg-dev build dependency, already fulfilled in wheezy.
   * Add xz-utils to Build-Depends-Indep.
+  * Fix a typo in the xvfb-run manpage.
 
  -- Sven Joachim <svenjoac@gmx.de>  Sun, 29 Sep 2019 13:01:04 +0200
 
