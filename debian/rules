@@ -5,7 +5,7 @@ include debian/rules.flags
 include /usr/share/dpkg/architecture.mk
 
 %:
-	dh $@ --with quilt,autoreconf --parallel
+	dh $@ --with quilt
 
 override_dh_autoreconf-arch: abibumpcheck
 	dh_autoreconf

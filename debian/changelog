@@ -8,6 +8,9 @@ xorg-server (2:1.20.4-2) UNRELEASED; urgency=medium
   * Set Rules-Requires-Root to binary-targets.
   * Drop dependency on dummy package libegl1-mesa (Closes: #930608).
   * Remove no longer used lintian overrides from version 2:1.11.2.901-1.
+  * Bump debhelper compat level to 11.
+    - Drop autoreconf and --parallel from the dh sequence, default since
+      compat level 10.  Remove dh-autoreconf from Build-Depends, redundant.
 
  -- Sven Joachim <svenjoac@gmx.de>  Sun, 29 Sep 2019 13:01:04 +0200
 
