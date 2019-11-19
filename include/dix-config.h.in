@@ -509,6 +509,9 @@
 /* Ask fontsproto to make font path element names const */
 #define FONT_PATH_ELEMENT_NAME_CONST    1
 
+/* Use highp as default precision for GLES */
+#undef GLES_USE_HIGHP
+
 /* Build GLAMOR */
 #undef GLAMOR
 

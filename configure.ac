@@ -668,6 +668,7 @@ AC_ARG_ENABLE(kdrive-evdev,   AS_HELP_STRING([--enable-kdrive-evdev], [Build evd
 AC_ARG_ENABLE(libunwind,      AS_HELP_STRING([--enable-libunwind], [Use libunwind for backtracing (default: auto)]), [LIBUNWIND="$enableval"], [LIBUNWIND="auto"])
 AC_ARG_ENABLE(xshmfence,      AS_HELP_STRING([--disable-xshmfence], [Disable xshmfence (default: auto)]), [XSHMFENCE="$enableval"], [XSHMFENCE="auto"])
 
+AC_ARG_ENABLE(gles-highp,    	      AS_HELP_STRING([--enable-gles-highp], [Use highp as default precision for GLES(default: no)]), [GLES_HIGHP=$enableval], [GLES_HIGHP=no])
 
 dnl chown/chmod to be setuid root as part of build
 dnl Replaces InstallXserverSetUID in imake
@@ -2139,6 +2140,10 @@ AM_CONDITIONAL([SOLARIS_VT], [test "x$solaris_vt" = xyes])
 AM_CONDITIONAL([DGA], [test "x$DGA" = xyes])
 AM_CONDITIONAL([XORG_BUS_PLATFORM], [test "x$CONFIG_UDEV_KMS" = xyes])
 AM_CONDITIONAL([XORG_DRIVER_MODESETTING], [test "x$XORG_DRIVER_MODESETTING" = xyes])
+
+if test "x$GLES_HIGHP" = xyes; then
+	AC_DEFINE(GLES_USE_HIGHP, 1, [Use highp as default precision for GLES])
+fi
 
 dnl glamor
 if test "x$GLAMOR" = xauto; then
