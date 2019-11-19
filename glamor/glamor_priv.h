@@ -43,10 +43,15 @@
 #include <epoxy/egl.h>
 #endif
 
+#ifdef GLES_USE_HIGHP
+#define GLAMOR_DEFAULT_PRECISION \
+    "precision highp float;\n"
+#else
 #define GLAMOR_DEFAULT_PRECISION  \
     "#ifdef GL_ES\n"              \
     "precision mediump float;\n"  \
     "#endif\n"
+#endif
 
 #include "glyphstr.h"
 
