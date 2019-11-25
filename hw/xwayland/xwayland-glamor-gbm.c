@@ -36,6 +36,7 @@
 #include <drm_fourcc.h>
 
 #define MESA_EGL_NO_X11_HEADERS
+#define EGL_NO_X11
 #include <gbm.h>
 #include <glamor_egl.h>
 
@@ -124,6 +125,22 @@ is_fd_render_node(int fd)
     return 0;
 }
 
+static char
+is_device_path_render_node (const char *device_path)
+{
+    char is_render_node;
+    int fd;
+
+    fd = open(device_path, O_RDWR | O_CLOEXEC);
+    if (fd < 0)
+        return 0;
+
+    is_render_node = is_fd_render_node(fd);
+    close(fd);
+
+    return is_render_node;
+}
+
 static PixmapPtr
 xwl_glamor_gbm_create_pixmap_for_bo(ScreenPtr screen, struct gbm_bo *bo,
                                     int depth)
@@ -153,6 +170,8 @@ xwl_glamor_gbm_create_pixmap_for_bo(ScreenPtr screen, struct gbm_bo *bo,
                                           xwl_screen->egl_context,
                                           EGL_NATIVE_PIXMAP_KHR,
                                           xwl_pixmap->bo, NULL);
+    if (xwl_pixmap->image == EGL_NO_IMAGE_KHR)
+      goto error;
 
     glGenTextures(1, &xwl_pixmap->texture);
     glBindTexture(GL_TEXTURE_2D, xwl_pixmap->texture);
@@ -160,14 +179,31 @@ xwl_glamor_gbm_create_pixmap_for_bo(ScreenPtr screen, struct gbm_bo *bo,
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
     glEGLImageTargetTexture2DOES(GL_TEXTURE_2D, xwl_pixmap->image);
+    if (eglGetError() != EGL_SUCCESS)
+      goto error;
+
     glBindTexture(GL_TEXTURE_2D, 0);
 
+    glamor_set_pixmap_texture(pixmap, xwl_pixmap->texture);
+    /* `set_pixmap_texture()` may fail silently if the FBO creation failed,
+     * so we check again the texture to be sure it worked.
+     */
+    if (!glamor_get_pixmap_texture(pixmap))
+      goto error;
+
+    glamor_set_pixmap_type(pixmap, GLAMOR_TEXTURE_DRM);
     xwl_pixmap_set_private(pixmap, xwl_pixmap);
 
-    glamor_set_pixmap_texture(pixmap, xwl_pixmap->texture);
-    glamor_set_pixmap_type(pixmap, GLAMOR_TEXTURE_DRM);
-
     return pixmap;
+
+error:
+    if (xwl_pixmap->image != EGL_NO_IMAGE_KHR)
+      eglDestroyImageKHR(xwl_screen->egl_display, xwl_pixmap->image);
+    if (pixmap)
+      glamor_destroy_pixmap(pixmap);
+    free(xwl_pixmap);
+
+    return NULL;
 }
 
 static PixmapPtr
@@ -178,6 +214,7 @@ xwl_glamor_gbm_create_pixmap(ScreenPtr screen,
     struct xwl_screen *xwl_screen = xwl_screen_get(screen);
     struct xwl_gbm_private *xwl_gbm = xwl_gbm_get(xwl_screen);
     struct gbm_bo *bo;
+    PixmapPtr pixmap = NULL;
 
     if (width > 0 && height > 0 && depth >= 15 &&
         (hint == 0 ||
@@ -202,11 +239,18 @@ xwl_glamor_gbm_create_pixmap(ScreenPtr screen,
                                GBM_BO_USE_SCANOUT | GBM_BO_USE_RENDERING);
         }
 
-        if (bo)
-            return xwl_glamor_gbm_create_pixmap_for_bo(screen, bo, depth);
+        if (bo) {
+            pixmap = xwl_glamor_gbm_create_pixmap_for_bo(screen, bo, depth);
+
+            if (!pixmap)
+                gbm_bo_destroy(bo);
+        }
     }
 
-    return glamor_create_pixmap(screen, width, height, depth, hint);
+    if (!pixmap)
+        pixmap = glamor_create_pixmap(screen, width, height, depth, hint);
+
+    return pixmap;
 }
 
 static Bool
@@ -611,14 +655,80 @@ static const dri3_screen_info_rec xwl_dri3_info = {
     .get_drawable_modifiers = glamor_get_drawable_modifiers,
 };
 
+static const char *
+get_render_node_path_for_device(const drmDevicePtr drm_device,
+                                const char *device_path)
+{
+    char *render_node_path = NULL;
+    char device_found = 0;
+    int i;
+
+    for (i = 0; i < DRM_NODE_MAX; i++) {
+        if ((drm_device->available_nodes & (1 << i)) == 0)
+           continue;
+
+        if (!strcmp (device_path, drm_device->nodes[i]))
+            device_found = 1;
+
+        if (is_device_path_render_node(drm_device->nodes[i]))
+            render_node_path = drm_device->nodes[i];
+
+        if (device_found && render_node_path)
+            return render_node_path;
+    }
+
+    return NULL;
+}
+
+static char *
+get_render_node_path(const char *device_path)
+{
+    drmDevicePtr *devices = NULL;
+    char *render_node_path = NULL;
+    int i, n_devices, max_devices;
+
+    max_devices = drmGetDevices2(0, NULL, 0);
+    if (max_devices <= 0)
+        goto out;
+
+    devices = calloc(max_devices, sizeof(drmDevicePtr));
+    if (!devices)
+        goto out;
+
+    n_devices = drmGetDevices2(0, devices, max_devices);
+    if (n_devices < 0)
+        goto out;
+
+    for (i = 0; i < n_devices; i++) {
+       const char *node_path = get_render_node_path_for_device(devices[i],
+                                                               device_path);
+       if (node_path) {
+           render_node_path = strdup(node_path);
+           break;
+       }
+    }
+
+out:
+    free(devices);
+    return render_node_path;
+}
+
 static void
 xwl_drm_handle_device(void *data, struct wl_drm *drm, const char *device)
 {
    struct xwl_screen *xwl_screen = data;
    struct xwl_gbm_private *xwl_gbm = xwl_gbm_get(xwl_screen);
    drm_magic_t magic;
+   char *render_node_path = NULL;
 
-   xwl_gbm->device_name = strdup(device);
+   if (!is_device_path_render_node(device))
+       render_node_path = get_render_node_path(device);
+
+   if (render_node_path)
+       xwl_gbm->device_name = render_node_path;
+   else
+       xwl_gbm->device_name = strdup(device);
+
    if (!xwl_gbm->device_name) {
        xwl_glamor_gbm_cleanup(xwl_screen);
        return;
