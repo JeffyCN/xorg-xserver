@@ -1,4 +1,4 @@
-xorg-server (2:1.20.6-1) UNRELEASED; urgency=medium
+xorg-server (2:1.20.6-1) unstable; urgency=medium
 
   [ Sven Joachim ]
   * Remove the explicit build and build-indep targets (Closes: #941128).
@@ -20,7 +20,7 @@ xorg-server (2:1.20.6-1) UNRELEASED; urgency=medium
   * New upstream release.
   * Add signing key from Matt Turner.
 
- -- Sven Joachim <svenjoac@gmx.de>  Sun, 29 Sep 2019 13:01:04 +0200
+ -- Timo Aaltonen <tjaalton@debian.org>  Mon, 25 Nov 2019 11:49:09 +0200
 
 xorg-server (2:1.20.4-1) unstable; urgency=medium
 
