@@ -1,0 +1,15 @@
+diff --git a/configure.ac b/configure.ac
+index 56f1164d867e21d3ae6c348ef915a2538299db99..c789c6a490dc65aea3dee50331a601ffdab52e38 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -2039,6 +2039,10 @@ if test "x$GLAMOR" = xyes; then
+ 			 [AC_DEFINE(GLAMOR_HAS_EGL_QUERY_DMABUF, 1, [Have GLAMOR_HAS_EGL_QUERY_DMABUF])],
+ 			 [])
+ 
++	PKG_CHECK_EXISTS(epoxy >= 1.5.4,
++			 [AC_DEFINE(GLAMOR_HAS_EGL_QUERY_DRIVER, 1, [Have GLAMOR_HAS_EGL_QUERY_DRIVER])],
++			 [])
++
+ 	PKG_CHECK_MODULES(GBM, "$LIBGBM", [GBM=yes], [GBM=no])
+ 	if test "x$GBM" = xyes; then
+ 		AC_DEFINE(GLAMOR_HAS_GBM, 1,
