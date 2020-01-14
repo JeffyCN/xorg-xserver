@@ -27,6 +27,7 @@ Build-Depends:
  libaudit-dev [linux-any],
  libdrm-dev (>= 2.4.89) [!hurd-i386],
  libgl1-mesa-dev (>= 9.2),
+ mesa-common-dev,
  libunwind-dev [amd64 arm64 armel armhf hppa i386 ia64 mips64 mips64el mipsel powerpc powerpcspe ppc64 ppc64el sh4],
  libxmuu-dev (>= 1:0.99.1),
  libxext-dev (>= 1:0.99.1),
@@ -49,6 +50,7 @@ Build-Depends:
  libegl1-mesa-dev [linux-any kfreebsd-any],
  libgbm-dev (>= 10.2) [linux-any kfreebsd-any],
 # XCB bits for Xephyr
+ libx11-xcb-dev,
  libxcb1-dev,
  libxcb-xkb-dev,
  libxcb-shape0-dev,
