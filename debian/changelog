@@ -1,4 +1,4 @@
-xorg-server (2:1.20.7-1) UNRELEASED; urgency=medium
+xorg-server (2:1.20.7-1) unstable; urgency=medium
 
   * New upstream release.
   * 07_use-modesetting-driver-by-default-on-GeForce.diff: Modified to
@@ -8,7 +8,7 @@ xorg-server (2:1.20.7-1) UNRELEASED; urgency=medium
   * serverminver: Bump video abi minor.
   * fix-modesetting-build.diff: Add a missing include to fix the build.
 
- -- Timo Aaltonen <tjaalton@debian.org>  Tue, 14 Jan 2020 09:33:58 +0200
+ -- Timo Aaltonen <tjaalton@debian.org>  Tue, 14 Jan 2020 10:50:19 +0200
 
 xorg-server (2:1.20.6-1) unstable; urgency=medium
 
