@@ -1,0 +1,30 @@
+commit 6a5e47c57d16de8b6a6a2636f3cbad1aebec32e2
+Author: Michel Dänzer <mdaenzer@redhat.com>
+Date:   Mon Jan 27 17:47:10 2020 +0100
+
+    xfree86/modes: Bail from xf86RotateRedisplay if pScreen->root is NULL
+    
+    Avoids a crash in xf86RotatePrepare -> DamageRegister during
+    CreateScreenResources if rotation or another transform is configured for
+    any connected RandR output in xorg.conf. The generic rotation/transform
+    code generally can't work without the root window currently.
+    
+    Closes: https://gitlab.freedesktop.org/xorg/xserver/issues/969
+    Fixes: 094f42cdfe5d "xfree86/modes: Call xf86RotateRedisplay from
+                         xf86CrtcRotate"
+    Acked-by: Olivier Fourdan <ofourdan@redhat.com>
+    Reviewed-by: Adam Jackson <ajax@redhat.com>
+
+diff --git a/hw/xfree86/modes/xf86Rotate.c b/hw/xfree86/modes/xf86Rotate.c
+index 05944cfcb..5415ed97c 100644
+--- a/hw/xfree86/modes/xf86Rotate.c
++++ b/hw/xfree86/modes/xf86Rotate.c
+@@ -176,7 +176,7 @@ xf86RotateRedisplay(ScreenPtr pScreen)
+     DamagePtr damage = xf86_config->rotation_damage;
+     RegionPtr region;
+ 
+-    if (!damage)
++    if (!damage || !pScreen->root)
+         return FALSE;
+     xf86RotatePrepare(pScreen);
+     region = DamageRegion(damage);

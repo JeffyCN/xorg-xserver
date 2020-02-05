@@ -1,3 +1,10 @@
+xorg-server (2:1.20.7-3) UNRELEASED; urgency=medium
+
+  * fix-rotate-crash.diff: Fix a crash if rotation is set on xorg.conf.
+    (Closes: #949257)
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Wed, 05 Feb 2020 18:27:08 +0200
+
 xorg-server (2:1.20.7-2) unstable; urgency=medium
 
   * add-EGL_QUERY_DRIVER-check.diff: Add a check for EGL_QUERY_DRIVER to
