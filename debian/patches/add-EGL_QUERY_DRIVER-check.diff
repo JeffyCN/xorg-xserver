@@ -13,3 +13,17 @@ index 56f1164d867e21d3ae6c348ef915a2538299db99..c789c6a490dc65aea3dee50331a601ff
  	PKG_CHECK_MODULES(GBM, "$LIBGBM", [GBM=yes], [GBM=no])
  	if test "x$GBM" = xyes; then
  		AC_DEFINE(GLAMOR_HAS_GBM, 1,
+diff --git a/include/dix-config.h.in b/include/dix-config.h.in
+index 1f91d2709..ca8ac8763 100644
+--- a/include/dix-config.h.in
++++ b/include/dix-config.h.in
+@@ -479,6 +479,9 @@
+ /* Glamor can use eglQueryDmaBuf* functions */
+ #undef GLAMOR_HAS_EGL_QUERY_DMABUF
+ 
++/* Glamor can use EGL_MESA_query_driver functions */
++#undef GLAMOR_HAS_EGL_QUERY_DRIVER
++
+ /* byte order */
+ #undef X_BYTE_ORDER
+ 

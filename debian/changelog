@@ -1,3 +1,10 @@
+xorg-server (2:1.20.7-4) UNRELEASED; urgency=medium
+
+  * add-EGL_QUERY_DRIVER-check.diff: Add missing change from upstream
+    to fix glamor getting the driver name from EGL.
+
+ -- Jordan Justen <jljusten@gmail.com>  Fri, 21 Feb 2020 14:10:40 -0800
+
 xorg-server (2:1.20.7-3) unstable; urgency=medium
 
   * fix-rotate-crash.diff: Fix a crash if rotation is set on xorg.conf.
