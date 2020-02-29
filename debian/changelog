@@ -1,9 +1,10 @@
-xorg-server (2:1.20.7-4) UNRELEASED; urgency=medium
+xorg-server (2:1.20.7-4) unstable; urgency=medium
 
+  [ Jordan Justen ]
   * add-EGL_QUERY_DRIVER-check.diff: Add missing change from upstream
     to fix glamor getting the driver name from EGL.
 
- -- Jordan Justen <jljusten@gmail.com>  Fri, 21 Feb 2020 14:10:40 -0800
+ -- Timo Aaltonen <tjaalton@debian.org>  Sat, 29 Feb 2020 07:05:06 +0200
 
 xorg-server (2:1.20.7-3) unstable; urgency=medium
 
