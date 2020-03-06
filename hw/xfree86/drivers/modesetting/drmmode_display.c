@@ -992,9 +992,24 @@ drmmode_create_bo(drmmode_ptr drmmode, drmmode_bo *bo,
 
 #ifdef GLAMOR_HAS_GBM
     if (drmmode->glamor) {
-        bo->gbm = gbm_bo_create(drmmode->gbm, width, height,
-                                drmmode->scrn->depth == 30 ?
-                                GBM_FORMAT_ARGB2101010 : GBM_FORMAT_ARGB8888,
+        uint32_t format;
+
+        switch (drmmode->scrn->depth) {
+        case 15:
+            format = GBM_FORMAT_ARGB1555;
+            break;
+        case 16:
+            format = GBM_FORMAT_RGB565;
+            break;
+        case 30:
+            format = GBM_FORMAT_ARGB2101010;
+            break;
+        default:
+            format = GBM_FORMAT_ARGB8888;
+            break;
+        }
+
+        bo->gbm = gbm_bo_create(drmmode->gbm, width, height, format,
                                 GBM_BO_USE_RENDERING | GBM_BO_USE_SCANOUT);
         bo->gbm_ptr = NULL;
         bo->used_modifiers = FALSE;
