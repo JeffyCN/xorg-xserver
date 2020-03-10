@@ -232,6 +232,17 @@ mieqEnqueue(DeviceIntPtr pDev, InternalEvent *e)
     Time time;
     size_t n_enqueued;
 
+    // HACK: NULL event means to remove device
+    if (!e) {
+        int i;
+
+        for (i = 0; i < QUEUE_CACHED_SIZE; i++) {
+            if (miEventQueue.motionEvents[i].pDev == pDev)
+                miEventQueue.motionEvents[i].pDev = NULL;
+        }
+        return;
+    }
+
     verify_internal_event(e);
 
     n_enqueued = mieqNumEnqueued(&miEventQueue);
