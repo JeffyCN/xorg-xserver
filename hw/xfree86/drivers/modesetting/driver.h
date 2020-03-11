@@ -64,6 +64,7 @@ typedef enum {
     OPTION_ASYNC_FLIP_SECONDARIES,
     OPTION_FLIP_FB,
     OPTION_FLIP_FB_RATE,
+    OPTION_NO_EDID,
 } modesettingOpts;
 
 typedef struct
