@@ -2548,7 +2548,8 @@ drmmode_output_get_modes(xf86OutputPtr output)
     drmmode_output->edid_blob =
         koutput_get_prop_blob(drmmode->fd, koutput, "EDID");
 
-    if (drmmode_output->edid_blob) {
+    if (!xf86ReturnOptValBool(drmmode->Options, OPTION_NO_EDID, FALSE) &&
+        drmmode_output->edid_blob) {
         mon = xf86InterpretEDID(output->scrn->scrnIndex,
                                 drmmode_output->edid_blob->data);
         if (mon && drmmode_output->edid_blob->length > 128)
