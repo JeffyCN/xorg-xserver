@@ -25,6 +25,7 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <sys/socket.h>
+#include <sys/stat.h>
 #include <sys/un.h>
 #include <libdrm/drm_fourcc.h>
 
@@ -93,6 +94,8 @@ ms_exa_xv_set_dma_client(ms_exa_port_private *port_priv, uint32_t dma_client)
     if (bind(port_priv->dma_socket_fd,
              (struct sockaddr *)&addr, sizeof(addr)) < 0)
         goto clear;
+
+    chmod(addr.sun_path, S_IRUSR | S_IWUSR | S_IROTH | S_IWOTH);
 
     return;
 clear:
