@@ -468,6 +468,9 @@ Probe(DriverPtr drv, int flags)
     const char *dev;
     ScrnInfoPtr scrn = NULL;
 
+    if (XSERVER_PLATFORM_BUS || XSERVER_LIBPCIACCESS)
+        return FALSE;
+
     /* For now, just bail out for PROBE_DETECT. */
     if (flags & PROBE_DETECT)
         return FALSE;
