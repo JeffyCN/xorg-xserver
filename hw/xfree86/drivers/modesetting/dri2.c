@@ -834,7 +834,7 @@ ms_dri2_schedule_swap(ClientPtr client, DrawablePtr draw,
     ScrnInfoPtr scrn = xf86ScreenToScrn(screen);
     int ret, flip = 0;
     xf86CrtcPtr crtc = ms_dri2_crtc_covering_drawable(draw);
-    drmmode_crtc_private_ptr drmmode_crtc = crtc->driver_private;
+    drmmode_crtc_private_ptr drmmode_crtc = crtc ? crtc->driver_private : NULL;
     ms_dri2_frame_event_ptr frame_info = NULL;
     uint64_t current_msc, current_ust;
     uint64_t request_msc;
