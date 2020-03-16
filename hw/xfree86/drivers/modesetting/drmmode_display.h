@@ -132,6 +132,10 @@ typedef struct {
 
     const char *dri2_device_name;
 
+#ifdef DRI3
+    char *dri3_device_name;
+#endif
+
     Bool dri2_flipping;
     Bool present_flipping;
 
