@@ -42,6 +42,8 @@
 #include "xf86Pci.h"
 #include "mipointer.h"
 #include "micmap.h"
+#include "misyncshm.h"
+#include "misyncstr.h"
 #include <X11/extensions/randr.h>
 #include "fb.h"
 #include "edid.h"
@@ -1845,6 +1847,31 @@ ScreenInit(ScreenPtr pScreen, int argc, char **argv)
         }
     }
 
+#ifdef DRI3
+    if (ms->drmmode.exa) {
+        if (!ms_exa_dri3_init(pScreen)) {
+            xf86DrvMsg(pScrn->scrnIndex, X_ERROR,
+                       "Failed to initialize the DRI3 extension.\n");
+        }
+    }
+#endif
+
+#if XSYNC
+    if (ms->drmmode.exa) {
+#ifdef HAVE_XSHMFENCE
+        if (!miSyncShmScreenInit(pScreen)) {
+            xf86DrvMsg(pScrn->scrnIndex, X_ERROR,
+                       "Failed to initialize sync support.\n");
+        }
+#else
+        if (!miSyncSetup(pScreen)) {
+            xf86DrvMsg(pScrn->scrnIndex, X_ERROR,
+                       "Failed to initialize sync support.\n");
+        }
+#endif
+    }
+#endif
+
     pScrn->vtSema = TRUE;
 
     return TRUE;
@@ -1925,6 +1952,13 @@ CloseScreen(ScreenPtr pScreen)
 
     /* Clear mask of assigned crtc's in this generation */
     ms_ent->assigned_crtcs = 0;
+
+#ifdef DRI3
+    if (ms->drmmode.dri3_device_name) {
+        free(ms->drmmode.dri3_device_name);
+        ms->drmmode.dri3_device_name = NULL;
+    }
+#endif
 
     if (ms->drmmode.dri2_enable) {
         ms_dri2_close_screen(pScreen);
