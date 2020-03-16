@@ -32,6 +32,7 @@ AM_CPPFLAGS = \
 	$(XORG_INCS) \
 	-I$(top_srcdir)/glamor \
 	-I$(top_srcdir)/exa \
+	-I$(top_srcdir)/dri3 \
 	-I$(srcdir)/../../ddc \
 	-I$(srcdir)/../../dri2 \
 	-I$(srcdir)/../../i2c \
@@ -59,6 +60,10 @@ modesetting_drv_la_SOURCES = \
 	 exa.c \
 	 xv.c \
 	 $(NULL)
+
+if DRI3
+modesetting_drv_la_SOURCES += dri3.c
+endif
 
 drivermandir = $(DRIVER_MAN_DIR)
 driverman_PRE = modesetting.man
