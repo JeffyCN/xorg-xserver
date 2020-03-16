@@ -213,5 +213,9 @@ Bool ms_exa_copy_area(PixmapPtr pSrc, PixmapPtr pDst,
 
 XF86VideoAdaptorPtr ms_exa_xv_init(ScreenPtr screen, int num_texture_ports);
 
+#ifdef DRI3
+Bool ms_exa_dri3_init(ScreenPtr screen);
+#endif
+
 void ms_exchange_buffers(PixmapPtr front, PixmapPtr back);
 int ms_name_from_pixmap(PixmapPtr pixmap, CARD16 *stride, CARD32 *size);
