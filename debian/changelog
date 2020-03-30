@@ -1,4 +1,4 @@
-xorg-server (2:1.20.8-1) UNRELEASED; urgency=medium
+xorg-server (2:1.20.8-1) unstable; urgency=medium
 
   * New upstream release.
   * patches: Dropped patches applied upstream:
@@ -8,7 +8,7 @@ xorg-server (2:1.20.8-1) UNRELEASED; urgency=medium
   * control: Use debhelper-compat, bump to 12.
   * rules: Migrate to dh_missing.
 
- -- Timo Aaltonen <tjaalton@debian.org>  Mon, 30 Mar 2020 14:07:53 +0300
+ -- Timo Aaltonen <tjaalton@debian.org>  Mon, 30 Mar 2020 15:48:38 +0300
 
 xorg-server (2:1.20.7-4) unstable; urgency=medium
 
