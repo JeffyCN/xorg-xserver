@@ -106,7 +106,7 @@ override_dh_fixperms-arch:
 
 override_dh_install:
 	dh_install -pxserver-xorg-core-udeb --sourcedir=debian/tmp/udeb
-	dh_install --remaining-packages --sourcedir=debian/tmp/main --fail-missing
+	dh_install --remaining-packages --sourcedir=debian/tmp/main
 	install -d $(CURDIR)/debian/xserver-xorg-dev/usr/share/xserver-xorg
 	# Extract only the major ABI version:
 	set -e; \
@@ -134,6 +134,9 @@ ifeq ($(DEB_HOST_ARCH_OS), linux)
 	install -d debian/xserver-xorg-core-udeb/lib/udev/rules.d
 	install -m 644 debian/local/64-xorg-xkb.rules debian/xserver-xorg-core-udeb/lib/udev/rules.d
 endif
+
+override_dh_missing:
+	dh_missing --fail-missing
 
 override_dh_clean:
 	dh_clean
