@@ -135,7 +135,10 @@ ifeq ($(DEB_HOST_ARCH_OS), linux)
 	install -m 644 debian/local/64-xorg-xkb.rules debian/xserver-xorg-core-udeb/lib/udev/rules.d
 endif
 
-override_dh_missing:
+override_dh_missing-indep:
+	dh_missing -i -X udeb/
+
+override_dh_missing-arch:
 	dh_missing --fail-missing
 
 override_dh_clean:
