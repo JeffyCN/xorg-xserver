@@ -961,11 +961,11 @@ ms_exa_copy_area(PixmapPtr pSrc, PixmapPtr pDst,
         return FALSE;
 
     region = RegionDuplicate(clip);
-    box = REGION_RECTS(region);
     n = REGION_NUM_RECTS(region);
 
     while(n--) {
         int sx, sy, sw, sh, dx, dy, dw, dh;
+        box = REGION_RECTS(region) + n;
 
         dx = box->x1;
         dy = box->y1;
@@ -978,6 +978,9 @@ ms_exa_copy_area(PixmapPtr pSrc, PixmapPtr pDst,
         sy = max(box->y1, 0);
         sw = min(box->x2, pSrc->drawable.width) - sx;
         sh = min(box->y2, pSrc->drawable.height) - sy;
+
+        if (sw <= 0 || sh <= 0 || dw <= 0 || dh <= 0)
+            continue;
 
         /* rga has scale limits */
         if ((double)sw / dw > 16 || (double)dw / sw > 16 ||
@@ -992,8 +995,6 @@ ms_exa_copy_area(PixmapPtr pSrc, PixmapPtr pDst,
 
         if (c_RkRgaBlit(&src_info, &dst_info, NULL) < 0)
             continue;
-
-        box++;
     }
 
     RegionDestroy(region);
