@@ -243,6 +243,8 @@ mieqEnqueue(DeviceIntPtr pDev, InternalEvent *e)
         return;
     }
 
+    SetInputCheck(&miEventQueue.head, &miEventQueue.tail);
+
     verify_internal_event(e);
 
     n_enqueued = mieqNumEnqueued(&miEventQueue);
@@ -684,6 +686,9 @@ mieqProcessInputEvents(void)
             e->pDev = NULL;
         }
     }
+
+    // prevent busy retrying cached motion
+    SetInputCheck(&miEventQueue.head, &miEventQueue.head);
 
     input_unlock();
 }
