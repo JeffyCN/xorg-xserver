@@ -99,12 +99,14 @@ rga_prepare_info(PixmapPtr pPixmap, rga_info_t *info,
     info->fd = -1;
     info->mmuFlag = 1;
 
-    if (priv && priv->fd) {
+    if (pPixmap->devPrivate.ptr && pPixmap->devKind) {
+        info->virAddr = pPixmap->devPrivate.ptr;
+        pitch = pPixmap->devKind;
+    } else if (priv && priv->fd > 0) {
         info->fd = priv->fd;
         pitch = priv->pitch;
     } else {
-        info->virAddr = pPixmap->devPrivate.ptr;
-        pitch = pPixmap->devKind;
+        return FALSE;
     }
 
     format = rga_get_pixmap_format(pPixmap);
