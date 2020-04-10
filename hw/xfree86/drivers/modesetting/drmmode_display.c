@@ -2606,6 +2606,14 @@ drmmode_output_get_modes(xf86OutputPtr output)
 
         drmmode_ConvertFromKMode(output->scrn, &koutput->modes[i], Mode);
 
+        if (Mode->HTotal > Mode->HDisplay * 2) {
+            drmmode_output->is_dummy = TRUE;
+
+            xf86DrvMsgVerb(output->scrn->scrnIndex, X_INFO, 0,
+                           "Found dummy connector with invalid htotal: %d.\n",
+                           koutput->connector_id);
+        }
+
         if (drmmode_output->need_remap) {
             Mode->HDisplay /= 2;
             Mode->VDisplay *= 2;
