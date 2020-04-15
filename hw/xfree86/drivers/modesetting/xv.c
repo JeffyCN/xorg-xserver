@@ -389,6 +389,18 @@ ms_exa_xv_put_image(ScrnInfoPtr pScrn,
     if (id != FOURCC_NV12 && id != DRM_FORMAT_XRGB8888)
         return BadMatch;
 
+#if 1//def XV_FULLSCREEN
+    BoxPtr box;
+
+    if (!RegionNotEmpty(clipBoxes))
+        return ret;
+
+    box = RegionRects(clipBoxes);
+    box->x1 = box->y1 = src_x = src_y = drw_x = drw_y = 0;
+    box->x2 = drw_w = screen->width;
+    box->y2 = drw_h = screen->height;
+#endif
+
     src_pixmap = ms_exa_xv_create_dma_pixmap(pScrn, port_priv, id);
     if (!src_pixmap) {
         src_pixmap = ms_exa_xv_create_pixmap(pScrn, port_priv, id,
