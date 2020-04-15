@@ -4601,7 +4601,11 @@ drmmode_flip_fb(xf86CrtcPtr crtc, int *timeout)
 
             /* keep the current fb */
             if (!ret && !drmmode_crtc->direct_video_dirty)
+#ifdef DUMMY_OUTPUT_LATENCY_MS
+                goto flip;
+#else
                 return TRUE;
+#endif
         }
     }
 
@@ -4617,6 +4621,9 @@ drmmode_flip_fb(xf86CrtcPtr crtc, int *timeout)
 
     fb = &drmmode_crtc->flip_fb[drmmode_crtc->current_fb];
 
+    gettimeofday(&tv, NULL);
+    fb->updated_ms = tv.tv_sec * 1000 + tv.tv_usec / 1000;
+
     if (drmmode_crtc->fbpool) {
         drmmode_crtc->fbpool->current_fb = drmmode_crtc->current_fb;
 
@@ -4629,6 +4636,44 @@ drmmode_flip_fb(xf86CrtcPtr crtc, int *timeout)
 
         return TRUE;
     }
+
+#ifdef DUMMY_OUTPUT_LATENCY_MS
+flip:
+    if (drmmode_crtc->is_dummy)
+        return TRUE;
+
+    /* Try to delay real monitors for the dummy one */
+    gettimeofday(&tv, NULL);
+    uint64_t target_ms =
+        tv.tv_sec * 1000 + tv.tv_usec / 1000 - DUMMY_OUTPUT_LATENCY_MS;
+    int i;
+
+    for (i = 0; i < ARRAY_SIZE(drmmode_crtc->flip_fb) - 1; i++) {
+        int index = drmmode_crtc->current_fb - i;
+        if (index < 0)
+            index += ARRAY_SIZE(drmmode_crtc->flip_fb);
+
+        fb = &drmmode_crtc->flip_fb[index];
+        if (!fb->updated_ms) {
+            // Nothing to display
+            fb = NULL;
+            break;
+        }
+
+        // Pending and ready to display
+        if (fb->updated_ms <= target_ms)
+            break;
+    }
+
+    // Trigger re-run for pending display
+    if (i && *timeout)
+        *timeout = 16;
+
+    if (!fb)
+        return TRUE;
+
+    fb->updated_ms = 0;
+#endif
 
     if (!ms_do_pageflip_bo(screen, &fb->bo, drmmode_crtc,
                            drmmode_crtc->vblank_pipe, TRUE,
