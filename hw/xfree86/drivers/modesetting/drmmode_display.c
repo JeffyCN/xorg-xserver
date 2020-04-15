@@ -5145,7 +5145,11 @@ drmmode_flip_fb(xf86CrtcPtr crtc, int *timeout)
             ret = RegionNotEmpty(dirty);
             RegionDestroy(dirty);
             if (!ret)
+#ifdef DUMMY_OUTPUT_LATENCY_MS
+                goto flip;
+#else
                 return TRUE;
+#endif
         }
     }
 
@@ -5160,6 +5164,8 @@ drmmode_flip_fb(xf86CrtcPtr crtc, int *timeout)
         return FALSE;
     }
 
+    fb->updated_ms = now_ms;
+
     if (drmmode_crtc->fbpool) {
         drmmode_crtc->fbpool->current_fb = drmmode_crtc->current_fb;
 
@@ -5172,6 +5178,42 @@ drmmode_flip_fb(xf86CrtcPtr crtc, int *timeout)
 
         return TRUE;
     }
+
+#ifdef DUMMY_OUTPUT_LATENCY_MS
+flip:
+    if (drmmode_crtc->is_dummy)
+        return TRUE;
+
+    /* Try to delay real monitors for the dummy one */
+    uint64_t target_ms = now_ms - DUMMY_OUTPUT_LATENCY_MS;
+    int i;
+
+    for (i = 0; i < ARRAY_SIZE(drmmode_crtc->flip_fb) - 1; i++) {
+        int index = next_fb - i;
+        if (index < 0)
+            index += ARRAY_SIZE(drmmode_crtc->flip_fb);
+
+        fb = &drmmode_crtc->flip_fb[index];
+        if (!fb->updated_ms) {
+            // Nothing to display
+            fb = NULL;
+            break;
+        }
+
+        // Pending and ready to display
+        if (fb->updated_ms <= target_ms)
+            break;
+    }
+
+    // Trigger re-run for pending display
+    if (i && *timeout)
+        *timeout = 16;
+
+    if (!fb)
+        return TRUE;
+
+    fb->updated_ms = 0;
+#endif
 
     if (!ms_do_pageflip_bo(screen, &fb->bo, drmmode_crtc,
                            drmmode_crtc->vblank_pipe, crtc, ms->async_pageflip,

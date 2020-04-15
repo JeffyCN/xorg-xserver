@@ -35,6 +35,8 @@
 #include "exa.h"
 #include "dumb_bo.h"
 
+#define DUMMY_OUTPUT_LATENCY_MS 60
+
 struct gbm_device;
 
 enum drmmode_plane_property {
@@ -189,6 +191,8 @@ typedef struct {
     Bool need_clear;
 
     uint8_t *dump_buf;
+
+    uint64_t updated_ms;
 } drmmode_fb;
 
 #define FBPOOL_MAGIC "FBPL"
@@ -224,7 +228,11 @@ typedef struct {
 
     /** support fb flipping to avoid tearing */
     unsigned fb_id;
+#ifdef DUMMY_OUTPUT_LATENCY_MS
+    drmmode_fb flip_fb[DUMMY_OUTPUT_LATENCY_MS / 16 + 5];
+#else
     drmmode_fb flip_fb[5];
+#endif
     unsigned current_fb;
     Bool external_flipped; /* dri2 or present flip */
     uint64_t flipping_time_ms; /* time of the latest fb flipping */
