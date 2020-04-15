@@ -204,7 +204,7 @@ typedef struct {
 
     /** support fb flipping to avoid tearing */
     unsigned fb_id;
-    drmmode_fb flip_fb[2];
+    drmmode_fb flip_fb[5];
     unsigned current_fb;
     uint64_t flipping_time_ms; /* time of the latest fb flipping */
     Bool can_flip_fb;
