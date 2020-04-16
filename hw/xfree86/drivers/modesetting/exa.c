@@ -155,6 +155,9 @@ static void ms_exa_done(PixmapPtr pPixmap) {}
 Bool
 ms_exa_prepare_access(PixmapPtr pPix, int index)
 {
+    ScreenPtr screen = pPix->drawable.pScreen;
+    ScrnInfoPtr scrn = xf86ScreenToScrn(screen);
+    modesettingPtr ms = modesettingPTR(scrn);
     struct ms_exa_pixmap_priv *priv = exaGetPixmapDriverPrivate(pPix);
 
     if (pPix->devPrivate.ptr)
@@ -162,6 +165,8 @@ ms_exa_prepare_access(PixmapPtr pPix, int index)
 
     if (!priv)
         return FALSE;
+
+    dumb_bo_map(ms->drmmode.fd, priv->bo);
 
     pPix->devPrivate.ptr = priv->bo->ptr;
 
@@ -763,8 +768,6 @@ ms_exa_create_pixmap2(ScreenPtr pScreen, int width, int height,
     priv->fd = dumb_bo_get_fd(ms->drmmode.fd, priv->bo, 0);
     priv->pitch = priv->bo->pitch;
 
-    dumb_bo_map(ms->drmmode.fd, priv->bo);
-
     if (new_fb_pitch)
         *new_fb_pitch = priv->pitch;
 
@@ -870,8 +873,6 @@ ms_exa_set_pixmap_bo(ScrnInfoPtr scrn, PixmapPtr pPixmap,
     priv->bo = bo;
     priv->fd = dumb_bo_get_fd(ms->drmmode.fd, priv->bo, 0);
     priv->pitch = priv->bo->pitch;
-
-    dumb_bo_map(ms->drmmode.fd, priv->bo);
 
     priv->owned = owned;
 
