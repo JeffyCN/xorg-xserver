@@ -396,39 +396,19 @@ ms_exa_check_composite(int op,
 }
 
 static Bool
-ms_exa_prepare_composite(int op,
-                         PicturePtr pSrcPicture,
-                         PicturePtr pMaskPicture,
-                         PicturePtr pDstPicture,
-                         PixmapPtr pSrc, PixmapPtr pMask, PixmapPtr pDst)
+ms_exa_parse_transform(PictTransformPtr t, int *rotate, Bool *reflect_y)
 {
-#ifdef MODESETTING_WITH_RGA
-    PictTransformPtr t = pSrcPicture->transform;
     PictVector v;
     double x, y, dx, dy;
     int r1, r2;
 
-    if (!rga_check_pixmap(pSrc))
-        return FALSE;
-
-    if (!rga_check_pixmap(pDst))
-        return FALSE;
-
-    if (pDst == pSrc)
-        return FALSE;
-
-    /* TODO: Support repeat */
-    if (pSrcPicture->repeat)
-        return FALSE;
-
-    /* TODO: Handle pSrcPicture->filter */
-
     if (!t) {
-        exa_prepare_args.composite.rotate = 0;
-        exa_prepare_args.composite.reflect_y = 0;
-        goto out;
+        *rotate = 0;
+        *reflect_y = FALSE;
+        return TRUE;
     }
 
+    /* Only support affine matrix */
     if (t->matrix[2][0] || t->matrix[2][1] || !t->matrix[2][2])
         return FALSE;
 
@@ -455,10 +435,40 @@ ms_exa_prepare_composite(int op,
     y = pixman_fixed_to_double(v.vector[1]) - dy;
     r2 = (int) ANGLE(atan2(y, x) * 180 / M_PI - 90);
 
-    exa_prepare_args.composite.rotate = 360 - r1;
-    exa_prepare_args.composite.reflect_y = r1 != r2;
+    *rotate = (360 - r1) % 360;
+    *reflect_y = r1 != r2;
 
-out:
+    return TRUE;
+}
+
+static Bool
+ms_exa_prepare_composite(int op,
+                         PicturePtr pSrcPicture,
+                         PicturePtr pMaskPicture,
+                         PicturePtr pDstPicture,
+                         PixmapPtr pSrc, PixmapPtr pMask, PixmapPtr pDst)
+{
+#ifdef MODESETTING_WITH_RGA
+    PictTransformPtr t = pSrcPicture->transform;
+
+    if (!rga_check_pixmap(pSrc))
+        return FALSE;
+
+    if (!rga_check_pixmap(pDst))
+        return FALSE;
+
+    if (pDst == pSrc)
+        return FALSE;
+
+    /* TODO: Support repeat */
+    if (pSrcPicture->repeat)
+        return FALSE;
+
+    /* TODO: Handle pSrcPicture->filter */
+
+    if (!ms_exa_parse_transform(t, &exa_prepare_args.composite.rotate,
+                                &exa_prepare_args.composite.reflect_y))
+        return FALSE;
 #endif
     exa_prepare_args.composite.op = op;
     exa_prepare_args.composite.pSrcPicture = pSrcPicture;
@@ -940,25 +950,100 @@ ms_exa_shareable_fd_from_pixmap(ScreenPtr screen,
     return priv->fd;
 }
 
-// TODO: Add bail func
+static Bool
+ms_exa_copy_area_bail(PixmapPtr pSrc, PixmapPtr pDst,
+                      pixman_f_transform_t *transform, RegionPtr clip)
+{
+    ScreenPtr screen = pSrc->drawable.pScreen;
+    PictFormatPtr format = PictureWindowFormat(screen->root);
+    PicturePtr src = NULL, dst = NULL;
+    pixman_transform_t t;
+    Bool ret = FALSE;
+    BoxPtr box;
+    int n, error;
+
+    if (pSrc->drawable.bitsPerPixel == 12 ||
+        pDst->drawable.bitsPerPixel == 12)
+        return FALSE;
+
+    src = CreatePicture(None, &pSrc->drawable,
+                        format, 0L, NULL, serverClient, &error);
+    if (!src)
+        return FALSE;
+
+    dst = CreatePicture(None, &pDst->drawable,
+                        format, 0L, NULL, serverClient, &error);
+    if (!dst)
+        goto out;
+
+    if (transform) {
+        if (!pixman_transform_from_pixman_f_transform(&t, transform))
+            goto out;
+
+        error = SetPictureTransform(src, &t);
+        if (error)
+            goto out;
+    }
+
+    box = REGION_RECTS(clip);
+    n = REGION_NUM_RECTS(clip);
+
+    while (n--) {
+        CompositePicture(PictOpSrc,
+                         src, NULL, dst,
+                         box->x1, box->y1, 0, 0, box->x1,
+                         box->y1, box->x2 - box->x1,
+                         box->y2 - box->y1);
+
+        box++;
+    }
+
+    ret = TRUE;
+out:
+    if (src)
+        FreePicture(src, None);
+    if (dst)
+        FreePicture(dst, None);
+
+    return ret;
+}
+
 Bool
 ms_exa_copy_area(PixmapPtr pSrc, PixmapPtr pDst,
                  pixman_f_transform_t *transform, RegionPtr clip)
 {
-#ifndef MODESETTING_WITH_RGA
-    return FALSE;
-#else
+#ifdef MODESETTING_WITH_RGA
+    ScreenPtr screen = pSrc->drawable.pScreen;
+    ScrnInfoPtr scrn = xf86ScreenToScrn(screen);
+    modesettingPtr ms = modesettingPTR(scrn);
     rga_info_t src_info = {0};
     rga_info_t dst_info = {0};
-    RegionPtr region;
+    RegionPtr region = NULL;
     BoxPtr box;
     int n;
 
+    if (!ms->drmmode.exa)
+        goto bail;
+
     if (!rga_check_pixmap(pSrc))
-        return FALSE;
+        goto bail;
 
     if (!rga_check_pixmap(pDst))
-        return FALSE;
+        goto bail;
+
+    /* Fallback to compositor for rotate / reflect */
+    if (transform) {
+        pixman_transform_t t;
+        Bool reflect_y = FALSE;
+        int rotate = 0;
+
+        pixman_transform_from_pixman_f_transform(&t, transform);
+        if (!ms_exa_parse_transform(&t, &rotate, &reflect_y))
+            goto bail;
+
+        if (rotate || reflect_y)
+            goto bail;
+    }
 
     region = RegionDuplicate(clip);
     n = REGION_NUM_RECTS(region);
@@ -977,7 +1062,8 @@ ms_exa_copy_area(PixmapPtr pSrc, PixmapPtr pDst,
         dw = box->x2 - box->x1;
         dh = box->y2 - box->y1;
 
-        pixman_f_transform_bounds(transform, box);
+        if (transform)
+            pixman_f_transform_bounds(transform, box);
 
         sx = max(box->x1, 0);
         sy = max(box->y1, 0);
@@ -990,19 +1076,25 @@ ms_exa_copy_area(PixmapPtr pSrc, PixmapPtr pDst,
         /* rga has scale limits */
         if ((double)sw / dw > 16 || (double)dw / sw > 16 ||
             (double)sh / dh > 16 || (double)dh / sh > 16)
-            continue;
+            goto bail;
 
         if (!rga_prepare_info(pSrc, &src_info, sx, sy, sw, sh))
-            continue;
+            goto bail;
 
         if (!rga_prepare_info(pDst, &dst_info, dx, dy, dw, dh))
-            continue;
+            goto bail;
 
         if (c_RkRgaBlit(&src_info, &dst_info, NULL) < 0)
-            continue;
+            goto bail;
     }
 
     RegionDestroy(region);
     return TRUE;
+
+bail:
+    if (region)
+        RegionDestroy(region);
 #endif
+
+    return ms_exa_copy_area_bail(pSrc, pDst, transform, clip);
 }
