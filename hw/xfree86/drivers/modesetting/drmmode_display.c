@@ -4201,6 +4201,26 @@ drmmode_apply_transform(xf86CrtcPtr crtc)
 {
     drmmode_crtc_private_ptr drmmode_crtc = crtc->driver_private;
     drmmode_ptr drmmode = drmmode_crtc->drmmode;
+    BoxRec box = {
+        .x1 = 0,
+        .y1 = 0,
+        .x2 = crtc->mode.HDisplay,
+        .y2 = crtc->mode.VDisplay,
+    };
+    int w, h;
+
+    /* should always success */
+    xf86CrtcRotate(crtc);
+
+    pixman_f_transform_bounds(&crtc->f_framebuffer_to_crtc, &box);
+    w = box.x2 - box.x1;
+    h = box.y2 - box.y1;
+
+    if ((w == crtc->mode.HDisplay && h == crtc->mode.VDisplay) ||
+        (w == crtc->mode.VDisplay && h == crtc->mode.HDisplay))
+        drmmode_crtc->is_scale = FALSE;
+    else
+        drmmode_crtc->is_scale = TRUE;
 
     /* fb flipping disabled or doing shared pixmap flipping */
     if (!drmmode_crtc->can_flip_fb || drmmode_crtc->enable_flipping)
@@ -4330,6 +4350,10 @@ drmmode_update_fb(xf86CrtcPtr crtc)
 
         fb->need_clear = TRUE;
     }
+
+    /* scaled screens may not be able to map areas(due to precision) */
+    if (drmmode_crtc->is_scale)
+        fb->need_clear = TRUE;
 
     dirty = NULL;
     if (fb->need_clear) {
