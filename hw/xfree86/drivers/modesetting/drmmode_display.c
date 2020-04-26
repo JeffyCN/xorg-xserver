@@ -4158,12 +4158,9 @@ drmmode_update_fb(xf86CrtcPtr crtc)
     modesettingPtr ms = modesettingPTR(scrn);
     ScreenPtr screen = xf86ScrnToScreen(scrn);
     SourceValidateProcPtr SourceValidate = screen->SourceValidate;
-    PixmapPtr dst_pixmap;
     RegionPtr dirty;
     drmmode_fb *fb;
-    BoxPtr box;
-    Bool ret = FALSE;
-    int n;
+    Bool ret;
 
     fb = &drmmode_crtc->flip_fb[drmmode_crtc->current_fb];
 
@@ -4211,78 +4208,10 @@ drmmode_update_fb(xf86CrtcPtr crtc)
         goto out;
     }
 
-    n = RegionNumRects(dirty);
-    box = RegionRects(dirty);
-
-    dst_pixmap = fb->pixmap;
-
-    /* base on xf86Rotate.c xf86RotateCrtcRedisplay() */
-    if (crtc->driverIsPerformingTransform & XF86DriverTransformOutput) {
-        PictFormatPtr format = PictureWindowFormat(screen->root);
-        int error;
-        PicturePtr src, dst;
-        XID include_inferiors = IncludeInferiors;
-
-        src = CreatePicture(None, &screen->root->drawable, format,
-                            CPSubwindowMode,
-                            &include_inferiors,
-                            serverClient, &error);
-        if (!src)
-            goto out;
-
-        dst = CreatePicture(None,
-                            &dst_pixmap->drawable,
-                            format, 0L, NULL, serverClient, &error);
-        if (!dst) {
-            FreePicture(src, None);
-            goto out;
-        }
-
-        error = SetPictureTransform(src, &crtc->crtc_to_framebuffer);
-        if (error) {
-            FreePicture(src, None);
-            FreePicture(dst, None);
-            goto out;
-        }
-
-        if (crtc->transform_in_use && crtc->filter)
-            SetPicturePictFilter(src, crtc->filter, crtc->params, crtc->nparams);
-
-        screen->SourceValidate = NULL;
-        while (n--) {
-            CompositePicture(PictOpSrc,
-                             src, NULL, dst,
-                             box->x1, box->y1, 0, 0, box->x1,
-                             box->y1, box->x2 - box->x1,
-                             box->y2 - box->y1);
-
-            box++;
-        }
-        screen->SourceValidate = SourceValidate;
-
-        FreePicture(src, None);
-        FreePicture(dst, None);
-    } else {
-        GCPtr gc = GetScratchGC(dst_pixmap->drawable.depth, screen);
-        ChangeGCVal subWindowMode;
-
-        subWindowMode.val = IncludeInferiors;
-        ChangeGC(NullClient, gc, GCSubwindowMode, &subWindowMode);
-
-        ValidateGC(&dst_pixmap->drawable, gc);
-        screen->SourceValidate = NULL;
-        while (n--) {
-            (*gc->ops->CopyArea)(&screen->root->drawable,
-                                 &dst_pixmap->drawable, gc,
-                                 crtc->x + box->x1, crtc->y + box->y1,
-                                 box->x2 - box->x1, box->y2 - box->y1,
-                                 box->x1, box->y1);
-
-            box++;
-        }
-        screen->SourceValidate = SourceValidate;
-        FreeScratchGC(gc);
-    }
+    screen->SourceValidate = NULL;
+    ret = ms_exa_copy_area(screen->GetScreenPixmap(screen), fb->pixmap,
+                           &crtc->f_crtc_to_framebuffer, dirty);
+    screen->SourceValidate = SourceValidate;
 
 #ifdef GLAMOR_HAS_GBM
     if (ms->drmmode.glamor)
