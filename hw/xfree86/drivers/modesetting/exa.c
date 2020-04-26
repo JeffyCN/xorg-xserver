@@ -940,25 +940,88 @@ ms_exa_shareable_fd_from_pixmap(ScreenPtr screen,
     return priv->fd;
 }
 
-// TODO: Add bail func
+static Bool
+ms_exa_copy_area_bail(PixmapPtr pSrc, PixmapPtr pDst,
+                      pixman_f_transform_t *transform, RegionPtr clip)
+{
+    ScreenPtr screen = pSrc->drawable.pScreen;
+    ScrnInfoPtr scrn = xf86ScreenToScrn(screen);
+    modesettingPtr ms = modesettingPTR(scrn);
+    PictFormatPtr format = PictureWindowFormat(screen->root);
+    PicturePtr src = NULL, dst = NULL;
+    pixman_transform_t t;
+    Bool ret = FALSE;
+    BoxPtr box;
+    int n, error;
+
+    if (pSrc->drawable.bitsPerPixel != ms->drmmode.kbpp ||
+        pDst->drawable.bitsPerPixel != ms->drmmode.kbpp)
+        return FALSE;
+
+    src = CreatePicture(None, &pSrc->drawable,
+                        format, 0L, NULL, serverClient, &error);
+    if (!src)
+        return FALSE;
+
+    dst = CreatePicture(None, &pDst->drawable,
+                        format, 0L, NULL, serverClient, &error);
+    if (!dst)
+        goto out;
+
+    if (transform) {
+        if (!pixman_transform_from_pixman_f_transform(&t, transform))
+            goto out;
+
+        error = SetPictureTransform(src, &t);
+        if (error)
+            goto out;
+    }
+
+    box = REGION_RECTS(clip);
+    n = REGION_NUM_RECTS(clip);
+
+    while (n--) {
+        CompositePicture(PictOpSrc,
+                         src, NULL, dst,
+                         box->x1, box->y1, 0, 0, box->x1,
+                         box->y1, box->x2 - box->x1,
+                         box->y2 - box->y1);
+
+        box++;
+    }
+
+    ret = TRUE;
+out:
+    if (src)
+        FreePicture(src, None);
+    if (dst)
+        FreePicture(dst, None);
+
+    return ret;
+}
+
 Bool
 ms_exa_copy_area(PixmapPtr pSrc, PixmapPtr pDst,
                  pixman_f_transform_t *transform, RegionPtr clip)
 {
-#ifndef MODESETTING_WITH_RGA
-    return FALSE;
-#else
+#ifdef MODESETTING_WITH_RGA
+    ScreenPtr screen = pSrc->drawable.pScreen;
+    ScrnInfoPtr scrn = xf86ScreenToScrn(screen);
+    modesettingPtr ms = modesettingPTR(scrn);
     rga_info_t src_info = {0};
     rga_info_t dst_info = {0};
-    RegionPtr region;
+    RegionPtr region = NULL;
     BoxPtr box;
     int n;
 
+    if (!ms->drmmode.exa)
+        goto bail;
+
     if (!rga_check_pixmap(pSrc))
-        return FALSE;
+        goto bail;
 
     if (!rga_check_pixmap(pDst))
-        return FALSE;
+        goto bail;
 
     region = RegionDuplicate(clip);
     n = REGION_NUM_RECTS(region);
@@ -972,7 +1035,8 @@ ms_exa_copy_area(PixmapPtr pSrc, PixmapPtr pDst,
         dw = box->x2 - box->x1;
         dh = box->y2 - box->y1;
 
-        pixman_f_transform_bounds(transform, box);
+        if (transform)
+            pixman_f_transform_bounds(transform, box);
 
         sx = max(box->x1, 0);
         sy = max(box->y1, 0);
@@ -985,19 +1049,25 @@ ms_exa_copy_area(PixmapPtr pSrc, PixmapPtr pDst,
         /* rga has scale limits */
         if ((double)sw / dw > 16 || (double)dw / sw > 16 ||
             (double)sh / dh > 16 || (double)dh / sh > 16)
-            continue;
+            goto bail;
 
         if (!rga_prepare_info(pSrc, &src_info, sx, sy, sw, sh))
-            continue;
+            goto bail;
 
         if (!rga_prepare_info(pDst, &dst_info, dx, dy, dw, dh))
-            continue;
+            goto bail;
 
         if (c_RkRgaBlit(&src_info, &dst_info, NULL) < 0)
-            continue;
+            goto bail;
     }
 
     RegionDestroy(region);
     return TRUE;
+
+bail:
+    if (region)
+        RegionDestroy(region);
 #endif
+
+    return ms_exa_copy_area_bail(pSrc, pDst, transform, clip);
 }
