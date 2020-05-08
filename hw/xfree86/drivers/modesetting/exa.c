@@ -383,7 +383,7 @@ ms_exa_check_composite(int op,
 {
 #ifdef MODESETTING_WITH_RGA
     /* TODO: Support other op */
-    if (op != PictOpSrc)
+    if (op != PictOpSrc && op != PictOpOver)
         return FALSE;
 
     /* TODO: Support mask */
@@ -531,7 +531,8 @@ ms_exa_composite(PixmapPtr pDst, int srcX, int srcY,
     rga_info_t tmp_info = {0};
     Bool reflect_y = exa_prepare_args.composite.reflect_y;
     int rotate = exa_prepare_args.composite.rotate;
-    int sw, sh;
+    int op = exa_prepare_args.composite.op;
+    int sw, sh, blend = 0;
 
     /* skip small images */
     if (width * height <= 4096)
@@ -554,6 +555,10 @@ ms_exa_composite(PixmapPtr pDst, int srcX, int srcY,
     if (!rga_prepare_info(pDst, &dst_info, dstX, dstY, width, height))
         goto bail;
 
+    /* dst = src + (1 - src.a) * dst */
+    if (op == PictOpOver)
+        blend = 0xFF0105;
+
     if (rotate == 90)
         src_info.rotation = HAL_TRANSFORM_ROT_90;
     else if (rotate == 180)
@@ -572,6 +577,7 @@ ms_exa_composite(PixmapPtr pDst, int srcX, int srcY,
         rga_set_rect(&tmp_info.rect, 0, 0, width, height,
                      width, height, rga_get_pixmap_format(pDst));
 
+        src_info.blend = blend;
         if (c_RkRgaBlit(&src_info, &tmp_info, NULL) < 0)
             goto bail;
 
@@ -581,6 +587,7 @@ ms_exa_composite(PixmapPtr pDst, int srcX, int srcY,
     if (reflect_y)
         src_info.rotation = HAL_TRANSFORM_FLIP_V;
 
+    src_info.blend = blend;
     if (c_RkRgaBlit(&src_info, &dst_info, NULL) < 0)
         goto bail;
 
