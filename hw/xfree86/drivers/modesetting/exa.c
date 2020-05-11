@@ -402,39 +402,19 @@ ms_exa_check_composite(int op,
 }
 
 static Bool
-ms_exa_prepare_composite(int op,
-                         PicturePtr pSrcPicture,
-                         PicturePtr pMaskPicture,
-                         PicturePtr pDstPicture,
-                         PixmapPtr pSrc, PixmapPtr pMask, PixmapPtr pDst)
+ms_exa_parse_transform(PictTransformPtr t, int *rotate, Bool *reflect_y)
 {
-#ifdef MODESETTING_WITH_RGA
-    PictTransformPtr t = pSrcPicture->transform;
     PictVector v;
     double x, y, dx, dy;
     int r1, r2;
 
-    if (!rga_check_pixmap(pSrc))
-        return FALSE;
-
-    if (!rga_check_pixmap(pDst))
-        return FALSE;
-
-    if (pDst == pSrc)
-        return FALSE;
-
-    /* TODO: Support repeat */
-    if (pSrcPicture->repeat)
-        return FALSE;
-
-    /* TODO: Handle pSrcPicture->filter */
-
     if (!t) {
-        exa_prepare_args.composite.rotate = 0;
-        exa_prepare_args.composite.reflect_y = 0;
-        goto out;
+        *rotate = 0;
+        *reflect_y = FALSE;
+        return TRUE;
     }
 
+    /* Only support affine matrix */
     if (t->matrix[2][0] || t->matrix[2][1] || !t->matrix[2][2])
         return FALSE;
 
@@ -461,10 +441,40 @@ ms_exa_prepare_composite(int op,
     y = pixman_fixed_to_double(v.vector[1]) - dy;
     r2 = (int) ANGLE(atan2(y, x) * 180 / M_PI - 90);
 
-    exa_prepare_args.composite.rotate = 360 - r1;
-    exa_prepare_args.composite.reflect_y = r1 != r2;
+    *rotate = (360 - r1) % 360;
+    *reflect_y = r1 != r2;
 
-out:
+    return TRUE;
+}
+
+static Bool
+ms_exa_prepare_composite(int op,
+                         PicturePtr pSrcPicture,
+                         PicturePtr pMaskPicture,
+                         PicturePtr pDstPicture,
+                         PixmapPtr pSrc, PixmapPtr pMask, PixmapPtr pDst)
+{
+#ifdef MODESETTING_WITH_RGA
+    PictTransformPtr t = pSrcPicture->transform;
+
+    if (!rga_check_pixmap(pSrc))
+        return FALSE;
+
+    if (!rga_check_pixmap(pDst))
+        return FALSE;
+
+    if (pDst == pSrc)
+        return FALSE;
+
+    /* TODO: Support repeat */
+    if (pSrcPicture->repeat)
+        return FALSE;
+
+    /* TODO: Handle pSrcPicture->filter */
+
+    if (!ms_exa_parse_transform(t, &exa_prepare_args.composite.rotate,
+                                &exa_prepare_args.composite.reflect_y))
+        return FALSE;
 #endif
     exa_prepare_args.composite.op = op;
     exa_prepare_args.composite.pSrcPicture = pSrcPicture;
@@ -954,8 +964,6 @@ ms_exa_copy_area_bail(PixmapPtr pSrc, PixmapPtr pDst,
                       pixman_f_transform_t *transform, RegionPtr clip)
 {
     ScreenPtr screen = pSrc->drawable.pScreen;
-    ScrnInfoPtr scrn = xf86ScreenToScrn(screen);
-    modesettingPtr ms = modesettingPTR(scrn);
     PictFormatPtr format = PictureWindowFormat(screen->root);
     PicturePtr src = NULL, dst = NULL;
     pixman_transform_t t;
@@ -963,8 +971,8 @@ ms_exa_copy_area_bail(PixmapPtr pSrc, PixmapPtr pDst,
     BoxPtr box;
     int n, error;
 
-    if (pSrc->drawable.bitsPerPixel != ms->drmmode.kbpp ||
-        pDst->drawable.bitsPerPixel != ms->drmmode.kbpp)
+    if (pSrc->drawable.bitsPerPixel == 12 ||
+        pDst->drawable.bitsPerPixel == 12)
         return FALSE;
 
     src = CreatePicture(None, &pSrc->drawable,
@@ -1031,6 +1039,20 @@ ms_exa_copy_area(PixmapPtr pSrc, PixmapPtr pDst,
 
     if (!rga_check_pixmap(pDst))
         goto bail;
+
+    /* Fallback to compositor for rotate / reflect */
+    if (transform) {
+        pixman_transform_t t;
+        Bool reflect_y = FALSE;
+        int rotate = 0;
+
+        pixman_transform_from_pixman_f_transform(&t, transform);
+        if (!ms_exa_parse_transform(&t, &rotate, &reflect_y))
+            goto bail;
+
+        if (rotate || reflect_y)
+            goto bail;
+    }
 
     region = RegionDuplicate(clip);
     n = REGION_NUM_RECTS(region);
