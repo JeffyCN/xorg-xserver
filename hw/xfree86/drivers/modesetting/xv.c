@@ -112,11 +112,27 @@ static void
 ms_exa_xv_stop_video(ScrnInfoPtr pScrn, void *data, Bool cleanup)
 {
     ms_exa_port_private *port_priv = data;
+    ScreenPtr screen = xf86ScrnToScreen(pScrn);
+    modesettingPtr ms = modesettingPTR(pScrn);
+    drmmode_ptr drmmode = &ms->drmmode;
+    RegionRec region;
+    BoxRec box;
+
+    drmmode->direct_video = FALSE;
 
     if (!cleanup)
         return;
 
     ms_exa_xv_set_dma_client(port_priv, 0);
+
+    box.x1 = 0;
+    box.x2 = screen->width;
+    box.y1 = 0;
+    box.y2 = screen->height;
+    RegionInit(&region, &box, 1);
+    DamageDamageRegion(&(*screen->GetScreenPixmap) (screen)->drawable,
+                       &region);
+    RegionUninit(&region);
 }
 
 static int
@@ -328,11 +344,14 @@ ms_exa_xv_put_image(ScrnInfoPtr pScrn,
                     RegionPtr clipBoxes, void *data, DrawablePtr pDrawable)
 {
     ms_exa_port_private *port_priv = data;
+    xf86CrtcConfigPtr xf86_config = XF86_CRTC_CONFIG_PTR(pScrn);
     ScreenPtr screen = pScrn->pScreen;
+    modesettingPtr ms = modesettingPTR(pScrn);
+    drmmode_ptr drmmode = &ms->drmmode;
     PixmapPtr src_pixmap, dst_pixmap;
     pixman_f_transform_t transform;
     double sx, sy, tx, ty;
-    int ret = Success;
+    int ret = Success, c;
 
     src_pixmap = ms_exa_xv_create_dma_pixmap(pScrn, port_priv, id);
     if (!src_pixmap) {
@@ -364,11 +383,30 @@ ms_exa_xv_put_image(ScrnInfoPtr pScrn,
     pixman_f_transform_init_scale(&transform, sx, sy);
     pixman_f_transform_translate(NULL, &transform, tx, ty);
 
+    drmmode->direct_video = TRUE;
+    for (c = 0; c < xf86_config->num_crtc; c++) {
+        xf86CrtcPtr crtc = xf86_config->crtc[c];
+        drmmode_crtc_private_ptr drmmode_crtc = crtc->driver_private;
+
+        if (!drmmode_crtc || drmmode_direct_video(crtc, src_pixmap,
+                                                  &transform, clipBoxes))
+            continue;
+
+        drmmode->direct_video = FALSE;
+        break;
+    }
+
+    if (drmmode->direct_video)
+        goto out;
+
+    DamageRegionAppend(pDrawable, clipBoxes);
+
     if (!ms_exa_copy_area(src_pixmap, dst_pixmap, &transform, clipBoxes))
         ret = BadMatch;
 
     DamageRegionProcessPending(pDrawable);
 
+out:
     screen->DestroyPixmap(src_pixmap);
 
     return ret;
