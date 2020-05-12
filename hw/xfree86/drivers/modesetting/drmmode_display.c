@@ -4112,7 +4112,75 @@ drmmode_destroy_flip_fb(xf86CrtcPtr crtc)
         if (fb->damage)
             DamageDestroy(fb->damage);
         fb->damage = NULL;
+
+        fb->dump_buf = NULL;
     }
+
+    if (drmmode_crtc->fbpool) {
+        munmap((void *)drmmode_crtc->fbpool, drmmode_crtc->fbpool_size);
+        drmmode_crtc->fbpool = NULL;
+    }
+
+    if (drmmode_crtc->fbpool_fd > 0) {
+        close(drmmode_crtc->fbpool_fd);
+        drmmode_crtc->fbpool_fd = 0;
+    }
+}
+
+static Bool
+drmmode_prepare_fbpool(xf86CrtcPtr crtc, int width, int height, int bpp)
+{
+    drmmode_crtc_private_ptr drmmode_crtc = crtc->driver_private;
+    fbpool_header fbpool = {
+        .width = width,
+        .height = height,
+        .bpp = bpp,
+        .num_fb = ARRAY_SIZE(drmmode_crtc->flip_fb),
+        .fb_size = width * height * bpp / 8,
+        .current_fb = -1,
+    };
+    size_t size = sizeof(fbpool) + fbpool.num_fb * fbpool.fb_size;
+
+    const char *file = "/tmp/.fbpool";
+
+    drmmode_crtc->fbpool_fd = open(file, O_RDWR | O_CLOEXEC | O_CREAT, 0666);
+    if (drmmode_crtc->fbpool_fd < 0) {
+        ErrorF("failed to open fbpool file: %s\n", file);
+        return FALSE;
+    }
+
+    if (ftruncate(drmmode_crtc->fbpool_fd, size) < 0) {
+        ErrorF("failed to truncate fbpool file: %s(%ld)\n", file, size);
+        goto err;
+    }
+
+    drmmode_crtc->fbpool =
+        (fbpool_header *)mmap(NULL, size, PROT_WRITE,
+                            MAP_SHARED, drmmode_crtc->fbpool_fd, 0);
+    if (drmmode_crtc->fbpool == MAP_FAILED) {
+        ErrorF("failed to mmap fbpool file: %s(%ld)\n", file, size);
+        goto err;
+    }
+
+    strncpy(fbpool.magic, FBPOOL_MAGIC, 4);
+
+    memcpy(drmmode_crtc->fbpool, &fbpool, sizeof(fbpool));
+    drmmode_crtc->fbpool_size = size;
+
+    xf86DrvMsgVerb(crtc->scrn->scrnIndex, X_INFO, 0,
+                   "Created fbpool file: %s with size: %dx%d(%d), num: %d\n",
+                   file, width, height, fbpool.fb_size, fbpool.num_fb);
+
+    return TRUE;
+err:
+    if (drmmode_crtc->fbpool_fd > 0) {
+        close(drmmode_crtc->fbpool_fd);
+        drmmode_crtc->fbpool_fd = 0;
+    }
+
+    drmmode_crtc->fbpool = NULL;
+
+    return FALSE;
 }
 
 static Bool
@@ -4126,11 +4194,14 @@ drmmode_create_flip_fb(xf86CrtcPtr crtc)
     height = crtc->mode.VDisplay;
     bpp = drmmode->kbpp;
 
-    /* Force using NV12 for dummy output */
-    if (drmmode_crtc->is_dummy)
+    drmmode_destroy_flip_fb(crtc);
+
+    if (drmmode_crtc->is_dummy) {
+        /* Force using NV12 for dummy output */
         bpp = 12;
 
-    drmmode_destroy_flip_fb(crtc);
+        drmmode_prepare_fbpool(crtc, width, height, bpp);
+    }
 
     if (drmmode_crtc->need_remap) {
         if (crtc->driverIsPerformingTransform & XF86DriverTransformOutput)
@@ -4148,6 +4219,13 @@ drmmode_create_flip_fb(xf86CrtcPtr crtc)
 
         if (drmmode_bo_import(drmmode, &fb->bo, &fb->fb_id) < 0)
             goto fail;
+
+        if (drmmode_crtc->fbpool) {
+            uint8_t *ptr =
+                (uint8_t *)drmmode_crtc->fbpool + sizeof(fbpool_header);
+
+            fb->dump_buf = ptr + i * drmmode_crtc->fbpool->fb_size;
+        }
     }
 
     return TRUE;
@@ -4294,33 +4372,10 @@ drmmode_prepare_dump_fb(drmmode_fb *fb)
 {
     ScreenPtr screen;
 
-    if (!fb || !fb->pixmap)
+    if (!fb || !fb->pixmap || !fb->dump_buf)
         return FALSE;
 
     fb->pixmap->devKind = fb->bo.width * fb->pixmap->drawable.bitsPerPixel / 8;
-
-    if (!fb->dump_buf) {
-        int size = fb->bo.height * fb->pixmap->devKind;
-        const char *file = getenv("DUMP_FILE");
-        if (!file)
-            file = "/tmp/dump.data";
-
-        fb->dump_fd = open(file, O_RDWR | O_CLOEXEC | O_CREAT, 0666);
-        if (fb->dump_fd < 0) {
-            ErrorF("failed to open dump file: %s\n", file);
-            return FALSE;
-        }
-
-        ftruncate(fb->dump_fd, size);
-
-        fb->dump_buf = mmap(NULL, size, PROT_WRITE,
-                            MAP_SHARED, fb->dump_fd, 0);
-        if (fb->dump_buf == MAP_FAILED) {
-            ErrorF("failed to mmap dump file: %s(%x)\n", file, size);
-            close(fb->dump_fd);
-            return FALSE;
-        }
-    }
 
     screen = fb->pixmap->drawable.pScreen;
     screen->ModifyPixmapHeader(fb->pixmap, fb->bo.width, fb->bo.height,
@@ -4328,6 +4383,7 @@ drmmode_prepare_dump_fb(drmmode_fb *fb)
                                fb->pixmap->drawable.bitsPerPixel,
                                fb->pixmap->devKind, fb->dump_buf);
 
+    // TODO: use prepare access
     fb->pixmap->devPrivate.ptr = fb->dump_buf;
 
     return TRUE;
@@ -4428,7 +4484,7 @@ drmmode_update_fb(xf86CrtcPtr crtc)
     if (drmmode_crtc->is_scale)
         fb->need_clear = TRUE;
 
-    if (drmmode_crtc->is_dummy)
+    if (drmmode_crtc->fbpool)
         drmmode_prepare_dump_fb(fb);
 
     dirty = NULL;
@@ -4561,18 +4617,15 @@ drmmode_flip_fb(xf86CrtcPtr crtc, int *timeout)
 
     fb = &drmmode_crtc->flip_fb[drmmode_crtc->current_fb];
 
-    if (drmmode_crtc->is_dummy) {
-        if (fb->dump_buf) {
-            munmap(fb->dump_buf, fb->pixmap->devKind * fb->bo.height);
-            fb->pixmap->devPrivate.ptr = fb->dump_buf = NULL;
+    if (drmmode_crtc->fbpool) {
+        drmmode_crtc->fbpool->current_fb = drmmode_crtc->current_fb;
 
-            screen->ModifyPixmapHeader(fb->pixmap, fb->bo.width, fb->bo.height,
-                                       fb->pixmap->drawable.bitsPerPixel,
-                                       fb->pixmap->drawable.bitsPerPixel,
-                                       drmmode_bo_get_pitch(&fb->bo), NULL);
+        fb->pixmap->devPrivate.ptr = NULL;
 
-            close(fb->dump_fd);
-        }
+        screen->ModifyPixmapHeader(fb->pixmap, fb->bo.width, fb->bo.height,
+                                   fb->pixmap->drawable.bitsPerPixel,
+                                   fb->pixmap->drawable.bitsPerPixel,
+                                   drmmode_bo_get_pitch(&fb->bo), NULL);
 
         return TRUE;
     }
