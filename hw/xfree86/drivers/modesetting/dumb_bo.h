@@ -34,6 +34,7 @@ struct dumb_bo {
     uint32_t size;
     void *ptr;
     uint32_t pitch;
+    uint32_t bpp;
 };
 
 struct dumb_bo *dumb_bo_create(int fd, const unsigned width,

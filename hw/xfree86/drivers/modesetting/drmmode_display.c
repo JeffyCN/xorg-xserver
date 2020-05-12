@@ -1188,6 +1188,22 @@ drmmode_bo_import(drmmode_ptr drmmode, drmmode_bo *bo,
         }
     }
 #endif
+
+    if (bo->dumb->bpp == 12) {
+        uint32_t handles[4] = { 0, };
+        uint32_t pitches[4] = { 0, };
+        uint32_t offsets[4] = { 0, };
+
+        handles[0] = handles[1] = drmmode_bo_get_handle(bo);
+        pitches[0] = drmmode_bo_get_pitch(bo) * 2 / 3;
+        pitches[1] = pitches[0];
+        offsets[1] = pitches[0] * bo->height;
+
+        return drmModeAddFB2 (drmmode->fd, bo->width, bo->height,
+                              DRM_FORMAT_NV12,
+                              handles, pitches, offsets, fb_id, 0);
+    }
+
     return drmModeAddFB(drmmode->fd, bo->width, bo->height,
                         drmmode->scrn->depth, drmmode->kbpp,
                         drmmode_bo_get_pitch(bo),
@@ -4580,6 +4596,10 @@ drmmode_create_flip_fb(xf86CrtcPtr crtc)
     height = crtc->mode.VDisplay;
     bpp = drmmode->kbpp;
 
+    /* Force using NV12 for dummy output */
+    if (drmmode_crtc->is_dummy)
+        bpp = 12;
+
     drmmode_destroy_flip_fb(crtc);
 
     if (drmmode_crtc->need_remap) {
@@ -4685,6 +4705,7 @@ static RegionPtr
 drmmode_transform_region(xf86CrtcPtr crtc, RegionPtr src)
 {
 #define MS_MAX_NUM_BOX 4
+    drmmode_crtc_private_ptr drmmode_crtc = crtc->driver_private;
     RegionPtr region = RegionCreate(NULL, 0);
     BoxRec rects[MS_MAX_NUM_BOX];
     BoxPtr box, rect;
@@ -4711,6 +4732,19 @@ drmmode_transform_region(xf86CrtcPtr crtc, RegionPtr src)
         rect->x2 = box[i].x2 + crtc->filter_width / 2;
         rect->y1 = box[i].y1 - crtc->filter_height / 2;
         rect->y2 = box[i].y2 + crtc->filter_height / 2;
+
+        if (drmmode_crtc->is_dummy) {
+            /* RGA has some limits on NV12 */
+            rect->x1 -= 2;
+            rect->x2 += 2;
+            rect->y1 -= 2;
+            rect->y2 += 2;
+            rect->x1 = rect->x1 & ~1;
+            rect->y1 = rect->y1 & ~1;
+            rect->x2 = (rect->x2 + 1) & ~1;
+            rect->y2 = (rect->y2 + 1) & ~1;
+        }
+
         pixman_f_transform_bounds(&crtc->f_framebuffer_to_crtc, rect);
         rect->x1 = max(rect->x1, 0);
         rect->y1 = max(rect->y1, 0);
@@ -4893,11 +4927,13 @@ drmmode_update_fb(xf86CrtcPtr crtc, drmmode_fb *fb)
     if (!fb->pixmap) {
         void *data = drmmode_bo_map(&ms->drmmode, &fb->bo);
         int pitch = drmmode_bo_get_pitch(&fb->bo);
+        int bpp = fb->bo.dumb->bpp;
+        int depth = bpp == 12 ? bpp : scrn->depth;
+
         fb->pixmap = drmmode_create_pixmap_header(screen,
                                                   fb->bo.width,
                                                   fb->bo.height,
-                                                  scrn->depth,
-                                                  ms->drmmode.kbpp,
+                                                  depth, bpp,
                                                   pitch, data);
         if (!fb->pixmap)
             return FALSE;
