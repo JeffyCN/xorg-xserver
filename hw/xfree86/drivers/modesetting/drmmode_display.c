@@ -440,6 +440,13 @@ plane_add_props(drmModeAtomicReq *req, xf86CrtcPtr crtc,
 {
     drmmode_crtc_private_ptr drmmode_crtc = crtc->driver_private;
     int ret = 0;
+    int width = crtc->mode.HDisplay;
+    int height = crtc->mode.VDisplay;
+
+    if (drmmode_crtc->need_remap) {
+        width *= 2;
+        height /= 2;
+    }
 
     if (drmmode_crtc->is_dummy)
         return 0;
@@ -451,15 +458,15 @@ plane_add_props(drmModeAtomicReq *req, xf86CrtcPtr crtc,
     ret |= plane_add_prop(req, drmmode_crtc, DRMMODE_PLANE_SRC_X, x << 16);
     ret |= plane_add_prop(req, drmmode_crtc, DRMMODE_PLANE_SRC_Y, y << 16);
     ret |= plane_add_prop(req, drmmode_crtc, DRMMODE_PLANE_SRC_W,
-                          crtc->mode.HDisplay << 16);
+                          width << 16);
     ret |= plane_add_prop(req, drmmode_crtc, DRMMODE_PLANE_SRC_H,
-                          crtc->mode.VDisplay << 16);
+                          height << 16);
     ret |= plane_add_prop(req, drmmode_crtc, DRMMODE_PLANE_CRTC_X, 0);
     ret |= plane_add_prop(req, drmmode_crtc, DRMMODE_PLANE_CRTC_Y, 0);
     ret |= plane_add_prop(req, drmmode_crtc, DRMMODE_PLANE_CRTC_W,
-                          crtc->mode.HDisplay);
+                          width);
     ret |= plane_add_prop(req, drmmode_crtc, DRMMODE_PLANE_CRTC_H,
-                          crtc->mode.VDisplay);
+                          height);
 
     return ret;
 }
@@ -1395,6 +1402,12 @@ drmmode_ConvertToKMode(ScrnInfoPtr scrn,
     kmode->vtotal = mode->VTotal;
     kmode->vscan = mode->VScan;
 
+    /* HACK for remap output */
+    if (kmode->vdisplay > kmode->vtotal) {
+        kmode->hdisplay *= 2;
+        kmode->vdisplay /= 2;
+    }
+
     kmode->flags = mode->Flags; //& FLAG_BITS;
     if (mode->name)
         strncpy(kmode->name, mode->name, DRM_DISPLAY_MODE_LEN);
@@ -1625,6 +1638,16 @@ drmmode_set_cursor_position(xf86CrtcPtr crtc, int x, int y)
 {
     drmmode_crtc_private_ptr drmmode_crtc = crtc->driver_private;
     drmmode_ptr drmmode = drmmode_crtc->drmmode;
+
+    if (drmmode_crtc->need_remap) {
+        int width = crtc->mode.HDisplay;
+        int height = crtc->mode.VDisplay / 2;
+
+        if (y > height) {
+            x += width;
+            y -= height;
+        }
+    }
 
     drmModeMoveCursor(drmmode->fd, drmmode_crtc->mode_crtc->crtc_id, x, y);
 }
@@ -2566,6 +2589,15 @@ drmmode_output_get_modes(xf86OutputPtr output)
 
             drmmode_output->is_dummy = TRUE;
         }
+
+        env = getenv("REMAP_CONNECTOR_ID");
+        if (env && koutput->connector_id == atoi(env)) {
+            xf86DrvMsgVerb(output->scrn->scrnIndex, X_INFO, 0,
+                           "Found remap connector: %d.\n",
+                           koutput->connector_id);
+
+            drmmode_output->need_remap = TRUE;
+        }
     }
 
     /* modes should already be available */
@@ -2573,6 +2605,12 @@ drmmode_output_get_modes(xf86OutputPtr output)
         Mode = xnfalloc(sizeof(DisplayModeRec));
 
         drmmode_ConvertFromKMode(output->scrn, &koutput->modes[i], Mode);
+
+        if (drmmode_output->need_remap) {
+            Mode->HDisplay /= 2;
+            Mode->VDisplay *= 2;
+        }
+
         Modes = xf86ModesAdd(Modes, Mode);
 
     }
@@ -3575,6 +3613,7 @@ drmmode_set_desired_modes(ScrnInfoPtr pScrn, drmmode_ptr drmmode, Bool set_hw)
 
         drmmode_output = output->driver_private;
         drmmode_crtc->is_dummy = drmmode_output->is_dummy;
+        drmmode_crtc->need_remap = drmmode_output->need_remap;
 
         /* Mark that we'll need to re-set the mode for sure */
         memset(&crtc->mode, 0, sizeof(crtc->mode));
@@ -4065,6 +4104,14 @@ drmmode_create_flip_fb(xf86CrtcPtr crtc)
 
     drmmode_destroy_flip_fb(crtc);
 
+    if (drmmode_crtc->need_remap) {
+        if (crtc->driverIsPerformingTransform & XF86DriverTransformOutput)
+            return FALSE;
+
+        width *= 2;
+        height /= 2;
+    }
+
     for (i = 0; i < ARRAY_SIZE(drmmode_crtc->flip_fb); i++) {
         drmmode_fb *fb = &drmmode_crtc->flip_fb[i];
 
@@ -4245,6 +4292,58 @@ drmmode_prepare_dump_fb(drmmode_fb *fb)
 }
 
 static Bool
+drmmode_remap_copy(PixmapPtr src_pixmap, PixmapPtr dst_pixmap,
+                   pixman_f_transform_t *transform, RegionPtr clip)
+{
+    RegionPtr clips[2];
+    BoxPtr boxes[2], box;
+    pixman_f_transform_t t;
+    Bool ret;
+    int n, width, height;
+
+    if (transform)
+        t = *transform;
+    else
+        pixman_f_transform_init_identity(&t);
+
+    width = dst_pixmap->drawable.width / 2;
+    height = dst_pixmap->drawable.height;
+
+    clips[0] = RegionDuplicate(clip);
+    clips[1] = RegionDuplicate(clip);
+
+    n = RegionNumRects(clip);
+    boxes[0] = RegionRects(clips[0]);
+    boxes[1] = RegionRects(clips[1]);
+
+    while(n--) {
+        box = boxes[0] + n;
+        box->y1 = min(box->y1, height);
+        box->y2 = min(box->y2, height);
+
+        box = boxes[1] + n;
+        box->y1 = max(box->y1 - height, 0);
+        box->y2 = max(box->y2 - height, 0);
+        box->x1 += width;
+        box->x2 += width;
+    }
+
+    ret = ms_exa_copy_area(src_pixmap, dst_pixmap, &t, clips[0]);
+    if (!ret)
+        goto out;
+
+    pixman_f_transform_translate(NULL, &t, width, -height);
+
+    ret = ms_exa_copy_area(src_pixmap, dst_pixmap, &t, clips[1]);
+
+out:
+    RegionDestroy(clips[0]);
+    RegionDestroy(clips[1]);
+
+    return ret;
+}
+
+static Bool
 drmmode_update_fb(xf86CrtcPtr crtc)
 {
     drmmode_crtc_private_ptr drmmode_crtc = crtc->driver_private;
@@ -4309,10 +4408,20 @@ drmmode_update_fb(xf86CrtcPtr crtc)
         goto out;
     }
 
-    screen->SourceValidate = NULL;
-    ret = ms_exa_copy_area(screen->GetScreenPixmap(screen), fb->pixmap,
-                           &crtc->f_crtc_to_framebuffer, dirty);
-    screen->SourceValidate = SourceValidate;
+    if (drmmode_crtc->need_remap) {
+        pixman_f_transform_t t;
+        pixman_f_transform_init_translate(&t, crtc->x, crtc->y);
+
+        screen->SourceValidate = NULL;
+        ret = drmmode_remap_copy(screen->GetScreenPixmap(screen),
+                                 fb->pixmap, &t, dirty);
+        screen->SourceValidate = SourceValidate;
+    } else {
+        screen->SourceValidate = NULL;
+        ret = ms_exa_copy_area(screen->GetScreenPixmap(screen), fb->pixmap,
+                               &crtc->f_crtc_to_framebuffer, dirty);
+        screen->SourceValidate = SourceValidate;
+    }
 
 #ifdef GLAMOR_HAS_GBM
     if (ms->drmmode.glamor)
@@ -4486,7 +4595,11 @@ drmmode_direct_video(xf86CrtcPtr crtc, PixmapPtr video_pixmap,
     pixman_f_transform_translate(NULL, &t, -crtc->x, -crtc->y);
 
     fb = &drmmode_crtc->flip_fb[drmmode_crtc->current_fb];
-    ret = ms_exa_copy_area(video_pixmap, fb->pixmap, &t, dirty);
+
+    if (drmmode_crtc->need_remap)
+        ret = drmmode_remap_copy(video_pixmap, fb->pixmap, &t, dirty);
+    else
+        ret = ms_exa_copy_area(video_pixmap, fb->pixmap, &t, dirty);
 
     drmmode_crtc->direct_video_dirty = ret;
 
