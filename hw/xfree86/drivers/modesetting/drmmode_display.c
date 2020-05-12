@@ -4319,13 +4319,17 @@ drmmode_flip_fb(xf86CrtcPtr crtc, int *timeout)
             RegionDestroy(dirty);
 
             /* keep the current fb */
-            if (!ret)
+            if (!ret && !drmmode_crtc->direct_video_dirty)
                 return TRUE;
         }
     }
 
-    drmmode_crtc->current_fb++;
-    drmmode_crtc->current_fb %= ARRAY_SIZE(drmmode_crtc->flip_fb);
+    drmmode_crtc->direct_video_dirty = FALSE;
+
+    if (!drmmode->direct_video) {
+        drmmode_crtc->current_fb++;
+        drmmode_crtc->current_fb %= ARRAY_SIZE(drmmode_crtc->flip_fb);
+    }
 
     if (!drmmode_update_fb(crtc))
         return FALSE;
@@ -4342,4 +4346,62 @@ drmmode_flip_fb(xf86CrtcPtr crtc, int *timeout)
     drmmode_crtc->flipping_time_ms = tv.tv_sec * 1000 + tv.tv_usec / 1000;
 
     return TRUE;
+}
+
+Bool
+drmmode_direct_video(xf86CrtcPtr crtc, PixmapPtr video_pixmap,
+                     pixman_f_transform_t *transform, RegionPtr clip)
+{
+    drmmode_crtc_private_ptr drmmode_crtc = crtc->driver_private;
+    ScrnInfoPtr scrn = crtc->scrn;
+    modesettingPtr ms = modesettingPTR(scrn);
+    drmmode_ptr drmmode = &ms->drmmode;
+    pixman_f_transform_t t = *transform;
+    RegionPtr dirty;
+    drmmode_fb *fb;
+    Bool ret = FALSE;
+
+#ifdef GLAMOR_HAS_GBM
+    if (ms->drmmode.glamor)
+        return FALSE;
+#endif
+
+    if (!drmmode_crtc || !crtc->enabled ||
+        drmmode_crtc->dpms_mode != DPMSModeOn)
+        return TRUE;
+
+    if (drmmode_crtc->rotate_fb_id)
+        return FALSE;
+
+    if (!drmmode_crtc->flip_fb_enabled)
+        return FALSE;
+
+    if (drmmode->dri2_flipping || drmmode->present_flipping)
+        return FALSE;
+
+    if (crtc->driverIsPerformingTransform & XF86DriverTransformOutput)
+        return FALSE;
+
+    drmmode_crtc->current_fb++;
+    drmmode_crtc->current_fb %= ARRAY_SIZE(drmmode_crtc->flip_fb);
+
+    if (!drmmode_update_fb(crtc))
+        return FALSE;
+
+    dirty = drmmode_transform_region(crtc, clip);
+    if (!RegionNotEmpty(dirty)) {
+        ret = TRUE;
+        goto out;
+    }
+
+    pixman_f_transform_translate(NULL, &t, -crtc->x, -crtc->y);
+
+    fb = &drmmode_crtc->flip_fb[drmmode_crtc->current_fb];
+    ret = ms_exa_copy_area(video_pixmap, fb->pixmap, &t, dirty);
+
+    drmmode_crtc->direct_video_dirty = ret;
+
+out:
+    RegionDestroy(dirty);
+    return ret;
 }
