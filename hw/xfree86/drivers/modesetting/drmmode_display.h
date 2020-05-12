@@ -244,6 +244,7 @@ typedef struct {
     Bool use_gamma_lut;
     Bool is_scale;
     Bool is_dummy;
+    Bool need_remap;
 } drmmode_crtc_private_rec, *drmmode_crtc_private_ptr;
 
 typedef struct {
@@ -281,6 +282,7 @@ typedef struct {
     xf86OutputStatus status;
 
     Bool is_dummy;
+    Bool need_remap;
 } drmmode_output_private_rec, *drmmode_output_private_ptr;
 
 typedef struct {
