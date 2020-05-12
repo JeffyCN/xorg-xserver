@@ -188,9 +188,20 @@ typedef struct {
 
     Bool need_clear;
 
-    int dump_fd;
     uint8_t *dump_buf;
 } drmmode_fb;
+
+#define FBPOOL_MAGIC "FBPL"
+
+typedef struct {
+    char magic[4];
+    int32_t width;
+    int32_t height;
+    int32_t bpp;
+    int32_t num_fb;
+    int32_t fb_size;
+    int32_t current_fb;
+} fbpool_header;
 
 typedef struct {
     drmmode_ptr drmmode;
@@ -245,6 +256,10 @@ typedef struct {
     Bool is_scale;
     Bool is_dummy;
     Bool need_remap;
+
+    int fbpool_fd;
+    fbpool_header *fbpool;
+    size_t fbpool_size;
 } drmmode_crtc_private_rec, *drmmode_crtc_private_ptr;
 
 typedef struct {
