@@ -29,6 +29,7 @@
 #include "dix-config.h"
 #endif
 
+#include <fcntl.h>
 #include <errno.h>
 #include <sys/ioctl.h>
 #include <sys/mman.h>
@@ -440,6 +441,9 @@ plane_add_props(drmModeAtomicReq *req, xf86CrtcPtr crtc,
     drmmode_crtc_private_ptr drmmode_crtc = crtc->driver_private;
     int ret = 0;
 
+    if (drmmode_crtc->is_dummy)
+        return 0;
+
     ret |= plane_add_prop(req, drmmode_crtc, DRMMODE_PLANE_FB_ID,
                           fb_id);
     ret |= plane_add_prop(req, drmmode_crtc, DRMMODE_PLANE_CRTC_ID,
@@ -467,6 +471,9 @@ crtc_add_prop(drmModeAtomicReq *req, drmmode_crtc_private_ptr drmmode_crtc,
     drmmode_prop_info_ptr info = &drmmode_crtc->props[prop];
     int ret;
 
+    if (drmmode_crtc->is_dummy)
+        return 0;
+
     if (!info)
         return -1;
 
@@ -481,6 +488,9 @@ connector_add_prop(drmModeAtomicReq *req, drmmode_output_private_ptr drmmode_out
 {
     drmmode_prop_info_ptr info = &drmmode_output->props_connector[prop];
     int ret;
+
+    if (drmmode_output->is_dummy)
+        return 0;
 
     if (!info)
         return -1;
@@ -2547,6 +2557,17 @@ drmmode_output_get_modes(xf86OutputPtr output)
 
     drmmode_output_attach_tile(output);
 
+    {
+        char *env = getenv("DUMMY_CONNECTOR_ID");
+        if (env && koutput->connector_id == atoi(env)) {
+            xf86DrvMsgVerb(output->scrn->scrnIndex, X_INFO, 0,
+                           "Found dummy connector: %d.\n",
+                           koutput->connector_id);
+
+            drmmode_output->is_dummy = TRUE;
+        }
+    }
+
     /* modes should already be available */
     for (i = 0; i < koutput->count_modes; i++) {
         Mode = xnfalloc(sizeof(DisplayModeRec));
@@ -3526,6 +3547,7 @@ drmmode_set_desired_modes(ScrnInfoPtr pScrn, drmmode_ptr drmmode, Bool set_hw)
     for (c = 0; c < config->num_crtc; c++) {
         xf86CrtcPtr crtc = config->crtc[c];
         drmmode_crtc_private_ptr drmmode_crtc = crtc->driver_private;
+        drmmode_output_private_ptr drmmode_output;
         xf86OutputPtr output = NULL;
         int o;
 
@@ -3550,6 +3572,9 @@ drmmode_set_desired_modes(ScrnInfoPtr pScrn, drmmode_ptr drmmode, Bool set_hw)
         /* paranoia */
         if (!output)
             continue;
+
+        drmmode_output = output->driver_private;
+        drmmode_crtc->is_dummy = drmmode_output->is_dummy;
 
         /* Mark that we'll need to re-set the mode for sure */
         memset(&crtc->mode, 0, sizeof(crtc->mode));
@@ -4176,6 +4201,50 @@ drmmode_transform_region(xf86CrtcPtr crtc, RegionPtr src)
 }
 
 static Bool
+drmmode_prepare_dump_fb(drmmode_fb *fb)
+{
+    ScreenPtr screen;
+
+    if (!fb || !fb->pixmap)
+        return FALSE;
+
+    fb->pixmap->devKind = fb->bo.width * fb->pixmap->drawable.bitsPerPixel / 8;
+
+    if (!fb->dump_buf) {
+        int size = fb->bo.height * fb->pixmap->devKind;
+        const char *file = getenv("DUMP_FILE");
+        if (!file)
+            file = "/tmp/dump.data";
+
+        fb->dump_fd = open(file, O_RDWR | O_CLOEXEC | O_CREAT, 0666);
+        if (fb->dump_fd < 0) {
+            ErrorF("failed to open dump file: %s\n", file);
+            return FALSE;
+        }
+
+        ftruncate(fb->dump_fd, size);
+
+        fb->dump_buf = mmap(NULL, size, PROT_WRITE,
+                            MAP_SHARED, fb->dump_fd, 0);
+        if (fb->dump_buf == MAP_FAILED) {
+            ErrorF("failed to mmap dump file: %s(%x)\n", file, size);
+            close(fb->dump_fd);
+            return FALSE;
+        }
+    }
+
+    screen = fb->pixmap->drawable.pScreen;
+    screen->ModifyPixmapHeader(fb->pixmap, fb->bo.width, fb->bo.height,
+                               fb->pixmap->drawable.bitsPerPixel,
+                               fb->pixmap->drawable.bitsPerPixel,
+                               fb->pixmap->devKind, fb->dump_buf);
+
+    fb->pixmap->devPrivate.ptr = fb->dump_buf;
+
+    return TRUE;
+}
+
+static Bool
 drmmode_update_fb(xf86CrtcPtr crtc)
 {
     drmmode_crtc_private_ptr drmmode_crtc = crtc->driver_private;
@@ -4215,6 +4284,9 @@ drmmode_update_fb(xf86CrtcPtr crtc)
     /* scaled screens may not be able to map areas(due to precision) */
     if (drmmode_crtc->is_scale)
         fb->need_clear = TRUE;
+
+    if (drmmode_crtc->is_dummy)
+        drmmode_prepare_dump_fb(fb);
 
     dirty = NULL;
     if (fb->need_clear) {
@@ -4335,6 +4407,23 @@ drmmode_flip_fb(xf86CrtcPtr crtc, int *timeout)
         return FALSE;
 
     fb = &drmmode_crtc->flip_fb[drmmode_crtc->current_fb];
+
+    if (drmmode_crtc->is_dummy) {
+        if (fb->dump_buf) {
+            munmap(fb->dump_buf, fb->pixmap->devKind * fb->bo.height);
+            fb->pixmap->devPrivate.ptr = fb->dump_buf = NULL;
+
+            screen->ModifyPixmapHeader(fb->pixmap, fb->bo.width, fb->bo.height,
+                                       fb->pixmap->drawable.bitsPerPixel,
+                                       fb->pixmap->drawable.bitsPerPixel,
+                                       drmmode_bo_get_pitch(&fb->bo), NULL);
+
+            close(fb->dump_fd);
+        }
+
+        return TRUE;
+    }
+
     if (!ms_do_pageflip_bo(screen, &fb->bo, drmmode_crtc,
                            drmmode_crtc->vblank_pipe, TRUE,
                            drmmode_flip_fb_handler, drmmode_flip_fb_abort))
