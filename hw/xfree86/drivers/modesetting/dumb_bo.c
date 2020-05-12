@@ -63,6 +63,7 @@ dumb_bo_create(int fd,
     bo->handle = arg.handle;
     bo->size = arg.size;
     bo->pitch = arg.pitch;
+    bo->bpp = bpp;
 
     return bo;
  err_free:
