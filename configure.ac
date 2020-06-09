@@ -2080,14 +2080,8 @@ if test "x$GLAMOR" = xyes; then
 	if test "x$GBM" = xyes; then
 		AC_DEFINE(GLAMOR_HAS_GBM, 1,
 			  [Build glamor with GBM-based EGL support])
-		AC_CHECK_DECL(GBM_BO_USE_LINEAR,
-			[AC_DEFINE(GLAMOR_HAS_GBM_LINEAR, 1, [Have GBM_BO_USE_LINEAR])], [],
-			[#include <stdlib.h>
-			 #include <gbm.h>])
-		dnl 17.1.0 is required for gbm_bo_create_with_modifiers
-		PKG_CHECK_EXISTS(gbm >= 17.1.0,
-				 [AC_DEFINE(GBM_BO_WITH_MODIFIERS, 1, [Have gbm_bo_create_with_modifiers])],
-				 [])
+		AC_DEFINE(GLAMOR_HAS_GBM_LINEAR, 0, [Have GBM_BO_USE_LINEAR])
+		AC_DEFINE(GBM_BO_WITH_MODIFIERS, 0, [Have gbm_bo_create_with_modifiers])
 		AC_CHECK_HEADER([gbm.h],
 			[AC_CHECK_LIB(gbm, gbm_bo_map,
 				[AC_DEFINE(GLAMOR_HAS_GBM_MAP,1,[Have gbm_bo_map])])])
