@@ -1,0 +1,72 @@
+From aa010e50c989e7619caf9ef1b341b45342fe6118 Mon Sep 17 00:00:00 2001
+From: Olivier Fourdan <ofourdan@redhat.com>
+Date: Tue, 27 Nov 2018 17:20:09 +0100
+Subject: [PATCH] xfree86: Reset transforms in xf86CrtcCloseScreen
+
+The RRTransform are freed along the DIX crtc structures, but the
+xf86crtc may keep a pointer to those and try to reuse it on server reset
+after the last client is gone:
+
+ Invalid read of size 4
+    at 0x4C8478: xf86CrtcRotate (xf86Rotate.c:464)
+    by 0x5753010: drmmode_set_desired_modes (drmmode_display.c:3483)
+    by 0x574C55C: CreateScreenResources (driver.c:1346)
+    by 0x4B97DA: xf86CrtcCreateScreenResources (xf86Crtc.c:746)
+    by 0x43F0D8: dix_main (main.c:214)
+    by 0x4CFD412: (below main) (in /usr/lib64/libc-2.28.so)
+  Address 0x75e4268 is 56 bytes inside a block of size 96 free'd
+    at 0x4839A0C: free (vg_replace_malloc.c:530)
+    by 0x50D4C9: PictureResetFilters (filter.c:274)
+    by 0x511383: PictureCloseScreen (picture.c:94)
+    by 0x4B942B: xf86CrtcCloseScreen (xf86Crtc.c:791)
+    by 0x51AB02: present_close_screen (present_screen.c:70)
+    by 0x4D747D: CursorCloseScreen (cursor.c:205)
+    by 0x43F337: dix_main (main.c:325)
+    by 0x4CFD412: (below main) (in /usr/lib64/libc-2.28.so)
+  Block was alloc'd at
+    at 0x483AD19: realloc (vg_replace_malloc.c:826)
+    by 0x50D001: PictureAddFilter (filter.c:148)
+    by 0x50D486: PictureSetDefaultFilters (filter.c:262)
+    by 0x511F58: PictureInit (picture.c:701)
+    by 0x510128: miPictureInit (mipict.c:557)
+    by 0x5AD748C: fbPictureInit (fbpict.c:493)
+    by 0x574ACFB: ScreenInit (driver.c:1629)
+    by 0x43B5E6: AddScreen (dispatch.c:3915)
+    by 0x48CD2A: InitOutput (xf86Init.c:730)
+    by 0x43F02E: dix_main (main.c:193)
+    by 0x4CFD412: (below main) (in /usr/lib64/libc-2.28.so)
+
+Make sure we clear and free both the desired transform and actual
+transform so that we don't reuse a previously freed transform when
+re-creating the resources after the server has been reset.
+
+Signed-off-by: Olivier Fourdan <ofourdan@redhat.com>
+Closes: https://gitlab.freedesktop.org/xorg/xserver/issues/14
+---
+ hw/xfree86/modes/xf86Crtc.c | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
+
+diff --git a/hw/xfree86/modes/xf86Crtc.c b/hw/xfree86/modes/xf86Crtc.c
+index 37a45bb3a..ff447c116 100644
+--- a/hw/xfree86/modes/xf86Crtc.c
++++ b/hw/xfree86/modes/xf86Crtc.c
+@@ -774,6 +774,16 @@ xf86CrtcCloseScreen(ScreenPtr screen)
+         xf86CrtcPtr crtc = config->crtc[c];
+ 
+         crtc->randr_crtc = NULL;
++
++        if (crtc->transformPresent) {
++            crtc->transformPresent = FALSE;
++            RRTransformFini(&crtc->transform);
++        }
++
++        if (crtc->desiredTransformPresent) {
++            crtc->desiredTransformPresent = FALSE;
++            RRTransformFini(&crtc->desiredTransform);
++        }
+     }
+ 
+     screen->CloseScreen = config->CloseScreen;
+-- 
+2.18.1
+

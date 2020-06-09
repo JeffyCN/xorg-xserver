@@ -6,3 +6,24 @@
 05_Revert-Unload-submodules.diff
 06_use-intel-only-on-pre-gen4.diff
 07_use-modesetting-driver-by-default-on-GeForce.diff
+
+## Ubuntu patches, not upstreamable
+168_glibc_trace_to_stderr.patch
+226_fall_back_to_autoconfiguration.patch
+
+## send upstream
+xfree86-no-xv-for-gpuscreens.patch
+no-nv.patch
+
+## upstream patches
+
+# hybrid graphics fixes
+228_autobind_gpu.patch
+xf86-ignore-conflicting-rr-caps.patch
+
+xi2-resize-touch.patch
+fix-default-permissions.patch
+reset-transforms-in-closescreen.diff
+dri2-use-va-gl-for-intel.diff
+dri2-set-fallback-names-amd-intel.diff
+randr-auto-bind-of-gpu-is-a-config-change.diff

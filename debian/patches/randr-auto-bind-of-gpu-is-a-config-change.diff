@@ -1,0 +1,49 @@
+commit bfb36a5806196e257958907bfcdd71c24acc5d37
+Author: Pekka Paalanen <pekka.paalanen@collabora.com>
+Date:   Mon Feb 10 16:07:41 2020 +0100
+
+    randr: auto-bind of GPU is a config change
+    
+    When a GPU is auto-bound adding more outputs to a screen, that needs to count
+    as a configuration change on that screen so that a WM listening for
+    RRScreenChangeNotify gets notified and handles it as a hotplug. This is
+    particularly for cases where the outputs are already connected. Otherwise
+    nothing might happen.
+    
+    Issue #909 describes a real world case where plugging in a DisplayLink dock
+    with a monitor already connected is sometimes left inactive by GNOME. That
+    issue is a race, and requires adding a sleep(5); as the first thing in
+    NewGPUDeviceRequest() to reproduce reliably. With the sleep, the monitor in the
+    dock will never activate automatically. Add this fix over the sleep, and the
+    issue is gone.
+    
+    This fix was originally developed on a branch replicating Ubuntu 19.04 patch
+    set based on xserver 1.20.4. Testing on master branch was impossible due to
+    xorg/xserver#910.
+    
+    Closes: https://gitlab.freedesktop.org/xorg/xserver/issues/909
+    
+    Signed-off-by: Pekka Paalanen <pekka.paalanen@collabora.com>
+    Reviewed-by: Michel Dänzer <mdaenzer@redhat.com>
+
+diff --git a/randr/rrprovider.c b/randr/rrprovider.c
+index b25ad0feb..dbc3be0e2 100644
+--- a/randr/rrprovider.c
++++ b/randr/rrprovider.c
+@@ -1,5 +1,6 @@
+ /*
+  * Copyright © 2012 Red Hat Inc.
++ * Copyright 2019 DisplayLink (UK) Ltd.
+  *
+  * Permission to use, copy, modify, distribute, and sell this software and its
+  * documentation for any purpose is hereby granted without fee, provided that
+@@ -501,6 +502,9 @@ RRProviderAutoConfigGpuScreen(ScreenPtr pScreen, ScreenPtr masterScreen)
+         (master_provider->capabilities & RR_Capability_SourceOutput)) {
+         pScrPriv->rrProviderSetOutputSource(pScreen, provider, master_provider);
+         RRInitPrimeSyncProps(pScreen);
++
++        masterPriv->configChanged = TRUE;
++        RRSetChanged(masterScreen);
+     }
+ 
+     if ((provider->capabilities & RR_Capability_SourceOffload) &&

@@ -1,7 +1,7 @@
 DEB_HOST_ARCH_OS ?= $(shell dpkg-architecture -qDEB_HOST_ARCH_OS)
 
 VENDOR = $(shell lsb_release -i -s)
-SUPPORT = https://www.debian.org/support
+SUPPORT = For technical support please see http://www.ubuntu.com/support
 
 SOURCE_NAME    :=  xorg-server
 SOURCE_VERSION := $(shell dpkg-parsechangelog -S Version)

@@ -181,7 +181,7 @@ done
 
 # Start the command and save its exit status.
 set +e
-DISPLAY=:$SERVERNUM XAUTHORITY=$AUTHFILE "$@"
+DISPLAY=:$SERVERNUM XAUTHORITY=$AUTHFILE "$@" 2>&1
 RETVAL=$?
 set -e
 

@@ -66,7 +66,11 @@ cookie removed, and the authority file deleted (if the user did not specify
 one to use).
 .B xvfb\-run
 then exits with the exit status of
-.IR command .
+.IR command ,
+except in error conditions (see
+.SM
+.B EXIT STATUS
+below).
 .PP
 .B xvfb\-run
 requires the
@@ -202,8 +206,6 @@ options are specified; see above.
 .B xvfb\-run
 uses its exit status as well as output to standard error to communicate
 diagnostics.
-The exit status of \(oq1\(cq is not used, and should be interpreted as failure
-of the specified command.
 .TP
 0
 .B xvfb\-run
@@ -212,6 +214,10 @@ only uses this exit status if the
 option is given.
 In all other situations, this may be interpreted as success of the specified
 command.
+.TP
+1
+.B Xvfb
+did not start correctly.
 .TP
 2
 No command to run was specified.

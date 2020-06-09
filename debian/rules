@@ -4,6 +4,10 @@ include debian/rules.flags
 
 include /usr/share/dpkg/architecture.mk
 
+ifeq ($(shell dpkg-vendor --derives-from Ubuntu && echo yes) $(DEB_HOST_ARCH), yes i386)
+   skip_packages = -Nxdmx-tools
+endif
+
 %:
 	dh $@ --with quilt
 
@@ -68,6 +72,10 @@ override_dh_auto_install:
 	rm -rf debian/tmp/udeb/usr/lib/*/pkgconfig
 
 	install -m 755 debian/local/xvfb-run debian/tmp/main/usr/bin
+	# Make sure Xvfb at least starts up
+	PATH=debian/tmp/main/usr/bin/:/bin:/usr/bin \
+	  debian/tmp/main/usr/bin/xvfb-run -s "-screen 0 1280x1024x24 -nolisten tcp -noreset" true
+
 	install debian/local/xvfb-run.1 debian/tmp/main/usr/share/man/man1
 ifneq ($(DEB_HOST_ARCH_OS), linux)
 	install -d debian/tmp/main/usr/share/X11/xorg.conf.d
@@ -145,3 +153,9 @@ override_dh_clean:
 	dh_clean
 	rm -rf debian/build
 	rm -rf build-source
+
+override_dh_builddeb:
+	dh_builddeb $(skip_packages)
+
+override_dh_gencontrol:
+	dh_gencontrol $(skip_packages)

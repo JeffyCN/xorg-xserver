@@ -1,0 +1,45 @@
+commit f9e7cdf65901665cf5a4efc4df3164337229f3ac
+Author: Hans de Goede <hdegoede@redhat.com>
+Date:   Mon Aug 5 17:12:01 2019 +0200
+
+    xf86: dri2: Use va_gl as VDPAU driver for Intel i965 GPUs
+    
+    The modesetting driver (which now often is used with Intel GPUs),
+    relies on DRI2ScreenInit() to setup the DRI and VDPAU driver names.
+    
+    Before this commit it would always assign the same name to the 2 names,
+    but the VDPAU driver for i965 GPUs should be va_gl.
+    
+    This commit adds a special case for the i965 case, replacing the
+    VDPAU driver name with "va_gl" if the GPU is using the i965 driver
+    for DRI.
+    
+    Note this commit adds a FIXME comment for a related memory leak, that leak
+    was already present and fixing it falls outside of the scope of this commit.
+    
+    BugLink: https://bugzilla.redhat.com/show_bug.cgi?id=1413733
+    Cc: kwizart@gmail.com
+    Reviewed-by: Emil Velikov <emil.velikov@collabora.com>
+    Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+
+diff --git a/hw/xfree86/dri2/dri2.c b/hw/xfree86/dri2/dri2.c
+index b913c2220..18a6fefff 100644
+--- a/hw/xfree86/dri2/dri2.c
++++ b/hw/xfree86/dri2/dri2.c
+@@ -1602,9 +1602,16 @@ DRI2ScreenInit(ScreenPtr pScreen, DRI2InfoPtr info)
+         if (info->driverName) {
+             ds->driverNames[0] = info->driverName;
+         } else {
++            /* FIXME dri2_probe_driver_name() returns a strdup-ed string,
++             * currently this gets leaked */
+             ds->driverNames[0] = ds->driverNames[1] = dri2_probe_driver_name(pScreen, info);
+             if (!ds->driverNames[0])
+                 return FALSE;
++
++            /* There is no VDPAU driver for i965, fallback to the generic
++             * OpenGL/VAAPI va_gl backend to emulate VDPAU on i965. */
++            if (strcmp(ds->driverNames[0], "i965") == 0)
++                ds->driverNames[1] = "va_gl";
+         }
+     }
+     else {

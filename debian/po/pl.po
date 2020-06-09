@@ -3,8 +3,8 @@
 # $Id: xorg.po,v 1.26 2006/02/15 09:47:09 arteek Exp $
 #
 # Copyright:
-# 2006 Bartosz Feñski <fenio@debian.org>
-# 2006 Artur Szymañski <arteek@wp.pl>
+# 2006 Bartosz Fe?ski <fenio@debian.org>
+# 2006 Artur Szyma?ski <arteek@wp.pl>
 #
 # This file is distributed under the same license as the xorg-x11 package.
 # Please see debian/copyright.
@@ -31,19 +31,19 @@ msgstr "Tylko root"
 #. Choices
 #: ../xserver-xorg-legacy.templates:2001
 msgid "Console Users Only"
-msgstr "Tylko u¿ytkownicy konsoli"
+msgstr "Tylko u?ytkownicy konsoli"
 
 #. Type: select
 #. Choices
 #: ../xserver-xorg-legacy.templates:2001
 msgid "Anybody"
-msgstr "Ka¿dy u¿ytkownik"
+msgstr "Ka?dy u?ytkownik"
 
 #. Type: select
 #. Description
 #: ../xserver-xorg-legacy.templates:2002
 msgid "Users allowed to start the X server:"
-msgstr "U¿ytkownicy mog±cy uruchamiaæ serwer X:"
+msgstr "U?ytkownicy mog?cy uruchamia? serwer X:"
 
 #. Type: select
 #. Description
@@ -56,11 +56,11 @@ msgid ""
 "compromise is to permit the X server to be started only by users logged in "
 "to one of the virtual consoles."
 msgstr ""
-"Poniewa¿ serwer X dzia³a z przywilejami speru¿ytkownika, ze wzglêdu na "
-"bezpieczeñstwo systemu nierozs±dnie jest dawaæ prawa jego uruchamiania "
-"ka¿demu u¿ytkownikowi. Z drugiej za¶ strony, jeszcze mniej rozs±dnie jest "
-"uruchamianie programów klienckich X ogólnego przeznaczenia jako u¿ytkownik "
-"root, co mo¿e siê zdarzyæ je¶li tylko root bêdzie móg³ uruchomiæ serwer X. "
+"Poniewa? serwer X dzia?a z przywilejami speru?ytkownika, ze wzgl?du na "
+"bezpiecze?stwo systemu nierozs?dnie jest dawa? prawa jego uruchamiania "
+"ka?demu u?ytkownikowi. Z drugiej za? strony, jeszcze mniej rozs?dnie jest "
+"uruchamianie program?w klienckich X og?lnego przeznaczenia jako u?ytkownik "
+"root, co mo?e si? zdarzy? je?li tylko root b?dzie m?g? uruchomi? serwer X. "
 "Dobrym kompromisem jest zezwolenie na uruchamianie serwera X tylko "
-"u¿ytkownikom zalogowanym na jednej z wirtualnych konsol (u¿ytkownik konsoli)."
+"u?ytkownikom zalogowanym na jednej z wirtualnych konsol (u?ytkownik konsoli)."
 

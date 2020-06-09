@@ -1,7 +1,8 @@
 Source: xorg-server
 Section: x11
 Priority: optional
-Maintainer: Debian X Strike Force <debian-x@lists.debian.org>
+Maintainer: Ubuntu X-SWAT <ubuntu-x@lists.ubuntu.com>
+XSBC-Original-Maintainer: Debian X Strike Force <debian-x@lists.debian.org>
 Build-Depends:
  debhelper-compat (= 12),
  po-debconf,
@@ -10,6 +11,7 @@ Build-Depends:
  pkg-config,
  bison,
  flex,
+ xauth,
  xutils-dev (>= 1:7.6+4),
  xfonts-utils (>= 1:7.5+1),
  x11proto-dev (>= 2018.4),
@@ -46,7 +48,7 @@ Build-Depends:
  libxinerama-dev,
  libxshmfence-dev (>= 1.1) [!hurd-i386],
 # glamor
- libepoxy-dev [linux-any kfreebsd-any],
+ libepoxy-dev (>= 1.5.4) [linux-any kfreebsd-any],
  libegl1-mesa-dev [linux-any kfreebsd-any],
  libgbm-dev (>= 10.2) [linux-any kfreebsd-any],
 # XCB bits for Xephyr
@@ -233,7 +235,10 @@ Depends:
  xserver-common (>= ${source:Version}),
  ${shlibs:Depends},
  ${misc:Depends},
-Recommends: xauth
+ xauth,
+ x11-xkb-utils
+Recommends:
+ libgl1-mesa-dri
 Provides: xserver
 Multi-Arch: foreign
 Description: Virtual Framebuffer 'fake' X server

@@ -76,7 +76,7 @@ msgstr "Alle"
 #. Description
 #: ../xserver-xorg-legacy.templates:2002
 msgid "Users allowed to start the X server:"
-msgstr "Brugere, der må starte X-serveren:"
+msgstr "Brugere, der m? starte X-serveren:"
 
 #. Type: select
 #. Description
@@ -89,10 +89,10 @@ msgid ""
 "compromise is to permit the X server to be started only by users logged in "
 "to one of the virtual consoles."
 msgstr ""
-"Da X-serveren kører med superbruger-rettigheder kan det af sikkerhedsgrunde "
-"være en dårlig idé at tillade enhver at starte den. På den anden side er det "
-"endnu dårligere at køre normale X-programmer som root, hvilket netop er, "
-"hvad der kan blive resultatet, hvis kun root må starte X-serveren. Et godt "
-"kompromis er at kun tillade brugere der er logget ind på en virtuel konsol "
+"Da X-serveren k?rer med superbruger-rettigheder kan det af sikkerhedsgrunde "
+"v?re en d?rlig id? at tillade enhver at starte den. P? den anden side er det "
+"endnu d?rligere at k?re normale X-programmer som root, hvilket netop er, "
+"hvad der kan blive resultatet, hvis kun root m? starte X-serveren. Et godt "
+"kompromis er at kun tillade brugere der er logget ind p? en virtuel konsol "
 "at starte X-serveren."
 

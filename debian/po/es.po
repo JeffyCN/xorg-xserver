@@ -36,24 +36,24 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=ISO-8859-15\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-POFile-SpellExtra: Bloq Mayús nocaps macintoshold share dead symbols\n"
+"X-POFile-SpellExtra: Bloq May?s nocaps macintoshold share dead symbols\n"
 "X-POFile-SpellExtra: Window PCI metawin conf logo Type autodetectar AGP\n"
 "X-POFile-SpellExtra: BusID xserver xkb keys Express multitarjeta Caps pc\n"
 "X-POFile-SpellExtra: usr Xorg nodeadkeys lspci type nice bin fr ctrl XKB\n"
-"X-POFile-SpellExtra: AT xorg not framebuffer siéntase Lock swapcaps us\n"
-"X-POFile-SpellExtra: PowerPC sólamente altwin root macintosh\n"
+"X-POFile-SpellExtra: AT xorg not framebuffer si?ntase Lock swapcaps us\n"
+"X-POFile-SpellExtra: PowerPC s?lamente altwin root macintosh\n"
 
 #. Type: select
 #. Choices
 #: ../xserver-xorg-legacy.templates:2001
 msgid "Root Only"
-msgstr "Sólo root"
+msgstr "S?lo root"
 
 #. Type: select
 #. Choices
 #: ../xserver-xorg-legacy.templates:2001
 msgid "Console Users Only"
-msgstr "Sólo usuarios de consola"
+msgstr "S?lo usuarios de consola"
 
 #. Type: select
 #. Choices
@@ -80,9 +80,9 @@ msgid ""
 msgstr ""
 "Debido a que el servidor X se ejecuta con privilegios de superusuario, puede "
 "no ser muy prudente permitir que cualquier usuario lo arranque, por razones "
-"de seguridad. Por otra parte, es aún más imprudente ejecutar programas "
-"cliente de X de forma general como root, lo cual puede suceder si sólamente "
+"de seguridad. Por otra parte, es a?n m?s imprudente ejecutar programas "
+"cliente de X de forma general como root, lo cual puede suceder si s?lamente "
 "se permite a root iniciar el servidor X. Un compromiso entre ambos casos es "
-"permitir que el servidor X lo inicien sólo usuarios que hayan entrado por "
+"permitir que el servidor X lo inicien s?lo usuarios que hayan entrado por "
 "una de las consolas virtuales."
 

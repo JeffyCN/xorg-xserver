@@ -24,7 +24,7 @@
 # Branden Robinson, 2000--2004.
 # Thomas Morin, 2001.
 # Patrice Karatchentzeff, 2001.
-# Jérôme Schell, 2001.
+# J?r?me Schell, 2001.
 # Jean-Christophe Dubacq, 2002.
 # Christian Perrier <bubulle@debian.org>, 2003, 2004, 2006, 2007, 2008.
 msgid ""
@@ -65,7 +65,7 @@ msgstr "N'importe qui"
 #. Description
 #: ../xserver-xorg-legacy.templates:2002
 msgid "Users allowed to start the X server:"
-msgstr "Utilisateurs autorisés à lancer un serveur X :"
+msgstr "Utilisateurs autoris?s ? lancer un serveur X?:"
 
 #. Type: select
 #. Description
@@ -78,10 +78,10 @@ msgid ""
 "compromise is to permit the X server to be started only by users logged in "
 "to one of the virtual consoles."
 msgstr ""
-"Le serveur X étant lancé avec des droits privilégiés, il n'est pas très "
-"prudent pour des raisons de sécurité de permettre à n'importe qui de le "
-"lancer. D'un autre côté, il est encore moins prudent de lancer les logiciels "
+"Le serveur X ?tant lanc? avec des droits privil?gi?s, il n'est pas tr?s "
+"prudent pour des raisons de s?curit? de permettre ? n'importe qui de le "
+"lancer. D'un autre c?t?, il est encore moins prudent de lancer les logiciels "
 "clients X en tant que superutilisateur, ce qui risque d'arriver si seul le "
-"superutilisateur est autorisé à lancer un serveur X. Un bon compromis est "
-"que seuls les utilisateurs connectés sur une des consoles virtuelles "
+"superutilisateur est autoris? ? lancer un serveur X. Un bon compromis est "
+"que seuls les utilisateurs connect?s sur une des consoles virtuelles "
 "puissent lancer un serveur X."

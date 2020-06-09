@@ -22,7 +22,7 @@
 #    Developers do not need to manually edit POT or PO files.
 #
 # Branden Robinson, 2000-2004.
-# André Dahlqvist, 2001.
+# Andr? Dahlqvist, 2001.
 # Peter Toneby, 2002.
 # Mikael Hedin, 2002.
 # Daniel Nylander, 2006.
@@ -54,7 +54,7 @@ msgstr "Endast root"
 #. Choices
 #: ../xserver-xorg-legacy.templates:2001
 msgid "Console Users Only"
-msgstr "Endast konsollanvändare"
+msgstr "Endast konsollanv?ndare"
 
 #. Type: select
 #. Choices
@@ -66,7 +66,7 @@ msgstr "Alla"
 #. Description
 #: ../xserver-xorg-legacy.templates:2002
 msgid "Users allowed to start the X server:"
-msgstr "Användare som är behöriga att starta X-servern:"
+msgstr "Anv?ndare som ?r beh?riga att starta X-servern:"
 
 #. Type: select
 #. Description
@@ -79,10 +79,10 @@ msgid ""
 "compromise is to permit the X server to be started only by users logged in "
 "to one of the virtual consoles."
 msgstr ""
-"Då X-servern körs med superanvändarens rättigheter kan det vara otillbörligt "
-"att, ur säkerhetssynpunkt, låta vilken användare som helst starta den. Å "
-"andra sidan är det ännu värre att köra de flesta X-program som root, vilket "
-"är det som kan hända om endast root tillåts starta X-servern. A bra "
-"kompromiss är att endast tillåta användare som är inloggade på en av de "
+"D? X-servern k?rs med superanv?ndarens r?ttigheter kan det vara otillb?rligt "
+"att, ur s?kerhetssynpunkt, l?ta vilken anv?ndare som helst starta den. ? "
+"andra sidan ?r det ?nnu v?rre att k?ra de flesta X-program som root, vilket "
+"?r det som kan h?nda om endast root till?ts starta X-servern. A bra "
+"kompromiss ?r att endast till?ta anv?ndare som ?r inloggade p? en av de "
 "virtuella konsollerna."
 
