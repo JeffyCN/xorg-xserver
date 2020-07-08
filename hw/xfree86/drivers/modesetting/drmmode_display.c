@@ -4090,6 +4090,11 @@ drmmode_get_default_bpp(ScrnInfoPtr pScrn, drmmode_ptr drmmode, int *depth,
     return;
 }
 
+#include <sys/ioctl.h>
+
+#define IOC_MAGIC 'c'
+#define IOCWRITE _IOWR(IOC_MAGIC, 0, int)
+
 static void
 drmmode_destroy_flip_fb(xf86CrtcPtr crtc)
 {
@@ -4136,23 +4141,32 @@ drmmode_prepare_fbpool(xf86CrtcPtr crtc, int width, int height, int bpp)
         .width = width,
         .height = height,
         .bpp = bpp,
-        .num_fb = ARRAY_SIZE(drmmode_crtc->flip_fb),
         .fb_size = width * height * bpp / 8,
-        .current_fb = -1,
     };
-    size_t size = sizeof(fbpool) + fbpool.num_fb * fbpool.fb_size;
+    size_t size = sizeof(fbpool) + fbpool.fb_size;
 
-    const char *file = "/tmp/.fbpool";
+    const char *file = "/dev/app_acm-0";
 
-    drmmode_crtc->fbpool_fd = open(file, O_RDWR | O_CLOEXEC | O_CREAT, 0666);
+    if (drmmode_crtc->fbpool_fd > 0)
+        goto mmap;
+
+    drmmode_crtc->fbpool_fd = open(file, O_RDWR | O_CLOEXEC);
+    if (drmmode_crtc->fbpool_fd < 0)
+        drmmode_crtc->fbpool_fd =
+            open(file, O_RDWR | O_CLOEXEC | O_CREAT, 0666);
     if (drmmode_crtc->fbpool_fd < 0) {
         ErrorF("failed to open fbpool file: %s\n", file);
         return FALSE;
     }
 
-    if (ftruncate(drmmode_crtc->fbpool_fd, size) < 0) {
-        ErrorF("failed to truncate fbpool file: %s(%ld)\n", file, size);
-        goto err;
+    ftruncate(drmmode_crtc->fbpool_fd, size);
+
+mmap:
+    if (drmmode_crtc->fbpool) {
+        if (drmmode_crtc->fbpool_size == size)
+            goto out;
+
+        munmap((void *)drmmode_crtc->fbpool, drmmode_crtc->fbpool_size);
     }
 
     drmmode_crtc->fbpool =
@@ -4163,14 +4177,11 @@ drmmode_prepare_fbpool(xf86CrtcPtr crtc, int width, int height, int bpp)
         goto err;
     }
 
+out:
     strncpy(fbpool.magic, FBPOOL_MAGIC, 4);
 
     memcpy(drmmode_crtc->fbpool, &fbpool, sizeof(fbpool));
     drmmode_crtc->fbpool_size = size;
-
-    xf86DrvMsgVerb(crtc->scrn->scrnIndex, X_INFO, 0,
-                   "Created fbpool file: %s with size: %dx%d(%d), num: %d\n",
-                   file, width, height, fbpool.fb_size, fbpool.num_fb);
 
     return TRUE;
 err:
@@ -4197,12 +4208,9 @@ drmmode_create_flip_fb(xf86CrtcPtr crtc)
 
     drmmode_destroy_flip_fb(crtc);
 
-    if (drmmode_crtc->is_dummy) {
-        /* Force using NV12 for dummy output */
+    /* Force using NV12 for dummy output */
+    if (drmmode_crtc->is_dummy)
         bpp = 12;
-
-        drmmode_prepare_fbpool(crtc, width, height, bpp);
-    }
 
     /* Force using NV12 for all output */
     bpp = 12;
@@ -4223,13 +4231,6 @@ drmmode_create_flip_fb(xf86CrtcPtr crtc)
 
         if (drmmode_bo_import(drmmode, &fb->bo, &fb->fb_id) < 0)
             goto fail;
-
-        if (drmmode_crtc->fbpool) {
-            uint8_t *ptr =
-                (uint8_t *)drmmode_crtc->fbpool + sizeof(fbpool_header);
-
-            fb->dump_buf = ptr + i * drmmode_crtc->fbpool->fb_size;
-        }
     }
 
     return TRUE;
@@ -4492,8 +4493,13 @@ drmmode_update_fb(xf86CrtcPtr crtc)
     if (drmmode_crtc->is_scale)
         fb->need_clear = TRUE;
 
-    if (drmmode_crtc->fbpool)
+    if (drmmode_crtc->is_dummy &&
+        drmmode_prepare_fbpool(crtc, fb->bo.width, fb->bo.height,
+                               fb->bo.dumb->bpp)) {
+        fb->dump_buf = (uint8_t *)drmmode_crtc->fbpool + sizeof(fbpool_header);
         drmmode_prepare_dump_fb(fb);
+        fb->need_clear = TRUE;
+    }
 
     dirty = NULL;
     if (fb->need_clear) {
@@ -4656,7 +4662,9 @@ drmmode_flip_fb(xf86CrtcPtr crtc, int *timeout)
     drmmode_fps(crtc);
 
     if (drmmode_crtc->fbpool) {
-        drmmode_crtc->fbpool->current_fb = drmmode_crtc->current_fb;
+        munmap((void *)drmmode_crtc->fbpool, drmmode_crtc->fbpool_size);
+        drmmode_crtc->fbpool = NULL;
+        ioctl(drmmode_crtc->fbpool_fd, IOCWRITE, &drmmode_crtc->fbpool_size);
 
         fb->pixmap->devPrivate.ptr = NULL;
 
