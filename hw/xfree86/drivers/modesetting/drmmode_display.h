@@ -202,9 +202,7 @@ typedef struct {
     int32_t width;
     int32_t height;
     int32_t bpp;
-    int32_t num_fb;
     int32_t fb_size;
-    int32_t current_fb;
 } fbpool_header;
 
 typedef struct {
