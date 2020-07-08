@@ -268,6 +268,10 @@ typedef struct {
     int fbpool_fd;
     fbpool_header *fbpool;
     size_t fbpool_size;
+
+    const char *name;
+    uint32_t frames;
+    uint64_t start_time_ms;
 } drmmode_crtc_private_rec, *drmmode_crtc_private_ptr;
 
 typedef struct {
