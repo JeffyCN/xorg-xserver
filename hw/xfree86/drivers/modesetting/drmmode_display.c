@@ -3638,6 +3638,7 @@ drmmode_set_desired_modes(ScrnInfoPtr pScrn, drmmode_ptr drmmode, Bool set_hw)
         drmmode_output = output->driver_private;
         drmmode_crtc->is_dummy = drmmode_output->is_dummy;
         drmmode_crtc->need_remap = drmmode_output->need_remap;
+        drmmode_crtc->name = strdup(output->name);
 
         /* Mark that we'll need to re-set the mode for sure */
         memset(&crtc->mode, 0, sizeof(crtc->mode));
@@ -4203,6 +4204,9 @@ drmmode_create_flip_fb(xf86CrtcPtr crtc)
         drmmode_prepare_fbpool(crtc, width, height, bpp);
     }
 
+    /* Force using NV12 for all output */
+    bpp = 12;
+
     if (drmmode_crtc->need_remap) {
         if (crtc->driverIsPerformingTransform & XF86DriverTransformOutput)
             return FALSE;
@@ -4261,6 +4265,9 @@ drmmode_apply_transform(xf86CrtcPtr crtc)
     else
         drmmode_crtc->is_scale = TRUE;
 
+    if (drmmode_crtc->is_dummy)
+        goto create;
+
     /* fb flipping disabled or doing shared pixmap flipping */
     if (!drmmode_crtc->can_flip_fb || drmmode_crtc->enable_flipping)
         goto bail;
@@ -4277,6 +4284,7 @@ drmmode_apply_transform(xf86CrtcPtr crtc)
             goto bail;
     }
 
+create:
     if (!drmmode_create_flip_fb(crtc)) {
         drmmode_crtc->can_flip_fb = FALSE;
         goto fail;
@@ -4554,6 +4562,27 @@ drmmode_flip_fb_abort(modesettingPtr ms, void *data)
     drmmode_crtc->flipping = FALSE;
 }
 
+static void
+drmmode_fps(xf86CrtcPtr crtc)
+{
+    drmmode_crtc_private_ptr drmmode_crtc = crtc->driver_private;
+    struct timeval tv;
+    uint64_t now_ms;
+
+    gettimeofday(&tv, NULL);
+    now_ms = tv.tv_sec * 1000 + tv.tv_usec / 1000;
+
+    if(!(++drmmode_crtc->frames % 30)) {
+        int duration = now_ms - drmmode_crtc->start_time_ms;
+
+        printf("CRTC-%d(%s) FPS: %2.2f\n",
+               drmmode_crtc->mode_crtc->crtc_id, drmmode_crtc->name,
+               drmmode_crtc->frames * 1000.0 / duration);
+        drmmode_crtc->start_time_ms = now_ms;
+        drmmode_crtc->frames = 0;
+    }
+}
+
 Bool
 drmmode_flip_fb(xf86CrtcPtr crtc, int *timeout)
 {
@@ -4623,6 +4652,8 @@ drmmode_flip_fb(xf86CrtcPtr crtc, int *timeout)
 
     gettimeofday(&tv, NULL);
     fb->updated_ms = tv.tv_sec * 1000 + tv.tv_usec / 1000;
+
+    drmmode_fps(crtc);
 
     if (drmmode_crtc->fbpool) {
         drmmode_crtc->fbpool->current_fb = drmmode_crtc->current_fb;

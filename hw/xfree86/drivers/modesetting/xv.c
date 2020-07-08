@@ -395,6 +395,7 @@ ms_exa_xv_put_image(ScrnInfoPtr pScrn,
     pixman_f_transform_init_scale(&transform, sx, sy);
     pixman_f_transform_translate(NULL, &transform, tx, ty);
 
+#if 0
     drmmode->direct_video = TRUE;
     for (c = 0; c < xf86_config->num_crtc; c++) {
         xf86CrtcPtr crtc = xf86_config->crtc[c];
@@ -410,6 +411,7 @@ ms_exa_xv_put_image(ScrnInfoPtr pScrn,
 
     if (drmmode->direct_video)
         goto out;
+#endif
 
     DamageRegionAppend(pDrawable, clipBoxes);
 
