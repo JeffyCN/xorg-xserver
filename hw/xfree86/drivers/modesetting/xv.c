@@ -349,13 +349,17 @@ ms_exa_xv_put_image(ScrnInfoPtr pScrn,
 
     DamageRegionAppend(pDrawable, clipBoxes);
 
-    RegionTranslate(clipBoxes, -dst_pixmap->screen_x, -dst_pixmap->screen_y);
-
     sx = (double)src_w / drw_w;
     sy = (double)src_h / drw_h;
 
-    tx = drw_x - src_x - dst_pixmap->screen_x;
-    ty = drw_y - src_y - dst_pixmap->screen_y;
+    tx = drw_x - src_x;
+    ty = drw_y - src_y;
+
+#ifdef COMPOSITE
+    RegionTranslate(clipBoxes, -dst_pixmap->screen_x, -dst_pixmap->screen_y);
+    tx -= dst_pixmap->screen_x;
+    ty -= dst_pixmap->screen_y;
+#endif
 
     pixman_f_transform_init_scale(&transform, sx, sy);
     pixman_f_transform_translate(NULL, &transform, tx, ty);
