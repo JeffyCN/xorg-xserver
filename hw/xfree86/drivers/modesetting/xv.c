@@ -25,6 +25,7 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <sys/socket.h>
+#include <sys/stat.h>
 #include <sys/un.h>
 #include <libdrm/drm_fourcc.h>
 
@@ -40,9 +41,14 @@ static XF86VideoFormatRec Formats[NUM_FORMATS] = {
 #define MAKE_ATOM(a) MakeAtom(a, sizeof(a) - 1, TRUE)
 
 XvAttributeRec ms_exa_xv_attributes[] = {
+    {XvSettable | XvGettable, 0, 0xFFFFFFFF, (char *)"XV_DMA_CLIENT_ID"},
+    {XvSettable | XvGettable, 0, 0xFFFFFFFF, (char *)"XV_DMA_HOR_STRIDE"},
+    {XvSettable | XvGettable, 0, 0xFFFFFFFF, (char *)"XV_DMA_VER_STRIDE"},
     {0, 0, 0, NULL}
 };
 int ms_exa_xv_num_attributes = ARRAY_SIZE(ms_exa_xv_attributes) - 1;
+
+Atom msDmaClient, msDmaHorStride, msDmaVerStride;
 
 XvImageRec ms_exa_xv_images[] = {
     XVIMAGE_NV12
@@ -50,19 +56,84 @@ XvImageRec ms_exa_xv_images[] = {
 int ms_exa_xv_num_images = ARRAY_SIZE(ms_exa_xv_images);
 
 #define ALIGN(i,m) (((i) + (m) - 1) & ~((m) - 1))
+#define ClipValue(v,min,max) ((v) < (min) ? (min) : (v) > (max) ? (max) : (v))
+
+#define XV_MAX_DMA_FD 3
 
 typedef struct {
+    uint32_t dma_client;
+    uint32_t dma_hor_stride;
+    uint32_t dma_ver_stride;
+    int dma_socket_fd;
 } ms_exa_port_private;
+
+static void
+ms_exa_xv_set_dma_client(ms_exa_port_private *port_priv, uint32_t dma_client)
+{
+    struct sockaddr_un addr;
+
+    // re-open socket to flush pending messages
+    if (port_priv->dma_client)
+        close(port_priv->dma_socket_fd);
+
+    port_priv->dma_client = dma_client;
+
+    if (!dma_client)
+        goto clear;
+
+    port_priv->dma_socket_fd = socket(PF_UNIX, SOCK_DGRAM | SOCK_NONBLOCK, 0);
+    if (port_priv->dma_socket_fd < 0)
+        goto clear;
+
+    addr.sun_family = AF_LOCAL;
+    snprintf(addr.sun_path, sizeof(addr.sun_path),
+             "/tmp/.xv_dma_client.%d", port_priv->dma_client);
+    addr.sun_path[sizeof(addr.sun_path) - 1] = '\0';
+
+    unlink(addr.sun_path);
+    if (bind(port_priv->dma_socket_fd,
+             (struct sockaddr *)&addr, sizeof(addr)) < 0)
+        goto clear;
+
+    chmod(addr.sun_path, S_IRUSR | S_IWUSR | S_IROTH | S_IWOTH);
+
+    return;
+clear:
+    if (port_priv->dma_socket_fd > 0) {
+        close(port_priv->dma_socket_fd);
+        port_priv->dma_socket_fd = 0;
+    }
+    port_priv->dma_client = 0;
+    port_priv->dma_hor_stride = 0;
+    port_priv->dma_ver_stride = 0;
+}
 
 static void
 ms_exa_xv_stop_video(ScrnInfoPtr pScrn, void *data, Bool cleanup)
 {
+    ms_exa_port_private *port_priv = data;
+
+    if (!cleanup)
+        return;
+
+    ms_exa_xv_set_dma_client(port_priv, 0);
 }
 
 static int
 ms_exa_xv_set_port_attribute(ScrnInfoPtr pScrn,
                              Atom attribute, INT32 value, void *data)
 {
+    ms_exa_port_private *port_priv = data;
+
+    if (attribute == msDmaClient)
+        ms_exa_xv_set_dma_client(port_priv, ClipValue(value, 0, 0xFFFFFFFF));
+    else if (attribute == msDmaHorStride)
+        port_priv->dma_hor_stride = ClipValue(value, 0, 0xFFFFFFFF);
+    else if (attribute == msDmaVerStride)
+        port_priv->dma_ver_stride = ClipValue(value, 0, 0xFFFFFFFF);
+    else
+        return BadMatch;
+
     return Success;
 }
 
@@ -70,6 +141,17 @@ static int
 ms_exa_xv_get_port_attribute(ScrnInfoPtr pScrn,
                              Atom attribute, INT32 *value, void *data)
 {
+    ms_exa_port_private *port_priv = data;
+
+    if (attribute == msDmaClient)
+        *value = port_priv->dma_client;
+    else if (attribute == msDmaHorStride)
+        *value = port_priv->dma_hor_stride;
+    else if (attribute == msDmaVerStride)
+        *value = port_priv->dma_ver_stride;
+    else
+        return BadMatch;
+
     return Success;
 }
 
@@ -116,6 +198,99 @@ ms_exa_xv_query_image_attributes(ScrnInfoPtr pScrn,
 }
 
 static PixmapPtr
+ms_exa_xv_create_dma_pixmap(ScrnInfoPtr scrn,
+                            ms_exa_port_private *port_priv, int id)
+{
+    modesettingPtr ms = modesettingPTR(scrn);
+    ScreenPtr screen = scrn->pScreen;
+    PixmapPtr pixmap = NULL;
+    struct dumb_bo *bo = NULL;
+    struct iovec iov;
+    struct msghdr msg;
+    struct cmsghdr *header;
+    char buf[CMSG_SPACE (sizeof (int))];
+    int dma_fds[XV_MAX_DMA_FD], num_dma_fd = 0;
+    int width, height, pitch;
+
+    if (!port_priv->dma_client || port_priv->dma_socket_fd <= 0)
+        return NULL;
+
+    if (id != FOURCC_NV12)
+        goto err;
+
+    if (!port_priv->dma_hor_stride || !port_priv->dma_ver_stride)
+        goto err;
+
+    iov.iov_base = buf;
+    iov.iov_len = 1;
+
+    msg.msg_iov = &iov;
+    msg.msg_iovlen = 1;
+    msg.msg_name = NULL;
+    msg.msg_namelen = 0;
+
+    num_dma_fd = 0;
+    while (1) {
+        msg.msg_control = buf;
+        msg.msg_controllen = sizeof(buf);
+
+        if (recvmsg(port_priv->dma_socket_fd, &msg, 0) < 0)
+            break;
+
+        /* End with a empty msg */
+        header = CMSG_FIRSTHDR(&msg);
+        if (!header)
+            break;
+
+        for (; header != NULL; header = CMSG_NXTHDR(&msg, header)) {
+            if (header->cmsg_level != SOL_SOCKET
+                || header->cmsg_type != SCM_RIGHTS
+                || header->cmsg_len != CMSG_LEN(sizeof(int)))
+                break;
+
+            dma_fds[num_dma_fd++] = *((int *)CMSG_DATA(header));
+        }
+    }
+
+    /* Expected 1 buffer for NV12 */
+    if (num_dma_fd != 1)
+        goto err;
+
+    width = port_priv->dma_hor_stride;
+    height = port_priv->dma_ver_stride;
+    pitch = width * 3 / 2;
+
+    pixmap = drmmode_create_pixmap_header(screen, width, height,
+                                          12, 12, pitch, NULL);
+    if (!pixmap)
+        goto err;
+
+    bo = dumb_get_bo_from_fd(ms->drmmode.fd, dma_fds[0],
+                             pitch, pitch * height);
+    if (!bo)
+        goto err_free_pixmap;
+
+    if (!ms_exa_set_pixmap_bo(scrn, pixmap, bo, TRUE))
+        goto err_free_bo;
+
+    goto out;
+
+err_free_bo:
+    dumb_bo_destroy(ms->drmmode.fd, bo);
+err_free_pixmap:
+    screen->DestroyPixmap(pixmap);
+    pixmap = NULL;
+err:
+    ErrorF("ms xv failed to import dma pixmap\n");
+    ms_exa_xv_set_dma_client(port_priv, 0);
+out:
+    while (num_dma_fd--)
+        close(dma_fds[num_dma_fd]);
+
+    return pixmap;
+}
+
+static PixmapPtr
 ms_exa_xv_create_pixmap(ScrnInfoPtr scrn, ms_exa_port_private *port_priv,
                         int id,
                         unsigned char *buf,
@@ -159,10 +334,13 @@ ms_exa_xv_put_image(ScrnInfoPtr pScrn,
     double sx, sy, tx, ty;
     int ret = Success;
 
-    src_pixmap = ms_exa_xv_create_pixmap(pScrn, port_priv, id,
-                                         buf, width, height);
-    if (!src_pixmap)
-        return BadMatch;
+    src_pixmap = ms_exa_xv_create_dma_pixmap(pScrn, port_priv, id);
+    if (!src_pixmap) {
+        src_pixmap = ms_exa_xv_create_pixmap(pScrn, port_priv, id,
+                                             buf, width, height);
+        if (!src_pixmap)
+            return BadMatch;
+    }
 
     if (pDrawable->type == DRAWABLE_WINDOW)
         dst_pixmap = screen->GetWindowPixmap((WindowPtr) pDrawable);
@@ -207,6 +385,10 @@ ms_exa_xv_init(ScreenPtr screen, int num_texture_ports)
     XF86VideoAdaptorPtr adapt;
     int i;
 
+    msDmaClient = MAKE_ATOM("XV_DMA_CLIENT_ID");
+    msDmaHorStride = MAKE_ATOM("XV_DMA_HOR_STRIDE");
+    msDmaVerStride = MAKE_ATOM("XV_DMA_VER_STRIDE");
+
     adapt = calloc(1, sizeof(XF86VideoAdaptorRec) + num_texture_ports *
                    (sizeof(ms_exa_port_private) + sizeof(DevUnion)));
     if (adapt == NULL)
@@ -246,6 +428,11 @@ ms_exa_xv_init(ScreenPtr screen, int num_texture_ports)
 
     for (i = 0; i < num_texture_ports; i++) {
         ms_exa_port_private *priv = &port_priv[i];
+
+        priv->dma_client = 0;
+        priv->dma_socket_fd = 0;
+        priv->dma_hor_stride = 0;
+        priv->dma_ver_stride = 0;
 
         adapt->pPortPrivates[i].ptr = (void *) (priv);
     }
