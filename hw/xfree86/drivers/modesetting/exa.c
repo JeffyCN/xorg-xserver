@@ -898,6 +898,11 @@ ms_exa_copy_area(PixmapPtr pSrc, PixmapPtr pDst,
         int sx, sy, sw, sh, dx, dy, dw, dh;
         box = REGION_RECTS(region) + n;
 
+        box->x1 = max(box->x1, 0);
+        box->y1 = max(box->y1, 0);
+        box->x2 = min(box->x2, pDst->drawable.width);
+        box->y2 = min(box->y2, pDst->drawable.height);
+
         dx = box->x1;
         dy = box->y1;
         dw = box->x2 - box->x1;
