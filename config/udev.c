@@ -56,7 +56,7 @@ static struct udev_monitor *udev_monitor;
 
 #ifdef CONFIG_UDEV_KMS
 static void
-config_udev_odev_setup_attribs(const char *path, const char *syspath,
+config_udev_odev_setup_attribs(struct udev_device *udev_device, const char *path, const char *syspath,
                                int major, int minor,
                                config_odev_probe_proc_ptr probe_callback);
 #endif
@@ -128,7 +128,7 @@ device_added(struct udev_device *udev_device)
 
         LogMessage(X_INFO, "config/udev: Adding drm device (%s)\n", path);
 
-        config_udev_odev_setup_attribs(path, syspath, major(devnum),
+        config_udev_odev_setup_attribs(udev_device, path, syspath, major(devnum),
                                        minor(devnum), NewGPUDeviceRequest);
         return;
     }
@@ -322,7 +322,7 @@ device_removed(struct udev_device *device)
 
         LogMessage(X_INFO, "config/udev: removing GPU device %s %s\n",
                    syspath, path);
-        config_udev_odev_setup_attribs(path, syspath, major(devnum),
+        config_udev_odev_setup_attribs(device, path, syspath, major(devnum),
                                        minor(devnum), DeleteGPUDeviceRequest);
         /* Retry vtenter after a drm node removal */
         systemd_logind_vtenter();
@@ -464,17 +464,49 @@ config_udev_fini(void)
 
 #ifdef CONFIG_UDEV_KMS
 
+/* Find the last occurrence of the needle in haystack */
+static char *strrstr(const char *haystack, const char *needle)
+{
+    char *prev, *last, *tmp;
+
+    prev = strstr(haystack, needle);
+    if (!prev)
+        return NULL;
+
+    last = prev;
+    tmp = prev + 1;
+
+    while (tmp) {
+        last = strstr(tmp, needle);
+        if (!last)
+            return prev;
+        else {
+            prev = last;
+            tmp = prev + 1;
+        }
+    }
+
+    return last;
+}
+
 static void
-config_udev_odev_setup_attribs(const char *path, const char *syspath,
+config_udev_odev_setup_attribs(struct udev_device *udev_device, const char *path, const char *syspath,
                                int major, int minor,
                                config_odev_probe_proc_ptr probe_callback)
 {
     struct OdevAttributes *attribs = config_odev_allocate_attributes();
+    const char *value, *str;
 
     attribs->path = XNFstrdup(path);
     attribs->syspath = XNFstrdup(syspath);
     attribs->major = major;
     attribs->minor = minor;
+
+    value = udev_device_get_property_value(udev_device, "ID_PATH");
+    if (value && (str = strrstr(value, "pci-"))) {
+        attribs->busid = XNFstrdup(str);
+        attribs->busid[3] = ':';
+    }
 
     /* ownership of attribs is passed to probe layer */
     probe_callback(attribs);
@@ -516,7 +548,7 @@ config_udev_odev_probe(config_odev_probe_proc_ptr probe_callback)
         else if (!check_seat(udev_device))
             goto no_probe;
 
-        config_udev_odev_setup_attribs(path, syspath, major(devnum),
+        config_udev_odev_setup_attribs(udev_device, path, syspath, major(devnum),
                                        minor(devnum), probe_callback);
     no_probe:
         udev_device_unref(udev_device);
