@@ -6,6 +6,8 @@ xorg-server (2:1.20.9-1) UNRELEASED; urgency=medium
     probing the GPU.
   * revert-hw-xfree86-avoid-cursor-use-after-free.diff: Revert a commit
     which is causing server crashes.
+  * revert-disabling-xss-for-rootless-xwayland.diff: Fix a regression
+    where apps crash under Xwayland.
 
  -- Timo Aaltonen <tjaalton@debian.org>  Mon, 31 Aug 2020 13:30:28 +0300
 

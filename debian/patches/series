@@ -8,3 +8,4 @@
 07_use-modesetting-driver-by-default-on-GeForce.diff
 fix-pci-probing-segfault.diff
 revert-hw-xfree86-avoid-cursor-use-after-free.diff
+revert-disabling-xss-for-rootless-xwayland.diff

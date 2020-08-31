@@ -1,0 +1,32 @@
+commit 1a3092be2784822b99c1fe7fcba8665f6e40381c
+Author: Timo Aaltonen <tjaalton@debian.org>
+Date:   Mon Aug 31 17:30:04 2020 +0300
+
+    Revert "xwayland: Disable the MIT-SCREEN-SAVER extension when rootless"
+    
+    This reverts commit 3059a2e62ae7ef665a537ee0fc2ec24beccf17ae.
+
+diff --git a/hw/xwayland/xwayland.c b/hw/xwayland/xwayland.c
+index d02934cd5..317b81690 100644
+--- a/hw/xwayland/xwayland.c
++++ b/hw/xwayland/xwayland.c
+@@ -1132,19 +1132,6 @@ xwl_screen_init(ScreenPtr pScreen, int argc, char **argv)
+     for (i = 1; i < argc; i++) {
+         if (strcmp(argv[i], "-rootless") == 0) {
+             xwl_screen->rootless = 1;
+-
+-            /* Disable the XSS extension on Xwayland rootless.
+-             *
+-             * Xwayland is just a Wayland client, no X11 screensaver
+-             * should be expected to work reliably on Xwayland rootless.
+-             */
+-#ifdef SCREENSAVER
+-            noScreenSaverExtension = TRUE;
+-#endif
+-            ScreenSaverTime = 0;
+-            ScreenSaverInterval = 0;
+-            defaultScreenSaverTime = 0;
+-            defaultScreenSaverInterval = 0;
+         }
+         else if (strcmp(argv[i], "-wm") == 0) {
+             xwl_screen->wm_fd = atoi(argv[i + 1]);
