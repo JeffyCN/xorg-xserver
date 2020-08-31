@@ -1,0 +1,29 @@
+commit 7f4916e16c964fd2f4828ea541b121dcd84bcebb
+Author: Timo Aaltonen <tjaalton@debian.org>
+Date:   Mon Aug 31 13:32:54 2020 +0300
+
+    Revert "hw/xfree86: Avoid cursor use after free"
+    
+    This reverts commit c726ceacc1a39c56d2b054ac5f35798d0c3640d7.
+
+diff --git a/hw/xfree86/ramdac/xf86CursorRD.c b/hw/xfree86/ramdac/xf86CursorRD.c
+index ee1d98916..afcce5353 100644
+--- a/hw/xfree86/ramdac/xf86CursorRD.c
++++ b/hw/xfree86/ramdac/xf86CursorRD.c
+@@ -212,7 +212,7 @@ xf86CursorEnableDisableFBAccess(ScrnInfoPtr pScrn, Bool enable)
+                                                xf86CursorScreenKey);
+ 
+     if (!enable && ScreenPriv->CurrentCursor != NullCursor) {
+-        CursorPtr currentCursor = RefCursor(ScreenPriv->CurrentCursor);
++        CursorPtr currentCursor = ScreenPriv->CurrentCursor;
+ 
+         xf86CursorSetCursor(pDev, pScreen, NullCursor, ScreenPriv->x,
+                             ScreenPriv->y);
+@@ -231,7 +231,6 @@ xf86CursorEnableDisableFBAccess(ScrnInfoPtr pScrn, Bool enable)
+          */
+         xf86CursorSetCursor(pDev, pScreen, ScreenPriv->SavedCursor,
+                             ScreenPriv->x, ScreenPriv->y);
+-        UnrefCursor(ScreenPriv->SavedCursor);
+         ScreenPriv->SavedCursor = NULL;
+     }
+ }

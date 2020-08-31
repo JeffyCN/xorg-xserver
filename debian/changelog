@@ -4,6 +4,8 @@ xorg-server (2:1.20.9-1) UNRELEASED; urgency=medium
     - CVE-2020-14347 (Closes: #968986)
   * fix-pci-probing-segfault.diff: Fix a regression in 1.20.9 when
     probing the GPU.
+  * revert-hw-xfree86-avoid-cursor-use-after-free.diff: Revert a commit
+    which is causing server crashes.
 
  -- Timo Aaltonen <tjaalton@debian.org>  Mon, 31 Aug 2020 13:30:28 +0300
 

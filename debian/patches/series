@@ -7,3 +7,4 @@
 06_use-intel-only-on-pre-gen4.diff
 07_use-modesetting-driver-by-default-on-GeForce.diff
 fix-pci-probing-segfault.diff
+revert-hw-xfree86-avoid-cursor-use-after-free.diff
