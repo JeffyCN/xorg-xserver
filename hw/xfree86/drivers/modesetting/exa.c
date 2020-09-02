@@ -564,9 +564,9 @@ ms_exa_composite(PixmapPtr pDst, int srcX, int srcY,
     if (!rga_prepare_info(pDst, &dst_info, dstX, dstY, width, height))
         goto bail;
 
-    /* dst = src + (1 - src.a) * dst */
+    /* dst = src.a * src + (1 - src.a) * dst */
     if (op == PictOpOver)
-        blend = 0xFF0105;
+        blend = 0xFF0405;
 
     if (rotate == 90)
         src_info.rotation = HAL_TRANSFORM_ROT_90;
