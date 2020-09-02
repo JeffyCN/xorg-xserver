@@ -254,6 +254,15 @@ ms_exa_solid(PixmapPtr pPixmap, int x1, int y1, int x2, int y2)
 
     dst_info.color = exa_prepare_args.solid.fg;
 
+    /* rga only support RGBA8888 for color fill */
+    if (pPixmap->drawable.bitsPerPixel != 32)
+        goto bail;
+
+    if (pPixmap->drawable.depth == 24)
+        dst_info.color |= 0xFF << 24;
+
+    dst_info.rect.format = RK_FORMAT_RGBA_8888;
+
     if (c_RkRgaColorFill(&dst_info) < 0)
         goto bail;
 
