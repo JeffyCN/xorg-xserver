@@ -513,7 +513,10 @@ ms_exa_composite_bail(PixmapPtr pDst, int srcX, int srcY,
     ms_exa_prepare_access(pSrc, 0);
     ms_exa_prepare_access(pDst, 0);
     fbComposite(op, pSrcPicture, pMaskPicture, pDstPicture,
-                srcX, srcY, maskX, maskY, dstX, dstY, width, height);
+                srcX, srcY, maskX, maskY,
+                dstX - pDstPicture->pDrawable->x,
+                dstY - pDstPicture->pDrawable->y,
+                width, height);
     ms_exa_finish_access(pDst, 0);
     ms_exa_finish_access(pSrc, 0);
 
@@ -564,7 +567,7 @@ ms_exa_composite(PixmapPtr pDst, int srcX, int srcY,
     if (!rga_prepare_info(pDst, &dst_info, dstX, dstY, width, height))
         goto bail;
 
-    /* dst = src.a * src + (1 - src.a) * dst */
+    /* dst = src + (1 - src.a) * dst */
     if (op == PictOpOver)
         blend = 0xFF0405;
 
