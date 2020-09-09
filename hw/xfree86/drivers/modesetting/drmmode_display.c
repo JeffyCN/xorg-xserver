@@ -4155,7 +4155,7 @@ drmmode_prepare_fbpool(xf86CrtcPtr crtc, int width, int height, int bpp)
         drmmode_crtc->fbpool_fd =
             open(file, O_RDWR | O_CLOEXEC | O_CREAT, 0666);
     if (drmmode_crtc->fbpool_fd < 0) {
-        ErrorF("failed to open fbpool file: %s\n", file);
+        DebugF("failed to open fbpool file: %s\n", file);
         return FALSE;
     }
 
@@ -4173,7 +4173,7 @@ mmap:
         (fbpool_header *)mmap(NULL, size, PROT_WRITE,
                             MAP_SHARED, drmmode_crtc->fbpool_fd, 0);
     if (drmmode_crtc->fbpool == MAP_FAILED) {
-        ErrorF("failed to mmap fbpool file: %s(%ld)\n", file, size);
+        DebugF("failed to mmap fbpool file: %s(%ld)\n", file, size);
         goto err;
     }
 
@@ -4493,9 +4493,12 @@ drmmode_update_fb(xf86CrtcPtr crtc)
     if (drmmode_crtc->is_scale)
         fb->need_clear = TRUE;
 
-    if (drmmode_crtc->is_dummy &&
-        drmmode_prepare_fbpool(crtc, fb->bo.width, fb->bo.height,
-                               fb->bo.dumb->bpp)) {
+    if (drmmode_crtc->is_dummy) {
+        if (!drmmode_prepare_fbpool(crtc, fb->bo.width, fb->bo.height,
+                                    fb->bo.dumb->bpp))
+            /* Fake updated when fbpool unavailable */
+            return TRUE;
+
         fb->dump_buf = (uint8_t *)drmmode_crtc->fbpool + sizeof(fbpool_header);
         drmmode_prepare_dump_fb(fb);
         fb->need_clear = TRUE;
