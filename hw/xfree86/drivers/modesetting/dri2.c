@@ -621,8 +621,6 @@ ms_dri2_exchange_buffers(DrawablePtr draw, DRI2BufferPtr front,
     *front_pix = *back_pix;
     *back_pix = tmp_pix;
 
-    ms_exchange_buffers(front_priv->pixmap, back_priv->pixmap);
-
     /* Post damage on the front buffer so that listeners, such
      * as DisplayLink know take a copy and shove it over the USB.
      */
@@ -631,6 +629,9 @@ ms_dri2_exchange_buffers(DrawablePtr draw, DRI2BufferPtr front,
     region.extents.y2 = front_priv->pixmap->drawable.height;
     region.data = NULL;
     DamageRegionAppend(&front_priv->pixmap->drawable, &region);
+
+    ms_exchange_buffers(front_priv->pixmap, back_priv->pixmap);
+
     DamageRegionProcessPending(&front_priv->pixmap->drawable);
 }
 
