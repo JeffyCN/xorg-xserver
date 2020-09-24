@@ -1,9 +1,9 @@
-xorg-server (2:1.20.9-2) UNRELEASED; urgency=medium
+xorg-server (2:1.20.9-2) unstable; urgency=medium
 
   * fix-pci-probing-segfault.diff: Dropped and revert three commits
     instead. (Closes: #969739)
 
- -- Timo Aaltonen <tjaalton@debian.org>  Thu, 24 Sep 2020 12:16:19 +0300
+ -- Timo Aaltonen <tjaalton@debian.org>  Thu, 24 Sep 2020 12:19:06 +0300
 
 xorg-server (2:1.20.9-1) unstable; urgency=medium
 
