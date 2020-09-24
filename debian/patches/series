@@ -6,6 +6,8 @@
 05_Revert-Unload-submodules.diff
 06_use-intel-only-on-pre-gen4.diff
 07_use-modesetting-driver-by-default-on-GeForce.diff
-fix-pci-probing-segfault.diff
 revert-hw-xfree86-avoid-cursor-use-after-free.diff
 revert-disabling-xss-for-rootless-xwayland.diff
+0001-Revert-linux-Fix-platform-device-probe-for-DT-based-.patch
+0001-Revert-linux-Fix-platform-device-PCI-detection-for-c.patch
+0001-Revert-linux-Make-platform-device-probe-less-fragile.patch
