@@ -4338,8 +4338,5 @@ drmmode_flip_fb(xf86CrtcPtr crtc, int *timeout)
 
     drmmode_crtc->flipping = TRUE;
 
-    gettimeofday(&tv, NULL);
-    drmmode_crtc->flipping_time_ms = tv.tv_sec * 1000 + tv.tv_usec / 1000;
-
     return TRUE;
 }
