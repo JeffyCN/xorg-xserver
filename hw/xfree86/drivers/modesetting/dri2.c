@@ -495,7 +495,7 @@ ms_dri2_schedule_flip(ms_dri2_frame_event_ptr info)
                        ms_dri2_flip_handler,
                        ms_dri2_flip_abort)) {
         ms->drmmode.dri2_flipping = TRUE;
-        drmmode_crtc->flip_fb_enabled = FALSE;
+        drmmode_crtc->flipping = TRUE;
         return TRUE;
     }
     return FALSE;
