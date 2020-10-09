@@ -378,7 +378,7 @@ ms_present_flip(RRCrtcPtr crtc,
                          "Present-flip");
     if (ret) {
         ms->drmmode.present_flipping = TRUE;
-        drmmode_crtc->flip_fb_enabled = FALSE;
+        drmmode_crtc->flipping = TRUE;
     }
 
     return ret;
