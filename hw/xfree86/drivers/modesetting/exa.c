@@ -27,6 +27,11 @@
 #ifdef MODESETTING_WITH_RGA
 #include <rga/rga.h>
 #include <rga/RgaApi.h>
+
+#define RGA_MIN_LINEWIDTH       2
+
+/* See rga_get_pixmap_format */
+#define PIXMAP_IS_YUV(pix) ((pix)->drawable.bitsPerPixel == 12)
 #endif
 
 #define ABS(n)      ((n) < 0 ? -(n) : (n))
@@ -110,7 +115,7 @@ rga_prepare_info(PixmapPtr pPixmap, rga_info_t *info,
     format = rga_get_pixmap_format(pPixmap);
 
     /* rga requires yuv image rect align to 2 */
-    if (pPixmap->drawable.bitsPerPixel == 12) {
+    if (PIXMAP_IS_YUV(pPixmap)) {
         x = (x + 1) & ~1;
         y = (y + 1) & ~1;
         w = w & ~1;
@@ -118,7 +123,7 @@ rga_prepare_info(PixmapPtr pPixmap, rga_info_t *info,
     }
 
     /* rga requires image width/height larger than 2 */
-    if (w <= 2 || h <= 2)
+    if (w <= RGA_MIN_LINEWIDTH || h <= RGA_MIN_LINEWIDTH)
         return FALSE;
 
     rga_set_rect(&info->rect, x, y, w, h,
@@ -135,8 +140,8 @@ rga_check_pixmap(PixmapPtr pPixmap)
     RgaSURF_FORMAT format;
 
     /* rga requires image width/height larger than 2 */
-    if (pPixmap->drawable.width <= 2 &&
-        pPixmap->drawable.height <= 2)
+    if (pPixmap->drawable.width <= RGA_MIN_LINEWIDTH &&
+        pPixmap->drawable.height <= RGA_MIN_LINEWIDTH)
         return FALSE;
 
     format = rga_get_pixmap_format(pPixmap);
@@ -624,7 +629,7 @@ ms_exa_upload_to_screen(PixmapPtr pDst, int x, int y, int w, int h,
     Bool ret = FALSE;
 
     /* rga requires image width/height larger than 2 */
-    if (w <= 2 || h <= 2)
+    if (w <= RGA_MIN_LINEWIDTH || h <= RGA_MIN_LINEWIDTH)
         return FALSE;
 
     /* skip small images */
@@ -685,7 +690,7 @@ ms_exa_download_from_screen(PixmapPtr pSrc, int x, int y, int w, int h,
     Bool ret = FALSE;
 
     /* rga requires image width/height larger than 2 */
-    if (w <= 2 || h <= 2)
+    if (w <= RGA_MIN_LINEWIDTH || h <= RGA_MIN_LINEWIDTH)
         return FALSE;
 
     /* skip small images */
@@ -983,8 +988,8 @@ ms_exa_copy_area_bail(PixmapPtr pSrc, PixmapPtr pDst,
     BoxPtr box;
     int n, error;
 
-    if (pSrc->drawable.bitsPerPixel == 12 ||
-        pDst->drawable.bitsPerPixel == 12)
+    /* Doesn't support yuv */
+    if (PIXMAP_IS_YUV(pSrc) || PIXMAP_IS_YUV(pDst))
         return FALSE;
 
     src = CreatePicture(None, &pSrc->drawable,
@@ -1091,21 +1096,22 @@ ms_exa_copy_area(PixmapPtr pSrc, PixmapPtr pDst,
         sw = min(box->x2, pSrc->drawable.width) - sx;
         sh = min(box->y2, pSrc->drawable.height) - sy;
 
-        if (sw <= 0 || sh <= 0 || dw <= 0 || dh <= 0)
-            continue;
-
         /* rga has scale limits */
         if ((double)sw / dw > 16 || (double)dw / sw > 16 ||
             (double)sh / dh > 16 || (double)dh / sh > 16)
-            goto bail;
+            goto err;
 
         if (!rga_prepare_info(pSrc, &src_info, sx, sy, sw, sh))
-            goto bail;
+            goto err;
 
         if (!rga_prepare_info(pDst, &dst_info, dx, dy, dw, dh))
-            goto bail;
+            goto err;
 
-        if (c_RkRgaBlit(&src_info, &dst_info, NULL) < 0)
+        if (!c_RkRgaBlit(&src_info, &dst_info, NULL))
+            continue;
+err:
+        /* HACK: Ignoring errors for YUV, since xserver cannot handle it */
+        if (!PIXMAP_IS_YUV(pSrc) && !PIXMAP_IS_YUV(pDst))
             goto bail;
     }
 
