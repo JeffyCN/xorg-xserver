@@ -27,6 +27,9 @@
 #ifdef MODESETTING_WITH_RGA
 #include <rga/rga.h>
 #include <rga/RgaApi.h>
+
+#define RGA_MIN_LINEWIDTH       2
+#define RGA_MIN_LINEWIDTH_YUV   3
 #endif
 
 #define ABS(n)      ((n) < 0 ? -(n) : (n))
@@ -118,7 +121,7 @@ rga_prepare_info(PixmapPtr pPixmap, rga_info_t *info,
     }
 
     /* rga requires image width/height larger than 2 */
-    if (w <= 2 || h <= 2)
+    if (w <= RGA_MIN_LINEWIDTH || h <= RGA_MIN_LINEWIDTH)
         return FALSE;
 
     rga_set_rect(&info->rect, x, y, w, h,
@@ -135,8 +138,8 @@ rga_check_pixmap(PixmapPtr pPixmap)
     RgaSURF_FORMAT format;
 
     /* rga requires image width/height larger than 2 */
-    if (pPixmap->drawable.width <= 2 &&
-        pPixmap->drawable.height <= 2)
+    if (pPixmap->drawable.width <= RGA_MIN_LINEWIDTH &&
+        pPixmap->drawable.height <= RGA_MIN_LINEWIDTH)
         return FALSE;
 
     format = rga_get_pixmap_format(pPixmap);
@@ -624,7 +627,7 @@ ms_exa_upload_to_screen(PixmapPtr pDst, int x, int y, int w, int h,
     Bool ret = FALSE;
 
     /* rga requires image width/height larger than 2 */
-    if (w <= 2 || h <= 2)
+    if (w <= RGA_MIN_LINEWIDTH || h <= RGA_MIN_LINEWIDTH)
         return FALSE;
 
     /* skip small images */
@@ -685,7 +688,7 @@ ms_exa_download_from_screen(PixmapPtr pSrc, int x, int y, int w, int h,
     Bool ret = FALSE;
 
     /* rga requires image width/height larger than 2 */
-    if (w <= 2 || h <= 2)
+    if (w <= RGA_MIN_LINEWIDTH || h <= RGA_MIN_LINEWIDTH)
         return FALSE;
 
     /* skip small images */
@@ -1041,7 +1044,17 @@ ms_exa_copy_area(PixmapPtr pSrc, PixmapPtr pDst,
     rga_info_t dst_info = {0};
     RegionPtr region = NULL;
     BoxPtr box;
-    int n;
+    int n, src_min_linewidth, dst_min_linewidth;
+
+    if (pSrc->drawable.bitsPerPixel == 12)
+        src_min_linewidth = RGA_MIN_LINEWIDTH_YUV;
+    else
+        src_min_linewidth = RGA_MIN_LINEWIDTH;
+
+    if (pDst->drawable.bitsPerPixel == 12)
+        dst_min_linewidth = RGA_MIN_LINEWIDTH_YUV;
+    else
+        dst_min_linewidth = RGA_MIN_LINEWIDTH;
 
     if (!ms->drmmode.exa)
         goto bail;
@@ -1091,7 +1104,9 @@ ms_exa_copy_area(PixmapPtr pSrc, PixmapPtr pDst,
         sw = min(box->x2, pSrc->drawable.width) - sx;
         sh = min(box->y2, pSrc->drawable.height) - sy;
 
-        if (sw <= 0 || sh <= 0 || dw <= 0 || dh <= 0)
+        /* ignore the small areas since rga cannot handle them */
+        if (sw <= src_min_linewidth || sh <= src_min_linewidth ||
+            dw <= dst_min_linewidth || dh <= dst_min_linewidth)
             continue;
 
         /* rga has scale limits */
