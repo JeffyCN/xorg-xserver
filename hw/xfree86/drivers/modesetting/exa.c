@@ -1076,15 +1076,19 @@ ms_exa_copy_area(PixmapPtr pSrc, PixmapPtr pDst,
         /* rga has scale limits */
         if ((double)sw / dw > 16 || (double)dw / sw > 16 ||
             (double)sh / dh > 16 || (double)dh / sh > 16)
-            goto bail;
+            goto err;
 
         if (!rga_prepare_info(pSrc, &src_info, sx, sy, sw, sh))
-            goto bail;
+            goto err;
 
         if (!rga_prepare_info(pDst, &dst_info, dx, dy, dw, dh))
-            goto bail;
+            goto err;
 
-        if (c_RkRgaBlit(&src_info, &dst_info, NULL) < 0)
+        if (!c_RkRgaBlit(&src_info, &dst_info, NULL))
+            continue;
+err:
+        /* HACK: Ignoring errors for YUV, since xserver cannot handle it */
+        if (!PIXMAP_IS_YUV(pSrc) && !PIXMAP_IS_YUV(pDst))
             goto bail;
     }
 
