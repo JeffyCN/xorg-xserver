@@ -24,6 +24,5 @@ xf86-ignore-conflicting-rr-caps.patch
 xi2-resize-touch.patch
 fix-default-permissions.patch
 reset-transforms-in-closescreen.diff
-dri2-use-va-gl-for-intel.diff
 dri2-set-fallback-names-amd-intel.diff
 randr-auto-bind-of-gpu-is-a-config-change.diff
