@@ -29,7 +29,9 @@
 #include <rga/RgaApi.h>
 
 #define RGA_MIN_LINEWIDTH       2
-#define RGA_MIN_LINEWIDTH_YUV   3
+
+/* See rga_get_pixmap_format */
+#define PIXMAP_IS_YUV(pix) ((pix)->drawable.bitsPerPixel == 12)
 #endif
 
 #define ABS(n)      ((n) < 0 ? -(n) : (n))
@@ -113,7 +115,7 @@ rga_prepare_info(PixmapPtr pPixmap, rga_info_t *info,
     format = rga_get_pixmap_format(pPixmap);
 
     /* rga requires yuv image rect align to 2 */
-    if (pPixmap->drawable.bitsPerPixel == 12) {
+    if (PIXMAP_IS_YUV(pPixmap)) {
         x = (x + 1) & ~1;
         y = (y + 1) & ~1;
         w = w & ~1;
@@ -986,8 +988,8 @@ ms_exa_copy_area_bail(PixmapPtr pSrc, PixmapPtr pDst,
     BoxPtr box;
     int n, error;
 
-    if (pSrc->drawable.bitsPerPixel == 12 ||
-        pDst->drawable.bitsPerPixel == 12)
+    /* Doesn't support yuv */
+    if (PIXMAP_IS_YUV(pSrc) || PIXMAP_IS_YUV(pDst))
         return FALSE;
 
     src = CreatePicture(None, &pSrc->drawable,
@@ -1044,17 +1046,7 @@ ms_exa_copy_area(PixmapPtr pSrc, PixmapPtr pDst,
     rga_info_t dst_info = {0};
     RegionPtr region = NULL;
     BoxPtr box;
-    int n, src_min_linewidth, dst_min_linewidth;
-
-    if (pSrc->drawable.bitsPerPixel == 12)
-        src_min_linewidth = RGA_MIN_LINEWIDTH_YUV;
-    else
-        src_min_linewidth = RGA_MIN_LINEWIDTH;
-
-    if (pDst->drawable.bitsPerPixel == 12)
-        dst_min_linewidth = RGA_MIN_LINEWIDTH_YUV;
-    else
-        dst_min_linewidth = RGA_MIN_LINEWIDTH;
+    int n;
 
     if (!ms->drmmode.exa)
         goto bail;
@@ -1104,23 +1096,22 @@ ms_exa_copy_area(PixmapPtr pSrc, PixmapPtr pDst,
         sw = min(box->x2, pSrc->drawable.width) - sx;
         sh = min(box->y2, pSrc->drawable.height) - sy;
 
-        /* ignore the small areas since rga cannot handle them */
-        if (sw <= src_min_linewidth || sh <= src_min_linewidth ||
-            dw <= dst_min_linewidth || dh <= dst_min_linewidth)
-            continue;
-
         /* rga has scale limits */
         if ((double)sw / dw > 16 || (double)dw / sw > 16 ||
             (double)sh / dh > 16 || (double)dh / sh > 16)
-            goto bail;
+            goto err;
 
         if (!rga_prepare_info(pSrc, &src_info, sx, sy, sw, sh))
-            goto bail;
+            goto err;
 
         if (!rga_prepare_info(pDst, &dst_info, dx, dy, dw, dh))
-            goto bail;
+            goto err;
 
         if (c_RkRgaBlit(&src_info, &dst_info, NULL) < 0)
+            goto err;
+err:
+        /* HACK: Ignoring errors for YUV, since xserver cannot handle it */
+        if (!PIXMAP_IS_YUV(pSrc) && !PIXMAP_IS_YUV(pDst))
             goto bail;
     }
 
