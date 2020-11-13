@@ -1107,8 +1107,8 @@ ms_exa_copy_area(PixmapPtr pSrc, PixmapPtr pDst,
         if (!rga_prepare_info(pDst, &dst_info, dx, dy, dw, dh))
             goto err;
 
-        if (c_RkRgaBlit(&src_info, &dst_info, NULL) < 0)
-            goto err;
+        if (!c_RkRgaBlit(&src_info, &dst_info, NULL))
+            continue;
 err:
         /* HACK: Ignoring errors for YUV, since xserver cannot handle it */
         if (!PIXMAP_IS_YUV(pSrc) && !PIXMAP_IS_YUV(pDst))
