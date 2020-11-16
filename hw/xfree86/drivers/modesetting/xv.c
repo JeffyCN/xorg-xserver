@@ -32,6 +32,25 @@
 #include <X11/extensions/Xv.h>
 #include "fourcc.h"
 
+#define XVIMAGE_XRGB8888 \
+   { \
+        DRM_FORMAT_XRGB8888, \
+        XvRGB, \
+        LSBFirst, \
+        {'R','G','B','X', \
+          0x00,0x00,0x00,0x10,0x80,0x00,0x00,0xAA,0x00,0x38,0x9B,0x71}, \
+        32, \
+        XvPacked, \
+        1, \
+        24, 0xff0000, 0x00ff00, 0x0000ff, \
+        0, 0, 0, \
+        0, 0, 0, \
+        0, 0, 0, \
+        {'B','G','R', \
+          0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}, \
+        XvTopToBottom \
+   }
+
 #define NUM_FORMATS 4
 
 static XF86VideoFormatRec Formats[NUM_FORMATS] = {
@@ -51,7 +70,8 @@ int ms_exa_xv_num_attributes = ARRAY_SIZE(ms_exa_xv_attributes) - 1;
 Atom msDmaClient, msDmaHorStride, msDmaVerStride;
 
 XvImageRec ms_exa_xv_images[] = {
-    XVIMAGE_NV12
+    XVIMAGE_NV12,
+    XVIMAGE_XRGB8888
 };
 int ms_exa_xv_num_images = ARRAY_SIZE(ms_exa_xv_images);
 
@@ -193,7 +213,7 @@ ms_exa_xv_query_image_attributes(ScrnInfoPtr pScrn,
     if (offsets)
         offsets[0] = 0;
 
-    if (id != FOURCC_NV12)
+    if (id != FOURCC_NV12 && id != DRM_FORMAT_XRGB8888)
         return 0;
 
     *w = ALIGN(*w, 2);
@@ -205,6 +225,8 @@ ms_exa_xv_query_image_attributes(ScrnInfoPtr pScrn,
     if (offsets)
         offsets[1] = size;
     tmp = ALIGN(*w, 4);
+    if (id == DRM_FORMAT_XRGB8888)
+        tmp *= 4;
     if (pitches)
         pitches[1] = tmp;
     tmp *= (*h >> 1);
@@ -226,13 +248,10 @@ ms_exa_xv_create_dma_pixmap(ScrnInfoPtr scrn,
     struct cmsghdr *header;
     char buf[CMSG_SPACE (sizeof (int))];
     int dma_fds[XV_MAX_DMA_FD], num_dma_fd = 0;
-    int width, height, pitch;
+    int width, height, pitch, bpp;
 
     if (!port_priv->dma_client || port_priv->dma_socket_fd <= 0)
         return NULL;
-
-    if (id != FOURCC_NV12)
-        goto err;
 
     if (!port_priv->dma_hor_stride || !port_priv->dma_ver_stride)
         goto err;
@@ -268,16 +287,23 @@ ms_exa_xv_create_dma_pixmap(ScrnInfoPtr scrn,
         }
     }
 
-    /* Expected 1 buffer for NV12 */
+    /* Only expect 1 buffer */
     if (num_dma_fd != 1)
         goto err;
 
     width = port_priv->dma_hor_stride;
     height = port_priv->dma_ver_stride;
-    pitch = width * 3 / 2;
+
+    if (id == FOURCC_NV12) {
+        pitch = width * 3 / 2;
+        bpp = 12;
+    } else {
+        pitch = width * 4;
+        bpp = 32;
+    }
 
     pixmap = drmmode_create_pixmap_header(screen, width, height,
-                                          12, 12, pitch, NULL);
+                                          bpp, bpp, pitch, NULL);
     if (!pixmap)
         goto err;
 
@@ -315,12 +341,18 @@ ms_exa_xv_create_pixmap(ScrnInfoPtr scrn, ms_exa_port_private *port_priv,
 {
     ScreenPtr screen = scrn->pScreen;
     PixmapPtr pixmap;
-    int pitch;
+    int pitch, bpp;
 
-    pitch = ALIGN(width, 4) * 3 / 2;
+    if (id == FOURCC_NV12) {
+        pitch = ALIGN(width, 4) * 3 / 2;
+        bpp = 12;
+    } else {
+        pitch = ALIGN(width, 4) * 4;
+        bpp = 32;
+    }
 
     pixmap = drmmode_create_pixmap_header(screen, width, height,
-                                          12, 12, pitch, buf);
+                                          bpp, bpp, pitch, buf);
     if (!pixmap)
         return NULL;
 
@@ -352,6 +384,9 @@ ms_exa_xv_put_image(ScrnInfoPtr pScrn,
     pixman_f_transform_t transform;
     double sx, sy, tx, ty;
     int ret = Success, c;
+
+    if (id != FOURCC_NV12 && id != DRM_FORMAT_XRGB8888)
+        return BadMatch;
 
     src_pixmap = ms_exa_xv_create_dma_pixmap(pScrn, port_priv, id);
     if (!src_pixmap) {
