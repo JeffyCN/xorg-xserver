@@ -78,14 +78,15 @@ static struct ms_exa_pixmap_priv *exa_scratch_pixmap;
 static inline RgaSURF_FORMAT
 rga_get_pixmap_format(PixmapPtr pPix)
 {
-    /* HACK: reverse all formats since RGA doesn't support BGRX */
     switch (pPix->drawable.bitsPerPixel) {
     case 32:
         if (pPix->drawable.depth == 32)
-            return RK_FORMAT_RGBA_8888; /* should be BGRA_8888 */
-        return RK_FORMAT_RGBX_8888; /* should be BGRX_8888 */
+            return RK_FORMAT_BGRA_8888;
+        return RK_FORMAT_BGRX_8888;
+    case 16:
+	return RK_FORMAT_RGB_565;
     case 12:
-        return RK_FORMAT_YCrCb_420_SP; /* should be YCbCr_420_SP */
+        return RK_FORMAT_YCbCr_420_SP;
     default:
         return RK_FORMAT_UNKNOWN;
     }
