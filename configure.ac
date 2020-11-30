@@ -668,7 +668,7 @@ AC_ARG_ENABLE(kdrive-evdev,   AS_HELP_STRING([--enable-kdrive-evdev], [Build evd
 AC_ARG_ENABLE(libunwind,      AS_HELP_STRING([--enable-libunwind], [Use libunwind for backtracing (default: auto)]), [LIBUNWIND="$enableval"], [LIBUNWIND="auto"])
 AC_ARG_ENABLE(xshmfence,      AS_HELP_STRING([--disable-xshmfence], [Disable xshmfence (default: auto)]), [XSHMFENCE="$enableval"], [XSHMFENCE="auto"])
 
-AC_ARG_ENABLE(gles-highp,    	      AS_HELP_STRING([--enable-gles-highp], [Use highp as default precision for GLES(default: no)]), [GLES_HIGHP=$enableval], [GLES_HIGHP=no])
+AC_ARG_ENABLE(gles-highp,    	      AS_HELP_STRING([--enable-gles-highp], [Use highp as default precision for GLES(default: yes)]), [GLES_HIGHP=$enableval], [GLES_HIGHP=yes])
 
 dnl chown/chmod to be setuid root as part of build
 dnl Replaces InstallXserverSetUID in imake
