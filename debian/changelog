@@ -1,3 +1,10 @@
+xorg-server (2:1.20.10-1) UNRELEASED; urgency=medium
+
+  * New upstream release.
+    - CVE-2020-14360, CVE-2020-25712 (Closes: #976216)
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Wed, 02 Dec 2020 10:22:34 +0200
+
 xorg-server (2:1.20.9-2) unstable; urgency=medium
 
   * fix-pci-probing-segfault.diff: Dropped and revert three commits
