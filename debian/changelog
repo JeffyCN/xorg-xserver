@@ -1,5 +1,6 @@
 xorg-server (2:1.20.10-1) UNRELEASED; urgency=medium
 
+  [ Timo Aaltonen ]
   * New upstream release.
     - CVE-2020-14360, CVE-2020-25712 (Closes: #976216)
   * Drop patches:
@@ -9,6 +10,9 @@ xorg-server (2:1.20.10-1) UNRELEASED; urgency=medium
       being a client bug
   * control: Add libnvidia-egl-wayland-dev to build-depends, enables
     EGLStream support in xwayland.
+
+  [ Adrian Bunk ]
+  * rules: Add a workaround to fix build on mips*. (Closes: #975579)
 
  -- Timo Aaltonen <tjaalton@debian.org>  Wed, 02 Dec 2020 10:22:34 +0200
 
