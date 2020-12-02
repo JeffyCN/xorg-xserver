@@ -71,6 +71,7 @@ Build-Depends:
 # arc4random_buf(), getpeereid()
  libbsd-dev,
 # xwayland
+ libnvidia-egl-wayland-dev,
  libwayland-dev [linux-any],
  wayland-protocols (>= 1.10) [linux-any],
 #logind

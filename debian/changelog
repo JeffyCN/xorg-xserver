@@ -7,6 +7,8 @@ xorg-server (2:1.20.10-1) UNRELEASED; urgency=medium
     - revert-hw-xfree86-avoid-cursor-use-after-free.diff: Issue fixed in this version
     - revert-disabling-xss-for-rootless-xwayland.diff: Was resolved upstream as
       being a client bug
+  * control: Add libnvidia-egl-wayland-dev to build-depends, enables
+    EGLStream support in xwayland.
 
  -- Timo Aaltonen <tjaalton@debian.org>  Wed, 02 Dec 2020 10:22:34 +0200
 
