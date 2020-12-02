@@ -1,4 +1,4 @@
-xorg-server (2:1.20.10-1) UNRELEASED; urgency=medium
+xorg-server (2:1.20.10-1) unstable; urgency=medium
 
   [ Timo Aaltonen ]
   * New upstream release.
@@ -14,7 +14,7 @@ xorg-server (2:1.20.10-1) UNRELEASED; urgency=medium
   [ Adrian Bunk ]
   * rules: Add a workaround to fix build on mips*. (Closes: #975579)
 
- -- Timo Aaltonen <tjaalton@debian.org>  Wed, 02 Dec 2020 10:22:34 +0200
+ -- Timo Aaltonen <tjaalton@debian.org>  Wed, 02 Dec 2020 12:41:35 +0200
 
 xorg-server (2:1.20.9-2) unstable; urgency=medium
 
