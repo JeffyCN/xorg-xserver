@@ -2,6 +2,11 @@ xorg-server (2:1.20.10-1) UNRELEASED; urgency=medium
 
   * New upstream release.
     - CVE-2020-14360, CVE-2020-25712 (Closes: #976216)
+  * Drop patches:
+    - 0001-Revert-*: Reverted upstream in this version
+    - revert-hw-xfree86-avoid-cursor-use-after-free.diff: Issue fixed in this version
+    - revert-disabling-xss-for-rootless-xwayland.diff: Was resolved upstream as
+      being a client bug
 
  -- Timo Aaltonen <tjaalton@debian.org>  Wed, 02 Dec 2020 10:22:34 +0200
 
