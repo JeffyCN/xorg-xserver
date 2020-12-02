@@ -193,8 +193,6 @@ static void
 xwl_window_property_allow_commits(struct xwl_window *xwl_window,
                                   PropertyStateRec *propstate)
 {
-    Bool old_allow_commits = xwl_window->allow_commits;
-
     switch (propstate->state) {
     case PropertyNewValue:
         xwl_window_set_allow_commits_from_property(xwl_window, propstate->prop);
@@ -206,17 +204,6 @@ xwl_window_property_allow_commits(struct xwl_window *xwl_window,
 
     default:
         break;
-    }
-
-    /* If allow_commits turned from off to on, discard any frame
-     * callback we might be waiting for so that a new buffer is posted
-     * immediately through block_handler() if there is damage to post.
-     */
-    if (!old_allow_commits && xwl_window->allow_commits) {
-        if (xwl_window->frame_callback) {
-            wl_callback_destroy(xwl_window->frame_callback);
-            xwl_window->frame_callback = NULL;
-        }
     }
 }
 
@@ -540,7 +527,7 @@ ensure_surface_for_window(WindowPtr window)
     struct xwl_window *xwl_window;
     struct wl_region *region;
 
-    if (xwl_window_get(window))
+    if (xwl_window_from_window(window))
         return TRUE;
 
     xwl_screen = xwl_screen_get(screen);
@@ -1214,6 +1201,11 @@ xwl_screen_init(ScreenPtr pScreen, int argc, char **argv)
     wl_registry_add_listener(xwl_screen->registry,
                              &registry_listener, xwl_screen);
     xwl_screen_roundtrip(xwl_screen);
+
+    if (!xwl_screen->rootless && !xwl_screen->shell) {
+        ErrorF("missing wl_shell protocol\n");
+        return FALSE;
+    }
 
     bpc = xwl_screen->depth / 3;
     green_bpc = xwl_screen->depth - 2 * bpc;

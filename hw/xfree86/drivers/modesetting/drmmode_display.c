@@ -3457,9 +3457,11 @@ drmmode_adjust_frame(ScrnInfoPtr pScrn, drmmode_ptr drmmode, int x, int y)
 }
 
 Bool
-drmmode_set_desired_modes(ScrnInfoPtr pScrn, drmmode_ptr drmmode, Bool set_hw)
+drmmode_set_desired_modes(ScrnInfoPtr pScrn, drmmode_ptr drmmode, Bool set_hw,
+                          Bool ign_err)
 {
     xf86CrtcConfigPtr config = XF86_CRTC_CONFIG_PTR(pScrn);
+    Bool success = TRUE;
     int c;
 
     for (c = 0; c < config->num_crtc; c++) {
@@ -3507,8 +3509,17 @@ drmmode_set_desired_modes(ScrnInfoPtr pScrn, drmmode_ptr drmmode, Bool set_hw)
         if (set_hw) {
             if (!crtc->funcs->
                 set_mode_major(crtc, &crtc->desiredMode, crtc->desiredRotation,
-                               crtc->desiredX, crtc->desiredY))
-                return FALSE;
+                               crtc->desiredX, crtc->desiredY)) {
+                if (!ign_err)
+                    return FALSE;
+                else {
+                    success = FALSE;
+                    crtc->enabled = FALSE;
+                    xf86DrvMsg(pScrn->scrnIndex, X_WARNING,
+                               "Failed to set the desired mode on connector %s\n",
+                               output->name);
+                }
+            }
         } else {
             crtc->mode = crtc->desiredMode;
             crtc->rotation = crtc->desiredRotation;
@@ -3522,7 +3533,7 @@ drmmode_set_desired_modes(ScrnInfoPtr pScrn, drmmode_ptr drmmode, Bool set_hw)
     /* Validate leases on VT re-entry */
     drmmode_validate_leases(pScrn);
 
-    return TRUE;
+    return success;
 }
 
 static void
@@ -3607,29 +3618,18 @@ drmmode_setup_colormap(ScreenPtr pScreen, ScrnInfoPtr pScrn)
     return TRUE;
 }
 
-#ifdef CONFIG_UDEV_KMS
-
 #define DRM_MODE_LINK_STATUS_GOOD       0
 #define DRM_MODE_LINK_STATUS_BAD        1
 
-static void
-drmmode_handle_uevents(int fd, void *closure)
+void
+drmmode_update_kms_state(drmmode_ptr drmmode)
 {
-    drmmode_ptr drmmode = closure;
     ScrnInfoPtr scrn = drmmode->scrn;
-    struct udev_device *dev;
     drmModeResPtr mode_res;
     xf86CrtcConfigPtr  config = XF86_CRTC_CONFIG_PTR(scrn);
     int i, j;
     Bool found = FALSE;
     Bool changed = FALSE;
-
-    while ((dev = udev_monitor_receive_device(drmmode->uevent_monitor))) {
-        udev_device_unref(dev);
-        found = TRUE;
-    }
-    if (!found)
-        return;
 
     /* Try to re-set the mode on all the connectors with a BAD link-state:
      * This may happen if a link degrades and a new modeset is necessary, using
@@ -3744,6 +3744,25 @@ out:
 
 #undef DRM_MODE_LINK_STATUS_BAD
 #undef DRM_MODE_LINK_STATUS_GOOD
+
+#ifdef CONFIG_UDEV_KMS
+
+static void
+drmmode_handle_uevents(int fd, void *closure)
+{
+    drmmode_ptr drmmode = closure;
+    struct udev_device *dev;
+    Bool found = FALSE;
+
+    while ((dev = udev_monitor_receive_device(drmmode->uevent_monitor))) {
+        udev_device_unref(dev);
+        found = TRUE;
+    }
+    if (!found)
+        return;
+
+    drmmode_update_kms_state(drmmode);
+}
 
 #endif
 
