@@ -6,3 +6,8 @@
 05_Revert-Unload-submodules.diff
 06_use-intel-only-on-pre-gen4.diff
 07_use-modesetting-driver-by-default-on-GeForce.diff
+08_fix-for-ZDI-11426.patch
+09_Correct-bounds-checking-in-XkbSetNames.patch
+10_Fix-XIChangeHierarchy-integer-underflow.patch
+11_Fix-XkbSelectEvents-integer-underflow.patch
+12_Fix-XRecordRegisterClients-Integer-underflow.patch
