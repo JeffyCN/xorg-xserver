@@ -12,6 +12,9 @@ xorg-server (2:1.20.10-3) UNRELEASED; urgency=medium
   * Use dpkg-vendor to get the vendor name, drop lsb-release from
     Build-Depends.
 
+   [ Vagrant Cascadian ]
+  * Avoid embedding the running kernel version (Closes: #976898).
+
  -- Julien Cristau <jcristau@debian.org>  Wed, 06 Jan 2021 11:46:56 +0100
 
 xorg-server (2:1.20.10-2) unstable; urgency=medium

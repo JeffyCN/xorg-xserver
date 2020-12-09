@@ -18,6 +18,7 @@ confflags += \
 	--disable-strict-compilation \
 	--disable-debug \
 	--with-int10=x86emu \
+	--with-os-name="$(DEB_HOST_ARCH_OS)" \
 	--with-os-vendor="$(VENDOR)" \
 	--with-builderstring="$(SOURCE_NAME) $(SOURCE_VERSION) ($(SUPPORT))" \
 	--with-xkb-path=/usr/share/X11/xkb \
