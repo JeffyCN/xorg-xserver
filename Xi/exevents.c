@@ -1575,16 +1575,6 @@ DeliverEmulatedMotionEvent(DeviceIntPtr dev, TouchPointInfoPtr ti,
                                        &mask))
             return;
 
-        /* There may be a pointer grab on the device */
-        if (!grab) {
-            grab = dev->deviceGrab.grab;
-            if (grab) {
-                win = grab->window;
-                mask = grab->xi2mask;
-                client = rClient(grab);
-            }
-        }
-
         DeliverTouchEmulatedEvent(dev, ti, (InternalEvent*)&motion, &ti->listeners[0], client,
                                   win, grab, mask);
     }
