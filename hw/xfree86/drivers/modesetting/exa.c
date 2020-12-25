@@ -84,7 +84,7 @@ rga_get_pixmap_format(PixmapPtr pPix)
             return RK_FORMAT_BGRA_8888;
         return RK_FORMAT_BGRX_8888;
     case 16:
-	return RK_FORMAT_RGB_565;
+        return RK_FORMAT_RGB_565;
     case 12:
         return RK_FORMAT_YCbCr_420_SP;
     default:
@@ -504,6 +504,32 @@ ms_exa_prepare_composite(int op,
     return TRUE;
 }
 
+static inline void
+ms_exa_composite_fix_offsets(DrawablePtr pDrawable, PixmapPtr pPix,
+                             int *xoff, int *yoff)
+{
+    // Base on fb/fb.h#fbGetDrawablePixmap
+    if (pDrawable->type != DRAWABLE_PIXMAP) {
+        ScreenPtr pScreen = pDrawable->pScreen;
+        pPix = pScreen->GetWindowPixmap((WindowPtr) pDrawable);
+
+#ifdef COMPOSITE
+        *xoff -= pPix->drawable.x - pPix->screen_x;
+        *yoff -= pPix->drawable.y - pPix->screen_y;
+#else
+        *xoff -= pPix->drawable.x;
+        *yoff -= pPix->drawable.y;
+#endif
+    } else {
+        *xoff -= pDrawable->x;
+        *yoff -= pDrawable->y;
+    }
+
+    // Based on fb/fbpict.c#create_bits_picture
+    *xoff -= pDrawable->x;
+    *yoff -= pDrawable->y;
+}
+
 static void
 ms_exa_composite_bail(PixmapPtr pDst, int srcX, int srcY,
                       int maskX, int maskY, int dstX, int dstY,
@@ -521,11 +547,17 @@ ms_exa_composite_bail(PixmapPtr pDst, int srcX, int srcY,
 
     ms_exa_prepare_access(pSrc, 0);
     ms_exa_prepare_access(pDst, 0);
+
+    ms_exa_composite_fix_offsets(pSrcPicture->pDrawable, pSrc, &srcX, &srcY);
+    ms_exa_composite_fix_offsets(pDstPicture->pDrawable, pDst, &dstX, &dstY);
+    if (pMaskPicture && pMask)
+        ms_exa_composite_fix_offsets(pMaskPicture->pDrawable,
+                                     pMask, &maskX, &maskY);
+
     fbComposite(op, pSrcPicture, pMaskPicture, pDstPicture,
                 srcX, srcY, maskX, maskY,
-                dstX - pDstPicture->pDrawable->x,
-                dstY - pDstPicture->pDrawable->y,
-                width, height);
+                dstX, dstY, width, height);
+
     ms_exa_finish_access(pDst, 0);
     ms_exa_finish_access(pSrc, 0);
 
