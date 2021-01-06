@@ -1,3 +1,10 @@
+xorg-server (2:1.20.10-3) UNRELEASED; urgency=medium
+
+  * Drop workaround for mips* FTBFS added in 2:1.20.10-1, shouldn't be
+    necessary anymore with the change in 2:1.20.10-2.
+
+ -- Julien Cristau <jcristau@debian.org>  Wed, 06 Jan 2021 11:46:56 +0100
+
 xorg-server (2:1.20.10-2) unstable; urgency=medium
 
   * Stop defining inb/outb on mips, to fix FTBFS in some drivers with GCC 10

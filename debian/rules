@@ -4,11 +4,6 @@ include debian/rules.flags
 
 include /usr/share/dpkg/architecture.mk
 
-#workaround for FTBFS with gcc 10
-ifneq (,$(filter $(DEB_HOST_ARCH), mips mipsel mips64el))
-  export DEB_CFLAGS_MAINT_APPEND += -fcommon
-endif
-
 %:
 	dh $@ --with quilt
 
