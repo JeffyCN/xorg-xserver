@@ -1,3 +1,10 @@
+xorg-server (2:1.20.10-2) unstable; urgency=medium
+
+  * Stop defining inb/outb on mips, to fix FTBFS in some drivers with GCC 10
+    (closes: #978670).
+
+ -- Julien Cristau <jcristau@debian.org>  Wed, 06 Jan 2021 10:33:33 +0100
+
 xorg-server (2:1.20.10-1) unstable; urgency=medium
 
   [ Timo Aaltonen ]
