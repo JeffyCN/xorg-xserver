@@ -27,7 +27,8 @@ if [ -e "$XWRAPPER_CONFIG" ] || [ -z "$UPGRADE" ]; then
     ALLOWED_USERS="$RET"
   fi
   if [ -n "$ALLOWED_USERS" ]; then
-    NEW_XWRAPPER_CONFIG=$(tempfile -m 644)
+    NEW_XWRAPPER_CONFIG=$(mktemp)
+    chmod 644 "$NEW_XWRAPPER_CONFIG"
     if ! [ -e "$XWRAPPER_CONFIG" ]; then
       cat >>"$NEW_XWRAPPER_CONFIG" << EOF
 # Xwrapper.config (Debian X Window System server wrapper configuration file)
