@@ -98,7 +98,7 @@ Depends:
  ${misc:Depends},
 Recommends:
  libgl1-mesa-dri (>= 7.10.2-4),
- libpam-systemd,
+ default-logind | logind,
 Suggests: xfonts-100dpi | xfonts-75dpi, xfonts-scalable
 Breaks:
  libgl1-mesa-dri (<< 18.0.5),

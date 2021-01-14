@@ -1,7 +1,12 @@
 xorg-server (2:1.20.10-3) UNRELEASED; urgency=medium
 
+  [ Julien Cristau ]
   * Drop workaround for mips* FTBFS added in 2:1.20.10-1, shouldn't be
     necessary anymore with the change in 2:1.20.10-2.
+
+  [ Sven Joachim ]
+  * Recommend default-logind | logind rather than libpam-systemd in
+    xserver-xorg-core (Closes: #923198).
 
  -- Julien Cristau <jcristau@debian.org>  Wed, 06 Jan 2021 11:46:56 +0100
 
