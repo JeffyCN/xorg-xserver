@@ -1,6 +1,6 @@
 DEB_HOST_ARCH_OS ?= $(shell dpkg-architecture -qDEB_HOST_ARCH_OS)
 
-VENDOR = $(shell lsb_release -i -s)
+VENDOR = $(shell dpkg-vendor --query Vendor)
 SUPPORT = https://www.debian.org/support
 
 SOURCE_NAME    :=  xorg-server

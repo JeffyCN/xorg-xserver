@@ -6,7 +6,6 @@ Build-Depends:
  debhelper-compat (= 12),
  po-debconf,
  quilt,
- lsb-release,
  pkg-config,
  bison,
  flex,

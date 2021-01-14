@@ -9,6 +9,8 @@ xorg-server (2:1.20.10-3) UNRELEASED; urgency=medium
     xserver-xorg-core (Closes: #923198).
   * Use mktemp rather than tempfile in xserver-xorg-legacy.postinst
     (Closes: #979751).
+  * Use dpkg-vendor to get the vendor name, drop lsb-release from
+    Build-Depends.
 
  -- Julien Cristau <jcristau@debian.org>  Wed, 06 Jan 2021 11:46:56 +0100
 
