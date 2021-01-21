@@ -1021,10 +1021,6 @@ ms_exa_copy_area_bail(PixmapPtr pSrc, PixmapPtr pDst,
     BoxPtr box;
     int n, error;
 
-    /* Doesn't support yuv */
-    if (PIXMAP_IS_YUV(pSrc) || PIXMAP_IS_YUV(pDst))
-        return FALSE;
-
     src = CreatePicture(None, &pSrc->drawable,
                         format, 0L, NULL, serverClient, &error);
     if (!src)
