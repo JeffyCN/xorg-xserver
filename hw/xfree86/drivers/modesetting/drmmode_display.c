@@ -4735,12 +4735,10 @@ drmmode_apply_transform(xf86CrtcPtr crtc)
     else
         drmmode_crtc->is_scale = TRUE;
 
-    if (drmmode_crtc->is_dummy)
-        goto create;
-
     /* fb flipping disabled or doing shared pixmap flipping */
     if (!drmmode_crtc->can_flip_fb || drmmode_crtc->enable_flipping)
-        goto bail;
+        if (!drmmode_crtc->is_dummy)
+            goto bail;
 
     crtc->driverIsPerformingTransform |= XF86DriverTransformOutput;
 
@@ -4751,10 +4749,10 @@ drmmode_apply_transform(xf86CrtcPtr crtc)
         crtc->driverIsPerformingTransform &= ~XF86DriverTransformOutput;
 
         if (drmmode->fb_flip_mode == DRMMODE_FB_FLIP_TRANSFORMED)
-            goto bail;
+            if (!drmmode_crtc->is_dummy)
+                goto bail;
     }
 
-create:
     if (!drmmode_create_flip_fb(crtc)) {
         drmmode_crtc->can_flip_fb = FALSE;
         goto fail;
