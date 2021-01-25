@@ -286,6 +286,7 @@ typedef struct {
     drmmode_prop_info_rec props_connector[DRMMODE_CONNECTOR__COUNT];
     int enc_mask;
     int enc_clone_mask;
+    int possible_crtcs;
     xf86CrtcPtr current_crtc;
     Bool is_dummy;
     Bool need_remap;
