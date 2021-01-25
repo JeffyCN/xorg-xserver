@@ -98,7 +98,7 @@ rga_prepare_info(PixmapPtr pPixmap, rga_info_t *info,
 {
     struct ms_exa_pixmap_priv *priv = exaGetPixmapDriverPrivate(pPixmap);
     RgaSURF_FORMAT format;
-    int pitch;
+    int pitch, wstride, hstride;
 
     memset(info, 0, sizeof(rga_info_t));
 
@@ -129,9 +129,12 @@ rga_prepare_info(PixmapPtr pPixmap, rga_info_t *info,
     if (w <= RGA_MIN_LINEWIDTH || h <= RGA_MIN_LINEWIDTH)
         return FALSE;
 
-    rga_set_rect(&info->rect, x, y, w, h,
-                 pitch * 8 / pPixmap->drawable.bitsPerPixel,
-                 pPixmap->drawable.height, format);
+    wstride = pitch * 8 / pPixmap->drawable.bitsPerPixel;
+    hstride = pPixmap->drawable.height;
+    if (x < 0 || y < 0 || x + w > wstride || y + h > hstride)
+        return FALSE;
+
+    rga_set_rect(&info->rect, x, y, w, h, wstride, hstride, format);
 
     return TRUE;
 }
