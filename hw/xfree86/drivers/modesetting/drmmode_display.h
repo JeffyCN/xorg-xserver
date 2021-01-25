@@ -182,6 +182,7 @@ typedef struct {
     drmmode_ptr drmmode;
     drmModeCrtcPtr mode_crtc;
     uint32_t vblank_pipe;
+    int crtc_pipe;
     int dpms_mode;
     struct dumb_bo *cursor_bo;
     Bool cursor_up;
@@ -250,6 +251,7 @@ typedef struct {
     drmmode_prop_info_rec props_connector[DRMMODE_CONNECTOR__COUNT];
     int enc_mask;
     int enc_clone_mask;
+    int crtc_mask;
     xf86CrtcPtr current_crtc;
 } drmmode_output_private_rec, *drmmode_output_private_ptr;
 
