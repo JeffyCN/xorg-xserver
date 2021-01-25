@@ -3072,7 +3072,7 @@ drmmode_output_init(ScrnInfoPtr pScrn, drmmode_ptr drmmode, drmModeResPtr mode_r
 
     drmmode_output->crtc_mask = 0x7f;
     for (i = 0; i < koutput->count_encoders; i++) {
-        drmmode_output->crtc_mask &= kencoders[i]->possible_crtcs >> crtcshift;
+        drmmode_output->crtc_mask &= kencoders[i]->possible_crtcs;
     }
     /* work out the possible clones later */
     output->possible_clones = 0;
