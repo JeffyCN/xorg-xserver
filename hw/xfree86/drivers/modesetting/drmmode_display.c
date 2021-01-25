@@ -2408,6 +2408,7 @@ drmmode_crtc_init(ScrnInfoPtr pScrn, drmmode_ptr drmmode, drmModeResPtr mode_res
 {
     xf86CrtcPtr crtc;
     drmmode_crtc_private_ptr drmmode_crtc;
+    xf86CrtcConfigPtr config = XF86_CRTC_CONFIG_PTR(pScrn);
     modesettingEntPtr ms_ent = ms_ent_priv(pScrn);
     drmModeObjectPropertiesPtr props;
     static const drmmode_prop_info_rec crtc_props[] = {
@@ -2417,6 +2418,21 @@ drmmode_crtc_init(ScrnInfoPtr pScrn, drmmode_ptr drmmode, drmModeResPtr mode_res
         [DRMMODE_CRTC_GAMMA_LUT_SIZE] = { .name = "GAMMA_LUT_SIZE" },
         [DRMMODE_CRTC_CTM] = { .name = "CTM" },
     };
+    int o, found = 0;
+
+    /* only init possible crtcs for the outputs */
+    for (o = 0; o < config->num_output; o++) {
+        xf86OutputPtr output = config->output[o];
+        drmmode_output_private_ptr drmmode_output = output->driver_private;
+
+	if (drmmode_output->possible_crtcs & (1 << num)) {
+		output->possible_crtcs |= 1 << config->num_crtc;
+		found = 1;
+	}
+    }
+
+    if (!found)
+	    return 0;
 
     crtc = xf86CrtcCreate(pScrn, &drmmode_crtc_funcs);
     if (crtc == NULL)
@@ -3338,9 +3354,12 @@ drmmode_output_init(ScrnInfoPtr pScrn, drmmode_ptr drmmode, drmModeResPtr mode_r
     output->driver_private = drmmode_output;
     output->non_desktop = nonDesktop;
 
+    /* would be updated in crtc init */
     output->possible_crtcs = 0;
+
+    drmmode_output->possible_crtcs = 0;
     for (i = 0; i < koutput->count_encoders; i++) {
-        output->possible_crtcs |= (kencoders[i]->possible_crtcs >> crtcshift) & 0x7f;
+        drmmode_output->possible_crtcs |= kencoders[i]->possible_crtcs & 0x7f;
     }
     /* work out the possible clones later */
     output->possible_clones = 0;
@@ -3365,7 +3384,7 @@ drmmode_output_init(ScrnInfoPtr pScrn, drmmode_ptr drmmode, drmModeResPtr mode_r
             xf86DrvMsgVerb(pScrn->scrnIndex, X_INFO, 0,
                            "Bind output %d to current crtc %d.\n",
                            drmmode_output->output_id, current_crtc);
-            output->possible_crtcs = (1 << i) >> crtcshift;
+            drmmode_output->possible_crtcs = 1 << i;
             break;
         }
     }
