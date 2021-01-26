@@ -783,33 +783,15 @@ FreeRec(ScrnInfoPtr pScrn)
 static void
 try_enable_exa(ScrnInfoPtr pScrn)
 {
-    ScreenPtr pScreen = xf86ScrnToScreen(pScrn);
     modesettingPtr ms = modesettingPTR(pScrn);
 
-    if (!xf86LoadSubModule(pScrn, "exa"))
-        goto fail;
+    if (xf86LoadSubModule(pScrn, "exa"))
+        ms_init_exa(pScrn);
 
-    ms->drmmode.exa = exaDriverAlloc();
-    if (!ms->drmmode.exa)
-        goto fail;
-
-    if (!ms_setup_exa(pScrn, ms->drmmode.exa))
-        goto fail;
-
-    if (!exaDriverInit(pScreen, ms->drmmode.exa))
-        goto fail;
-
-    xf86DrvMsg(pScrn->scrnIndex, X_INFO, "exa initialized\n");
-
-    return;
-
-fail:
-    if (ms->drmmode.exa) {
-        free(ms->drmmode.exa);
-        ms->drmmode.exa = NULL;
-    }
-
-    xf86DrvMsg(pScrn->scrnIndex, X_ERROR, "exa initialization failed\n");
+    if (ms->drmmode.exa)
+        xf86DrvMsg(pScrn->scrnIndex, X_INFO, "exa initialized\n");
+    else
+        xf86DrvMsg(pScrn->scrnIndex, X_ERROR, "exa initialization failed\n");
 }
 
 static void
@@ -2044,10 +2026,7 @@ CloseScreen(ScreenPtr pScreen)
             pScreen->devPrivate = NULL;
         }
 
-        exaDriverFini(pScreen);
-        ms_cleanup_exa(pScrn, ms->drmmode.exa);
-        free(ms->drmmode.exa);
-        ms->drmmode.exa = NULL;
+        ms_deinit_exa(pScrn);
     }
 
     pScreen->CreateScreenResources = ms->createScreenResources;
