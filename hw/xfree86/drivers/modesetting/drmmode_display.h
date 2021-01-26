@@ -89,6 +89,11 @@ enum drmmode_fb_flip_mode {
 };
 
 typedef struct {
+    ExaDriverPtr driver;
+    void *priv;
+} drmmode_exa;
+
+typedef struct {
     int fd;
     unsigned fb_id;
     drmModeFBPtr mode_fb;
@@ -110,7 +115,7 @@ typedef struct {
     OptionInfoPtr Options;
 
     Bool glamor;
-    ExaDriverPtr exa;
+    drmmode_exa *exa;
 
     Bool shadow_enable;
     Bool shadow_enable2;
