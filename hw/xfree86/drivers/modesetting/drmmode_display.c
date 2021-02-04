@@ -2231,6 +2231,7 @@ drmmode_crtc_init(ScrnInfoPtr pScrn, drmmode_ptr drmmode, drmModeResPtr mode_res
 {
     xf86CrtcPtr crtc;
     drmmode_crtc_private_ptr drmmode_crtc;
+    xf86CrtcConfigPtr config = XF86_CRTC_CONFIG_PTR(pScrn);
     modesettingEntPtr ms_ent = ms_ent_priv(pScrn);
     modesettingPtr ms = modesettingPTR(pScrn);
     drmModeObjectPropertiesPtr props;
@@ -2238,6 +2239,21 @@ drmmode_crtc_init(ScrnInfoPtr pScrn, drmmode_ptr drmmode, drmModeResPtr mode_res
         [DRMMODE_CRTC_ACTIVE] = { .name = "ACTIVE" },
         [DRMMODE_CRTC_MODE_ID] = { .name = "MODE_ID" },
     };
+    int o, found = 0;
+
+    /* only init possible crtcs for the outputs */
+    for (o = 0; o < config->num_output; o++) {
+        xf86OutputPtr output = config->output[o];
+        drmmode_output_private_ptr drmmode_output = output->driver_private;
+
+	if (drmmode_output->possible_crtcs & (1 << num)) {
+		output->possible_crtcs |= 1 << config->num_crtc;
+		found = 1;
+	}
+    }
+
+    if (!found)
+	    return 0;
 
     crtc = xf86CrtcCreate(pScrn, &drmmode_crtc_funcs);
     if (crtc == NULL)
@@ -2249,7 +2265,6 @@ drmmode_crtc_init(ScrnInfoPtr pScrn, drmmode_ptr drmmode, drmModeResPtr mode_res
     drmmode_crtc->drmmode = drmmode;
     drmmode_crtc->vblank_pipe = drmmode_crtc_vblank_pipe(num);
     xorg_list_init(&drmmode_crtc->mode_list);
-    drmmode_crtc->crtc_pipe = num;
 
     if (drmmode->fb_flip_mode == DRMMODE_FB_FLIP_NONE)
         drmmode_crtc->can_flip_fb = FALSE;
@@ -2947,27 +2962,6 @@ drmmode_create_name(ScrnInfoPtr pScrn, drmModeConnectorPtr koutput, char *name,
         snprintf(name, 32, "%s-%d", output_names[koutput->connector_type], koutput->connector_type_id);
 }
 
-static void
-drmmode_outputs_fixup(ScrnInfoPtr scrn)
-{
-    xf86CrtcConfigPtr config = XF86_CRTC_CONFIG_PTR(scrn);
-    int o, c;
-
-    for (o = 0; o < config->num_output; o++) {
-        xf86OutputPtr output = config->output[o];
-        drmmode_output_private_ptr drmmode_output = output->driver_private;
-
-        output->possible_crtcs = 0;
-        for (c = 0; c < config->num_crtc; c++) {
-            xf86CrtcPtr crtc = config->crtc[c];
-            drmmode_crtc_private_ptr drmmode_crtc = crtc->driver_private;
-
-            if (drmmode_output->crtc_mask & (1 << drmmode_crtc->crtc_pipe))
-                output->possible_crtcs |= 1 << c;
-        }
-    }
-}
-
 static unsigned int
 drmmode_output_init(ScrnInfoPtr pScrn, drmmode_ptr drmmode, drmModeResPtr mode_res, int num, Bool dynamic, int crtcshift)
 {
@@ -3070,9 +3064,12 @@ drmmode_output_init(ScrnInfoPtr pScrn, drmmode_ptr drmmode, drmModeResPtr mode_r
     output->driver_private = drmmode_output;
     output->non_desktop = nonDesktop;
 
-    drmmode_output->crtc_mask = 0x7f;
+    /* would be updated in crtc init */
+    output->possible_crtcs = 0;
+
+    drmmode_output->possible_crtcs = 0x7f;
     for (i = 0; i < koutput->count_encoders; i++) {
-        drmmode_output->crtc_mask &= kencoders[i]->possible_crtcs;
+        drmmode_output->possible_crtcs &= kencoders[i]->possible_crtcs;
     }
     /* work out the possible clones later */
     output->possible_clones = 0;
@@ -3097,7 +3094,7 @@ drmmode_output_init(ScrnInfoPtr pScrn, drmmode_ptr drmmode, drmModeResPtr mode_r
             xf86DrvMsgVerb(pScrn->scrnIndex, X_INFO, 0,
                            "Bind output %d to current crtc %d.\n",
                            drmmode_output->output_id, current_crtc);
-            drmmode_output->crtc_mask = 1 << i;
+            drmmode_output->possible_crtcs = 1 << i;
             break;
         }
     }
@@ -3491,8 +3488,6 @@ drmmode_pre_init(ScrnInfoPtr pScrn, drmmode_ptr drmmode, int cpp)
             (crtcs_needed && !(ms_ent->assigned_crtcs & (1 << i))))
             crtcs_needed -= drmmode_crtc_init(pScrn, drmmode, mode_res, i);
 
-    drmmode_outputs_fixup(pScrn);
-
     /* All ZaphodHeads outputs provided with matching crtcs? */
     if (xf86IsEntityShared(pScrn->entityList[0]) && (crtcs_needed > 0))
         xf86DrvMsg(pScrn->scrnIndex, X_WARNING,
@@ -3811,9 +3806,6 @@ drmmode_handle_uevents(int fd, void *closure)
         changed = TRUE;
         drmmode_output_init(scrn, drmmode, mode_res, i, TRUE, 0);
     }
-
-    if (changed)
-        drmmode_outputs_fixup(scrn);
 
     /* Check to see if a lessee has disappeared */
     drmmode_validate_leases(scrn);
