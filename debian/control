@@ -69,10 +69,6 @@ Build-Depends:
  x11-xkb-utils,
 # arc4random_buf(), getpeereid()
  libbsd-dev,
-# xwayland
- libnvidia-egl-wayland-dev,
- libwayland-dev [linux-any],
- wayland-protocols (>= 1.10) [linux-any],
 #logind
   libdbus-1-dev (>= 1.0) [linux-any],
 # systemd-daemon
@@ -304,17 +300,6 @@ Description: Xorg X server - source files
  .
  Unless you are building a software product using X server sources,
  you probably want xserver-xorg and/or xserver-xorg-core instead.
-
-Package: xwayland
-Architecture: linux-any
-Depends:
- xserver-common (>= ${source:Version}),
- ${shlibs:Depends},
- ${misc:Depends},
-Description: Xwayland X server
- This package provides an X server running on top of wayland, using wayland
- input devices for input and forwarding either the root window or individual
- top-level windows as wayland surfaces.
 
 Package: xserver-xorg-legacy
 Architecture: any
