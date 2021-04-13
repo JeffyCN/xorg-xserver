@@ -2,6 +2,7 @@ xorg-server (2:1.20.11-1) UNRELEASED; urgency=medium
 
   * New upstream release.
     - CVE-2021-3472
+  * Add signing key for Matt Turner.
 
  -- Timo Aaltonen <tjaalton@debian.org>  Tue, 13 Apr 2021 18:34:16 +0300
 
