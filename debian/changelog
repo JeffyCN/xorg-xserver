@@ -1,3 +1,9 @@
+xorg-server (2:1.20.4-1+deb10u3) buster-security; urgency=high
+
+  * Fix XChangeFeedbackControl() request underflow (CVE-2021-3472)
+
+ -- Julien Cristau <jcristau@debian.org>  Mon, 19 Apr 2021 11:34:38 +0200
+
 xorg-server (2:1.20.4-1+deb10u2) buster-security; urgency=medium
 
   * CVE-2020-14360 CVE-2020-25712
