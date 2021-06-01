@@ -4676,6 +4676,7 @@ drmmode_create_flip_fb(xf86CrtcPtr crtc)
 
     /* Force using NV12 for all output */
     bpp = 12;
+    drmmode_crtc->is_scale = TRUE;
 
     if (drmmode_crtc->need_remap) {
         if (crtc->driverIsPerformingTransform & XF86DriverTransformOutput)
