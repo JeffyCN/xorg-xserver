@@ -1548,6 +1548,12 @@ drmmode_set_mode_major(xf86CrtcPtr crtc, DisplayModePtr mode,
         if (!drmmode_apply_transform(crtc))
             goto done;
 
+        if (drmmode->hotplug_reset) {
+            /* Ignore modeset when disconnected */
+            if (drmmode_crtc->output_status != XF86OutputStatusConnected)
+                goto done;
+        }
+
         crtc->funcs->gamma_set(crtc, crtc->gamma_red, crtc->gamma_green,
                                crtc->gamma_blue, crtc->gamma_size);
 
@@ -3742,8 +3748,41 @@ drmmode_handle_uevents(int fd, void *closure)
     for (i = 0; i < config->num_output; i++) {
         xf86OutputPtr output = config->output[i];
         drmmode_output_private_ptr drmmode_output = output->driver_private;
+        xf86OutputStatus status = drmmode_output_detect(output);
+        drmmode_crtc_private_ptr drmmode_crtc;
+        xf86CrtcPtr crtc = output->crtc;
 
-        drmmode_output_detect(output);
+        if (!crtc)
+            continue;
+
+        drmmode_crtc = crtc->driver_private;
+
+        if (drmmode_crtc->output_status != status) {
+            drmmode_crtc->output_status = status;
+
+            if (status != XF86OutputStatusConnected) {
+                xf86DrvMsg(scrn->scrnIndex, X_INFO,
+                           "Output %s disconnected.\n", output->name);
+
+                if (drmmode->hotplug_reset) {
+                    drmmode_crtc->need_modeset = TRUE;
+
+                    drmModeSetCrtc(drmmode->fd,
+                                   drmmode_crtc->mode_crtc->crtc_id,
+                                   0, 0, 0, NULL, 0, NULL);
+                    continue;
+                }
+            } else {
+                xf86DrvMsg(scrn->scrnIndex, X_INFO,
+                           "Output %s connected.\n", output->name);
+
+                if (drmmode_crtc->need_modeset) {
+                    drmmode_set_mode_major(crtc, &crtc->mode, crtc->rotation,
+                                           crtc->x, crtc->y);
+                    continue;
+                }
+            }
+        }
 
         /* Get an updated view of the properties for the current connector and
          * look for the link-status property
@@ -3753,10 +3792,6 @@ drmmode_handle_uevents(int fd, void *closure)
 
             if (!strcmp(p->mode_prop->name, "link-status")) {
                 if (p->value == DRM_MODE_LINK_STATUS_BAD) {
-                    xf86CrtcPtr crtc = output->crtc;
-                    if (!crtc)
-                        continue;
-
                     /* the connector got a link failure, re-set the current mode */
                     drmmode_set_mode_major(crtc, &crtc->mode, crtc->rotation,
                                            crtc->x, crtc->y);
