@@ -130,6 +130,8 @@ typedef struct {
     void *shadow_fb;
     void *shadow_fb2;
 
+    Bool hotplug_reset;
+
     enum drmmode_fb_flip_mode fb_flip_mode;
 
     DevPrivateKeyRec pixmapPrivateKeyRec;
@@ -241,6 +243,8 @@ typedef struct {
     uint32_t msc_prev;
     uint64_t msc_high;
     /** @} */
+
+    xf86OutputStatus output_status;
 
     Bool need_modeset;
     struct xorg_list mode_list;
