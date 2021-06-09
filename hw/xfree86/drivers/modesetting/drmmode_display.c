@@ -3723,8 +3723,23 @@ drmmode_handle_uevents(int fd, void *closure)
     for (i = 0; i < config->num_output; i++) {
         xf86OutputPtr output = config->output[i];
         drmmode_output_private_ptr drmmode_output = output->driver_private;
+        xf86OutputStatus status = drmmode_output_detect(output);
+        drmmode_crtc_private_ptr drmmode_crtc;
+        xf86CrtcPtr crtc = output->crtc;
 
-        drmmode_output_detect(output);
+        if (!crtc)
+            continue;
+
+        drmmode_crtc = crtc->driver_private;
+
+        if (status != XF86OutputStatusConnected) {
+            if (drmmode->hotplug_reset)
+                drmmode_crtc->need_modeset = TRUE;
+        } else if (drmmode_crtc->need_modeset) {
+            drmmode_set_mode_major(crtc, &crtc->mode, crtc->rotation,
+                                   crtc->x, crtc->y);
+            continue;
+        }
 
         /* Get an updated view of the properties for the current connector and
          * look for the link-status property
@@ -3734,10 +3749,6 @@ drmmode_handle_uevents(int fd, void *closure)
 
             if (!strcmp(p->mode_prop->name, "link-status")) {
                 if (p->value == DRM_MODE_LINK_STATUS_BAD) {
-                    xf86CrtcPtr crtc = output->crtc;
-                    if (!crtc)
-                        continue;
-
                     /* the connector got a link failure, re-set the current mode */
                     drmmode_set_mode_major(crtc, &crtc->mode, crtc->rotation,
                                            crtc->x, crtc->y);

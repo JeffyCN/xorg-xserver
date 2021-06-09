@@ -125,6 +125,8 @@ typedef struct {
     void *shadow_fb;
     void *shadow_fb2;
 
+    Bool hotplug_reset;
+
     enum drmmode_fb_flip_mode fb_flip_mode;
 
     DevPrivateKeyRec pixmapPrivateKeyRec;
