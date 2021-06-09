@@ -124,6 +124,8 @@ typedef struct {
     void *shadow_fb;
     void *shadow_fb2;
 
+    Bool hotplug_reset;
+
     enum drmmode_fb_flip_mode fb_flip_mode;
     int fb_flip_rate;
 
@@ -250,6 +252,9 @@ typedef struct {
     int enc_clone_mask;
     int possible_crtcs;
     xf86CrtcPtr current_crtc;
+
+    xf86OutputStatus status;
+
 } drmmode_output_private_rec, *drmmode_output_private_ptr;
 
 typedef struct _msPixmapPriv {
