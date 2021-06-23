@@ -228,6 +228,8 @@ typedef struct {
     uint64_t msc_high;
     /** @} */
 
+    xf86OutputStatus output_status;
+
     Bool need_modeset;
     struct xorg_list mode_list;
 

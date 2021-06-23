@@ -1550,6 +1550,17 @@ drmmode_set_mode_major(xf86CrtcPtr crtc, DisplayModePtr mode,
         if (!drmmode_apply_transform(crtc))
             goto done;
 
+        if (drmmode->hotplug_reset) {
+            /* Ignore modeset when disconnected */
+            if (drmmode_crtc->output_status != XF86OutputStatusConnected)
+                goto done;
+
+            /* Disable CRTC before modeset */
+            if (drmmode_crtc->need_modeset)
+                drmModeSetCrtc(drmmode->fd, drmmode_crtc->mode_crtc->crtc_id,
+                               0, 0, 0, NULL, 0, NULL);
+        }
+
         crtc->funcs->gamma_set(crtc, crtc->gamma_red, crtc->gamma_green,
                                crtc->gamma_blue, crtc->gamma_size);
 
@@ -3731,6 +3742,8 @@ drmmode_handle_uevents(int fd, void *closure)
             continue;
 
         drmmode_crtc = crtc->driver_private;
+
+        drmmode_crtc->output_status = status;
 
         if (status != XF86OutputStatusConnected) {
             if (drmmode->hotplug_reset)
