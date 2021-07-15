@@ -1554,11 +1554,6 @@ drmmode_set_mode_major(xf86CrtcPtr crtc, DisplayModePtr mode,
             /* Ignore modeset when disconnected */
             if (drmmode_crtc->output_status != XF86OutputStatusConnected)
                 goto done;
-
-            /* Disable CRTC before modeset */
-            if (drmmode_crtc->need_modeset)
-                drmModeSetCrtc(drmmode->fd, drmmode_crtc->mode_crtc->crtc_id,
-                               0, 0, 0, NULL, 0, NULL);
         }
 
         crtc->funcs->gamma_set(crtc, crtc->gamma_red, crtc->gamma_green,
@@ -3743,15 +3738,31 @@ drmmode_handle_uevents(int fd, void *closure)
 
         drmmode_crtc = crtc->driver_private;
 
-        drmmode_crtc->output_status = status;
+        if (drmmode_crtc->output_status != status) {
+            drmmode_crtc->output_status = status;
 
-        if (status != XF86OutputStatusConnected) {
-            if (drmmode->hotplug_reset)
-                drmmode_crtc->need_modeset = TRUE;
-        } else if (drmmode_crtc->need_modeset) {
-            drmmode_set_mode_major(crtc, &crtc->mode, crtc->rotation,
-                                   crtc->x, crtc->y);
-            continue;
+            if (status != XF86OutputStatusConnected) {
+                xf86DrvMsg(scrn->scrnIndex, X_INFO,
+                           "Output %s disconnected.\n", output->name);
+
+                if (drmmode->hotplug_reset) {
+                    drmmode_crtc->need_modeset = TRUE;
+
+                    drmModeSetCrtc(drmmode->fd,
+                                   drmmode_crtc->mode_crtc->crtc_id,
+                                   0, 0, 0, NULL, 0, NULL);
+                    continue;
+                }
+            } else {
+                xf86DrvMsg(scrn->scrnIndex, X_INFO,
+                           "Output %s connected.\n", output->name);
+
+                if (drmmode_crtc->need_modeset) {
+                    drmmode_set_mode_major(crtc, &crtc->mode, crtc->rotation,
+                                           crtc->x, crtc->y);
+                    continue;
+                }
+            }
         }
 
         /* Get an updated view of the properties for the current connector and
