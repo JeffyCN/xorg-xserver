@@ -4482,9 +4482,6 @@ drmmode_flip_fb(xf86CrtcPtr crtc, int *timeout)
     if (!drmmode_crtc->flip_fb_enabled)
         return TRUE;
 
-    if (drmmode->dri2_flipping || drmmode->present_flipping)
-        return TRUE;
-
     /* merge update requests when still flipping */
     if (drmmode_crtc->flipping) {
         uint64_t now_ms;
