@@ -1520,6 +1520,27 @@ drmmode_copy_fb(ScrnInfoPtr pScrn, drmmode_ptr drmmode)
 }
 
 static Bool
+drmmode_crtc_connected(xf86CrtcPtr crtc)
+{
+    xf86CrtcConfigPtr xf86_config = XF86_CRTC_CONFIG_PTR(crtc->scrn);
+    int i;
+
+    for (i = 0; i < xf86_config->num_output; i++) {
+        xf86OutputPtr output = xf86_config->output[i];
+        drmmode_output_private_ptr drmmode_output;
+        drmmode_output = output->driver_private;
+
+        if (output->crtc != crtc)
+            continue;
+
+        if (drmmode_output->status == XF86OutputStatusConnected)
+            return TRUE;
+    }
+
+    return FALSE;
+}
+
+static Bool
 drmmode_set_mode_major(xf86CrtcPtr crtc, DisplayModePtr mode,
                        Rotation rotation, int x, int y)
 {
@@ -1534,6 +1555,10 @@ drmmode_set_mode_major(xf86CrtcPtr crtc, DisplayModePtr mode,
     Bool can_test;
     int i;
 
+    /* Ignore modeset when disconnected in hotplug reset mode */
+    if (drmmode->hotplug_reset && !drmmode_crtc_connected(crtc))
+        return 0;
+
     saved_mode = crtc->mode;
     saved_x = crtc->x;
     saved_y = crtc->y;
@@ -1547,12 +1572,6 @@ drmmode_set_mode_major(xf86CrtcPtr crtc, DisplayModePtr mode,
 
         if (!drmmode_apply_transform(crtc))
             goto done;
-
-        if (drmmode->hotplug_reset) {
-            /* Ignore modeset when disconnected */
-            if (drmmode_crtc->output_status != XF86OutputStatusConnected)
-                goto done;
-        }
 
         crtc->funcs->gamma_set(crtc, crtc->gamma_red, crtc->gamma_green,
                                crtc->gamma_blue, crtc->gamma_size);
@@ -2375,6 +2394,45 @@ drmmode_output_update_properties(xf86OutputPtr output)
     }
 }
 
+static void
+drmmode_output_change_status(xf86OutputPtr output, xf86OutputStatus status)
+{
+    drmmode_output_private_ptr drmmode_output = output->driver_private;
+    drmmode_ptr drmmode = drmmode_output->drmmode;
+    drmmode_crtc_private_ptr drmmode_crtc;
+    ScrnInfoPtr scrn = drmmode->scrn;
+    xf86CrtcPtr crtc = output->crtc;
+    Bool connected;
+
+    if (drmmode_output->status == status)
+        return;
+
+    drmmode_output->status = status;
+    connected = status == XF86OutputStatusConnected;
+
+    xf86DrvMsg(scrn->scrnIndex, X_INFO,
+               "Output %s status changed to %s.\n", output->name,
+               connected ? "connected" : "disconnected");
+
+    if (!crtc)
+        return;
+
+    drmmode_crtc = crtc->driver_private;
+
+    if (!connected) {
+        if (drmmode->hotplug_reset) {
+            drmmode_crtc->need_modeset = TRUE;
+
+            drmModeSetCrtc(drmmode->fd,
+                           drmmode_crtc->mode_crtc->crtc_id,
+                           0, 0, 0, NULL, 0, NULL);
+        }
+    } else if (drmmode_crtc->need_modeset) {
+        drmmode_set_mode_major(crtc, &crtc->mode, crtc->rotation,
+                               crtc->x, crtc->y);
+    }
+}
+
 static xf86OutputStatus
 drmmode_output_detect(xf86OutputPtr output)
 {
@@ -2410,6 +2468,8 @@ drmmode_output_detect(xf86OutputPtr output)
         status = XF86OutputStatusUnknown;
         break;
     }
+
+    drmmode_output_change_status(output, status);
     return status;
 }
 
@@ -3748,41 +3808,14 @@ drmmode_handle_uevents(int fd, void *closure)
     for (i = 0; i < config->num_output; i++) {
         xf86OutputPtr output = config->output[i];
         drmmode_output_private_ptr drmmode_output = output->driver_private;
-        xf86OutputStatus status = drmmode_output_detect(output);
-        drmmode_crtc_private_ptr drmmode_crtc;
         xf86CrtcPtr crtc = output->crtc;
 
         if (!crtc)
             continue;
 
-        drmmode_crtc = crtc->driver_private;
-
-        if (drmmode_crtc->output_status != status) {
-            drmmode_crtc->output_status = status;
-
-            if (status != XF86OutputStatusConnected) {
-                xf86DrvMsg(scrn->scrnIndex, X_INFO,
-                           "Output %s disconnected.\n", output->name);
-
-                if (drmmode->hotplug_reset) {
-                    drmmode_crtc->need_modeset = TRUE;
-
-                    drmModeSetCrtc(drmmode->fd,
-                                   drmmode_crtc->mode_crtc->crtc_id,
-                                   0, 0, 0, NULL, 0, NULL);
-                    continue;
-                }
-            } else {
-                xf86DrvMsg(scrn->scrnIndex, X_INFO,
-                           "Output %s connected.\n", output->name);
-
-                if (drmmode_crtc->need_modeset) {
-                    drmmode_set_mode_major(crtc, &crtc->mode, crtc->rotation,
-                                           crtc->x, crtc->y);
-                    continue;
-                }
-            }
-        }
+        /* Update output status */
+        if (drmmode_output_detect(output) == XF86OutputStatusDisconnected)
+            continue;
 
         /* Get an updated view of the properties for the current connector and
          * look for the link-status property
