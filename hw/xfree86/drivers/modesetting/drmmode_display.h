@@ -244,8 +244,6 @@ typedef struct {
     uint64_t msc_high;
     /** @} */
 
-    xf86OutputStatus output_status;
-
     Bool need_modeset;
     struct xorg_list mode_list;
 
@@ -283,6 +281,8 @@ typedef struct {
     xf86CrtcPtr current_crtc;
     Atom ctm_atom;
     struct drm_color_ctm ctm;
+
+    xf86OutputStatus status;
 } drmmode_output_private_rec, *drmmode_output_private_ptr;
 
 typedef struct {
