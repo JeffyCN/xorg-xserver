@@ -1,6 +1,7 @@
 xorg-server (2:21.0.99.1+git20210810-1) UNRELEASED; urgency=medium
 
   * New upstream snapshot.
+  * 04_compiler_h_inb_outb_mips.diff: Dropped, upstream.
 
  -- Timo Aaltonen <tjaalton@debian.org>  Tue, 10 Aug 2021 14:15:28 +0300
 
