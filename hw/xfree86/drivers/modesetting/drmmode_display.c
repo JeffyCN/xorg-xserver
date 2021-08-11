@@ -4389,7 +4389,7 @@ drmmode_flip_fb(xf86CrtcPtr crtc, int *timeout)
     drmmode_fb *fb;
     struct timeval tv;
 
-    if (!drmmode_crtc || !crtc->enabled ||
+    if (!drmmode_crtc || !crtc->active || !drmmode_crtc_connected(crtc) ||
         drmmode_crtc->dpms_mode != DPMSModeOn || drmmode_crtc->rotate_fb_id)
         return TRUE;
 
