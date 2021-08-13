@@ -4913,7 +4913,10 @@ drmmode_flip_fb(xf86CrtcPtr crtc, int *timeout)
                            drmmode_crtc->vblank_pipe, crtc, TRUE,
                            drmmode_flip_fb_handler, drmmode_flip_fb_abort,
                            "FlipFB-flip"))
-        return FALSE;
+        /* HACK: Workaround commit random interrupted case */
+        if (errno != EPERM)
+            return FALSE;
+    }
 
     drmmode_crtc->flipping = TRUE;
 
