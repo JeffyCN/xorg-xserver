@@ -1417,7 +1417,7 @@ CreateScreenResources(ScreenPtr pScreen)
     if (!drmmode_set_desired_modes(pScrn, &ms->drmmode, pScrn->is_gpu))
         return FALSE;
 
-    if (!drmmode_glamor_handle_new_screen_pixmap(&ms->drmmode))
+    if (!drmmode_handle_new_screen_pixmap(&ms->drmmode))
         return FALSE;
 
     drmmode_uevent_init(pScrn, &ms->drmmode);
@@ -1430,7 +1430,7 @@ CreateScreenResources(ScreenPtr pScreen)
         if (!pixels)
             return FALSE;
 
-        drmmode_glamor_handle_new_screen_pixmap(&ms->drmmode);
+        drmmode_handle_new_screen_pixmap(&ms->drmmode);
     }
 
     rootPixmap = pScreen->GetScreenPixmap(pScreen);

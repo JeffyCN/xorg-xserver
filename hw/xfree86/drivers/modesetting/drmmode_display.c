@@ -1423,7 +1423,7 @@ create_pixmap_for_fbcon(drmmode_ptr drmmode, ScrnInfoPtr pScrn, int fbcon_id)
     if (pixmap)
         return pixmap;
 
-    if (!drmmode->glamor || !drmmode->exa)
+    if (!drmmode->glamor && !drmmode->exa)
         return NULL;
 
     fbcon = drmModeGetFB(drmmode->fd, fbcon_id);
@@ -1444,8 +1444,8 @@ create_pixmap_for_fbcon(drmmode_ptr drmmode, ScrnInfoPtr pScrn, int fbcon_id)
     if (drmmode->exa) {
         struct dumb_bo *bo;
 
-        bo = dumb_get_bo_from_fd(drmmode->fd, fbcon->handle, fbcon->pitch,
-                                 fbcon->pitch * fbcon->height);
+        bo = dumb_get_bo_from_handle(drmmode->fd, fbcon->handle, fbcon->pitch,
+                                     fbcon->pitch * fbcon->height);
         if (bo)
             ret = ms_exa_set_pixmap_bo(pScrn, pixmap, bo, TRUE);
     }
@@ -3271,7 +3271,7 @@ drmmode_set_pixmap_bo(drmmode_ptr drmmode, PixmapPtr pixmap, drmmode_bo *bo)
 }
 
 Bool
-drmmode_glamor_handle_new_screen_pixmap(drmmode_ptr drmmode)
+drmmode_handle_new_screen_pixmap(drmmode_ptr drmmode)
 {
     ScreenPtr screen = xf86ScrnToScreen(drmmode->scrn);
     PixmapPtr screen_pixmap = screen->GetScreenPixmap(screen);
@@ -3345,7 +3345,7 @@ drmmode_xf86crtc_resize(ScrnInfoPtr scrn, int width, int height)
     screen->ModifyPixmapHeader(ppix, width, height, -1, -1,
                                scrn->displayWidth * cpp, new_pixels);
 
-    if (!drmmode_glamor_handle_new_screen_pixmap(drmmode))
+    if (!drmmode_handle_new_screen_pixmap(drmmode))
         goto fail;
 
     for (i = 0; i < xf86_config->num_crtc; i++) {
