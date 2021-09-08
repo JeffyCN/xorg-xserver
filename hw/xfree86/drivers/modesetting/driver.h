@@ -177,6 +177,7 @@ Bool ms_do_pageflip_bo(ScreenPtr screen,
                        drmmode_bo *new_front_bo,
                        void *event,
                        int ref_crtc_vblank_pipe,
+                       xf86CrtcPtr target_crtc,
                        Bool async,
                        ms_pageflip_handler_proc pageflip_handler,
                        ms_pageflip_abort_proc pageflip_abort);

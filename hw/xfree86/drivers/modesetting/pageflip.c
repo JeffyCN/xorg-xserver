@@ -226,30 +226,12 @@ queue_flip_on_crtc(ScreenPtr screen, xf86CrtcPtr crtc,
     return TRUE;
 }
 
-static drmmode_crtc_private_ptr
-ms_vblank_pipe_to_crtc(xf86CrtcConfigPtr config, int vblank_pipe)
-{
-    int i;
-
-    if (vblank_pipe < 0)
-        return NULL;
-
-    for (i = 0; i < config->num_crtc; i++) {
-        xf86CrtcPtr crtc = config->crtc[i];
-        drmmode_crtc_private_ptr drmmode_crtc = crtc->driver_private;
-
-        if (vblank_pipe == drmmode_crtc->vblank_pipe)
-            return drmmode_crtc;
-    }
-
-    return NULL;
-}
-
 Bool
 ms_do_pageflip_bo(ScreenPtr screen,
                   drmmode_bo *new_front_bo,
                   void *event,
                   int ref_crtc_vblank_pipe,
+                  xf86CrtcPtr target_crtc,
                   Bool async,
                   ms_pageflip_handler_proc pageflip_handler,
                   ms_pageflip_abort_proc pageflip_abort)
@@ -270,11 +252,12 @@ ms_do_pageflip_bo(ScreenPtr screen,
         return FALSE;
     }
 
-    drmmode_crtc = ms_vblank_pipe_to_crtc(config, ref_crtc_vblank_pipe);
-    if (drmmode_crtc)
+    if (target_crtc) {
+        drmmode_crtc = target_crtc->driver_private;
         flipdata->fb_id = &drmmode_crtc->fb_id;
-    else
+    } else {
         flipdata->fb_id = &ms->drmmode.fb_id;
+    }
 
     flipdata->event = event;
     flipdata->screen = screen;
@@ -316,7 +299,7 @@ ms_do_pageflip_bo(ScreenPtr screen,
         if (!ms_crtc_on(crtc))
             continue;
 
-        if (drmmode_crtc && drmmode_crtc != crtc->driver_private)
+        if (target_crtc && crtc != target_crtc)
             continue;
 
         if (!queue_flip_on_crtc(screen, crtc, flipdata,
@@ -326,6 +309,7 @@ ms_do_pageflip_bo(ScreenPtr screen,
         }
 
         gettimeofday(&tv, NULL);
+        drmmode_crtc = crtc->driver_private;
         drmmode_crtc->flipping_time_ms = tv.tv_sec * 1000 + tv.tv_usec / 1000;
     }
 
@@ -405,7 +389,7 @@ ms_do_pageflip(ScreenPtr screen,
     new_front_bo.height = new_front->drawable.height;
 
     ret = ms_do_pageflip_bo(screen, &new_front_bo, event,
-                            ref_crtc_vblank_pipe, async,
+                            ref_crtc_vblank_pipe, NULL, async,
                             pageflip_handler, pageflip_abort);
 
 #ifdef GLAMOR_HAS_GBM

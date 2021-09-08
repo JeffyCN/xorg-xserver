@@ -4416,7 +4416,7 @@ drmmode_flip_fb(xf86CrtcPtr crtc, int *timeout)
 
     fb = &drmmode_crtc->flip_fb[drmmode_crtc->current_fb];
     if (!ms_do_pageflip_bo(screen, &fb->bo, drmmode_crtc,
-                           drmmode_crtc->vblank_pipe, TRUE,
+                           drmmode_crtc->vblank_pipe, crtc, TRUE,
                            drmmode_flip_fb_handler, drmmode_flip_fb_abort)) {
         /* HACK: Workaround commit random interrupted case */
         if (errno != EPERM)
