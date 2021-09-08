@@ -984,15 +984,6 @@ static int
 ms_dri2_frame_event_client_gone(void *data, XID id)
 {
     struct ms_dri2_resource *resource = data;
-    int i;
-
-    for (i = 0; i < screenInfo.numScreens; i++) {
-        ScreenPtr screen = screenInfo.screens[i];
-        ScrnInfoPtr scrn = xf86ScreenToScrn(screen);
-        modesettingPtr ms = modesettingPTR(scrn);
-
-        drmmode_set_desired_modes(scrn, &ms->drmmode, TRUE);
-    }
 
     while (!xorg_list_is_empty(&resource->list)) {
         ms_dri2_frame_event_ptr info =
