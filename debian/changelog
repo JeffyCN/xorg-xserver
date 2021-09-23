@@ -4,6 +4,7 @@ xorg-server (2:21.0.99.901-1) UNRELEASED; urgency=medium
   * 04_compiler_h_inb_outb_mips.diff: Dropped, upstream.
   * Xwayland is dropped from this souce, don't try to build it.
   * Xdmx is gone, drop it from the build.
+  * serverminver: Bump versions.
 
  -- Timo Aaltonen <tjaalton@debian.org>  Tue, 10 Aug 2021 14:15:28 +0300
 
