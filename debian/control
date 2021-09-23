@@ -25,7 +25,7 @@ Build-Depends:
  libudev-dev (>= 151-3) [linux-any],
  libselinux1-dev (>= 2.0.80) [linux-any],
  libaudit-dev [linux-any],
- libdrm-dev (>= 2.4.89) [!hurd-i386],
+ libdrm-dev (>= 2.4.107-5~) [!hurd-i386],
  libgl1-mesa-dev (>= 9.2),
  mesa-common-dev,
  libunwind-dev [amd64 arm64 armel armhf hppa i386 ia64 mips64 mips64el mipsel powerpc powerpcspe ppc64 ppc64el sh4],

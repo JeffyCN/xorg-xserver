@@ -7,6 +7,7 @@ xorg-server (2:21.0.99.901-1) UNRELEASED; urgency=medium
   * serverminver: Bump versions.
   * control: Bump x11proto-dev and libx1-dev depends.
   * control: Add libxcvt-dev to build-depends, xcvt to -core Recommends.
+  * control: Bump libdrm-dev build-depends.
 
  -- Timo Aaltonen <tjaalton@debian.org>  Tue, 10 Aug 2021 14:15:28 +0300
 
