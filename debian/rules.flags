@@ -82,7 +82,6 @@ confflags_udeb = \
 	--disable-xace \
 	--disable-xselinux \
 	--disable-xfree86-utils \
-	--disable-xwayland \
 	--disable-systemd-logind \
 	--without-systemd-daemon \
 	--disable-suid-wrapper \
@@ -98,14 +97,12 @@ ifeq ($(DEB_HOST_ARCH_OS), linux)
 	confflags_main += \
 		--enable-dri3 \
 		--enable-xselinux \
-		--enable-xwayland \
 		--enable-systemd-logind \
 		--with-systemd-daemon
 else
 	confflags_main += \
 		--disable-dri3 \
 		--disable-xselinux \
-		--disable-xwayland \
 		--disable-systemd-logind \
 		--without-systemd-daemon
 endif
