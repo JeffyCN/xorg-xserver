@@ -144,6 +144,7 @@ static const OptionInfoRec Options[] = {
     {OPTION_ATOMIC, "Atomic", OPTV_BOOLEAN, {0}, FALSE},
     {OPTION_VARIABLE_REFRESH, "VariableRefresh", OPTV_BOOLEAN, {0}, FALSE},
     {OPTION_USE_GAMMA_LUT, "UseGammaLUT", OPTV_BOOLEAN, {0}, FALSE},
+    {OPTION_ASYNC_FLIP_SECONDARIES, "AsyncFlipSecondaries", OPTV_BOOLEAN, {0}, FALSE},
     {-1, NULL, OPTV_NONE, {0}, FALSE}
 };
 
@@ -751,13 +752,14 @@ ms_change_property(ClientPtr client)
 
     client->requestVector[X_ChangeProperty] = saved_change_property;
     ret = saved_change_property(client);
-    if (ret != Success)
-        return ret;
 
     if (restore_property_vector)
         return ret;
 
     client->requestVector[X_ChangeProperty] = ms_change_property;
+
+    if (ret != Success)
+        return ret;
 
     ret = dixLookupWindow(&window, stuff->window, client, DixSetPropAccess);
     if (ret != Success)
@@ -1199,6 +1201,12 @@ PreInit(ScrnInfoPtr pScrn, int flags)
                                                  &ms->vrr_support) ? X_CONFIG : X_DEFAULT;
             xf86DrvMsg(pScrn->scrnIndex, from, "VariableRefresh: %sabled\n",
                        ms->vrr_support ? "en" : "dis");
+
+            ms->drmmode.async_flip_secondaries = FALSE;
+            from = xf86GetOptValBool(ms->drmmode.Options, OPTION_ASYNC_FLIP_SECONDARIES,
+                                     &ms->drmmode.async_flip_secondaries) ? X_CONFIG : X_DEFAULT;
+            xf86DrvMsg(pScrn->scrnIndex, from, "AsyncFlipSecondaries: %sabled\n",
+                       ms->drmmode.async_flip_secondaries ? "en" : "dis");
         }
     }
 
@@ -1218,6 +1226,14 @@ PreInit(ScrnInfoPtr pScrn, int flags)
             pScrn->capabilities |= RR_Capability_SourceOutput | RR_Capability_SourceOffload;
 #endif
     }
+
+    /*
+     * Use "atomic modesetting disable" request to detect if the kms driver is
+     * atomic capable, regardless if we will actually use atomic modesetting.
+     * This is effectively a no-op, we only care about the return status code.
+     */
+    ret = drmSetClientCap(ms->fd, DRM_CLIENT_CAP_ATOMIC, 0);
+    ms->atomic_modeset_capable = (ret == 0);
 
     if (xf86ReturnOptValBool(ms->drmmode.Options, OPTION_ATOMIC, FALSE)) {
         ret = drmSetClientCap(ms->fd, DRM_CLIENT_CAP_ATOMIC, 1);

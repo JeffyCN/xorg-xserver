@@ -3,9 +3,11 @@ project('xserver', 'c',
             'buildtype=debugoptimized',
             'c_std=gnu99',
         ],
-        version: '21.0.99.1',
+        version: '21.0.99.901',
         meson_version: '>= 0.47.0',
 )
+release_date = '2021-09-21'
+
 add_project_arguments('-DHAVE_DIX_CONFIG_H', language: ['c', 'objc'])
 cc = meson.get_compiler('c')
 
@@ -194,39 +196,6 @@ endif
 xorgsdkdir = join_paths(get_option('prefix'), get_option('includedir'), 'xorg')
 libxcvt_dep = dependency('libxcvt', required: build_xorg)
 
-build_xwayland = false
-if (host_machine.system() != 'darwin' and
-    host_machine.system() != 'windows')
-    if get_option('xwayland') != 'false'
-        xwayland_required = get_option('xwayland') == 'true'
-        build_glamor = glamor_option == 'true' or glamor_option == 'auto'
-
-        xwayland_path = get_option('xwayland-path')
-        if (xwayland_path == '')
-            xwayland_path = join_paths(get_option('prefix'), get_option('bindir'))
-        endif
-
-        xwayland_dep = [
-            dependency('wayland-client', version: wayland_req, required: xwayland_required),
-            dependency('wayland-protocols', version: wayland_protocols_req, required: xwayland_required),
-            dependency('libxcvt', required: xwayland_required),
-        ]
-
-        if build_glamor
-            xwayland_dep += dependency('libdrm', version: libdrm_req, required: xwayland_required)
-            xwayland_dep += dependency('epoxy', required: xwayland_required)
-        endif
-
-        build_xwayland = true
-        # check for all the deps being found, to handle 'auto' mode.
-        foreach d: xwayland_dep
-            if not d.found()
-                build_xwayland = false
-            endif
-        endforeach
-    endif
-endif
-
 build_xnest = false
 if (host_machine.system() != 'darwin' and
     host_machine.system() != 'windows')
@@ -324,7 +293,7 @@ endif
 module_dir = join_paths(get_option('libdir'), get_option('module_dir'))
 
 if glamor_option == 'auto'
-    build_glamor = build_xorg or build_xwayland
+    build_glamor = build_xorg
 else
     build_glamor = glamor_option == 'true'
 endif
@@ -334,21 +303,6 @@ epoxy_dep = dependency('', required: false)
 if build_glamor
     gbm_dep = dependency('gbm', version: gbm_req, required: false)
     epoxy_dep = dependency('epoxy', required: false)
-endif
-
-eglstream_option = get_option('xwayland_eglstream')
-if build_xwayland and build_glamor
-    eglstream_dep = dependency('wayland-eglstream-protocols', required:false)
-    if eglstream_option == 'auto'
-        build_eglstream = eglstream_dep.found()
-    else
-        build_eglstream = eglstream_option == 'true'
-        if build_eglstream and not eglstream_dep.found()
-            error('glamor EGLStream support requested, but wayland-eglstream-protocols not found')
-        endif
-    endif
-else
-    build_eglstream = false
 endif
 
 # Lots of sha1 options, because Linux is about choice :)
@@ -482,7 +436,7 @@ else
     endif
 endif
 
-libdrm_required = build_dri1 or build_dri2 or build_dri3
+libdrm_required = (build_dri1 or build_dri2 or build_dri3) and get_option('drm') == true
 if not libdrm_dep.found() and libdrm_required
     error('DRI requested, but LIBDRM not found')
 endif
@@ -689,6 +643,50 @@ manpage_config.set('modulepath', module_dir)
 manpage_config.set('suid_wrapper_dir', join_paths(get_option('prefix'), 'libexec'))
 manpage_config.set('default_font_path', default_font_path)
 
+require_docs = get_option('docs') == 'true'
+require_devel_docs = get_option('devel-docs') == 'true'
+require_docs_pdf = (require_docs or require_devel_docs) and get_option('docs-pdf') == 'true'
+
+sgml_doctools_dep = dependency('xorg-sgml-doctools',
+                               required: require_docs or require_devel_docs)
+xmlto = find_program('xmlto', required: require_docs or require_devel_docs)
+xsltproc = find_program('xsltproc', required: require_docs or require_devel_docs)
+fop = find_program('fop', required: require_docs_pdf)
+
+build_docs = (get_option('docs') != 'false' and
+    sgml_doctools_dep.found() and
+    xmlto.found())
+
+build_docs_devel = (get_option('devel-docs') != 'false' and
+    sgml_doctools_dep.found() and
+    xmlto.found())
+
+build_docs_pdf = (get_option('docs-pdf') != 'false' and
+    (build_docs or build_docs_devel) and
+    fop.found())
+
+if build_docs or build_docs_devel
+    doc_sgml_path = sgml_doctools_dep.get_pkgconfig_variable('sgmlrootdir')
+    doc_stylesheet_srcdir = join_paths(doc_sgml_path, 'X11')
+
+    # once we bump meson dependency to 0.56.0 we can use
+    # meson.project_build_root() instead of meson.build_root()
+
+    # Meson does not and will not support functions so we are copy-pasting
+    # documentation build code around which is unfortunate
+    # See https://mesonbuild.com/FAQ.html#why-doesnt-meson-have-user-defined-functionsmacros
+
+    docs_xmlto_search_flags = [
+        '--searchpath', doc_stylesheet_srcdir,
+        '--searchpath', meson.build_root(),
+    ]
+
+    docs_xslt_search_flags = [
+        '--path', doc_stylesheet_srcdir,
+        '--path', meson.build_root(),
+    ]
+endif
+
 # Include must come first, as it sets up dix-config.h
 subdir('include')
 
@@ -728,6 +726,7 @@ endif
 if build_xorg or get_option('xephyr')
     subdir('exa')
 endif
+subdir('doc')
 
 # Common static libraries of all X servers
 libxserver = [
@@ -824,4 +823,15 @@ if build_xorg
 
     install_data('xorg-server.m4',
                  install_dir: join_paths(get_option('datadir'), 'aclocal'))
+endif
+
+if build_docs or build_docs_devel
+    docxmlconfig = configuration_data()
+    docxmlconfig.set('PACKAGE_VERSION', meson.project_version())
+    docxmlconfig.set('RELEASE_DATE', release_date)
+    configure_file(
+        input: 'xserver.ent.in',
+        output: 'xserver.ent',
+        configuration: docxmlconfig
+    )
 endif

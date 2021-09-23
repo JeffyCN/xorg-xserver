@@ -26,9 +26,9 @@ dnl
 dnl Process this file with autoconf to create configure.
 
 AC_PREREQ(2.60)
-AC_INIT([xorg-server], 21.0.99.1, [https://gitlab.freedesktop.org/xorg/xserver/issues], xorg-server)
-RELEASE_DATE="2021-07-05"
-RELEASE_NAME="Carrot and Ginger Soup"
+AC_INIT([xorg-server], 21.0.99.901, [https://gitlab.freedesktop.org/xorg/xserver/issues], xorg-server)
+RELEASE_DATE="2021-09-21"
+RELEASE_NAME="Cheesecake"
 AC_CONFIG_SRCDIR([Makefile.am])
 AC_CONFIG_MACRO_DIR([m4])
 AM_INIT_AUTOMAKE([foreign dist-xz])
@@ -67,8 +67,6 @@ dnl xkb-config.h covers XKB for the Xorg and Xnest DDXs.
 AC_CONFIG_HEADERS(include/xkb-config.h)
 dnl xwin-config.h covers the XWin DDX.
 AC_CONFIG_HEADERS(include/xwin-config.h)
-dnl xwayland-config.h covers Xwayland.
-AC_CONFIG_HEADERS(include/xwayland-config.h)
 dnl version-config.h covers the version numbers so they can be bumped without
 dnl forcing an entire recompile.x
 AC_CONFIG_HEADERS(include/version-config.h)
@@ -572,14 +570,9 @@ AC_ARG_ENABLE(suid-wrapper, AS_HELP_STRING([--enable-suid-wrapper], [Build suid-
 
 dnl DDXes.
 AC_ARG_ENABLE(xorg,    	      AS_HELP_STRING([--enable-xorg], [Build Xorg server (default: auto)]), [XORG=$enableval], [XORG=auto])
-AC_ARG_ENABLE(dmx,    	      AS_HELP_STRING([--enable-dmx], [Build DMX server (default: no)]), [DMX=$enableval], [DMX=no])
 AC_ARG_ENABLE(xvfb,    	      AS_HELP_STRING([--enable-xvfb], [Build Xvfb server (default: yes)]), [XVFB=$enableval], [XVFB=yes])
 AC_ARG_ENABLE(xnest,   	      AS_HELP_STRING([--enable-xnest], [Build Xnest server (default: auto)]), [XNEST=$enableval], [XNEST=auto])
 AC_ARG_ENABLE(xquartz,        AS_HELP_STRING([--enable-xquartz], [Build Xquartz server for OS-X (default: auto)]), [XQUARTZ=$enableval], [XQUARTZ=auto])
-AC_ARG_ENABLE(xwayland,       AS_HELP_STRING([--enable-xwayland], [Build Xwayland server (default: auto)]), [XWAYLAND=$enableval], [XWAYLAND=auto])
-AC_ARG_ENABLE(xwayland-eglstream, AS_HELP_STRING([--enable-xwayland-eglstream], [Build Xwayland eglstream support (default: no)]), [XWAYLAND_EGLSTREAM=$enableval], [XWAYLAND_EGLSTREAM=no])
-AC_ARG_WITH(xwayland-path, AS_HELP_STRING([--with-xwayland-path=PATH], [Directory containing Xwayland executable (default: ${bindir})]),
-					 [ xwayland_path="$withval" ], [ xwayland_path="$bindir" ])
 AC_ARG_ENABLE(standalone-xpbproxy, AS_HELP_STRING([--enable-standalone-xpbproxy], [Build a standalone xpbproxy (in addition to the one integrated into Xquartz as a separate thread) (default: no)]), [STANDALONE_XPBPROXY=$enableval], [STANDALONE_XPBPROXY=no])
 AC_ARG_ENABLE(xwin,    	      AS_HELP_STRING([--enable-xwin], [Build XWin server (default: auto)]), [XWIN=$enableval], [XWIN=auto])
 AC_ARG_ENABLE(glamor,         AS_HELP_STRING([--enable-glamor], [Build glamor dix module (default: auto)]), [GLAMOR=$enableval], [GLAMOR=auto])
@@ -686,7 +679,6 @@ case $host_os in
 			XQUARTZ=yes
 			XVFB=no
 			XNEST=no
-			XWAYLAND=no
 
 			COMPOSITE=no
 			DGA=no
@@ -721,7 +713,6 @@ XINERAMAPROTO="xineramaproto"
 BIGFONTPROTO="xf86bigfontproto >= 1.2.0"
 DGAPROTO="xf86dgaproto >= 2.0.99.1"
 GLPROTO="glproto >= 1.4.17"
-DMXPROTO="dmxproto >= 2.2.99.1"
 VIDMODEPROTO="xf86vidmodeproto >= 2.2.99.1"
 APPLEWMPROTO="applewmproto >= 1.4"
 LIBXSHMFENCE="xshmfence >= 1.1"
@@ -743,7 +734,6 @@ PRESENTPROTO="presentproto >= 1.2"
 
 dnl List of libraries that require a specific version
 LIBAPPLEWM="applewm >= 1.4"
-LIBDMX="dmx >= 1.0.99.1"
 LIBDRI="dri >= 7.8.0"
 LIBDRM="libdrm >= 2.4.89"
 LIBEGL="egl"
@@ -2022,7 +2012,7 @@ AM_CONDITIONAL([XORG_DRIVER_INPUT_INPUTTEST], [test "x$XORG_DRIVER_INPUT_INPUTTE
 
 dnl glamor
 if test "x$GLAMOR" = xauto; then
-	if echo "$XORG" "$XEPHYR" "$XWAYLAND" | grep -q yes ; then
+	if echo "$XORG" "$XEPHYR" | grep -q yes ; then
 		GLAMOR=yes
 	fi
 fi
@@ -2180,62 +2170,6 @@ AM_CONDITIONAL(XQUARTZ, [test "x$XQUARTZ" = xyes])
 AM_CONDITIONAL(XQUARTZ_SPARKLE, [test "x$XQUARTZ_SPARKLE" != "xno"])
 AM_CONDITIONAL(STANDALONE_XPBPROXY, [test "x$STANDALONE_XPBPROXY" = xyes])
 
-dnl DMX DDX
-PKG_CHECK_MODULES(
-	[DMXMODULES],
-	[xmuu $LIBXEXT x11 >= 1.6 xrender xfixes $LIBXI $DMXPROTO xau $XDMCP_MODULES],
-	[PKG_CHECK_MODULES(
-		[XDMXCONFIG_DEP],
-		[xaw7 xmu xt xpm x11],
-		[have_dmx=yes],
-		[have_dmx=no])],
-	[have_dmx=no])
-AC_MSG_CHECKING([whether to build Xdmx DDX])
-if test "x$DMX" = xauto; then
-	DMX="$have_dmx"
-	case $host_os in
-		cygwin*) DMX="no" ;;
-		mingw*)  DMX="no" ;;
-		darwin*) DMX="no" ;;
-	esac
-fi
-AC_MSG_RESULT([$DMX])
-AM_CONDITIONAL(DMX, [test "x$DMX" = xyes])
-
-if test "x$DMX" = xyes; then
-	if test "x$have_dmx" = xno; then
-		AC_MSG_ERROR([Xdmx build explicitly requested, but required
-		              modules not found.])
-	fi
-	DMX_INCLUDES="$XEXT_INC $RENDER_INC $RECORD_INC"
-	XDMX_CFLAGS="$DMXMODULES_CFLAGS"
-	XDMX_LIBS="$FB_LIB $MI_LIB $XEXT_LIB $RENDER_LIB $RECORD_LIB $XI_LIB $XKB_LIB $XKB_STUB_LIB $DRI3_LIB $PRESENT_LIB $MIEXT_SYNC_LIB $MIEXT_SHADOW_LIB $MIEXT_DAMAGE_LIB $COMPOSITE_LIB $DAMAGE_LIB $MAIN_LIB $DIX_LIB $RANDR_LIB $RENDER_LIB $CONFIG_LIB $OS_LIB $FIXES_LIB"
-	XDMX_SYS_LIBS="$DMXMODULES_LIBS"
-	AC_SUBST([XDMX_CFLAGS])
-	AC_SUBST([XDMX_LIBS])
-	AC_SUBST([XDMX_SYS_LIBS])
-
-dnl USB sources in DMX require <linux/input.h>
-	AC_CHECK_HEADER([linux/input.h], DMX_BUILD_USB="yes",
-			DMX_BUILD_USB="no")
-	AC_SUBST(XDMXCONFIG_DEP_CFLAGS)
-	AC_SUBST(XDMXCONFIG_DEP_LIBS)
-	PKG_CHECK_MODULES([DMXEXAMPLES_DEP], [$LIBDMX $LIBXEXT x11])
-	AC_SUBST(DMXEXAMPLES_DEP_LIBS)
-	PKG_CHECK_MODULES([DMXXMUEXAMPLES_DEP], [$LIBDMX xmu $LIBXEXT x11])
-	AC_SUBST(DMXXMUEXAMPLES_DEP_LIBS)
-	PKG_CHECK_MODULES([DMXXIEXAMPLES_DEP], [$LIBDMX $LIBXI $LIBXEXT x11])
-	AC_SUBST(DMXXIEXAMPLES_DEP_LIBS)
-	PKG_CHECK_MODULES([XTSTEXAMPLES_DEP], [$LIBXTST $LIBXEXT x11])
-	AC_SUBST(XTSTEXAMPLES_DEP_LIBS)
-	PKG_CHECK_MODULES([XRESEXAMPLES_DEP], [xres $LIBXEXT x11])
-	AC_SUBST(XRESEXAMPLES_DEP_LIBS)
-	PKG_CHECK_MODULES([X11EXAMPLES_DEP], [$LIBXEXT x11])
-	AC_SUBST(X11EXAMPLES_DEP_LIBS)
-
-fi
-AM_CONDITIONAL([DMX_BUILD_USB], [test "x$DMX_BUILD_USB" = xyes])
-
 dnl kdrive DDX
 
 XEPHYR_LIBS=
@@ -2292,92 +2226,6 @@ AC_SUBST([KDRIVE_MAIN_LIB])
 AC_SUBST([KDRIVE_LOCAL_LIBS])
 AC_SUBST([KDRIVE_LIBS])
 AM_CONDITIONAL(XEPHYR, [test "x$KDRIVE" = xyes && test "x$XEPHYR" = xyes])
-
-dnl Xwayland DDX
-
-XWAYLANDMODULES="wayland-client >= 1.5.0 wayland-protocols >= 1.18"
-if test "x$XF86VIDMODE" = xyes; then
-	XWAYLANDMODULES="$XWAYLANDMODULES $VIDMODEPROTO"
-fi
-if test "x$DRM" = xyes; then
-	XWAYLANDMODULES="$XWAYLANDMODULES $LIBDRM"
-fi
-if test "x$GLAMOR" = xyes; then
-	XWAYLANDMODULES="$XWAYLANDMODULES epoxy"
-fi
-PKG_CHECK_MODULES(XWAYLANDMODULES, [$XWAYLANDMODULES], [have_xwayland=yes], [have_xwayland=no])
-AC_MSG_CHECKING([whether to build Xwayland DDX])
-if test "x$XWAYLAND" = xauto; then
-   XWAYLAND="$have_xwayland"
-fi
-AC_MSG_RESULT([$XWAYLAND])
-AM_CONDITIONAL(XWAYLAND, [test "x$XWAYLAND" = xyes])
-
-if test "x$XWAYLAND" = xyes; then
-	if test "x$have_xwayland" = xno; then
-		AC_MSG_ERROR([Xwayland build explicitly requested, but required modules not found.])
-	fi
-
-	if test "x$GLAMOR" = xyes && test "x$GBM" = xyes; then
-		AC_DEFINE(XWL_HAS_GLAMOR, 1,
-			  [Build xwayland with glamor support])
-		AC_SUBST(have_glamor, "true")
-	else
-		AC_SUBST(have_glamor, "false")
-	fi
-
-	PKG_CHECK_MODULES(WAYLAND_EGLSTREAM, [wayland-eglstream-protocols >= 1.0.2], [have_wl_eglstream=yes], [have_wl_eglstream=no])
-
-	if test "x$XWAYLAND_EGLSTREAM" = xauto; then
-		if test "x$have_wl_eglstream" = xyes && test "x$GLAMOR" = xyes; then
-			XWAYLAND_EGLSTREAM=yes
-		fi
-	fi
-
-	if test "x$XWAYLAND_EGLSTREAM" = xyes; then
-		if test "x$GLAMOR" != xyes; then
-			AC_MSG_ERROR([Xwayland eglstream support explicitly requested, but required modules not found.])
-		fi
-
-		if test "x$have_wl_eglstream" = xno; then
-			AC_MSG_ERROR([Xwayland eglstream support requires wayland-eglstream-protocols >= 1.0.2])
-		fi
-
-		AC_SUBST(WAYLAND_EGLSTREAM_DATADIR, `$PKG_CONFIG --variable=pkgdatadir wayland-eglstream-protocols`)
-		AC_DEFINE(XWL_HAS_EGLSTREAM, 1,
-			  [Build xwayland with eglstream support])
-		AC_SUBST(have_eglstream, "true")
-	else
-		AC_SUBST(have_eglstream, "false")
-	fi
-
-	PKG_CHECK_MODULES([LIBXCVT], $LIBXCVT)
-
-	XWAYLAND_LIBS="$FB_LIB $FIXES_LIB $MI_LIB $XEXT_LIB $DBE_LIB $RECORD_LIB $GLX_LIBS $RANDR_LIB $RENDER_LIB $DAMAGE_LIB $DRI3_LIB $PRESENT_LIB $MIEXT_SYNC_LIB $MIEXT_DAMAGE_LIB $MIEXT_SHADOW_LIB $XI_LIB $XKB_LIB $XKB_STUB_LIB $COMPOSITE_LIB $MAIN_LIB $DIX_LIB $OS_LIB"
-	XWAYLAND_SYS_LIBS="$XWAYLANDMODULES_LIBS $GLX_SYS_LIBS $LIBXCVT_LIBS"
-	AC_SUBST([XWAYLAND_LIBS])
-	AC_SUBST([XWAYLAND_SYS_LIBS])
-
-	if test "x$MONOTONIC_CLOCK" != xyes; then
-		AC_MSG_ERROR([Xwayland requires CLOCK_MONOTONIC support.])
-	fi
-
-	AC_PATH_PROG([WAYLAND_SCANNER], [wayland-scanner])
-	if test "x$WAYLAND_SCANNER" = x; then
-		PKG_CHECK_MODULES(WAYLAND_SCANNER, [wayland-scanner])
-		AC_SUBST(WAYLAND_SCANNER, `$PKG_CONFIG --variable=wayland_scanner wayland-scanner`)
-	fi
-
-        PKG_CHECK_MODULES(WAYLAND_SCANNER, [wayland-scanner >= 1.14.91],
-                          AC_SUBST(SCANNER_ARG, 'private-code'),
-                          AC_SUBST(SCANNER_ARG, 'code'))
-
-	AC_SUBST(WAYLAND_PROTOCOLS_DATADIR, `$PKG_CONFIG --variable=pkgdatadir wayland-protocols`)
-
-	AC_SUBST(xwayland_path)
-
-fi
-AM_CONDITIONAL(XWAYLAND_EGLSTREAM, [test "x$XWAYLAND_EGLSTREAM" = "xyes"])
 
 
 dnl and the rest of these are generic, so they're in config.h
@@ -2489,16 +2337,6 @@ hw/xfree86/xkb/Makefile
 hw/xfree86/utils/Makefile
 hw/xfree86/utils/man/Makefile
 hw/xfree86/utils/gtf/Makefile
-hw/dmx/config/Makefile
-hw/dmx/config/man/Makefile
-hw/dmx/doc/Makefile
-hw/dmx/doxygen/doxygen.conf
-hw/dmx/doxygen/Makefile
-hw/dmx/examples/Makefile
-hw/dmx/input/Makefile
-hw/dmx/glxProxy/Makefile
-hw/dmx/Makefile
-hw/dmx/man/Makefile
 hw/vfb/Makefile
 hw/vfb/man/Makefile
 hw/xnest/Makefile
@@ -2519,9 +2357,6 @@ hw/kdrive/Makefile
 hw/kdrive/ephyr/Makefile
 hw/kdrive/ephyr/man/Makefile
 hw/kdrive/src/Makefile
-hw/xwayland/Makefile
-hw/xwayland/man/Makefile
-hw/xwayland/xwayland.pc
 test/Makefile
 xserver.ent
 xorg-server.pc
