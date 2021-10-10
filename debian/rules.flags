@@ -4,7 +4,7 @@ VENDOR = $(shell lsb_release -i -s)
 SUPPORT = https://www.debian.org/support
 
 SOURCE_NAME    :=  xorg-server
-SOURCE_VERSION := $(shell dpkg-parsechangelog | awk -F': ' '/^Version: / {print $$2}')
+SOURCE_VERSION := $(shell git log --oneline -1)
 
 # disable-static is so we don't get libfoo.a for modules.  now if only we could
 # kill the .las.
