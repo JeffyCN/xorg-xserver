@@ -601,6 +601,7 @@ dnl kdrive options
 AC_ARG_ENABLE(libunwind,      AS_HELP_STRING([--enable-libunwind], [Use libunwind for backtracing (default: auto)]), [LIBUNWIND="$enableval"], [LIBUNWIND="auto"])
 AC_ARG_ENABLE(xshmfence,      AS_HELP_STRING([--disable-xshmfence], [Disable xshmfence (default: auto)]), [XSHMFENCE="$enableval"], [XSHMFENCE="auto"])
 
+AC_ARG_ENABLE(gles-highp,    	      AS_HELP_STRING([--enable-gles-highp], [Use highp as default precision for GLES(default: yes)]), [GLES_HIGHP=$enableval], [GLES_HIGHP=yes])
 
 dnl chown/chmod to be setuid root as part of build
 dnl Replaces InstallXserverSetUID in imake
@@ -2079,6 +2080,24 @@ AM_CONDITIONAL([DGA], [test "x$DGA" = xyes])
 AM_CONDITIONAL([XORG_BUS_PLATFORM], [test "x$CONFIG_UDEV_KMS" = xyes])
 AM_CONDITIONAL([XORG_DRIVER_MODESETTING], [test "x$XORG_DRIVER_MODESETTING" = xyes])
 
+if test "x$GLES_HIGHP" = xyes; then
+	AC_DEFINE(GLES_USE_HIGHP, 1, [Use highp as default precision for GLES])
+fi
+
+dnl modesetting
+if test "x$XORG_DRIVER_MODESETTING" = xyes; then
+	RGA_LIBS=
+	RGA_HEADER=
+
+	AC_CHECK_LIB([rga], [c_RkRgaInit], RGA_LIBS="-lrga")
+	AC_CHECK_HEADERS([rga/RgaApi.h], RGA_HEADER="yes")
+
+	if test "x$RGA_LIBS" != "x" && test "x$RGA_HEADER" = "xyes"; then
+		AC_SUBST(RGA_LIBS)
+		AC_DEFINE(MODESETTING_WITH_RGA, 1, [Have rockchip rga])
+	fi
+fi
+
 dnl glamor
 if test "x$GLAMOR" = xauto; then
 	if echo "$XORG" "$XEPHYR" "$XWAYLAND" | grep -q yes ; then
@@ -2108,11 +2127,18 @@ if test "x$GLAMOR" = xyes; then
 		PKG_CHECK_EXISTS(gbm >= 17.1.0,
 				 [AC_DEFINE(GBM_BO_WITH_MODIFIERS, 1, [Have gbm_bo_create_with_modifiers])],
 				 [])
+		AC_CHECK_HEADER([gbm.h],
+			[AC_CHECK_LIB(gbm, gbm_bo_map,
+				[AC_DEFINE(GLAMOR_HAS_GBM_MAP,1,[Have gbm_bo_map])])])
 	else
 		if test "x$XORG" = xyes; then
 			AC_MSG_ERROR([Glamor for Xorg requires $LIBGBM])
 		fi
 	fi
+
+	AC_CHECK_HEADER([GLES3/gl3.h],
+		[AC_CHECK_LIB(GLESv2, glFenceSync,
+			[AC_DEFINE(GLAMOR_HAS_GL_FENCE,1,[Have glFenceSync])])])
 fi
 AM_CONDITIONAL([GLAMOR_EGL], [test "x$GBM" = xyes])
 

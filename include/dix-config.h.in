@@ -470,6 +470,12 @@
 /* Ask fontsproto to make font path element names const */
 #define FONT_PATH_ELEMENT_NAME_CONST    1
 
+/* Use highp as default precision for GLES */
+#undef GLES_USE_HIGHP
+
+/* Build modesetting has rga support */
+#undef MODESETTING_WITH_RGA
+
 /* Build GLAMOR */
 #undef GLAMOR
 
@@ -478,6 +484,12 @@
 
 /* Build glamor/gbm has linear support */
 #undef GLAMOR_HAS_GBM_LINEAR
+
+/* Build glamor/gbm has bo_map support */
+#undef GLAMOR_HAS_GBM_MAP
+
+/* Build glamor/gbm has gl fence support */
+#undef GLAMOR_HAS_GL_FENCE
 
 /* GBM has modifiers support */
 #undef GBM_BO_WITH_MODIFIERS

@@ -140,6 +140,8 @@ glamor_poly_glyph_blt_gl(DrawablePtr drawable, GCPtr gc,
         }
     }
 
+    glamor_pixmap_invalid(pixmap);
+
     ret = TRUE;
 
 bail:
@@ -153,7 +155,8 @@ glamor_poly_glyph_blt(DrawablePtr drawable, GCPtr gc,
                       int start_x, int y, unsigned int nglyph,
                       CharInfoPtr *ppci, void *pglyph_base)
 {
-    if (glamor_poly_glyph_blt_gl(drawable, gc, start_x, y, nglyph, ppci,
+    if (GLAMOR_PREFER_GL() &&
+        glamor_poly_glyph_blt_gl(drawable, gc, start_x, y, nglyph, ppci,
                                  pglyph_base))
         return;
     miPolyGlyphBlt(drawable, gc, start_x, y, nglyph,
@@ -232,6 +235,8 @@ glamor_push_pixels_gl(GCPtr gc, PixmapPtr bitmap,
         glDrawArrays(GL_POINTS, 0, num_points);
     }
 
+    glamor_pixmap_invalid(pixmap);
+
     ret = TRUE;
 
 bail:
@@ -244,7 +249,8 @@ void
 glamor_push_pixels(GCPtr pGC, PixmapPtr pBitmap,
                    DrawablePtr pDrawable, int w, int h, int x, int y)
 {
-    if (glamor_push_pixels_gl(pGC, pBitmap, pDrawable, w, h, x, y))
+    if (GLAMOR_PREFER_GL() &&
+        glamor_push_pixels_gl(pGC, pBitmap, pDrawable, w, h, x, y))
         return;
 
     miPushPixels(pGC, pBitmap, pDrawable, w, h, x, y);

@@ -57,7 +57,7 @@ glamor_prep_pixmap_box(PixmapPtr pixmap, glamor_access_t access, BoxPtr box)
          * by a lower level driver
          */
         if (!priv->prepared)
-            return TRUE;
+            goto done;
 
         /* In X, multiple Drawables can be stored in the same Pixmap (such as
          * each individual window in a non-composited screen pixmap, or the
@@ -69,7 +69,7 @@ glamor_prep_pixmap_box(PixmapPtr pixmap, glamor_access_t access, BoxPtr box)
          */
         RegionSubtract(&region, &region, &priv->prepare_region);
         if (!RegionNotEmpty(&region))
-            return TRUE;
+            goto done;
 
         if (access == GLAMOR_ACCESS_RW)
             FatalError("attempt to remap buffer as writable");
@@ -80,7 +80,31 @@ glamor_prep_pixmap_box(PixmapPtr pixmap, glamor_access_t access, BoxPtr box)
             pixmap->devPrivate.ptr = NULL;
         }
     } else {
+#ifdef GLAMOR_HAS_GBM_MAP
+        struct gbm_bo *gbm = NULL;
+        uint32_t stride;
+
         RegionInit(&priv->prepare_region, box, 1);
+
+        if (!priv->exporting)
+            gbm = glamor_gbm_bo_from_pixmap(screen, pixmap);
+
+        if (gbm) {
+            pixmap->devPrivate.ptr =
+                gbm_bo_map(gbm, 0, 0, pixmap->drawable.width,
+                           pixmap->drawable.height,
+                           (access == GLAMOR_ACCESS_RW) ?
+                           GBM_BO_TRANSFER_READ_WRITE : GBM_BO_TRANSFER_READ,
+                           &stride, &priv->map_data);
+
+            if (pixmap->devPrivate.ptr) {
+                pixmap->devKind = stride;
+                priv->bo_mapped = TRUE;
+                priv->map_access = access;
+                goto done;
+            }
+        }
+#endif
 
         if (glamor_priv->has_rw_pbo) {
             if (priv->pbo == 0)
@@ -88,11 +112,29 @@ glamor_prep_pixmap_box(PixmapPtr pixmap, glamor_access_t access, BoxPtr box)
 
             gl_usage = GL_STREAM_READ;
 
+            glamor_priv->suppress_gl_out_of_memory_logging = true;
+
             glBindBuffer(GL_PIXEL_PACK_BUFFER, priv->pbo);
             glBufferData(GL_PIXEL_PACK_BUFFER,
                          pixmap->devKind * pixmap->drawable.height, NULL,
                          gl_usage);
-        } else {
+
+            glamor_priv->suppress_gl_out_of_memory_logging = false;
+
+            if (glGetError() == GL_OUT_OF_MEMORY) {
+                if (!glamor_priv->logged_any_pbo_allocation_failure) {
+                    LogMessageVerb(X_WARNING, 0, "glamor: Failed to allocate %d "
+                                   "bytes PBO due to GL_OUT_OF_MEMORY.\n",
+                                   pixmap->devKind * pixmap->drawable.height);
+                    glamor_priv->logged_any_pbo_allocation_failure = true;
+                }
+                glBindBuffer(GL_PIXEL_PACK_BUFFER, 0);
+                glDeleteBuffers(1, &priv->pbo);
+                priv->pbo = 0;
+            }
+        }
+
+        if (!priv->pbo) {
             pixmap->devPrivate.ptr = xallocarray(pixmap->devKind,
                                                  pixmap->drawable.height);
             if (!pixmap->devPrivate.ptr)
@@ -104,9 +146,7 @@ glamor_prep_pixmap_box(PixmapPtr pixmap, glamor_access_t access, BoxPtr box)
     glamor_download_boxes(pixmap, RegionRects(&region), RegionNumRects(&region),
                           0, 0, 0, 0, pixmap->devPrivate.ptr, pixmap->devKind);
 
-    RegionUninit(&region);
-
-    if (glamor_priv->has_rw_pbo) {
+    if (priv->pbo) {
         if (priv->map_access == GLAMOR_ACCESS_RW)
             gl_access = GL_READ_WRITE;
         else
@@ -115,6 +155,19 @@ glamor_prep_pixmap_box(PixmapPtr pixmap, glamor_access_t access, BoxPtr box)
         pixmap->devPrivate.ptr = glMapBuffer(GL_PIXEL_PACK_BUFFER, gl_access);
         glBindBuffer(GL_PIXEL_PACK_BUFFER, 0);
     }
+
+done:
+    RegionUninit(&region);
+
+#ifdef GLAMOR_HAS_GBM
+    if (priv->bo_mapped && !priv->gl_synced) {
+        /* Finish all gpu commands before accessing the buffer */
+        if (!glamor_priv->gl_synced)
+            glamor_finish(screen);
+
+        priv->gl_synced = TRUE;
+    }
+#endif
 
     priv->prepared = TRUE;
     return TRUE;
@@ -128,8 +181,6 @@ glamor_prep_pixmap_box(PixmapPtr pixmap, glamor_access_t access, BoxPtr box)
 static void
 glamor_fini_pixmap(PixmapPtr pixmap)
 {
-    ScreenPtr                   screen = pixmap->drawable.pScreen;
-    glamor_screen_private       *glamor_priv = glamor_get_screen_private(screen);
     glamor_pixmap_private       *priv = glamor_get_pixmap_private(pixmap);
 
     if (!GLAMOR_PIXMAP_PRIV_HAS_FBO(priv))
@@ -138,13 +189,17 @@ glamor_fini_pixmap(PixmapPtr pixmap)
     if (!priv->prepared)
         return;
 
-    if (glamor_priv->has_rw_pbo) {
+    if (priv->pbo) {
         glBindBuffer(GL_PIXEL_UNPACK_BUFFER, priv->pbo);
         glUnmapBuffer(GL_PIXEL_UNPACK_BUFFER);
         pixmap->devPrivate.ptr = NULL;
     }
 
+#ifdef GLAMOR_HAS_GBM
+    if (!priv->bo_mapped && priv->map_access == GLAMOR_ACCESS_RW) {
+#else
     if (priv->map_access == GLAMOR_ACCESS_RW) {
+#endif
         glamor_upload_boxes(pixmap,
                             RegionRects(&priv->prepare_region),
                             RegionNumRects(&priv->prepare_region),
@@ -153,10 +208,14 @@ glamor_fini_pixmap(PixmapPtr pixmap)
 
     RegionUninit(&priv->prepare_region);
 
-    if (glamor_priv->has_rw_pbo) {
+    if (priv->pbo) {
         glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0);
         glDeleteBuffers(1, &priv->pbo);
         priv->pbo = 0;
+#ifdef GLAMOR_HAS_GBM
+    } else if (priv->bo_mapped) {
+        /* Delay unmap to finalize */
+#endif
     } else {
         free(pixmap->devPrivate.ptr);
         pixmap->devPrivate.ptr = NULL;

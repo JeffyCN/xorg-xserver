@@ -118,6 +118,8 @@ glamor_poly_lines_solid_gl(DrawablePtr drawable, GCPtr gc,
         }
     }
 
+    glamor_pixmap_invalid(pixmap);
+
     ret = TRUE;
 
 bail:
@@ -163,7 +165,8 @@ void
 glamor_poly_lines(DrawablePtr drawable, GCPtr gc,
                   int mode, int n, DDXPointPtr points)
 {
-    if (glamor_poly_lines_gl(drawable, gc, mode, n, points))
+    if (GLAMOR_PREFER_GL() &&
+        glamor_poly_lines_gl(drawable, gc, mode, n, points))
         return;
     glamor_poly_lines_bail(drawable, gc, mode, n, points);
 }

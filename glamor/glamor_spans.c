@@ -142,6 +142,8 @@ glamor_fill_spans_gl(DrawablePtr drawable,
         }
     }
 
+    glamor_pixmap_invalid(pixmap);
+
     ret = TRUE;
 
 bail:
@@ -171,7 +173,8 @@ glamor_fill_spans(DrawablePtr drawable,
                   GCPtr gc,
                   int n, DDXPointPtr points, int *widths, int sorted)
 {
-    if (glamor_fill_spans_gl(drawable, gc, n, points, widths, sorted))
+    if (GLAMOR_PREFER_GL() &&
+        glamor_fill_spans_gl(drawable, gc, n, points, widths, sorted))
         return;
     glamor_fill_spans_bail(drawable, gc, n, points, widths, sorted);
 }
@@ -187,17 +190,14 @@ glamor_get_spans_gl(DrawablePtr drawable, int wmax,
     int box_index;
     int n;
     char *d;
-    GLenum type;
-    GLenum format;
     int off_x, off_y;
+    const struct glamor_format *f = glamor_format_for_pixmap(pixmap);
 
     pixmap_priv = glamor_get_pixmap_private(pixmap);
     if (!GLAMOR_PIXMAP_PRIV_HAS_FBO(pixmap_priv))
         goto bail;
 
     glamor_get_drawable_deltas(drawable, pixmap, &off_x, &off_y);
-
-    glamor_format_for_pixmap(pixmap, &format, &type);
 
     glamor_make_current(glamor_priv);
 
@@ -234,7 +234,8 @@ glamor_get_spans_gl(DrawablePtr drawable, int wmax,
             if (y >= box->y2)
                 continue;
 
-            glReadPixels(x1 - box->x1, y - box->y1, x2 - x1, 1, format, type, l);
+            glReadPixels(x1 - box->x1, y - box->y1, x2 - x1, 1,
+                         f->format, f->type, l);
         }
     }
 
@@ -256,7 +257,8 @@ void
 glamor_get_spans(DrawablePtr drawable, int wmax,
                  DDXPointPtr points, int *widths, int count, char *dst)
 {
-    if (glamor_get_spans_gl(drawable, wmax, points, widths, count, dst))
+    if (GLAMOR_PREFER_GL() &&
+        glamor_get_spans_gl(drawable, wmax, points, widths, count, dst))
         return;
     glamor_get_spans_bail(drawable, wmax, points, widths, count, dst);
 }
@@ -269,11 +271,10 @@ glamor_set_spans_gl(DrawablePtr drawable, GCPtr gc, char *src,
     glamor_screen_private *glamor_priv = glamor_get_screen_private(screen);
     PixmapPtr pixmap = glamor_get_drawable_pixmap(drawable);
     glamor_pixmap_private *pixmap_priv;
+    const struct glamor_format *f = glamor_format_for_pixmap(pixmap);
     int box_index;
     int n;
     char *s;
-    GLenum type;
-    GLenum format;
     int off_x, off_y;
 
     pixmap_priv = glamor_get_pixmap_private(pixmap);
@@ -287,7 +288,6 @@ glamor_set_spans_gl(DrawablePtr drawable, GCPtr gc, char *src,
         goto bail;
 
     glamor_get_drawable_deltas(drawable, pixmap, &off_x, &off_y);
-    glamor_format_for_pixmap(pixmap, &format, &type);
 
     glamor_make_current(glamor_priv);
 
@@ -348,12 +348,14 @@ glamor_set_spans_gl(DrawablePtr drawable, GCPtr gc, char *src,
 
                 glTexSubImage2D(GL_TEXTURE_2D, 0,
                                 x1 - box->x1, y1 - box->y1, x2 - x1, 1,
-                                format, type,
+                                f->format, f->type,
                                 l);
             }
             s += PixmapBytePad(w, drawable->depth);
         }
     }
+
+    glamor_pixmap_invalid(pixmap);
 
     return TRUE;
 
@@ -375,7 +377,8 @@ void
 glamor_set_spans(DrawablePtr drawable, GCPtr gc, char *src,
                  DDXPointPtr points, int *widths, int numPoints, int sorted)
 {
-    if (glamor_set_spans_gl(drawable, gc, src, points, widths, numPoints, sorted))
+    if (GLAMOR_PREFER_GL() &&
+        glamor_set_spans_gl(drawable, gc, src, points, widths, numPoints, sorted))
         return;
     glamor_set_spans_bail(drawable, gc, src, points, widths, numPoints, sorted);
 }

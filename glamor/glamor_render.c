@@ -529,7 +529,7 @@ glamor_set_composite_texture(glamor_screen_private *glamor_priv, int unit,
      * sometimes get zero bits in the R channel, which is harmless.
      */
     glamor_bind_texture(glamor_priv, GL_TEXTURE0 + unit, fbo,
-                        glamor_fbo_red_is_alpha(glamor_priv, dest_priv->fbo));
+                        dest_priv->fbo->is_red);
     repeat_type = picture->repeatType;
     switch (picture->repeatType) {
     case RepeatNone:
@@ -772,23 +772,26 @@ static Bool
 glamor_render_format_is_supported(PicturePtr picture)
 {
     PictFormatShort storage_format;
+    glamor_screen_private *glamor_priv;
 
     /* Source-only pictures should always work */
     if (!picture->pDrawable)
         return TRUE;
 
-    storage_format = format_for_depth(picture->pDrawable->depth);
+    glamor_priv = glamor_get_screen_private(picture->pDrawable->pScreen);
+    storage_format =
+        glamor_priv->formats[picture->pDrawable->depth].render_format;
 
     switch (picture->format) {
-    case PICT_x2r10g10b10:
+    case PICT_a2r10g10b10:
         return storage_format == PICT_x2r10g10b10;
     case PICT_a8r8g8b8:
     case PICT_x8r8g8b8:
         return storage_format == PICT_a8r8g8b8 || storage_format == PICT_x8r8g8b8;
-    case PICT_a8:
-        return storage_format == PICT_a8;
+    case PICT_a1r5g5b5:
+        return storage_format == PICT_x1r5g5b5;
     default:
-        return FALSE;
+        return picture->format == storage_format;
     }
 }
 
@@ -898,7 +901,7 @@ glamor_composite_choose_shader(CARD8 op,
     }
 
     if (dest_pixmap->drawable.bitsPerPixel <= 8 &&
-        glamor_priv->one_channel_format == GL_RED) {
+        glamor_priv->formats[8].format == GL_RED) {
         key.dest_swizzle = SHADER_DEST_SWIZZLE_ALPHA_TO_RED;
     } else {
         key.dest_swizzle = SHADER_DEST_SWIZZLE_DEFAULT;
@@ -1091,7 +1094,7 @@ glamor_composite_set_shader_blend(glamor_screen_private *glamor_priv,
         }
     }
 
-    if (glamor_priv->gl_flavor != GLAMOR_GL_ES2)
+    if (!glamor_priv->is_gles)
         glDisable(GL_COLOR_LOGIC_OP);
 
     if (op_info->source_blend == GL_ONE && op_info->dest_blend == GL_ZERO) {
@@ -1297,6 +1300,9 @@ glamor_composite_with_shader(CARD8 op,
     }
 
     glDisable(GL_SCISSOR_TEST);
+
+    glamor_pixmap_invalid(dest_pixmap);
+
 disable_va:
     glDisableVertexAttribArray(GLAMOR_VERTEX_POS);
     glDisableVertexAttribArray(GLAMOR_VERTEX_SOURCE);
@@ -1608,6 +1614,9 @@ glamor_composite(CARD8 op,
     BoxPtr extent;
     int nbox, ok = FALSE;
     int force_clip = 0;
+
+    if (!GLAMOR_PREFER_GL())
+        goto fail;
 
     if (source->pDrawable) {
         source_pixmap = glamor_get_drawable_pixmap(source->pDrawable);

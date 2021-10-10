@@ -79,6 +79,9 @@ glamor_put_image_gl(DrawablePtr drawable, GCPtr gc, int depth, int x, int y,
     glamor_upload_region(pixmap, &region, x, y, (uint8_t *) bits, byte_stride);
 
     RegionUninit(&region);
+
+    glamor_pixmap_invalid(pixmap);
+
     return TRUE;
 bail:
     return FALSE;
@@ -97,7 +100,8 @@ void
 glamor_put_image(DrawablePtr drawable, GCPtr gc, int depth, int x, int y,
                  int w, int h, int leftPad, int format, char *bits)
 {
-    if (glamor_put_image_gl(drawable, gc, depth, x, y, w, h, leftPad, format, bits))
+    if (GLAMOR_PREFER_GL() &&
+        glamor_put_image_gl(drawable, gc, depth, x, y, w, h, leftPad, format, bits))
         return;
     glamor_put_image_bail(drawable, gc, depth, x, y, w, h, leftPad, format, bits);
 }
@@ -156,7 +160,8 @@ void
 glamor_get_image(DrawablePtr drawable, int x, int y, int w, int h,
                  unsigned int format, unsigned long plane_mask, char *d)
 {
-    if (glamor_get_image_gl(drawable, x, y, w, h, format, plane_mask, d))
+    if (GLAMOR_PREFER_GL() &&
+        glamor_get_image_gl(drawable, x, y, w, h, format, plane_mask, d))
         return;
     glamor_get_image_bail(drawable, x, y, w, h, format, plane_mask, d);
 }

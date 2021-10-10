@@ -152,6 +152,8 @@ glamor_poly_fill_rect_gl(DrawablePtr drawable,
         }
     }
 
+    glamor_pixmap_invalid(pixmap);
+
     ret = TRUE;
 
 bail:
@@ -181,7 +183,8 @@ void
 glamor_poly_fill_rect(DrawablePtr drawable,
                       GCPtr gc, int nrect, xRectangle *prect)
 {
-    if (glamor_poly_fill_rect_gl(drawable, gc, nrect, prect))
+    if (GLAMOR_PREFER_GL() &&
+        glamor_poly_fill_rect_gl(drawable, gc, nrect, prect))
         return;
     glamor_poly_fill_rect_bail(drawable, gc, nrect, prect);
 }

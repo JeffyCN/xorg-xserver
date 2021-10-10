@@ -221,7 +221,9 @@ glamor_copy_cpu_fbo(DrawablePtr src,
         goto bail;
 
     glamor_make_current(glamor_priv);
-    glamor_prepare_access(src, GLAMOR_ACCESS_RO);
+
+    if (!glamor_prepare_access(src, GLAMOR_ACCESS_RO))
+        goto bail;
 
     glamor_get_drawable_deltas(dst, dst_pixmap, &dst_xoff, &dst_yoff);
 
@@ -309,7 +311,9 @@ glamor_copy_fbo_cpu(DrawablePtr src,
         goto bail;
 
     glamor_make_current(glamor_priv);
-    glamor_prepare_access(dst, GLAMOR_ACCESS_RW);
+
+    if (!glamor_prepare_access(dst, GLAMOR_ACCESS_RW))
+        goto bail;
 
     glamor_get_drawable_deltas(src, src_pixmap, &src_xoff, &src_yoff);
 
@@ -475,6 +479,8 @@ glamor_copy_fbo_fbo_draw(DrawablePtr src,
             glamor_glDrawArrays_GL_QUADS(glamor_priv, nbox);
         }
     }
+
+    glamor_pixmap_invalid(dst_pixmap);
 
     ret = TRUE;
 
@@ -697,6 +703,12 @@ glamor_copy_gl(DrawablePtr src,
     glamor_pixmap_private *src_priv = glamor_get_pixmap_private(src_pixmap);
     glamor_pixmap_private *dst_priv = glamor_get_pixmap_private(dst_pixmap);
 
+#ifdef GLAMOR_HAS_GBM_MAP
+    /* HACK for freerdp */
+    if (nbox == 1 && (box->x2 - box->x1) == 64 && (box->y2 - box->y1) == 64)
+        return FALSE;
+#endif
+
     if (GLAMOR_PIXMAP_PRIV_HAS_FBO(dst_priv)) {
         if (GLAMOR_PIXMAP_PRIV_HAS_FBO(src_priv)) {
             if (glamor_copy_needs_temp(src, dst, box, nbox, dx, dy))
@@ -734,7 +746,9 @@ glamor_copy(DrawablePtr src,
     if (nbox == 0)
 	return;
 
-    if (glamor_copy_gl(src, dst, gc, box, nbox, dx, dy, reverse, upsidedown, bitplane, closure))
+    if (GLAMOR_PREFER_GL() &&
+        glamor_copy_gl(src, dst, gc, box, nbox, dx, dy, reverse,
+                       upsidedown, bitplane, closure))
         return;
     glamor_copy_bail(src, dst, gc, box, nbox, dx, dy, reverse, upsidedown, bitplane, closure);
 }

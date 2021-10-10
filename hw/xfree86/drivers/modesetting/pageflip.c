@@ -27,6 +27,8 @@
 #include <xserver_poll.h>
 #include <xf86drm.h>
 
+#include <sys/time.h>
+
 #include "driver.h"
 
 /*
@@ -63,8 +65,6 @@ ms_flush_drm_events(ScreenPtr screen)
     return 1;
 }
 
-#ifdef GLAMOR_HAS_GBM
-
 /*
  * Event data for an in progress flip.
  * This contains a pointer to the vblank event,
@@ -82,6 +82,7 @@ struct ms_flipdata {
     uint64_t fe_msc;
     uint64_t fe_usec;
     uint32_t old_fb_id;
+    uint32_t *fb_id;
 };
 
 /*
@@ -153,17 +154,19 @@ ms_pageflip_abort(void *data)
     ScrnInfoPtr scrn = xf86ScreenToScrn(screen);
     modesettingPtr ms = modesettingPTR(scrn);
 
-    if (flipdata->flip_count == 1)
+    if (flipdata->flip_count == 1) {
         flipdata->abort_handler(ms, flipdata->event);
 
+        drmModeRmFB(ms->fd, flipdata->old_fb_id);
+    }
     ms_pageflip_free(flip);
 }
 
 static Bool
 do_queue_flip_on_crtc(modesettingPtr ms, xf86CrtcPtr crtc,
-                      uint32_t flags, uint32_t seq)
+                      uint32_t flags, uint32_t seq, unsigned fb_id)
 {
-    return drmmode_crtc_flip(crtc, ms->drmmode.fb_id, flags,
+    return drmmode_crtc_flip(crtc, fb_id, flags,
                              (void *) (uintptr_t) seq);
 }
 
@@ -201,7 +204,7 @@ queue_flip_on_crtc(ScreenPtr screen, xf86CrtcPtr crtc,
     /* take a reference on flipdata for use in flip */
     flipdata->flip_count++;
 
-    while (do_queue_flip_on_crtc(ms, crtc, flags, seq)) {
+    while (do_queue_flip_on_crtc(ms, crtc, flags, seq, *flipdata->fb_id)) {
         err = errno;
         /* We may have failed because the event queue was full.  Flush it
          * and retry.  If there was nothing to flush, then we failed for
@@ -223,43 +226,37 @@ queue_flip_on_crtc(ScreenPtr screen, xf86CrtcPtr crtc,
     return TRUE;
 }
 
-
 Bool
-ms_do_pageflip(ScreenPtr screen,
-               PixmapPtr new_front,
-               void *event,
-               int ref_crtc_vblank_pipe,
-               Bool async,
-               ms_pageflip_handler_proc pageflip_handler,
-               ms_pageflip_abort_proc pageflip_abort)
+ms_do_pageflip_bo(ScreenPtr screen,
+                  drmmode_bo *new_front_bo,
+                  void *event,
+                  int ref_crtc_vblank_pipe,
+                  xf86CrtcPtr target_crtc,
+                  Bool async,
+                  ms_pageflip_handler_proc pageflip_handler,
+                  ms_pageflip_abort_proc pageflip_abort)
 {
-#ifndef GLAMOR_HAS_GBM
-    return FALSE;
-#else
     ScrnInfoPtr scrn = xf86ScreenToScrn(screen);
     modesettingPtr ms = modesettingPTR(scrn);
     xf86CrtcConfigPtr config = XF86_CRTC_CONFIG_PTR(scrn);
-    drmmode_bo new_front_bo;
+    drmmode_crtc_private_ptr drmmode_crtc;
     uint32_t flags;
     int i;
     struct ms_flipdata *flipdata;
-    glamor_block_handler(screen);
-
-    new_front_bo.gbm = glamor_gbm_bo_from_pixmap(screen, new_front);
-    new_front_bo.dumb = NULL;
-
-    if (!new_front_bo.gbm) {
-        xf86DrvMsg(scrn->scrnIndex, X_ERROR,
-                   "Failed to get GBM bo for flip to new front.\n");
-        return FALSE;
-    }
+    struct timeval tv;
 
     flipdata = calloc(1, sizeof(struct ms_flipdata));
     if (!flipdata) {
-        drmmode_bo_destroy(&ms->drmmode, &new_front_bo);
         xf86DrvMsg(scrn->scrnIndex, X_ERROR,
                    "Failed to allocate flipdata.\n");
         return FALSE;
+    }
+
+    if (target_crtc) {
+        drmmode_crtc = target_crtc->driver_private;
+        flipdata->fb_id = &drmmode_crtc->fb_id;
+    } else {
+        flipdata->fb_id = &ms->drmmode.fb_id;
     }
 
     flipdata->event = event;
@@ -277,12 +274,10 @@ ms_do_pageflip(ScreenPtr screen,
     flipdata->flip_count++;
 
     /* Create a new handle for the back buffer */
-    flipdata->old_fb_id = ms->drmmode.fb_id;
+    flipdata->old_fb_id = *flipdata->fb_id;
 
-    new_front_bo.width = new_front->drawable.width;
-    new_front_bo.height = new_front->drawable.height;
-    if (drmmode_bo_import(&ms->drmmode, &new_front_bo,
-                          &ms->drmmode.fb_id))
+    if (drmmode_bo_import(&ms->drmmode, new_front_bo,
+                          flipdata->fb_id))
         goto error_out;
 
     flags = DRM_MODE_PAGE_FLIP_EVENT;
@@ -304,14 +299,19 @@ ms_do_pageflip(ScreenPtr screen,
         if (!ms_crtc_on(crtc))
             continue;
 
+        if (target_crtc && crtc != target_crtc)
+            continue;
+
         if (!queue_flip_on_crtc(screen, crtc, flipdata,
                                 ref_crtc_vblank_pipe,
                                 flags)) {
             goto error_undo;
         }
-    }
 
-    drmmode_bo_destroy(&ms->drmmode, &new_front_bo);
+        gettimeofday(&tv, NULL);
+        drmmode_crtc = crtc->driver_private;
+        drmmode_crtc->flipping_time_ms = tv.tv_sec * 1000 + tv.tv_usec / 1000;
+    }
 
     /*
      * Do we have more than our local reference,
@@ -331,14 +331,13 @@ error_undo:
      * submitted anything
      */
     if (flipdata->flip_count == 1) {
-        drmModeRmFB(ms->fd, ms->drmmode.fb_id);
-        ms->drmmode.fb_id = flipdata->old_fb_id;
+        drmModeRmFB(ms->fd, *flipdata->fb_id);
+        *flipdata->fb_id = flipdata->old_fb_id;
     }
 
 error_out:
     xf86DrvMsg(scrn->scrnIndex, X_WARNING, "Page flip failed: %s\n",
                strerror(errno));
-    drmmode_bo_destroy(&ms->drmmode, &new_front_bo);
     /* if only the local reference - free the structure,
      * else drop the local reference and return */
     if (flipdata->flip_count == 1)
@@ -347,7 +346,58 @@ error_out:
         flipdata->flip_count--;
 
     return FALSE;
-#endif /* GLAMOR_HAS_GBM */
 }
 
+Bool
+ms_do_pageflip(ScreenPtr screen,
+               PixmapPtr new_front,
+               void *event,
+               int ref_crtc_vblank_pipe,
+               Bool async,
+               ms_pageflip_handler_proc pageflip_handler,
+               ms_pageflip_abort_proc pageflip_abort)
+{
+    ScrnInfoPtr scrn = xf86ScreenToScrn(screen);
+    modesettingPtr ms = modesettingPTR(scrn);
+    drmmode_bo new_front_bo = {0};
+    Bool ret;
+
+#ifdef GLAMOR_HAS_GBM
+    if (ms->drmmode.glamor) {
+        new_front_bo.gbm = glamor_gbm_bo_from_pixmap(screen, new_front);
+        if (!new_front_bo.gbm) {
+            xf86DrvMsg(scrn->scrnIndex, X_ERROR,
+                       "Failed to get GBM bo for flip to new front.\n");
+            return FALSE;
+        }
+
+        glamor_block_handler(screen);
+    } else
 #endif
+    if (ms->drmmode.exa) {
+        new_front_bo.dumb = ms_exa_bo_from_pixmap(screen, new_front);
+        if (!new_front_bo.dumb) {
+            xf86DrvMsg(scrn->scrnIndex, X_ERROR,
+                       "Failed to get dumb bo for flip to new front.\n");
+            return FALSE;
+        }
+    } else {
+        return FALSE;
+    }
+
+    new_front_bo.width = new_front->drawable.width;
+    new_front_bo.height = new_front->drawable.height;
+
+    ret = ms_do_pageflip_bo(screen, &new_front_bo, event,
+                            ref_crtc_vblank_pipe, NULL, async,
+                            pageflip_handler, pageflip_abort);
+
+#ifdef GLAMOR_HAS_GBM
+    new_front_bo.gbm = NULL;
+#endif
+    new_front_bo.dumb = NULL;
+
+    drmmode_bo_destroy(&ms->drmmode, &new_front_bo);
+
+    return ret;
+}

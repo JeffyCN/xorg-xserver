@@ -199,6 +199,8 @@ static const char vs_template[] =
 
 static const char fs_template[] =
     "%s"                                /* version */
+    "%s"                                /* prim extensions */
+    "%s"                                /* fill extensions */
     GLAMOR_DEFAULT_PRECISION
     "%s"                                /* defines */
     "%s"                                /* prim fs_vars */
@@ -281,7 +283,7 @@ glamor_build_program(ScreenPtr          screen,
     if (!fs_vars)
         goto fail;
 
-    if (version) {
+    if (version && !glamor_priv->is_gles) {
         if (asprintf(&version_string, "#version %d\n", version) < 0)
             version_string = NULL;
         if (!version_string)
@@ -302,6 +304,8 @@ glamor_build_program(ScreenPtr          screen,
     if (asprintf(&fs_prog_string,
                  fs_template,
                  str(version_string),
+                 str(prim->fs_extensions),
+                 str(fill->fs_extensions),
                  str(defines),
                  str(prim->fs_vars),
                  str(fill->fs_vars),
@@ -459,7 +463,7 @@ glamor_set_blend(CARD8 op, glamor_program_alpha alpha, PicturePtr dst)
         break;
     }
 
-    if (glamor_priv->gl_flavor != GLAMOR_GL_ES2)
+    if (!glamor_priv->is_gles)
         glDisable(GL_COLOR_LOGIC_OP);
 
     if (op == PictOpSrc)
