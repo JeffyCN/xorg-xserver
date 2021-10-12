@@ -4388,6 +4388,7 @@ drmmode_flip_fb(xf86CrtcPtr crtc, int *timeout)
     ScreenPtr screen = xf86ScrnToScreen(drmmode->scrn);
     drmmode_fb *fb;
     struct timeval tv;
+    uint64_t now_ms, target_ms;
 
     if (!drmmode_crtc || !crtc->active || !drmmode_crtc_connected(crtc) ||
         drmmode_crtc->dpms_mode != DPMSModeOn || drmmode_crtc->rotate_fb_id)
@@ -4396,18 +4397,23 @@ drmmode_flip_fb(xf86CrtcPtr crtc, int *timeout)
     if (!drmmode_crtc->flip_fb_enabled)
         return TRUE;
 
-    /* merge update requests when still flipping */
-    if (drmmode_crtc->flipping) {
-        uint64_t now_ms;
+    gettimeofday(&tv, NULL);
+    now_ms = tv.tv_sec * 1000 + tv.tv_usec / 1000;
 
-        gettimeofday(&tv, NULL);
-        now_ms = tv.tv_sec * 1000 + tv.tv_usec / 1000;
+    target_ms = drmmode_crtc->flipping_time_ms;
 
-        if (now_ms - drmmode_crtc->flipping_time_ms < 50) {
-            if (*timeout)
-                *timeout = 3;
-            return TRUE;
-        }
+    if (drmmode_crtc->flipping)
+        /* handle flip timeout */
+        target_ms += 50;
+    else if (drmmode->fb_flip_rate)
+        /* limit flip rate */
+        target_ms += 1000 / drmmode->fb_flip_rate;
+
+    /* merge update requests */
+    if (now_ms < target_ms) {
+        if (*timeout)
+            *timeout = 3;
+        return TRUE;
     }
 
     fb = &drmmode_crtc->flip_fb[drmmode_crtc->current_fb];
