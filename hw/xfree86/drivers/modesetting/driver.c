@@ -147,6 +147,7 @@ static const OptionInfoRec Options[] = {
     {OPTION_DOUBLE_SHADOW, "DoubleShadow", OPTV_BOOLEAN, {0}, FALSE},
     {OPTION_ATOMIC, "Atomic", OPTV_BOOLEAN, {0}, FALSE},
     {OPTION_FLIP_FB, "FlipFB", OPTV_STRING, {0}, FALSE},
+    {OPTION_FLIP_FB_RATE, "MaxFlipRate", OPTV_INTEGER, {0}, 0},
     {OPTION_NO_EDID, "NoEDID", OPTV_BOOLEAN, {0}, FALSE},
     {OPTION_HOTPLUG_RESET, "HotplugReset", OPTV_BOOLEAN, {0}, TRUE},
     {-1, NULL, OPTV_NONE, {0}, FALSE}
@@ -1089,11 +1090,15 @@ PreInit(ScrnInfoPtr pScrn, int flags)
     else
         ms->drmmode.fb_flip_mode = DRMMODE_FB_FLIP_NONE;
 
+    ret = -1;
+    xf86GetOptValInteger(ms->drmmode.Options, OPTION_FLIP_FB_RATE, &ret);
+    ms->drmmode.fb_flip_rate = ret > 0 ? ret : 0;
+
     if (ms->drmmode.fb_flip_mode != DRMMODE_FB_FLIP_NONE)
         xf86DrvMsg(pScrn->scrnIndex, X_INFO,
-                   "FlipFB: %s\n",
+                   "FlipFB: %s, limited to: %d fps\n",
                    (ms->drmmode.fb_flip_mode == DRMMODE_FB_FLIP_ALWAYS ?
-                    "Always" : "Transformed"));
+                    "Always" : "Transformed"), ms->drmmode.fb_flip_rate ?: -1);
 
     pScrn->capabilities = 0;
     ret = drmGetCap(ms->fd, DRM_CAP_PRIME, &value);
