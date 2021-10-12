@@ -1644,8 +1644,10 @@ ScreenInit(ScreenPtr pScreen, int argc, char **argv)
 
     pScrn->pScreen = pScreen;
 
+#if 0 // The Rockchip BSP kernels doesn't have DRM permit checking.
     if (!SetMaster(pScrn))
         return FALSE;
+#endif
 
 #ifdef GLAMOR_HAS_GBM
     if (ms->drmmode.glamor)
