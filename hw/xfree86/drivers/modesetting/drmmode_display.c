@@ -604,7 +604,6 @@ drmmode_crtc_get_fb_id(xf86CrtcPtr crtc, uint32_t *fb_id, int *x, int *y)
 {
     drmmode_crtc_private_ptr drmmode_crtc = crtc->driver_private;
     drmmode_ptr drmmode = drmmode_crtc->drmmode;
-    ScreenPtr screen = xf86ScrnToScreen(drmmode->scrn);
     int ret;
 
     *fb_id = 0;
@@ -621,10 +620,6 @@ drmmode_crtc_get_fb_id(xf86CrtcPtr crtc, uint32_t *fb_id, int *x, int *y)
     }
     else if (drmmode_crtc->rotate_fb_id) {
         *fb_id = drmmode_crtc->rotate_fb_id;
-        *x = *y = 0;
-    }
-    else if (!screen->isGPU && drmmode_crtc->flip_fb_enabled) {
-        *fb_id = drmmode_crtc->flip_fb[drmmode_crtc->current_fb].fb_id;
         *x = *y = 0;
     } else {
         *fb_id = drmmode->fb_id;
