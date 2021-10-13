@@ -378,7 +378,7 @@ ms_present_flip(RRCrtcPtr crtc,
                          "Present-flip");
     if (ret) {
         ms->drmmode.present_flipping = TRUE;
-        drmmode_crtc->flipping = TRUE;
+        drmmode_crtc->external_flipped = TRUE;
     }
 
     return ret;
