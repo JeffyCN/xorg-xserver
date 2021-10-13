@@ -345,7 +345,7 @@ ms_present_flip(RRCrtcPtr crtc,
         xf86DrvMsg(scrn->scrnIndex, X_ERROR, "present flip failed\n");
     } else {
         ms->drmmode.present_flipping = TRUE;
-        drmmode_crtc->flipping = TRUE;
+        drmmode_crtc->external_flipped = TRUE;
     }
 
     return ret;
