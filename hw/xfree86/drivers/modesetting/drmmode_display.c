@@ -975,21 +975,25 @@ drmmode_crtc_flip(xf86CrtcPtr crtc, uint32_t fb_id, uint32_t flags, void *data)
 {
     modesettingPtr ms = modesettingPTR(crtc->scrn);
     drmmode_crtc_private_ptr drmmode_crtc = crtc->driver_private;
-    int ret;
+    int ret, x, y, w, h;
+
+    if (fb_id == ms->drmmode.fb_id) {
+        /* screen FB flip */
+        x = crtc->x;
+        y = crtc->y;
+    } else {
+        /* single crtc FB flip */
+        x = y = 0;
+    }
+
+    w = crtc->mode.HDisplay;
+    h = crtc->mode.VDisplay;
 
     if (ms->atomic_modeset) {
         drmModeAtomicReq *req = drmModeAtomicAlloc();
-        int x, y;
 
         if (!req)
             return 1;
-
-        if (fb_id == ms->drmmode.fb_id) {
-            x = crtc->x;
-            y = crtc->y;
-        } else {
-            x = y = 0;
-        }
 
         ret = plane_add_props(req, crtc, fb_id, x, y);
         flags |= DRM_MODE_ATOMIC_NONBLOCK;
@@ -998,6 +1002,12 @@ drmmode_crtc_flip(xf86CrtcPtr crtc, uint32_t fb_id, uint32_t flags, void *data)
         drmModeAtomicFree(req);
         return ret;
     }
+
+    ret = drmModeSetPlane(ms->fd, drmmode_crtc->plane_id,
+                          drmmode_crtc->mode_crtc->crtc_id, fb_id, 0,
+                          x, y, w, h, x << 16, y << 16, w << 16, h << 16);
+    if (ret)
+        return ret;
 
     return drmModePageFlip(ms->fd, drmmode_crtc->mode_crtc->crtc_id,
                            fb_id, flags, data);
