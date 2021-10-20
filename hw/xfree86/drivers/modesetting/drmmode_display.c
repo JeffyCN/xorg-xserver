@@ -1546,79 +1546,28 @@ drmmode_crtc_dpms(xf86CrtcPtr crtc, int mode)
     }
 }
 
-static PixmapPtr
-create_pixmap_for_fbcon(drmmode_ptr drmmode, ScrnInfoPtr pScrn, int fbcon_id)
+static Bool
+drmmode_crtc_copy_fb(ScrnInfoPtr pScrn, drmmode_ptr drmmode,
+                     xf86CrtcPtr crtc)
 {
-    PixmapPtr pixmap = drmmode->fbcon_pixmap;
-    drmModeFBPtr fbcon;
     ScreenPtr pScreen = xf86ScrnToScreen(pScrn);
-    modesettingPtr ms = modesettingPTR(pScrn);
+    PixmapPtr screen_pixmap = pScreen->GetScreenPixmap(pScreen);
+    drmmode_crtc_private_ptr drmmode_crtc = crtc->driver_private;
+    drmmode_prop_info_rec *props_plane = drmmode_crtc->props_plane;
+    drmModeObjectProperties *props;
+    PixmapPtr src = NULL, dst;
+    drmModeFBPtr fbcon;
+    struct dumb_bo *bo;
+    GCPtr gc;
+    int src_x, src_y, src_w, src_h, crtc_x, crtc_y, crtc_w, crtc_h;
+    int fbcon_id, fb_width, fb_height, fb_pitch, fb_depth, fb_bpp;
     Bool ret = FALSE;
 
-    if (pixmap)
-        return pixmap;
+    if (!drmmode_crtc->plane_id)
+        return FALSE;
 
-    if (!drmmode->glamor && !drmmode->exa)
-        return NULL;
-
-    fbcon = drmModeGetFB(drmmode->fd, fbcon_id);
-    if (fbcon == NULL)
-        return NULL;
-
-    if (fbcon->depth != pScrn->depth ||
-        fbcon->width != pScrn->virtualX ||
-        fbcon->height != pScrn->virtualY)
-        goto out_free_fb;
-
-    pixmap = drmmode_create_pixmap_header(pScreen, fbcon->width,
-                                          fbcon->height, fbcon->depth,
-                                          fbcon->bpp, fbcon->pitch, NULL);
-    if (!pixmap)
-        goto out_free_fb;
-
-    if (drmmode->exa) {
-        struct dumb_bo *bo;
-
-        bo = dumb_get_bo_from_handle(drmmode->fd, fbcon->handle, fbcon->pitch,
-                                     fbcon->pitch * fbcon->height);
-        if (bo)
-            ret = ms_exa_set_pixmap_bo(pScrn, pixmap, bo, TRUE);
-#ifdef GLAMOR_HAS_GBM
-    } else if (!drmmode->glamor) {
-	ret = ms->glamor.egl_create_textured_pixmap(pixmap, fbcon->handle,
-						    fbcon->pitch);
-#endif
-    }
-
-    if (!ret) {
-      FreePixmap(pixmap);
-      pixmap = NULL;
-    }
-
-    drmmode->fbcon_pixmap = pixmap;
-out_free_fb:
-    drmModeFreeFB(fbcon);
-    return pixmap;
-}
-
-void
-drmmode_copy_fb(ScrnInfoPtr pScrn, drmmode_ptr drmmode)
-{
-    xf86CrtcConfigPtr xf86_config = XF86_CRTC_CONFIG_PTR(pScrn);
-    ScreenPtr pScreen = xf86ScrnToScreen(pScrn);
-    PixmapPtr src, dst;
-    int fbcon_id = 0;
-    GCPtr gc;
-    int i;
-
-    for (i = 0; i < xf86_config->num_crtc; i++) {
-        drmmode_crtc_private_ptr drmmode_crtc = xf86_config->crtc[i]->driver_private;
-        if (drmmode_crtc->mode_crtc->buffer_id)
-            fbcon_id = drmmode_crtc->mode_crtc->buffer_id;
-    }
-
-    if (!fbcon_id)
-        return;
+    if (!(fbcon_id = drmmode_crtc->mode_crtc->buffer_id))
+        return FALSE;
 
     if (fbcon_id == drmmode->fb_id) {
         /* in some rare case there might be no fbcon and we might already
@@ -1626,28 +1575,115 @@ drmmode_copy_fb(ScrnInfoPtr pScrn, drmmode_ptr drmmode)
          * kernel ttm code just do nothing as anyway there is nothing
          * to do
          */
-        return;
+        return FALSE;
     }
 
-    src = create_pixmap_for_fbcon(drmmode, pScrn, fbcon_id);
+    props = drmModeObjectGetProperties(drmmode->fd, drmmode_crtc->plane_id,
+                                       DRM_MODE_OBJECT_PLANE);
+    if (!props) {
+        xf86DrvMsg(drmmode->scrn->scrnIndex, X_ERROR,
+                   "couldn't get plane properties\n");
+        return FALSE;
+    }
+
+    src_x = drmmode_prop_get_value(&props_plane[DRMMODE_PLANE_SRC_X],
+                                   props, 0) >> 16;
+    src_y = drmmode_prop_get_value(&props_plane[DRMMODE_PLANE_SRC_Y],
+                                   props, 0) >> 16;
+    src_w = drmmode_prop_get_value(&props_plane[DRMMODE_PLANE_SRC_W],
+                                   props, 0) >> 16;
+    src_h = drmmode_prop_get_value(&props_plane[DRMMODE_PLANE_SRC_H],
+                                   props, 0) >> 16;
+    crtc_x = drmmode_prop_get_value(&props_plane[DRMMODE_PLANE_CRTC_X],
+                                    props, 0) + crtc->x;
+    crtc_y = drmmode_prop_get_value(&props_plane[DRMMODE_PLANE_CRTC_Y],
+                                    props, 0) + crtc->y;
+    crtc_w = drmmode_prop_get_value(&props_plane[DRMMODE_PLANE_CRTC_W],
+                                    props, 0);
+    crtc_h = drmmode_prop_get_value(&props_plane[DRMMODE_PLANE_CRTC_H],
+                                    props, 0);
+    drmModeFreeObjectProperties(props);
+
+    if (!src_w || !src_h || src_w != crtc_w || src_h != crtc_h ||
+        crtc_x + crtc_w > screen_pixmap->drawable.width ||
+        crtc_y + crtc_h > screen_pixmap->drawable.height)
+        return FALSE;
+
+    fbcon = drmModeGetFB(drmmode->fd, fbcon_id);
+    if (!fbcon)
+        return FALSE;
+
+    fb_width = fbcon->width;
+    fb_height = fbcon->height;
+    fb_pitch = fbcon->pitch;
+    fb_depth = fbcon->depth;
+    fb_bpp = fbcon->bpp;
+
+    bo = dumb_get_bo_from_handle(drmmode->fd, fbcon->handle, fbcon->pitch,
+                                 fbcon->pitch * fbcon->height);
+    drmModeFreeFB(fbcon);
+    if (!bo)
+        return FALSE;
+
+    if (dumb_bo_map(drmmode->fd, bo) < 0)
+        goto out;
+
+    src = drmmode_create_pixmap_header(pScreen, fb_width,
+                                       fb_height, fb_depth,
+                                       fb_bpp, fb_pitch,
+                                       bo->ptr);
     if (!src)
-        return;
+        goto out;
+
+    if (drmmode->exa) {
+        if (!ms_exa_set_pixmap_bo(pScrn, src, bo, FALSE))
+            goto out;
+    }
+#ifdef GLAMOR_HAS_GBM
+    else if (drmmode->glamor) {
+        modesettingPtr ms = modesettingPTR(pScrn);
+        if (!ms->glamor.egl_create_textured_pixmap(src, bo->handle, bo->pitch))
+            goto out;
+    }
+#endif
 
     dst = pScreen->GetScreenPixmap(pScreen);
 
     gc = GetScratchGC(pScrn->depth, pScreen);
     ValidateGC(&dst->drawable, gc);
 
-    (*gc->ops->CopyArea)(&src->drawable, &dst->drawable, gc, 0, 0,
-                         pScrn->virtualX, pScrn->virtualY, 0, 0);
+    (*gc->ops->CopyArea)(&src->drawable, &dst->drawable, gc, src_x, src_y,
+                         src_w, src_h, crtc_x, crtc_y);
 
     FreeScratchGC(gc);
+    ret = TRUE;
+
+out:
+    if (src)
+        pScreen->DestroyPixmap(src);
+    if (bo)
+        dumb_bo_destroy(drmmode->fd, bo);
+    return ret;
+}
+
+void
+drmmode_copy_fb(ScrnInfoPtr pScrn, drmmode_ptr drmmode)
+{
+    xf86CrtcConfigPtr xf86_config = XF86_CRTC_CONFIG_PTR(pScrn);
+    ScreenPtr pScreen = xf86ScrnToScreen(pScrn);
+    Bool ret = FALSE;
+    int i;
+
+    if (getenv("XSERVER_NO_BG_NONE"))
+        return;
+
+    for (i = 0; i < xf86_config->num_crtc; i++)
+        ret |= drmmode_crtc_copy_fb(pScrn, drmmode, xf86_config->crtc[i]);
+
+    if (!ret)
+        return;
 
     pScreen->canDoBGNoneRoot = TRUE;
-
-    if (drmmode->fbcon_pixmap)
-        pScrn->pScreen->DestroyPixmap(drmmode->fbcon_pixmap);
-    drmmode->fbcon_pixmap = NULL;
 }
 
 static Bool
