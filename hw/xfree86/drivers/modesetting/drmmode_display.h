@@ -141,8 +141,6 @@ typedef struct {
 
     Bool is_secondary;
 
-    PixmapPtr fbcon_pixmap;
-
     const char *dri2_device_name;
 
 #ifdef DRI3
