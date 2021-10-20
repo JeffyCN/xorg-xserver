@@ -1121,6 +1121,9 @@ PreInit(ScrnInfoPtr pScrn, int flags)
         ms->atomic_modeset = FALSE;
     }
 
+    /* Try to enable atomic cap, but not doing atomic modeset */
+    drmSetClientCap(ms->fd, DRM_CLIENT_CAP_ATOMIC, 2);
+
     drmSetClientCap(ms->fd, DRM_CLIENT_CAP_UNIVERSAL_PLANES, 1);
 
     ms->kms_has_modifiers = FALSE;
