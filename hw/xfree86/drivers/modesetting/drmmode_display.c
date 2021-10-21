@@ -1352,7 +1352,7 @@ drmmode_EnableSharedPixmapFlipping(xf86CrtcPtr crtc, drmmode_ptr drmmode,
         return FALSE;
     }
 
-    drmmode_set_desired_modes(scrn, &ms->drmmode, TRUE);
+    drmmode_set_desired_modes(scrn, &ms->drmmode, TRUE, TRUE);
 
     return TRUE;
 }
@@ -1373,7 +1373,7 @@ drmmode_DisableSharedPixmapFlipping(xf86CrtcPtr crtc, drmmode_ptr drmmode)
     drmmode_set_target_scanout_pixmap(crtc, NULL,
                                       &drmmode_crtc->prime_pixmap_back);
 
-    drmmode_set_desired_modes(scrn, &ms->drmmode, TRUE);
+    drmmode_set_desired_modes(scrn, &ms->drmmode, TRUE, TRUE);
 }
 
 static void

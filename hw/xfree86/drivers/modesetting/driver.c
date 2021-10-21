@@ -726,7 +726,7 @@ msBlockHandler(ScreenPtr pScreen, void *timeout)
                 continue;
 
             drmmode_crtc->can_flip_fb = FALSE;
-            drmmode_set_desired_modes(pScrn, &ms->drmmode, TRUE);
+            drmmode_set_desired_modes(pScrn, &ms->drmmode, TRUE, FALSE);
             break;
         }
     }
