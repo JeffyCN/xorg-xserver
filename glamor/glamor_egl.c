@@ -756,8 +756,9 @@ glamor_egl_destroy_pixmap(PixmapPtr pixmap)
 _X_EXPORT void
 glamor_egl_exchange_buffers(PixmapPtr front, PixmapPtr back)
 {
-    struct gbm_bo *temp_bo;
-    Bool temp_mod;
+#define GLAMOR_EXCHANGE(a, b) \
+    { typeof(a) __tmp; __tmp = a; a = b; b = __tmp; }
+
     struct glamor_pixmap_private *front_priv =
         glamor_get_pixmap_private(front);
     struct glamor_pixmap_private *back_priv =
@@ -765,12 +766,14 @@ glamor_egl_exchange_buffers(PixmapPtr front, PixmapPtr back)
 
     glamor_pixmap_exchange_fbos(front, back);
 
-    temp_bo = back_priv->bo;
-    temp_mod = back_priv->used_modifiers;
-    back_priv->bo = front_priv->bo;
-    back_priv->used_modifiers = front_priv->used_modifiers;
-    front_priv->bo = temp_bo;
-    front_priv->used_modifiers = temp_mod;
+    GLAMOR_EXCHANGE(back_priv->bo, front_priv->bo);
+    GLAMOR_EXCHANGE(back_priv->owned_bo, front_priv->owned_bo);
+    GLAMOR_EXCHANGE(back_priv->used_modifiers, front_priv->used_modifiers);
+    GLAMOR_EXCHANGE(back_priv->bo_mapped, front_priv->bo_mapped);
+    GLAMOR_EXCHANGE(back_priv->map_data, front_priv->map_data);
+
+    GLAMOR_EXCHANGE(back->devPrivate.ptr, front->devPrivate.ptr);
+    GLAMOR_EXCHANGE(back->devKind, front->devKind);
 
     glamor_set_pixmap_type(front, GLAMOR_TEXTURE_DRM);
     glamor_set_pixmap_type(back, GLAMOR_TEXTURE_DRM);
