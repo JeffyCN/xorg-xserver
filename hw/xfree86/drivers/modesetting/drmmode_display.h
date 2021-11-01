@@ -78,6 +78,8 @@ typedef struct {
 #ifdef GLAMOR_HAS_GBM
     Bool used_modifiers;
     struct gbm_bo *gbm;
+    void *gbm_map_data;
+    void *gbm_ptr;
     Bool owned_gbm;
 #endif
 } drmmode_bo;
