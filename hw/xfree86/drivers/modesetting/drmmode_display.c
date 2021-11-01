@@ -932,8 +932,17 @@ drmmode_bo_destroy(drmmode_ptr drmmode, drmmode_bo *bo)
     int ret;
 
 #ifdef GLAMOR_HAS_GBM
-    if (bo->owned_gbm && bo->gbm) {
-        gbm_bo_destroy(bo->gbm);
+    if (bo->gbm) {
+#ifdef GLAMOR_HAS_GBM_MAP
+        if (bo->gbm_ptr) {
+            gbm_bo_unmap(bo->gbm, bo->gbm_map_data);
+            bo->gbm_ptr = NULL;
+        }
+#endif
+
+        if (bo->owned_gbm)
+            gbm_bo_destroy(bo->gbm);
+
         bo->gbm = NULL;
     }
 #endif
@@ -986,8 +995,21 @@ drmmode_bo_map(drmmode_ptr drmmode, drmmode_bo *bo)
     int ret;
 
 #ifdef GLAMOR_HAS_GBM
-    if (bo->gbm)
+    if (bo->gbm) {
+#ifdef GLAMOR_HAS_GBM_MAP
+        uint32_t stride;
+
+        if (bo->gbm_ptr)
+            return bo->gbm_ptr;
+
+        bo->gbm_ptr = gbm_bo_map(bo->gbm, 0, 0, bo->width, bo->height,
+                                 GBM_BO_TRANSFER_READ_WRITE, &stride,
+                                 &bo->gbm_map_data);
+        return bo->gbm_ptr;
+#else
         return NULL;
+#endif
+    }
 #endif
 
     if (bo->dumb->ptr)
@@ -1083,6 +1105,7 @@ drmmode_create_bo(drmmode_ptr drmmode, drmmode_bo *bo,
 
         bo->gbm = gbm_bo_create(drmmode->gbm, width, height, format,
                                 GBM_BO_USE_RENDERING | GBM_BO_USE_SCANOUT);
+        bo->gbm_ptr = NULL;
         bo->used_modifiers = FALSE;
         bo->owned_gbm = TRUE;
         return bo->gbm != NULL;
