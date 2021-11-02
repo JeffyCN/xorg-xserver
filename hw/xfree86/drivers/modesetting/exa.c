@@ -85,8 +85,6 @@ rga_get_pixmap_format(PixmapPtr pPix)
         if (pPix->drawable.depth == 32)
             return RK_FORMAT_BGRA_8888;
         return RK_FORMAT_BGRX_8888;
-    case 16:
-        return RK_FORMAT_RGB_565;
     case 12:
         return RK_FORMAT_YCbCr_420_SP;
     default:
@@ -1260,4 +1258,6 @@ ms_deinit_exa(ScrnInfoPtr scrn)
 
     free(exa);
     ms->drmmode.exa = NULL;
+
+    c_RkRgaDeInit();
 }
