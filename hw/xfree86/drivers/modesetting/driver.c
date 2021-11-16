@@ -1463,7 +1463,11 @@ CreateScreenResources(ScreenPtr pScreen)
             return FALSE;
     }
 
+#if 0 // Disable dirty tracking for performance
     err = drmModeDirtyFB(ms->fd, ms->drmmode.fb_id, NULL, 0);
+#else
+    err = -EINVAL;
+#endif
 
     if (err != -EINVAL && err != -ENOSYS) {
         ms->damage = DamageCreate(NULL, NULL, DamageReportNone, TRUE,
