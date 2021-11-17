@@ -1,4 +1,4 @@
-xorg-server (2:21.1.0-1) UNRELEASED; urgency=medium
+xorg-server (2:21.1.1-1) UNRELEASED; urgency=medium
 
   * New upstream release.
   * 04_compiler_h_inb_outb_mips.diff: Dropped, upstream.
