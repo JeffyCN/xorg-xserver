@@ -147,6 +147,7 @@ Architecture: any
 Depends:
  libpixman-1-dev (>= 0.27.2),
  x11proto-dev (>= 2021.5),
+ libxcvt-dev,
  libxfont-dev,
  libxkbfile-dev,
  libpciaccess-dev,
