@@ -914,7 +914,7 @@ drmmode_crtc_flip(xf86CrtcPtr crtc, uint32_t fb_id, uint32_t flags, void *data)
 
     ret = drmModeSetPlane(ms->fd, drmmode_crtc->plane_id,
                           drmmode_crtc->mode_crtc->crtc_id, fb_id, 0,
-                          x, y, w, h, x, y, w << 16, h << 16);
+                          x, y, w, h, x << 16, y << 16, w << 16, h << 16);
     if (ret)
         return ret;
 
