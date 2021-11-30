@@ -4488,7 +4488,7 @@ drmmode_flip_fb(xf86CrtcPtr crtc, int *timeout)
     ScreenPtr screen = xf86ScrnToScreen(drmmode->scrn);
     drmmode_fb *fb;
     struct timeval tv;
-    uint64_t now_ms, target_ms;
+    uint64_t now_ms, diff_ms;
     int next_fb;
 
     if (!drmmode_crtc || !crtc->active || !drmmode_crtc_connected(crtc) ||
@@ -4501,24 +4501,32 @@ drmmode_flip_fb(xf86CrtcPtr crtc, int *timeout)
     gettimeofday(&tv, NULL);
     now_ms = tv.tv_sec * 1000 + tv.tv_usec / 1000;
 
-    target_ms = drmmode_crtc->flipping_time_ms;
+    diff_ms = now_ms - drmmode_crtc->flipping_time_ms;
 
-    if (drmmode_crtc->external_flipped)
-        /* idle from external flip */
-        target_ms += 100;
-    else if (drmmode_crtc->flipping)
-        /* handle flip timeout */
-        target_ms += 50;
-    else if (drmmode->fb_flip_rate)
-        /* limit flip rate */
-        target_ms += 1000 / drmmode->fb_flip_rate;
+    /* handle flip timeout */
+    if (drmmode_crtc->flipping && diff_ms >= 50) {
+        xf86DrvMsg(drmmode->scrn->scrnIndex, X_WARNING,
+                   "crtc-%d flip timeout!\n", drmmode_crtc->mode_crtc->crtc_id);
+        drmmode_crtc->flipping = FALSE;
+    }
 
-    /* merge update requests */
-    if (now_ms < target_ms)
+    /* retry later if still flipping */
+    if (drmmode_crtc->flipping ||
+        drmmode->dri2_flipping || drmmode->present_flipping)
         goto retry;
 
-    fb = &drmmode_crtc->flip_fb[drmmode_crtc->current_fb];
+    if (drmmode_crtc->external_flipped) {
+        /* delay to exit external flip mode */
+        if (diff_ms < 100)
+            goto retry;
+    } else if (drmmode->fb_flip_rate) {
+        /* limit flip rate */
+        if (diff_ms < (1000 / drmmode->fb_flip_rate))
+            goto retry;
+    }
 
+    /* keep the current fb if not dirty */
+    fb = &drmmode_crtc->flip_fb[drmmode_crtc->current_fb];
     if (fb->damage && !fb->need_clear) {
         RegionPtr region = DamageRegion(fb->damage);
         RegionPtr dirty;
@@ -4528,38 +4536,41 @@ drmmode_flip_fb(xf86CrtcPtr crtc, int *timeout)
         if (dirty) {
             ret = RegionNotEmpty(dirty);
             RegionDestroy(dirty);
-
-            /* keep the current fb */
             if (!ret)
                 return TRUE;
         }
     }
 
+    /* switch to the next fb */
     next_fb = drmmode_crtc->current_fb + 1;
     next_fb %= ARRAY_SIZE(drmmode_crtc->flip_fb);
     fb = &drmmode_crtc->flip_fb[next_fb];
-
-    if (!drmmode_update_fb(crtc, fb))
+    if (!drmmode_update_fb(crtc, fb)) {
+        xf86DrvMsg(drmmode->scrn->scrnIndex, X_WARNING,
+                   "crtc-%d failed to update fb!\n",
+                   drmmode_crtc->mode_crtc->crtc_id);
         return FALSE;
-
-    /* retry later if still flipping */
-    if (drmmode_crtc->flipping ||
-        drmmode->dri2_flipping || drmmode->present_flipping)
-        goto retry;
+    }
 
     if (!ms_do_pageflip_bo(screen, &fb->bo, drmmode_crtc,
                            drmmode_crtc->vblank_pipe, crtc, TRUE,
                            drmmode_flip_fb_handler, drmmode_flip_fb_abort)) {
         /* HACK: Workaround commit random interrupted case */
-        if (errno != EPERM)
+        if (errno != EPERM) {
+            xf86DrvMsg(drmmode->scrn->scrnIndex, X_WARNING,
+                       "crtc-%d failed to flip(%s)!\n",
+                       drmmode_crtc->mode_crtc->crtc_id, strerror(errno));
             return FALSE;
+        }
     }
+
+    drmmode_crtc->current_fb = next_fb;
+
+    drmmode_crtc->flipping = TRUE;
+    drmmode_crtc->external_flipped = FALSE;
 
     /* take out FB syncing time from framerate control */
     drmmode_crtc->flipping_time_ms = now_ms;
-    drmmode_crtc->external_flipped = FALSE;
-
-    drmmode_crtc->current_fb = next_fb;
 
     return TRUE;
 
