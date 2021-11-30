@@ -853,6 +853,57 @@ drmmode_crtc_connected(xf86CrtcPtr crtc)
 }
 
 static int
+drmmode_crtc_modeset(xf86CrtcPtr crtc, uint32_t fb_id,
+                     uint32_t x, uint32_t y, uint32_t *output_ids,
+                     int output_count, drmModeModeInfoPtr mode)
+{
+    drmmode_crtc_private_ptr drmmode_crtc = crtc->driver_private;
+    drmmode_ptr drmmode = drmmode_crtc->drmmode;
+    struct dumb_bo *bo = NULL;
+    uint32_t old_fb_id = 0;
+    int ret = -1;
+
+    /* prefer using the original FB */
+    ret = drmModeSetCrtc(drmmode->fd, drmmode_crtc->mode_crtc->crtc_id,
+                         fb_id, x, y, output_ids, output_count, mode);
+    if (!ret)
+        return 0;
+
+    /* fallback to a new dummy FB */
+    bo = dumb_bo_create(drmmode->fd, mode->hdisplay, mode->vdisplay,
+                        drmmode->kbpp);
+    if (!bo)
+        goto err;
+
+    ret = drmModeAddFB(drmmode->fd, mode->hdisplay, mode->vdisplay,
+                       drmmode->scrn->depth, drmmode->kbpp,
+                       bo->pitch, bo->handle, &fb_id);
+    if (ret < 0)
+        goto err;
+
+    ret = drmModeSetCrtc(drmmode->fd, drmmode_crtc->mode_crtc->crtc_id,
+                         fb_id, 0, 0, output_ids, output_count, mode);
+    if (ret < 0) {
+        old_fb_id = fb_id;
+        goto err;
+    }
+
+    /* update crtc's current fb_id */
+    old_fb_id = drmmode_crtc->fb_id;
+    drmmode_crtc->fb_id = fb_id;
+
+    ret = 0;
+err:
+    if (bo)
+        dumb_bo_destroy(drmmode->fd, bo);
+
+    if (old_fb_id)
+        drmModeRmFB(drmmode->fd, old_fb_id);
+
+    return ret;
+}
+
+static int
 drmmode_crtc_set_mode(xf86CrtcPtr crtc, Bool test_only)
 {
     modesettingPtr ms = modesettingPTR(crtc->scrn);
@@ -961,8 +1012,9 @@ drmmode_crtc_set_mode(xf86CrtcPtr crtc, Bool test_only)
     }
 
     drmmode_ConvertToKMode(crtc->scrn, &kmode, &crtc->mode);
-    ret = drmModeSetCrtc(drmmode->fd, drmmode_crtc->mode_crtc->crtc_id,
-                         fb_id, x, y, output_ids, output_count, &kmode);
+
+    ret = drmmode_crtc_modeset(crtc, fb_id, x, y,
+                               output_ids, output_count, &kmode);
 
     drmmode_set_ctm(crtc, ctm);
 
