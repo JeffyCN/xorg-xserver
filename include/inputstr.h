@@ -602,8 +602,6 @@ typedef struct _DeviceIntRec {
     int xtest_master_id;
 
     struct _SyncCounter *idle_counter;
-
-    CARD32 lastMotionTime;
 } DeviceIntRec;
 
 typedef struct {
