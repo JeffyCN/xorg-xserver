@@ -617,8 +617,8 @@ glamor_xv_render_dma_nv12(glamor_port_private *port_priv, int dma_fd)
     GLuint texture;
 
     const EGLint attrs[] = {
-        EGL_WIDTH, port_priv->w,
-        EGL_HEIGHT, port_priv->h,
+        EGL_WIDTH, hor_stride,
+        EGL_HEIGHT, ver_stride,
         EGL_LINUX_DRM_FOURCC_EXT, DRM_FORMAT_NV12,
         EGL_DMA_BUF_PLANE0_FD_EXT, dma_fd,
         EGL_DMA_BUF_PLANE0_OFFSET_EXT, 0,
