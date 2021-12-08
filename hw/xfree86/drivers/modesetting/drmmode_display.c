@@ -3496,7 +3496,7 @@ drmmode_xf86crtc_resize(ScrnInfoPtr scrn, int width, int height)
     scrn->virtualY = height;
     scrn->displayWidth = pitch / kcpp;
 
-    if (!drmmode->gbm) {
+    if (!drmmode->gbm && !drmmode->exa) {
         new_pixels = drmmode_map_front_bo(drmmode);
         if (!new_pixels)
             goto fail;
