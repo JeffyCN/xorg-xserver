@@ -83,6 +83,14 @@ conf_data.set('GLAMOR_HAS_GBM_LINEAR',
               build_glamor and gbm_dep.found() and gbm_dep.version().version_compare('>= 10.6'))
 conf_data.set('GBM_BO_WITH_MODIFIERS',
               build_glamor and gbm_dep.found() and gbm_dep.version().version_compare('>= 17.1'))
+conf_data.set('GLAMOR_HAS_GBM_MAP',
+              build_glamor and cc.has_function('gbm_bo_map', dependencies : gbm_dep) ? '1' : false)
+conf_data.set('GLAMOR_HAS_GL_FENCE',
+              build_glamor and cc.has_function('glFenceSync', dependencies : dependency('glesv2', required : false)) ? '1' : false)
+
+conf_data.set('GLES_USE_HIGHP', get_option('gles-highp') ? '1' : false)
+
+conf_data.set('MODESETTING_WITH_RGA', build_modesetting and rga_dep.found() ? '1' : false)
 
 conf_data.set_quoted('SERVER_MISC_CONFIG_PATH', serverconfigdir)
 conf_data.set_quoted('PROJECTROOT', get_option('prefix'))
