@@ -361,6 +361,11 @@ else
     build_vbe = get_option('vbe') == 'true'
 endif
 
+rga_dep = dependency('', required: false)
+if build_modesetting
+    rga_dep = dependency('librga', required: false)
+endif
+
 build_vgahw = false
 if get_option('vgahw') == 'auto'
     if (host_machine.system() != 'darwin' and
