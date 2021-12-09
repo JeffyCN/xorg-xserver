@@ -6,7 +6,13 @@ modesetting_srcs = [
     'pageflip.c',
     'present.c',
     'vblank.c',
+    'exa.c',
+    'xv.c',
 ]
+
+if build_dri3
+    modesetting_srcs += 'dri3.c'
+endif
 
 shared_module(
     'modesetting_drv',
@@ -20,6 +26,7 @@ shared_module(
         udev_dep,
         libdrm_dep,
         gbm_dep,
+        rga_dep,
     ],
 
     install: true,
