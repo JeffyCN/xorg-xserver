@@ -17,6 +17,9 @@ option('xvfb', type: 'boolean', value: true,
 option('xwin', type: 'combo', choices: ['true', 'false', 'auto'], value: 'auto',
        description: 'Enable XWin X server')
 
+option('gles-highp', type: 'boolean', value: true,
+       description: 'Use highp as default precision for GLES (default true)')
+
 option('builder_addr', type: 'string', description: 'Builder address', value: 'xorg@lists.freedesktop.org')
 option('builder_string', type: 'string', description: 'Additional builder string')
 
