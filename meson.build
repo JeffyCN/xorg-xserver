@@ -443,6 +443,11 @@ endif
 
 build_modesetting = libdrm_dep.found() and dri2proto_dep.found()
 
+rga_dep = dependency('', required: false)
+if build_modesetting
+    rga_dep = dependency('librga', required: false)
+endif
+
 build_vgahw = false
 if get_option('vgahw') == 'auto'
     if (host_machine.system() != 'darwin' and
