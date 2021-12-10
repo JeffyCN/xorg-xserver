@@ -4008,6 +4008,13 @@ drmmode_handle_uevents(int fd, void *closure)
 
             if (!strcmp(p->mode_prop->name, "link-status")) {
                 if (p->value == DRM_MODE_LINK_STATUS_BAD) {
+                    drmmode_crtc_private_ptr drmmode_crtc = crtc->driver_private;
+                    drmmode_crtc->need_modeset = TRUE;
+
+                    /* Delay re-set to dpms-on */
+                    if (drmmode_output->dpms != DPMSModeOn)
+                        break;
+
                     /* the connector got a link failure, re-set the current mode */
                     drmmode_set_mode_major(crtc, &crtc->mode, crtc->rotation,
                                            crtc->x, crtc->y);
