@@ -660,8 +660,8 @@ glamor_xv_render_dma_nv12(glamor_port_private *port_priv, int dma_fd)
     /* TODO: support contrast/brightness/gamma/saturation/hue */
     glamor_set_alu(screen, GXcopy);
 
-    src_xscale = 1.0 / port_priv->w;
-    src_yscale = 1.0 / port_priv->h;
+    src_xscale = 1.0 / hor_stride;
+    src_yscale = 1.0 / ver_stride;
 
     glUseProgram(glamor_priv->xv_prog_ext.prog);
 
