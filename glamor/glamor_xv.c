@@ -66,6 +66,14 @@ typedef struct tagREF_TRANSFORM {
 #define RTFContrast(a)   (1.0 + ((a)*1.0)/1000.0)
 #define RTFHue(a)   (((a)*3.1416)/1000.0)
 
+#ifndef DRM_FORMAT_NV12_10
+#define DRM_FORMAT_NV12_10 fourcc_code('N', 'A', '1', '2')
+#endif
+
+#ifndef DRM_FORMAT_NV15
+#define DRM_FORMAT_NV15 fourcc_code('N', 'V', '1', '5')
+#endif
+
 #define XV_MAX_DMA_FD 3
 
 static const glamor_facet glamor_facet_xv_planar_2 = {
@@ -162,13 +170,14 @@ XvAttributeRec glamor_xv_attributes[] = {
     {XvSettable | XvGettable, 0, 0xFFFFFFFF, (char *)"XV_DMA_CLIENT_ID"},
     {XvSettable | XvGettable, 0, 0xFFFFFFFF, (char *)"XV_DMA_HOR_STRIDE"},
     {XvSettable | XvGettable, 0, 0xFFFFFFFF, (char *)"XV_DMA_VER_STRIDE"},
+    {XvSettable | XvGettable, 0, 0xFFFFFFFF, (char *)"XV_DMA_DRM_FOURCC"},
     {0, 0, 0, NULL}
 };
 int glamor_xv_num_attributes = ARRAY_SIZE(glamor_xv_attributes) - 1;
 
 Atom glamorBrightness, glamorContrast, glamorSaturation, glamorHue,
     glamorColorspace, glamorGamma, glamorDmaClient, glamorDmaHorStride,
-    glamorDmaVerStride;
+    glamorDmaVerStride, glamorDmaDrmFourcc;
 
 XvImageRec glamor_xv_images[] = {
     XVIMAGE_YV12,
@@ -278,6 +287,7 @@ clear:
     port_priv->dma_client = 0;
     port_priv->dma_hor_stride = 0;
     port_priv->dma_ver_stride = 0;
+    port_priv->dma_drm_fourcc = 0;
 }
 
 void
@@ -323,6 +333,8 @@ glamor_xv_set_port_attribute(glamor_port_private *port_priv,
         port_priv->dma_hor_stride = ClipValue(value, 0, 0xFFFFFFFF);
     else if (attribute == glamorDmaVerStride)
         port_priv->dma_ver_stride = ClipValue(value, 0, 0xFFFFFFFF);
+    else if (attribute == glamorDmaDrmFourcc)
+        port_priv->dma_drm_fourcc = ClipValue(value, 0, 0xFFFFFFFF);
     else
         return BadMatch;
     return Success;
@@ -350,6 +362,8 @@ glamor_xv_get_port_attribute(glamor_port_private *port_priv,
         *value = port_priv->dma_hor_stride;
     else if (attribute == glamorDmaVerStride)
         *value = port_priv->dma_ver_stride;
+    else if (attribute == glamorDmaDrmFourcc)
+        *value = port_priv->dma_drm_fourcc;
     else
         return BadMatch;
 
@@ -591,7 +605,7 @@ glamor_xv_render(glamor_port_private *port_priv, int id)
 }
 
 static int
-glamor_xv_render_dma_nv12(glamor_port_private *port_priv, int dma_fd)
+glamor_xv_render_dma(glamor_port_private *port_priv, int dma_fd)
 {
     ScreenPtr screen = port_priv->pPixmap->drawable.pScreen;
     glamor_screen_private *glamor_priv = glamor_get_screen_private(screen);
@@ -609,6 +623,9 @@ glamor_xv_render_dma_nv12(glamor_port_private *port_priv, int dma_fd)
         port_priv->dma_hor_stride ? port_priv->dma_hor_stride : port_priv->w;
     int ver_stride =
         port_priv->dma_ver_stride ? port_priv->dma_ver_stride : port_priv->h;
+    int width = hor_stride;
+    uint32_t fourcc =
+        port_priv->dma_drm_fourcc ? port_priv->dma_drm_fourcc : DRM_FORMAT_NV12;
 
     PFNEGLCREATEIMAGEKHRPROC create_image;
     PFNEGLDESTROYIMAGEKHRPROC destroy_image;
@@ -616,10 +633,27 @@ glamor_xv_render_dma_nv12(glamor_port_private *port_priv, int dma_fd)
     EGLImageKHR image;
     GLuint texture;
 
+    /* Mali is using NV15 for NV12_10 */
+    switch (fourcc) {
+    case DRM_FORMAT_NV12_10:
+    case DRM_FORMAT_NV15:
+        fourcc = DRM_FORMAT_NV15;
+
+        /* HACK: guess a width from 10B stride */
+        width = hor_stride / 10 * 8;
+        break;
+    case DRM_FORMAT_NV16:
+    case DRM_FORMAT_NV12:
+        break;
+    default:
+        ErrorF("glamor xv only support DMA for NV12|NV12_10|NV16\n");
+        return BadMatch;
+    }
+
     const EGLint attrs[] = {
-        EGL_WIDTH, hor_stride,
+        EGL_WIDTH, width,
         EGL_HEIGHT, ver_stride,
-        EGL_LINUX_DRM_FOURCC_EXT, DRM_FORMAT_NV12,
+        EGL_LINUX_DRM_FOURCC_EXT, fourcc,
         EGL_DMA_BUF_PLANE0_FD_EXT, dma_fd,
         EGL_DMA_BUF_PLANE0_OFFSET_EXT, 0,
         EGL_DMA_BUF_PLANE0_PITCH_EXT, hor_stride,
@@ -660,7 +694,7 @@ glamor_xv_render_dma_nv12(glamor_port_private *port_priv, int dma_fd)
     /* TODO: support contrast/brightness/gamma/saturation/hue */
     glamor_set_alu(screen, GXcopy);
 
-    src_xscale = 1.0 / hor_stride;
+    src_xscale = 1.0 / width;
     src_yscale = 1.0 / ver_stride;
 
     glUseProgram(glamor_priv->xv_prog_ext.prog);
@@ -843,7 +877,7 @@ glamor_xv_put_dma_image(glamor_port_private *port_priv,
     port_priv->h = height;
     port_priv->pDraw = pDrawable;
 
-    ret = glamor_xv_render_dma_nv12(port_priv, dma_fds[0]);
+    ret = glamor_xv_render_dma(port_priv, dma_fds[0]);
     if (ret == Success && sync)
         glamor_finish(pScreen);
 
@@ -1039,6 +1073,7 @@ glamor_xv_init_port(glamor_port_private *port_priv)
     port_priv->dma_socket_fd = 0;
     port_priv->dma_hor_stride = 0;
     port_priv->dma_ver_stride = 0;
+    port_priv->dma_drm_fourcc = 0;
 
     REGION_NULL(pScreen, &port_priv->clip);
 }
@@ -1055,4 +1090,5 @@ glamor_xv_core_init(ScreenPtr screen)
     glamorDmaClient = MAKE_ATOM("XV_DMA_CLIENT_ID");
     glamorDmaHorStride = MAKE_ATOM("XV_DMA_HOR_STRIDE");
     glamorDmaVerStride = MAKE_ATOM("XV_DMA_VER_STRIDE");
+    glamorDmaDrmFourcc = MAKE_ATOM("XV_DMA_DRM_FOURCC");
 }
