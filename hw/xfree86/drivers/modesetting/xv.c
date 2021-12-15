@@ -32,6 +32,10 @@
 #include <X11/extensions/Xv.h>
 #include "fourcc.h"
 
+#ifndef DRM_FORMAT_NV12_10
+#define DRM_FORMAT_NV12_10 fourcc_code('N', 'A', '1', '2')
+#endif
+
 #define XVIMAGE_XRGB8888 \
    { \
         DRM_FORMAT_XRGB8888, \
@@ -63,11 +67,12 @@ XvAttributeRec ms_exa_xv_attributes[] = {
     {XvSettable | XvGettable, 0, 0xFFFFFFFF, (char *)"XV_DMA_CLIENT_ID"},
     {XvSettable | XvGettable, 0, 0xFFFFFFFF, (char *)"XV_DMA_HOR_STRIDE"},
     {XvSettable | XvGettable, 0, 0xFFFFFFFF, (char *)"XV_DMA_VER_STRIDE"},
+    {XvSettable | XvGettable, 0, 0xFFFFFFFF, (char *)"XV_DMA_DRM_FOURCC"},
     {0, 0, 0, NULL}
 };
 int ms_exa_xv_num_attributes = ARRAY_SIZE(ms_exa_xv_attributes) - 1;
 
-Atom msDmaClient, msDmaHorStride, msDmaVerStride;
+Atom msDmaClient, msDmaHorStride, msDmaVerStride, msDmaDrmFourcc;
 
 XvImageRec ms_exa_xv_images[] = {
     XVIMAGE_NV12,
@@ -84,6 +89,7 @@ typedef struct {
     uint32_t dma_client;
     uint32_t dma_hor_stride;
     uint32_t dma_ver_stride;
+    uint32_t dma_drm_fourcc;
     int dma_socket_fd;
 } ms_exa_port_private;
 
@@ -126,6 +132,7 @@ clear:
     port_priv->dma_client = 0;
     port_priv->dma_hor_stride = 0;
     port_priv->dma_ver_stride = 0;
+    port_priv->dma_drm_fourcc = 0;
 }
 
 static void
@@ -151,6 +158,8 @@ ms_exa_xv_set_port_attribute(ScrnInfoPtr pScrn,
         port_priv->dma_hor_stride = ClipValue(value, 0, 0xFFFFFFFF);
     else if (attribute == msDmaVerStride)
         port_priv->dma_ver_stride = ClipValue(value, 0, 0xFFFFFFFF);
+    else if (attribute == msDmaDrmFourcc)
+        port_priv->dma_drm_fourcc = ClipValue(value, 0, 0xFFFFFFFF);
     else
         return BadMatch;
 
@@ -169,6 +178,8 @@ ms_exa_xv_get_port_attribute(ScrnInfoPtr pScrn,
         *value = port_priv->dma_hor_stride;
     else if (attribute == msDmaVerStride)
         *value = port_priv->dma_ver_stride;
+    else if (attribute == msDmaDrmFourcc)
+        *value = port_priv->dma_drm_fourcc;
     else
         return BadMatch;
 
@@ -232,7 +243,8 @@ ms_exa_xv_create_dma_pixmap(ScrnInfoPtr scrn,
     struct cmsghdr *header;
     char buf[CMSG_SPACE (sizeof (int))];
     int dma_fds[XV_MAX_DMA_FD], num_dma_fd = 0;
-    int width, height, pitch, bpp;
+    int width, height, pitch, bpp, depth;
+    uint32_t drm_fourcc;
 
     if (!port_priv->dma_client || port_priv->dma_socket_fd <= 0)
         return NULL;
@@ -278,16 +290,24 @@ ms_exa_xv_create_dma_pixmap(ScrnInfoPtr scrn,
     width = port_priv->dma_hor_stride;
     height = port_priv->dma_ver_stride;
 
-    if (id == FOURCC_NV12) {
-        pitch = width * 3 / 2;
-        bpp = 12;
-    } else {
+    drm_fourcc = port_priv->dma_drm_fourcc ? port_priv->dma_drm_fourcc : id;
+    if (drm_fourcc == DRM_FORMAT_XRGB8888) {
         pitch = width * 4;
-        bpp = 32;
+        depth = bpp = 32;
+    } else {
+        pitch = width * 3 / 2;
+        depth = bpp = 12;
+
+        /* HACK: Special depth for NV12_10 and NV16*/
+        if (drm_fourcc == DRM_FORMAT_NV12_10) {
+            depth = 10;
+        } else if (drm_fourcc == DRM_FORMAT_NV16) {
+            depth = 16;
+        }
     }
 
     pixmap = drmmode_create_pixmap_header(screen, width, height,
-                                          bpp, bpp, pitch, NULL);
+                                          depth, bpp, pitch, NULL);
     if (!pixmap)
         goto err;
 
@@ -423,6 +443,7 @@ ms_exa_xv_init(ScreenPtr screen, int num_texture_ports)
     msDmaClient = MAKE_ATOM("XV_DMA_CLIENT_ID");
     msDmaHorStride = MAKE_ATOM("XV_DMA_HOR_STRIDE");
     msDmaVerStride = MAKE_ATOM("XV_DMA_VER_STRIDE");
+    msDmaDrmFourcc = MAKE_ATOM("XV_DMA_DRM_FOURCC");
 
     adapt = calloc(1, sizeof(XF86VideoAdaptorRec) + num_texture_ports *
                    (sizeof(ms_exa_port_private) + sizeof(DevUnion)));
@@ -468,6 +489,7 @@ ms_exa_xv_init(ScreenPtr screen, int num_texture_ports)
         priv->dma_socket_fd = 0;
         priv->dma_hor_stride = 0;
         priv->dma_ver_stride = 0;
+        priv->dma_drm_fourcc = 0;
 
         adapt->pPortPrivates[i].ptr = (void *) (priv);
     }
