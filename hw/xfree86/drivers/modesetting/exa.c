@@ -86,7 +86,15 @@ rga_get_pixmap_format(PixmapPtr pPix)
             return RK_FORMAT_BGRA_8888;
         return RK_FORMAT_BGRX_8888;
     case 12:
-        return RK_FORMAT_YCbCr_420_SP;
+        switch (pPix->drawable.depth) {
+        case 12:
+            return RK_FORMAT_YCbCr_420_SP;
+        /* HACK: Special depth for NV12_10 and NV16*/
+        case 10:
+            return RK_FORMAT_YCbCr_420_SP_10B;
+        default:
+            return RK_FORMAT_YCbCr_422_SP;
+        }
     default:
         return RK_FORMAT_UNKNOWN;
     }
