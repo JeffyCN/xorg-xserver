@@ -25,6 +25,29 @@ xorg-server (2:21.1.1-1) experimental; urgency=medium
 
  -- Timo Aaltonen <tjaalton@debian.org>  Wed, 17 Nov 2021 16:31:46 +0200
 
+xorg-server (2:1.20.14-1) unstable; urgency=medium
+
+  * New upstream release.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Tue, 11 Jan 2022 16:21:08 +0200
+
+xorg-server (2:1.20.13-3) unstable; urgency=high
+
+  * Team upload.
+  * record: Fix out of bounds access in SwapCreateRegister() [CVE-2021-4011]
+  * xfixes: Fix out of bounds access in *ProcXFixesCreatePointerBarrier() [CVE-2021-4009]
+  * Xext: Fix out of bounds access in SProcScreenSaverSuspend() [CVE-2021-4010]
+  * render: Fix out of bounds access in SProcRenderCompositeGlyphs() [CVE-2021-4008]
+
+ -- Julien Cristau <jcristau@debian.org>  Tue, 14 Dec 2021 14:38:21 +0100
+
+xorg-server (2:1.20.13-2) unstable; urgency=medium
+
+  * Upload to unstable.
+  * Disable building xwayland.
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Sat, 27 Nov 2021 13:03:35 +0200
+
 xorg-server (2:1.20.13-1) experimental; urgency=medium
 
   * New upstream release.

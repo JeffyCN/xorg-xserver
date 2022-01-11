@@ -34,6 +34,7 @@ confflags += \
 	--disable-linux-acpi \
 	--disable-linux-apm \
 	--disable-xquartz \
+	--disable-xwayland \
 	--disable-xwin \
 	--disable-install-setuid
 
