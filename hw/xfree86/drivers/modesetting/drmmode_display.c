@@ -4554,6 +4554,8 @@ drmmode_flip_fb(xf86CrtcPtr crtc, int *timeout)
     drmmode_crtc_private_ptr drmmode_crtc = crtc->driver_private;
     drmmode_ptr drmmode = drmmode_crtc->drmmode;
     ScreenPtr screen = xf86ScrnToScreen(drmmode->scrn);
+    ScrnInfoPtr scrn = xf86ScreenToScrn(screen);
+    modesettingPtr ms = modesettingPTR(scrn);
     drmmode_fb *fb;
     struct timeval tv;
     uint64_t now_ms, diff_ms;
@@ -4621,7 +4623,7 @@ drmmode_flip_fb(xf86CrtcPtr crtc, int *timeout)
     }
 
     if (!ms_do_pageflip_bo(screen, &fb->bo, drmmode_crtc,
-                           drmmode_crtc->vblank_pipe, crtc, TRUE,
+                           drmmode_crtc->vblank_pipe, crtc, ms->async_pageflip,
                            drmmode_flip_fb_handler, drmmode_flip_fb_abort)) {
         /* HACK: Workaround commit random interrupted case */
         if (errno != EPERM) {
