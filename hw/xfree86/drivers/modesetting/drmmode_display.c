@@ -5123,8 +5123,9 @@ drmmode_flip_fb(xf86CrtcPtr crtc, int *timeout)
     }
 
     if (!ms_do_pageflip_bo(screen, &fb->bo, drmmode_crtc,
-                           drmmode_crtc->vblank_pipe, crtc, TRUE,
-                           drmmode_flip_fb_handler, drmmode_flip_fb_abort,
+                           drmmode_crtc->vblank_pipe, crtc,
+                           drmmode->can_async_flip, drmmode_flip_fb_handler,
+                           drmmode_flip_fb_abort,
                            "FlipFB-flip")) {
         /* HACK: Workaround commit random interrupted case */
         if (errno != EPERM) {
