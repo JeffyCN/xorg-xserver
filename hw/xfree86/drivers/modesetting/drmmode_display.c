@@ -4113,6 +4113,8 @@ drmmode_create_initial_bos(ScrnInfoPtr pScrn, drmmode_ptr drmmode)
 
     if (!drmmode_create_bo(drmmode, &drmmode->front_bo, width, height, bpp))
         return FALSE;
+    if (drmmode_bo_import(drmmode, &drmmode->front_bo, &drmmode->fb_id) < 0)
+        return FALSE;
     pScrn->displayWidth = drmmode_bo_get_pitch(&drmmode->front_bo) / cpp;
 
     width = ms->cursor_width;
