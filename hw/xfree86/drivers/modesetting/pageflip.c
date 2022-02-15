@@ -281,7 +281,7 @@ ms_do_pageflip_bo(ScreenPtr screen,
         goto error_out;
 
     flags = DRM_MODE_PAGE_FLIP_EVENT;
-    if (async)
+    if (async && ms->async_pageflip)
         flags |= DRM_MODE_PAGE_FLIP_ASYNC;
 
     /* Queue flips on all enabled CRTCs.
