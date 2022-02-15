@@ -127,6 +127,7 @@ typedef struct _modesettingRec {
     Bool tried_queue_sequence;
 
     Bool kms_has_modifiers;
+    Bool async_pageflip;
 
     XF86VideoAdaptorPtr adaptor;
 } modesettingRec, *modesettingPtr;
