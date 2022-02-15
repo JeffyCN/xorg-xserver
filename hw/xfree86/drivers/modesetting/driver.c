@@ -1144,6 +1144,11 @@ PreInit(ScrnInfoPtr pScrn, int flags)
 
     drmSetClientCap(ms->fd, DRM_CLIENT_CAP_UNIVERSAL_PLANES, 1);
 
+    ms->async_pageflip = FALSE;
+    ret = drmGetCap(ms->fd, DRM_CAP_ASYNC_PAGE_FLIP, &value);
+    if (ret == 0 && value == 1)
+        ms->async_pageflip = TRUE;
+
     ms->kms_has_modifiers = FALSE;
     ret = drmGetCap(ms->fd, DRM_CAP_ADDFB2_MODIFIERS, &value);
     if (ret == 0 && value != 0)
