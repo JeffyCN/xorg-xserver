@@ -1760,7 +1760,9 @@ configScreen(confScreenPtr screenp, XF86ConfScreenPtr conf_screen, int scrnum,
         count++;
         dispptr = (XF86ConfDisplayPtr) dispptr->list.next;
     }
-    screenp->displays = xnfallocarray(count, sizeof(DispRec));
+
+    /* HACK: Pre-alloc a large displays array to avoid later realloc */
+    screenp->displays = xnfallocarray(32, sizeof(DispRec));
     screenp->numdisplays = count;
 
     /* Fill in the default Virtual size, if any */
