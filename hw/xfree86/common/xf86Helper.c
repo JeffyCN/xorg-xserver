@@ -554,9 +554,17 @@ xf86SetDepthBpp(ScrnInfoPtr scrp, int depth, int dummy, int fbbpp,
      */
     if (i == scrp->confScreen->numdisplays) {
         scrp->confScreen->numdisplays++;
+
+	/**
+	 * HACK: Realloc would free the old displays and damage other
+	 * scrp's display.
+	 */
+#if 0
         scrp->confScreen->displays =
             xnfreallocarray(scrp->confScreen->displays,
                             scrp->confScreen->numdisplays, sizeof(DispRec));
+#endif
+
         xf86DrvMsg(scrp->scrnIndex, X_INFO,
                    "Creating default Display subsection in Screen section\n"
                    "\t\"%s\" for depth/fbbpp %d/%d\n",
