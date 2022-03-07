@@ -1267,5 +1267,7 @@ ms_deinit_exa(ScrnInfoPtr scrn)
     free(exa);
     ms->drmmode.exa = NULL;
 
+#ifdef MODESETTING_WITH_RGA
     c_RkRgaDeInit();
+#endif
 }
