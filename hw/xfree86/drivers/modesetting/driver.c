@@ -1288,12 +1288,16 @@ msUpdatePacked(ScreenPtr pScreen, shadowBufPtr pBuf)
         free(prect);
     } while (0);
 
-    ms_exa_prepare_access(pBuf->pPixmap, 0);
+    if (ms->drmmode.exa)
+        ms_exa_prepare_access(pBuf->pPixmap, 0);
+
     if (use_3224)
         shadowUpdate32to24(pScreen, pBuf);
     else
         shadowUpdatePacked(pScreen, pBuf);
-    ms_exa_finish_access(pBuf->pPixmap, 0);
+
+    if (ms->drmmode.exa)
+        ms_exa_finish_access(pBuf->pPixmap, 0);
 }
 
 static Bool
