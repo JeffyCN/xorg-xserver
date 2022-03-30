@@ -786,10 +786,8 @@ drmmode_crtc_modeset(xf86CrtcPtr crtc, uint32_t fb_id,
     width = mode->hdisplay;
     height = mode->vdisplay;
 
-    /* shadow bo or front bo size matched */
-    if (fb_id != drmmode->fb_id ||
-        (width <= drmmode->front_bo.width &&
-         height <= drmmode->front_bo.height))
+    /* flip-fb disabled or shadow bo */
+    if (!drmmode_crtc->flip_fb_enabled || fb_id != drmmode->fb_id)
         return drmModeSetCrtc(drmmode->fd, drmmode_crtc->mode_crtc->crtc_id,
                               fb_id, x, y, output_ids, output_count, mode);
 
@@ -805,7 +803,7 @@ drmmode_crtc_modeset(xf86CrtcPtr crtc, uint32_t fb_id,
         goto err;
 
     ret = drmModeSetCrtc(drmmode->fd, drmmode_crtc->mode_crtc->crtc_id,
-                         fb_id, x, y, output_ids, output_count, mode);
+                         fb_id, 0, 0, output_ids, output_count, mode);
     if (ret < 0) {
         old_fb_id = fb_id;
         goto err;
