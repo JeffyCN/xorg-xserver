@@ -30,6 +30,7 @@
 #endif
 
 #include <errno.h>
+#include <fcntl.h>
 #include <sys/ioctl.h>
 #include <sys/mman.h>
 #include <sys/time.h>
@@ -2595,6 +2596,11 @@ drmmode_crtc_init(ScrnInfoPtr pScrn, drmmode_ptr drmmode, drmModeResPtr mode_res
         drmmode_crtc->props[DRMMODE_CRTC_GAMMA_LUT_SIZE].value &&
         xf86ReturnOptValBool(drmmode->Options, OPTION_USE_GAMMA_LUT, TRUE);
 
+    /* HACK: Using FB(0) to query UDL process state */
+    if (!drmModePageFlipTarget(drmmode->fd, drmmode_crtc->mode_crtc->crtc_id,
+                               0, 0, NULL, 0))
+        drmmode_crtc->is_udl = TRUE;
+
     return 1;
 }
 
@@ -4712,7 +4718,8 @@ out:
     return ret;
 }
 
-static Bool
+/* return value: error (<0), skip-flip (0), flip (>0) */
+static int
 drmmode_update_fb(xf86CrtcPtr crtc, drmmode_fb *fb)
 {
     drmmode_crtc_private_ptr drmmode_crtc = crtc->driver_private;
@@ -4722,7 +4729,7 @@ drmmode_update_fb(xf86CrtcPtr crtc, drmmode_fb *fb)
     ScreenPtr screen = xf86ScrnToScreen(scrn);
     SourceValidateProcPtr SourceValidate = screen->SourceValidate;
     RegionPtr dirty;
-    Bool ret;
+    int ret;
 
     if (!fb->pixmap) {
         void *data = drmmode_bo_map(&ms->drmmode, &fb->bo);
@@ -4734,10 +4741,10 @@ drmmode_update_fb(xf86CrtcPtr crtc, drmmode_fb *fb)
                                                   ms->drmmode.kbpp,
                                                   pitch, data);
         if (!fb->pixmap)
-            return FALSE;
+            return -1;
 
         if (!drmmode_set_pixmap_bo(&ms->drmmode, fb->pixmap, &fb->bo))
-            return FALSE;
+            return -1;
 
         /* setup a damage to track dirty */
         fb->damage = DamageCreate(NULL, drmmode_flip_damage_destroy,
@@ -4768,7 +4775,7 @@ drmmode_update_fb(xf86CrtcPtr crtc, drmmode_fb *fb)
     }
 
     if (!RegionNotEmpty(dirty)) {
-        ret = TRUE;
+        ret = 0;
         goto out;
     }
 
@@ -4786,10 +4793,26 @@ drmmode_update_fb(xf86CrtcPtr crtc, drmmode_fb *fb)
         glamor_finish(screen);
 #endif
 
+    ret = 1;
+
+    /* HACK: Prefer drmModeDirtyFB for UDL partial update */
+    if (drmmode_crtc->is_udl && !fb->need_clear) {
+        BoxPtr rect = RegionExtents(dirty);
+        drmModeClip clip;
+
+        clip.x1 = rect->x1;
+        clip.y1 = rect->y1;
+        clip.x2 = rect->x2;
+        clip.y2 = rect->y2;
+
+        /* HACK: Using FB(0) to update current UDL FB */
+        if (!drmModeDirtyFB(ms->fd, 0, &clip, 1))
+            ret = 0;
+    }
+
     fb->need_clear = FALSE;
     DamageEmpty(fb->damage);
 
-    ret = TRUE;
 out:
     RegionDestroy(dirty);
     return ret;
@@ -4823,7 +4846,7 @@ drmmode_flip_fb(xf86CrtcPtr crtc, int *timeout)
     drmmode_fb *fb;
     struct timeval tv;
     uint64_t now_ms, diff_ms;
-    int next_fb;
+    int next_fb, ret;
 
     if (!drmmode_crtc || !crtc->active || !drmmode_crtc_connected(crtc) ||
         drmmode_crtc->dpms_mode != DPMSModeOn || drmmode_crtc->rotate_fb_id)
@@ -4831,6 +4854,15 @@ drmmode_flip_fb(xf86CrtcPtr crtc, int *timeout)
 
     if (!drmmode_crtc->flip_fb_enabled)
         return TRUE;
+
+    if (drmmode_crtc->is_udl) {
+        /* HACK: Using FB(0) to query UDL process state */
+        if (drmModePageFlipTarget(ms->fd, drmmode_crtc->mode_crtc->crtc_id,
+                                  0, 0, NULL, 0) < 0)
+            goto retry;
+
+        drmmode_crtc->flipping = FALSE;
+    }
 
     gettimeofday(&tv, NULL);
     now_ms = tv.tv_sec * 1000 + tv.tv_usec / 1000;
@@ -4853,37 +4885,38 @@ drmmode_flip_fb(xf86CrtcPtr crtc, int *timeout)
         /* delay to exit external flip mode */
         if (diff_ms < 100)
             goto retry;
+
+        drmmode_crtc->external_flipped = FALSE;
     } else if (drmmode->fb_flip_rate) {
         /* limit flip rate */
         if (diff_ms < (1000 / drmmode->fb_flip_rate))
             goto retry;
     }
 
-    /* keep the current fb if not dirty */
-    fb = &drmmode_crtc->flip_fb[drmmode_crtc->current_fb];
-    if (fb->damage && !fb->need_clear) {
-        RegionPtr region = DamageRegion(fb->damage);
-        RegionPtr dirty;
-        Bool ret;
-
-        dirty = drmmode_transform_region(crtc, region);
-        if (dirty) {
-            ret = RegionNotEmpty(dirty);
-            RegionDestroy(dirty);
-            if (!ret)
-                return TRUE;
-        }
-    }
-
     /* switch to the next fb */
     next_fb = drmmode_crtc->current_fb + 1;
     next_fb %= ARRAY_SIZE(drmmode_crtc->flip_fb);
+
+    /* HACK: Use single FB for UDL */
+    if (drmmode_crtc->is_udl)
+        next_fb = drmmode_crtc->current_fb;
+
     fb = &drmmode_crtc->flip_fb[next_fb];
-    if (!drmmode_update_fb(crtc, fb)) {
+    ret = drmmode_update_fb(crtc, fb);
+    if (ret < 0) {
         xf86DrvMsg(drmmode->scrn->scrnIndex, X_WARNING,
                    "crtc-%d failed to update fb!\n",
                    drmmode_crtc->mode_crtc->crtc_id);
         return FALSE;
+    }
+
+    if (!ret) {
+        /* HACK: Fake flip for rate control */
+        if (drmmode_crtc->is_udl)
+            drmmode_crtc->flipping_time_ms = now_ms;
+
+        /* keep the current fb if not updated */
+        return TRUE;
     }
 
     if (!ms_do_pageflip_bo(screen, &fb->bo, drmmode_crtc,
@@ -4901,7 +4934,6 @@ drmmode_flip_fb(xf86CrtcPtr crtc, int *timeout)
     drmmode_crtc->current_fb = next_fb;
 
     drmmode_crtc->flipping = TRUE;
-    drmmode_crtc->external_flipped = FALSE;
 
     /* take out FB syncing time from framerate control */
     drmmode_crtc->flipping_time_ms = now_ms;
