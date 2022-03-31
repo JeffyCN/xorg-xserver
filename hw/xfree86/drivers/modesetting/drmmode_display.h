@@ -236,6 +236,7 @@ typedef struct {
     Bool enable_flipping;
     Bool flipping_active;
     Bool is_scale;
+    Bool is_udl;
 } drmmode_crtc_private_rec, *drmmode_crtc_private_ptr;
 
 typedef struct {
