@@ -206,6 +206,13 @@ queue_flip_on_crtc(ScreenPtr screen, xf86CrtcPtr crtc,
 
     while (do_queue_flip_on_crtc(ms, crtc, flags, seq, *flipdata->fb_id)) {
         err = errno;
+
+        /* HACK: Fake successed */
+        if (err) {
+            ms_drm_abort_seq(scrn, seq);
+            return TRUE;
+        }
+
         /* We may have failed because the event queue was full.  Flush it
          * and retry.  If there was nothing to flush, then we failed for
          * some other reason and should just return an error.
@@ -321,6 +328,14 @@ ms_do_pageflip_bo(ScreenPtr screen,
     if (flipdata->flip_count > 1) {
         flipdata->flip_count--;
         return TRUE;
+    }
+
+    /* HACK: Ignore errors */
+    if (flipdata->flip_count == 1) {
+        flipdata->abort_handler(ms, flipdata->event);
+        drmModeRmFB(ms->fd, flipdata->old_fb_id);
+        free(flipdata);
+	return TRUE;
     }
 
 error_undo:
