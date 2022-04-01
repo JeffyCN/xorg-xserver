@@ -2370,7 +2370,7 @@ drmmode_crtc_create_planes(xf86CrtcPtr crtc, int num)
 
         /* Only primary planes are important for atomic page-flipping */
         type = drmmode_prop_get_value(&tmp_props[DRMMODE_PLANE_TYPE],
-                                      props, DRMMODE_PLANE_TYPE__COUNT);
+                                      props, DRMMODE_PLANE_TYPE_PRIMARY);
         if (type != DRMMODE_PLANE_TYPE_PRIMARY) {
             drmModeFreePlane(kplane);
             drmModeFreeObjectProperties(props);
