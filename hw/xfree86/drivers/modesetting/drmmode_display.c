@@ -2546,8 +2546,10 @@ drmmode_crtc_init(ScrnInfoPtr pScrn, drmmode_ptr drmmode, drmModeResPtr mode_res
         }
     }
 
+#if 0
     if (!found)
         return 0;
+#endif
 
     crtc = xf86CrtcCreate(pScrn, &drmmode_crtc_funcs);
     if (crtc == NULL)
@@ -2714,6 +2716,7 @@ drmmode_output_detect(xf86OutputPtr output)
 
     if (!drmmode_output->mode_output) {
         drmmode_output->output_id = -1;
+        drmmode_output_change_status(output, XF86OutputStatusDisconnected);
         return XF86OutputStatusDisconnected;
     }
 
@@ -3345,7 +3348,7 @@ drmmode_output_init(ScrnInfoPtr pScrn, drmmode_ptr drmmode, drmModeResPtr mode_r
     if (path_blob)
         drmModeFreePropertyBlob(path_blob);
 
-    if (path_blob && dynamic) {
+    if (/*path_blob && */dynamic) {
         /* see if we have an output with this name already
            and hook stuff up */
         for (i = 0; i < xf86_config->num_output; i++) {
@@ -3872,6 +3875,12 @@ drmmode_pre_init(ScrnInfoPtr pScrn, drmmode_ptr drmmode, int cpp)
     xf86DrvMsgVerb(pScrn->scrnIndex, X_INFO, MS_LOGLEVEL_DEBUG,
                    "Up to %d crtcs needed for screen.\n", crtcs_needed);
 
+    if (crtcs_needed != mode_res->count_crtcs) {
+        crtcs_needed = mode_res->count_crtcs;
+        xf86DrvMsgVerb(pScrn->scrnIndex, X_INFO, 0,
+                       "Grab all %d crtcs.\n", crtcs_needed);
+    }
+
     xf86CrtcSetSizeRange(pScrn, 320, 200, mode_res->max_width,
                          mode_res->max_height);
     for (i = 0; i < mode_res->count_crtcs; i++)
@@ -4231,6 +4240,7 @@ drmmode_handle_uevents(int fd, void *closure)
         drmModeFreeConnector(drmmode_output->mode_output);
         drmmode_output->mode_output = NULL;
         drmmode_output->output_id = -1;
+        drmmode_output_change_status(output, XF86OutputStatusDisconnected);
 
         changed = TRUE;
     }
