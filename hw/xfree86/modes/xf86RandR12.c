@@ -1239,6 +1239,11 @@ xf86RandR12CrtcSet(ScreenPtr pScreen,
             crtc->desiredY = y;
         }
         xf86DisableUnusedFunctions(pScrn);
+
+	/*
+	 * Make sure the layout is correct
+	 */
+	xf86ReconfigureLayout();
     }
     free(save_crtcs);
     return xf86RandR12CrtcNotify(randr_crtc);
