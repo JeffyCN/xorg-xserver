@@ -4555,44 +4555,47 @@ drmmode_flip_damage_destroy(DamagePtr damage, void *closure)
 static RegionPtr
 drmmode_transform_region(xf86CrtcPtr crtc, RegionPtr src)
 {
-    RegionPtr region;
-    BoxPtr box;
+#define MS_MAX_NUM_BOX 4
+    RegionPtr region = RegionCreate(NULL, 0);
+    BoxRec rects[MS_MAX_NUM_BOX];
+    BoxPtr box, rect;
     Bool empty;
-    int n;
+    int n, i;
 
-    /* draw the extents rather than small rects */
-    if (RegionNumRects(src) > 4)
-        region = RegionCreate(&src->extents, 1);
-    else
-        region = RegionDuplicate(src);
-
-    if (!RegionNotEmpty(region))
+    if (!RegionNotEmpty(src))
         return region;
 
-    n = RegionNumRects(region);
-    box = RegionRects(region);
+    if (RegionNumRects(src) < MS_MAX_NUM_BOX) {
+        n = RegionNumRects(src);
+        box = RegionRects(src);
+    } else {
+        /* draw the extents rather than small rects */
+        n = 1;
+        box = RegionExtents(src);
+    }
 
     empty = TRUE;
-    while(n--) {
-        box->x1 -= crtc->filter_width >> 1;
-        box->x2 += crtc->filter_width >> 1;
-        box->y1 -= crtc->filter_height >> 1;
-        box->y2 += crtc->filter_height >> 1;
-        pixman_f_transform_bounds(&crtc->f_framebuffer_to_crtc, box);
-        box->x1 = max(box->x1, 0);
-        box->y1 = max(box->y1, 0);
-        box->x2 = min(box->x2, crtc->mode.HDisplay);
-        box->y2 = min(box->y2, crtc->mode.VDisplay);
+    for (i = 0; i < n; i++) {
+        rect = &rects[i];
 
-        if (box->x1 < box->x2 && box->y1 < box->y2)
+        rect->x1 = box[i].x1 - crtc->filter_width / 2;
+        rect->x2 = box[i].x2 + crtc->filter_width / 2;
+        rect->y1 = box[i].y1 - crtc->filter_height / 2;
+        rect->y2 = box[i].y2 + crtc->filter_height / 2;
+        pixman_f_transform_bounds(&crtc->f_framebuffer_to_crtc, rect);
+        rect->x1 = max(rect->x1, 0);
+        rect->y1 = max(rect->y1, 0);
+        rect->x2 = min(rect->x2, crtc->mode.HDisplay);
+        rect->y2 = min(rect->y2, crtc->mode.VDisplay);
+
+        if (rect->x1 < rect->x2 && rect->y1 < rect->y2)
             empty = FALSE;
-
-        box++;
     }
 
     if (empty)
-        RegionEmpty(region);
+        return region;
 
+    RegionInitBoxes(region, rects, n);
     return region;
 }
 
