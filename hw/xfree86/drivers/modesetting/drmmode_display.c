@@ -5012,7 +5012,7 @@ drmmode_update_fb(xf86CrtcPtr crtc, drmmode_fb *fb)
         goto out;
     }
 
-    screen->SourceValidate = NULL;
+    screen->SourceValidate = miSourceValidate;
     if (drmmode->exa)
         ret = ms_exa_copy_area(screen->GetScreenPixmap(screen), fb->pixmap,
                                &crtc->f_crtc_to_framebuffer, dirty);
