@@ -4599,12 +4599,67 @@ drmmode_transform_region(xf86CrtcPtr crtc, RegionPtr src)
     return region;
 }
 
+Bool
+ms_copy_area(PixmapPtr pSrc, PixmapPtr pDst,
+             pixman_f_transform_t *transform, RegionPtr clip)
+{
+    ScreenPtr screen = pSrc->drawable.pScreen;
+    PictFormatPtr format = PictureWindowFormat(screen->root);
+    PicturePtr src = NULL, dst = NULL;
+    pixman_transform_t t;
+    Bool ret = FALSE;
+    BoxPtr box;
+    int n, error;
+
+    src = CreatePicture(None, &pSrc->drawable,
+                        format, 0L, NULL, serverClient, &error);
+    if (!src)
+        return FALSE;
+
+    dst = CreatePicture(None, &pDst->drawable,
+                        format, 0L, NULL, serverClient, &error);
+    if (!dst)
+        goto out;
+
+    if (transform) {
+        if (!pixman_transform_from_pixman_f_transform(&t, transform))
+            goto out;
+
+        error = SetPictureTransform(src, &t);
+        if (error)
+            goto out;
+    }
+
+    box = REGION_RECTS(clip);
+    n = REGION_NUM_RECTS(clip);
+
+    while (n--) {
+        CompositePicture(PictOpSrc,
+                         src, NULL, dst,
+                         box->x1, box->y1, 0, 0, box->x1,
+                         box->y1, box->x2 - box->x1,
+                         box->y2 - box->y1);
+
+        box++;
+    }
+
+    ret = TRUE;
+out:
+    if (src)
+        FreePicture(src, None);
+    if (dst)
+        FreePicture(dst, None);
+
+    return ret;
+}
+
 static Bool
 drmmode_update_fb(xf86CrtcPtr crtc, drmmode_fb *fb)
 {
     drmmode_crtc_private_ptr drmmode_crtc = crtc->driver_private;
     ScrnInfoPtr scrn = crtc->scrn;
     modesettingPtr ms = modesettingPTR(scrn);
+    drmmode_ptr drmmode = &ms->drmmode;
     ScreenPtr screen = xf86ScrnToScreen(scrn);
     SourceValidateProcPtr SourceValidate = screen->SourceValidate;
     RegionPtr dirty;
@@ -4659,7 +4714,11 @@ drmmode_update_fb(xf86CrtcPtr crtc, drmmode_fb *fb)
     }
 
     screen->SourceValidate = NULL;
-    ret = ms_exa_copy_area(screen->GetScreenPixmap(screen), fb->pixmap,
+    if (drmmode->exa)
+        ret = ms_exa_copy_area(screen->GetScreenPixmap(screen), fb->pixmap,
+                               &crtc->f_crtc_to_framebuffer, dirty);
+    else
+        ret = ms_copy_area(screen->GetScreenPixmap(screen), fb->pixmap,
                            &crtc->f_crtc_to_framebuffer, dirty);
     screen->SourceValidate = SourceValidate;
 
