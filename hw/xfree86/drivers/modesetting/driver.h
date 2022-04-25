@@ -194,6 +194,9 @@ Bool ms_do_pageflip(ScreenPtr screen,
 
 int ms_flush_drm_events(ScreenPtr screen);
 
+Bool ms_copy_area(PixmapPtr pSrc, PixmapPtr pDst,
+                  pixman_f_transform_t *transform, RegionPtr clip);
+
 Bool ms_init_exa(ScrnInfoPtr scrn);
 void ms_deinit_exa(ScrnInfoPtr scrn);
 Bool ms_exa_set_pixmap_bo(ScrnInfoPtr scrn, PixmapPtr pPixmap,
