@@ -892,6 +892,7 @@ typedef struct {
     uint32_t dma_hor_stride;
     uint32_t dma_ver_stride;
     uint32_t dma_drm_fourcc;
+    uint32_t dma_drm_afbc;
     int dma_socket_fd;
 
     DrawablePtr pDraw;
