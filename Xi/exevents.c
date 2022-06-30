@@ -1032,6 +1032,11 @@ DeliverOneTouchEvent(ClientPtr client, DeviceIntPtr dev, TouchPointInfoPtr ti,
     err = TryClientEvents(client, dev, xi2, 1, filter, filter, NullGrab);
     free(xi2);
 
+    if (ev->any.type == ET_TouchUpdate && ti->pending_finish) {
+        ev->any.type = ET_TouchEnd;
+        DeliverOneTouchEvent(client, dev, ti, grab, win, ev);
+    }
+
     /* Returning the value from TryClientEvents isn't useful, since all our
      * resource-gone cleanups will update the delivery list anyway. */
     return TRUE;
@@ -1981,6 +1986,9 @@ DeliverTouchEndEvent(DeviceIntPtr dev, TouchPointInfoPtr ti, InternalEvent *ev,
             ev->any.type = ET_TouchUpdate;
             ev->device_event.flags |= TOUCH_PENDING_END;
             ti->pending_finish = TRUE;
+
+            if (normal_end && listener->state != LISTENER_HAS_END)
+                rc = DeliverOneTouchEvent(client, dev, ti, grab, win, ev);
         }
 
         if (normal_end)
