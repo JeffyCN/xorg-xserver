@@ -1336,6 +1336,9 @@ PreInit(ScrnInfoPtr pScrn, int flags)
     if (ret == 0 && value == 1)
         ms->drmmode.can_async_flip = TRUE;
 
+    /* HACK: The Rockchip BSP kernel might wrongly enable it */
+    ms->drmmode.can_async_flip = FALSE;
+
     ms->kms_has_modifiers = FALSE;
     ret = drmGetCap(ms->fd, DRM_CAP_ADDFB2_MODIFIERS, &value);
     if (ret == 0 && value != 0)
