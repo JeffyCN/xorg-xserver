@@ -1139,6 +1139,9 @@ PreInit(ScrnInfoPtr pScrn, int flags)
         ms->atomic_modeset = FALSE;
     }
 
+    /* HACK: Force disabling atomic APIs */
+    ms->atomic_modeset = 0;
+
     /* Try to enable atomic cap, but not doing atomic modeset */
     drmSetClientCap(ms->fd, DRM_CLIENT_CAP_ATOMIC, 2);
 
