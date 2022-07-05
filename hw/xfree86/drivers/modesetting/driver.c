@@ -1106,6 +1106,9 @@ PreInit(ScrnInfoPtr pScrn, int flags)
     ret = drmSetClientCap(ms->fd, DRM_CLIENT_CAP_ATOMIC, 1);
     ms->atomic_modeset = (ret == 0);
 
+    /* HACK: Force disabling atomic APIs */
+    ms->atomic_modeset = 0;
+
     /* Try to enable atomic cap, but not doing atomic modeset */
     drmSetClientCap(ms->fd, DRM_CLIENT_CAP_ATOMIC, 2);
 
