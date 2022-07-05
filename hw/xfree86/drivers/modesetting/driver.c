@@ -1140,6 +1140,9 @@ PreInit(ScrnInfoPtr pScrn, int flags)
     if (ret == 0 && value == 1)
         ms->async_pageflip = TRUE;
 
+    /* HACK: The Rockchip BSP kernel might wrongly enable it */
+    ms->async_pageflip = FALSE;
+
     ms->kms_has_modifiers = FALSE;
     ret = drmGetCap(ms->fd, DRM_CAP_ADDFB2_MODIFIERS, &value);
     if (ret == 0 && value != 0)
