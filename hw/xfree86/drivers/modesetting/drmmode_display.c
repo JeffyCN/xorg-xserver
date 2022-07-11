@@ -1592,7 +1592,7 @@ drmmode_crtc_copy_fb(ScrnInfoPtr pScrn, drmmode_ptr drmmode,
     struct dumb_bo *bo;
     uint8_t *src, *dst;
     int src_x, src_y, src_w, src_h, crtc_x, crtc_y, crtc_w, crtc_h;
-    int fbcon_id, src_bpp, src_pitch, dst_pitch;
+    int fbcon_id, src_pitch, dst_pitch;
 
     if (!drmmode_crtc->plane_id)
         return FALSE;
@@ -1642,8 +1642,6 @@ drmmode_crtc_copy_fb(ScrnInfoPtr pScrn, drmmode_ptr drmmode,
     if (!fbcon)
         return FALSE;
 
-    src_bpp = fbcon->depth;
-
     bo = dumb_get_bo_from_handle(drmmode->fd, fbcon->handle, fbcon->pitch,
                                  fbcon->pitch * fbcon->height);
     drmModeFreeFB(fbcon);
@@ -1658,7 +1656,7 @@ drmmode_crtc_copy_fb(ScrnInfoPtr pScrn, drmmode_ptr drmmode,
     src_pitch = bo->pitch;
     dst_pitch = screen_pixmap->devKind;
 
-    if (!drmmode_copy(src, src_pitch, src_x, src_y, src_bpp,
+    if (!drmmode_copy(src, src_pitch, src_x, src_y, fbcon->bpp,
                       dst, dst_pitch, crtc_x, crtc_y, drmmode->kbpp,
                       src_w, src_h))
         goto err;
