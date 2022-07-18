@@ -1504,7 +1504,6 @@ drmmode_copy(uint8_t *src, int src_pitch, int src_x, int src_y, int src_bpp,
 #define RGA_FORMAT(bpp) ({ \
     RgaSURF_FORMAT format = RK_FORMAT_UNKNOWN; \
     if ((bpp) == 16) format = RK_FORMAT_RGB_565; \
-    if ((bpp) == 24) format = RK_FORMAT_RGB_888; \
     if ((bpp) == 32) format = RK_FORMAT_RGBX_8888; \
     format; })
 
@@ -1520,8 +1519,10 @@ drmmode_copy(uint8_t *src, int src_pitch, int src_x, int src_y, int src_bpp,
     if (!src || ! src_pitch || !dst || !dst_pitch)
         return FALSE;
 
-    if (src_bpp != 16 && src_bpp != 24 && src_bpp != 32 &&
-        dst_bpp != 16 && dst_bpp != 24 && dst_bpp != 32)
+    if (src_bpp != 16 && src_bpp != 32)
+        return FALSE;
+
+    if (dst_bpp != 16 && dst_bpp != 32)
         return FALSE;
 
 #ifdef MODESETTING_WITH_RGA
@@ -1592,7 +1593,7 @@ drmmode_crtc_copy_fb(ScrnInfoPtr pScrn, drmmode_ptr drmmode,
     struct dumb_bo *bo;
     uint8_t *src, *dst;
     int src_x, src_y, src_w, src_h, crtc_x, crtc_y, crtc_w, crtc_h;
-    int fbcon_id, src_pitch, dst_pitch;
+    int fbcon_id, src_bpp, src_pitch, dst_pitch;
 
     if (!drmmode_crtc->plane_id)
         return FALSE;
@@ -1642,6 +1643,8 @@ drmmode_crtc_copy_fb(ScrnInfoPtr pScrn, drmmode_ptr drmmode,
     if (!fbcon)
         return FALSE;
 
+    src_bpp = fbcon->bpp;
+
     bo = dumb_get_bo_from_handle(drmmode->fd, fbcon->handle, fbcon->pitch,
                                  fbcon->pitch * fbcon->height);
     drmModeFreeFB(fbcon);
@@ -1656,7 +1659,7 @@ drmmode_crtc_copy_fb(ScrnInfoPtr pScrn, drmmode_ptr drmmode,
     src_pitch = bo->pitch;
     dst_pitch = screen_pixmap->devKind;
 
-    if (!drmmode_copy(src, src_pitch, src_x, src_y, fbcon->bpp,
+    if (!drmmode_copy(src, src_pitch, src_x, src_y, src_bpp,
                       dst, dst_pitch, crtc_x, crtc_y, drmmode->kbpp,
                       src_w, src_h))
         goto err;
