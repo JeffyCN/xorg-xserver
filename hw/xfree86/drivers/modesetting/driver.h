@@ -183,6 +183,14 @@ typedef struct _modesettingRec {
     } glamor;
 #endif
 
+    /* exa API */
+    struct {
+        ExaDriverPtr (*Alloc)(void);
+        Bool (*Init)(ScreenPtr, ExaDriverPtr);
+        void (*Fini)(ScreenPtr);
+        void *(*GetPrivate)(PixmapPtr);
+    } exa;
+
     XF86VideoAdaptorPtr adaptor;
 } modesettingRec, *modesettingPtr;
 
