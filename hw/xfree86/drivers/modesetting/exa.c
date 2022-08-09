@@ -75,6 +75,16 @@ typedef struct {
     ms_exa_prepare_args prepare_args;
 } ms_exa_ctx;
 
+static ms_exa_pixmap_priv *
+ms_exa_get_private(PixmapPtr pPixmap)
+{
+    ScreenPtr screen = pPixmap->drawable.pScreen;
+    ScrnInfoPtr scrn = xf86ScreenToScrn(screen);
+    modesettingPtr ms = modesettingPTR(scrn);
+
+    return ms->exa.GetPrivate(pPixmap);
+}
+
 #ifdef MODESETTING_WITH_RGA
 
 static inline RgaSURF_FORMAT
@@ -104,7 +114,7 @@ static Bool
 rga_prepare_info(PixmapPtr pPixmap, rga_info_t *info,
                  int x, int y, int w, int h)
 {
-    ms_exa_pixmap_priv *priv = exaGetPixmapDriverPrivate(pPixmap);
+    ms_exa_pixmap_priv *priv = ms_exa_get_private(pPixmap);
     RgaSURF_FORMAT format;
     int pitch, wstride, hstride;
 
@@ -148,7 +158,7 @@ rga_prepare_info(PixmapPtr pPixmap, rga_info_t *info,
 static Bool
 rga_check_pixmap(PixmapPtr pPixmap)
 {
-    ms_exa_pixmap_priv *priv = exaGetPixmapDriverPrivate(pPixmap);
+    ms_exa_pixmap_priv *priv = ms_exa_get_private(pPixmap);
     RgaSURF_FORMAT format;
 
     /* rga requires image width/height larger than 2 */
@@ -176,7 +186,7 @@ ms_exa_prepare_access(PixmapPtr pPix, int index)
     ScreenPtr screen = pPix->drawable.pScreen;
     ScrnInfoPtr scrn = xf86ScreenToScrn(screen);
     modesettingPtr ms = modesettingPTR(scrn);
-    ms_exa_pixmap_priv *priv = exaGetPixmapDriverPrivate(pPix);
+    ms_exa_pixmap_priv *priv = ms_exa_get_private(pPix);
 
     if (pPix->devPrivate.ptr)
         return TRUE;
@@ -194,7 +204,7 @@ ms_exa_prepare_access(PixmapPtr pPix, int index)
 void
 ms_exa_finish_access(PixmapPtr pPix, int index)
 {
-    ms_exa_pixmap_priv *priv = exaGetPixmapDriverPrivate(pPix);
+    ms_exa_pixmap_priv *priv = ms_exa_get_private(pPix);
 
     if (priv && priv->bo)
         pPix->devPrivate.ptr = NULL;
@@ -895,7 +905,7 @@ fail:
 static Bool
 ms_exa_pixmap_is_offscreen(PixmapPtr pPixmap)
 {
-    ms_exa_pixmap_priv *priv = exaGetPixmapDriverPrivate(pPixmap);
+    ms_exa_pixmap_priv *priv = ms_exa_get_private(pPixmap);
 
     return priv && priv->bo;
 }
@@ -904,7 +914,7 @@ Bool
 ms_exa_set_pixmap_bo(ScrnInfoPtr scrn, PixmapPtr pPixmap,
                      struct dumb_bo *bo, Bool owned)
 {
-    ms_exa_pixmap_priv *priv = exaGetPixmapDriverPrivate(pPixmap);
+    ms_exa_pixmap_priv *priv = ms_exa_get_private(pPixmap);
     modesettingPtr ms = modesettingPTR(scrn);
 
     if (!ms->drmmode.exa || !priv)
@@ -931,9 +941,9 @@ ms_exa_set_pixmap_bo(ScrnInfoPtr scrn, PixmapPtr pPixmap,
 struct dumb_bo *
 ms_exa_bo_from_pixmap(ScreenPtr screen, PixmapPtr pixmap)
 {
-    ms_exa_pixmap_priv *priv = exaGetPixmapDriverPrivate(pixmap);
     ScrnInfoPtr scrn = xf86ScreenToScrn(screen);
     modesettingPtr ms = modesettingPTR(scrn);
+    ms_exa_pixmap_priv *priv = ms_exa_get_private(pixmap);
 
     if (!ms->drmmode.exa || !priv)
         return NULL;
@@ -944,8 +954,8 @@ ms_exa_bo_from_pixmap(ScreenPtr screen, PixmapPtr pixmap)
 void
 ms_exa_exchange_buffers(PixmapPtr front, PixmapPtr back)
 {
-    ms_exa_pixmap_priv *front_priv = exaGetPixmapDriverPrivate(front);
-    ms_exa_pixmap_priv *back_priv = exaGetPixmapDriverPrivate(back);
+    ms_exa_pixmap_priv *front_priv = ms_exa_get_private(front);
+    ms_exa_pixmap_priv *back_priv = ms_exa_get_private(back);
     ms_exa_pixmap_priv tmp_priv;
 
     tmp_priv = *front_priv;
@@ -987,9 +997,9 @@ ms_exa_shareable_fd_from_pixmap(ScreenPtr screen,
                                 CARD16 *stride,
                                 CARD32 *size)
 {
-    ms_exa_pixmap_priv *priv = exaGetPixmapDriverPrivate(pixmap);
     ScrnInfoPtr scrn = xf86ScreenToScrn(screen);
     modesettingPtr ms = modesettingPTR(scrn);
+    ms_exa_pixmap_priv *priv = ms_exa_get_private(pixmap);
 
     if (!ms->drmmode.exa || !priv || !priv->fd)
         return -1;
@@ -1155,13 +1165,13 @@ ms_init_exa(ScrnInfoPtr scrn)
         return FALSE;
 
     exa = ms->drmmode.exa;
-    exa->driver = exaDriverAlloc();
+    exa->driver = ms->exa.Alloc();
     if (!exa->driver)
         goto bail;
 
     ms_setup_exa(exa->driver);
 
-    if (!exaDriverInit(screen, exa->driver))
+    if (!ms->exa.Init(screen, exa->driver))
         goto bail;
 
     exa->priv = calloc(1, sizeof(ms_exa_ctx));
@@ -1206,7 +1216,7 @@ ms_deinit_exa(ScrnInfoPtr scrn)
     }
 
     if (exa->driver) {
-        exaDriverFini(screen);
+        ms->exa.Fini(screen);
         free(exa->driver);
     }
 
