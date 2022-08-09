@@ -970,9 +970,16 @@ static void
 try_enable_exa(ScrnInfoPtr pScrn)
 {
     modesettingPtr ms = modesettingPTR(pScrn);
+    void *mod = xf86LoadSubModule(pScrn, "exa");
+    if (mod) {
+        ms->exa.Alloc = LoaderSymbolFromModule(mod, "exaDriverAlloc");
+        ms->exa.Init = LoaderSymbolFromModule(mod, "exaDriverInit");
+        ms->exa.Fini = LoaderSymbolFromModule(mod, "exaDriverFini");
+        ms->exa.GetPrivate =
+            LoaderSymbolFromModule(mod, "exaGetPixmapDriverPrivate");
 
-    if (xf86LoadSubModule(pScrn, "exa"))
         ms_init_exa(pScrn);
+    }
 
     if (ms->drmmode.exa)
         xf86DrvMsg(pScrn->scrnIndex, X_INFO, "exa initialized\n");
