@@ -21,6 +21,10 @@
  * IN THE SOFTWARE.
  */
 
+#include "dix-config.h"
+
+#ifdef GLXEXT
+
 #include <epoxy/glx.h>
 #include "glamor_context.h"
 
@@ -66,3 +70,5 @@ glamor_glx_screen_init(struct glamor_context *glamor_ctx)
 
     return True;
 }
+
+#endif // GLXEXT
