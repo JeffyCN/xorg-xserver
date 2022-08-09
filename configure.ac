@@ -2090,7 +2090,8 @@ if test "x$GLAMOR" = xyes; then
 				 [AC_DEFINE(GBM_BO_WITH_MODIFIERS, 1, [Have gbm_bo_create_with_modifiers])],
 				 [])
 		AC_CHECK_HEADER([gbm.h],
-			[AC_CHECK_LIB(gbm, gbm_bo_map,
+			[LDFLAGS="$LDFLAGS $GBM_LIBS"
+			 AC_CHECK_LIB(gbm, gbm_bo_map,
 				[AC_DEFINE(GLAMOR_HAS_GBM_MAP,1,[Have gbm_bo_map])])])
 	else
 		if test "x$XORG" = xyes; then
@@ -2098,8 +2099,11 @@ if test "x$GLAMOR" = xyes; then
 		fi
 	fi
 
+	PKG_CHECK_MODULES(EGL, "$LIBEGL")
+
 	AC_CHECK_HEADER([GLES3/gl3.h],
-		[AC_CHECK_LIB(GLESv2, glFenceSync,
+		[LDFLAGS="$LDFLAGS $EGL_LIBS"
+		 AC_CHECK_LIB(GLESv2, glFenceSync,
 			[AC_DEFINE(GLAMOR_HAS_GL_FENCE,1,[Have glFenceSync])])])
 fi
 AM_CONDITIONAL([GLAMOR_EGL], [test "x$GBM" = xyes])
