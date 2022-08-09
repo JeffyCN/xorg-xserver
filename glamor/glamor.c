@@ -673,8 +673,10 @@ glamor_init(ScreenPtr screen, unsigned int flags)
     if (flags & GLAMOR_USE_EGL_SCREEN) {
         glamor_egl_screen_init(screen, &glamor_priv->ctx);
     } else {
+#ifdef GLXEXT
         if (!glamor_glx_screen_init(&glamor_priv->ctx))
             goto fail;
+#endif
     }
 
     glamor_make_current(glamor_priv);
