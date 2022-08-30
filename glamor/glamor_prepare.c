@@ -159,16 +159,16 @@ glamor_prep_pixmap_box(PixmapPtr pixmap, glamor_access_t access, BoxPtr box)
 done:
     RegionUninit(&region);
 
-#ifdef GLAMOR_HAS_GBM
-    if (priv->bo_mapped && !priv->gl_synced) {
+    if (priv->bo_mapped) {
         /* Finish all gpu commands before accessing the buffer */
-        if (!glamor_priv->gl_synced)
+        if (!priv->gl_synced && !glamor_priv->gl_synced)
             glamor_finish(screen);
 
         priv->gl_synced = TRUE;
+
+        /* No prepared flag for directly mapping */
+        return TRUE;
     }
-    return TRUE;
-#endif
 
     priv->prepared = TRUE;
     return TRUE;
@@ -179,13 +179,28 @@ done:
  * if we were writing to it and then unbind it to release the memory
  */
 
-static void
-glamor_fini_pixmap(PixmapPtr pixmap)
+void
+glamor_finish_access_pixmap(PixmapPtr pixmap, Bool force)
 {
     glamor_pixmap_private       *priv = glamor_get_pixmap_private(pixmap);
 
     if (!GLAMOR_PIXMAP_PRIV_HAS_FBO(priv))
         return;
+
+#ifdef GLAMOR_HAS_GBM
+    if (priv->bo_mapped) {
+        if (priv->prepared)
+            FatalError("something wrong during buffer mapping");
+
+        /* Delay unmap to finalize when not forced */
+        if (force) {
+            pixmap->devPrivate.ptr = NULL;
+
+            gbm_bo_unmap(priv->bo, priv->map_data);
+            priv->bo_mapped = FALSE;
+        }
+    }
+#endif
 
     if (!priv->prepared)
         return;
@@ -196,11 +211,7 @@ glamor_fini_pixmap(PixmapPtr pixmap)
         pixmap->devPrivate.ptr = NULL;
     }
 
-#ifdef GLAMOR_HAS_GBM
-    if (!priv->bo_mapped && priv->map_access == GLAMOR_ACCESS_RW) {
-#else
     if (priv->map_access == GLAMOR_ACCESS_RW) {
-#endif
         glamor_upload_boxes(pixmap,
                             RegionRects(&priv->prepare_region),
                             RegionNumRects(&priv->prepare_region),
@@ -213,10 +224,6 @@ glamor_fini_pixmap(PixmapPtr pixmap)
         glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0);
         glDeleteBuffers(1, &priv->pbo);
         priv->pbo = 0;
-#ifdef GLAMOR_HAS_GBM
-    } else if (priv->bo_mapped) {
-        /* Delay unmap to finalize */
-#endif
     } else {
         free(pixmap->devPrivate.ptr);
         pixmap->devPrivate.ptr = NULL;
@@ -260,7 +267,7 @@ glamor_prepare_access_box(DrawablePtr drawable, glamor_access_t access,
 void
 glamor_finish_access(DrawablePtr drawable)
 {
-    glamor_fini_pixmap(glamor_get_drawable_pixmap(drawable));
+    glamor_finish_access_pixmap(glamor_get_drawable_pixmap(drawable), FALSE);
 }
 
 /*
