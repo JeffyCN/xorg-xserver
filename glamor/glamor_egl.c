@@ -170,17 +170,11 @@ glamor_egl_set_pixmap_bo(PixmapPtr pixmap, struct gbm_bo *bo,
     struct glamor_pixmap_private *pixmap_priv =
         glamor_get_pixmap_private(pixmap);
 
-    if (pixmap_priv->bo) {
-#ifdef GLAMOR_HAS_GBM_MAP
-        if (pixmap_priv->bo_mapped) {
-            gbm_bo_unmap(pixmap_priv->bo, pixmap_priv->map_data);
-            pixmap_priv->bo_mapped = FALSE;
-            pixmap->devPrivate.ptr = NULL;
-        }
-#endif
-        if (pixmap_priv->owned_bo)
-            gbm_bo_destroy(pixmap_priv->bo);
-    }
+    glamor_finish_access_pixmap(pixmap, TRUE);
+
+    if (pixmap_priv->bo && pixmap_priv->owned_bo)
+        gbm_bo_destroy(pixmap_priv->bo);
+
     pixmap_priv->bo = bo;
     pixmap_priv->owned_bo = TRUE;
     pixmap_priv->used_modifiers = used_modifiers;
@@ -766,11 +760,16 @@ glamor_egl_exchange_buffers(PixmapPtr front, PixmapPtr back)
 
     glamor_pixmap_exchange_fbos(front, back);
 
+    glamor_finish_access_pixmap(front, FALSE);
+    glamor_finish_access_pixmap(back, FALSE);
+
+    /* Swap all buffer related members */
     GLAMOR_EXCHANGE(back_priv->bo, front_priv->bo);
     GLAMOR_EXCHANGE(back_priv->owned_bo, front_priv->owned_bo);
     GLAMOR_EXCHANGE(back_priv->used_modifiers, front_priv->used_modifiers);
     GLAMOR_EXCHANGE(back_priv->bo_mapped, front_priv->bo_mapped);
     GLAMOR_EXCHANGE(back_priv->map_data, front_priv->map_data);
+    GLAMOR_EXCHANGE(back_priv->gl_synced, front_priv->gl_synced);
 
     GLAMOR_EXCHANGE(back->devPrivate.ptr, front->devPrivate.ptr);
     GLAMOR_EXCHANGE(back->devKind, front->devKind);
