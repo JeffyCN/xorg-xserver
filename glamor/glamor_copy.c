@@ -337,6 +337,30 @@ bail:
 #define GL_TILE_RASTER_ORDER_INCREASING_Y_MESA   0x8BBA
 #endif
 
+/**
+ * HACK: The FBO draw sometimes not working after resume in UOS, somehow this
+ * hack (or trigger a draw on other FBO) could workaround it.
+ * Should fix it in Mali DDK instead.
+ */
+static void
+glamor_fbo_workaround(PixmapPtr pixmap)
+{
+    ScreenPtr                   screen = pixmap->drawable.pScreen;
+    glamor_screen_private       *glamor_priv = glamor_get_screen_private(screen);
+    glamor_pixmap_private       *priv = glamor_get_pixmap_private(pixmap);
+    const struct glamor_format *f = glamor_format_for_pixmap(pixmap);
+    glamor_pixmap_fbo       *fbo = glamor_pixmap_fbo_at(priv, 0);
+
+    glamor_make_current(glamor_priv);
+    glamor_bind_texture(glamor_priv, GL_TEXTURE0, fbo, TRUE);
+
+    glamor_prepare_access(&pixmap->drawable, GLAMOR_ACCESS_RO);
+    glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 1, 1,
+                    f->format, f->type,
+                    pixmap->devPrivate.ptr);
+    glamor_finish_access(&pixmap->drawable);
+}
+
 /*
  * Copy from GPU to GPU by using the source
  * as a texture and painting that into the destination
@@ -400,6 +424,8 @@ glamor_copy_fbo_fbo_draw(DrawablePtr src,
                                   copy_facet, NULL, NULL, NULL))
             goto bail_ctx;
     }
+
+    glamor_fbo_workaround(dst_pixmap);
 
     args.src_pixmap = src_pixmap;
     args.bitplane = bitplane;
