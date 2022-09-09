@@ -1,6 +1,5 @@
 ## Patches with a number < 100 are applied in debian.
 ## Ubuntu patches start with 100.
-001_fedora_extramodes.patch
 02_kbsd-input-devd.diff
 03_static-nettle.diff
 05_Revert-Unload-submodules.diff
