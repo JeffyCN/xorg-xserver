@@ -59,6 +59,7 @@ typedef enum {
     OPTION_BIND_CURRENT,
     OPTION_NO_EDID,
     OPTION_HOTPLUG_RESET,
+    OPTION_WARM_UP,
 } modesettingOpts;
 
 typedef struct
@@ -128,6 +129,8 @@ typedef struct _modesettingRec {
 
     Bool kms_has_modifiers;
     Bool async_pageflip;
+
+    Bool warm_up;
 
     XF86VideoAdaptorPtr adaptor;
 } modesettingRec, *modesettingPtr;
