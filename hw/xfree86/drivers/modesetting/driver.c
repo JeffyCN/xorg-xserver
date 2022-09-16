@@ -150,6 +150,7 @@ static const OptionInfoRec Options[] = {
     {OPTION_BIND_CURRENT, "BindCurrent", OPTV_BOOLEAN, {0}, FALSE},
     {OPTION_NO_EDID, "NoEDID", OPTV_BOOLEAN, {0}, FALSE},
     {OPTION_HOTPLUG_RESET, "HotplugReset", OPTV_BOOLEAN, {0}, FALSE},
+    {OPTION_WARM_UP, "WarmUp", OPTV_BOOLEAN, {0}, FALSE},
     {-1, NULL, OPTV_NONE, {0}, FALSE}
 };
 
@@ -747,6 +748,12 @@ msBlockHandler_oneshot(ScreenPtr pScreen, void *pTimeout)
     ScrnInfoPtr pScrn = xf86ScreenToScrn(pScreen);
     modesettingPtr ms = modesettingPTR(pScrn);
 
+    /* HACK: Ignore the first request */
+    if (ms->warm_up) {
+        ms->warm_up = FALSE;
+        return;
+    }
+
     msBlockHandler(pScreen, pTimeout);
 
     drmmode_set_desired_modes(pScrn, &ms->drmmode, TRUE);
@@ -1088,6 +1095,9 @@ PreInit(ScrnInfoPtr pScrn, int flags)
 
     ms->drmmode.hotplug_reset =
         xf86ReturnOptValBool(ms->drmmode.Options, OPTION_HOTPLUG_RESET, TRUE);
+
+    ms->warm_up =
+        xf86ReturnOptValBool(ms->drmmode.Options, OPTION_WARM_UP, TRUE);
 
     str_value = xf86GetOptValString(ms->drmmode.Options, OPTION_FLIP_FB);
     if (!str_value || !strcmp(str_value, "transformed"))
