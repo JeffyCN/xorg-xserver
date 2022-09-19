@@ -132,6 +132,7 @@ typedef struct _modesettingRec {
     Bool async_pageflip;
 
     Bool warm_up;
+    Bool freeze;
 
     XF86VideoAdaptorPtr adaptor;
 } modesettingRec, *modesettingPtr;
