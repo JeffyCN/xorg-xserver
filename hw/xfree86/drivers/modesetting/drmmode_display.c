@@ -784,22 +784,21 @@ drmmode_crtc_modeset(xf86CrtcPtr crtc, uint32_t fb_id,
     drmmode_ptr drmmode = drmmode_crtc->drmmode;
     struct dumb_bo *bo = NULL;
     uint32_t old_fb_id = 0;
-    int width, height, ret = -1;
+    int ret = -1;
 
-    width = mode->hdisplay;
-    height = mode->vdisplay;
+    /* prefer using the original FB */
+    ret = drmModeSetCrtc(drmmode->fd, drmmode_crtc->mode_crtc->crtc_id,
+                         fb_id, x, y, output_ids, output_count, mode);
+    if (!ret)
+        return 0;
 
-    /* flip-fb disabled or shadow bo */
-    if (!drmmode_crtc->flip_fb_enabled || fb_id != drmmode->fb_id)
-        return drmModeSetCrtc(drmmode->fd, drmmode_crtc->mode_crtc->crtc_id,
-                              fb_id, x, y, output_ids, output_count, mode);
-
-    /* create dummy bo for modeset */
-    bo = dumb_bo_create(drmmode->fd, width, height, drmmode->kbpp);
+    /* fallback to a new dummy FB */
+    bo = dumb_bo_create(drmmode->fd, mode->hdisplay, mode->vdisplay,
+                        drmmode->kbpp);
     if (!bo)
         goto err;
 
-    ret = drmModeAddFB(drmmode->fd, width, height,
+    ret = drmModeAddFB(drmmode->fd, mode->hdisplay, mode->vdisplay,
                        drmmode->scrn->depth, drmmode->kbpp,
                        bo->pitch, bo->handle, &fb_id);
     if (ret < 0)
