@@ -1325,6 +1325,13 @@ drmmode_crtc_dpms(xf86CrtcPtr crtc, int mode)
     modesettingPtr ms = modesettingPTR(crtc->scrn);
     drmmode_crtc_private_ptr drmmode_crtc = crtc->driver_private;
 
+    if (ms->freeze) {
+        xf86DrvMsg(crtc->scrn->scrnIndex, X_INFO,
+                   "Ignoring dpms on crtc-%d (freezed)\n",
+                   drmmode_crtc->mode_crtc->crtc_id);
+        return;
+    }
+
     /* XXX Check if DPMS mode is already the right one */
 
     drmmode_crtc->dpms_mode = mode;
@@ -1495,6 +1502,13 @@ drmmode_set_mode_major(xf86CrtcPtr crtc, DisplayModePtr mode,
     /* Ignore modeset when disconnected in hotplug reset mode */
     if (drmmode->hotplug_reset && !drmmode_crtc_connected(crtc))
         return ret;
+
+    if (ms->freeze) {
+        xf86DrvMsg(crtc->scrn->scrnIndex, X_INFO,
+                   "Ignoring modeset on crtc-%d (freezed)\n",
+                   drmmode_crtc->mode_crtc->crtc_id);
+        return ret;
+    }
 
     saved_mode = crtc->mode;
     saved_x = crtc->x;
@@ -2538,6 +2552,12 @@ drmmode_output_dpms(xf86OutputPtr output, int mode)
 
     if (!koutput)
         return;
+
+    if (ms->freeze) {
+        xf86DrvMsg(output->scrn->scrnIndex, X_INFO,
+                   "Ignoring dpms on output-%s (freezed)\n", output->name);
+        return;
+    }
 
     /* XXX Check if DPMS mode is already the right one */
 

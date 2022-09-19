@@ -221,7 +221,7 @@ ms_present_check_flip(RRCrtcPtr crtc,
     int num_crtcs_on = 0;
     int i;
 
-    if (!ms->drmmode.pageflip)
+    if (ms->freeze || !ms->drmmode.pageflip)
         return FALSE;
 
     if (ms->drmmode.dri2_flipping)
