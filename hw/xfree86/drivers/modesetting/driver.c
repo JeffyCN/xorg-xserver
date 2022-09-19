@@ -722,7 +722,7 @@ ms_dirty_get_ent(ScreenPtr screen, PixmapPtr secondary_dst)
     return NULL;
 }
 
-static void
+static Bool
 msBlockHandler(ScreenPtr pScreen, void *timeout)
 {
     modesettingPtr ms = modesettingPTR(xf86ScreenToScrn(pScreen));
@@ -730,10 +730,22 @@ msBlockHandler(ScreenPtr pScreen, void *timeout)
     xf86CrtcConfigPtr xf86_config = XF86_CRTC_CONFIG_PTR(pScrn);
     int c;
 
+    /* HACK: Ignore the first request */
+    if (ms->warm_up) {
+        ms->warm_up = FALSE;
+        *((int *)timeout) = 16;
+        return FALSE;
+    }
+
+    if (!access(getenv("XSERVER_FREEZE_DISPLAY") ? : "", F_OK)) {
+        *((int *)timeout) = 16;
+        return FALSE;
+    }
+
     pScreen->BlockHandler = ms->BlockHandler;
     pScreen->BlockHandler(pScreen, timeout);
     ms->BlockHandler = pScreen->BlockHandler;
-    pScreen->BlockHandler = msBlockHandler;
+    pScreen->BlockHandler = (void *)msBlockHandler;
     if (pScreen->isGPU && !ms->drmmode.reverse_prime_offload_mode)
         dispatch_secondary_dirty(pScreen);
     else {
@@ -754,6 +766,7 @@ msBlockHandler(ScreenPtr pScreen, void *timeout)
     }
 
     ms_dirty_update(pScreen, timeout);
+    return TRUE;
 }
 
 static void
@@ -762,13 +775,8 @@ msBlockHandler_oneshot(ScreenPtr pScreen, void *pTimeout)
     ScrnInfoPtr pScrn = xf86ScreenToScrn(pScreen);
     modesettingPtr ms = modesettingPTR(pScrn);
 
-    /* HACK: Ignore the first request */
-    if (ms->warm_up) {
-        ms->warm_up = FALSE;
+    if (!msBlockHandler(pScreen, pTimeout))
         return;
-    }
-
-    msBlockHandler(pScreen, pTimeout);
 
     drmmode_set_desired_modes(pScrn, &ms->drmmode, TRUE, FALSE);
 }
