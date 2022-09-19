@@ -193,6 +193,7 @@ typedef struct _modesettingRec {
     } exa;
 
     Bool warm_up;
+    Bool freeze;
 
     XF86VideoAdaptorPtr adaptor;
 } modesettingRec, *modesettingPtr;
