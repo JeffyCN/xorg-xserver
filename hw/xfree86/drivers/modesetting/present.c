@@ -223,7 +223,7 @@ ms_present_check_flip(RRCrtcPtr crtc,
     int i;
     struct gbm_bo *gbm;
 
-    if (!ms->drmmode.pageflip)
+    if (ms->freeze || !ms->drmmode.pageflip)
         return FALSE;
 
     if (ms->drmmode.dri2_flipping)
