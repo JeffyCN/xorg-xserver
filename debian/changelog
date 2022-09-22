@@ -1,9 +1,9 @@
-xorg-server (2:21.1.4-2) UNRELEASED; urgency=medium
+xorg-server (2:21.1.4-2) unstable; urgency=medium
 
   * 001_fedora_extramodes.patch: Dropped, apparently obsolete since
-    1.5.0.
+    1.5.0. (LP: #1990456)
 
- -- Timo Aaltonen <tjaalton@debian.org>  Fri, 09 Sep 2022 09:46:29 +0300
+ -- Timo Aaltonen <tjaalton@debian.org>  Thu, 22 Sep 2022 08:53:59 +0300
 
 xorg-server (2:21.1.4-1) unstable; urgency=medium
 
