@@ -1,9 +1,9 @@
-xorg-server (2:21.1.4-3) UNRELEASED; urgency=medium
+xorg-server (2:21.1.4-3) unstable; urgency=medium
 
   * xkb: proof GetCountedString against request length attacks (CVE-2022-3550)
   * xkb: fix some possible memleaks in XkbGetKbdByName (CVE-2022-3551)
 
- -- Emilio Pozuelo Monfort <pochu@debian.org>  Thu, 10 Nov 2022 12:29:36 +0100
+ -- Emilio Pozuelo Monfort <pochu@debian.org>  Fri, 11 Nov 2022 13:35:13 +0100
 
 xorg-server (2:21.1.4-2) unstable; urgency=medium
 
