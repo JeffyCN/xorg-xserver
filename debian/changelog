@@ -1,3 +1,11 @@
+xorg-server (2:21.1.5-1) UNRELEASED; urgency=medium
+
+  * New upstream release.
+    - CVE-2022-46340, CVE-2022-46341, CVE-2022-46342, CVE-2022-46343,
+      CVE-2022-46344, CVE-2022-46283
+
+ -- Timo Aaltonen <tjaalton@debian.org>  Wed, 14 Dec 2022 10:56:53 +0200
+
 xorg-server (2:21.1.4-3) unstable; urgency=medium
 
   * xkb: proof GetCountedString against request length attacks (CVE-2022-3550)
