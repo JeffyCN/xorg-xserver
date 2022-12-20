@@ -6,5 +6,3 @@
 06_use-intel-only-on-pre-gen4.diff
 07_use-modesetting-driver-by-default-on-GeForce.diff
 present-Check-for-NULL-to-prevent-crash.patch
-08_xkb-proof-GetCountedString-against-request-length-at.patch
-09_xkb-fix-some-possible-memleaks-in-XkbGetKbdByName.patch
