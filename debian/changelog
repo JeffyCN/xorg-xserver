@@ -1,10 +1,10 @@
-xorg-server (2:21.1.6-1) UNRELEASED; urgency=medium
+xorg-server (2:21.1.6-1) unstable; urgency=medium
 
   * New upstream release.
   * patches: Drop upstreamed patches.
   * Add signing-key from Olivier Fourdan.
 
- -- Timo Aaltonen <tjaalton@debian.org>  Tue, 20 Dec 2022 15:48:02 +0200
+ -- Timo Aaltonen <tjaalton@debian.org>  Thu, 05 Jan 2023 16:02:46 +0200
 
 xorg-server (2:21.1.5-1) unstable; urgency=medium
 
