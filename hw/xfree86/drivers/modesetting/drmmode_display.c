@@ -56,11 +56,6 @@
 
 #include "driver.h"
 
-#ifdef MODESETTING_WITH_RGA
-#include <rga/rga.h>
-#include <rga/RgaApi.h>
-#endif
-
 static Bool drmmode_xf86crtc_resize(ScrnInfoPtr scrn, int width, int height);
 
 static void drmmode_destroy_flip_fb(xf86CrtcPtr crtc);
@@ -1507,91 +1502,6 @@ drmmode_crtc_dpms(xf86CrtcPtr crtc, int mode)
 }
 
 static Bool
-drmmode_copy(uint8_t *src, int src_pitch, int src_x, int src_y, int src_bpp,
-             uint8_t *dst, int dst_pitch, int dst_x, int dst_y, int dst_bpp,
-             int width, int height)
-{
-#ifdef MODESETTING_WITH_RGA
-#define RGA_FORMAT(bpp) ({ \
-    RgaSURF_FORMAT format = RK_FORMAT_UNKNOWN; \
-    if ((bpp) == 16) format = RK_FORMAT_RGB_565; \
-    if ((bpp) == 32) format = RK_FORMAT_RGBX_8888; \
-    format; })
-
-    rga_info_t src_info = {0};
-    rga_info_t dst_info = {0};
-    RgaSURF_FORMAT src_format = RGA_FORMAT(src_bpp);
-    RgaSURF_FORMAT dst_format = RGA_FORMAT(dst_bpp);
-    int ret;
-#endif
-
-    int i, j;
-
-    if (!src || ! src_pitch || !dst || !dst_pitch)
-        return FALSE;
-
-    if (src_bpp != 16 && src_bpp != 32)
-        return FALSE;
-
-    if (dst_bpp != 16 && dst_bpp != 32)
-        return FALSE;
-
-#ifdef MODESETTING_WITH_RGA
-    /* RGA copy */
-
-    if (c_RkRgaInit() < 0)
-        return FALSE;
-
-    src_info.fd = -1;
-    src_info.mmuFlag = 1;
-    src_info.virAddr = src;
-    rga_set_rect(&src_info.rect, src_x, src_y, width, height,
-                 src_pitch * 8 / src_bpp, src_y + height, src_format);
-
-    dst_info.fd = -1;
-    dst_info.mmuFlag = 1;
-    dst_info.virAddr = dst;
-    rga_set_rect(&dst_info.rect, dst_x, dst_y, width, height,
-                 dst_pitch * 8 / dst_bpp, dst_y + height, dst_format);
-
-
-    ret = c_RkRgaBlit(&src_info, &dst_info, NULL);
-    c_RkRgaDeInit();
-
-    if (ret >= 0)
-        return TRUE;
-#endif
-
-    /* SW copy */
-
-    src += src_x * src_bpp / 8 + src_y * src_pitch;
-    dst += dst_x * dst_bpp / 8 + dst_y * dst_pitch;
-
-#define RGB565_TO_RGB32(ptr) ({ \
-                              int c = ((uint16_t *)(ptr))[0]; \
-                              c = ((c) & 0xF800) << 8 | ((c) & 0x3800) << 5 | \
-                              ((c) & 0x7E0) << 5 | ((c) & 0xE0) << 3 | \
-                              ((c) & 0x1F) << 3 | ((c) & 0x3); c; })
-
-#define RGB_TO_RGB32(ptr) \
-    (ptr)[0] << 16 | (ptr)[1] << 8 | (ptr)[2]
-
-#define CONVERT_TO_RGB32(ptr, bpp) \
-    ((bpp) == 16) ? RGB565_TO_RGB32(ptr) : RGB_TO_RGB32(ptr)
-
-    for (i = 0; i < height; i++) {
-        for (j = 0; j < width; j++)
-            ((uint32_t *)dst)[j] =
-                CONVERT_TO_RGB32(src + j * src_bpp / 8, src_bpp);
-
-        src += src_pitch;
-        dst += dst_pitch;
-    }
-
-    return TRUE;
-}
-
-static Bool
 drmmode_crtc_copy_fb(ScrnInfoPtr pScrn, drmmode_ptr drmmode,
                      xf86CrtcPtr crtc)
 {
@@ -1600,11 +1510,13 @@ drmmode_crtc_copy_fb(ScrnInfoPtr pScrn, drmmode_ptr drmmode,
     drmmode_crtc_private_ptr drmmode_crtc = crtc->driver_private;
     drmmode_prop_info_rec *props_plane = drmmode_crtc->props_plane;
     drmModeObjectProperties *props;
+    PixmapPtr src = NULL, dst;
     drmModeFBPtr fbcon;
     struct dumb_bo *bo;
-    uint8_t *src, *dst;
+    GCPtr gc;
     int src_x, src_y, src_w, src_h, crtc_x, crtc_y, crtc_w, crtc_h;
-    int fbcon_id, src_bpp, src_pitch, dst_pitch;
+    int fbcon_id, fb_width, fb_height, fb_pitch, fb_depth, fb_bpp;
+    Bool ret = FALSE;
 
     if (!drmmode_crtc->plane_id)
         return FALSE;
@@ -1647,14 +1559,20 @@ drmmode_crtc_copy_fb(ScrnInfoPtr pScrn, drmmode_ptr drmmode,
                                     props, 0);
     drmModeFreeObjectProperties(props);
 
-    if (!src_w || !src_h || src_w != crtc_w || src_h != crtc_h)
+    if (!src_w || !src_h || src_w != crtc_w || src_h != crtc_h ||
+        crtc_x + crtc_w > screen_pixmap->drawable.width ||
+        crtc_y + crtc_h > screen_pixmap->drawable.height)
         return FALSE;
 
     fbcon = drmModeGetFB(drmmode->fd, fbcon_id);
     if (!fbcon)
         return FALSE;
 
-    src_bpp = fbcon->bpp;
+    fb_width = fbcon->width;
+    fb_height = fbcon->height;
+    fb_pitch = fbcon->pitch;
+    fb_depth = fbcon->depth;
+    fb_bpp = fbcon->bpp;
 
     bo = dumb_get_bo_from_handle(drmmode->fd, fbcon->handle, fbcon->pitch,
                                  fbcon->pitch * fbcon->height);
@@ -1663,23 +1581,43 @@ drmmode_crtc_copy_fb(ScrnInfoPtr pScrn, drmmode_ptr drmmode,
         return FALSE;
 
     if (dumb_bo_map(drmmode->fd, bo) < 0)
-        goto err;
+        goto out;
 
-    src = bo->ptr;
-    dst = drmmode_map_front_bo(drmmode);
-    src_pitch = bo->pitch;
-    dst_pitch = screen_pixmap->devKind;
+    src = drmmode_create_pixmap_header(pScreen, fb_width,
+                                       fb_height, fb_depth,
+                                       fb_bpp, fb_pitch,
+                                       bo->ptr);
+    if (!src)
+        goto out;
 
-    if (!drmmode_copy(src, src_pitch, src_x, src_y, src_bpp,
-                      dst, dst_pitch, crtc_x, crtc_y, drmmode->kbpp,
-                      src_w, src_h))
-        goto err;
+    if (drmmode->exa) {
+        if (!ms_exa_set_pixmap_bo(pScrn, src, bo, FALSE))
+            goto out;
+    }
+#ifdef GLAMOR_HAS_GBM
+    else if (drmmode->glamor) {
+        if (!glamor_egl_create_textured_pixmap(src, bo->handle, bo->pitch))
+            goto out;
+    }
+#endif
 
-    dumb_bo_destroy(drmmode->fd, bo);
-    return TRUE;
-err:
-    dumb_bo_destroy(drmmode->fd, bo);
-    return FALSE;
+    dst = pScreen->GetScreenPixmap(pScreen);
+
+    gc = GetScratchGC(pScrn->depth, pScreen);
+    ValidateGC(&dst->drawable, gc);
+
+    (*gc->ops->CopyArea)(&src->drawable, &dst->drawable, gc, src_x, src_y,
+                         src_w, src_h, crtc_x, crtc_y);
+
+    FreeScratchGC(gc);
+    ret = TRUE;
+
+out:
+    if (src)
+        pScreen->DestroyPixmap(src);
+    if (bo)
+        dumb_bo_destroy(drmmode->fd, bo);
+    return ret;
 }
 
 void
@@ -1689,6 +1627,9 @@ drmmode_copy_fb(ScrnInfoPtr pScrn, drmmode_ptr drmmode)
     ScreenPtr pScreen = xf86ScrnToScreen(pScrn);
     Bool ret = FALSE;
     int i;
+
+    if (getenv("XSERVER_NO_BG_NONE"))
+        return;
 
     for (i = 0; i < xf86_config->num_crtc; i++)
         ret |= drmmode_crtc_copy_fb(pScrn, drmmode, xf86_config->crtc[i]);
