@@ -549,6 +549,9 @@ can_exchange(ScrnInfoPtr scrn, DrawablePtr draw,
 #endif
         if (drmmode_crtc->rotate_bo.dumb)
             return FALSE;
+        if (config->crtc[i]->driverIsPerformingTransform &
+            XF86DriverTransformOutput)
+            return FALSE;
 
         if (xf86_crtc_on(config->crtc[i]))
             num_crtcs_on++;
