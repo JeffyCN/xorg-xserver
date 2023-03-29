@@ -1,3 +1,10 @@
+xorg-server (2:21.1.7-2) unstable; urgency=high
+
+  * composite: Fix use-after-free of the COW
+    ZDI-CAN-19866/CVE-2023-1393
+
+ -- Julien Cristau <jcristau@debian.org>  Wed, 29 Mar 2023 15:11:07 +0200
+
 xorg-server (2:21.1.7-1) unstable; urgency=medium
 
   * New upstream release
