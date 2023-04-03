@@ -2575,7 +2575,7 @@ drmmode_output_change_status(xf86OutputPtr output, xf86OutputStatus status)
     drmmode_crtc = crtc->driver_private;
 
     if (!connected) {
-        if (drmmode->hotplug_reset) {
+        if (drmmode->hotplug_reset && !drmmode_crtc_connected(crtc)) {
             drmmode_crtc->need_modeset = TRUE;
 
             drmModeSetCrtc(drmmode->fd,
