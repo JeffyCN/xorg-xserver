@@ -3326,13 +3326,15 @@ drmmode_output_init(ScrnInfoPtr pScrn, drmmode_ptr drmmode, drmModeResPtr mode_r
                                           DRMMODE_PLANE_TYPE__COUNT);
     drmModeFreeObjectProperties(props);
 
-    for (i = 0; i < mode_res->count_crtcs; i++) {
-        if (current_crtc == mode_res->crtcs[i]) {
-            xf86DrvMsgVerb(pScrn->scrnIndex, X_INFO, 0,
-                           "Bind output %d to current crtc %d.\n",
-                           drmmode_output->output_id, current_crtc);
-            drmmode_output->possible_crtcs = 1 << i;
-            break;
+    if (xf86ReturnOptValBool(drmmode->Options, OPTION_BIND_CURRENT, TRUE)) {
+        for (i = 0; i < mode_res->count_crtcs; i++) {
+            if (current_crtc == mode_res->crtcs[i]) {
+                xf86DrvMsgVerb(pScrn->scrnIndex, X_INFO, 0,
+                               "Bind output %d to current crtc %d.\n",
+                               drmmode_output->output_id, current_crtc);
+                drmmode_output->possible_crtcs = 1 << i;
+                break;
+            }
         }
     }
 

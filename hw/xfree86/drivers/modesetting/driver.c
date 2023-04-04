@@ -147,9 +147,10 @@ static const OptionInfoRec Options[] = {
     {OPTION_USE_GAMMA_LUT, "UseGammaLUT", OPTV_BOOLEAN, {0}, FALSE},
     {OPTION_FLIP_FB, "FlipFB", OPTV_STRING, {0}, FALSE},
     {OPTION_FLIP_FB_RATE, "MaxFlipRate", OPTV_INTEGER, {0}, 0},
+    {OPTION_BIND_CURRENT, "BindCurrent", OPTV_BOOLEAN, {0}, FALSE},
     {OPTION_NO_EDID, "NoEDID", OPTV_BOOLEAN, {0}, FALSE},
-    {OPTION_HOTPLUG_RESET, "HotplugReset", OPTV_BOOLEAN, {0}, TRUE},
-    {OPTION_WARM_UP, "WarmUp", OPTV_BOOLEAN, {0}, TRUE},
+    {OPTION_HOTPLUG_RESET, "HotplugReset", OPTV_BOOLEAN, {0}, FALSE},
+    {OPTION_WARM_UP, "WarmUp", OPTV_BOOLEAN, {0}, FALSE},
     {-1, NULL, OPTV_NONE, {0}, FALSE}
 };
 
