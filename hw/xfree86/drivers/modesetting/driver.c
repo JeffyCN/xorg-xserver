@@ -153,6 +153,7 @@ static const OptionInfoRec Options[] = {
     {OPTION_NO_EDID, "NoEDID", OPTV_BOOLEAN, {0}, FALSE},
     {OPTION_HOTPLUG_RESET, "HotplugReset", OPTV_BOOLEAN, {0}, FALSE},
     {OPTION_WARM_UP, "WarmUp", OPTV_BOOLEAN, {0}, FALSE},
+    {OPTION_VIRTUAL_SIZE, "VirtualSize", OPTV_STRING, {0}, FALSE},
     {-1, NULL, OPTV_NONE, {0}, FALSE}
 };
 
