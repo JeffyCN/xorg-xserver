@@ -286,6 +286,9 @@ typedef struct {
     Atom ctm_atom;
     struct drm_color_ctm ctm;
 
+    int virtual_width;
+    int virtual_height;
+
     xf86OutputStatus status;
 } drmmode_output_private_rec, *drmmode_output_private_ptr;
 
