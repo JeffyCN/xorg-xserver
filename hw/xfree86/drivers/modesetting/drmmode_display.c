@@ -416,7 +416,7 @@ drmmode_prop_info_free(drmmode_prop_info_ptr info, int num_props)
 }
 
 static void
-drmmode_ConvertToKMode(ScrnInfoPtr scrn,
+drmmode_ConvertToKMode(xf86CrtcPtr crtc,
                        drmModeModeInfo * kmode, DisplayModePtr mode);
 
 
@@ -562,7 +562,7 @@ crtc_add_dpms_props(drmModeAtomicReq *req, xf86CrtcPtr crtc,
     if (crtc_active) {
         drmModeModeInfo kmode;
 
-        drmmode_ConvertToKMode(crtc->scrn, &kmode, &crtc->mode);
+        drmmode_ConvertToKMode(crtc, &kmode, &crtc->mode);
         ret |= drm_mode_ensure_blob(crtc, kmode);
 
         ret |= crtc_add_prop(req, drmmode_crtc,
@@ -721,7 +721,7 @@ drmmode_output_dpms_atomic(xf86OutputPtr output, int mode)
         drmmode_crtc_private_ptr drmmode_crtc = crtc->driver_private;
         drmModeModeInfo kmode;
 
-        drmmode_ConvertToKMode(crtc->scrn, &kmode, &crtc->mode);
+        drmmode_ConvertToKMode(crtc, &kmode, &crtc->mode);
         ret |= drm_mode_ensure_blob(crtc, kmode);
 
         ret |= connector_add_prop(req, drmmode_output,
@@ -777,47 +777,58 @@ drmmode_crtc_modeset(xf86CrtcPtr crtc, uint32_t fb_id,
 {
     drmmode_crtc_private_ptr drmmode_crtc = crtc->driver_private;
     drmmode_ptr drmmode = drmmode_crtc->drmmode;
+    BoxRec box = {
+        .x1 = 0,
+        .y1 = 0,
+        .x2 = xf86ModeWidth(&crtc->mode, crtc->rotation),
+        .y2 = xf86ModeHeight(&crtc->mode, crtc->rotation),
+    };
     struct dumb_bo *bo = NULL;
-    uint32_t old_fb_id = 0;
-    int ret = -1;
+    uint32_t new_fb_id = 0;
+    int ret = -1, w, h;
+
+    pixman_f_transform_bounds(&crtc->f_framebuffer_to_crtc, &box);
+    w = box.x2 - box.x1;
+    h = box.y2 - box.y1;
 
     /* prefer using the original FB */
     ret = drmModeSetCrtc(drmmode->fd, drmmode_crtc->mode_crtc->crtc_id,
                          fb_id, x, y, output_ids, output_count, mode);
     if (!ret)
-        return 0;
+        goto set_plane;
 
     /* fallback to a new dummy FB */
     bo = dumb_bo_create(drmmode->fd, mode->hdisplay, mode->vdisplay,
                         drmmode->kbpp);
     if (!bo)
-        goto err;
+        goto out;
 
     ret = drmModeAddFB(drmmode->fd, mode->hdisplay, mode->vdisplay,
                        drmmode->scrn->depth, drmmode->kbpp,
-                       bo->pitch, bo->handle, &fb_id);
+                       bo->pitch, bo->handle, &new_fb_id);
     if (ret < 0)
-        goto err;
+        goto out;
 
     ret = drmModeSetCrtc(drmmode->fd, drmmode_crtc->mode_crtc->crtc_id,
-                         fb_id, 0, 0, output_ids, output_count, mode);
-    if (ret < 0) {
-        old_fb_id = fb_id;
-        goto err;
-    }
+                         new_fb_id, 0, 0, output_ids, output_count, mode);
+    if (ret < 0)
+        goto out;
 
-    /* update crtc's current fb_id */
-    old_fb_id = drmmode_crtc->fb_id;
-    drmmode_crtc->fb_id = fb_id;
+set_plane:
+    ret = drmModeSetPlane(drmmode->fd, drmmode_crtc->plane_id,
+                          drmmode_crtc->mode_crtc->crtc_id, fb_id, 0,
+                          0, 0, mode->hdisplay, mode->vdisplay,
+                          x << 16, y << 16, w << 16, h << 16);
+    if (ret < 0)
+        goto out;
 
     ret = 0;
-err:
+out:
+    if (new_fb_id)
+        drmModeRmFB(drmmode->fd, new_fb_id);
+
     if (bo)
         dumb_bo_destroy(drmmode->fd, bo);
-
-    if (old_fb_id)
-        drmModeRmFB(drmmode->fd, old_fb_id);
-
     return ret;
 }
 
@@ -927,7 +938,7 @@ drmmode_crtc_set_mode(xf86CrtcPtr crtc, Bool test_only)
         output_count++;
     }
 
-    drmmode_ConvertToKMode(crtc->scrn, &kmode, &crtc->mode);
+    drmmode_ConvertToKMode(crtc, &kmode, &crtc->mode);
 
     ret = drmmode_crtc_modeset(crtc, fb_id, x, y,
                                output_ids, output_count, &kmode);
@@ -941,7 +952,10 @@ drmmode_crtc_flip(xf86CrtcPtr crtc, uint32_t fb_id, uint32_t flags, void *data)
 {
     modesettingPtr ms = modesettingPTR(crtc->scrn);
     drmmode_crtc_private_ptr drmmode_crtc = crtc->driver_private;
-    int ret, sx, sy, w, h;
+    int ret, sx, sy, sw, sh, dw, dh;
+    drmModeModeInfo kmode;
+
+    drmmode_ConvertToKMode(crtc, &kmode, &crtc->mode);
 
     if (fb_id == ms->drmmode.fb_id) {
         /* screen FB flip */
@@ -952,8 +966,10 @@ drmmode_crtc_flip(xf86CrtcPtr crtc, uint32_t fb_id, uint32_t flags, void *data)
         sx = sy = 0;
     }
 
-    w = crtc->mode.HDisplay;
-    h = crtc->mode.VDisplay;
+    sw = crtc->mode.HDisplay;
+    sh = crtc->mode.VDisplay;
+    dw = kmode.hdisplay;
+    dh = kmode.vdisplay;
 
     if (ms->atomic_modeset) {
         drmModeAtomicReq *req = drmModeAtomicAlloc();
@@ -971,7 +987,7 @@ drmmode_crtc_flip(xf86CrtcPtr crtc, uint32_t fb_id, uint32_t flags, void *data)
 
     ret = drmModeSetPlane(ms->fd, drmmode_crtc->plane_id,
                           drmmode_crtc->mode_crtc->crtc_id, fb_id, 0,
-                          0, 0, w, h, sx << 16, sy << 16, w << 16, h << 16);
+                          0, 0, dw, dh, sx << 16, sy << 16, sw << 16, sh << 16);
     if (ret)
         return ret;
 
@@ -1435,9 +1451,12 @@ drmmode_DisableSharedPixmapFlipping(xf86CrtcPtr crtc, drmmode_ptr drmmode)
 }
 
 static void
-drmmode_ConvertFromKMode(ScrnInfoPtr scrn,
+drmmode_ConvertFromKMode(xf86OutputPtr output,
                          drmModeModeInfo * kmode, DisplayModePtr mode)
 {
+    ScrnInfoPtr scrn = output->scrn;
+    drmmode_output_private_ptr drmmode_output = output->driver_private;
+
     memset(mode, 0, sizeof(DisplayModeRec));
     mode->status = MODE_OK;
 
@@ -1463,12 +1482,51 @@ drmmode_ConvertFromKMode(ScrnInfoPtr scrn,
     if (kmode->type & DRM_MODE_TYPE_PREFERRED)
         mode->type |= M_T_PREFERRED;
     xf86SetModeCrtc(mode, scrn->adjustFlags);
+
+    /* HACK: Use virtual size for all modes */
+    if (drmmode_output->virtual_width && drmmode_output->virtual_height) {
+        mode->HDisplay = drmmode_output->virtual_width;
+        mode->VDisplay = drmmode_output->virtual_height;
+    }
 }
 
 static void
-drmmode_ConvertToKMode(ScrnInfoPtr scrn,
+drmmode_ConvertToKMode(xf86CrtcPtr crtc,
                        drmModeModeInfo * kmode, DisplayModePtr mode)
 {
+    xf86CrtcConfigPtr xf86_config = XF86_CRTC_CONFIG_PTR(crtc->scrn);
+    int i, j;
+
+    /* HACK: Convert from virtual size */
+    for (i = 0; i < xf86_config->num_output; i++) {
+        xf86OutputPtr output = xf86_config->output[i];
+        drmmode_output_private_ptr drmmode_output = output->driver_private;
+        drmModeConnectorPtr koutput = drmmode_output->mode_output;
+
+        if (output->crtc != crtc)
+            continue;
+
+        if (!drmmode_output->virtual_width || !drmmode_output->virtual_height)
+            continue;
+
+        /* Search for original mode */
+        for (j = 0; j < koutput->count_modes; j++) {
+            drmModeModeInfoPtr scan = &koutput->modes[j];
+            if (scan->clock == mode->Clock &&
+                scan->hsync_start == mode->HSyncStart &&
+                scan->hsync_end == mode->HSyncEnd &&
+                scan->htotal == mode->HTotal &&
+                scan->hskew == mode->HSkew &&
+                scan->vsync_start == mode->VSyncStart &&
+                scan->vsync_end == mode->VSyncEnd &&
+                scan->vtotal == mode->VTotal &&
+                scan->vscan == mode->VScan) {
+                *kmode = *scan;
+                return;
+            }
+        }
+    }
+
     memset(kmode, 0, sizeof(*kmode));
 
     kmode->clock = mode->Clock;
@@ -1769,6 +1827,12 @@ drmmode_set_cursor_position(xf86CrtcPtr crtc, int x, int y)
 {
     drmmode_crtc_private_ptr drmmode_crtc = crtc->driver_private;
     drmmode_ptr drmmode = drmmode_crtc->drmmode;
+    drmModeModeInfo kmode;
+
+    drmmode_ConvertToKMode(crtc, &kmode, &crtc->mode);
+
+    x = x * crtc->mode.HDisplay / kmode.hdisplay;
+    y = y * crtc->mode.VDisplay / kmode.vdisplay;
 
     drmModeMoveCursor(drmmode->fd, drmmode_crtc->mode_crtc->crtc_id, x, y);
 }
@@ -2818,7 +2882,7 @@ drmmode_output_get_modes(xf86OutputPtr output)
     for (i = 0; i < koutput->count_modes; i++) {
         Mode = xnfalloc(sizeof(DisplayModeRec));
 
-        drmmode_ConvertFromKMode(output->scrn, &koutput->modes[i], Mode);
+        drmmode_ConvertFromKMode(output, &koutput->modes[i], Mode);
         Modes = xf86ModesAdd(Modes, Mode);
 
     }
@@ -3300,6 +3364,24 @@ drmmode_output_init(ScrnInfoPtr pScrn, drmmode_ptr drmmode, drmModeResPtr mode_r
     if (!drmmode_output) {
         xf86OutputDestroy(output);
         goto out_free_encoders;
+    }
+
+    snprintf(name, sizeof(name), "XSERVER_%s_SIZE",
+             output_names[koutput->connector_type]);
+    s = xf86GetOptValString(drmmode->Options, OPTION_VIRTUAL_SIZE);
+    if (s)
+        s = strstr(s, output->name);
+    if (s) {
+        int w, h;
+        if (sscanf(s + strlen(output->name) + 1, "%dx%d", &w, &h) == 2 &&
+            w > 0 && h > 0) {
+            drmmode_output->virtual_width = w;
+            drmmode_output->virtual_height = h;
+            xf86DrvMsg(pScrn->scrnIndex, X_INFO,
+                       "Using virtual size %dx%d for connector: %s\n",
+                       drmmode_output->virtual_width,
+                       drmmode_output->virtual_height, output->name);
+        }
     }
 
     drmmode_output->output_id = mode_res->connectors[num];

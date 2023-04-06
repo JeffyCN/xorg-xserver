@@ -269,6 +269,9 @@ typedef struct {
     int possible_crtcs;
     xf86CrtcPtr current_crtc;
 
+    int virtual_width;
+    int virtual_height;
+
     xf86OutputStatus status;
 
 } drmmode_output_private_rec, *drmmode_output_private_ptr;
