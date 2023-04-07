@@ -1120,11 +1120,6 @@ PreInit(ScrnInfoPtr pScrn, int flags)
     else
         ms->drmmode.fb_flip_mode = DRMMODE_FB_FLIP_NONE;
 
-    if (defaultbpp != 32 && ms->drmmode.fb_flip_mode != DRMMODE_FB_FLIP_NONE) {
-        xf86DrvMsg(pScrn->scrnIndex, X_INFO, "FlipFB: only support 32 bpp!\n");
-        ms->drmmode.fb_flip_mode = DRMMODE_FB_FLIP_NONE;
-    }
-
     ret = -1;
     xf86GetOptValInteger(ms->drmmode.Options, OPTION_FLIP_FB_RATE, &ret);
     ms->drmmode.fb_flip_rate = ret > 0 ? ret : 0;
