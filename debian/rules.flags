@@ -75,7 +75,7 @@ confflags_udeb = \
 	--disable-xdm-auth-1 \
 	--disable-glx \
 	--disable-dri \
-	--disable-dri2 \
+	--enable-dri2 \
 	--disable-glamor \
 	--disable-xinerama \
 	--disable-xf86vidmode \

@@ -1,3 +1,12 @@
+xorg-server (2:21.1.7-3) UNRELEASED; urgency=medium
+
+  * Enable DRI2 for the udeb build, needed in addition to DRM support
+    since 9c81b8f5b5 to build the modesetting driver. This fixes failures
+    to start X in the graphical installer under UTM (Closes: #1035014).
+    Thanks to Keith Toh for the report and the follow-up tests!
+
+ -- Cyril Brulebois <kibi@debian.org>  Thu, 27 Apr 2023 15:46:50 +0200
+
 xorg-server (2:21.1.7-2) unstable; urgency=high
 
   * composite: Fix use-after-free of the COW
