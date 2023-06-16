@@ -775,19 +775,41 @@ drmmode_crtc_modeset(xf86CrtcPtr crtc, uint32_t fb_id,
 {
     drmmode_crtc_private_ptr drmmode_crtc = crtc->driver_private;
     drmmode_ptr drmmode = drmmode_crtc->drmmode;
-    BoxRec box = {
-        .x1 = 0,
-        .y1 = 0,
-        .x2 = xf86ModeWidth(&crtc->mode, crtc->rotation),
-        .y2 = xf86ModeHeight(&crtc->mode, crtc->rotation),
-    };
     struct dumb_bo *bo = NULL;
     uint32_t new_fb_id = 0;
-    int ret = -1, w, h;
+    int sx, sy, sw, sh, dx, dy, dw, dh;
+    int ret;
 
-    pixman_f_transform_bounds(&crtc->f_framebuffer_to_crtc, &box);
-    w = box.x2 - box.x1;
-    h = box.y2 - box.y1;
+    if (crtc->driverIsPerformingTransform & XF86DriverTransformOutput) {
+        struct pixman_f_vector point;
+        point.v[0] = crtc->mode.HDisplay;
+        point.v[1] = crtc->mode.VDisplay;
+        point.v[2] = 1;
+
+        pixman_f_transform_point(&crtc->f_crtc_to_framebuffer, &point);
+
+        sx = 0;
+        sy = 0;
+        sw = floor(point.v[0]);
+        sh = floor(point.v[1]);
+
+        point.v[0] = point.v[1] = 0;
+        pixman_f_transform_point(&crtc->f_framebuffer_to_crtc, &point);
+
+        dx = floor(point.v[0]);
+        dy = floor(point.v[1]);
+        dw = mode->hdisplay - dx;
+        dh = mode->vdisplay - dy;
+    } else {
+        sx = x;
+        sy = y;
+        sw = crtc->mode.HDisplay;
+        sh = crtc->mode.VDisplay;
+        dx = 0;
+        dy = 0;
+        dw = mode->hdisplay;
+        dh = mode->vdisplay;
+    }
 
     /* prefer using the original FB */
     ret = drmModeSetCrtc(drmmode->fd, drmmode_crtc->mode_crtc->crtc_id,
@@ -815,8 +837,8 @@ drmmode_crtc_modeset(xf86CrtcPtr crtc, uint32_t fb_id,
 set_plane:
     ret = drmModeSetPlane(drmmode->fd, drmmode_crtc->plane_id,
                           drmmode_crtc->mode_crtc->crtc_id, fb_id, 0,
-                          0, 0, mode->hdisplay, mode->vdisplay,
-                          x << 16, y << 16, w << 16, h << 16);
+                          dx, dy, dw, dh,
+                          sx << 16, sy << 16, sw << 16, sh << 16);
     if (ret < 0)
         goto out;
 
