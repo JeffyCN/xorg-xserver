@@ -768,47 +768,93 @@ drmmode_crtc_disable(xf86CrtcPtr crtc)
     return ret;
 }
 
+static Bool
+drmmode_crtc_connected(xf86CrtcPtr crtc)
+{
+    xf86CrtcConfigPtr xf86_config = XF86_CRTC_CONFIG_PTR(crtc->scrn);
+    int i;
+
+    for (i = 0; i < xf86_config->num_output; i++) {
+        xf86OutputPtr output = xf86_config->output[i];
+        drmmode_output_private_ptr drmmode_output;
+        drmmode_output = output->driver_private;
+
+        if (output->crtc != crtc)
+            continue;
+
+        if (drmmode_output->status == XF86OutputStatusConnected)
+            return TRUE;
+    }
+
+    return FALSE;
+}
+
 static int
 drmmode_crtc_modeset(xf86CrtcPtr crtc, uint32_t fb_id,
                      uint32_t x, uint32_t y, uint32_t *output_ids,
                      int output_count, drmModeModeInfoPtr mode)
 {
+    xf86CrtcConfigPtr xf86_config = XF86_CRTC_CONFIG_PTR(crtc->scrn);
     drmmode_crtc_private_ptr drmmode_crtc = crtc->driver_private;
     drmmode_ptr drmmode = drmmode_crtc->drmmode;
     struct dumb_bo *bo = NULL;
     uint32_t new_fb_id = 0;
     int sx, sy, sw, sh, dx, dy, dw, dh;
-    int ret;
+    int ret, i;
+
+    sx = x;
+    sy = y;
 
     if (crtc->driverIsPerformingTransform & XF86DriverTransformOutput) {
         struct pixman_f_vector point;
+
+        /* Convert output's right-bottom to framebuffer's right-bottom */
         point.v[0] = crtc->mode.HDisplay;
         point.v[1] = crtc->mode.VDisplay;
         point.v[2] = 1;
-
         pixman_f_transform_point(&crtc->f_crtc_to_framebuffer, &point);
 
-        sx = 0;
-        sy = 0;
-        sw = floor(point.v[0]);
-        sh = floor(point.v[1]);
+        sw = floor(point.v[0]) - sx;
+        sh = floor(point.v[1]) - sy;
 
-        point.v[0] = point.v[1] = 0;
+        /* Convert framebuffer's left-top to output's left-top */
+        point.v[0] = sx;
+        point.v[1] = sy;
         pixman_f_transform_point(&crtc->f_framebuffer_to_crtc, &point);
 
-        dx = floor(point.v[0]);
-        dy = floor(point.v[1]);
+        /* Convert output's left-top to physic left-top */
+        dx = floor(point.v[0]) * mode->hdisplay / crtc->mode.HDisplay;
+        dy = floor(point.v[1]) * mode->vdisplay / crtc->mode.VDisplay;
         dw = mode->hdisplay - dx;
         dh = mode->vdisplay - dy;
     } else {
-        sx = x;
-        sy = y;
         sw = crtc->mode.HDisplay;
         sh = crtc->mode.VDisplay;
         dx = 0;
         dy = 0;
         dw = mode->hdisplay;
         dh = mode->vdisplay;
+    }
+
+    for (i = 0; i < xf86_config->num_output; i++) {
+        xf86OutputPtr output = xf86_config->output[i];
+        drmmode_output_private_ptr drmmode_output;
+
+        if (output->crtc != crtc)
+            continue;
+
+        /* NOTE: Only use the first output's padding */
+        drmmode_output = output->driver_private;
+        if (!output_count || drmmode_output->output_id != output_ids[0])
+            continue;
+
+        dx += drmmode_output->padding_top;
+        dw -= drmmode_output->padding_top;
+        dw -= drmmode_output->padding_bottom;
+        dy += drmmode_output->padding_left;
+        dh -= drmmode_output->padding_left;
+        dh -= drmmode_output->padding_right;
+        break;
     }
 
     /* prefer using the original FB */
@@ -961,9 +1007,10 @@ drmmode_crtc_set_mode(xf86CrtcPtr crtc, Bool test_only)
 int
 drmmode_crtc_flip(xf86CrtcPtr crtc, uint32_t fb_id, uint32_t flags, void *data)
 {
+    xf86CrtcConfigPtr xf86_config = XF86_CRTC_CONFIG_PTR(crtc->scrn);
     modesettingPtr ms = modesettingPTR(crtc->scrn);
     drmmode_crtc_private_ptr drmmode_crtc = crtc->driver_private;
-    int ret, sx, sy, sw, sh, dw, dh;
+    int ret, i, sx, sy, sw, sh, dx, dy, dw, dh;
     drmModeModeInfo kmode;
 
     drmmode_ConvertToKMode(crtc, &kmode, &crtc->mode);
@@ -979,26 +1026,35 @@ drmmode_crtc_flip(xf86CrtcPtr crtc, uint32_t fb_id, uint32_t flags, void *data)
 
     sw = crtc->mode.HDisplay;
     sh = crtc->mode.VDisplay;
+    dx = dy = 0;
     dw = kmode.hdisplay;
     dh = kmode.vdisplay;
 
-    if (ms->atomic_modeset) {
-        drmModeAtomicReq *req = drmModeAtomicAlloc();
+    for (i = 0; i < xf86_config->num_output; i++) {
+        xf86OutputPtr output = xf86_config->output[i];
+        drmmode_output_private_ptr drmmode_output;
 
-        if (!req)
-            return 1;
+        if (output->crtc != crtc)
+            continue;
 
-        ret = plane_add_props(req, crtc, fb_id, sx, sy);
-        flags |= DRM_MODE_ATOMIC_NONBLOCK;
-        if (ret == 0)
-            ret = drmModeAtomicCommit(ms->fd, req, flags, data);
-        drmModeAtomicFree(req);
-        return ret;
+        drmmode_output = output->driver_private;
+        if (drmmode_output->output_id == -1)
+            continue;
+
+        /* NOTE: Only use the first output's padding */
+        dx += drmmode_output->padding_top;
+        dw -= drmmode_output->padding_top;
+        dw -= drmmode_output->padding_bottom;
+        dy += drmmode_output->padding_left;
+        dh -= drmmode_output->padding_left;
+        dh -= drmmode_output->padding_right;
+        break;
     }
 
     ret = drmModeSetPlane(ms->fd, drmmode_crtc->plane_id,
                           drmmode_crtc->mode_crtc->crtc_id, fb_id, 0,
-                          0, 0, dw, dh, sx << 16, sy << 16, sw << 16, sh << 16);
+                          dx, dy, dw, dh,
+                          sx << 16, sy << 16, sw << 16, sh << 16);
     if (ret)
         return ret;
 
@@ -1722,27 +1778,6 @@ drmmode_copy_fb(ScrnInfoPtr pScrn, drmmode_ptr drmmode)
 #endif
 
     pScreen->canDoBGNoneRoot = TRUE;
-}
-
-static Bool
-drmmode_crtc_connected(xf86CrtcPtr crtc)
-{
-    xf86CrtcConfigPtr xf86_config = XF86_CRTC_CONFIG_PTR(crtc->scrn);
-    int i;
-
-    for (i = 0; i < xf86_config->num_output; i++) {
-        xf86OutputPtr output = xf86_config->output[i];
-        drmmode_output_private_ptr drmmode_output;
-        drmmode_output = output->driver_private;
-
-        if (output->crtc != crtc)
-            continue;
-
-        if (drmmode_output->status == XF86OutputStatusConnected)
-            return TRUE;
-    }
-
-    return FALSE;
 }
 
 static Bool
@@ -3369,8 +3404,6 @@ drmmode_output_init(ScrnInfoPtr pScrn, drmmode_ptr drmmode, drmModeResPtr mode_r
         goto out_free_encoders;
     }
 
-    snprintf(name, sizeof(name), "XSERVER_%s_SIZE",
-             output_names[koutput->connector_type]);
     s = xf86GetOptValString(drmmode->Options, OPTION_VIRTUAL_SIZE);
     if (s)
         s = strstr(s, output->name);
@@ -3384,6 +3417,28 @@ drmmode_output_init(ScrnInfoPtr pScrn, drmmode_ptr drmmode, drmModeResPtr mode_r
                        "Using virtual size %dx%d for connector: %s\n",
                        drmmode_output->virtual_width,
                        drmmode_output->virtual_height, output->name);
+        }
+    }
+
+    s = xf86GetOptValString(drmmode->Options, OPTION_PADDING);
+    if (s)
+        s = strstr(s, output->name);
+    if (s) {
+        int top, bottom, left, right;
+        if (sscanf(s + strlen(output->name) + 1, "%d,%d,%d,%d",
+                   &top, &bottom, &left, &right) == 4) {
+            if (top >= 0 && bottom >= 0 && left >= 0 && right >= 0) {
+                drmmode_output->padding_top = top;
+                drmmode_output->padding_bottom = bottom;
+                drmmode_output->padding_left = left;
+                drmmode_output->padding_right = right;
+                xf86DrvMsg(pScrn->scrnIndex, X_INFO,
+                           "Using padding top:%d bottom:%d left:%d right:%d\n",
+                           drmmode_output->padding_top,
+                           drmmode_output->padding_bottom,
+                           drmmode_output->padding_left,
+                           drmmode_output->padding_right);
+            }
         }
     }
 
