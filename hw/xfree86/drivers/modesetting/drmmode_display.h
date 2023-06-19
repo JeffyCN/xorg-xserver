@@ -254,6 +254,11 @@ typedef struct {
     int virtual_width;
     int virtual_height;
 
+    int padding_top;
+    int padding_bottom;
+    int padding_left;
+    int padding_right;
+
     xf86OutputStatus status;
 
 } drmmode_output_private_rec, *drmmode_output_private_ptr;
