@@ -60,6 +60,7 @@ typedef enum {
     OPTION_HOTPLUG_RESET,
     OPTION_WARM_UP,
     OPTION_VIRTUAL_SIZE,
+    OPTION_PADDING,
 } modesettingOpts;
 
 typedef struct
