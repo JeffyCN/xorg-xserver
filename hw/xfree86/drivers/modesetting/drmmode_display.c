@@ -809,24 +809,41 @@ drmmode_crtc_modeset(xf86CrtcPtr crtc, uint32_t fb_id,
 
     if (crtc->driverIsPerformingTransform & XF86DriverTransformOutput) {
         struct pixman_f_vector point;
+        int x1, y1, x2, y2;
 
-        /* Convert output's right-bottom to framebuffer's right-bottom */
+        point.v[2] = 1;
+
+        /* Convert output's area to framebuffer's area */
+        point.v[0] = 0;
+        point.v[1] = 0;
+        pixman_f_transform_point(&crtc->f_crtc_to_framebuffer, &point);
+        x2 = floor(point.v[0]);
+        y2 = floor(point.v[1]);
+
         point.v[0] = crtc->mode.HDisplay;
         point.v[1] = crtc->mode.VDisplay;
-        point.v[2] = 1;
         pixman_f_transform_point(&crtc->f_crtc_to_framebuffer, &point);
+        x1 = floor(point.v[0]);
+        y1 = floor(point.v[1]);
 
-        sw = floor(point.v[0]) - sx;
-        sh = floor(point.v[1]) - sy;
+        sw = max(x1, x2) - sx;
+        sh = max(y1, y2) - sy;
 
-        /* Convert framebuffer's left-top to output's left-top */
+        /* Convert framebuffer's area to output's area */
         point.v[0] = sx;
         point.v[1] = sy;
         pixman_f_transform_point(&crtc->f_framebuffer_to_crtc, &point);
+        x1 = floor(point.v[0]);
+        y1 = floor(point.v[1]);
 
-        /* Convert output's left-top to physic left-top */
-        dx = floor(point.v[0]) * mode->hdisplay / crtc->mode.HDisplay;
-        dy = floor(point.v[1]) * mode->vdisplay / crtc->mode.VDisplay;
+        point.v[0] = sw;
+        point.v[1] = sh;
+        pixman_f_transform_point(&crtc->f_framebuffer_to_crtc, &point);
+        x2 = floor(point.v[0]);
+        y2 = floor(point.v[1]);
+
+        dx = min(x1, x2) * mode->hdisplay / crtc->mode.HDisplay;
+        dy = min(y1, y2) * mode->vdisplay / crtc->mode.VDisplay;
         dw = mode->hdisplay - dx;
         dh = mode->vdisplay - dy;
     } else {
