@@ -115,6 +115,8 @@ Bool
 glamor_prefer_gl(const char *func) {
     if (!strcmp(func, "glamor_copy") ||
         !strcmp(func, "glamor_composite") ||
+        !strcmp(func, "glamor_put_image") ||
+        !strcmp(func, "glamor_get_image") ||
         !strcmp(func, "glamor_poly_segment") ||
         !strcmp(func, "glamor_push_pixels") ||
         !strcmp(func, "glamor_poly_fill_rect") ||
@@ -124,8 +126,6 @@ glamor_prefer_gl(const char *func) {
     /*
     if (!strcmp(func, "glamor_poly_lines") ||
        !strcmp(func, "glamor_poly_point") ||
-       !strcmp(func, "glamor_put_image") ||
-       !strcmp(func, "glamor_get_image") ||
        !strcmp(func, "glamor_fill_spans") ||
        !strcmp(func, "glamor_get_spans") ||
        !strcmp(func, "glamor_set_spans"))
