@@ -287,6 +287,10 @@ glamor_make_pixmap_exportable(PixmapPtr pixmap, Bool modifiers_ok)
         (modifiers_ok || !pixmap_priv->used_modifiers))
         return TRUE;
 
+    /* HACK: Mali doesn't support depth 8 */
+    if (pixmap->drawable.depth == 8)
+        return FALSE;
+
     switch (pixmap->drawable.depth) {
     case 30:
         format = GBM_FORMAT_ARGB2101010;
