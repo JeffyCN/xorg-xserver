@@ -187,8 +187,13 @@ ms_exa_prepare_access(PixmapPtr pPix, int index)
     dumb_bo_map(ms->drmmode.fd, priv->bo);
 
     pPix->devPrivate.ptr = priv->bo->ptr;
+    if (!pPix->devPrivate.ptr) {
+        xf86DrvMsg(scrn->scrnIndex, X_WARNING,
+                   "Failed to map bo: %d\n", priv->bo->handle);
+        return FALSE;
+    }
 
-    return pPix->devPrivate.ptr != NULL;
+    return TRUE;
 }
 
 void
@@ -256,10 +261,13 @@ ms_exa_solid_bail(PixmapPtr pPixmap, int x1, int y1, int x2, int y2)
     ChangeGC(NullClient, gc, GCFunction | GCPlaneMask | GCForeground, val);
     ValidateGC(&pPixmap->drawable, gc);
 
-    ms_exa_prepare_access(pPixmap, 0);
-    fbFill(&pPixmap->drawable, gc, x1, y1, x2 - x1, y2 - y1);
-    ms_exa_finish_access(pPixmap, 0);
+    if (!ms_exa_prepare_access(pPixmap, 0))
+        goto free_gc;
 
+    fbFill(&pPixmap->drawable, gc, x1, y1, x2 - x1, y2 - y1);
+
+    ms_exa_finish_access(pPixmap, 0);
+free_gc:
     FreeScratchGC(gc);
 }
 
@@ -366,13 +374,19 @@ ms_exa_copy_bail(PixmapPtr pDstPixmap, int srcX, int srcY,
     ChangeGC(NullClient, gc, GCFunction | GCPlaneMask, val);
     ValidateGC(&pDstPixmap->drawable, gc);
 
-    ms_exa_prepare_access(pSrcPixmap, 0);
-    ms_exa_prepare_access(pDstPixmap, 0);
+    if (!ms_exa_prepare_access(pSrcPixmap, 0))
+        goto free_gc;
+
+    if (!ms_exa_prepare_access(pDstPixmap, 0))
+        goto finish_src;
+
     fbCopyArea(&pSrcPixmap->drawable, &pDstPixmap->drawable, gc,
                srcX, srcY, width, height, dstX, dstY);
-    ms_exa_finish_access(pDstPixmap, 0);
-    ms_exa_finish_access(pSrcPixmap, 0);
 
+    ms_exa_finish_access(pDstPixmap, 0);
+finish_src:
+    ms_exa_finish_access(pSrcPixmap, 0);
+free_gc:
     FreeScratchGC(gc);
 }
 
@@ -452,6 +466,7 @@ ms_exa_check_composite(int op,
     return TRUE;
 }
 
+#ifdef MODESETTING_WITH_RGA
 static Bool
 ms_exa_parse_transform(PictTransformPtr t, int *rotate, Bool *reflect_y)
 {
@@ -497,6 +512,7 @@ ms_exa_parse_transform(PictTransformPtr t, int *rotate, Bool *reflect_y)
 
     return TRUE;
 }
+#endif
 
 static Bool
 ms_exa_prepare_composite(int op,
@@ -585,11 +601,16 @@ ms_exa_composite_bail(PixmapPtr pDst, int srcX, int srcY,
     PixmapPtr pMask = ctx->prepare_args.composite.pMask;
     int op = ctx->prepare_args.composite.op;
 
-    if (pMask)
-        ms_exa_prepare_access(pMask, 0);
+    if (pMask) {
+        if (!ms_exa_prepare_access(pMask, 0))
+            return;
+    }
 
-    ms_exa_prepare_access(pSrc, 0);
-    ms_exa_prepare_access(pDst, 0);
+    if (!ms_exa_prepare_access(pSrc, 0))
+        goto finish_mask;
+
+    if (!ms_exa_prepare_access(pDst, 0))
+        goto finish_src;
 
     ms_exa_composite_fix_offsets(pSrcPicture->pDrawable, pSrc, &srcX, &srcY);
     ms_exa_composite_fix_offsets(pDstPicture->pDrawable, pDst, &dstX, &dstY);
@@ -602,8 +623,9 @@ ms_exa_composite_bail(PixmapPtr pDst, int srcX, int srcY,
                 dstX, dstY, width, height);
 
     ms_exa_finish_access(pDst, 0);
+finish_src:
     ms_exa_finish_access(pSrc, 0);
-
+finish_mask:
     if (pMask)
         ms_exa_finish_access(pMask, 0);
 }
