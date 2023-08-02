@@ -96,7 +96,7 @@ applewmproto_dep = dependency('applewmproto', version: '>= 1.4', fallback: ['xor
 xshmfence_dep = dependency('xshmfence', version: '>= 1.1', required: false)
 
 pixman_dep = dependency('pixman-1')
-libbsd_dep = dependency('libbsd', required: false)
+libbsd_dep = dependency('libbsd-overlay', required: false)
 xkbcomp_dep = dependency('xkbcomp', required: false)
 xkbfile_dep = dependency('xkbfile')
 xfont2_dep = dependency('xfont2', version: '>= 2.0')
