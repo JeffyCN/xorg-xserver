@@ -393,7 +393,7 @@ xf86VTLeave(void)
     for (i = 0; i < xf86NumGPUScreens; i++)
         xf86GPUScreens[i]->LeaveVT(xf86GPUScreens[i]);
 
-    if (!xf86VTSwitchAway())
+    if (!getenv("VT_EMULATED") && !xf86VTSwitchAway())
         goto switch_failed;
 
 #ifdef XF86PM
@@ -453,7 +453,7 @@ xf86VTEnter(void)
     IHPtr ih;
 
     DebugF("xf86VTSwitch: Entering\n");
-    if (!xf86VTSwitchTo())
+    if (!getenv("VT_EMULATED") && !xf86VTSwitchTo())
         return;
 
 #ifdef XF86PM
@@ -515,6 +515,20 @@ xf86VTSwitch(void)
     if (!DGAVTSwitch())
         return;
 #endif
+
+    {
+        /* HACK: For userspace VT emulation */
+        const char *env;
+        if ((env = getenv("VT_EMULATED"))) {
+            if (!access(env, F_OK) == xf86VTOwner()) {
+                if (xf86VTOwner())
+                    xf86VTLeave();
+                else
+                    xf86VTEnter();
+            }
+            return;
+        }
+    }
 
     /*
      * Since all screens are currently all in the same state it is sufficient
