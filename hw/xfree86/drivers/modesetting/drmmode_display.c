@@ -4816,7 +4816,8 @@ drmmode_flip_fb(xf86CrtcPtr crtc, int *timeout)
     int next_fb;
 
     if (!drmmode_crtc || !crtc->active || !drmmode_crtc_connected(crtc) ||
-        drmmode_crtc->dpms_mode != DPMSModeOn || drmmode_crtc->rotate_fb_id)
+        drmmode_crtc->dpms_mode != DPMSModeOn || drmmode_crtc->rotate_fb_id ||
+        !drmmode->scrn->vtSema)
         return TRUE;
 
     if (!drmmode_crtc->flip_fb_enabled)
