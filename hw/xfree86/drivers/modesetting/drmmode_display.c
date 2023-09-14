@@ -1905,8 +1905,8 @@ drmmode_set_cursor_position(xf86CrtcPtr crtc, int x, int y)
 
     drmmode_ConvertToKMode(crtc, &kmode, &crtc->mode);
 
-    x = x * crtc->mode.HDisplay / kmode.hdisplay;
-    y = y * crtc->mode.VDisplay / kmode.vdisplay;
+    x = x * kmode.hdisplay / crtc->mode.HDisplay;
+    y = y * kmode.vdisplay / crtc->mode.VDisplay;
 
     drmModeMoveCursor(drmmode->fd, drmmode_crtc->mode_crtc->crtc_id, x, y);
 }
