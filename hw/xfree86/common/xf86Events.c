@@ -344,6 +344,22 @@ xf86UpdateHasVTProperty(Bool hasVT)
     }
 }
 
+/* HACK: For userspace VT emulation */
+static Bool
+vt_emulation(void)
+{
+    const char *env = getenv("VT_EMULATION") ? : "/var/run/frecon/";
+    return !access(env, F_OK);
+}
+
+static Bool
+vt_emulation_activated(void)
+{
+    const char *env =
+        getenv("VT_EMULATION_ACTIVATED") ? : "/var/run/frecon/current";
+    return !access(env, F_OK);
+}
+
 void
 xf86VTLeave(void)
 {
@@ -382,7 +398,7 @@ xf86VTLeave(void)
     for (i = 0; i < xf86NumGPUScreens; i++)
         xf86GPUScreens[i]->LeaveVT(xf86GPUScreens[i]);
 
-    if (!xf86VTSwitchAway())
+    if (!vt_emulation() && !xf86VTSwitchAway())
         goto switch_failed;
 
     if (xf86OSPMClose)
@@ -440,7 +456,7 @@ xf86VTEnter(void)
     IHPtr ih;
 
     DebugF("xf86VTSwitch: Entering\n");
-    if (!xf86VTSwitchTo())
+    if (!vt_emulation() && !xf86VTSwitchTo())
         return;
 
     xf86OSPMClose = xf86OSPMOpen();
@@ -500,6 +516,16 @@ xf86VTSwitch(void)
     if (!DGAVTSwitch())
         return;
 #endif
+
+    if (vt_emulation()) {
+        if (vt_emulation_activated() == xf86VTOwner()) {
+            if (xf86VTOwner())
+                xf86VTLeave();
+            else
+                xf86VTEnter();
+        }
+        return;
+    }
 
     /*
      * Since all screens are currently all in the same state it is sufficient
