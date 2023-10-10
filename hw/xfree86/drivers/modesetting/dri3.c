@@ -85,8 +85,8 @@ ms_exa_pixmap_from_fds(ScreenPtr screen,
 {
     ScrnInfoPtr scrn = xf86ScreenToScrn(screen);
     modesettingPtr ms = modesettingPTR(scrn);
-	PixmapPtr pixmap;
-	struct dumb_bo *bo;
+    PixmapPtr pixmap;
+    struct dumb_bo *bo;
 
     if (num_fds != 1 || offsets[0] || modifier != DRM_FORMAT_MOD_INVALID)
         return NULL;
@@ -118,8 +118,8 @@ ms_exa_egl_fd_from_pixmap(ScreenPtr screen, PixmapPtr pixmap,
 {
     ScrnInfoPtr scrn = xf86ScreenToScrn(screen);
     modesettingPtr ms = modesettingPTR(scrn);
-	struct dumb_bo *bo;
-	int fd;
+    struct dumb_bo *bo;
+    int fd;
 
     bo = ms_exa_bo_from_pixmap(screen, pixmap);
     if (!bo)
@@ -127,7 +127,7 @@ ms_exa_egl_fd_from_pixmap(ScreenPtr screen, PixmapPtr pixmap,
 
     fd = dumb_bo_get_fd(ms->drmmode.fd, bo, 0);
     *stride = bo->pitch;
-	*size = bo->size;
+    *size = bo->size;
 
     return fd;
 }
@@ -139,7 +139,7 @@ ms_exa_egl_fds_from_pixmap(ScreenPtr screen, PixmapPtr pixmap, int *fds,
 {
     ScrnInfoPtr scrn = xf86ScreenToScrn(screen);
     modesettingPtr ms = modesettingPTR(scrn);
-	struct dumb_bo *bo;
+    struct dumb_bo *bo;
 
     bo = ms_exa_bo_from_pixmap(screen, pixmap);
     if (!bo)
@@ -155,9 +155,9 @@ ms_exa_egl_fds_from_pixmap(ScreenPtr screen, PixmapPtr pixmap, int *fds,
 
 static Bool
 ms_exa_get_formats(ScreenPtr screen,
-				   CARD32 *num_formats, CARD32 **formats)
+                   CARD32 *num_formats, CARD32 **formats)
 {
-	/* TODO: Return formats */
+    /* TODO: Return formats */
     *num_formats = 0;
     return TRUE;
 }
@@ -196,5 +196,5 @@ ms_exa_dri3_init(ScreenPtr screen)
     modesettingPtr ms = modesettingPTR(scrn);
     ms->drmmode.dri3_device_name = drmGetDeviceNameFromFd2(ms->drmmode.fd);
 
-	return dri3_screen_init(screen, &ms_exa_dri3_info);
+    return dri3_screen_init(screen, &ms_exa_dri3_info);
 }
