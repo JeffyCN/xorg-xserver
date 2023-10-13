@@ -1828,7 +1828,7 @@ ScreenInit(ScreenPtr pScreen, int argc, char **argv)
 
 #ifdef GLAMOR_HAS_GBM
     if (ms->drmmode.glamor) {
-        ms->adaptor = glamor_xv_init(pScreen, 16);
+        ms->adaptor = glamor_xv_init(pScreen, 128);
         if (ms->adaptor != NULL) {
             xf86XVScreenInit(pScreen, &ms->adaptor, 1);
         } else {
@@ -1839,7 +1839,7 @@ ScreenInit(ScreenPtr pScreen, int argc, char **argv)
 #endif
 
     if (ms->drmmode.exa) {
-        ms->adaptor = ms_exa_xv_init(pScreen, 16);
+        ms->adaptor = ms_exa_xv_init(pScreen, 128);
         if (ms->adaptor != NULL) {
             xf86XVScreenInit(pScreen, &ms->adaptor, 1);
         } else {
