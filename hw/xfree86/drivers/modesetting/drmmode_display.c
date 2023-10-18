@@ -802,27 +802,19 @@ drmmode_crtc_connected(xf86CrtcPtr crtc)
     return FALSE;
 }
 
-static int
-drmmode_crtc_modeset(xf86CrtcPtr crtc, uint32_t fb_id,
-                     uint32_t x, uint32_t y, uint32_t *output_ids,
-                     int output_count, drmModeModeInfoPtr mode)
+static void
+drmmode_crtc_bounds(xf86CrtcPtr crtc, uint32_t *x, uint32_t *y,
+                    uint32_t *w, uint32_t *h)
 {
     xf86CrtcConfigPtr xf86_config = XF86_CRTC_CONFIG_PTR(crtc->scrn);
-    drmmode_crtc_private_ptr drmmode_crtc = crtc->driver_private;
-    drmmode_ptr drmmode = drmmode_crtc->drmmode;
-    struct dumb_bo *bo = NULL;
-    uint32_t new_fb_id = 0;
-    int sx, sy, sw, sh, dx, dy, dw, dh;
-    int ret, i;
+    drmModeModeInfo kmode;
+    int i;
 
-    sx = x;
-    sy = y;
-    sw = crtc->mode.HDisplay;
-    sh = crtc->mode.VDisplay;
-    dx = 0;
-    dy = 0;
-    dw = mode->hdisplay;
-    dh = mode->vdisplay;
+    drmmode_ConvertToKMode(crtc, &kmode, &crtc->mode);
+
+    *x = *y = 0;
+    *w = kmode.hdisplay;
+    *h = kmode.vdisplay;
 
     for (i = 0; i < xf86_config->num_output; i++) {
         xf86OutputPtr output = xf86_config->output[i];
@@ -831,19 +823,39 @@ drmmode_crtc_modeset(xf86CrtcPtr crtc, uint32_t fb_id,
         if (output->crtc != crtc)
             continue;
 
-        /* NOTE: Only use the first output's padding */
         drmmode_output = output->driver_private;
-        if (!output_count || drmmode_output->output_id != output_ids[0])
+        if (drmmode_output->output_id == -1)
             continue;
 
-        dx += drmmode_output->padding_top;
-        dw -= drmmode_output->padding_top;
-        dw -= drmmode_output->padding_bottom;
-        dy += drmmode_output->padding_left;
-        dh -= drmmode_output->padding_left;
-        dh -= drmmode_output->padding_right;
+        /* NOTE: Only use the first output's padding */
+        *x += drmmode_output->padding_top;
+        *w -= drmmode_output->padding_top;
+        *w -= drmmode_output->padding_bottom;
+        *y += drmmode_output->padding_left;
+        *h -= drmmode_output->padding_left;
+        *h -= drmmode_output->padding_right;
         break;
     }
+}
+
+static int
+drmmode_crtc_modeset(xf86CrtcPtr crtc, uint32_t fb_id,
+                     uint32_t x, uint32_t y, uint32_t *output_ids,
+                     int output_count, drmModeModeInfoPtr mode)
+{
+    drmmode_crtc_private_ptr drmmode_crtc = crtc->driver_private;
+    drmmode_ptr drmmode = drmmode_crtc->drmmode;
+    struct dumb_bo *bo = NULL;
+    uint32_t new_fb_id = 0;
+    uint32_t sx, sy, sw, sh, dx, dy, dw, dh;
+    int ret;
+
+    sx = x;
+    sy = y;
+    sw = crtc->mode.HDisplay;
+    sh = crtc->mode.VDisplay;
+
+    drmmode_crtc_bounds(crtc, &dx, &dy, &dw, &dh);
 
     /* prefer using the original FB */
     ret = drmModeSetCrtc(drmmode->fd, drmmode_crtc->mode_crtc->crtc_id,
@@ -1004,13 +1016,10 @@ drmmode_crtc_set_mode(xf86CrtcPtr crtc, Bool test_only)
 int
 drmmode_crtc_flip(xf86CrtcPtr crtc, uint32_t fb_id, uint32_t flags, void *data)
 {
-    xf86CrtcConfigPtr xf86_config = XF86_CRTC_CONFIG_PTR(crtc->scrn);
     modesettingPtr ms = modesettingPTR(crtc->scrn);
     drmmode_crtc_private_ptr drmmode_crtc = crtc->driver_private;
-    int ret, i, sx, sy, sw, sh, dx, dy, dw, dh;
-    drmModeModeInfo kmode;
-
-    drmmode_ConvertToKMode(crtc, &kmode, &crtc->mode);
+    uint32_t sx, sy, sw, sh, dx, dy, dw, dh;
+    int ret;
 
     if (fb_id == ms->drmmode.fb_id) {
         /* screen FB flip */
@@ -1023,30 +1032,8 @@ drmmode_crtc_flip(xf86CrtcPtr crtc, uint32_t fb_id, uint32_t flags, void *data)
 
     sw = crtc->mode.HDisplay;
     sh = crtc->mode.VDisplay;
-    dx = dy = 0;
-    dw = kmode.hdisplay;
-    dh = kmode.vdisplay;
 
-    for (i = 0; i < xf86_config->num_output; i++) {
-        xf86OutputPtr output = xf86_config->output[i];
-        drmmode_output_private_ptr drmmode_output;
-
-        if (output->crtc != crtc)
-            continue;
-
-        drmmode_output = output->driver_private;
-        if (drmmode_output->output_id == -1)
-            continue;
-
-        /* NOTE: Only use the first output's padding */
-        dx += drmmode_output->padding_top;
-        dw -= drmmode_output->padding_top;
-        dw -= drmmode_output->padding_bottom;
-        dy += drmmode_output->padding_left;
-        dh -= drmmode_output->padding_left;
-        dh -= drmmode_output->padding_right;
-        break;
-    }
+    drmmode_crtc_bounds(crtc, &dx, &dy, &dw, &dh);
 
     ret = drmModeSetPlane(ms->fd, drmmode_crtc->plane_id,
                           drmmode_crtc->mode_crtc->crtc_id, fb_id, 0,
@@ -1870,12 +1857,12 @@ drmmode_set_cursor_position(xf86CrtcPtr crtc, int x, int y)
 {
     drmmode_crtc_private_ptr drmmode_crtc = crtc->driver_private;
     drmmode_ptr drmmode = drmmode_crtc->drmmode;
-    drmModeModeInfo kmode;
+    uint32_t dx, dy, dw, dh;
 
-    drmmode_ConvertToKMode(crtc, &kmode, &crtc->mode);
+    drmmode_crtc_bounds(crtc, &dx, &dy, &dw, &dh);
 
-    x = x * kmode.hdisplay / crtc->mode.HDisplay;
-    y = y * kmode.vdisplay / crtc->mode.VDisplay;
+    x = x * dw / crtc->mode.HDisplay + dx;
+    y = y * dh / crtc->mode.VDisplay + dy;
 
     drmModeMoveCursor(drmmode->fd, drmmode_crtc->mode_crtc->crtc_id, x, y);
 }
