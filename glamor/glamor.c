@@ -729,12 +729,6 @@ glamor_init(ScreenPtr screen, unsigned int flags)
             goto fail;
         }
 
-        if (!glamor_priv->is_core_profile &&
-            !epoxy_has_gl_extension("GL_ARB_texture_border_clamp")) {
-            ErrorF("GL_ARB_texture_border_clamp required\n");
-            goto fail;
-        }
-
         if (!glamor_check_instruction_count(gl_version))
             goto fail;
 
@@ -755,11 +749,6 @@ glamor_init(ScreenPtr screen, unsigned int flags)
             ErrorF("GL_EXT_texture_format_BGRA8888 required\n");
             goto fail;
         }
-
-        if (!epoxy_has_gl_extension("GL_OES_texture_border_clamp")) {
-            ErrorF("GL_OES_texture_border_clamp required\n");
-            goto fail;
-        }
     }
 
     if (!epoxy_has_gl_extension("GL_ARB_vertex_array_object") &&
@@ -767,6 +756,10 @@ glamor_init(ScreenPtr screen, unsigned int flags)
         ErrorF("GL_{ARB,OES}_vertex_array_object required\n");
         goto fail;
     }
+
+    glamor_priv->has_border_clamp =
+        epoxy_has_gl_extension("GL_ARB_texture_border_clamp") ||
+        epoxy_has_gl_extension("GL_OES_texture_border_clamp");
 
     glamor_priv->has_rw_pbo = FALSE;
     if (!glamor_priv->is_gles)
