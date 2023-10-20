@@ -218,6 +218,7 @@ typedef struct glamor_screen_private {
     Bool use_quads;
     Bool has_dual_blend;
     Bool has_texture_swizzle;
+    Bool has_border_clamp;
     Bool is_core_profile;
     Bool can_copyplane;
     int max_fbo_size;
