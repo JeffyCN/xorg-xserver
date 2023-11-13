@@ -170,12 +170,20 @@ glamor_download_boxes(PixmapPtr pixmap, BoxPtr in_boxes, int in_nbox,
             if (x2 <= x1 || y2 <= y1)
                 continue;
 
+            /* HACK: Mali450 doesn't support GL_BGRA, use GL_RGBA instead */
+            GLenum format;
+
+            if (glamor_priv->is_utgard && f->format == GL_BGRA)
+                format = GL_RGBA;
+            else
+                format = f->format;
+
             if (glamor_priv->has_pack_subimage ||
                 x2 - x1 == byte_stride / bytes_per_pixel) {
-                glReadPixels(x1 - box->x1, y1 - box->y1, x2 - x1, y2 - y1, f->format, f->type, bits + ofs);
+                glReadPixels(x1 - box->x1, y1 - box->y1, x2 - x1, y2 - y1, format, f->type, bits + ofs);
             } else {
                 for (; y1 < y2; y1++, ofs += byte_stride)
-                    glReadPixels(x1 - box->x1, y1 - box->y1, x2 - x1, 1, f->format, f->type, bits + ofs);
+                    glReadPixels(x1 - box->x1, y1 - box->y1, x2 - x1, 1, format, f->type, bits + ofs);
             }
         }
     }

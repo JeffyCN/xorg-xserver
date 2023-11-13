@@ -267,7 +267,14 @@ glamor_prepare_access_box(DrawablePtr drawable, glamor_access_t access,
 void
 glamor_finish_access(DrawablePtr drawable)
 {
-    glamor_finish_access_pixmap(glamor_get_drawable_pixmap(drawable), FALSE);
+    ScreenPtr screen = drawable->pScreen;
+    struct glamor_screen_private *glamor_priv =
+        glamor_get_screen_private(screen);
+
+    if(glamor_priv->is_utgard)
+        glamor_finish_access_pixmap(glamor_get_drawable_pixmap(drawable), TRUE);
+    else
+        glamor_finish_access_pixmap(glamor_get_drawable_pixmap(drawable), FALSE);
 }
 
 /*
