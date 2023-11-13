@@ -273,6 +273,11 @@ glamor_block_handler(ScreenPtr screen)
     glamor_make_current(glamor_priv);
 
     if (glamor_priv->is_gles) {
+        /* HACK: utgrad doesn't support gl-fence */
+        if (glamor_priv->is_utgard) {
+            glamor_finish(screen);
+            return;
+        }
 #ifdef GLAMOR_HAS_GL_FENCE
         GLsync sync;
 
@@ -516,7 +521,11 @@ glamor_add_format(ScreenPtr screen, int depth, CARD32 render_format,
         glDeleteTextures(1, &tex);
         glDeleteFramebuffers(1, &fbo);
 
-        if (format != read_format || type != read_type) {
+        /*
+         * Hack: Since utgard driver always return read_format/read_type
+         * as constant value, we do not check format/type.
+         */
+        if ((format != read_format || type != read_type) && !glamor_priv->is_utgard) {
             ErrorF("glamor: Implementation returned 0x%x/0x%x read format/type "
                    "for depth %d, expected 0x%x/0x%x.  "
                    "Falling back to software.\n",
@@ -725,6 +734,11 @@ glamor_init(ScreenPtr screen, unsigned int flags)
         glamor_priv->glsl_version = 120;
     }
 
+    /* HACK: ARM Mali-4xx use utgard DDK */
+    if (strstr((char *)glGetString(GL_RENDERER), "Mali-4") &&
+        strstr((char *)glGetString(GL_VENDOR), "ARM"))
+        glamor_priv->is_utgard = TRUE;
+
     /* We'd like to require GL_ARB_map_buffer_range or
      * GL_OES_map_buffer_range, since it offers more information to
      * the driver than plain old glMapBuffer() or glBufferSubData().
@@ -820,6 +834,15 @@ glamor_init(ScreenPtr screen, unsigned int flags)
     if (strstr((char *)glGetString(GL_VENDOR), "Broadcom") &&
         strstr((char *)glGetString(GL_RENDERER), "VC4"))
         glamor_priv->use_quads = FALSE;
+
+    /* HACK: disable hdr_debug on utgard */
+    if (glamor_priv->is_utgard) {
+        glamor_priv->has_khr_debug = FALSE;
+        for(int i = 0 ; i < MaxBOTEX; i++) {
+            glamor_priv->bo_tex[i].fbo_tex_oes = 0;
+            glamor_priv->bo_tex[i].bo_oes = NULL;
+        }
+    }
 
     glGetIntegerv(GL_MAX_RENDERBUFFER_SIZE, &glamor_priv->max_fbo_size);
     glGetIntegerv(GL_MAX_TEXTURE_SIZE, &glamor_priv->max_fbo_size);

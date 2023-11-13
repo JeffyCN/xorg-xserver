@@ -38,9 +38,20 @@ glamor_destroy_fbo(glamor_screen_private *glamor_priv,
 
     if (fbo->fb)
         glDeleteFramebuffers(1, &fbo->fb);
-    if (fbo->tex)
+    if (fbo->tex) {
         glDeleteTextures(1, &fbo->tex);
-
+        if(glamor_priv->is_utgard) {
+            for(int i = 0 ; i < MaxBOTEX; i++) {
+                if(fbo->tex == glamor_priv->bo_tex[i].fbo_tex_oes &&
+                   glamor_priv->bo_tex[i].bo_oes != NULL) {
+                    gbm_bo_destroy(glamor_priv->bo_tex[i].bo_oes);
+                    glamor_priv->bo_tex[i].fbo_tex_oes = 0;
+                    glamor_priv->bo_tex[i].bo_oes = NULL;
+                    break;
+                }
+            }
+        }
+    }
     free(fbo);
 }
 
