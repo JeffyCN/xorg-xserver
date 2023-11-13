@@ -202,6 +202,12 @@ struct glamor_saved_procs {
     ScreenBlockHandlerProcPtr block_handler;
 };
 
+#define MaxBOTEX 128
+typedef struct glamor_bo_tex_mg {
+    int fbo_tex_oes;
+    struct gbm_bo *bo_oes;
+} glamor_bo_tex_mg_t;
+
 typedef struct glamor_screen_private {
     Bool is_gles;
     int glsl_version;
@@ -223,6 +229,9 @@ typedef struct glamor_screen_private {
     Bool can_copyplane;
     int max_fbo_size;
     Bool gl_synced;
+
+    Bool is_utgard;
+    glamor_bo_tex_mg_t bo_tex[MaxBOTEX];
 
     struct glamor_format formats[33];
     struct glamor_format cbcr_format;

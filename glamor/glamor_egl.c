@@ -245,6 +245,21 @@ glamor_egl_create_textured_pixmap_from_gbm_bo(PixmapPtr pixmap,
     glamor_create_texture_from_image(screen, image, &texture);
     eglDestroyImage(glamor_egl->display, image);
     glamor_set_pixmap_type(pixmap, GLAMOR_TEXTURE_DRM);
+
+    /* HACK: record texture and bo for utgard */
+    if(glamor_priv->is_utgard) {
+        int i;
+        for(i = 0 ; i < MaxBOTEX; i++) {
+            if(glamor_priv->bo_tex[i].bo_oes == NULL) {
+                glamor_priv->bo_tex[i].fbo_tex_oes = texture;
+                glamor_priv->bo_tex[i].bo_oes = bo;
+                break;
+            }
+        }
+        if (i == MaxBOTEX)
+            ErrorF("bo_tex is full,then bo will leak !!!\n");
+    }
+
     glamor_set_pixmap_texture(pixmap, texture);
     glamor_egl_set_pixmap_bo(pixmap, bo, used_modifiers);
 
