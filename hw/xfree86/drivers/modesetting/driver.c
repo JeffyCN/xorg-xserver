@@ -728,8 +728,12 @@ msBlockHandler(ScreenPtr pScreen, void *timeout)
     }
 
     if (!access(getenv("XSERVER_FREEZE_DISPLAY") ? : "", F_OK)) {
+        ms->freeze = TRUE;
         *((int *)timeout) = 16;
         return FALSE;
+    } else if (ms->freeze) {
+        ms->freeze = FALSE;
+        drmmode_set_desired_modes(pScrn, &ms->drmmode, TRUE);
     }
 
     pScreen->BlockHandler = ms->BlockHandler;
