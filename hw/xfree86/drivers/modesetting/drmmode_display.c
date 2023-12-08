@@ -1869,8 +1869,8 @@ drmmode_set_cursor_position(xf86CrtcPtr crtc, int x, int y)
 
     drmmode_crtc_bounds(crtc, &dx, &dy, &dw, &dh);
 
-    x = x * dw / crtc->mode.HDisplay + dx;
-    y = y * dh / crtc->mode.VDisplay + dy;
+    x = x * (int)dw / crtc->mode.HDisplay + dx;
+    y = y * (int)dh / crtc->mode.VDisplay + dy;
 
     drmModeMoveCursor(drmmode->fd, drmmode_crtc->mode_crtc->crtc_id, x, y);
 }
