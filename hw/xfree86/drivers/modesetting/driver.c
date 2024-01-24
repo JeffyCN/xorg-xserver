@@ -1334,7 +1334,7 @@ msEnableSharedPixmapFlipping(RRCrtcPtr crtc, PixmapPtr front, PixmapPtr back)
         return FALSE;
 
     /* Not supported if we can't flip */
-    if (!ms->drmmode.pageflip)
+    if (ms->freeze || !ms->drmmode.pageflip)
         return FALSE;
 
     /* Not currently supported with reverse PRIME */
