@@ -113,6 +113,9 @@ glamor_create_fbo_from_tex(glamor_screen_private *glamor_priv,
         if (glamor_pixmap_ensure_fb(glamor_priv, fbo) != 0) {
             glamor_destroy_fbo(glamor_priv, fbo);
             fbo = NULL;
+        } else if (flag == GLAMOR_CREATE_FBO_CLEAR_FBO) {
+            glClearColor(0.0, 0.0, 0.0, 1.0);
+            glClear(GL_COLOR_BUFFER_BIT);
         }
     }
 
@@ -161,6 +164,9 @@ glamor_create_fbo(glamor_screen_private *glamor_priv,
 
     if (!tex) /* Texture creation failed due to GL_OUT_OF_MEMORY */
         return NULL;
+
+    if (flag != GLAMOR_CREATE_FBO_NO_FBO)
+        flag = GLAMOR_CREATE_FBO_CLEAR_FBO;
 
     return glamor_create_fbo_from_tex(glamor_priv, pixmap, w, h,
                                       tex, flag);
@@ -342,14 +348,23 @@ glamor_pixmap_ensure_fbo(PixmapPtr pixmap, int flag)
     }
     else {
         /* We do have a fbo, but it may lack of fb or tex. */
-        if (!pixmap_priv->fbo->tex)
+        if (!pixmap_priv->fbo->tex) {
             pixmap_priv->fbo->tex =
                 _glamor_create_tex(glamor_priv, pixmap, pixmap->drawable.width,
                                    pixmap->drawable.height);
+            if (flag != GLAMOR_CREATE_FBO_NO_FBO)
+                flag = GLAMOR_CREATE_FBO_CLEAR_FBO;
+        }
 
-        if (flag != GLAMOR_CREATE_FBO_NO_FBO && pixmap_priv->fbo->fb == 0)
+        if (flag != GLAMOR_CREATE_FBO_NO_FBO && pixmap_priv->fbo->fb == 0) {
             if (glamor_pixmap_ensure_fb(glamor_priv, pixmap_priv->fbo) != 0)
                 return FALSE;
+
+            if (flag == GLAMOR_CREATE_FBO_CLEAR_FBO) {
+                glClearColor(0.0, 0.0, 0.0, 1.0);
+                glClear(GL_COLOR_BUFFER_BIT);
+            }
+        }
     }
 
     return TRUE;
