@@ -180,7 +180,7 @@ done:
  */
 
 void
-glamor_finish_access_pixmap(PixmapPtr pixmap, Bool force)
+glamor_finish_access_pixmap(PixmapPtr pixmap)
 {
     glamor_pixmap_private       *priv = glamor_get_pixmap_private(pixmap);
 
@@ -192,13 +192,10 @@ glamor_finish_access_pixmap(PixmapPtr pixmap, Bool force)
         if (priv->prepared)
             FatalError("something wrong during buffer mapping");
 
-        /* Delay unmap to finalize when not forced */
-        if (force) {
-            pixmap->devPrivate.ptr = NULL;
+        pixmap->devPrivate.ptr = NULL;
 
-            gbm_bo_unmap(priv->bo, priv->map_data);
-            priv->bo_mapped = FALSE;
-        }
+        gbm_bo_unmap(priv->bo, priv->map_data);
+        priv->bo_mapped = FALSE;
     }
 #endif
 
@@ -272,9 +269,9 @@ glamor_finish_access(DrawablePtr drawable)
         glamor_get_screen_private(screen);
 
     if(glamor_priv->is_utgard)
-        glamor_finish_access_pixmap(glamor_get_drawable_pixmap(drawable), TRUE);
+        glamor_finish_access_pixmap(glamor_get_drawable_pixmap(drawable));
     else
-        glamor_finish_access_pixmap(glamor_get_drawable_pixmap(drawable), FALSE);
+        glamor_finish_access_pixmap(glamor_get_drawable_pixmap(drawable));
 }
 
 /*

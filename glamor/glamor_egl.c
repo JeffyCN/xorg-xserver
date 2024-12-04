@@ -170,7 +170,7 @@ glamor_egl_set_pixmap_bo(PixmapPtr pixmap, struct gbm_bo *bo,
     struct glamor_pixmap_private *pixmap_priv =
         glamor_get_pixmap_private(pixmap);
 
-    glamor_finish_access_pixmap(pixmap, TRUE);
+    glamor_finish_access_pixmap(pixmap);
 
     if (pixmap_priv->bo && pixmap_priv->owned_bo)
         gbm_bo_destroy(pixmap_priv->bo);
@@ -779,8 +779,8 @@ glamor_egl_exchange_buffers(PixmapPtr front, PixmapPtr back)
 
     glamor_pixmap_exchange_fbos(front, back);
 
-    glamor_finish_access_pixmap(front, FALSE);
-    glamor_finish_access_pixmap(back, FALSE);
+    glamor_finish_access_pixmap(front);
+    glamor_finish_access_pixmap(back);
 
     /* Swap all buffer related members */
     GLAMOR_EXCHANGE(back_priv->bo, front_priv->bo);
