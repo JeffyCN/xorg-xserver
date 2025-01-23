@@ -3938,6 +3938,7 @@ drmmode_xf86crtc_resize(ScrnInfoPtr scrn, int width, int height)
         if (!crtc->enabled)
             continue;
 
+        drmmode_destroy_flip_fb(crtc);
         drmmode_set_mode_major(crtc, &crtc->mode,
                                crtc->rotation, crtc->x, crtc->y);
     }
@@ -4910,10 +4911,10 @@ drmmode_create_flip_fb(xf86CrtcPtr crtc)
     height = crtc->mode.VDisplay;
     bpp = drmmode->kbpp;
 
-    drmmode_destroy_flip_fb(crtc);
-
     for (i = 0; i < ARRAY_SIZE(drmmode_crtc->flip_fb); i++) {
         drmmode_fb *fb = &drmmode_crtc->flip_fb[i];
+        if (fb->fb_id)
+            continue;
 
         if (!drmmode_create_bo(drmmode, &fb->bo, width, height, bpp))
             goto fail;
