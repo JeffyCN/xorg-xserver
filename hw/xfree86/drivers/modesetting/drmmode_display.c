@@ -889,12 +889,12 @@ drmmode_crtc_bounds(xf86CrtcPtr crtc, uint32_t *x, uint32_t *y,
             continue;
 
         /* NOTE: Only use the first output's padding */
-        *x += drmmode_output->padding_top;
-        *w -= drmmode_output->padding_top;
-        *w -= drmmode_output->padding_bottom;
-        *y += drmmode_output->padding_left;
-        *h -= drmmode_output->padding_left;
-        *h -= drmmode_output->padding_right;
+        *x += drmmode_output->padding_left;
+        *w -= drmmode_output->padding_left;
+        *w -= drmmode_output->padding_right;
+        *y += drmmode_output->padding_top;
+        *h -= drmmode_output->padding_top;
+        *h -= drmmode_output->padding_bottom;
         break;
     }
 }
