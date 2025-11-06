@@ -60,8 +60,8 @@
 
 static Bool drmmode_xf86crtc_resize(ScrnInfoPtr scrn, int width, int height);
 
-static void drmmode_destroy_flip_fb(xf86CrtcPtr crtc);
-static Bool drmmode_create_flip_fb(xf86CrtcPtr crtc);
+static void drmmode_disable_flip_fb(xf86CrtcPtr crtc);
+static Bool drmmode_enable_flip_fb(xf86CrtcPtr crtc);
 static Bool drmmode_update_fb(xf86CrtcPtr crtc, drmmode_fb *fb);
 static Bool drmmode_apply_transform(xf86CrtcPtr crtc);
 
@@ -3938,7 +3938,6 @@ drmmode_xf86crtc_resize(ScrnInfoPtr scrn, int width, int height)
         if (!crtc->enabled)
             continue;
 
-        drmmode_destroy_flip_fb(crtc);
         drmmode_set_mode_major(crtc, &crtc->mode,
                                crtc->rotation, crtc->x, crtc->y);
     }
@@ -4700,7 +4699,7 @@ drmmode_free_bos(ScrnInfoPtr pScrn, drmmode_ptr drmmode)
         drmmode_crtc_private_ptr drmmode_crtc = crtc->driver_private;
 
         dumb_bo_destroy(drmmode->fd, drmmode_crtc->cursor_bo);
-        drmmode_destroy_flip_fb(crtc);
+        drmmode_disable_flip_fb(crtc);
     }
 }
 
@@ -4875,11 +4874,15 @@ miPointerSpriteFuncRec drmmode_sprite_funcs = {
 };
 
 static void
-drmmode_destroy_flip_fb(xf86CrtcPtr crtc)
+drmmode_disable_flip_fb(xf86CrtcPtr crtc)
 {
     drmmode_crtc_private_ptr drmmode_crtc = crtc->driver_private;
     drmmode_ptr drmmode = drmmode_crtc->drmmode;
     int i;
+
+    drmmode_crtc->flip_fb_width = 0;
+    drmmode_crtc->flip_fb_height = 0;
+    drmmode_crtc->flip_fb_enabled = FALSE;
 
     for (i = 0; i < ARRAY_SIZE(drmmode_crtc->flip_fb); i++) {
         drmmode_fb *fb = &drmmode_crtc->flip_fb[i];
@@ -4901,7 +4904,7 @@ drmmode_destroy_flip_fb(xf86CrtcPtr crtc)
 }
 
 static Bool
-drmmode_create_flip_fb(xf86CrtcPtr crtc)
+drmmode_enable_flip_fb(xf86CrtcPtr crtc)
 {
     drmmode_crtc_private_ptr drmmode_crtc = crtc->driver_private;
     drmmode_ptr drmmode = drmmode_crtc->drmmode;
@@ -4910,6 +4913,13 @@ drmmode_create_flip_fb(xf86CrtcPtr crtc)
     width = crtc->mode.HDisplay;
     height = crtc->mode.VDisplay;
     bpp = drmmode->kbpp;
+
+    // Reuse buffers of the same size.
+    if (drmmode_crtc->flip_fb_width == width &&
+        drmmode_crtc->flip_fb_height == height)
+        goto out;
+
+    drmmode_disable_flip_fb(crtc);
 
     for (i = 0; i < ARRAY_SIZE(drmmode_crtc->flip_fb); i++) {
         drmmode_fb *fb = &drmmode_crtc->flip_fb[i];
@@ -4923,10 +4933,14 @@ drmmode_create_flip_fb(xf86CrtcPtr crtc)
             goto fail;
     }
 
+out:
+    drmmode_crtc->flip_fb_width = width;
+    drmmode_crtc->flip_fb_height = height;
+    drmmode_crtc->flip_fb_enabled = TRUE;
     return TRUE;
 
 fail:
-    drmmode_destroy_flip_fb(crtc);
+    drmmode_disable_flip_fb(crtc);
     return FALSE;
 }
 
@@ -4972,21 +4986,15 @@ drmmode_apply_transform(xf86CrtcPtr crtc)
             goto bail;
     }
 
-    if (!drmmode_create_flip_fb(crtc)) {
+    if (!drmmode_enable_flip_fb(crtc)) {
         drmmode_crtc->can_flip_fb = FALSE;
-        goto fail;
+        goto bail;
     }
-
-    drmmode_crtc->flip_fb_enabled = TRUE;
 
     return TRUE;
 
-fail:
-    drmmode_crtc->can_flip_fb = FALSE;
-
 bail:
-    drmmode_destroy_flip_fb(crtc);
-    drmmode_crtc->flip_fb_enabled = FALSE;
+    drmmode_disable_flip_fb(crtc);
 
     crtc->driverIsPerformingTransform &= ~XF86DriverTransformOutput;
     return xf86CrtcRotate(crtc);
