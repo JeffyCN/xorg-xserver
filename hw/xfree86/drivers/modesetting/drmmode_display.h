@@ -218,6 +218,8 @@ typedef struct {
     Bool external_flipped; /* dri2 or present flip */
     uint64_t flipping_time_ms; /* time of the latest fb flipping */
     Bool can_flip_fb;
+    Bool flip_fb_width;
+    Bool flip_fb_height;
     Bool flip_fb_enabled;
     Bool flipping;
 
