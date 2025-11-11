@@ -3564,9 +3564,20 @@ drmmode_clones_init(ScrnInfoPtr scrn, drmmode_ptr drmmode, drmModeResPtr mode_re
             int k;
 
             for (k = 0; k < mode_res->count_encoders; k++) {
+                /* HACK: Filter out virtual encoders */
+                drmModeEncoderPtr encoder =
+                    drmModeGetEncoder(drmmode->fd, mode_res->encoders[k]);
+                if (encoder->encoder_type == DRM_MODE_ENCODER_VIRTUAL)
+                    drmmode_output->enc_clone_mask &= ~(1 << k);
+                drmModeFreeEncoder(encoder);
+
                 if (mode_res->encoders[k] ==
-                    drmmode_output->mode_encoders[j]->encoder_id)
+                    drmmode_output->mode_encoders[j]->encoder_id) {
                     drmmode_output->enc_mask |= (1 << k);
+
+                    /* HACK: Filter out itself */
+                    drmmode_output->enc_clone_mask &= ~(1 << k);
+                }
             }
 
             drmmode_output->enc_clone_mask &=
